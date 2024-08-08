@@ -6,7 +6,9 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  CatalogueSelect,
   DocumentTypesFieldet,
+  LegacyDocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -80,7 +82,18 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         </ErrorBoundary>
       </Fieldset>
 
-      <DocumentTypesFieldet />
+      <ErrorBoundary
+        errorMessage={
+          <FormattedMessage
+            description="Objects API registrations options: document types selection error"
+            defaultMessage="Something went wrong while retrieving the available catalogues and/or document types."
+          />
+        }
+      >
+        <DocumentTypesFieldet />
+      </ErrorBoundary>
+
+      <LegacyDocumentTypesFieldet />
 
       <Fieldset
         title={

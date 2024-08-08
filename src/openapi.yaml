@@ -3853,10 +3853,10 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/objects-api/catalogi:
+  /api/v2/registration/plugins/objects-api/catalogues:
     get:
-      operationId: registration_plugins_objects_api_catalogi_list
-      description: List the available catalogi.
+      operationId: registration_plugins_objects_api_catalogues_list
+      description: List the available catalogues.
       summary: List available Catalogi from the provided Objects API group
       parameters:
       - in: query
@@ -3877,7 +3877,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Catalogus'
+                  $ref: '#/components/schemas/Catalogue'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4056,7 +4056,7 @@ paths:
   /api/v2/registration/plugins/zgw-api/catalogi:
     get:
       operationId: registration_plugins_zgw_api_catalogi_list
-      description: List the available catalogi.
+      description: List the available catalogues.
       summary: List the available Catalogi from the provided ZGW API group
       parameters:
       - in: query
@@ -4077,7 +4077,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Catalogus'
+                  $ref: '#/components/schemas/Catalogue'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -6832,18 +6832,18 @@ components:
           description: Email given when making the appointment
       required:
       - email
-    Catalogus:
+    Catalogue:
       type: object
       properties:
-        domein:
+        domain:
           type: string
         rsin:
           type: string
         label:
           type: string
-          description: The display label of the catalogus
+          description: The display label of the catalogue
       required:
-      - domein
+      - domain
       - label
       - rsin
     Category:

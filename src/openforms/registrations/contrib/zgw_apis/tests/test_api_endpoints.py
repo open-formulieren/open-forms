@@ -61,7 +61,7 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
             },
         )
 
-        test_catalogus = [obj for obj in response.json() if obj["domein"] == "TEST"]
+        test_catalogus = [obj for obj in response.json() if obj["domain"] == "TEST"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(test_catalogus), 1)

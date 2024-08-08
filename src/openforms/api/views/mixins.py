@@ -1,5 +1,5 @@
-from collections.abc import Callable, Iterable
-from typing import Any
+from collections.abc import Iterable
+from typing import Generic, TypeVar
 
 from rest_framework import serializers
 from rest_framework.request import Request
@@ -17,7 +17,10 @@ class SerializerContextMixin:
         return {"request": self.request, "format": self.format_kwarg, "view": self}
 
 
-class ListMixin(SerializerContextMixin):
+T = TypeVar("T")
+
+
+class ListMixin(Generic[T], SerializerContextMixin):
     """
     Fetch and serialize a list of objects.
 
@@ -26,14 +29,15 @@ class ListMixin(SerializerContextMixin):
     """
 
     serializer_class: type[serializers.Serializer]
-    get_objects: Callable[[], Iterable[Any]]
 
     def get_serializer(self, *args, **kwargs):
         kwargs.setdefault("context", self.get_serializer_context())
         return self.serializer_class(many=True, *args, **kwargs)
 
+    def get_objects(self) -> Iterable[T]:
+        raise NotImplementedError("You must implement the 'get_objects' method")
+
     def get(self, request, *args, **kwargs):
         objects = self.get_objects()
         serializer = self.get_serializer(instance=objects)
-
         return Response(serializer.data)

@@ -1875,6 +1875,12 @@
       "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
+  "HNB0l+": [
+    {
+      "type": 0,
+      "value": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+    }
+  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -2143,6 +2149,12 @@
       "value": "The maximum number of files that can be uploaded."
     }
   ],
+  "KtVIGz": [
+    {
+      "type": 0,
+      "value": "Document types (legacy)"
+    }
+  ],
   "KwatvH": [
     {
       "type": 0,
@@ -2309,6 +2321,12 @@
     {
       "type": 0,
       "value": "All simple variables are mapped to a case property."
+    }
+  ],
+  "NYJo4j": [
+    {
+      "type": 0,
+      "value": "Catalogue"
     }
   ],
   "NdaqDN": [
@@ -4689,6 +4707,12 @@
     {
       "type": 0,
       "value": "Is sensitive data"
+    }
+  ],
+  "mCHS+l": [
+    {
+      "type": 0,
+      "value": "You have selected a catalogue - the document type URLs configured here will be ignored."
     }
   ],
   "mH3X/G": [

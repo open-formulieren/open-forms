@@ -33,3 +33,29 @@ export const mockTargetPathsPost = paths =>
       return res(ctx.json(paths[variableJsonSchemaType]));
     }
   );
+
+const CATALOGUES = [
+  {
+    rsin: '000000000',
+    domain: 'TEST',
+    label: 'Catalogus 1',
+  },
+  {
+    rsin: '000000000',
+    domain: 'OTHER',
+    label: 'Catalogus 2',
+  },
+  {
+    rsin: '111111111',
+    domain: 'TEST',
+    label: 'TEST (111111111)',
+  },
+];
+
+export const mockCataloguesGet = () =>
+  rest.get(
+    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/catalogues`,
+    (req, res, ctx) => {
+      return res(ctx.json(CATALOGUES));
+    }
+  );

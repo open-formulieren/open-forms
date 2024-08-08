@@ -829,6 +829,11 @@
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
+  "HNB0l+": {
+    "defaultMessage": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns.",
+    "description": "New document types informative message",
+    "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+  },
   "HXE3Mm": {
     "defaultMessage": "Slug of the form, used in URLs",
     "description": "Form slug field help text",
@@ -984,6 +989,11 @@
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
   },
+  "KtVIGz": {
+    "defaultMessage": "Document types (legacy)",
+    "description": "Objects registration: document types (legacy)",
+    "originalDefault": "Document types (legacy)"
+  },
   "KzlSYi": {
     "defaultMessage": "Restore",
     "description": "Restore form version link",
@@ -1103,6 +1113,11 @@
     "defaultMessage": "All simple variables are mapped to a case property.",
     "description": "Warning that all simple variables are mapped",
     "originalDefault": "All simple variables are mapped to a case property."
+  },
+  "NYJo4j": {
+    "defaultMessage": "Catalogue",
+    "description": "Objects API registration options 'catalogue' label",
+    "originalDefault": "Catalogue"
   },
   "NwTdLM": {
     "defaultMessage": "Component where locations for an appointment will be shown",
@@ -2118,6 +2133,11 @@
     "defaultMessage": "Add item",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
+  },
+  "mCHS+l": {
+    "defaultMessage": "You have selected a catalogue - the document type URLs configured here will be ignored.",
+    "description": "Objects registration: warning that legacy document types will be ignored",
+    "originalDefault": "You have selected a catalogue - the document type URLs configured here will be ignored."
   },
   "mH3X/G": {
     "defaultMessage": "today",

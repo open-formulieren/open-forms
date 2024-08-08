@@ -1,4 +1,4 @@
-import {useField, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 

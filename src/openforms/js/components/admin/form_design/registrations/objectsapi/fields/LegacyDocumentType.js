@@ -1,11 +1,12 @@
-import {useField} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import {WarningIcon} from 'components/admin/icons';
 
 const DocumentType = ({name, label, helpText}) => {
   const [fieldProps] = useField(name);
@@ -82,23 +83,54 @@ const InformatieobjecttypeAttachment = () => (
   />
 );
 
-export const DocumentTypesFieldet = () => (
-  <Fieldset
-    title={
-      <FormattedMessage
-        description="Objects registration: document types"
-        defaultMessage="Document types"
-      />
-    }
-    collapsible
-    fieldNames={[
-      'informatieobjecttypeSubmissionReport',
-      'informatieobjecttypeSubmissionCsv',
-      'informatieobjecttypeAttachment',
-    ]}
-  >
-    <InformatieobjecttypeSubmissionReport />
-    <InformatieobjecttypeSubmissionCsv />
-    <InformatieobjecttypeAttachment />
-  </Fieldset>
-);
+export const LegacyDocumentTypesFieldet = () => {
+  const intl = useIntl();
+  const {
+    values: {
+      catalogue,
+      informatieobjecttypeSubmissionReport,
+      informatieobjecttypeSubmissionCsv,
+      informatieobjecttypeAttachment,
+    },
+  } = useFormikContext();
+
+  const isConfigIgnored =
+    catalogue &&
+    (informatieobjecttypeSubmissionReport ||
+      informatieobjecttypeSubmissionCsv ||
+      informatieobjecttypeAttachment);
+
+  return (
+    <Fieldset
+      title={
+        <>
+          {isConfigIgnored && (
+            <WarningIcon
+              asLead
+              text={intl.formatMessage({
+                description:
+                  'Objects registration: warning that legacy document types will be ignored',
+                defaultMessage:
+                  'You have selected a catalogue - the document type URLs configured here will be ignored.',
+              })}
+            />
+          )}
+          <FormattedMessage
+            description="Objects registration: document types (legacy)"
+            defaultMessage="Document types (legacy)"
+          />
+        </>
+      }
+      collapsible
+      fieldNames={[
+        'informatieobjecttypeSubmissionReport',
+        'informatieobjecttypeSubmissionCsv',
+        'informatieobjecttypeAttachment',
+      ]}
+    >
+      <InformatieobjecttypeSubmissionReport />
+      <InformatieobjecttypeSubmissionCsv />
+      <InformatieobjecttypeAttachment />
+    </Fieldset>
+  );
+};

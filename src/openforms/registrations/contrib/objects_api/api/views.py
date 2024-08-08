@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from openforms.api.views import ListMixin
 from openforms.contrib.zgw.api.views import (
-    BaseCatalogiListView,
+    BaseCatalogueListView,
     BaseInformatieObjectTypenListView,
 )
 
@@ -136,7 +136,7 @@ class TargetPathsListView(views.APIView):
         parameters=[APIGroupQueryParamsSerializer],
     ),
 )
-class CatalogiListView(BaseCatalogiListView):
+class CatalogueListView(BaseCatalogueListView):
     filter_serializer_class = APIGroupQueryParamsSerializer
 
 

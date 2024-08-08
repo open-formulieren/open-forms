@@ -1,13 +1,13 @@
 from django.urls import path
 
-from .views import CatalogiListView, InformatieObjectTypenListView
+from .views import CatalogueListView, InformatieObjectTypenListView
 
 app_name = "zgw_apis"
 
 urlpatterns = [
     path(
         "catalogi",
-        CatalogiListView.as_view(),
+        CatalogueListView.as_view(),
         name="catalogi-list",
     ),
     path(
