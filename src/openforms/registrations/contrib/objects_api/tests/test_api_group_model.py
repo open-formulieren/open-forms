@@ -238,7 +238,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
         )
 
         try:
-            config.clean()
+            config.full_clean()
         except ValidationError as exc:
             raise self.failureException("Not specifying a catalogue is valid.") from exc
 
@@ -248,7 +248,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
         )
 
         with self.assertRaises(ValidationError) as exc_context:
-            config.clean()
+            config.full_clean()
 
         self.assertIn("catalogi_service", exc_context.exception.error_dict)
 
@@ -256,7 +256,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
         # validates against the fixtures in docker/open-zaak
         config = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True,
-            catalogue_domain="Nope",  # does not exist in fixtures
+            catalogue_domain="NOPE",  # does not exist in fixtures
             catalogue_rsin="000000000",
         )
 
@@ -266,12 +266,12 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                 "The specified catalogue does not exist. Maybe you made a typo in the "
                 "domain or RSIN?",
             ):
-                config.clean()
+                config.full_clean()
 
         with self.subTest("valid catalogue"):
             config.catalogue_domain = "TEST"  # exists in the fixture
             try:
-                config.clean()
+                config.full_clean()
             except ValidationError as exc:
                 raise self.failureException(
                     "Catalogue exists and should validate"
@@ -301,7 +301,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                     ValidationError,
                     "The document type URL is not in the specified catalogue.",
                 ) as exc_context:
-                    _config.clean()
+                    _config.full_clean()
 
                 self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
 
@@ -317,7 +317,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
             )
 
             try:
-                config2.clean()
+                config2.full_clean()
             except ValidationError as exc:
                 raise self.failureException(
                     "Expected configuration to be valid"
@@ -349,7 +349,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                 invalid_config = copy(config)
                 setattr(invalid_config, field, iot_in_other)
 
-                invalid_config.clean()
+                invalid_config.full_clean()
 
             self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
 
@@ -358,7 +358,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                 setattr(valid_config, field, iot_in_test)
 
                 try:
-                    valid_config.clean()
+                    valid_config.full_clean()
                 except ValidationError as exc:
                     raise self.failureException(
                         "Configuration is supposed to be valid"
