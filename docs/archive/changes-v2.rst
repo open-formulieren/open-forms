@@ -9,6 +9,321 @@ Changes for major version 2 of Open Forms.
    The versions listed here no longer receive bugfixes, they are end-of-life. For
    maintained versions, see :ref:`changelog`.
 
+2.4.10 (2024-06-19)
+===================
+
+Final bugfix release in the ``2.4.x`` series.
+
+* [:backend:`4403`] Fixed broken submission PDF layout when empty values are present.
+
+2.4.9 (2024-06-14)
+==================
+
+Bugfix release fixing some issues (still) in 2.4.8
+
+Note that 2.4.8 was never published to Docker Hub.
+
+* [:backend:`4338`] Fixed prefill for StUF-BG with SOAP 1.2 not properly extracting attributes.
+* [:backend:`4390`] Fixed regression introduced by #4368 that would break template variables in
+  hyperlinks inside WYSIWYG content.
+
+2.4.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [:backend:`4255`] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [:backend:`4368`] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [:backend:`4362`] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
+2.4.7 (2024-05-13)
+==================
+
+Bugfix release
+
+* [:backend:`4079`] Fixed metadata retrieval for DigiD failing when certificates signed by the G1 root are used.
+* [:backend:`4103`] Fixed incorrect appointment details being included in the submission PDF.
+* [:backend:`4145`] Fixed the payment status not being registered correctly for StUF-ZDS.
+* [:backend:`3964`] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [:backend:`4205`] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+
+2.4.6 (2024-03-14)
+==================
+
+Bugfix release
+
+* [:backend:`3863`] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [:backend:`3858`] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+* [:backend:`3864`] Fixed handling of StUF-BG responses where one partner is returned.
+* [:backend:`1052`] Upgraded DigiD/eHerkenning library.
+* [:backend:`3975`, :backend:`3052`] Fixed legacy service fetch configuration being picked over the intended
+  format.
+* [:backend:`3881`] Fixed updating a re-usable form definition in one form causing issues in other
+  forms that also use this same form definition.
+
+2.4.5 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:sdk:`642`] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
+
+2.4.4 (2024-01-30)
+==================
+
+Hotfix release to address an upgrade problem.
+
+* Bump packages to their latest security releases
+* [:backend:`3616`] Fixed broken PDF template for appointment data.
+* Fixed a broken migration preventing upgrading to 2.4.x.
+
+2.4.3 (2024-01-12)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3656`] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
+* [:backend:`3692`] Fixed crash when using OIDC DigiD login while logged into the admin interface.
+* [:backend:`3744`] Fixed conditionally marking a postcode component as required/optional.
+
+  .. note:: We cannot automatically fix existing logic rules. For affected forms, you
+     can remove and re-add the logic rule action to modify the 'required' state.
+
+* [:backend:`3704`] Fixed the family members component not retrieving the partners when using
+  StUF-BG as data source.
+* [:backend:`2710`] Added missing initials (voorletters) prefill option for StUF-BG plugin.
+* Fixed failing docs build by disabling/changing some link checks.
+
+2.4.2 (2023-12-08)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3625`] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* Updated CSP ``frame-ancestors`` directive to be consistent with the ``X-Frame-Options``
+  configuration.
+* [:backend:`3605`] Fixed unintended number localization in StUF/SOAP messages.
+* [:backend:`3613`] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+* [:backend:`3647`] Fixed a backend (logic check) crash when non-parsable time, date or datetime
+  values are passed. The values are now ignored as if nothing was submitted.
+
+2.4.1 (2023-11-14)
+==================
+
+Hotfix release
+
+* [:backend:`3604`] Fixed a regression in the Objects API and ZGW API's registration backends. The
+  required ``Content-Crs`` request header was no longer sent in outgoing requests after
+  the API client refactoring.
+
+2.4.0 "Miffy" (2023-11-09)
+==========================
+
+Open Forms 2.4.0 is a feature release.
+
+.. epigraph::
+
+   **Miffy** (or "Nijntje" in Dutch) is a fictional rabbit appearing in a series of
+   picture books authored by Dick Bruna. Both are famous Utrecht citizens. You can find
+   Miffy in a number of places, such as the "Nijntje Pleintje" (Miffy Square) and a set
+   of pedestrian traffic lights in the shape of the rabbit in the city center.
+
+Upgrade procedure
+-----------------
+
+⚠️ Ensure you upgrade to Open Forms 2.3.0 before upgrading to the 2.4 release series.
+
+To keep the codebase maintainable and follow best pratices, we've done some considerable
+cleanups in the code that may require some special attention. We've collected the
+details for this release in a separate documentation page.
+
+⚠️ Please review the instructions in the documentation under **Installation** >
+**Upgrade details to Open Forms 2.4.0** before and during upgrading.
+
+Major features
+--------------
+
+***️ (Experimental) Suwinet plugin**
+
+We now support retrieving data for a logged in user (with BSN) through Suwinet. This
+feature is in experimental/preview mode, so we rely on your feedback on how to further
+develop and improve this.
+
+**📅 Appointments**
+
+Our Qmatic appointments plugin now also supports multiple customer/multiple products
+flows, matching the JCC feature set.
+
+**🧩 More NL Design System components**
+
+We continue bridging the gap between our custom UI-components and available NL DS
+components. Our buttons and links now no longer require OF-specific tokens and we've
+removed a whole bunch of styling code that got in the way when building your own theme.
+
+More will come in the future!
+
+Detailed changes
+----------------
+
+The 2.4.0-alpha.0 changes are included as well, see the earlier changelog entry.
+
+**New features**
+
+* Form designer
+
+    * [:backend:`586`] Added support for Suwinet as a prefill plugin.
+    * [:backend:`3188`] Added better error feedback when adding form steps to a form with
+      duplicate keys.
+    * [:backend:`3351`] The family members component can now be used to retrieve partner
+      information instead of only the children (you can select children, partners or
+      both).
+    * [:backend:`2953`] Added support for durations between dates in JSON-logic.
+    * [:backend:`2952`] Form steps can now initially be non-applicable and dynamically be made
+      applicable.
+
+* [:backend:`3499`] Accepting/declining cookies in the notice now no longer refreshes the page.
+* [:backend:`3477`] Added CSP ``form-action`` directives, generated via the DigiD/eHerkenning
+  and Ogone configuration.
+* [:backend:`3524`] The behaviour when retrieving family members who don't have a BSN is now
+  consistent and well-defined.
+* [:backend:`3566`] Replaced custom buttons with utrecht-button components.
+
+**Bugfixes**
+
+* [:backend:`3527`] Duplicated form steps in a form are now blocked at the database level.
+* [:backend:`3448`] Fixed emails not being sent with a subject line > 70 characters.
+* [:backend:`3448`] Fixed a performance issue when upgrading the underlying email sending library
+  if you have many (queued) emails.
+* [:backend:`2629`] Fixed array variable inputs in the form designer.
+* [:backend:`3491`] Fixed slowdown in the form designer when created a new or loading an existing
+  form when many reusable form definitions exist.
+* [:backend:`3557`] Fixed a bug that would not display the available document types when
+  configuring the file upload component.
+* [:backend:`3553`] Fixed a crash when validating a ZWG registration backend when no default
+  ZGW API group is set.
+* [:backend:`3537`] Fixed validator plugin list endpoint to properly converting camelCase params
+  into snake_case.
+* [:backend:`3467`] Fixed crashes when importing/copying forms with ``null`` in the prefill
+  configuration.
+* [:backend:`3580`] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
+**Project maintenance**
+
+* Upgraded various dependencies with the most recent (security) releases.
+* [:backend:`2958`] Started the rework for form field-level translations, the backend can now
+  handle present and future formats.
+* [:backend:`3489`] All API client usage is updated to a new library, which should lead to a
+  better developer experience and make it easier to get better performance when making
+  (multiple) API calls.
+* Bumped pip-tools for latest pip compatibility.
+* [:backend:`3531`] Added a custom migration operation class for formio component transformations.
+* [:backend:`3531`] The time component now stores ``minTime``/``maxTime`` in the ``validate``
+  namespace.
+* Contributed a number of library extensions back to the library itself.
+* Squashed the variables app migrations.
+* [:backend:`2958`] Upgraded (experimental) new form builder to 0.8.0, which uses the new
+  translations format.
+* Fixed test suite which didn't take DST into account.
+* [:backend:`3449`] Documented the (new) co-sign flow.
+
+2.4.0-alpha.0 (2023-10-02)
+==========================
+
+Upgrade procedure
+-----------------
+
+.. warning::
+
+    Ensure you upgrade to Open Forms 2.3.0 before upgrading to the 2.4 release series.
+
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`3185`] Added Haal Centraal: HR prefill plugin to official extensions build.
+* [:backend:`3051`] You can now schedule activation/deactivation of forms.
+* [:backend:`1884`] Added more fine-grained custom errors for time field components.
+* More fields irrelevant to appointment forms are now hidden in the form designer.
+* [:backend:`3456`] Implemented multi-product and multi-customer appointments for Qmatic.
+* [:backend:`3413`] Improved UX by including direct hyperlinks to the form in co-sign emails (
+  admins can disable this behaviour).
+* [:backend:`3328`] Qmatic appointments plugin now support mTLS.
+* [:backend:`3481`] JSON-data sent to the Objects API can now optionally be HTML-escaped for when
+  downstream systems fail to do so.
+* [:backend:`2688`] Service-fetch response data is now cached & timeouts are configurable on the
+  configuration.
+* [:backend:`3443`] You can now provide custom validation error messages for date fields
+* [:backend:`3402`] Added tracing information to outgoing emails so we can report on failures.
+* [:backend:`3402`] Added email digest to report (potential) observed problems, like email
+  delivery failures.
+
+**Bugfixes**
+
+* [:backend:`3139`] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [:backend:`3447`] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [:backend:`3445`] Fixed not being able to enter more decimals for latitude/longitude in the map
+  component configuration.
+* [:backend:`3423`] Fixed import crash with forms using service fetch.
+* [:backend:`3420`] Fixed styling of cookie overview page.
+* [:backend:`3378`] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [:backend:`3470`] Fixed form names with slashes breaking submission generation.
+* [:backend:`3437`] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+* [:backend:`3393`] Fixed duplicated form field label in eHerkenning configuration.
+* [:backend:`3375`] Fixed translation warnings being shown for optional empty fields.
+* [:backend:`3187`] Fixed UI displaying re-usable form definitions that are already in the form.
+* [:backend:`3422`] Fixed logic tab crashes when variables/fields are deleted and added a generic
+  error boundary with troubleshooting information.
+* [:backend:`3308`] Fixed new installations having all-English default messages for translatable
+  default content.
+* [:backend:`3492`] Fixed help text referring to old context variable.
+* [:backend:`3437`] Made request logging solution more robust to prevent weird crashes.
+* [:backend:`3279`] Added robustness to admin pages making requests to external hosts.
+
+**Project maintenance**
+
+* [:backend:`3190`] Added end-to-end tests for DigiD and eHerkenning authentication flows with a
+  real broker.
+* Mentioned extension requirements file in docs.
+* [:backend:`3416`] Refactored rendering of appointment data  in confirmation PDF.
+* [:backend:`3389`] Stopped building test images, instead use symlinks or git submodules in your
+  (CI) pipeline.
+* Updated appointments documentation.
+* Moved service factory to more general purpose location.
+* [:backend:`3421`] Updated local infrastructure for form exports and clarified language to manage
+  import expectations.
+* Updated version of internal experimental new formio-builder.
+* Prevent upgrades from < 2.3.0 to 2.4.
+* Squashed *a lot* of migrations.
+* Removed dead/obsolete "default BSN/KVK" configuration - no code used this anymore since
+  a while.
+* [:backend:`3328`] Initial rework of API clients to generically support mTLS and other
+  connection parameters.
+* Fixed test cleanup for self-signed certs support, causing flaky tests.
+* Moved around a bunch of testing utilities to more appropriate directories.
+* [:backend:`3489`] Refactored all API-client usage into common interface.
+* Fixed tests failing with dev-settings.
+* Bumped dependencies with security releases.
+
 2.3.9 (2024-05-08)
 ==================
 
