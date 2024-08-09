@@ -7,6 +7,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..tests.factories import ObjectsAPIGroupConfigFactory
@@ -359,3 +360,23 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         for key, type in expected.items():
             with self.subTest(key=key):
                 self.assertIsInstance(record[key], type)
+
+    @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
+    def test_allow_unpublished_document_types(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "objects_api_group": self.objects_api_group.pk,
+                # catalogue in fixture with draft document types
+                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertGreater(len(data), 0)
+        has_any_drafts = any((item for item in data if item["isPublished"] is False))
+        self.assertTrue(has_any_drafts)
