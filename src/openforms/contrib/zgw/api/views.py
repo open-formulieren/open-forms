@@ -1,17 +1,18 @@
-from dataclasses import dataclass
-from typing import Any, ClassVar
+from dataclasses import dataclass, field
+from typing import ClassVar
 
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 
 from openforms.api.views import ListMixin
 
-from .filters import ProvidesCatalogiClientQueryParamsSerializer
+from .filters import DocumentTypesFilter, ProvidesCatalogiClientQueryParamsSerializer
 from .serializers import CatalogueSerializer, InformatieObjectTypeSerializer
 
 
 @dataclass
 class Catalogue:
+    url: str
     domain: str
     rsin: str
     name: str = ""
@@ -41,13 +42,26 @@ class BaseCatalogueListView(ListMixin[Catalogue], APIView):
 
         return [
             Catalogue(
-                domain=item["domein"], rsin=item["rsin"], name=item.get("naam", "")
+                url=item["url"],
+                domain=item["domein"],
+                rsin=item["rsin"],
+                name=item.get("naam", ""),
             )
             for item in catalogus_data
         ]
 
 
-class BaseInformatieObjectTypenListView(ListMixin, APIView):
+@dataclass
+class DocumentType:
+    catalogue: Catalogue
+    omschrijving: str
+    url: str = field(compare=False)  # different versions have different URLs
+
+    def catalogus_label(self) -> str:
+        return self.catalogue.label
+
+
+class BaseInformatieObjectTypenListView(ListMixin[DocumentType], APIView):
     """
     List the available InformatieObjectTypen.
 
@@ -59,46 +73,45 @@ class BaseInformatieObjectTypenListView(ListMixin, APIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = InformatieObjectTypeSerializer
-    filter_serializer_class: ClassVar[type[ProvidesCatalogiClientQueryParamsSerializer]]
+    filter_serializer_class: ClassVar[type[DocumentTypesFilter]]
 
-    def get_objects(self):
+    def get_objects(self) -> list[DocumentType]:
         filter_serializer = self.filter_serializer_class(data=self.request.query_params)
         filter_serializer.is_valid(raise_exception=True)
 
-        iotypen_data: dict[tuple[str, str], dict[str, Any]] = {}
+        catalogus_url = filter_serializer.validated_data["catalogus_url"]
+
+        document_types: list[DocumentType] = []
         with filter_serializer.get_ztc_client() as client:
-            catalogus_data = client.get_all_catalogi()
-            catalogus_mapping = {
-                catalogus["url"]: catalogus for catalogus in catalogus_data
+            # look up the relevant catalogue information, since we need to embed
+            # information in the document types for the formio-builder file component.
+            _catalogues: list[dict]
+            if catalogus_url:
+                response = client.get(catalogus_url)
+                response.raise_for_status()
+                _catalogues = [response.json()]
+            else:
+                _catalogues = list(client.get_all_catalogi())
+
+            catalogues: dict[str, Catalogue] = {
+                item["url"]: Catalogue(
+                    url=item["url"],
+                    domain=item["domein"],
+                    rsin=item["rsin"],
+                    name=item.get("naam", ""),
+                )
+                for item in _catalogues
             }
-            catalogus = filter_serializer.validated_data.get("catalogus_url", "")
 
-            for iotype in client.get_all_informatieobjecttypen(catalogus=catalogus):
-                # Filter out duplicate entries, as you can set start/end dates on IOTs:
-                key = (iotype["catalogus"], iotype["omschrijving"])
-                if key not in iotypen_data:
-                    iotypen_data[key] = iotype
+            # now, look up the document types, possibly filtered
+            for iotype in client.get_all_informatieobjecttypen(catalogus=catalogus_url):
+                document_type = DocumentType(
+                    url=iotype["url"],
+                    omschrijving=iotype["omschrijving"],
+                    catalogue=catalogues[iotype["catalogus"]],
+                )
+                if document_type in document_types:
+                    continue
+                document_types.append(document_type)
 
-        iotypen = []
-
-        for iotype in iotypen_data.values():
-            _catalogus = catalogus_mapping[iotype["catalogus"]]
-            catalogue = Catalogue(
-                domain=_catalogus["domein"],
-                rsin=_catalogus["rsin"],
-                name=_catalogus.get("naam", ""),
-            )
-
-            iotypen.append(
-                {
-                    "catalogus_domein": catalogue.domain,
-                    "catalogus_rsin": catalogue.rsin,
-                    "catalogus_label": catalogue.label,
-                    "url": iotype["url"],
-                    "omschrijving": iotype["omschrijving"],
-                    # Not taken into account by the serializer, but used to filter duplicates:
-                    "catalogus_url": iotype["catalogus"],
-                }
-            )
-
-        return iotypen
+        return document_types
