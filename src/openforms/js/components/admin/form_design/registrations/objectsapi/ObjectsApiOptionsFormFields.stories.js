@@ -192,12 +192,12 @@ export const APIFetchError = {
     });
 
     await step('Retrieving catalogues and document types', async () => {
-      const fieldsetTitle = canvas.getByRole('heading', {name: /Documenttypen/});
+      const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen (Tonen)'});
       expect(fieldsetTitle).toBeVisible();
       await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
 
       const errorMessage = await canvas.findByText(
-        'Something went wrong while retrieving the available catalogues and/or document types.'
+        'Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen.'
       );
       expect(errorMessage).toBeVisible();
     });
