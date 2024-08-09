@@ -1,5 +1,7 @@
-from typing import Callable, Iterator, NotRequired, TypedDict
+from functools import cached_property
+from typing import Callable, Iterator, Literal, NotRequired, TypedDict
 
+from flags.state import flag_enabled
 from zgw_consumers.nlx import NLXClient
 
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
@@ -41,7 +43,21 @@ class InformatieObjectType(TypedDict):
     concept: NotRequired[bool]
 
 
+class InformatieObjectTypeListParams(TypedDict, total=False):
+    catalogus: str
+    status: Literal["alles", "concept", "definitief"]
+    omschrijving: str
+    datumGeldigheid: str
+    page: int
+
+
 class CatalogiClient(NLXClient):
+    @cached_property
+    def allow_drafts(self) -> bool:
+        enabled = flag_enabled("ZGW_APIS_INCLUDE_DRAFTS")
+        assert enabled is not None
+        return enabled
+
     def get_all_catalogi(self) -> Iterator[dict]:
         """
         List all available catalogi, consuming pagination if relevant.
@@ -69,24 +85,25 @@ class CatalogiClient(NLXClient):
             return None
         return data["results"][0]
 
-    def get_all_informatieobjecttypen(self, *, catalogus: str = "") -> Iterator[dict]:
+    def get_all_informatieobjecttypen(
+        self, *, catalogus: str = ""
+    ) -> Iterator[InformatieObjectType]:
         """List all informatieobjecttypen.
 
         :arg catalogus: the catalogus URL the informatieobjecttypen should belong to.
         """
-        params = {}
+        params: InformatieObjectTypeListParams = {}
         if catalogus:
             params["catalogus"] = catalogus
-        response = self.get("informatieobjecttypen", params=params)
+        if self.allow_drafts:
+            params["status"] = "alles"
+        response = self.get("informatieobjecttypen", params=params)  # type: ignore
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
 
     def find_informatieobjecttypen(
-        self,
-        *,
-        catalogus: str,
-        description: str,
+        self, *, catalogus: str, description: str
     ) -> list[InformatieObjectType] | None:
         """
         Look up an informatieobjecttype within the specified catalogue.
@@ -94,13 +111,13 @@ class CatalogiClient(NLXClient):
         The description is unique within a catalogue, but multiple versions may exist.
         If no results are found, ``None`` is returned.
         """
-        response = self.get(
-            "informatieobjecttypen",
-            params={
-                "catalogus": catalogus,
-                "omschrijving": description,
-            },
-        )
+        params: InformatieObjectTypeListParams = {
+            "catalogus": catalogus,
+            "omschrijving": description,
+        }
+        if self.allow_drafts:
+            params["status"] = "alles"
+        response = self.get("informatieobjecttypen", params=params)  # type: ignore
         response.raise_for_status()
         data: PaginatedResponseData[InformatieObjectType] = response.json()
         if data["count"] == 0:

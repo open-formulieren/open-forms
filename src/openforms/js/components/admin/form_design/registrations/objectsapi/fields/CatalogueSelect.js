@@ -1,60 +1,28 @@
 import {useFormikContext} from 'formik';
+import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
-import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
-import {get} from 'utils/fetch';
 
-const ENDPOINT = '/api/v2/registration/plugins/objects-api/catalogues';
-
-const getCatalogues = async apiGroupID => {
-  const response = await get(ENDPOINT, {objects_api_group: apiGroupID});
-  if (!response.ok) {
-    throw new Error('Loading available object type versions failed');
-  }
-  const catalogues = response.data;
-
-  const _optionsByRSIN = {};
-  for (const catalogue of catalogues) {
-    const {rsin} = catalogue;
-    if (!_optionsByRSIN[rsin]) _optionsByRSIN[rsin] = [];
-    _optionsByRSIN[rsin].push(catalogue);
-  }
-
-  const groups = Object.entries(_optionsByRSIN)
-    .map(([rsin, options]) => ({
-      label: rsin,
-      options: options.sort((a, b) => a.label.localeCompare(b.label)),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  return groups;
+export const extractValue = (optionGroups, currentValue) => {
+  const allOptions = optionGroups.reduce((acc, group) => acc.concat(group.options), []);
+  return (
+    allOptions.find(
+      ({rsin, domain}) => rsin === currentValue.rsin && domain === currentValue.domain
+    ) ?? null
+  );
 };
 
-const CatalogueSelect = () => {
+const CatalogueSelect = ({loading, optionGroups}) => {
   const {
     values: {objectsApiGroup = null, catalogue = {}},
     getFieldHelpers,
   } = useFormikContext();
 
   const {setValue} = getFieldHelpers('catalogue');
-
-  const {
-    loading,
-    value: optionGroups = [],
-    error,
-  } = useAsync(async () => {
-    if (!objectsApiGroup) return [];
-    return await getCatalogues(objectsApiGroup);
-  }, [objectsApiGroup]);
-  if (error) throw error;
-
-  const allOptions = optionGroups.reduce((acc, group) => acc.concat(group.options), []);
-  const value =
-    allOptions.find(({rsin, domain}) => rsin === catalogue.rsin && domain === catalogue.domain) ??
-    null;
+  const value = extractValue(optionGroups, catalogue);
   return (
     <FormRow>
       <Field
@@ -85,6 +53,22 @@ const CatalogueSelect = () => {
       </Field>
     </FormRow>
   );
+};
+
+CatalogueSelect.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  optionGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      options: PropTypes.arrayOf(
+        PropTypes.shape({
+          rsin: PropTypes.string.isRequired,
+          domain: PropTypes.string.isRequired,
+          label: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+    })
+  ),
 };
 
 export default CatalogueSelect;

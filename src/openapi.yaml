@@ -3905,6 +3905,7 @@ paths:
         schema:
           type: string
           format: uri
+          default: ''
           minLength: 1
         description: Filter informatieobjecttypen against this catalogus URL.
       - in: query
@@ -4105,6 +4106,7 @@ paths:
         schema:
           type: string
           format: uri
+          default: ''
           minLength: 1
         description: Filter informatieobjecttypen against this catalogus URL.
       - in: query
@@ -6842,10 +6844,16 @@ components:
         label:
           type: string
           description: The display label of the catalogue
+        url:
+          type: string
+          format: uri
+          description: The API resource URL of the catalogue. You can use this for
+            subsequent filtering operations.
       required:
       - domain
       - label
       - rsin
+      - url
     Category:
       type: object
       properties:
@@ -8396,22 +8404,21 @@ components:
     InformatieObjectType:
       type: object
       properties:
-        catalogusDomein:
-          type: string
-        catalogusRsin:
-          type: string
-        catalogusLabel:
-          type: string
-          description: The display label of the catalogus
         url:
           type: string
           format: uri
         omschrijving:
           type: string
+          title: description
+          description: The description uniquely identifies a document type within
+            a catalogue. Multiple versions of the same document type may exist, these
+            have non-overlapping valid from/valid until dates.
+        catalogusLabel:
+          type: string
+          title: catalogue label
+          description: A representation of the catalogue containing the document type.
       required:
-      - catalogusDomein
       - catalogusLabel
-      - catalogusRsin
       - omschrijving
       - url
     Language:

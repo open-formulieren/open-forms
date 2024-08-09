@@ -5,7 +5,13 @@ import selectEvent from 'react-select-event';
 import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
+import {
+  mockCataloguesGet,
+  mockDocumentTypesGet,
+  mockObjecttypeVersionsGet,
+  mockObjecttypesError,
+  mockObjecttypesGet,
+} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
@@ -51,6 +57,8 @@ export default {
           {version: 1, status: 'published'},
           {version: 2, status: 'draft'},
         ]),
+        mockCataloguesGet(),
+        mockDocumentTypesGet(),
       ],
     },
   },
@@ -238,5 +246,45 @@ export const V2ValidationErrors = {
       [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
     ],
+  },
+};
+
+export const SelectDocumentType = {
+  args: {
+    formData: {
+      version: 2,
+      objectsApiGroup: 1,
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const fieldsetTitle = canvas.getByRole('heading', {name: /Documenttypen/});
+    expect(fieldsetTitle).toBeVisible();
+    await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+
+    const catalogueSelect = canvas.getByLabelText('Catalogue');
+    await selectEvent.select(catalogueSelect, 'Catalogus 1');
+    const pdfSelect = canvas.getByLabelText('Informatieobjecttype inzendings-PDF');
+    await selectEvent.select(pdfSelect, 'Test PDF');
+
+    const testForm = await canvas.findByTestId('test-form');
+    await waitFor(() => {
+      expect(testForm).toHaveFormValues({
+        iotSubmissionReport: 'Test PDF',
+        iotSubmissionCsv: '',
+        iotAttachment: '',
+      });
+    });
+
+    await selectEvent.select(catalogueSelect, 'Catalogus 2');
+    await waitFor(() => {
+      expect(testForm).toHaveFormValues({
+        iotSubmissionReport: '',
+        iotSubmissionCsv: '',
+        iotAttachment: '',
+      });
+    });
   },
 };
