@@ -27,8 +27,8 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/78fdc9f5-6c78-49e7-80cf-c6536aab54f6","uuid":"78fdc9f5-6c78-49e7-80cf-c6536aab54f6","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-08-08","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/600dadee-455e-494c-9721-757b4eeb5b73","uuid":"600dadee-455e-494c-9721-757b4eeb5b73","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-08-09","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -43,9 +43,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 08 Aug 2024 12:07:39 GMT
+      - Fri, 09 Aug 2024 08:19:11 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/78fdc9f5-6c78-49e7-80cf-c6536aab54f6
+      - http://localhost:8002/api/v2/objects/600dadee-455e-494c-9721-757b4eeb5b73
       Referrer-Policy:
       - same-origin
       Server:
@@ -89,7 +89,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 08 Aug 2024 12:07:39 GMT
+      - Fri, 09 Aug 2024 08:19:11 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -126,11 +126,11 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/78fdc9f5-6c78-49e7-80cf-c6536aab54f6
+    uri: http://localhost:8002/api/v2/objects/600dadee-455e-494c-9721-757b4eeb5b73
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/78fdc9f5-6c78-49e7-80cf-c6536aab54f6","uuid":"78fdc9f5-6c78-49e7-80cf-c6536aab54f6","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-08-08","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/600dadee-455e-494c-9721-757b4eeb5b73","uuid":"600dadee-455e-494c-9721-757b4eeb5b73","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"],"submission_provider_payment_ids":["12345"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-08-09","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -145,7 +145,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 08 Aug 2024 12:07:39 GMT
+      - Fri, 09 Aug 2024 08:19:11 GMT
       Referrer-Policy:
       - same-origin
       Server:
