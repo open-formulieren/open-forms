@@ -2,6 +2,136 @@
 Changelog
 =========
 
+2.8.0-alpha.0 (2024-08-09)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4267`, :backend:`4567`, :backend:`4577`] Improved the UX of the Objects
+  API registration options:
+
+    - Configuration is now in a modal and changes in configuration require an explicit
+      confirmation, meaning you can now explore more without potentially breaking the
+      configuration.
+    - Upgraded the API group, object type and object type version dropdowns with search
+      functionality.
+    - Configuration fields are now logically grouped. Optional settings are shown in a
+      collapsed group to declutter the UI.
+    - You can now select a catalogue from a dropdown (with search functionality) that
+      contains the document types to use.
+    - API groups (admin): you can now specify a catalogue and the descriptions of
+      document types to use rather than entering the API URL to a specific version.
+
+  These UX and configuration improvements are still work-in-progress, more will become
+  available in next releases and we will also rework the ZGW API registration options.
+* [:backend:`4051`] Added a better JSON-editor in a number of places, bringing them up
+  to parity with the editor in the form builder:
+
+    - Editing JSON logic triggers.
+    - Editing JSON logic variable assignment expressions.
+    - Editing service fetch mapping expressions.
+    - Viewing the JSON-definition of logic rules and/or actions.
+* [:backend:`4555`] Improved the UX of pre-fill configuration on the variables tab:
+
+    - There is now a single summary column for the prefill configuration, instead of
+      three separate columns.
+    - Improved the wording/language used to differentiate between authorizee/authorised
+      roles.
+    - Editing the configuration is now done in a separate modal.
+
+* [:backend:`4456`] The admin interface now clearly displays which environment you are
+  on. You can disable displaying this information, and you can change the text and
+  colors to easily differentiate between acceptance/production environments.
+* [:backend:`4488`] The submisson report PDF now no longer opens in a new tab/window,
+  the browser is forced to download it.
+* Support pre-filling form fields from existing data in the Objects API:
+
+    - [:backend:`4397`] Added ability to store an object reference on the submission so
+      that the information can be retrieve and pre-filled.
+    - [:backend:`4395`] Added a flag to specify if an existing object needs to be
+      updated during registration, or a new record should be created.
+
+  This feature is currently under heavy development.
+* [:backend:`4432`] Improved robustness in form designer interface when crashes occur
+  because of external systems.
+* [:backend:`4442`] Improved certificate handling and DigiD/eHerkenning via SAML
+  configuration:
+
+    - You can now upload password-protected private keys.
+    - You can now configure multiple certificates for DigiD/eHerkenning. The "next"
+      certificate will be included in the generated metadata so you can seamlessly
+      transition when your old certificate is about to expire.
+    - The metadata files are now forced as download to prevent formatting and copy/paste
+      errors.
+
+* [:backend:`4380`] You can now include more payment details/information in the StUF-ZDS
+  and Objects API registration plugins:
+
+    - Added support for storing and including the payment ID from the payment provider.
+    - Added support to send the order ID, payment status and payment amount as
+      ``extraElementen`` in StUF-ZDS.
+
+  .. note:: Currently this requires the ``open-forms-ext-stuf-zds-payments`` extension,
+     but it will land in Open Forms core in the future.
+
+* You can now configure some django-log-outgoing-requests settings with environment
+  variables.
+* [:backend:`4575`] You can now configure the ``SENDFILE_BACKEND`` with an environment
+  variable.
+
+**Bugfixes**
+
+* Fixed a crash in the validation of form variables used in logic rules.
+* [:backend:`4516`] Fixed imports (and error feedback) of legacy exports with Objects
+  API registration backends. It should now be more clear that admins possibly need to
+  check the Objects API groups configuration.
+* [:backend:`4191`] Fixed a couple of bugs when adding a company as initator in the
+  ZGW API's registration plugin:
+
+    - Fixed the datatype of ``vestiging`` field in ZGW registration rollen/betrokkenen.
+    - Fixed the ``aoaIdentificatie`` being empty - this is not allowed.
+
+* [:backend:`4533`] Fixed Objects API registration options checkboxes not toggling.
+* [:backend:`4502`] Fixed a problem where the registration-backend routing logic is not
+  calculated again after pausing and resuming a submission.
+* [:backend:`4334`] Fixed the email registration plugin not sending a payment-received
+  email when "wait for payment to register" is enabled. This behaviour is to ensure that
+  financial departments can always be informed of payment administration.
+* [:backend:`4519`] Fixed form variable dropdowns taking up too much horizontal space.
+* Backend checks of form component validation configuration are mandatory. All components
+  support the same set of validation mechanism in frontend and backend.
+* [:backend:`4560`] Fixed more PDF generation overlapping content issues. The layout no
+  longer uses two columns, but just stacks the labels and answers below each other since
+  a compromise was not feasible.
+* Fixed upgrade check scripts for 2.7.x.
+
+**Project maintenance**
+
+* [:backend:`4267`] Converted more existing tests from mocks to VCR.
+* Added static type checking to the CI pipeline. We will continue to improve the
+  type-safety of the code, which should result in fewer bugs and improve the developer
+  experience.
+* Upgraded a number of third-party packages.
+* Simplified testing tools to test translation-enabled forms.
+* [:backend:`4492`] Upload IDs are no longer stored in the session, which was obsoleted
+  by relating uploads to a submission.
+* [:backend:`4534`] Applied some memory-usage optimizations when interacting with the
+  Catalogi API.
+* Swapped out pip-tools with `uv <https://github.com/astral-sh/uv>`_ because it has much
+  better performance.
+* [:backend:`3197`] Upgraded to Python 3.12 from Python 3.10.
+* Fixed some more sources of test flakiness.
+* The random state from factory boy is now reported in CI to help reproduce test
+  flakiness issues.
+* [:backend:`4380`] There is now a mock service (docker-compose based) for a StUF-ZDS
+  server.
+* Added CI job to test upgrade check scripts/machinery.
+
 2.7.4 (2024-08-06)
 ==================
 

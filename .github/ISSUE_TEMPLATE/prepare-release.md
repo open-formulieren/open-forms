@@ -42,5 +42,6 @@ assignees: sergei-maertens
   - [ ] Version bump
   - [ ] Regenerate API spec
   - [ ] Update READMEs with release dates + links
+- [ ] Update the `upgrade_simulation` CI job matrix
 - [ ] Bump version number (including package-lock.json)
 - [ ] Update changelog
