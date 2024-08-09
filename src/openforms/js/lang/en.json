@@ -1534,6 +1534,11 @@
     "description": "Objects API - objecttype version",
     "originalDefault": "Version of the object type in the Object Types API."
   },
+  "YDjQH8": {
+    "defaultMessage": "Something went wrong while retrieving the available catalogues and/or document types.",
+    "description": "Objects API registrations options: document types selection error",
+    "originalDefault": "Something went wrong while retrieving the available catalogues and/or document types."
+  },
   "YQ/Vx0": {
     "defaultMessage": "Save",
     "description": "Admin save submit button",

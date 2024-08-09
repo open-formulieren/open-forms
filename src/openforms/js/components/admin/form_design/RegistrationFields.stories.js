@@ -317,11 +317,11 @@ export const ObjectsAPI = {
     });
 
     await step('Select a catalogue for document types', async () => {
-      const fieldsetTitle = modal.getByRole('heading', {name: /Documenttypen/});
+      const fieldsetTitle = modal.getByRole('heading', {name: 'Documenttypen (Tonen)'});
       expect(fieldsetTitle).toBeVisible();
       await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
 
-      const catalogueSelect = modal.getByLabelText('Catalogue');
+      const catalogueSelect = modal.getByLabelText('Catalogus');
       await selectEvent.select(catalogueSelect, 'Catalogus 2');
     });
 

@@ -837,7 +837,7 @@
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "HNB0l+": {
-    "defaultMessage": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns.",
+    "defaultMessage": "Zodra je een catalogus selecteert, zullen de verouderde documenttype-instellingen genegeerd worden - zelfs als je geen documenttype in de dropdowns kiest.",
     "description": "New document types informative message",
     "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
   },
@@ -997,7 +997,7 @@
     "originalDefault": "Manually defined"
   },
   "KtVIGz": {
-    "defaultMessage": "Document types (legacy)",
+    "defaultMessage": "Documenttypen (verouderd)",
     "description": "Objects registration: document types (legacy)",
     "originalDefault": "Document types (legacy)"
   },
@@ -1123,7 +1123,7 @@
     "originalDefault": "All simple variables are mapped to a case property."
   },
   "NYJo4j": {
-    "defaultMessage": "Catalogue",
+    "defaultMessage": "Catalogus",
     "description": "Objects API registration options 'catalogue' label",
     "originalDefault": "Catalogue"
   },
@@ -1282,7 +1282,7 @@
     "originalDefault": "Form variable"
   },
   "RA263v": {
-    "defaultMessage": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}",
+    "defaultMessage": "{viewMode, select, ui {Toon JSON-definitie} json {Toon normale interface} other {UNKNOWN}}",
     "description": "Toggle icon for JSON logic presentation mode.",
     "originalDefault": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}"
   },
@@ -1549,6 +1549,11 @@
     "description": "Objects API - objecttype version",
     "originalDefault": "Version of the object type in the Object Types API."
   },
+  "YDjQH8": {
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen.",
+    "description": "Objects API registrations options: document types selection error",
+    "originalDefault": "Something went wrong while retrieving the available catalogues and/or document types."
+  },
   "YQ/Vx0": {
     "defaultMessage": "Opslaan",
     "description": "Admin save submit button",
@@ -1635,7 +1640,7 @@
     "originalDefault": "Mapped to the {geometryPath} attribute"
   },
   "aDFrqO": {
-    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "defaultMessage": "{numErrors, plural, one {Er is een validatiefout.} other {Er zijn {numErrors} validatiefouten.} }",
     "description": "Objects API registration validation errors icon next to button",
     "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
@@ -2154,7 +2159,7 @@
     "originalDefault": "Add item"
   },
   "mCHS+l": {
-    "defaultMessage": "You have selected a catalogue - the document type URLs configured here will be ignored.",
+    "defaultMessage": "Je hebt een catalogus geselecteerd - de hier ingestelde documenttype-URLs worden genegeerd.",
     "description": "Objects registration: warning that legacy document types will be ignored",
     "originalDefault": "You have selected a catalogue - the document type URLs configured here will be ignored."
   },

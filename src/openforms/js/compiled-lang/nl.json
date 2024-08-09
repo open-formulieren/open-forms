@@ -1899,7 +1899,7 @@
   "HNB0l+": [
     {
       "type": 0,
-      "value": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+      "value": "Zodra je een catalogus selecteert, zullen de verouderde documenttype-instellingen genegeerd worden - zelfs als je geen documenttype in de dropdowns kiest."
     }
   ],
   "HNoGb8": [
@@ -2173,7 +2173,7 @@
   "KtVIGz": [
     {
       "type": 0,
-      "value": "Document types (legacy)"
+      "value": "Documenttypen (verouderd)"
     }
   ],
   "KwatvH": [
@@ -2347,7 +2347,7 @@
   "NYJo4j": [
     {
       "type": 0,
-      "value": "Catalogue"
+      "value": "Catalogus"
     }
   ],
   "NdaqDN": [
@@ -2655,7 +2655,7 @@
           "value": [
             {
               "type": 0,
-              "value": "Show editor"
+              "value": "Toon normale interface"
             }
           ]
         },
@@ -2671,7 +2671,7 @@
           "value": [
             {
               "type": 0,
-              "value": "Show JSON definition"
+              "value": "Toon JSON-definitie"
             }
           ]
         }
@@ -3326,6 +3326,12 @@
       "value": "Handleiding"
     }
   ],
+  "YDjQH8": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen."
+    }
+  ],
   "YJpESX": [
     {
       "type": 0,
@@ -3553,7 +3559,7 @@
           "value": [
             {
               "type": 0,
-              "value": "There is a validation error."
+              "value": "Er is een validatiefout."
             }
           ]
         },
@@ -3561,7 +3567,7 @@
           "value": [
             {
               "type": 0,
-              "value": "There are "
+              "value": "Er zijn "
             },
             {
               "type": 1,
@@ -3569,7 +3575,7 @@
             },
             {
               "type": 0,
-              "value": " validation errors."
+              "value": " validatiefouten."
             }
           ]
         }
@@ -4734,7 +4740,7 @@
   "mCHS+l": [
     {
       "type": 0,
-      "value": "You have selected a catalogue - the document type URLs configured here will be ignored."
+      "value": "Je hebt een catalogus geselecteerd - de hier ingestelde documenttype-URLs worden genegeerd."
     }
   ],
   "mH3X/G": [

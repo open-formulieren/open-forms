@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.translation import gettext as _
 
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -229,6 +229,7 @@ class ObjectsAPIGroupTests(TestCase):
             )
 
 
+@override_settings(LANGUAGE_CODE="en")
 class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
