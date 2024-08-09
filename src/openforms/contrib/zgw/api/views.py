@@ -56,6 +56,9 @@ class DocumentType:
     catalogue: Catalogue
     omschrijving: str
     url: str = field(compare=False)  # different versions have different URLs
+    is_published: bool = field(
+        compare=False
+    )  # different versions may have different publication states
 
     def catalogus_label(self) -> str:
         return self.catalogue.label
@@ -109,6 +112,7 @@ class BaseInformatieObjectTypenListView(ListMixin[DocumentType], APIView):
                     url=iotype["url"],
                     omschrijving=iotype["omschrijving"],
                     catalogue=catalogues[iotype["catalogus"]],
+                    is_published=not iotype.get("concept", False),
                 )
                 if document_type in document_types:
                     continue

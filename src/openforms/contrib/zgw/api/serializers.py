@@ -33,3 +33,10 @@ class InformatieObjectTypeSerializer(serializers.Serializer):
         label=_("catalogue label"),
         help_text=_("A representation of the catalogue containing the document type."),
     )
+    is_published = serializers.BooleanField(
+        label=_("Is published"),
+        help_text=_(
+            "Unpublished document types may be returned when the feature flag "
+            "'ZGW_APIS_INCLUDE_DRAFTS' is enabled."
+        ),
+    )
