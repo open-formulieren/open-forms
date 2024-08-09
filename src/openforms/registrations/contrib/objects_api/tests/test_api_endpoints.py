@@ -269,15 +269,8 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         super().setUpTestData()
 
         # create services for the docker-compose Open Zaak instance.
-        catalogi_service = ServiceFactory.create(
-            api_root="http://localhost:8003/catalogi/api/v1/",
-            api_type=APITypes.ztc,
-            auth_type=AuthTypes.zgw,
-            client_id="test_client_id",
-            secret="test_secret_key",
-        )
         cls.objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            catalogi_service=catalogi_service,
+            for_test_docker_compose=True
         )
 
     def test_must_be_logged_in_as_admin(self):
@@ -316,7 +309,17 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         data = response.json()
 
-        self.assertEqual(len(data), 3)
+        num_document_types = len(data)
+        # at least 6 distinct document types are defined in the fixture
+        self.assertGreaterEqual(num_document_types, 6)
+        # assert that multiple versions are de-duplicated
+        num_unique = len(
+            {
+                (item["omschrijving"], item["catalogusDomein"], item["catalogusRsin"])
+                for item in data
+            }
+        )
+        self.assertEqual(num_unique, num_document_types)
 
     def test_retrieve_filter_by_catalogus(self):
         user = StaffUserFactory.create()
@@ -334,4 +337,9 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         data = response.json()
 
-        self.assertEqual(len(data), 3)
+        self.assertGreaterEqual(len(data), 3)
+        # we expect only one catalogue to be returned
+        catalogi_domains_seen = {item["catalogusDomein"] for item in data}
+        self.assertEqual(len(catalogi_domains_seen), 1)
+        catalogi_rsin_seen = {item["catalogusRsin"] for item in data}
+        self.assertEqual(len(catalogi_rsin_seen), 1)

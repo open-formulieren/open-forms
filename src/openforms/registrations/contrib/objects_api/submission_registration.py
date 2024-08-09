@@ -4,7 +4,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Generic, Iterator, TypeVar, cast, override
+from typing import Any, Generic, Iterator, Literal, TypeVar, cast, override
 
 from django.db.models import F
 
@@ -15,6 +15,7 @@ from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.service import (
+    DocumentOptions,
     create_attachment_document,
     create_csv_document,
     create_report_document,
@@ -37,7 +38,12 @@ from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
-from .client import DocumentenClient, get_documents_client
+from .client import (
+    CatalogiClient,
+    DocumentenClient,
+    get_catalogi_client,
+    get_documents_client,
+)
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import (
     PAYMENT_VARIABLE_NAMES,
@@ -61,43 +67,86 @@ def _point_coordinate(value: Any) -> dict[str, Any] | object:
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
-def build_options(
-    plugin_options: RegistrationOptions, key_mapping: dict[str, str]
-) -> dict[str, Any]:
+def _resolve_documenttype(
+    field: Literal["submission_report", "submission_csv", "attachment"],
+    options: RegistrationOptions,
+    submission: Submission,
+    catalogi_client: CatalogiClient,
+) -> str:
     """
-    Construct options from plugin options dict, allowing renaming of keys
+    Given the registration options, resolve the documenttype URL to use.
+
+    :arg field: for which kind of upload the document type must be resolved.
+    :return: the resolved document type URL, if any. Empty string means that the upload
+      should be skipped.
     """
-    options = {
-        new_key: plugin_options[key_in_opts]
-        for new_key, key_in_opts in key_mapping.items()
-        if key_in_opts in plugin_options
-    }
-    return options
+    catalogue = options.get("catalogue")
+    match field:
+        case "submission_report":
+            description = options["iot_submission_report"]
+            url_ref = options.get("informatieobjecttype_submission_report", "")
+        case "submission_csv":
+            description = options["iot_submission_csv"]
+            url_ref = options.get("informatieobjecttype_submission_csv", "")
+        case "attachment":
+            description = options["iot_attachment"]
+            url_ref = options.get("informatieobjecttype_attachment", "")
+        case _:  # pragma: no cover
+            raise RuntimeError(f"Unhandled field '{field}'.")
+
+    # descriptions only work if a catalogue is provided to look up the document type
+    # inside it
+    if catalogue is None:
+        return url_ref
+
+    if not description:
+        return url_ref
+
+    # domain and rsin should not be empty, otherwise our validation is broken.
+    assert catalogue["domain"] and catalogue["rsin"]
+    assert submission.completed_on is not None
+
+    version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
+    catalogus = catalogi_client.find_catalogus(**catalogue)
+    if catalogus is None:
+        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+
+    versions = catalogi_client.find_informatieobjecttypen(
+        catalogus=catalogus["url"],
+        description=description,
+        valid_on=version_valid_on,
+    )
+    if versions is None:
+        raise RuntimeError(
+            f"Could not find a document type with description '{description}' that is "
+            f"valid on {version_valid_on.isoformat()}."
+        )
+
+    version = versions[0]
+    return version["url"]
 
 
 def register_submission_pdf(
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
-    if not options["informatieobjecttype_submission_report"]:
+    document_type = _resolve_documenttype(
+        "submission_report", options, submission, catalogi_client
+    )
+    if not document_type:
         return ""
 
     submission_report = SubmissionReport.objects.get(submission=submission)
-    submission_report_options = build_options(
-        options,
-        {
-            "informatieobjecttype": "informatieobjecttype_submission_report",
-            "organisatie_rsin": "organisatie_rsin",
-            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-        },
-    )
-
     report_document = create_report_document(
         client=documents_client,
         name=submission.form.admin_name,
         submission_report=submission_report,
-        options=submission_report_options,
+        options={
+            "informatieobjecttype": document_type,
+            "organisatie_rsin": options.get("organisatie_rsin", ""),
+        },
         language=submission_report.submission.language_code,
     )
     return report_document["url"]
@@ -107,30 +156,28 @@ def register_submission_csv(
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
     if not options.get("upload_submission_csv", False):
         return ""
 
-    if not options["informatieobjecttype_submission_csv"]:
+    document_type = _resolve_documenttype(
+        "submission_csv", options, submission, catalogi_client
+    )
+    if not document_type:
         return ""
 
-    submission_csv_options = build_options(
-        options,
-        {
-            "informatieobjecttype": "informatieobjecttype_submission_csv",
-            "organisatie_rsin": "organisatie_rsin",
-            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-            "auteur": "auteur",
-        },
-    )
     qs = Submission.objects.filter(pk=submission.pk).select_related("auth_info")
-    submission_csv = create_submission_export(qs).export("csv")  # type: ignore
+    submission_csv = create_submission_export(qs).export("csv")
 
     submission_csv_document = create_csv_document(
         client=documents_client,
         name=f"{submission.form.admin_name} (csv)",
         csv_data=submission_csv,
-        options=submission_csv_options,
+        options={
+            "informatieobjecttype": document_type,
+            "organisatie_rsin": options.get("organisatie_rsin", ""),
+        },
         language=submission.language_code,
     )
 
@@ -142,38 +189,41 @@ def register_submission_attachment(
     attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
-
-    attachment_options = build_options(
-        options,
-        {
-            "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
-            "organisatie_rsin": "organisatie_rsin",
-            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-        },
+    default_document_type = _resolve_documenttype(
+        "attachment", options, submission, catalogi_client
     )
+    assert default_document_type, "Registration should have been skipped"
 
-    # this helps the type checker in narrowing the type
-    # and expressing that it should not happen that submission.completed_on is not set
+    # registration for submissions that aren't completed does not make sense and the
+    # assert helps with type narrowing
     assert submission.completed_on is not None
-    attachment_options["ontvangstdatum"] = (
-        datetime_in_amsterdam(submission.completed_on).date().isoformat()
-    )
 
-    component_overwrites = {
-        "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
-        "titel": attachment.titel,
-        "organisatie_rsin": attachment.bronorganisatie,
-        "informatieobjecttype": attachment.informatieobjecttype,
+    document_options: DocumentOptions = {
+        "informatieobjecttype": default_document_type,
+        "organisatie_rsin": options.get("organisatie_rsin", ""),
+        "ontvangstdatum": datetime_in_amsterdam(submission.completed_on)
+        .date()
+        .isoformat(),
     }
-    for key, value in component_overwrites.items():
-        if value:
-            attachment_options[key] = value
+
+    # apply overrides from the attachment itself, if set
+    if va := attachment.doc_vertrouwelijkheidaanduiding:
+        document_options["doc_vertrouwelijkheidaanduiding"] = va
+    if title := attachment.titel:
+        document_options["titel"] = title
+    if rsin := attachment.bronorganisatie:
+        document_options["organisatie_rsin"] = rsin
+    # TODO convert this to catalogue + description mechanism too! See #4267
+    if document_type := attachment.informatieobjecttype:
+        document_options["informatieobjecttype"] = document_type
+
     attachment_document = create_attachment_document(
         client=documents_client,
         name=submission.form.admin_name,
         submission_attachment=attachment,
-        options=attachment_options,
+        options=document_options,
         language=attachment.submission_step.submission.language_code,  # assume same as submission
     )
 
@@ -232,21 +282,34 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
         )
         submission_attachments: list[ObjectsAPISubmissionAttachment] = []
 
+        _is_attachment_document_type_configured = (
+            options.get("catalogue") and options.get("iot_attachment")
+        ) or options.get("informatieobjecttype_attachment")
+
+        api_group = options["objects_api_group"]
+
         with (
-            get_documents_client(options["objects_api_group"]) as documents_client,
+            get_documents_client(api_group) as documents_client,
+            get_catalogi_client(api_group) as catalogi_client,
             save_and_raise(registration_data, submission_attachments),
         ):
             if not registration_data.pdf_url:
                 registration_data.pdf_url = register_submission_pdf(
-                    submission, options, documents_client
+                    submission,
+                    options,
+                    documents_client,
+                    catalogi_client,
                 )
 
             if not registration_data.csv_url:
                 registration_data.csv_url = register_submission_csv(
-                    submission, options, documents_client
+                    submission,
+                    options,
+                    documents_client,
+                    catalogi_client,
                 )
 
-            if options["informatieobjecttype_attachment"]:
+            if _is_attachment_document_type_configured:
                 existing = [
                     o.submission_file_attachment
                     for o in ObjectsAPISubmissionAttachment.objects.filter(
@@ -256,12 +319,17 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
 
                 for attachment in submission.attachments:
                     if attachment not in existing:
+                        document_url = register_submission_attachment(
+                            submission,
+                            attachment,
+                            options,
+                            documents_client,
+                            catalogi_client,
+                        )
                         submission_attachments.append(
                             ObjectsAPISubmissionAttachment(
                                 submission_file_attachment=attachment,
-                                document_url=register_submission_attachment(
-                                    submission, attachment, options, documents_client
-                                ),
+                                document_url=document_url,
                             )
                         )
 
@@ -328,6 +396,11 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     ) -> dict[str, Any]:
         """Get the record data to be sent to the Objects API."""
 
+        # help the type checker a little, our 'apply_defaults_to' does some heavy
+        # lifting.
+        assert "productaanvraag_type" in options
+        assert "content_json" in options
+
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
         )
@@ -377,6 +450,8 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV1
     ) -> dict[str, Any] | None:
+        assert "payment_status_update_json" in options
+
         if not options["payment_status_update_json"]:
             logger.warning(
                 "Skipping payment status update because no template was configured."
@@ -458,7 +533,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         urls_map: defaultdict[str, list[str]] = defaultdict(list)
         for o in objects_api_attachments:
-            urls_map[o.variable_key].append(o.document_url)
+            urls_map[o.variable_key].append(o.document_url)  # type: ignore
 
         for key, variable in state.variables.items():
             try:

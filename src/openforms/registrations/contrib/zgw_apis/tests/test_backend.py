@@ -113,6 +113,7 @@ class ZGWBackendTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/rollen",
@@ -143,6 +144,7 @@ class ZGWBackendTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/statussen",
@@ -969,6 +971,7 @@ class ZGWBackendTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
 
         plugin = ZGWRegistration("zgw")
@@ -1034,6 +1037,7 @@ class ZGWBackendTests(TestCase):
             str(roltypen_url),
             status_code=200,
             json={"count": 0, "next": None, "previous": None, "results": []},
+            headers={"API-version": "1.0.0"},
         )
 
         plugin = ZGWRegistration("zgw")
@@ -1858,6 +1862,7 @@ class ZGWBackendTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
@@ -2077,6 +2082,7 @@ class ZGWBackendTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
