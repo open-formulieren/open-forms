@@ -96,6 +96,11 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ''
           DEBUG: 'true'
+          # deliberatey broken
+          CELERY_BROKER_URL: 'redis://bad-host:6379/0'
+          # specified explicitly, since the broker URL is broken, but the once backend
+          # needs to be available even with CELERY_TASK_ALWAYS_EAGER
+          CELERY_ONCE_REDIS_URL: 'redis://localhost:6379/0'
 
       - run: npm ci
         working-directory: .github/actions/report-flaky

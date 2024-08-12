@@ -1,4 +1,5 @@
 import inspect
+from functools import partial
 from uuid import UUID
 
 from django.conf import settings
@@ -516,7 +517,7 @@ class FormViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        on_variables_bulk_update_event(form.id)
+        transaction.on_commit(partial(on_variables_bulk_update_event, form.id))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

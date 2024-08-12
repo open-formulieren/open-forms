@@ -26,8 +26,7 @@ class FormStatisticsTests(SubmissionsMixin, APITestCase):
 
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        with self.captureOnCommitCallbacks(execute=True):
-            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         form_statistics = FormStatistics.objects.get()
 
@@ -62,8 +61,7 @@ class FormStatisticsTests(SubmissionsMixin, APITestCase):
                 "api:submission-complete", kwargs={"uuid": submission.uuid}
             )
 
-            with self.captureOnCommitCallbacks(execute=True):
-                response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
             form_statistics = FormStatistics.objects.get()
 

@@ -6,19 +6,19 @@ from pathlib import Path
 from django.conf import settings
 from django.test import TestCase
 
-from openforms.celery import READINESS_FILE, app
+from openforms.celery import READINESS_FILE
+from openforms.conf.utils import config
 
+# real, working Celery broker URL. In CI, the envvar CELERY_BROKER_URL is deliberately
+# set to a broken configuration to prevent broken test isolation, but the tests here
+# require a real, functionining broker. Most people have redis running locally and CI
+# also runs it on localhost, if you need another solution, you can set the
+# _CELERY_BROKER_URL environment variable.
+CELERY_BROKER_URL: str = config("_CELERY_BROKER_URL", default="redis://localhost:6379/0")  # type: ignore
 START_WORKER_SCRIPT = Path(settings.BASE_DIR) / "bin" / "celery_worker.sh"
 
 
 class CeleryTest(TestCase):
-    def setUp(self):
-        def shutdown_celery():
-            app.control.shutdown()
-            if READINESS_FILE.is_file():
-                READINESS_FILE.unlink(missing_ok=True)
-
-        self.addCleanup(shutdown_celery)
 
     def test_celery_worker_health_check(self):
         """Assert that READINESS_FILE exists after worker has started but not before and not after
@@ -28,13 +28,23 @@ class CeleryTest(TestCase):
             not READINESS_FILE.is_file()
         ), "Celery worker not started but READINESS_FILE found"
 
+        def cleanup():
+            if READINESS_FILE.is_file():
+                READINESS_FILE.unlink(missing_ok=True)
+
+        self.addCleanup(cleanup)
+
         # start Celery worker
         process = subprocess.Popen(
             [START_WORKER_SCRIPT],
             cwd=settings.BASE_DIR,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
-            env={**os.environ, "ENABLE_COVERAGE": os.environ.get("COVERAGE_RUN", "")},
+            env={
+                **os.environ,
+                "CELERY_BROKER_URL": CELERY_BROKER_URL,
+                "ENABLE_COVERAGE": os.environ.get("COVERAGE_RUN", ""),
+            },
         )
 
         # wait for READINESS_FILE to be created, break out as soon as possible
