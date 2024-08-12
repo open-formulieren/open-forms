@@ -48,7 +48,7 @@ const Select = ({name, options, ...props}) => {
       menuPlacement="auto"
       options={options}
       {...fieldProps}
-      value={options.find(opt => opt.value === value)}
+      value={options.find(opt => opt.value === value) || null}
       onChange={selectedOption => {
         setValue(selectedOption.value);
       }}

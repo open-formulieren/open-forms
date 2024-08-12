@@ -314,12 +314,20 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertGreaterEqual(num_document_types, 6)
         # assert that multiple versions are de-duplicated
         num_unique = len(
-            {
-                (item["omschrijving"], item["catalogusDomein"], item["catalogusRsin"])
-                for item in data
-            }
+            {(item["omschrijving"], item["catalogusLabel"]) for item in data}
         )
         self.assertEqual(num_unique, num_document_types)
+
+        # check the data types of returned information
+        record = data[0]
+        expected = {
+            "catalogusLabel": str,
+            "omschrijving": str,
+            "url": str,
+        }
+        for key, type in expected.items():
+            with self.subTest(key=key):
+                self.assertIsInstance(record[key], type)
 
     def test_retrieve_filter_by_catalogus(self):
         user = StaffUserFactory.create()
@@ -339,7 +347,15 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertGreaterEqual(len(data), 3)
         # we expect only one catalogue to be returned
-        catalogi_domains_seen = {item["catalogusDomein"] for item in data}
-        self.assertEqual(len(catalogi_domains_seen), 1)
-        catalogi_rsin_seen = {item["catalogusRsin"] for item in data}
-        self.assertEqual(len(catalogi_rsin_seen), 1)
+        catalogi_labels_seen = {item["catalogusLabel"] for item in data}
+        self.assertEqual(len(catalogi_labels_seen), 1)
+        # check the data types of returned information
+        record = data[0]
+        expected = {
+            "catalogusLabel": str,
+            "omschrijving": str,
+            "url": str,
+        }
+        for key, type in expected.items():
+            with self.subTest(key=key):
+                self.assertIsInstance(record[key], type)

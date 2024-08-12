@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.api.filters import (
+    DocumentTypesFilter,
     ProvidesCatalogiClientQueryParamsSerializer,
 )
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
@@ -12,7 +13,7 @@ from ..client import get_catalogi_client
 from ..models import ZGWApiGroupConfig
 
 
-class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer):
+class ZGWAPIGroupMixin(serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.exclude(drc_service=None),
         help_text=_(
@@ -27,9 +28,13 @@ class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer)
         return get_catalogi_client(zgw_api_group)
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(APIGroupQueryParamsSerializer):
-    catalogus_url = serializers.URLField(
-        label=_("catalogus URL"),
-        help_text=_("Filter informatieobjecttypen against this catalogus URL."),
-        required=False,
-    )
+class APIGroupQueryParamsSerializer(
+    ZGWAPIGroupMixin, ProvidesCatalogiClientQueryParamsSerializer
+):
+    pass
+
+
+class ListInformatieObjectTypenQueryParamsSerializer(
+    ZGWAPIGroupMixin, DocumentTypesFilter
+):
+    pass

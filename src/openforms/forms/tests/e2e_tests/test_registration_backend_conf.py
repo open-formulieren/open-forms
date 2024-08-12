@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from pathlib import Path
 
 from django.urls import Resolver404, resolve, reverse
 
@@ -18,12 +18,17 @@ from openforms.tests.e2e.base import (
     rs_select_option,
 )
 from openforms.tests.utils import log_flaky
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..factories import FormFactory
 from .helpers import close_modal, open_component_options_modal, phase
 
+VCR_CASSETTES = (Path(__file__).parent).resolve()
 
-class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
+
+class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
+    VCR_TEST_FILES = VCR_CASSETTES
+
     async def test_configuring_zgw_api_group(self):
         """
         Test that the admin editor dynamically changes the request to InformatieObjectTypenListView based on the registration backend configuration.
@@ -149,57 +154,32 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             str(zgw_api_2.pk),
         )
 
-    @patch(
-        "openforms.registrations.contrib.objects_api.client.ObjecttypesClient.list_objecttype_versions"
-    )
-    @patch(
-        "openforms.registrations.contrib.objects_api.client.ObjecttypesClient.list_objecttypes"
-    )
-    async def test_configuration_objects_api_group(
-        self,
-        m_list_objecttypes: MagicMock,
-        m_list_objecttype_versions: MagicMock,
-    ):
+    async def test_configuration_objects_api_group(self):
         """
-        Test that the admin editor dynamically changes the request to
-        InformatieObjectTypenListView based on the registration backend configuration.
+        Assert that the document types are retrieved based on the selected API group.
 
-        The flow in this test is:
-        - Configure the Registration backend to use set 1 of the configured Object apis
-        - Go to the file upload component and check that the query parameter in the
-          request to the informatieobjecttype endpoint is the PK of the right group
-        - Go back to the registration tab and change which Objects API group should be used
-        - Go to the file component and check that the query parameter in the request changes
+        This test uses VCR, when re-recording cassettes, ensure that the docker-compose
+        services are up and running. From the root of the repo:
+
+        .. code-block:: bash
+
+            cd docker
+            docker compose \
+                -f docker-compose.open-zaak.yml \
+                -f docker-compose.objects-apis.yml \
+                up
         """
-        ot_root = "https://objecttypes-1.nl/api/v2/"
-        # subset of fields, API spec is at
-        # https://github.com/maykinmedia/objecttypes-api/
-        m_list_objecttypes.return_value = [
-            {
-                "url": f"{ot_root}objecttypes/0879828e-823b-493e-9879-e310b1bfda77",
-                "uuid": "0879828e-823b-493e-9879-e310b1bfda77",
-                "name": "Some object type",
-                "namePlural": "Some object types",
-                "dataClassification": "open",
-            }
-        ]
-        m_list_objecttype_versions.return_value = [{"version": 1, "status": "draft"}]
 
         @sync_to_async
         def setUpTestData():
+            # both groups talk to the same services for simplicity
             objects_api_1 = ObjectsAPIGroupConfigFactory.create(
                 name="Group 1",
-                objects_service__api_root="https://objects-1.nl/api/v1/",
-                objecttypes_service__api_root=ot_root,
-                drc_service__api_root="https://documenten-1.nl/api/v1/",
-                catalogi_service__api_root="https://catalogus-1.nl/api/v1/",
+                for_test_docker_compose=True,
             )
             objects_api_2 = ObjectsAPIGroupConfigFactory.create(
                 name="Group 2",
-                objects_service__api_root="https://objects-2.nl/api/v1/",
-                objecttypes_service__api_root="https://objecttypes-2.nl/api/v1/",
-                drc_service__api_root="https://documenten-2.nl/api/v1/",
-                catalogi_service__api_root="https://catalogus-2.nl/api/v1/",
+                for_test_docker_compose=True,
             )
             form = FormFactory.create(
                 name="Configure registration test",

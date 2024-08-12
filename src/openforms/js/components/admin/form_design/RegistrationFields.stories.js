@@ -3,6 +3,7 @@ import selectEvent from 'react-select-event';
 
 import {
   mockCataloguesGet,
+  mockDocumentTypesGet,
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
@@ -189,6 +190,7 @@ export default {
             {version: 2, status: 'draft'},
           ]),
           mockCataloguesGet(),
+          mockDocumentTypesGet(),
         ],
       },
     },
