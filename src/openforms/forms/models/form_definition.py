@@ -2,7 +2,6 @@ import hashlib
 import json
 import uuid
 from copy import deepcopy
-from functools import partial
 from typing import TYPE_CHECKING
 
 from django.conf import settings
@@ -17,7 +16,6 @@ from openforms.formio.utils import iter_components
 from openforms.utils.helpers import get_charfield_max_length, truncate_str_if_needed
 
 from ..models import Form
-from ..tasks import detect_formiojs_configuration_snake_case
 from ..validators import validate_template_expressions
 
 if TYPE_CHECKING:
@@ -83,8 +81,6 @@ class FormDefinition(models.Model):
 
         super().save(*args, **kwargs)
 
-        self._check_configuration_integrity()
-
     def delete(self, using=None, keep_parents=False):
         if Form.objects.filter(formstep__form_definition=self).exists():
             raise ValidationError(
@@ -100,15 +96,6 @@ class FormDefinition(models.Model):
 
         super().clean()
         validate_form_definition_is_reusable(self)
-
-    def _check_configuration_integrity(self):
-        if settings.DEBUG:
-            callback = partial(
-                detect_formiojs_configuration_snake_case, self.id, raise_exception=True
-            )
-        else:
-            callback = partial(detect_formiojs_configuration_snake_case.delay, self.id)
-        transaction.on_commit(callback)
 
     @transaction.atomic
     def copy(self):
