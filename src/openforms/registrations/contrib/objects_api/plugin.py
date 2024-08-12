@@ -31,18 +31,6 @@ PLUGIN_IDENTIFIER = "objects_api"
 logger = logging.getLogger(__name__)
 
 
-def build_options(plugin_options: RegistrationOptions, key_mapping: dict) -> dict:
-    """
-    Construct options from plugin options dict, allowing renaming of keys
-    """
-    options = {
-        new_key: plugin_options[key_in_opts]
-        for new_key, key_in_opts in key_mapping.items()
-        if key_in_opts in plugin_options
-    }
-    return options
-
-
 @register(PLUGIN_IDENTIFIER)
 class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("Objects API registration")

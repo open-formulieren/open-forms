@@ -1,6 +1,6 @@
 import logging
 from io import BytesIO
-from typing import Literal, TypeAlias
+from typing import Literal, NotRequired, TypeAlias, TypedDict
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 
@@ -11,11 +11,20 @@ logger = logging.getLogger(__name__)
 SupportedLanguage: TypeAlias = Literal["nl", "en"]
 
 
+class DocumentOptions(TypedDict):
+    informatieobjecttype: str
+    organisatie_rsin: str
+    auteur: NotRequired[str]
+    doc_vertrouwelijkheidaanduiding: NotRequired[str]
+    ontvangstdatum: NotRequired[str]
+    titel: NotRequired[str]
+
+
 def create_report_document(
     client: DocumentenClient,
     name: str,
     submission_report: SubmissionReport,
-    options: dict,
+    options: DocumentOptions,
     language: SupportedLanguage,
 ) -> dict:
     """
@@ -43,7 +52,7 @@ def create_csv_document(
     client: DocumentenClient,
     name: str,
     csv_data: str,
-    options: dict,
+    options: DocumentOptions,
     language: SupportedLanguage,
 ) -> dict:
     content = BytesIO(csv_data.encode())
@@ -66,7 +75,7 @@ def create_attachment_document(
     client: DocumentenClient,
     name: str,
     submission_attachment: SubmissionFileAttachment,
-    options: dict,
+    options: DocumentOptions,
     language: SupportedLanguage,
 ) -> dict:
     """
@@ -84,7 +93,7 @@ def create_attachment_document(
             status="definitief",
             filename=submission_attachment.get_display_name(),
             description="Bijgevoegd document",
-            received_date=options["ontvangstdatum"],
+            received_date=options.get("ontvangstdatum"),
             vertrouwelijkheidaanduiding=options.get(
                 "doc_vertrouwelijkheidaanduiding", ""
             ),

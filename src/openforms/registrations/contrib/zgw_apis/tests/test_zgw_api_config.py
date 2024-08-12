@@ -115,6 +115,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken-1.nl/api/v1/rollen",
@@ -145,8 +146,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
-        m.get("https://catalogi-1.nl/api/v1/zaaktypen", status_code=200, json=[])
+        m.get(
+            "https://catalogi-1.nl/api/v1/zaaktypen",
+            status_code=200,
+            json=[],
+            headers={"API-version": "1.0.0"},
+        )
         m.post(
             "https://zaken-1.nl/api/v1/statussen",
             status_code=201,
@@ -232,6 +239,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.get(
             "https://catalogi-2.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F2&omschrijvingGeneriek=initiator",
@@ -248,8 +256,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
-        m.get("https://catalogi-2.nl/api/v1/zaaktypen", status_code=200, json=[])
+        m.get(
+            "https://catalogi-2.nl/api/v1/zaaktypen",
+            status_code=200,
+            json=[],
+            headers={"API-version": "1.0.0"},
+        )
         m.post(
             "https://zaken-2.nl/api/v1/rollen",
             status_code=201,
@@ -279,6 +293,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken-2.nl/api/v1/statussen",

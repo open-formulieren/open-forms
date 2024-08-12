@@ -226,6 +226,7 @@ class PartialRegistrationFailureTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         self.requests_mock.post(
             "https://zaken.nl/api/v1/rollen",
@@ -256,6 +257,7 @@ class PartialRegistrationFailureTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         self.requests_mock.post(
             "https://zaken.nl/api/v1/statussen",
@@ -599,6 +601,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/rollen",
@@ -629,6 +632,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/statussen",
@@ -766,6 +770,7 @@ class eigenschappenPartialRegistrationFailureTests(TestCase):
                     )
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/rollen",
@@ -796,6 +801,7 @@ class eigenschappenPartialRegistrationFailureTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/statussen",
@@ -830,6 +836,7 @@ class eigenschappenPartialRegistrationFailureTests(TestCase):
                     ),
                 ],
             },
+            headers={"API-version": "1.0.0"},
         )
         m.post(
             "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",

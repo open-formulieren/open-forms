@@ -37,6 +37,7 @@ class ConfigCheckTests(TestCase):
         m.get(
             "https://catalogi.example.com/api/v1/informatieobjecttypen",
             json={"results": []},
+            headers={"API-version": "1.0.0"},
         )
 
     def test_no_objects_service_configured(self):
