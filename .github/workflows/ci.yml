@@ -96,6 +96,8 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ''
           DEBUG: 'true'
+          # deliberatey broken
+          CELERY_BROKER_URL: 'redis://bad-host:6379/0'
 
       - run: npm ci
         working-directory: .github/actions/report-flaky
