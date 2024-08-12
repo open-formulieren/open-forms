@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import datetime
 from typing import Protocol
 
@@ -8,6 +9,7 @@ from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
@@ -411,10 +413,30 @@ class AddressValueSerializer(serializers.Serializer):
 
     def __init__(self, **kwargs):
         self.derive_address = kwargs.pop("derive_address", None)
+        self.component = kwargs.pop("component", None)
         super().__init__(**kwargs)
+
+    def validate_city(self, value: str) -> str:
+        if city_regex := glom(
+            self.component, "openForms.components.city.validate.pattern", default=""
+        ):
+            if not re.fullmatch(city_regex, value):
+                raise serializers.ValidationError(
+                    _("City does not match the specified pattern."),
+                    code="invalid",
+                )
+        return value
 
     def validate_postcode(self, value: str) -> str:
         """Normalize the postcode so that it matches the regex from the BRK API."""
+        if postcode_regex := glom(
+            self.component, "openForms.components.postcode.validate.pattern", default=""
+        ):
+            if not re.fullmatch(postcode_regex, value):
+                raise serializers.ValidationError(
+                    _("Postcode does not match the specified pattern."),
+                    code="invalid",
+                )
         return value.upper().replace(" ", "")
 
     def validate(self, attrs):
@@ -469,6 +491,7 @@ class AddressNL(BasePlugin[AddressNLComponent]):
             derive_address=component["deriveAddress"],
             required=required,
             allow_null=not required,
+            component=component,
             **extra,
         )
 
