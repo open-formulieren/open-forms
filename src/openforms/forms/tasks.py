@@ -1,4 +1,3 @@
-import copy
 import logging
 from datetime import timedelta
 from functools import partial
@@ -8,7 +7,6 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 
 from celery import chain
-from djangorestframework_camel_case.util import camelize
 
 from openforms.variables.constants import FormVariableSources
 
