@@ -376,6 +376,25 @@ Other settings
 
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
+.. _installation_environment_config_feature_flags:
+
+Feature flags
+=============
+
+Open Forms sometimes supports a layered approach for feature flags, where some
+behaviours can be enabled at deploy-time through environment variables already. If
+this option is not available, you can still enable/disable the feature flag in the
+admin interface, via **Admin** > **Configuration** > **Flag states**.
+
+Feature flags are usually documented in the relevant module that they apply to. Below
+you can find a list of feature flags that can be set through their matching environment
+variables, linking to the description of their behaviour in their respective module.
+
+* :ref:`DIGID_EHERKENNING_OIDC_STRICT <>`
+* :ref:`ZGW_APIS_INCLUDE_DRAFTS <configuration_registration_objects_feature_flags>` -
+  set to ``True`` to allow unpublished types to be used in the ZGW APIs.
+
+
 Specifying the environment variables
 =====================================
 
