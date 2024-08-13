@@ -410,5 +410,12 @@
         "catalogus": 1,
         "deelzaaktypen": []
     }
+},
+{
+    "model": "config.featureflags",
+    "pk": 1,
+    "fields": {
+        "allow_unpublished_typen": true
+    }
 }
 ]
