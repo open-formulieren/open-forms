@@ -8417,8 +8417,13 @@ components:
           type: string
           title: catalogue label
           description: A representation of the catalogue containing the document type.
+        isPublished:
+          type: boolean
+          description: Unpublished document types may be returned when the feature
+            flag 'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
       required:
       - catalogusLabel
+      - isPublished
       - omschrijving
       - url
     Language:
