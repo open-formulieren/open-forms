@@ -63,8 +63,7 @@
                                             </div>
 
                                             <div class="submission-step-row__value{% if not component_node.display_value %} submission-step-row__value--empty{% endif %}">
-                                                {% trans "(not filled in)" as empty_value %}
-                                                {{ component_node.display_value|default:empty_value }}
+                                                {{ component_node.display_value|default:"" }}
                                             </div>
                                         {% endif %}
                                     {% endif %}
