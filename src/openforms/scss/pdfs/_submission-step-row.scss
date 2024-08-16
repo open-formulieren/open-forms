@@ -51,6 +51,7 @@
     @include body();
     word-break: break-all;
     margin-bottom: 0.5em;
+    min-height: 1em;
 
     &--empty {
       font-style: italic;
