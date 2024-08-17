@@ -44,6 +44,7 @@ const Select = ({name, options, ...props}) => {
     <ReactSelect
       inputId={`id_${name}`}
       className="admin-react-select"
+      classNamePrefix="admin-react-select"
       styles={styles}
       menuPlacement="auto"
       options={options}

@@ -1,13 +1,16 @@
+import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useEffect} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {useContext, useEffect} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync, usePrevious} from 'react-use';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
+import {WarningIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
 
 import CatalogueSelect, {extractValue as getCatalogueOption} from './CatalogueSelect';
@@ -50,31 +53,73 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
     throw new Error('Loading available document types failed');
   }
   const documentTypes = response.data.sort((a, b) => a.omschrijving.localeCompare(b.omschrijving));
-  return documentTypes.map(({omschrijving}) => ({
+  return documentTypes.map(({omschrijving, isPublished}) => ({
     value: omschrijving,
-    label: omschrijving,
+    label: (
+      <span
+        className={classNames('document-type-option', {
+          'document-type-option--draft': !isPublished,
+        })}
+      >
+        <FormattedMessage
+          description="Document type option label"
+          defaultMessage={`{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
+          values={{
+            omschrijving,
+            isPublished,
+            draft: chunks => <span className="document-type-option__draft-suffix">{chunks}</span>,
+          }}
+        />
+      </span>
+    ),
   }));
 };
 
 // Components
 
 const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => {
-  const [, , fieldHelpers] = useField(name);
+  const intl = useIntl();
+  const [{value}, , fieldHelpers] = useField(name);
   const {setValue} = fieldHelpers;
+
+  const {ZGW_APIS_INCLUDE_DRAFTS = false} = useContext(FeatureFlagsContext);
+
+  const showWarning =
+    !isDisabled &&
+    value &&
+    !loading &&
+    options.find(option => option.value === value) === undefined;
+
   return (
     <FormRow>
       <Field name={name} label={label} helpText={helpText} noManageChildProps>
-        <ReactSelect
-          name={name}
-          options={options}
-          isLoading={loading}
-          isDisabled={isDisabled}
-          onChange={selectedOption => {
-            // unset form key entirely if the selection is cleared
-            setValue(selectedOption ? selectedOption.value : undefined);
-          }}
-          isClearable
-        />
+        <>
+          <ReactSelect
+            name={name}
+            options={options}
+            isLoading={loading}
+            isDisabled={isDisabled}
+            onChange={selectedOption => {
+              // unset form key entirely if the selection is cleared
+              setValue(selectedOption ? selectedOption.value : undefined);
+            }}
+            isClearable
+          />
+          {showWarning && (
+            <WarningIcon
+              text={intl.formatMessage(
+                {
+                  description: 'Warning message about missing document type option.',
+                  defaultMessage: `The value ''{value}' is set but could not be found. {draftsEnabled, select,
+                      true {Possibly the draft was deleted.}
+                      other {Perhaps this document type is not published yet?}
+                    }`,
+                },
+                {value, draftsEnabled: ZGW_APIS_INCLUDE_DRAFTS}
+              )}
+            />
+          )}
+        </>
       </Field>
     </FormRow>
   );
@@ -88,7 +133,7 @@ DocumentType.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
+      label: PropTypes.node.isRequired,
     })
   ).isRequired,
   helpText: PropTypes.node,

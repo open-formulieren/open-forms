@@ -3,6 +3,7 @@ import {Form, Formik} from 'formik';
 import selectEvent from 'react-select-event';
 
 import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
+import {FeatureFlagsDecorator} from 'components/admin/form_design/story-decorators';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {
@@ -307,5 +308,34 @@ export const DisplayPersistedConfiguration = {
 
     expect(await canvas.findByText('Catalogus 1')).toBeVisible();
     expect(await canvas.findByText('Test PDF')).toBeVisible();
+  },
+};
+
+export const DraftDocumentTypesFeatureFlagOn = {
+  args: {
+    formData: {
+      version: 2,
+      objectsApiGroup: 1,
+      catalogue: {
+        rsin: '111111111',
+        domain: 'TEST',
+      },
+      iotSubmissionReport: 'A rather long draft description',
+      iotSubmissionCsv: 'Not-found documenttype',
+    },
+  },
+  decorators: [FeatureFlagsDecorator],
+  parameters: {
+    featureFlags: {
+      ZGW_APIS_INCLUDE_DRAFTS: true,
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const fieldsetTitle = canvas.getByRole('heading', {name: 'Documenttypen (Tonen)'});
+    expect(fieldsetTitle).toBeVisible();
+    await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
   },
 };

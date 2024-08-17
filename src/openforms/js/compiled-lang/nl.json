@@ -2972,6 +2972,40 @@
       "value": "Bewaartermijn van inzendingen"
     }
   ],
+  "UOofxD": [
+    {
+      "type": 1,
+      "value": "omschrijving"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "(not published)"
+                }
+              ],
+              "type": 8,
+              "value": "draft"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isPublished"
+    }
+  ],
   "UlVtQd": [
     {
       "type": 0,
@@ -4975,6 +5009,42 @@
     {
       "type": 0,
       "value": "Actie toevoegen"
+    }
+  ],
+  "p9zrjb": [
+    {
+      "type": 0,
+      "value": "The value '"
+    },
+    {
+      "type": 1,
+      "value": "value"
+    },
+    {
+      "type": 0,
+      "value": "' is set but could not be found. "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Perhaps this document type is not published yet?"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Possibly the draft was deleted."
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "draftsEnabled"
     }
   ],
   "pDJBaK": [
