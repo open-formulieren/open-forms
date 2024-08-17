@@ -19,6 +19,10 @@
 @import './column-field-value';
 @import './confirmation-email-template';
 
+// Form design UI
+@import './select';
+@import './document-type-option';
+
 // Logic editor UI
 @import './dsl-editor';
 @import './logic-rule';
@@ -43,6 +47,3 @@
 
 // Errors
 @import './error-message';
-
-// Form variables select-dropdown
-@import './select';

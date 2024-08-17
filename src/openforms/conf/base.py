@@ -1199,6 +1199,13 @@ FLAGS = {
             "value": config("DIGID_EHERKENNING_OIDC_STRICT", default=False),
         }
     ],
+    # ZGW API's
+    "ZGW_APIS_INCLUDE_DRAFTS": [
+        {
+            "condition": "boolean",
+            "value": config("ZGW_APIS_INCLUDE_DRAFTS", default=False),
+        },
+    ],
 }
 
 #

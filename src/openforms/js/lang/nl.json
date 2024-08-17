@@ -1416,6 +1416,11 @@
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
   },
+  "UOofxD": {
+    "defaultMessage": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "description": "Document type option label",
+    "originalDefault": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
+  },
   "Uq9Hbx": {
     "defaultMessage": "-",
     "description": "Registration summary no registration backend fallback message",
@@ -2278,6 +2283,11 @@
     "defaultMessage": "Actie toevoegen",
     "description": "Add form logic rule action button",
     "originalDefault": "Add action"
+  },
+  "p9zrjb": {
+    "defaultMessage": "The value ''{value}' is set but could not be found. {draftsEnabled, select, true {Possibly the draft was deleted.} other {Perhaps this document type is not published yet?} }",
+    "description": "Warning message about missing document type option.",
+    "originalDefault": "The value ''{value}' is set but could not be found. {draftsEnabled, select, true {Possibly the draft was deleted.} other {Perhaps this document type is not published yet?} }"
   },
   "pGmjYH": {
     "defaultMessage": "Gebruiker",

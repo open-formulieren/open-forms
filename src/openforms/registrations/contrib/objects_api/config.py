@@ -157,6 +157,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     iot_submission_report = serializers.CharField(
         label=_("submission report document type description"),
         required=False,
+        allow_blank=True,
         max_length=80,
         default="",
         help_text=_(
@@ -169,6 +170,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     iot_submission_csv = serializers.CharField(
         label=_("submission report CSV document type description"),
         required=False,
+        allow_blank=True,
         max_length=80,
         default="",
         help_text=_(
@@ -181,6 +183,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     iot_attachment = serializers.CharField(
         label=_("attachment document type description"),
         required=False,
+        allow_blank=True,
         max_length=80,
         default="",
         help_text=_(

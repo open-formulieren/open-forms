@@ -200,22 +200,80 @@ some guidelines for schema authors:
   external entity (resolving this will likely be added in the future in a way that does
   not create security issues).
 
+.. _configuration_registration_objects_feature_flags:
+
+Feature flags
+=============
+
+Feature flags can be enabled or disabled in the admin interface, via **Admin** >
+**Configuration** > **Flag states**.
+
+``ZGW_APIS_INCLUDE_DRAFTS``
+---------------------------
+
+When drafts are included in the ZGW APIs integration, you will be able to select
+document types that have not been published yet for the attachments, submission report
+PDF and CSV. This can be useful when you're testing out things and iterating quickly.
+
+.. note:: Support for creating documents from unpublished document types depends on your
+   particular ZGW API's provider/implementation. The VNG standard requires document
+   types to be published before you can create documents of that type.
+
+Can be enabled at :ref:`deploy time <installation_environment_config_feature_flags>` or
+through the admin interface. Find or create the record with:
+
+* **Flag**: ``ZGW_APIS_INCLUDE_DRAFTS``
+* **Condition name**: ``boolean``
+* **Expected value**: ``true`` to enable it, ``false`` to disable.
+* **Required**: leave unchecked
+
 Technical
 =========
 
-Open Forms requires Objects API v2.2 or newer.
+Open Forms requires Objects API v2.2 or newer and the Objecttypes API v2.0 or newer.
 
-================  ==========================================
+================  ===============================================
 Objects API       Test status
-================  ==========================================
+================  ===============================================
 2.2.x             Manually verified
-2.3.x             Manually verified, integration tests in CI
-================  ==========================================
+2.3.x             Manually verified
+2.4.x             Manually verified, automated end-to-end testing
+================  ===============================================
 
 .. versionchanged:: 2.6.0
 
     Objects API versions older than 2.2.0 are no longer officially supported. You need
     at least version 2.2.0.
+
+================  ===============================================
+Objecttypes API   Test status
+================  ===============================================
+2.0.x             Unknown
+2.1.x             Manually verified
+2.2.x             Manually verified, automated end-to-end testing
+================  ===============================================
+
+For Documents API integration (to upload attachments), Open Forms requires the
+Catalogi API and Documenten API.
+
+================  ===============================================
+Catalogi API      Test status
+================  ===============================================
+1.0.x             Manually verified, some tests in CI
+1.1.x             Manually verified, some tests in CI
+1.2.x             Manually verified, some tests in CI
+1.3.x             Manually verified, automated end-to-end testing
+================  ===============================================
+
+================  ===============================================
+Documenten API    Test status
+================  ===============================================
+1.0.x             Manually verified, some tests in CI
+1.1.x             Manually verified, some tests in CI
+1.2.x             Manually verified, some tests in CI
+1.3.x             Manually verified, some tests in CI
+1.4.x             Manually verified, automated end-to-end testing
+================  ===============================================
 
 
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/

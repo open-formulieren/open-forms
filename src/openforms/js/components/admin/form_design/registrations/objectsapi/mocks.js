@@ -70,11 +70,13 @@ const DOCUMENT_TYPES = {
       url: 'https://example.com/catalogi/api/v1/iot/1',
       omschrijving: 'Test PDF',
       catalogusLabel: 'Catalogus 1',
+      isPublished: true,
     },
     {
       url: 'https://example.com/catalogi/api/v1/iot/2',
       omschrijving: 'Test attachment',
       catalogusLabel: 'Catalogus 1',
+      isPublished: true,
     },
   ],
   'https://example.com/catalogi/api/v1/catalogussen/2': [
@@ -82,11 +84,13 @@ const DOCUMENT_TYPES = {
       url: 'https://example.com/catalogi/api/v1/iot/1',
       omschrijving: 'Other PDF',
       catalogusLabel: 'Catalogus 2',
+      isPublished: true,
     },
     {
       url: 'https://example.com/catalogi/api/v1/iot/4',
       omschrijving: 'Other attachment',
       catalogusLabel: 'Catalogus 2',
+      isPublished: true,
     },
   ],
   'https://example.com/catalogi/api/v1/catalogussen/3': [
@@ -94,16 +98,25 @@ const DOCUMENT_TYPES = {
       url: 'https://example.com/catalogi/api/v1/iot/10',
       omschrijving: 'Document type 1',
       catalogusLabel: 'TEST (111111111)',
+      isPublished: false,
     },
     {
       url: 'https://example.com/catalogi/api/v1/iot/11',
       omschrijving: 'Document type 2',
       catalogusLabel: 'TEST (111111111)',
+      isPublished: true,
     },
     {
       url: 'https://example.com/catalogi/api/v1/iot/12',
       omschrijving: 'Document type 3',
       catalogusLabel: 'TEST (111111111)',
+      isPublished: true,
+    },
+    {
+      url: 'https://example.com/catalogi/api/v1/iot/13',
+      omschrijving: 'A rather long draft description',
+      catalogusLabel: 'TEST (111111111)',
+      isPublished: false,
     },
   ],
 };

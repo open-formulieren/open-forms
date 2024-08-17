@@ -1,0 +1,16 @@
+@use 'microscope-sass/lib/bem';
+
+.document-type-option {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  @include bem.element('draft-suffix') {
+    color: var(--body-quiet-color);
+
+    // only display the suffix in the dropdown
+    @at-root .admin-react-select__value-container & {
+      display: none;
+    }
+  }
+}

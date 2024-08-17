@@ -1,6 +1,7 @@
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
+from flags.state import flag_enabled
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.config.constants import UploadFileType
@@ -29,7 +30,11 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
                 ],
-                "feature_flags": {},
+                "feature_flags": {
+                    "ZGW_APIS_INCLUDE_DRAFTS": flag_enabled(
+                        "ZGW_APIS_INCLUDE_DRAFTS", request=request
+                    ),
+                },
                 "confidentiality_levels": [
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices

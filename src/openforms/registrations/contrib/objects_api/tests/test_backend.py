@@ -21,6 +21,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_documents_client, get_objects_client
@@ -537,5 +538,67 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             (
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        )
+
+    @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
+    def test_allow_registration_with_unpublished_document_types(self):
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="DRAFT",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "attachment",
+                    "type": "file",
+                }
+            ],
+            submitted_data={
+                "attachment": [SubmittedFileFactory.build()],
+            },
+            completed=True,
+            # version is valid from August 9th
+            completed_on=datetime(2024, 8, 10, 12, 0, 0).replace(tzinfo=timezone.utc),
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="attachment",
+        )
+
+        # version is not relevant, works the same for v1
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": api_group,
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "attachment",
+                    "target_path": ["single_file"],
+                },
+            ],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "Unpublished",
+        }
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+        document_url = result["record"]["data"]["single_file"]
+        with get_documents_client(api_group) as client:
+            created_document = client.get(document_url).json()
+
+        self.assertEqual(
+            created_document["informatieobjecttype"],
+            (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"
             ),
         )

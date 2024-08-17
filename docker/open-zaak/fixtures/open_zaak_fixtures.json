@@ -50,6 +50,22 @@
     }
 },
 {
+    "model": "catalogi.catalogus",
+    "pk": 3,
+    "fields": {
+        "_etag": "70058e53ac6aa06b1ef64966509660a2",
+        "naam": "Drafts",
+        "uuid": "aa0e0a50-33f6-4473-99a1-b92bab94e749",
+        "domein": "DRAFT",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "OF",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
     "model": "catalogi.eigenschapspecificatie",
     "pk": 1,
     "fields": {
@@ -224,6 +240,27 @@
     }
 },
 {
+    "model": "catalogi.informatieobjecttype",
+    "pk": 8,
+    "fields": {
+        "_etag": "3835df1ae4bf5b9a3db52df04cbceee1",
+        "datum_begin_geldigheid": "2024-08-09",
+        "datum_einde_geldigheid": null,
+        "concept": true,
+        "uuid": "3628d25f-f491-4375-a752-39d16bf2dd59",
+        "omschrijving": "Unpublished",
+        "informatieobjectcategorie": "Tests",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 3
+    }
+},
+{
     "model": "catalogi.zaaktypeinformatieobjecttype",
     "pk": 1,
     "fields": {
@@ -372,6 +409,13 @@
         "bronzaaktype_omschrijving": "",
         "catalogus": 1,
         "deelzaaktypen": []
+    }
+},
+{
+    "model": "config.featureflags",
+    "pk": 1,
+    "fields": {
+        "allow_unpublished_typen": true
     }
 }
 ]

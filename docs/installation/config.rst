@@ -294,16 +294,6 @@ Other settings
   reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
   ``/auth/oidc/callback/``, if ``True``, it is ``/org-oidc/callback/``.
 
-* ``DIGID_EHERKENNING_OIDC_STRICT``: Enable strict claim processing/validation when
-  using :ref:`configuration_authentication_oidc_digid`,
-  :ref:`configuration_authentication_oidc_eherkenning` or
-  :ref:`configuration_authentication_oidc_machtigen`. Defaults to ``False``. You can
-  also add a feature flag in the admin interface to enable this behaviour.
-
-  .. versionadded:: 2.7.0
-     A formal and more complete authentication context data model is used - existing
-     installations likely do not provide all this information yet.
-
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the
   administrative interface. Enabling this forces users to log in every time they open
@@ -375,6 +365,33 @@ Other settings
 .. _django-sendfile documentation: https://django-sendfile2.readthedocs.io/en/stable/backends.html
 
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
+
+.. _installation_environment_config_feature_flags:
+
+Feature flags
+=============
+
+Open Forms sometimes supports a layered approach for feature flags, where some
+behaviours can be enabled at deploy-time through environment variables already. If
+this option is not available, you can still enable/disable the feature flag in the
+admin interface, via **Admin** > **Configuration** > **Flag states**.
+
+Feature flags are usually documented in the relevant module that they apply to. Below
+you can find a list of feature flags that can be set through their matching environment
+variables, linking to the description of their behaviour in their respective module.
+
+* :ref:`ZGW_APIS_INCLUDE_DRAFTS <configuration_registration_objects_feature_flags>` -
+  set to ``True`` to allow unpublished types to be used in the ZGW APIs.
+
+* ``DIGID_EHERKENNING_OIDC_STRICT``: Enable strict claim processing/validation when
+  using :ref:`configuration_authentication_oidc_digid`,
+  :ref:`configuration_authentication_oidc_eherkenning` or
+  :ref:`configuration_authentication_oidc_machtigen`. Defaults to ``False``.
+
+  .. versionadded:: 2.7.0
+     A formal and more complete authentication context data model is used - existing
+     installations likely do not provide all this information yet.
+
 
 Specifying the environment variables
 =====================================

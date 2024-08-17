@@ -11,7 +11,7 @@ These tests make use of requests-mock rather than VCR for two reasons:
 
 from datetime import date
 
-from django.test import SimpleTestCase
+from django.test import TestCase
 
 import requests_mock
 from furl import furl
@@ -20,7 +20,7 @@ from ..clients import CatalogiClient
 from ..exceptions import StandardViolation
 
 
-class CatalogiClientTests(SimpleTestCase):
+class CatalogiClientTests(TestCase):
 
     @requests_mock.Mocker()
     def test_automatic_version_information_extraction(self, m: requests_mock.Mocker):

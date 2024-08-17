@@ -1,7 +1,9 @@
 from datetime import date
+from functools import cached_property
 from operator import itemgetter
-from typing import Callable, Iterator, NotRequired, TypeAlias, TypedDict
+from typing import Callable, Iterator, Literal, NotRequired, TypeAlias, TypedDict
 
+from flags.state import flag_enabled
 from requests import Response
 from zgw_consumers.nlx import NLXClient
 
@@ -53,6 +55,14 @@ CatalogiAPIVersion: TypeAlias = tuple[
 ]
 
 
+class InformatieObjectTypeListParams(TypedDict, total=False):
+    catalogus: str
+    status: Literal["alles", "concept", "definitief"]
+    omschrijving: str
+    datumGeldigheid: str
+    page: int
+
+
 class CatalogiClient(NLXClient):
     _api_version: CatalogiAPIVersion | None = None
 
@@ -77,6 +87,12 @@ class CatalogiClient(NLXClient):
         except ValueError as exc:
             raise StandardViolation("API-version must follow semver format.") from exc
         return (major, minor, patch)
+
+    @cached_property
+    def allow_drafts(self) -> bool:
+        enabled = flag_enabled("ZGW_APIS_INCLUDE_DRAFTS")
+        assert enabled is not None
+        return enabled
 
     def request(self, *args, **kwargs):
         response = super().request(*args, **kwargs)
@@ -111,15 +127,19 @@ class CatalogiClient(NLXClient):
             return None
         return data["results"][0]
 
-    def get_all_informatieobjecttypen(self, *, catalogus: str = "") -> Iterator[dict]:
+    def get_all_informatieobjecttypen(
+        self, *, catalogus: str = ""
+    ) -> Iterator[InformatieObjectType]:
         """List all informatieobjecttypen.
 
         :arg catalogus: the catalogus URL the informatieobjecttypen should belong to.
         """
-        params = {}
+        params: InformatieObjectTypeListParams = {}
         if catalogus:
             params["catalogus"] = catalogus
-        response = self.get("informatieobjecttypen", params=params)
+        if self.allow_drafts:
+            params["status"] = "alles"
+        response = self.get("informatieobjecttypen", params=params)  # type: ignore
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
@@ -139,17 +159,19 @@ class CatalogiClient(NLXClient):
         """
         _supports_filtering_valid_on = self.api_version >= (1, 2, 0)
 
-        params = {
+        params: InformatieObjectTypeListParams = {
             "catalogus": catalogus,
             "omschrijving": description,
         }
-
         # datumGeldigheid was added in v1.2.0 of the APIs & the APIs reject query string
         # parameters that are unkonwn, so we can not just optmistically send it :(
         if valid_on and _supports_filtering_valid_on:
             params["datumGeldigheid"] = valid_on.isoformat()
+        if self.allow_drafts:
+            params["status"] = "alles"
 
-        response = self.get("informatieobjecttypen", params=params)
+        response = self.get("informatieobjecttypen", params=params)  # type: ignore
+
         response.raise_for_status()
         data: PaginatedResponseData[InformatieObjectType] = response.json()
         if data["count"] == 0:
