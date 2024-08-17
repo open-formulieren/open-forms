@@ -3,7 +3,9 @@ import React from 'react';
 const TinyMceContext = React.createContext('');
 TinyMceContext.displayName = 'TinyMceContext';
 
-const FeatureFlagsContext = React.createContext({});
+const FeatureFlagsContext = React.createContext({
+  ZGW_APIS_INCLUDE_DRAFTS: false,
+});
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 
 const FormContext = React.createContext({

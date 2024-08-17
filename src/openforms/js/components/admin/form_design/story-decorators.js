@@ -3,8 +3,12 @@ import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors'
 
 import {FormLogicContext} from './Context';
 
-export const FeatureFlagsDecorator = Story => (
-  <FeatureFlagsContext.Provider value={{}}>
+export const FeatureFlagsDecorator = (Story, {parameters}) => (
+  <FeatureFlagsContext.Provider
+    value={{
+      ZGW_APIS_INCLUDE_DRAFTS: parameters?.featureFlags?.ZGW_APIS_INCLUDE_DRAFTS ?? false,
+    }}
+  >
     <Story />
   </FeatureFlagsContext.Provider>
 );
