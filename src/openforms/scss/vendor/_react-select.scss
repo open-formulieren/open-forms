@@ -16,5 +16,9 @@
     overflow: visible;
   }
 
+  @at-root .errors &__control {
+    --border-color: var(--error-fg);
+  }
+
   inline-size: clamp(200px, 100%, var(--of-admin-select-max-inline-size));
 }
