@@ -171,6 +171,14 @@ class ZGWApiGroupConfig(models.Model):
     def __str__(self):
         return self.name
 
+    def full_clean(self, *args, **kwargs) -> None:
+        # circular imports otherwise between client/models/validators
+        from .validators import validate_catalogue_reference
+
+        super().full_clean(*args, **kwargs)
+
+        validate_catalogue_reference(self)
+
     def apply_defaults_to(self, options):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
         options.setdefault(
