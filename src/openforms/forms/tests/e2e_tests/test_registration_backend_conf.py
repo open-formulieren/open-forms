@@ -121,7 +121,14 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="ZGW API's")
-                await page.get_by_label("ZGW API group").select_option(label="Group 1")
+                await page.get_by_role("button", name="Configure options").click()
+
+                config_modal = page.get_by_role("dialog")
+                await rs_select_option(
+                    config_modal.get_by_role("combobox", name="API group"),
+                    option_label="Group 1",
+                )
+                await config_modal.get_by_role("button", name="Save").click()
 
             with phase("Configure upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
@@ -132,10 +139,14 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
             with phase("Update the ZGW API group configured"):
                 await page.get_by_role("tab", name="Registration").click()
-                await page.get_by_role(
-                    "combobox", name="Select registration backend"
-                ).select_option(label="ZGW API's")
-                await page.get_by_label("ZGW API group").select_option(label="Group 2")
+                await page.get_by_role("button", name="Configure options").click()
+
+                config_modal = page.get_by_role("dialog")
+                await rs_select_option(
+                    config_modal.get_by_role("combobox", name="API group"),
+                    option_label="Group 2",
+                )
+                await config_modal.get_by_role("button", name="Save").click()
 
             with phase("Reopen the upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
