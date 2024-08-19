@@ -6,7 +6,6 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
-  CatalogueSelect,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   ObjectTypeSelect,

@@ -9,19 +9,18 @@ import ReactSelect from 'components/admin/forms/ReactSelect';
 
 const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField('objectsApiGroup');
-  const {values, setValues} = useFormikContext();
+  const {setValues} = useFormikContext();
   const {value} = fieldProps;
 
   // reset the objecttype specific-configuration whenever the API group changes
   useUpdateEffect(() => {
-    const newValues = {
-      ...values,
+    setValues(prevValues => ({
+      ...prevValues,
       objecttype: '',
       objecttypeVersion: undefined,
       variablesMapping: [],
-    };
-    setValues(newValues);
-  }, [setValues, value]); // deliberately excluding values!
+    }));
+  }, [setValues, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
   return (
