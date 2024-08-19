@@ -14,6 +14,11 @@
     "description": "Service fetch configuration modal form Path field label",
     "originalDefault": "Path"
   },
+  "+Te82K": {
+    "defaultMessage": "Optional ZGW configuration",
+    "description": "ZGW APIs registration: default overrides fieldset title",
+    "originalDefault": "Optional ZGW configuration"
+  },
   "+dcsE0": {
     "defaultMessage": "Reset waarde",
     "description": "Delete datetime value",
@@ -119,6 +124,11 @@
     "description": "Open Forms variable label",
     "originalDefault": "Open Forms variable"
   },
+  "1y4N2r": {
+    "defaultMessage": "RSIN van de organisatie die eigenaar is van de zaak en documenten en deze aanmaakt.",
+    "description": "ZGW APIs registration options 'organisationRSIN' help text",
+    "originalDefault": "RSIN of the organization, which creates and owns the case and documents."
+  },
   "20K9To": {
     "defaultMessage": "Servicebevraging instellen",
     "description": "Service fetch configuration selection modal title",
@@ -185,20 +195,10 @@
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
     "originalDefault": "Toggle JSON Schema"
   },
-  "41hfj4": {
-    "defaultMessage": "Welke ZGW APIs-groep gebruikt moet worden.",
-    "description": "ZGW API group selection",
-    "originalDefault": "Which ZGW API group to use."
-  },
   "4FQxD/": {
     "defaultMessage": "Configureren",
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
-  },
-  "4XnRWO": {
-    "defaultMessage": "Koppel variabelen aan zaakeigenschappen",
-    "description": "Open map case properties to variables modal button",
-    "originalDefault": "Map variables to case properties"
   },
   "4iGsG1": {
     "defaultMessage": "Geboortedatum veld",
@@ -249,11 +249,6 @@
     "defaultMessage": "Nog een waarde toevoegen",
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
-  },
-  "5QVVXM": {
-    "defaultMessage": "Objecten API - objecttypeversie",
-    "description": "Version of the object type in the Object Types API",
-    "originalDefault": "Objects API - objecttype version"
   },
   "5uaKBM": {
     "defaultMessage": "minus",
@@ -361,11 +356,6 @@
     "defaultMessage": "Is herbruikbaar?",
     "description": "Form step is reusable label",
     "originalDefault": "Is reusable?"
-  },
-  "8BjiJI": {
-    "defaultMessage": "Koppel variabelen aan zaakeigenschappen",
-    "description": "Modal title for case property to variable mapping",
-    "originalDefault": "Map variables to case properties"
   },
   "8LLxRg": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -482,6 +472,11 @@
     "defaultMessage": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+  },
+  "AWyevn": {
+    "defaultMessage": "Vertrouwelijkheidaanduiding",
+    "description": "ZGW APIs registration options 'zaakVertrouwelijkheidaanduiding' label",
+    "originalDefault": "Confidentiality"
   },
   "AtBVAV": {
     "defaultMessage": "Bevestigen",
@@ -630,6 +625,11 @@
     "description": "'Variable key' label",
     "originalDefault": "Variable key"
   },
+  "DbajPO": {
+    "defaultMessage": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Als je hier een waarde selecteert, dan overschrijft die de vertrouwelijkheidaanduiding van het geselecteerde zaaktype.",
+    "description": "ZGW APIs registration options 'zaakVertrouwelijkheidaanduiding' help text",
+    "originalDefault": "Indication of the level to which extent the case is meant to be public. The value selected here will override the default configured on the case type."
+  },
   "DcI1VF": {
     "defaultMessage": "Sessie vervallen",
     "description": "Modal title session expired",
@@ -670,15 +670,15 @@
     "description": "Too many cosign components",
     "originalDefault": "There are multiple co-sign components specified in this form. At most one should be present."
   },
+  "EQho4S": {
+    "defaultMessage": "API-groep",
+    "description": "ZGW APIs group field label",
+    "originalDefault": "API group"
+  },
   "Ekld1h": {
     "defaultMessage": "Opslaan als nieuw",
     "description": "Save as new service fetch configuration button label",
     "originalDefault": "Save as new"
-  },
-  "EoyaLh": {
-    "defaultMessage": "RSIN van de organisatie die de ZAAK aanmaakt.",
-    "description": "Organisatie rsin",
-    "originalDefault": "RSIN of organization, which creates the ZAAK."
   },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
@@ -720,11 +720,6 @@
     "defaultMessage": "Eenvoudig",
     "description": "Simple logic type",
     "originalDefault": "Simple"
-  },
-  "FbvIpr": {
-    "defaultMessage": "URL van het ZAAKTYPE in de Catalogi API.",
-    "description": "ZAAKTYPE URL",
-    "originalDefault": "URL of the ZAAKTYPE in the Catalogi API."
   },
   "FceidS": {
     "defaultMessage": "is niet gelijk aan",
@@ -805,6 +800,11 @@
     "defaultMessage": "Leeg (null)",
     "description": "JSON variable type \"null\" representation",
     "originalDefault": "Null"
+  },
+  "GwOWGv": {
+    "defaultMessage": "Plugin configuration: ZGW APIs",
+    "description": "ZGW APIs registration options modal title",
+    "originalDefault": "Plugin configuration: ZGW APIs"
   },
   "H3dRU6": {
     "defaultMessage": "Vink aan om het veld op te nemen als procesvariabele",
@@ -926,6 +926,11 @@
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
   },
+  "JKq3TC": {
+    "defaultMessage": "Medewerkerroltype",
+    "description": "Objects API registration options 'medewerkerRoltype' label",
+    "originalDefault": "Medewerker roltype"
+  },
   "JRGs/Q": {
     "defaultMessage": "Klap JsonLogic-expressie in/uit",
     "description": "Expand/collapse logic expression icon title",
@@ -1010,6 +1015,11 @@
     "defaultMessage": "Betaalprovider",
     "description": "Payment provider fieldset title",
     "originalDefault": "Payment provider"
+  },
+  "L4EVfI": {
+    "defaultMessage": "Changing the api group will clear the existing configuration. Are you sure you want to continue?",
+    "description": "ZGW APIs registration options: warning message when changing the api group",
+    "originalDefault": "Changing the api group will clear the existing configuration. Are you sure you want to continue?"
   },
   "L97GKs": {
     "defaultMessage": "Stijl waarin het formulier wordt weergegeven (niet verplicht).",
@@ -1127,10 +1137,20 @@
     "description": "Objects API registration options 'catalogue' label",
     "originalDefault": "Catalogue"
   },
+  "Nfn2qu": {
+    "defaultMessage": "Case type API resource URL in the Catalogi API.",
+    "description": "ZGW APIs registration options 'CaseType' help text",
+    "originalDefault": "Case type API resource URL in the Catalogi API."
+  },
   "NwTdLM": {
     "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
     "description": "Locations Component field help text",
     "originalDefault": "Component where locations for an appointment will be shown"
+  },
+  "NyyJMK": {
+    "defaultMessage": "The API group specifies which ZGW services to use.",
+    "description": "ZGW APIs group field help text",
+    "originalDefault": "The API group specifies which ZGW services to use."
   },
   "O/wKJh": {
     "defaultMessage": "Waarde",
@@ -1266,11 +1286,6 @@
     "description": "Variable prefill configuration modal title",
     "originalDefault": "Prefill configuration"
   },
-  "R78GMf": {
-    "defaultMessage": "Vertrouwelijkheidaanduiding",
-    "description": "Indication of the level to which extend the dossier of the ZAAK is meant to be public",
-    "originalDefault": "Confidentiality"
-  },
   "R7XVbR": {
     "defaultMessage": "hoofdentiteit",
     "description": "Identifier role (for mandate context) label for representee",
@@ -1326,10 +1341,20 @@
     "description": "action type \"property\" label",
     "originalDefault": "change a property of a component."
   },
+  "ScbJK7": {
+    "defaultMessage": "RSIN Organisatie",
+    "description": "ZGW APIs registration options 'organisationRSIN' label",
+    "originalDefault": "Organisation RSIN"
+  },
   "SjbNyf": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add zaakeigenschap (mapping) button",
     "originalDefault": "Add variable"
+  },
+  "Sw6TLH": {
+    "defaultMessage": "Documenttype",
+    "description": "ZGW APIs registration options 'DocumentType' label",
+    "originalDefault": "Document type"
   },
   "T0OLUV": {
     "defaultMessage": "Sleutel-waarde paar (object) toevoegen",
@@ -1366,15 +1391,15 @@
     "description": "Service fetch configuration modal form Path field help text",
     "originalDefault": "the path should not have a leading slash"
   },
-  "TIraO3": {
-    "defaultMessage": "Objecten API - objecttype",
-    "description": "URL to the OBJECT TYPE for the \"Product Request\" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the \"Product Request\") 3) data (submitted form data)",
-    "originalDefault": "Objects API - objecttype"
-  },
   "TR5xSY": {
     "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",
     "description": "Logic rule deletion confirm message",
     "originalDefault": "Are you sure you want to delete this rule?"
+  },
+  "TRjRww": {
+    "defaultMessage": "Basis",
+    "description": "ZGW APIs registration backend options, 'base' tab label",
+    "originalDefault": "Base"
   },
   "TXwGu1": {
     "defaultMessage": "URL-deel",
@@ -1405,11 +1430,6 @@
     "defaultMessage": "Variabelekoppelingen",
     "description": "Objects API registration backend options 'Variables Mapping' tab label",
     "originalDefault": "Variables Mapping"
-  },
-  "UHlGZJ": {
-    "defaultMessage": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden.",
-    "description": "Confidentiality",
-    "originalDefault": "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
   },
   "UKTqb8": {
     "defaultMessage": "Bewaartermijn van inzendingen",
@@ -1539,21 +1559,6 @@
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
   },
-  "XqTjf+": {
-    "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt.",
-    "description": "Objects API - JSON content field",
-    "originalDefault": "JSON template for the content of the request sent to the Objects API."
-  },
-  "Y2d0q4": {
-    "defaultMessage": "URL van het INFORMATIEOBJECTTYPE in de Catalogi API.",
-    "description": "Informatieobjecttype URL",
-    "originalDefault": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API."
-  },
-  "Y7s6RB": {
-    "defaultMessage": "Versie van het objecttype in de Objecttypen API.",
-    "description": "Objects API - objecttype version",
-    "originalDefault": "Version of the object type in the Object Types API."
-  },
   "YDjQH8": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen.",
     "description": "Objects API registrations options: document types selection error",
@@ -1623,6 +1628,11 @@
     "defaultMessage": "Zet registratieplugin voor de inzending",
     "description": "action type \"set-registration-backend\" label",
     "originalDefault": "Set the registration backend to use for the submission"
+  },
+  "ZiARkY": {
+    "defaultMessage": "Any configuration option specified here overrides the matching option of the selected API group.",
+    "description": "ZGW APIs defaults override informative message",
+    "originalDefault": "Any configuration option specified here overrides the matching option of the selected API group."
   },
   "ZzjFxE": {
     "defaultMessage": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?",
@@ -1782,6 +1792,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' label",
     "originalDefault": "Product request type"
   },
+  "cuivC6": {
+    "defaultMessage": "Version",
+    "description": "ZGW APIs registration options 'objecttypeVersion' label",
+    "originalDefault": "Version"
+  },
   "d1W41c": {
     "defaultMessage": "Van formulierveld",
     "description": "JSON editor: \"component\" variable source label",
@@ -1856,11 +1871,6 @@
     "defaultMessage": "Geavanceerde opties",
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
-  },
-  "eU7+uS": {
-    "defaultMessage": "Bevestigen",
-    "description": "Confirm button for case property to variable mapping",
-    "originalDefault": "Confirm"
   },
   "evbysh": {
     "defaultMessage": "Variabeledefinitie",
@@ -2007,6 +2017,11 @@
     "description": "Manage complex process vars configure column title",
     "originalDefault": "Configure"
   },
+  "hxssl8": {
+    "defaultMessage": "Objects API integration",
+    "description": "ZGW APIs registration: Objects API fieldset title",
+    "originalDefault": "Objects API integration"
+  },
   "hzx+WF": {
     "defaultMessage": "Interne naam",
     "description": "Form name field label",
@@ -2032,6 +2047,11 @@
     "defaultMessage": "is kleiner dan",
     "description": "\"<\" operator description",
     "originalDefault": "is less than"
+  },
+  "ieF+xK": {
+    "defaultMessage": "Zaaktype",
+    "description": "ZGW APIs registration options 'CaseType' label",
+    "originalDefault": "Case type"
   },
   "inhTXo": {
     "defaultMessage": "jaren",
@@ -2163,6 +2183,11 @@
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
   },
+  "ln72CJ": {
+    "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
+    "description": "ZGW APIs registration options 'objecttype' help text",
+    "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+  },
   "mCHS+l": {
     "defaultMessage": "Je hebt een catalogus geselecteerd - de hier ingestelde documenttype-URLs worden genegeerd.",
     "description": "Objects registration: warning that legacy document types will be ignored",
@@ -2208,12 +2233,6 @@
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
   },
-  "nDPXSj": {
-    "defaultMessage": "Zaaktype",
-    "description": "URL of the ZAAKTYPE in the Catalogi API",
-    "isTranslated": true,
-    "originalDefault": "Zaaktype"
-  },
   "nFXYHB": {
     "defaultMessage": "Datum en tijdstip waarop het formulier gedeactiveerd moet worden.",
     "description": "Form deactivation field help text",
@@ -2238,11 +2257,6 @@
     "defaultMessage": "De waarde voor \"doelbinding\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier en/of eigen organisatie-instellingen.",
     "description": "Form 'BRP Personen purpose limitation header value' field help text",
     "originalDefault": "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
-  },
-  "o+PhWW": {
-    "defaultMessage": "Organisatie-RSIN",
-    "description": "RSIN of organization, which creates the ZAAK",
-    "originalDefault": "Organisatie rsin"
   },
   "o8CfuS": {
     "defaultMessage": "Tekst (string)",
@@ -2279,6 +2293,11 @@
     "description": "Open manage complex camunda process vars modal button",
     "originalDefault": "Complex process variables"
   },
+  "p5Iv+R": {
+    "defaultMessage": "Document type API resource URL in the Catalogi API.",
+    "description": "ZGW APIs registration options 'DocumentType' help text",
+    "originalDefault": "Document type API resource URL in the Catalogi API."
+  },
   "p8LSwF": {
     "defaultMessage": "Actie toevoegen",
     "description": "Add form logic rule action button",
@@ -2303,11 +2322,6 @@
     "defaultMessage": "Registratiemethode",
     "description": "Registration backend label",
     "originalDefault": "Select registration backend"
-  },
-  "plld71": {
-    "defaultMessage": "Objecten API - JSON-inhoud sjabloon",
-    "description": "JSON template for the content of the request sent to the Objects API",
-    "originalDefault": "Objects API - JSON content field"
   },
   "poZZD9": {
     "defaultMessage": "Naam",
@@ -2353,11 +2367,6 @@
     "defaultMessage": "Exporteren",
     "description": "Export form button",
     "originalDefault": "Export"
-  },
-  "qpFDF5": {
-    "defaultMessage": "Medewerkerroltype",
-    "description": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.",
-    "originalDefault": "Medewerker roltype"
   },
   "qzISfx": {
     "defaultMessage": "URL-deel",
@@ -2419,12 +2428,6 @@
     "description": "DMN evaluation not configured yet message",
     "originalDefault": "(not configured yet)"
   },
-  "s4xyn5": {
-    "defaultMessage": "Informatieobjecttype",
-    "description": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API",
-    "isTranslated": true,
-    "originalDefault": "Informatieobjecttype"
-  },
   "sCkGL9": {
     "defaultMessage": "ongeldige uitvoerparameters",
     "description": "Warning message: DMN output mapping problems detected",
@@ -2434,11 +2437,6 @@
     "defaultMessage": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier.",
     "description": "Help text of form field 'Send the confirmation email'",
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
-  },
-  "sbtZya": {
-    "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele gekoppeld)} other {({varCount} variabelen gekoppeld)} }",
-    "description": "Managed mappings state feedback",
-    "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
   },
   "sptpzv": {
     "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
@@ -2470,6 +2468,11 @@
     "description": "Change form page title",
     "originalDefault": "Change form"
   },
+  "tOueRC": {
+    "defaultMessage": "Zaakeigenschappen ({count})",
+    "description": "ZGW APIs registration backend options, 'case properties' tab label",
+    "originalDefault": "Case properties ({count})"
+  },
   "tRCXsR": {
     "defaultMessage": "Bouw een logica-expressie door componenten en voorwaarden te selecteren in dropdowns.",
     "description": "Simple logic type info text",
@@ -2489,6 +2492,11 @@
     "defaultMessage": "Naam",
     "description": "Manage complex process vars alias column title",
     "originalDefault": "Name"
+  },
+  "tzwS3S": {
+    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.",
+    "description": "Objects API registration options 'medewerkerRoltype' help text",
+    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
   "u3P/1E": {
     "defaultMessage": "RSIN van de organisatie die eigenaar is van en het INFORMATIEOBJECT aanmaakt.",
@@ -2610,25 +2618,10 @@
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
   },
-  "xrmpmN": {
-    "defaultMessage": "Medewerkerroltype",
-    "description": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company",
-    "originalDefault": "Medewerker roltype"
-  },
-  "xwBVzh": {
-    "defaultMessage": "ZGW API-groep",
-    "description": "ZGW API group",
-    "originalDefault": "ZGW API group"
-  },
   "xyVtKp": {
     "defaultMessage": "Plugin-instellingen: Objecten API",
     "description": "Objects API registration options modal title",
     "originalDefault": "Plugin configuration: Objects API"
-  },
-  "y2I3Eu": {
-    "defaultMessage": "Objecten API - objecttype",
-    "description": "URL to the OBJECT TYPE for the \"Product Request\" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the \"Product Request\") 3) data (submitted form data).",
-    "originalDefault": "Objects API - objecttype"
   },
   "y4U0aW": {
     "defaultMessage": "{required, select, true {{path} (verplicht)} other {{path}}}",
@@ -2649,6 +2642,11 @@
     "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
+  },
+  "yTfQNG": {
+    "defaultMessage": "Objecttype",
+    "description": "ZGW APIs registration options 'objecttype' label",
+    "originalDefault": "Objecttype"
   },
   "yTpHh0": {
     "defaultMessage": "(niet ingesteld)",

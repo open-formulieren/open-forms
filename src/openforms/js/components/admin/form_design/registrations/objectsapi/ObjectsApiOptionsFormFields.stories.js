@@ -2,8 +2,10 @@ import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
 import selectEvent from 'react-select-event';
 
-import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
-import {FeatureFlagsDecorator} from 'components/admin/form_design/story-decorators';
+import {
+  FeatureFlagsDecorator,
+  ValidationErrorsDecorator,
+} from 'components/admin/form_design/story-decorators';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {

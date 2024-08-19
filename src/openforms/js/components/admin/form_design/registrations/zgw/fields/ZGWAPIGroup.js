@@ -7,18 +7,23 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
-  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField('objectsApiGroup');
+const ZGWAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
+  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField('zgwApiGroup');
   const {setValues} = useFormikContext();
   const {value} = fieldProps;
 
-  // reset the objecttype specific-configuration whenever the API group changes
+  // reset the zaaktype/objecttype specific-configuration whenever the API group changes
   useUpdateEffect(() => {
     setValues(prevValues => ({
       ...prevValues,
-      objecttype: '',
+      zaaktype: '',
+      informatieobjecttype: '',
+      medewerkerRoltype: '',
+      propertyMappings: [],
+      // objects API integration
+      objecttype: undefined,
       objecttypeVersion: undefined,
-      variablesMapping: [],
+      contentJson: undefined,
     }));
   }, [setValues, value]);
 
@@ -26,24 +31,21 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
   return (
     <FormRow>
       <Field
-        name="objectsApiGroup"
+        name="zgwApiGroup"
         required
         label={
-          <FormattedMessage
-            description="Objects API group field label"
-            defaultMessage="API group"
-          />
+          <FormattedMessage description="ZGW APIs group field label" defaultMessage="API group" />
         }
         helpText={
           <FormattedMessage
-            description="Objects API group field help text"
-            defaultMessage="The API group specifies which objects and objecttypes services to use."
+            description="ZGW APIs group field help text"
+            defaultMessage="The API group specifies which ZGW services to use."
           />
         }
         noManageChildProps
       >
         <ReactSelect
-          name="objectsApiGroup"
+          name="zgwApiGroup"
           options={options}
           required
           onChange={selectedOption => {
@@ -56,7 +58,7 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
   );
 };
 
-ObjectsAPIGroup.propTypes = {
+ZGWAPIGroup.propTypes = {
   apiGroupChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(
       PropTypes.oneOfType([
@@ -68,4 +70,4 @@ ObjectsAPIGroup.propTypes = {
   onChangeCheck: PropTypes.func,
 };
 
-export default ObjectsAPIGroup;
+export default ZGWAPIGroup;

@@ -53,10 +53,10 @@
     }
   }
 
-  &__header {
-    &:not(:last-child) {
-      margin-bottom: 1em;
-    }
+  &__header + * {
+    // leave room for absolute positioned elements that otherwise get cut off by the
+    // overflow: auto
+    padding-block-start: 1em;
   }
 
   &__close {

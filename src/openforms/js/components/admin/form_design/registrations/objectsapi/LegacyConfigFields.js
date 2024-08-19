@@ -132,7 +132,7 @@ JSONTemplateField.propTypes = {
   helpText: PropTypes.node,
 };
 
-const ContentJSON = () => (
+export const ContentJSON = () => (
   <JSONTemplateField
     name="contentJson"
     label={

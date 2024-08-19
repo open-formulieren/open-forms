@@ -7,13 +7,16 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
-import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
+import {
+  FormDecorator,
+  ValidationErrorsDecorator,
+} from 'components/admin/form_design/story-decorators';
 
 import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [ValidationErrorsDecorator],
+  decorators: [ValidationErrorsDecorator, FormDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -43,8 +46,8 @@ export default {
               enumNames: ['ZGW API group 1'],
             },
             zaakVertrouwelijkheidaanduiding: {
-              enum: ['openbaar'],
-              enumNames: ['Openbaar'],
+              enum: ['openbaar', 'geheim'],
+              enumNames: ['Openbaar', 'Geheim'],
             },
           },
         },
@@ -171,6 +174,14 @@ export default {
     onChange: fn(),
     addBackend: fn(),
     onDelete: fn(),
+    availableComponents: {
+      textField1: {
+        label: 'textfield1',
+      },
+      textField2: {
+        label: 'textfield2',
+      },
+    },
   },
   parameters: {
     msw: {
@@ -270,6 +281,7 @@ export const ConfiguredBackends = {
       },
     ],
     validationErrors: [
+      ['form.registrationBackends.1.options.zgwApiGroup', 'You sure about this?'],
       ['form.registrationBackends.3.options.objectsApiGroup', 'You shall not pass.'],
     ],
   },
@@ -410,5 +422,11 @@ export const ZGW = {
         },
       },
     ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
   },
 };

@@ -37,6 +37,10 @@
           padding-right: 1em;
         }
       }
+
+      tr.has-errors td {
+        vertical-align: bottom !important;
+      }
     }
   }
 

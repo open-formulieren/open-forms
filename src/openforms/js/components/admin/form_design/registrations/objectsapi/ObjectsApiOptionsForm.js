@@ -20,6 +20,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
   const {objectsApiGroup} = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(objectsApiGroup.enum, objectsApiGroup.enumNames);
   const numErrors = filterErrors(name, validationErrors).length;
+  const defaultGroup = apiGroupChoices.length === 1 ? apiGroupChoices[0][0] : undefined;
 
   return (
     <Field name={name} label={label}>
@@ -76,10 +77,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
             initialValues={{
               ...formData,
               // Ensure that if there's only one option, it is automatically selected.
-              objectsApiGroup:
-                formData.objectsApiGroup ?? apiGroupChoices.length === 1
-                  ? apiGroupChoices[0][0]
-                  : undefined,
+              objectsApiGroup: formData.objectsApiGroup ?? defaultGroup,
             }}
             onSubmit={(values, actions) => {
               onChange({formData: values});

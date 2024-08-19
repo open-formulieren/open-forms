@@ -29,6 +29,12 @@
       "value": "Path"
     }
   ],
+  "+Te82K": [
+    {
+      "type": 0,
+      "value": "Optional ZGW configuration"
+    }
+  ],
   "+XwAuT": [
     {
       "type": 0,
@@ -265,6 +271,12 @@
       "value": " contains the original filename."
     }
   ],
+  "1y4N2r": [
+    {
+      "type": 0,
+      "value": "RSIN of the organization, which creates and owns the case and documents."
+    }
+  ],
   "2/2h2C": [
     {
       "type": 0,
@@ -421,12 +433,6 @@
       "value": "Location"
     }
   ],
-  "41hfj4": [
-    {
-      "type": 0,
-      "value": "Which ZGW API group to use."
-    }
-  ],
   "45IQhq": [
     {
       "type": 0,
@@ -473,12 +479,6 @@
     {
       "type": 0,
       "value": " files to upload."
-    }
-  ],
-  "4XnRWO": [
-    {
-      "type": 0,
-      "value": "Map variables to case properties"
     }
   ],
   "4iGsG1": [
@@ -561,12 +561,6 @@
     {
       "type": 0,
       "value": "Add another value"
-    }
-  ],
-  "5QVVXM": [
-    {
-      "type": 0,
-      "value": "Objects API - objecttype version"
     }
   ],
   "5XOrxo": [
@@ -859,12 +853,6 @@
       "value": "Is reusable?"
     }
   ],
-  "8BjiJI": [
-    {
-      "type": 0,
-      "value": "Map variables to case properties"
-    }
-  ],
   "8LLxRg": [
     {
       "type": 0,
@@ -1091,6 +1079,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+    }
+  ],
+  "AWyevn": [
+    {
+      "type": 0,
+      "value": "Confidentiality"
     }
   ],
   "AtBVAV": [
@@ -1469,6 +1463,12 @@
       "value": "Variable key"
     }
   ],
+  "DbajPO": [
+    {
+      "type": 0,
+      "value": "Indication of the level to which extent the case is meant to be public. The value selected here will override the default configured on the case type."
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -1595,6 +1595,12 @@
       "value": "There are multiple co-sign components specified in this form. At most one should be present."
     }
   ],
+  "EQho4S": [
+    {
+      "type": 0,
+      "value": "API group"
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -1625,12 +1631,6 @@
     {
       "type": 0,
       "value": "Save as new"
-    }
-  ],
-  "EoyaLh": [
-    {
-      "type": 0,
-      "value": "RSIN of organization, which creates the ZAAK."
     }
   ],
   "ErwGIQ": [
@@ -1691,12 +1691,6 @@
     {
       "type": 0,
       "value": "Simple"
-    }
-  ],
-  "FbvIpr": [
-    {
-      "type": 0,
-      "value": "URL of the ZAAKTYPE in the Catalogi API."
     }
   ],
   "Fc/emc": [
@@ -1831,6 +1825,12 @@
     {
       "type": 0,
       "value": "Single column"
+    }
+  ],
+  "GwOWGv": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: ZGW APIs"
     }
   ],
   "H3dRU6": [
@@ -2015,6 +2015,12 @@
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
     }
   ],
+  "JKq3TC": [
+    {
+      "type": 0,
+      "value": "Medewerker roltype"
+    }
+  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -2171,6 +2177,12 @@
     {
       "type": 0,
       "value": "Payment provider"
+    }
+  ],
+  "L4EVfI": [
+    {
+      "type": 0,
+      "value": "Changing the api group will clear the existing configuration. Are you sure you want to continue?"
     }
   ],
   "L97GKs": [
@@ -2345,6 +2357,12 @@
       "value": ")"
     }
   ],
+  "Nfn2qu": [
+    {
+      "type": 0,
+      "value": "Case type API resource URL in the Catalogi API."
+    }
+  ],
   "Nsifca": [
     {
       "type": 0,
@@ -2361,6 +2379,12 @@
     {
       "type": 0,
       "value": "Component where locations for an appointment will be shown"
+    }
+  ],
+  "NyyJMK": [
+    {
+      "type": 0,
+      "value": "The API group specifies which ZGW services to use."
     }
   ],
   "O/wKJh": [
@@ -2613,12 +2637,6 @@
       "value": "You need to configure both longitude and latitude."
     }
   ],
-  "R78GMf": [
-    {
-      "type": 0,
-      "value": "Confidentiality"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -2799,6 +2817,12 @@
       "value": "change a property of a component."
     }
   ],
+  "ScbJK7": [
+    {
+      "type": 0,
+      "value": "Organisation RSIN"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
@@ -2809,6 +2833,12 @@
     {
       "type": 0,
       "value": "Which authentication method the co-signer must use. Note that this must be an authentication method available on the form."
+    }
+  ],
+  "Sw6TLH": [
+    {
+      "type": 0,
+      "value": "Document type"
     }
   ],
   "T0OLUV": [
@@ -2865,16 +2895,16 @@
       "value": "the path should not have a leading slash"
     }
   ],
-  "TIraO3": [
-    {
-      "type": 0,
-      "value": "Objects API - objecttype"
-    }
-  ],
   "TR5xSY": [
     {
       "type": 0,
       "value": "Are you sure you want to delete this rule?"
+    }
+  ],
+  "TRjRww": [
+    {
+      "type": 0,
+      "value": "Base"
     }
   ],
   "TXwGu1": [
@@ -2935,12 +2965,6 @@
     {
       "type": 0,
       "value": "Select the plugin(s) to use for the validation functionality."
-    }
-  ],
-  "UHlGZJ": [
-    {
-      "type": 0,
-      "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
     }
   ],
   "UJTIZU": [
@@ -3307,28 +3331,10 @@
       "value": "Remove"
     }
   ],
-  "XqTjf+": [
-    {
-      "type": 0,
-      "value": "JSON template for the content of the request sent to the Objects API."
-    }
-  ],
-  "Y2d0q4": [
-    {
-      "type": 0,
-      "value": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API."
-    }
-  ],
   "Y4oNhH": [
     {
       "type": 0,
       "value": "Maximum width"
-    }
-  ],
-  "Y7s6RB": [
-    {
-      "type": 0,
-      "value": "Version of the object type in the Object Types API."
     }
   ],
   "Y8cmP1": [
@@ -3527,6 +3533,12 @@
     {
       "type": 0,
       "value": "Set the registration backend to use for the submission"
+    }
+  ],
+  "ZiARkY": [
+    {
+      "type": 0,
+      "value": "Any configuration option specified here overrides the matching option of the selected API group."
     }
   ],
   "ZzjFxE": [
@@ -3899,6 +3911,12 @@
       "value": "The name under which the INFORMATIEOBJECT is formally known."
     }
   ],
+  "cuivC6": [
+    {
+      "type": 0,
+      "value": "Version"
+    }
+  ],
   "czUDSQ": [
     {
       "type": 0,
@@ -4083,12 +4101,6 @@
     {
       "type": 0,
       "value": "Advanced options"
-    }
-  ],
-  "eU7+uS": [
-    {
-      "type": 0,
-      "value": "Confirm"
     }
   ],
   "eUowhH": [
@@ -4393,6 +4405,12 @@
       "value": "Mobile"
     }
   ],
+  "hxssl8": [
+    {
+      "type": 0,
+      "value": "Objects API integration"
+    }
+  ],
   "hzx+WF": [
     {
       "type": 0,
@@ -4457,6 +4475,12 @@
     {
       "type": 0,
       "value": "is less than"
+    }
+  ],
+  "ieF+xK": [
+    {
+      "type": 0,
+      "value": "Case type"
     }
   ],
   "ifG3sd": [
@@ -4731,6 +4755,12 @@
       "value": "Add item"
     }
   ],
+  "ln72CJ": [
+    {
+      "type": 0,
+      "value": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+    }
+  ],
   "loKqis": [
     {
       "type": 0,
@@ -4839,12 +4869,6 @@
       "value": "Whether to add children information to the component."
     }
   ],
-  "nDPXSj": [
-    {
-      "type": 0,
-      "value": "Zaaktype"
-    }
-  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -4891,12 +4915,6 @@
     {
       "type": 0,
       "value": "Tooltip"
-    }
-  ],
-  "o+PhWW": [
-    {
-      "type": 0,
-      "value": "Organisatie rsin"
     }
   ],
   "o5Mfn3": [
@@ -4975,6 +4993,12 @@
     {
       "type": 0,
       "value": "Complex process variables"
+    }
+  ],
+  "p5Iv+R": [
+    {
+      "type": 0,
+      "value": "Document type API resource URL in the Catalogi API."
     }
   ],
   "p7g2h+": [
@@ -5083,12 +5107,6 @@
       "value": "Select registration backend"
     }
   ],
-  "plld71": [
-    {
-      "type": 0,
-      "value": "Objects API - JSON content field"
-    }
-  ],
   "poZZD9": [
     {
       "type": 0,
@@ -5153,12 +5171,6 @@
     {
       "type": 0,
       "value": "Export"
-    }
-  ],
-  "qpFDF5": [
-    {
-      "type": 0,
-      "value": "Medewerker roltype"
     }
   ],
   "qzISfx": [
@@ -5245,12 +5257,6 @@
       "value": "(not configured yet)"
     }
   ],
-  "s4xyn5": [
-    {
-      "type": 0,
-      "value": "Informatieobjecttype"
-    }
-  ],
   "sCkGL9": [
     {
       "type": 0,
@@ -5273,44 +5279,6 @@
     {
       "type": 0,
       "value": "Manually fill in"
-    }
-  ],
-  "sbtZya": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variable mapped)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variables mapped)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
     }
   ],
   "sgmcmf": [
@@ -5365,6 +5333,20 @@
       "value": "Change form"
     }
   ],
+  "tOueRC": [
+    {
+      "type": 0,
+      "value": "Case properties ("
+    },
+    {
+      "type": 1,
+      "value": "count"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "tRCXsR": [
     {
       "type": 0,
@@ -5405,6 +5387,12 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "tzwS3S": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
     }
   ],
   "u3P/1E": [
@@ -5671,18 +5659,6 @@
       "value": "Create definition"
     }
   ],
-  "xrmpmN": [
-    {
-      "type": 0,
-      "value": "Medewerker roltype"
-    }
-  ],
-  "xwBVzh": [
-    {
-      "type": 0,
-      "value": "ZGW API group"
-    }
-  ],
   "xxVNeU": [
     {
       "type": 0,
@@ -5693,12 +5669,6 @@
     {
       "type": 0,
       "value": "Plugin configuration: Objects API"
-    }
-  ],
-  "y2I3Eu": [
-    {
-      "type": 0,
-      "value": "Objects API - objecttype"
     }
   ],
   "y4U0aW": [
@@ -5775,6 +5745,12 @@
     {
       "type": 0,
       "value": "How to specify the available options."
+    }
+  ],
+  "yTfQNG": [
+    {
+      "type": 0,
+      "value": "Objecttype"
     }
   ],
   "yTpHh0": [

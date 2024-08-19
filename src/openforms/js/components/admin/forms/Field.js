@@ -16,7 +16,7 @@ export const normalizeErrors = (errors = [], intl) => {
 
     if (error.defaultMessage) return intl.formatMessage(error);
 
-    const [key, msg] = error;
+    const [, msg] = error;
     return msg;
   });
   return [hasErrors, formattedErrors];
