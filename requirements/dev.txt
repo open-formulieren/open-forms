@@ -1204,7 +1204,7 @@ webencodings==0.5.1
     #   cssselect2
     #   html5lib
     #   tinycss2
-webob==1.8.6
+webob==1.8.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
