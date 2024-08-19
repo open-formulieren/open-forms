@@ -7,7 +7,7 @@ from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
 from openforms.template.validators import DjangoTemplateValidator
-from openforms.utils.validators import validate_rsin
+from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
 
 
 def get_content_text() -> str:
@@ -42,6 +42,12 @@ class ZgwConfig(SingletonModel):
         verbose_name = _("ZGW API's configuration")
 
 
+# no catalogus specified, requires both RSIN and domain to be unspecified
+_CATALOGUE_NOT_SET = models.Q(catalogue_domain="", catalogue_rsin="")
+# catalogus specified, requires both RSIN and domain to be set
+_CATALOGUE_SET = ~models.Q(catalogue_domain="") & ~models.Q(catalogue_rsin="")
+
+
 class ZGWApiGroupConfig(models.Model):
     name = models.CharField(
         _("name"),
@@ -72,7 +78,33 @@ class ZGWApiGroupConfig(models.Model):
         related_name="zgwset_ztc_config",
         null=True,
     )
+
+    #
     # Overridable defaults
+    #
+    catalogue_domain = models.CharField(
+        _("catalogus domain"),
+        # blank because: opt-in to new config pattern & may be specified on form-level
+        # options instead of here.
+        blank=True,
+        max_length=5,
+        help_text=_(
+            "The 'domein' attribute for the Catalogus resource in the Catalogi API."
+        ),
+        validators=[validate_uppercase],
+    )
+    catalogue_rsin = models.CharField(
+        _("catalogus RSIN"),
+        # blank because: opt-in to new config pattern & may be specified on form-level
+        # options instead of here.
+        blank=True,
+        max_length=9,
+        help_text=_(
+            "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
+        ),
+        validators=[RSINValidator()],
+    )
+
     organisatie_rsin = models.CharField(
         _("organisation RSIN"),
         max_length=9,
@@ -125,6 +157,16 @@ class ZGWApiGroupConfig(models.Model):
     class Meta:
         verbose_name = _("ZGW API set")
         verbose_name_plural = _("ZGW API sets")
+        constraints = [
+            models.CheckConstraint(
+                check=_CATALOGUE_NOT_SET | _CATALOGUE_SET,
+                name="registrations_zgw_apis_catalogue_composite_key",
+                violation_error_message=_(
+                    "You must specify both domain and RSIN to uniquely identify a "
+                    "catalogue.",
+                ),
+            ),
+        ]
 
     def __str__(self):
         return self.name
