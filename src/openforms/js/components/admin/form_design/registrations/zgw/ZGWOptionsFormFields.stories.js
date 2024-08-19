@@ -99,6 +99,6 @@ export const ValidationErrorsCasePropertiesTab = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('tab', {name: /Case properties/}));
+    await userEvent.click(canvas.getByRole('tab', {name: /Zaakeigenschappen/}));
   },
 };

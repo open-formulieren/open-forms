@@ -29,6 +29,12 @@
       "value": "Pad"
     }
   ],
+  "+Te82K": [
+    {
+      "type": 0,
+      "value": "Optional ZGW configuration"
+    }
+  ],
   "+XwAuT": [
     {
       "type": 0,
@@ -265,6 +271,12 @@
       "value": " bevat de oorspronkelijke bestandsnaam."
     }
   ],
+  "1y4N2r": [
+    {
+      "type": 0,
+      "value": "RSIN van de organisatie die eigenaar is van de zaak en documenten en deze aanmaakt."
+    }
+  ],
   "2/2h2C": [
     {
       "type": 0,
@@ -421,12 +433,6 @@
       "value": "Locatie"
     }
   ],
-  "41hfj4": [
-    {
-      "type": 0,
-      "value": "Welke ZGW APIs-groep gebruikt moet worden."
-    }
-  ],
   "45IQhq": [
     {
       "type": 0,
@@ -473,12 +479,6 @@
     {
       "type": 0,
       "value": " bestanden om te uploaden."
-    }
-  ],
-  "4XnRWO": [
-    {
-      "type": 0,
-      "value": "Koppel variabelen aan zaakeigenschappen"
     }
   ],
   "4iGsG1": [
@@ -561,12 +561,6 @@
     {
       "type": 0,
       "value": "Nog een waarde toevoegen"
-    }
-  ],
-  "5QVVXM": [
-    {
-      "type": 0,
-      "value": "Objecten API - objecttypeversie"
     }
   ],
   "5XOrxo": [
@@ -863,12 +857,6 @@
       "value": "Is herbruikbaar?"
     }
   ],
-  "8BjiJI": [
-    {
-      "type": 0,
-      "value": "Koppel variabelen aan zaakeigenschappen"
-    }
-  ],
   "8LLxRg": [
     {
       "type": 0,
@@ -1095,6 +1083,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "AWyevn": [
+    {
+      "type": 0,
+      "value": "Vertrouwelijkheidaanduiding"
     }
   ],
   "AtBVAV": [
@@ -1490,6 +1484,12 @@
       "value": "Sleutel variabele"
     }
   ],
+  "DbajPO": [
+    {
+      "type": 0,
+      "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Als je hier een waarde selecteert, dan overschrijft die de vertrouwelijkheidaanduiding van het geselecteerde zaaktype."
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -1616,6 +1616,12 @@
       "value": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is."
     }
   ],
+  "EQho4S": [
+    {
+      "type": 0,
+      "value": "API-groep"
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -1646,12 +1652,6 @@
     {
       "type": 0,
       "value": "Opslaan als nieuw"
-    }
-  ],
-  "EoyaLh": [
-    {
-      "type": 0,
-      "value": "RSIN van de organisatie die de ZAAK aanmaakt."
     }
   ],
   "ErwGIQ": [
@@ -1712,12 +1712,6 @@
     {
       "type": 0,
       "value": "Eenvoudig"
-    }
-  ],
-  "FbvIpr": [
-    {
-      "type": 0,
-      "value": "URL van het ZAAKTYPE in de Catalogi API."
     }
   ],
   "Fc/emc": [
@@ -1852,6 +1846,12 @@
     {
       "type": 0,
       "value": "Eén kolom"
+    }
+  ],
+  "GwOWGv": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: ZGW APIs"
     }
   ],
   "H3dRU6": [
@@ -2036,6 +2036,12 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
+  "JKq3TC": [
+    {
+      "type": 0,
+      "value": "Medewerkerroltype"
+    }
+  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -2192,6 +2198,12 @@
     {
       "type": 0,
       "value": "Betaalprovider"
+    }
+  ],
+  "L4EVfI": [
+    {
+      "type": 0,
+      "value": "Changing the api group will clear the existing configuration. Are you sure you want to continue?"
     }
   ],
   "L97GKs": [
@@ -2366,6 +2378,12 @@
       "value": ")"
     }
   ],
+  "Nfn2qu": [
+    {
+      "type": 0,
+      "value": "Case type API resource URL in the Catalogi API."
+    }
+  ],
   "Nsifca": [
     {
       "type": 0,
@@ -2382,6 +2400,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare locaties voor een afspraak komen te staan"
+    }
+  ],
+  "NyyJMK": [
+    {
+      "type": 0,
+      "value": "The API group specifies which ZGW services to use."
     }
   ],
   "O/wKJh": [
@@ -2630,12 +2654,6 @@
       "value": "Je moet latitude en longitude allebei instellen."
     }
   ],
-  "R78GMf": [
-    {
-      "type": 0,
-      "value": "Vertrouwelijkheidaanduiding"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -2816,6 +2834,12 @@
       "value": "wijzig een attribuut van een veld/component."
     }
   ],
+  "ScbJK7": [
+    {
+      "type": 0,
+      "value": "RSIN Organisatie"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
@@ -2826,6 +2850,12 @@
     {
       "type": 0,
       "value": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+    }
+  ],
+  "Sw6TLH": [
+    {
+      "type": 0,
+      "value": "Documenttype"
     }
   ],
   "T0OLUV": [
@@ -2882,16 +2912,16 @@
       "value": "Zorg ervoor dat het pad niet met een schuine streep ('/') begint."
     }
   ],
-  "TIraO3": [
-    {
-      "type": 0,
-      "value": "Objecten API - objecttype"
-    }
-  ],
   "TR5xSY": [
     {
       "type": 0,
       "value": "Weet u zeker dat u deze regel wil verwijderen?"
+    }
+  ],
+  "TRjRww": [
+    {
+      "type": 0,
+      "value": "Basis"
     }
   ],
   "TXwGu1": [
@@ -2952,12 +2982,6 @@
     {
       "type": 0,
       "value": "Selecteer de plugin(s) om te gebruiken voor validatie."
-    }
-  ],
-  "UHlGZJ": [
-    {
-      "type": 0,
-      "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden."
     }
   ],
   "UJTIZU": [
@@ -3324,28 +3348,10 @@
       "value": "Verwijderen"
     }
   ],
-  "XqTjf+": [
-    {
-      "type": 0,
-      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt."
-    }
-  ],
-  "Y2d0q4": [
-    {
-      "type": 0,
-      "value": "URL van het INFORMATIEOBJECTTYPE in de Catalogi API."
-    }
-  ],
   "Y4oNhH": [
     {
       "type": 0,
       "value": "Maximale breedte"
-    }
-  ],
-  "Y7s6RB": [
-    {
-      "type": 0,
-      "value": "Versie van het objecttype in de Objecttypen API."
     }
   ],
   "Y8cmP1": [
@@ -3545,6 +3551,12 @@
     {
       "type": 0,
       "value": "Zet registratieplugin voor de inzending"
+    }
+  ],
+  "ZiARkY": [
+    {
+      "type": 0,
+      "value": "Any configuration option specified here overrides the matching option of the selected API group."
     }
   ],
   "ZzjFxE": [
@@ -3921,6 +3933,12 @@
       "value": "Titel voor het document in de Documenten API."
     }
   ],
+  "cuivC6": [
+    {
+      "type": 0,
+      "value": "Version"
+    }
+  ],
   "czUDSQ": [
     {
       "type": 0,
@@ -4105,12 +4123,6 @@
     {
       "type": 0,
       "value": "Geavanceerde opties"
-    }
-  ],
-  "eU7+uS": [
-    {
-      "type": 0,
-      "value": "Bevestigen"
     }
   ],
   "eUowhH": [
@@ -4415,6 +4427,12 @@
       "value": "Mobiel"
     }
   ],
+  "hxssl8": [
+    {
+      "type": 0,
+      "value": "Objects API integration"
+    }
+  ],
   "hzx+WF": [
     {
       "type": 0,
@@ -4479,6 +4497,12 @@
     {
       "type": 0,
       "value": "is kleiner dan"
+    }
+  ],
+  "ieF+xK": [
+    {
+      "type": 0,
+      "value": "Zaaktype"
     }
   ],
   "ifG3sd": [
@@ -4753,6 +4777,12 @@
       "value": "Item toevoegen"
     }
   ],
+  "ln72CJ": [
+    {
+      "type": 0,
+      "value": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+    }
+  ],
   "loKqis": [
     {
       "type": 0,
@@ -4861,12 +4891,6 @@
       "value": "Indien aangevinkt, dan worden gegevens van kinderen opgehaald en ingesloten."
     }
   ],
-  "nDPXSj": [
-    {
-      "type": 0,
-      "value": "Zaaktype"
-    }
-  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -4913,12 +4937,6 @@
     {
       "type": 0,
       "value": "Tooltip"
-    }
-  ],
-  "o+PhWW": [
-    {
-      "type": 0,
-      "value": "Organisatie-RSIN"
     }
   ],
   "o5Mfn3": [
@@ -4997,6 +5015,12 @@
     {
       "type": 0,
       "value": "Complexe procesvariabelen"
+    }
+  ],
+  "p5Iv+R": [
+    {
+      "type": 0,
+      "value": "Document type API resource URL in the Catalogi API."
     }
   ],
   "p7g2h+": [
@@ -5105,12 +5129,6 @@
       "value": "Registratiemethode"
     }
   ],
-  "plld71": [
-    {
-      "type": 0,
-      "value": "Objecten API - JSON-inhoud sjabloon"
-    }
-  ],
   "poZZD9": [
     {
       "type": 0,
@@ -5175,12 +5193,6 @@
     {
       "type": 0,
       "value": "Exporteren"
-    }
-  ],
-  "qpFDF5": [
-    {
-      "type": 0,
-      "value": "Medewerkerroltype"
     }
   ],
   "qzISfx": [
@@ -5267,12 +5279,6 @@
       "value": "(nog niet ingesteld)"
     }
   ],
-  "s4xyn5": [
-    {
-      "type": 0,
-      "value": "Informatieobjecttype"
-    }
-  ],
   "sCkGL9": [
     {
       "type": 0,
@@ -5295,44 +5301,6 @@
     {
       "type": 0,
       "value": "Handmatig opvoeren"
-    }
-  ],
-  "sbtZya": [
-    {
-      "offset": 0,
-      "options": {
-        "=0": {
-          "value": [
-          ]
-        },
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "(1 variabele gekoppeld)"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "("
-            },
-            {
-              "type": 1,
-              "value": "varCount"
-            },
-            {
-              "type": 0,
-              "value": " variabelen gekoppeld)"
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "varCount"
     }
   ],
   "sgmcmf": [
@@ -5387,6 +5355,20 @@
       "value": "Formulier configureren"
     }
   ],
+  "tOueRC": [
+    {
+      "type": 0,
+      "value": "Zaakeigenschappen ("
+    },
+    {
+      "type": 1,
+      "value": "count"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "tRCXsR": [
     {
       "type": 0,
@@ -5427,6 +5409,12 @@
     {
       "type": 0,
       "value": "Naam"
+    }
+  ],
+  "tzwS3S": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
     }
   ],
   "u3P/1E": [
@@ -5693,18 +5681,6 @@
       "value": "Formulierdefinitie aanmaken"
     }
   ],
-  "xrmpmN": [
-    {
-      "type": 0,
-      "value": "Medewerkerroltype"
-    }
-  ],
-  "xwBVzh": [
-    {
-      "type": 0,
-      "value": "ZGW API-groep"
-    }
-  ],
   "xxVNeU": [
     {
       "type": 0,
@@ -5715,12 +5691,6 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Objecten API"
-    }
-  ],
-  "y2I3Eu": [
-    {
-      "type": 0,
-      "value": "Objecten API - objecttype"
     }
   ],
   "y4U0aW": [
@@ -5797,6 +5767,12 @@
     {
       "type": 0,
       "value": "Selecteer een databron voor de keuzeopties."
+    }
+  ],
+  "yTfQNG": [
+    {
+      "type": 0,
+      "value": "Objecttype"
     }
   ],
   "yTpHh0": [
