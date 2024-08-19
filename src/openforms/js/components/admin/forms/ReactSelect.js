@@ -51,7 +51,12 @@ const Select = ({name, options, ...props}) => {
       {...fieldProps}
       value={options.find(opt => opt.value === value) || null}
       onChange={selectedOption => {
-        setValue(selectedOption.value);
+        // clear the value
+        if (selectedOption == null) {
+          setValue(undefined);
+        } else {
+          setValue(selectedOption.value);
+        }
       }}
       {...props}
     />
