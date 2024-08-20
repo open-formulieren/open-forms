@@ -174,7 +174,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertTrue(is_valid)
 
     @override_settings(LANGUAGE_CODE="en")
-    def test_invalid_omschrijving(self):
+    def test_invalid_roltype_omschrijving(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
             "zaaktype": (
@@ -198,3 +198,104 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "Could not find a roltype with this description related to the zaaktype.",
             serializer.errors["medewerker_roltype"][0],
         )
+
+    def test_catalogue_reference_badly_formatted_data(self):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+
+        with self.subTest("domain without rsin"):
+            serializer = ZaakOptionsSerializer(
+                data={**base, "catalogue": {"domain": "TEST"}},
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            error = serializer.errors["catalogue"]["non_field_errors"][0]
+            self.assertIn("domain", error)
+            self.assertIn("rsin", error)
+
+        with self.subTest("rsin without domain"):
+            serializer = ZaakOptionsSerializer(
+                data={**base, "catalogue": {"rsin": "123456782"}}
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            error = serializer.errors["catalogue"]["non_field_errors"][0]
+            self.assertIn("domain", error)
+            self.assertIn("rsin", error)
+
+        with self.subTest("invalid RSIN"):
+            serializer = ZaakOptionsSerializer(
+                data={
+                    "catalogue": {
+                        "domain": "ok",
+                        "rsin": "AAAAAAAAA",
+                    }
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            self.assertIn("rsin", serializer.errors["catalogue"])
+
+    def test_catalogue_reference_with_api_calls(self):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+
+        with self.subTest("valid catalogue reference"):
+            serializer1 = ZaakOptionsSerializer(
+                data={
+                    **base,
+                    "catalogue": {
+                        "domain": "TEST",
+                        "rsin": "000000000",
+                    },
+                }
+            )
+
+            valid1 = serializer1.is_valid()
+
+            self.assertTrue(valid1)
+
+        with self.subTest("invalid catalogus reference"):
+            serializer2 = ZaakOptionsSerializer(
+                data={
+                    **base,
+                    "catalogue": {
+                        "domain": "NOOPE",
+                        "rsin": "000000000",
+                    },
+                }
+            )
+
+            valid2 = serializer2.is_valid()
+
+            self.assertFalse(valid2)
+            self.assertIn("catalogue", serializer2.errors)
+            err = serializer2.errors["catalogue"][0]
+            self.assertEqual(err.code, "invalid-catalogue")
