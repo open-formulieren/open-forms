@@ -26,11 +26,23 @@ class Validate(TypedDict, total=False):
     plugins: list[str]
 
 
+# Custom validation for AddressNL sub components
+class ComponentValidation(TypedDict):
+    validate: Validate
+    translatedErrors: TranslationsDict
+
+
+class AddressValidationComponents(TypedDict):
+    postcode: NotRequired[ComponentValidation]
+    city: NotRequired[ComponentValidation]
+
+
 class OpenFormsConfig(TypedDict):
     widget: NotRequired[str]
     minDate: NotRequired[DateConstraintConfiguration | None]
     maxDate: NotRequired[DateConstraintConfiguration | None]
     translations: NotRequired[TranslationsDict]
+    components: NotRequired[AddressValidationComponents]
 
 
 class OpenFormsOptionExtension(TypedDict):

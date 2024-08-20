@@ -277,3 +277,102 @@ class AddressNLValidationTests(SimpleTestCase):
         is_valid, _ = validate_formio_data(component, data)
 
         self.assertTrue(is_valid)
+
+    def test_addressNL_custom_postcode_validation_fail(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL custom postcode validation",
+            "deriveAddress": False,
+            "openForms": {
+                "components": {
+                    "postcode": {
+                        "validate": {"pattern": "1017 [A-Za-z]{2}"},
+                        "translatedErrors": {},
+                    }
+                }
+            },
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1015 CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "",
+                "streetName": "",
+            }
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        self.assertEqual(errors["addressNl"]["postcode"][0].code, "invalid")
+
+    def test_addressNL_custom_city_validation_fail(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL custom postcode validation",
+            "deriveAddress": False,
+            "openForms": {
+                "components": {
+                    "city": {
+                        "validate": {"pattern": "Amsterdam"},
+                        "translatedErrors": {},
+                    }
+                }
+            },
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1015 CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Rotterdam",
+                "streetName": "",
+            }
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        self.assertEqual(errors["addressNl"]["city"][0].code, "invalid")
+
+    def test_addressNL_custom_postcode_and_city_validation_success(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL custom postcode validation",
+            "deriveAddress": False,
+            "openForms": {
+                "components": {
+                    "postcode": {
+                        "validate": {"pattern": "1017 [A-Za-z]{2}"},
+                        "translatedErrors": {},
+                    },
+                    "city": {
+                        "validate": {"pattern": "Amsterdam"},
+                        "translatedErrors": {},
+                    },
+                }
+            },
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1017 CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Amsterdam",
+                "streetName": "",
+            }
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
