@@ -130,6 +130,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: on
             ],
             "geometry_variable_key": "location",
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -206,6 +209,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "target_path": ["submission_provider_payment_ids"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         submission.price = Decimal("40.00")
         submission.save()
@@ -299,6 +305,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
                 # fmt: on
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -373,6 +382,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["pointCoordinates"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -417,6 +429,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["textfield"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -457,6 +472,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["textfield"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -485,6 +503,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["of_nummer"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -540,6 +561,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_kvk"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -595,6 +619,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_pseudo"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -639,6 +666,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_date"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
@@ -707,6 +737,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["authn", "soort_actor"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
         submission = SubmissionFactory.create(
@@ -815,6 +848,9 @@ class V2HandlerTests(TestCase):
                     "target_path": ["authn", "soort_actor"],
                 },
             ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
         }
         handler = ObjectsAPIV2Handler()
 
