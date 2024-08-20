@@ -48,6 +48,19 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertFalse(is_valid)
         self.assertIn("zgw_api_group", serializer.errors)
 
+    def test_bad_case_type_document_type_api_roots(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "zaaktype": "https://other-host.local/api/v1/zt/123",
+            "informatieobjecttype": "https://other-host.local/api/v1/iot/456",
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("zaaktype", serializer.errors)
+        self.assertIn("informatieobjecttype", serializer.errors)
+
     def test_existing_provided_variable_in_specific_zaaktype(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -89,9 +102,13 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
 
         self.assertFalse(is_valid)
         self.assertIn("property_mappings", serializer.errors)
+        self.assertIn(0, serializer.errors["property_mappings"])
+        self.assertIn("eigenschap", serializer.errors["property_mappings"][0])
+
+        error_msg = serializer.errors["property_mappings"][0]["eigenschap"]
         self.assertEqual(
-            "Could not find a property with the name 'wrong variable' related to the zaaktype.",
-            serializer.errors["property_mappings"][0],
+            error_msg,
+            "Could not find a property with the name 'wrong variable' in the case type",
         )
 
     def test_validate_zaaktype_within_configured_ztc_service(self):

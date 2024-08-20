@@ -1,13 +1,14 @@
-from typing import Any
-
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+from ape_pie import InvalidURLError
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
-from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
+from openforms.contrib.zgw.clients.catalogi import CatalogiClient, omschrijving_matcher
+from openforms.contrib.zgw.serializers import CatalogueSerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -15,6 +16,7 @@ from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client
 from .models import ZGWApiGroupConfig
+from .typing import RegistrationOptions
 
 
 class MappedVariablePropertySerializer(serializers.Serializer):
@@ -39,6 +41,18 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         help_text=_("Which ZGW API set to use."),
         label=_("ZGW API set"),
+    )
+    # TODO: if selected, the informatieobjecttypen should also be limited to this
+    # catalogue, but that requires moving the registration options from the component
+    # to the registration options!
+    catalogue = CatalogueSerializer(
+        label=_("catalogue"),
+        required=False,
+        help_text=_(
+            "The catalogue in the catalogi API from the selected API group. This "
+            "overrides the catalogue specified in the API group, if it's set. Case "
+            "and document types specified will be resolved against this catalogue."
+        ),
     )
     zaaktype = serializers.URLField(
         required=True, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -116,7 +130,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         fields["zgw_api_group"].required = False
         return fields
 
-    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+    def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
@@ -140,81 +154,163 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             else:
                 attrs["zgw_api_group"] = existing_group
 
-        group_config = attrs["zgw_api_group"]
-
-        # Run all validations against catalogi API in the same connection pool.
-        with get_catalogi_client(group_config) as client:
-            catalogi = list(client.get_all_catalogi())
-
-            # validate that the zaaktype is in the provided catalogi
-            zaaktype_url = attrs["zaaktype"]
-            zaaktype_exists = any(
-                zaaktype_url in catalogus["zaaktypen"] for catalogus in catalogi
-            )
-            if not zaaktype_exists:
-                raise serializers.ValidationError(
-                    {
-                        "zaaktype": _(
-                            "The provided zaaktype does not exist in the specified "
-                            "Catalogi API."
-                        )
-                    },
-                    code="not-found",
-                )
-
-            # validate that the informatieobjecttype is in the provided catalogi
-            informatieobjecttype_url = attrs["informatieobjecttype"]
-            informatieobjecttype_exists = any(
-                informatieobjecttype_url in catalogus["informatieobjecttypen"]
-                for catalogus in catalogi
-            )
-            if not informatieobjecttype_exists:
-                raise serializers.ValidationError(
-                    {
-                        "informatieobjecttype": _(
-                            "The provided informatieobjecttype does not exist in the "
-                            "specified Catalogi API."
-                        )
-                    },
-                    code="not-found",
-                )
-
-            # Make sure the property (eigenschap) related to the zaaktype exists
-            if mappings := attrs.get("property_mappings"):
-                eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
-                retrieved_eigenschappen = {
-                    eigenschap["naam"]: eigenschap["url"]
-                    for eigenschap in eigenschappen
-                }
-
-                errors = []
-                for mapping in mappings:
-                    if mapping["eigenschap"] not in retrieved_eigenschappen:
-                        errors.append(
-                            _(
-                                "Could not find a property with the name "
-                                "'{property_name}' related to the zaaktype."
-                            ).format(property_name=mapping["eigenschap"])
-                        )
-
-                if errors:
-                    raise serializers.ValidationError(
-                        {"property_mappings": errors}, code="invalid"
-                    )
-
-            if "medewerker_roltype" in attrs:
-                roltypen = client.list_roltypen(
-                    zaaktype=attrs["zaaktype"],
-                    matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
-                )
-                if not roltypen:
-                    raise serializers.ValidationError(
-                        {
-                            "medewerker_roltype": _(
-                                "Could not find a roltype with this description related to the zaaktype."
-                            )
-                        },
-                        code="invalid",
-                    )
+        _validate_against_catalogi_api(attrs)
 
         return attrs
+
+
+def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
+    """
+    Validate the configuration options against the specified catalogi API.
+
+    1. If provided, validate that the specified catalogue exists in the configured
+       Catalogi API (ZTC).
+    2. Validate that the case type and document type exist:
+
+        1. If a catalogue is provided (either in the options or on the API group),
+           check that they are contained inside the specified catalogue.
+        2. Otherwise, apply the legacy behaviour and validate that both exist in the
+           specified Catalogi API.
+
+    3. Validate that the configured case properties ("eigenschappen") exist on the
+       specified case type.
+    4. Validate that the employee role type ("medewerkerroltype") exists on the
+       specified case type.
+    """
+    with get_catalogi_client(attrs["zgw_api_group"]) as client:
+        # validate the catalogue itself - the queryset in the field guarantees that
+        # api_group.ztc_service is not null.
+        _validate_catalogue_case_and_doc_type(client, attrs)
+        _validate_case_type_properties(client, attrs)
+        _validate_medewerker_roltype(client, attrs)
+
+
+def _validate_catalogue_case_and_doc_type(
+    client: CatalogiClient, attrs: RegistrationOptions
+) -> None:
+    _errors = {}
+
+    api_group = attrs["zgw_api_group"]
+    catalogus = None
+    catalogue_option = attrs.get("catalogue")
+
+    case_type_url = attrs["zaaktype"]
+    document_type_url = attrs["informatieobjecttype"]
+
+    domain, rsin = (
+        (
+            catalogue_option["domain"],
+            catalogue_option["rsin"],
+        )
+        if catalogue_option is not None
+        else (
+            api_group.catalogue_domain,
+            api_group.catalogue_rsin,
+        )
+    )
+
+    err_invalid_case_type = ErrorDetail(
+        _("The provided zaaktype does not exist in the specified Catalogi API."),  # type: ignore
+        code="not-found",
+    )
+    err_invalid_document_type = ErrorDetail(
+        _(
+            "The provided informatieobjecttype does not exist in the specified "
+            "Catalogi API."
+        ),  # type: ignore
+        code="not-found",
+    )
+
+    # DB check constraint + serializer validation guarantee that both or none
+    # are empty at the same time
+    if domain and rsin:
+        catalogus = client.find_catalogus(domain=domain, rsin=rsin)
+        if catalogus is None:
+            raise serializers.ValidationError(
+                {
+                    "catalogue": _(
+                        "The specified catalogue does not exist. Maybe you made a "
+                        "typo in the domain or RSIN?"
+                    ),
+                },
+                code="invalid-catalogue",
+            )
+
+        if case_type_url not in catalogus["zaaktypen"]:
+            _errors["zaaktype"] = err_invalid_case_type
+        if document_type_url not in catalogus["informatieobjecttypen"]:
+            _errors["informatieobjecttype"] = err_invalid_document_type
+
+    else:
+        try:
+            zaaktype_response = client.get(attrs["zaaktype"])
+            zaaktype_ok = zaaktype_response.status_code == 200
+        except InvalidURLError:
+            zaaktype_ok = False
+        if not zaaktype_ok:
+            _errors["zaaktype"] = err_invalid_case_type
+
+        try:
+            document_type_response = client.get(attrs["informatieobjecttype"])
+            document_type_ok = document_type_response.status_code == 200
+        except InvalidURLError:
+            document_type_ok = False
+        if not document_type_ok:
+            _errors["informatieobjecttype"] = err_invalid_document_type
+
+    # If there are problems with the case type or document type, there's no point
+    # to continue validation that relies on these values, so bail early.
+    if _errors:
+        raise serializers.ValidationError(_errors)
+
+
+def _validate_case_type_properties(
+    client: CatalogiClient, attrs: RegistrationOptions
+) -> None:
+    # Make sure the property (eigenschap) related to the zaaktype exists
+    if not (mappings := attrs.get("property_mappings")):
+        return
+
+    eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
+    eigenschappen_names = {eigenschap["naam"] for eigenschap in eigenschappen}
+
+    _errors: dict[int, dict] = {}
+    for index, mapping in enumerate(mappings):
+        if (name := mapping["eigenschap"]) in eigenschappen_names:
+            continue
+
+        msg = _(
+            "Could not find a property with the name '{name}' in the case type"
+        ).format(name=name)
+        _errors[index] = {"eigenschap": ErrorDetail(msg, code="not-found")}
+
+        # TODO: validate that the componentKey is a valid reference, but for that the
+        # variables must be persisted before the form registration options are being
+        # validated, which currently is not the case.
+
+    if _errors:
+        raise serializers.ValidationError(
+            {"property_mappings": _errors},  # type: ignore
+            code="invalid",
+        )
+
+
+def _validate_medewerker_roltype(
+    client: CatalogiClient, attrs: RegistrationOptions
+) -> None:
+    if not (description := attrs.get("medewerker_roltype")):
+        return
+
+    roltypen = client.list_roltypen(
+        zaaktype=attrs["zaaktype"],
+        matcher=omschrijving_matcher(description),
+    )
+    if not roltypen:
+        raise serializers.ValidationError(
+            {
+                "medewerker_roltype": _(
+                    "Could not find a roltype with this description related to the zaaktype."
+                )
+            },
+            code="invalid",
+        )
