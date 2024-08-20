@@ -430,10 +430,14 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     @staticmethod
     def _process_value(value: Any, component: Component) -> Any:
         match component:
-            case {"type": "file", **rest}:
-                multiple = rest.get("multiple", False)
+            # multiple files - return an array
+            case {"type": "file", "multiple": True}:
                 assert isinstance(value, list)
-                return value[0] if not multiple else value
+                return value
+            # single file - return only one element
+            case {"type": "file"}:
+                assert isinstance(value, list)
+                return value[0] if value else ""
 
             case {"type": "map"}:
                 # Currently we only support Point coordinates
