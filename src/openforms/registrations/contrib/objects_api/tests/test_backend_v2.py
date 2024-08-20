@@ -14,6 +14,7 @@ from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -331,6 +332,51 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
         self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
+
+    def test_submission_with_empty_optional_file(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "single_file",
+                    "type": "file",
+                },
+            ],
+            completed=True,
+        )
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable=submission.form.formvariable_set.get(key="single_file"),
+            key="single_file",
+            value=[],
+        )
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                # fmt: off
+                {
+                    "variable_key": "single_file",
+                    "target_path": ["single_file"],
+                },
+                # fmt: on
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        assert result is not None
 
 
 class V2HandlerTests(TestCase):
