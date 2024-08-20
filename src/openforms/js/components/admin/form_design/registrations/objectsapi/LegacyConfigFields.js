@@ -52,7 +52,16 @@ const LegacyConfigFields = ({apiGroupChoices}) => (
       <PaymentStatusUpdateJSON />
     </Fieldset>
 
-    <DocumentTypesFieldet />
+    <ErrorBoundary
+      errorMessage={
+        <FormattedMessage
+          description="Objects API registrations options: document types selection error"
+          defaultMessage="Something went wrong while retrieving the available catalogues and/or document types."
+        />
+      }
+    >
+      <DocumentTypesFieldet />
+    </ErrorBoundary>
 
     <LegacyDocumentTypesFieldet />
 
