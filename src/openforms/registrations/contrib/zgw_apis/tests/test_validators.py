@@ -299,3 +299,33 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             self.assertIn("catalogue", serializer2.errors)
             err = serializer2.errors["catalogue"][0]
             self.assertEqual(err.code, "invalid-catalogue")
+
+    def test_validation_case_type_document_type_in_catalogue(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            # Bad UUIDs, they don't exist in the API, so they're definitely not members
+            # of the catalogue resource
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/111111111-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/111111111-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("zaaktype", serializer.errors)
+        err = serializer.errors["zaaktype"][0]
+        self.assertEqual(err.code, "not-found")
+        self.assertIn("informatieobjecttype", serializer.errors)
+        err = serializer.errors["informatieobjecttype"][0]
+        self.assertEqual(err.code, "not-found")
