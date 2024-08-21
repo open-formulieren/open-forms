@@ -1,6 +1,8 @@
+import inspect
 import os
 import re
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, Literal, TypeAlias
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -10,9 +12,17 @@ from django.urls import reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
-from playwright.async_api import BrowserType, Locator, Page, async_playwright, expect
+from playwright.async_api import (
+    BrowserContext,
+    BrowserType,
+    Locator,
+    Page,
+    async_playwright,
+    expect,
+)
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.conf.utils import config
 
 SupportedBrowser: TypeAlias = Literal["chromium", "firefox", "webkit"]
 
@@ -20,6 +30,9 @@ HEADLESS = "NO_E2E_HEADLESS" not in os.environ
 BROWSER: SupportedBrowser = os.getenv("E2E_DRIVER", default="chromium")  # type:ignore
 SLOW_MO = int(os.environ.get("SLOW_MO", "100"))
 PLAYWRIGHT_BROWSERS_PATH = os.getenv("PLAYWRIGHT_BROWSERS_PATH", default=None)
+
+ENABLE_TRACING: bool = config("E2E_ENABLE_TRACING", default=False)
+TRACES_ROOT_PATH = Path(config("E2E_TRACES_PATH", default="/tmp/playwright"))  # type: ignore
 
 LAUNCH_KWARGS = {
     "headless": HEADLESS,
@@ -40,6 +53,51 @@ def create_superuser(**kwargs):
 
 
 @asynccontextmanager
+async def maybe_trace(context: BrowserContext):
+    """
+    Use playwright tracing if opted in through the envvar.
+
+    Usage:
+    """
+    trace_file_path: Path | None = None
+
+    if ENABLE_TRACING:
+        # Thanks ChatGPT.
+        stack = inspect.stack()
+        test_method_name = ""
+        test_case_name = ""
+        for frame in stack:
+            # The frame's `function` attribute will give the name of the method
+            # The `frame` object contains a `frame` attribute that provides access to the locals
+            if "self" not in frame.frame.f_locals:
+                continue
+
+            # Check if `self` is an instance of a `unittest.TestCase` subclass
+            self_instance = frame.frame.f_locals["self"]
+            if not isinstance(self_instance, E2ETestCase):
+                continue
+
+            test_cls = self_instance.__class__
+            dir_path = TRACES_ROOT_PATH / Path(test_cls.__module__.replace(".", "/"))
+            test_case_name = test_cls.__name__
+            test_method_name = frame.function
+            trace_file_path = dir_path / f"{test_case_name}.{test_method_name}.zip"
+            break
+
+        if trace_file_path:
+            await context.tracing.start(screenshots=True, snapshots=True, sources=True)
+
+    save_trace = True
+    try:
+        yield
+        save_trace = False
+    finally:
+        if ENABLE_TRACING and save_trace and trace_file_path:
+            trace_file_path.parent.mkdir(parents=True, exist_ok=True)
+            await context.tracing.stop(path=trace_file_path)
+
+
+@asynccontextmanager
 async def browser_page():
     context_kwargs: dict[str, Any] = {
         "locale": "en-UK",
@@ -54,7 +112,8 @@ async def browser_page():
             browser = await _browser.launch(**LAUNCH_KWARGS)
             context = await browser.new_context(**context_kwargs)
             page = await context.new_page()
-            yield page
+            async with maybe_trace(context):
+                yield page
         finally:
             await browser.close()
 

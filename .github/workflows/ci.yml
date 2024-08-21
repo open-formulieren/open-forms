@@ -283,7 +283,17 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ''
           E2E_DRIVER: ${{ matrix.browser }}
+          E2E_ENABLE_TRACING: '1'
+          E2E_TRACES_PATH: /tmp/playwright_traces
           SDK_RELEASE: ${{ steps.sdk-tag.outputs.sdk_tag }}
+
+      - name: Upload playwright traces artifact on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces-${{ matrix.browser }}
+          path: /tmp/playwright_traces
+          retention-days: 1
 
   docs:
     name: Build and check documentation
