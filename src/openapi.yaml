@@ -4054,9 +4054,9 @@ paths:
         schema:
           type: string
         required: true
-  /api/v2/registration/plugins/zgw-api/catalogi:
+  /api/v2/registration/plugins/zgw-api/catalogues:
     get:
-      operationId: registration_plugins_zgw_api_catalogi_list
+      operationId: registration_plugins_zgw_api_catalogues_list
       description: List the available catalogues.
       summary: List the available Catalogi from the provided ZGW API group
       parameters:
