@@ -1,4 +1,5 @@
 export {default as ZGWAPIGroup} from './ZGWAPIGroup';
+export {default as CatalogueSelect} from './CatalogueSelect';
 export {default as CaseType} from './CaseType';
 export {default as DocumentType} from './DocumentType';
 export {default as OrganisationRSIN} from './OrganisationRSIN';

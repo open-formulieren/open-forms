@@ -393,6 +393,11 @@
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
   },
+  "9HyRBr": {
+    "defaultMessage": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly.",
+    "description": "ZGW APIs registrations options: catalogue select error",
+    "originalDefault": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly."
+  },
   "9LdZVP": {
     "defaultMessage": "Attribuut",
     "description": "Variable prefill attribute label",
@@ -1491,6 +1496,11 @@
     "defaultMessage": "Datum/tijd",
     "description": "Date/time column header",
     "originalDefault": "Date/time"
+  },
+  "WNPDeM": {
+    "defaultMessage": "Catalogue",
+    "description": "ZGW APIs registration options 'catalogue' label",
+    "originalDefault": "Catalogue"
   },
   "WQCs+M": {
     "defaultMessage": "Product",

@@ -2,11 +2,12 @@ import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {
-  mockCataloguesGet,
   mockDocumentTypesGet,
+  mockCataloguesGet as mockObjectsApiCataloguesGet,
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {mockCataloguesGet as mockZGWApisCataloguesGet} from 'components/admin/form_design/registrations/zgw/mocks';
 import {
   FormDecorator,
   ValidationErrorsDecorator,
@@ -200,9 +201,10 @@ export default {
             {version: 1, status: 'published'},
             {version: 2, status: 'draft'},
           ]),
-          mockCataloguesGet(),
+          mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
         ],
+        zgwMocks: [mockZGWApisCataloguesGet()],
       },
     },
   },
