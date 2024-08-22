@@ -411,3 +411,15 @@ class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = PostCompletionMetadata
+
+
+class EmailVerificationFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
+    component_key = "email"
+    email = factory.Faker("email")
+
+    class Meta:
+        model = "submissions.EmailVerification"
+
+    class Params:
+        verified = factory.Trait(verified_on=factory.LazyFunction(timezone.now))

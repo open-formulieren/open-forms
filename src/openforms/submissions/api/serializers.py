@@ -1,8 +1,10 @@
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import TypedDict
 
 from django.conf import settings
+from django.contrib.sessions.backends.base import SessionBase
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -26,9 +28,9 @@ from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
 from openforms.utils.urls import build_absolute_uri
 
-from ..constants import ProcessingResults, ProcessingStatuses
+from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
-from ..models import Submission, SubmissionStep
+from ..models import EmailVerification, Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from ..utils import get_report_download_url
 from .fields import (
@@ -564,3 +566,63 @@ class SubmissionReportUrlSerializer(serializers.Serializer):
     @extend_schema_field(OpenApiTypes.URI)
     def get_report_download_url(self, submission) -> str:
         return get_report_download_url(self.context["request"], submission.report)
+
+
+class EmailVerificationData(TypedDict):
+    submission: Submission
+    component_key: str
+    email: str
+
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    submission = serializers.HyperlinkedRelatedField(
+        view_name="api:submission-detail",
+        lookup_field="uuid",
+        queryset=Submission.objects.none(),  # Overridden dynamically
+        label=_("Submission"),
+        write_only=True,
+        required=True,
+    )
+
+    class Meta:
+        model = EmailVerification
+        fields = ("submission", "component_key", "email")
+
+    def get_fields(self):
+        fields = super().get_fields()
+        view = self.context.get("view")
+        if getattr(view, "swagger_fake_view", False):
+            return fields
+
+        session: SessionBase = self.context["request"].session
+
+        submission_field = fields["submission"]
+        assert isinstance(
+            submission_field, serializers.HyperlinkedRelatedField
+        )  # for the type checker
+        submission_field.queryset = Submission.objects.filter(
+            completed_on=None, uuid__in=session.get(SUBMISSIONS_SESSION_KEY, [])
+        )
+        return fields
+
+    def validate(self, attrs: EmailVerificationData) -> EmailVerificationData:
+        # validate that the component key is present in the submissoin form *and* points
+        # to an email component
+        config_wrapper = attrs["submission"].total_configuration_wrapper
+        key = attrs["component_key"]
+        try:
+            component = config_wrapper.component_map[key]
+            key_valid = component["type"] == "email"
+        except KeyError:
+            key_valid = False
+        if not key_valid:
+            raise serializers.ValidationError(
+                {
+                    "component_key": _(
+                        "The key '{key}' does not point to an email component in the form."
+                    ).format(key=key),
+                },
+                code="not_found",
+            )
+
+        return attrs

@@ -1,17 +1,20 @@
 from django.conf import settings
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
+from openforms.submissions.models.email_verification import EmailVerification
 
 from ..models import TemporaryFileUpload
-from .permissions import OwnsTemporaryUploadPermission
+from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
 from .renderers import FileRenderer
+from .serializers import EmailVerificationSerializer
 
 
 @extend_schema(
@@ -68,3 +71,28 @@ class TemporaryFileView(DestroyAPIView):
         # saved when trying to access the next form step
         instance.attachments.all().delete()
         instance.delete()
+
+
+@extend_schema(
+    summary=_("Start email verification"),
+    description=_(
+        "Create an email verification resource to start the verification process. "
+        "A verification e-mail will be scheduled and sent to the provided email "
+        "address, containing the verification code to use during verification.\n\n"
+        "Validations check that the provided component key is present in the form of "
+        "the submission and that it actually is an `email` component."
+    ),
+)
+class EmailVerificationCreateView(CreateAPIView):
+    authentication_classes = (AnonCSRFSessionAuthentication,)
+    permission_classes = (AnyActiveSubmissionPermission,)
+    serializer_class = EmailVerificationSerializer
+    # using none to prevent potential accidents - the view only needs to know about
+    # queryset.model anyway
+    queryset = EmailVerification.objects.none()
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        verification = serializer.instance
+        assert isinstance(verification, EmailVerification)
+        transaction.on_commit(verification.send_email)
