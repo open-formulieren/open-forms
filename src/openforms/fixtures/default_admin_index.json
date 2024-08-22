@@ -96,6 +96,10 @@
             ],
             [
                 "submissions",
+                "emailverification"
+            ],
+            [
+                "submissions",
                 "submission"
             ],
             [

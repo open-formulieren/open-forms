@@ -1,3 +1,4 @@
+from .email_verification import EmailVerification
 from .post_completion_metadata import PostCompletionMetadata
 from .submission import Submission
 from .submission_files import (
@@ -24,4 +25,5 @@ __all__ = [
     "TemporaryFileUpload",
     "submission_file_upload_to",
     "temporary_file_upload_to",
+    "EmailVerification",
 ]

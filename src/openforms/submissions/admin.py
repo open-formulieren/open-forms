@@ -26,6 +26,7 @@ from ..utils.admin import ReadOnlyAdminMixin
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
 from .models import (
+    EmailVerification,
     Submission,
     SubmissionFileAttachment,
     SubmissionReport,
@@ -579,3 +580,18 @@ class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         return False
+
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ("email", "submission", "component_key", "is_verified")
+    search_fields = (
+        "email",
+        "component_key",
+        "submission__uuid",
+        "submission__public_registration_reference",
+    )
+
+    @admin.display(description=_("is verified"), boolean=True)
+    def is_verified(self, obj: EmailVerification) -> bool:
+        return obj.verified_on is not None
