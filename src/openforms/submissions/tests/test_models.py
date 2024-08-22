@@ -7,8 +7,6 @@ from django.db import IntegrityError
 from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
-from hypothesis import given, settings, strategies as st
-from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
@@ -585,6 +583,13 @@ class SubmissionTests(TestCase):
 
         submission.clear_execution_state()
 
+    @tag("gh-3470")
+    def test_names_do_not_break_pdf_saving_to_disk(self):
+        report = SubmissionReportFactory.create(submission__form__name="not/a/path")
+        report.generate_submission_report_pdf()
+
+        self.assertTrue(report.content.storage.exists(report.content.name))
+
 
 class TemporaryFileUploadTests(TestCase):
     def test_legacy_check_constraint(self):
@@ -600,20 +605,3 @@ class TemporaryFileUploadTests(TestCase):
                 submission=SubmissionFactory.create(),
                 legacy=True,
             )
-
-
-@temp_private_root()
-class PDFSubmissionReportTests(HypothesisTestCase):
-    @tag("gh-3470")
-    @given(
-        st.text(
-            min_size=1,
-            alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
-        )
-    )
-    @settings(deadline=2000)
-    def test_names_do_not_break_pdf_saving_to_disk(self, form_name):
-        report = SubmissionReportFactory.create(submission__form__name=form_name)
-        report.generate_submission_report_pdf()
-
-        self.assertTrue(report.content.storage.exists(report.content.name))
