@@ -1,0 +1,14 @@
+{% load i18n capture_tags %}
+
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+
+{% blocktranslate %}
+<p>This email address requires verification for the "{{ tt_openvariable }} form_name {{ tt_closevariable }}" form.</p>
+
+<p>Enter the code below to confirm your email address:</p>
+
+<p><strong>{{ tt_openvariable }} code {{ tt_closevariable }}</strong></p>
+
+<p>If you did not request this verification, you can safely ignore this email.</p>
+{% endblocktranslate %}

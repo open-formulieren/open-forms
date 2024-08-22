@@ -358,6 +358,24 @@ Variabele                           Beschrijving
 ==================================  ===========================================================================
 
 
+E-mailverificatie e-mail
+========================
+
+Gebruikers die hun e-mailadres moeten verifiëren ontvangen een verificatiecode op het
+opgegeven e-mailadres. Het onderwerp en de inhoud van deze e-mail kan je instellen in
+de algemene configuratie.
+
+**Speciale instructies**
+
+De volgende sjabloonvariabelen zijn beschikbaar voor het onderwerp- en inhoudsjabloon.
+
+==================================  ===========================================================================
+Variabele                           Beschrijving
+==================================  ===========================================================================
+``{{ form_name }}``                 De naam van het formulier.
+``{{ code }}``                      De verificatiecode die de gebruiker dient in te voeren in het formulier.
+==================================  ===========================================================================
+
 Bevestigingspagina
 ==================
 

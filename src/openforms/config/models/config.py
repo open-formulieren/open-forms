@@ -130,6 +130,23 @@ class GlobalConfiguration(SingletonModel):
         ],
     )
 
+    email_verification_request_subject = models.CharField(
+        _("subject"),
+        max_length=1000,
+        help_text=_("Subject of the email verification email."),
+        default=partial(_render, "emails/email_verification/subject.txt"),
+        validators=[DjangoTemplateValidator()],
+    )
+    email_verification_request_content = HTMLField(
+        _("content"),
+        help_text=_("Content of the email verification email message."),
+        default=partial(_render, "emails/email_verification/request.html"),
+        validators=[
+            DjangoTemplateValidator(),
+            URLSanitationValidator(),
+        ],
+    )
+
     allow_empty_initiator = models.BooleanField(
         _("allow empty initiator"),
         default=False,

@@ -52,6 +52,15 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                 "fields": ("cosign_request_template",),
             },
         ),
+        (
+            _("Email address verification emails"),
+            {
+                "fields": (
+                    "email_verification_request_subject",
+                    "email_verification_request_content",
+                ),
+            },
+        ),
         (_("General Email settings"), {"fields": ("recipients_email_digest",)}),
         (
             _("Button labels"),
