@@ -4,6 +4,7 @@ from drf_spectacular.plumbing import (
     ResolvedComponent,
     build_basic_type,
     build_parameter_type,
+    get_lib_doc_excludes as _get_lib_doc_excludes,
 )
 from drf_spectacular.utils import OpenApiParameter, inline_serializer
 from rest_framework.fields import Field
@@ -72,3 +73,13 @@ def extend_inline_serializer(
     return inline_serializer(
         name or serializer.__name__, serializer().get_fields() | fields, **kwargs
     )
+
+
+def get_lib_doc_excludes():
+    from openforms.contrib.zgw.api.serializers import CatalogueSerializer
+
+    base = _get_lib_doc_excludes()
+    extra = [
+        CatalogueSerializer,
+    ]
+    return [*base, *extra]

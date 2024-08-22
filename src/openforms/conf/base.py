@@ -985,6 +985,7 @@ SPECTACULAR_SETTINGS = {
         "AvailableLanguagesEnum": "django.conf.settings.LANGUAGES",
         "StatementCheckboxEnum": "openforms.forms.constants.StatementCheckboxChoices",
     },
+    "GET_LIB_DOC_EXCLUDES": "openforms.api.drf_spectacular.plumbing.get_lib_doc_excludes",
 }
 
 #
