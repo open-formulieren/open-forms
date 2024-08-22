@@ -73,6 +73,16 @@ class TemporaryFileView(DestroyAPIView):
         instance.delete()
 
 
+@extend_schema(
+    summary=_("Start email verification"),
+    description=_(
+        "Create an email verification resource to start the verification process. "
+        "A verification e-mail will be scheduled and sent to the provided email "
+        "address, containing the verification code to use during verification.\n\n"
+        "Validations check that the provided component key is present in the form of "
+        "the submission and that it actually is an `email` component."
+    ),
+)
 class EmailVerificationCreateView(CreateAPIView):
     authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = (AnyActiveSubmissionPermission,)

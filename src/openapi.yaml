@@ -5334,6 +5334,52 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/submissions/email-verifications:
+    post:
+      operationId: submissions_email_verifications_create
+      description: |-
+        Create an email verification resource to start the verification process. A verification e-mail will be scheduled and sent to the provided email address, containing the verification code to use during verification.
+
+        Validations check that the provided component key is present in the form of the submission and that it actually is an `email` component.
+      summary: Start email verification
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerification'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailVerification'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v2/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -7289,6 +7335,27 @@ components:
       - form
       type: string
       description: '* `form` - form'
+    EmailVerification:
+      type: object
+      properties:
+        submission:
+          type: string
+          format: uri
+          writeOnly: true
+        componentKey:
+          type: string
+          description: Key of the email component in the submission's form.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        email:
+          type: string
+          format: email
+          title: Email address
+          description: The email address that is being verified.
+          maxLength: 254
+      required:
+      - componentKey
+      - email
+      - submission
     Exception:
       type: object
       description: |-
