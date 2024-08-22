@@ -70,7 +70,7 @@ class EmailVerification(models.Model):
         verbose_name_plural = _("email verifications")
 
     def __str__(self):
-        return _("{email} (component '{component}''): {status}").format(
+        return _("{email} (component '{component}'): {status}").format(
             email=self.email,
             component=self.component_key,
             status=_("verified") if self.verified_on else _("not verified"),
