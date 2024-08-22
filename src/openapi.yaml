@@ -5380,6 +5380,51 @@ paths:
         schema:
           type: string
         required: true
+  /api/v2/submissions/email-verifications/verify:
+    post:
+      operationId: submissions_email_verifications_verify_create
+      description: Using the code obtained from the verification email, mark the email
+        address as verified. Using an invalid code results in validation errors in
+        the error response.
+      summary: Verify email address
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyEmail'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v2/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -10348,6 +10393,34 @@ components:
       required:
       - dmnVariable
       - formVariable
+    VerifyEmail:
+      type: object
+      properties:
+        submission:
+          type: string
+          format: uri
+          writeOnly: true
+        componentKey:
+          type: string
+          description: Key of the email component in the submission's form.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        email:
+          type: string
+          format: email
+          title: Email address
+          description: The email address that is being verified.
+          maxLength: 254
+        code:
+          type: string
+          writeOnly: true
+          title: verification code
+          maxLength: 6
+          minLength: 6
+      required:
+      - code
+      - componentKey
+      - email
+      - submission
     _AppointmentProduct:
       type: object
       properties:

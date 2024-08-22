@@ -626,3 +626,37 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+
+
+class VerifyEmailData(EmailVerificationData):
+    code: str
+
+
+class VerifyEmailSerializer(EmailVerificationSerializer):
+    code = serializers.CharField(
+        label=_("verification code"),
+        min_length=6,
+        max_length=6,
+        write_only=True,
+    )
+
+    class Meta(EmailVerificationSerializer.Meta):
+        fields = EmailVerificationSerializer.Meta.fields + ("code",)
+
+    def validate(self, attrs: VerifyEmailData):  # type: ignore
+        verification = EmailVerification.objects.filter(
+            submission=attrs["submission"],
+            component_key=attrs["component_key"],
+            email=attrs["email"],
+            verification_code=attrs["code"],
+        ).first()
+        if verification is None:
+            raise serializers.ValidationError(
+                {"code": _("The verification code does not match.")}
+            )
+
+        # if all is well, store the verification in the instance for the view to
+        # consume
+        self.instance = verification
+
+        return attrs
