@@ -8,10 +8,13 @@ during the form submission and the state is inspected during form submission val
 See https://github.com/open-formulieren/open-forms/issues/4542.
 """
 
+from django.conf import settings
 from django.db import models
+from django.utils import translation
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from openforms.emails.utils import send_mail_html
 from openforms.formio.validators import variable_key_validator
 
 from .submission import Submission
@@ -75,3 +78,21 @@ class EmailVerification(models.Model):
             component=self.component_key,
             status=_("verified") if self.verified_on else _("not verified"),
         )
+
+    def send_email(self):
+        """
+        Send the verification email.
+        """
+        with translation.override(self.submission.language_code):
+            form_name = self.submission.form.name
+            # TODO: make templates configureable and set up template context.
+            send_mail_html(
+                subject=f"{form_name} - email verification code",
+                html_body=f"""
+                    <p>Your requested verification code is: <strong>{self.verification_code}</strong>.</p>
+                    <p>If you did not request this, you can ignore this email.</p>
+                """,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.email],
+                theme=self.submission.form.theme,
+            )
