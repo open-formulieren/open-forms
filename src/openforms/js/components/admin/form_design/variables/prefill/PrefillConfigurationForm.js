@@ -143,9 +143,10 @@ const AttributeField = () => {
   } = useAsync(async () => {
     if (!plugin) return [];
 
-    const endpoint = `/api/v2/prefill/plugins/${plugin}/attributes`;
+    // const endpoint = `/api/v2/prefill/plugins/${plugin}/attributes`;
+    const endpoint = `/api/v2/prefill/plugins/objects-api/objecttypes/ac1fa3f8-fb2a-4fcb-b715-d480aceeda10/versions/1/attributes`;
     // XXX: clean up error handling here at some point...
-    const response = await get(endpoint);
+    const response = await get(endpoint, {objects_api_group: '2'});
     if (!response.ok) throw response.data;
     return response.data.map(attribute => [attribute.id, attribute.label]);
   }, [plugin]);

@@ -161,6 +161,11 @@ class FormVariable(models.Model):
         default=IdentifierRoles.main,
         max_length=100,
     )
+    prefill_options = models.JSONField(
+        _("prefill options"),
+        default=dict,
+        blank=True,
+    )
     data_type = models.CharField(
         verbose_name=_("data type"),
         help_text=_("The type of the value that will be associated with this variable"),

@@ -19,9 +19,14 @@ class BasePlugin(AbstractBasePlugin):
     for_components: Container[str] = AllComponentTypes()
 
     @staticmethod
-    def get_available_attributes() -> Iterable[tuple[str, str]]:
+    def get_available_attributes(
+        reference: dict[str, str] | None = None,
+    ) -> Iterable[tuple[str, str]]:
         """
         Return a choice list of available attributes this plugin offers.
+
+        :param reference: a dict based on which we retrieve the available attributes.
+          Can be used when we have dynamic lists of attributes.
         """
         raise NotImplementedError(
             "You must implement the 'get_available_attributes' method."

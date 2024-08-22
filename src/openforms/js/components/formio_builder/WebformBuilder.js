@@ -20,6 +20,9 @@ import {currentTheme} from 'utils/theme';
 
 import {
   getPrefillAttributes,
+  getPrefillObjectsAPIGroups,
+  getPrefillObjectsAPIObjecttypeVersions,
+  getPrefillObjectsAPIObjecttypes,
   getPrefillPlugins,
   getRegistrationAttributes,
   getValidatorPlugins,
@@ -166,7 +169,7 @@ class WebformBuilder extends WebformBuilderFormio {
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
             getPrefillPlugins={getPrefillPlugins}
-            getPrefillAttributes={getPrefillAttributes}
+            getPrefillAttributes={getPrefillObjectsAPIObjecttypeVersions}
             getFileTypes={async () => FILE_TYPES}
             serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
             getDocumentTypes={async () => await getAvailableDocumentTypes(this)}

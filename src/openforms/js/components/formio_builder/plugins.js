@@ -18,7 +18,35 @@ export const getPrefillPlugins = async () => {
   return resp.data;
 };
 
-export const getPrefillAttributes = async plugin => {
-  const resp = await get(`/api/v2/prefill/plugins/${plugin}/attributes`);
+// export const getPrefillAttributes = async plugin => {
+//   // const resp = await get(`/api/v2/prefill/plugins/${plugin}/attributes`);
+//   const resp = await get(`/api/v2/prefill/plugins/objects-api/groups`);
+//   return resp.data;
+// };
+
+// export const getPrefillObjectsAPIGroups = async () => {
+//   const resp = await get(`/api/v2/prefill/plugins/objects-api/groups`);
+//   return resp.data;
+// };
+
+// export const getPrefillObjectsAPIObjecttypes = async () => {
+//   const resp = await get(`/api/v2/prefill/plugins/objects-api/objecttypes/2`);
+//   return resp.data;
+// };
+
+// export const getPrefillObjectsAPIObjecttypeVersions = async () => {
+//   const resp = await get(
+//     `/api/v2/prefill/plugins/objects-api/objecttypes/2/ac1fa3f8-fb2a-4fcb-b715-d480aceeda10/versions`
+//   );
+//   return resp.data;
+// };
+
+export const getPrefillObjectsAPIObjecttypeVersions = async () => {
+  const resp = await get(
+    `/api/v2/prefill/plugins/objects-api/objecttypes/ac1fa3f8-fb2a-4fcb-b715-d480aceeda10/versions/1/attributes`,
+    {
+      objects_api_group: '2',
+    }
+  );
   return resp.data;
 };
