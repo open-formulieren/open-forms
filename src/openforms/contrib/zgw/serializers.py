@@ -15,6 +15,10 @@ class CatalogueSerializer(serializers.Serializer):
 
     - :class:`openforms.registrations.contrib.objects_api.models.ObjectsAPIGroupConfig`
     - :class:`openforms.registrations.contrib.zgw_apis.models.ZGWApiGroupConfig`
+
+    Use this serializer to persist the catalogue selection in registration backend
+    options. When return available catalogues in an API endpoint, use
+    :class:`openforms.contrib.zgw.api.serializers.CatalogueSerializer` instead.
     """
 
     domain = serializers.CharField(
