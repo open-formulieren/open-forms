@@ -35,6 +35,16 @@ class Catalogus(TypedDict):
     rsin: str
     naam: NotRequired[str]  # not present in older versions
     informatieobjecttypen: list[str]
+    zaaktypen: list[str]
+
+
+class CaseType(TypedDict):
+    # there are more attributes, but we currently don't use them. See the Catalogi
+    # API spec
+    url: str
+    catalogus: str  # URL pointer to the catalogue
+    identificatie: str
+    omschrijving: str
 
 
 class InformatieObjectType(TypedDict):
@@ -46,6 +56,14 @@ class InformatieObjectType(TypedDict):
     beginGeldigheid: str  # ISO 8601 date string
     eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
     concept: NotRequired[bool]
+
+
+class Eigenschap(TypedDict):
+    # there are more attributes, but we currently don't use them. See the Catalogi
+    # API spec
+    url: str
+    naam: str
+    zaaktype: str  # URL pointer to the case type
 
 
 CatalogiAPIVersion: TypeAlias = tuple[
@@ -226,7 +244,7 @@ class CatalogiClient(NLXClient):
         results = response.json()["results"]
         return matcher(results)
 
-    def list_eigenschappen(self, zaaktype: str) -> list[dict]:
+    def list_eigenschappen(self, zaaktype: str) -> list[Eigenschap]:
         query = {"zaaktype": zaaktype}
 
         response = self.get("eigenschappen", params=query)

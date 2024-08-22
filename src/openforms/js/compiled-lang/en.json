@@ -131,6 +131,18 @@
       "value": "Whether to show this value in the confirmation PDF"
     }
   ],
+  "0D+m56": [
+    {
+      "type": 0,
+      "value": "Regular expression for city"
+    }
+  ],
+  "0FD2pY": [
+    {
+      "type": 0,
+      "value": "Validation for the postcode field"
+    }
+  ],
   "0M2B7B": [
     {
       "type": 0,
@@ -281,6 +293,12 @@
     {
       "type": 0,
       "value": "The minimum value this field can have before the form can be submitted."
+    }
+  ],
+  "205QX5": [
+    {
+      "type": 0,
+      "value": "When email address verification is enabled, the user must verify their email address before they can submit the form. This proves the email address exists and that they have access to the account."
     }
   ],
   "20K9To": [
@@ -453,6 +471,12 @@
     {
       "type": 0,
       "value": "Days"
+    }
+  ],
+  "4DrI94": [
+    {
+      "type": 0,
+      "value": "Regular expression for postcode"
     }
   ],
   "4FQxD/": [
@@ -923,6 +947,12 @@
       "value": "Please select the logic type:"
     }
   ],
+  "9HyRBr": [
+    {
+      "type": 0,
+      "value": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly."
+    }
+  ],
   "9LdZVP": [
     {
       "type": 0,
@@ -1365,6 +1395,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "length"
+    }
+  ],
+  "Cf5zSF": [
+    {
+      "type": 0,
+      "value": "Verify"
     }
   ],
   "CiaAYL": [
@@ -1959,6 +1995,26 @@
     {
       "type": 0,
       "value": "Remove"
+    }
+  ],
+  "ISVTEk": [
+    {
+      "type": 0,
+      "value": "The component type "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "type"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " is unknown. We can only display the JSON definition."
     }
   ],
   "IhIqdj": [
@@ -3217,6 +3273,12 @@
       "value": "Date/time"
     }
   ],
+  "WNPDeM": [
+    {
+      "type": 0,
+      "value": "Catalogue"
+    }
+  ],
   "WQCs+M": [
     {
       "type": 0,
@@ -3235,6 +3297,12 @@
       "value": "In the past"
     }
   ],
+  "Wb+QGm": [
+    {
+      "type": 0,
+      "value": "Require verification"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -3251,6 +3319,12 @@
     {
       "type": 0,
       "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
+    }
+  ],
+  "WxwqZJ": [
+    {
+      "type": 0,
+      "value": "The regular expression pattern test that the postcode field value must pass before the form can be submitted."
     }
   ],
   "Wz5QZo": [
@@ -3947,6 +4021,12 @@
       "value": "Remove item"
     }
   ],
+  "dD9O3Q": [
+    {
+      "type": 0,
+      "value": "Regular expression for postcode"
+    }
+  ],
   "dGBYF7": [
     {
       "options": {
@@ -4217,6 +4297,12 @@
       "value": "A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component."
     }
   ],
+  "fhVFUY": [
+    {
+      "type": 0,
+      "value": "City"
+    }
+  ],
   "fpX4ei": [
     {
       "type": 0,
@@ -4349,6 +4435,20 @@
     {
       "type": 0,
       "value": "JSON content template"
+    }
+  ],
+  "hEVgKd": [
+    {
+      "type": 0,
+      "value": "Error message for \""
+    },
+    {
+      "type": 1,
+      "value": "key"
+    },
+    {
+      "type": 0,
+      "value": "\""
     }
   ],
   "hJtTwo": [
@@ -4833,6 +4933,12 @@
       "value": "Form field"
     }
   ],
+  "mck25o": [
+    {
+      "type": 0,
+      "value": "Validation for the city field"
+    }
+  ],
   "mf9eF+": [
     {
       "type": 0,
@@ -4969,6 +5075,12 @@
     {
       "type": 0,
       "value": "City"
+    }
+  ],
+  "osl4X2": [
+    {
+      "type": 0,
+      "value": "The regular expression pattern test that the city field value must pass before the form can be submitted."
     }
   ],
   "ow5AAO": [
@@ -5233,6 +5345,12 @@
       "value": "Update existing object"
     }
   ],
+  "rW1edF": [
+    {
+      "type": 0,
+      "value": "Postcode"
+    }
+  ],
   "rZfe8Z": [
     {
       "type": 0,
@@ -5301,6 +5419,12 @@
     {
       "type": 0,
       "value": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+    }
+  ],
+  "swKpQE": [
+    {
+      "type": 0,
+      "value": "Regular expression for city"
     }
   ],
   "t5fg/K": [
@@ -5709,6 +5833,12 @@
     {
       "type": 0,
       "value": "Maximum length"
+    }
+  ],
+  "yGAl1a": [
+    {
+      "type": 0,
+      "value": "Close"
     }
   ],
   "yIPUtA": [

@@ -10,10 +10,13 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
+import {
+  CatalogueSelect,
+  getCatalogueOption,
+  groupAndSortCatalogueOptions,
+} from 'components/admin/forms/zgw';
 import {WarningIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
-
-import CatalogueSelect, {extractValue as getCatalogueOption} from './CatalogueSelect';
 
 // Data fetching
 
@@ -25,23 +28,7 @@ const getCatalogues = async apiGroupID => {
   if (!response.ok) {
     throw new Error('Loading available catalogues failed');
   }
-  const catalogues = response.data;
-
-  const _optionsByRSIN = {};
-  for (const catalogue of catalogues) {
-    const {rsin} = catalogue;
-    if (!_optionsByRSIN[rsin]) _optionsByRSIN[rsin] = [];
-    _optionsByRSIN[rsin].push(catalogue);
-  }
-
-  const groups = Object.entries(_optionsByRSIN)
-    .map(([rsin, options]) => ({
-      label: rsin,
-      options: options.sort((a, b) => a.label.localeCompare(b.label)),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  return groups;
+  return groupAndSortCatalogueOptions(response.data);
 };
 
 const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
@@ -212,7 +199,17 @@ export const DocumentTypesFieldet = () => {
         type in the dropdowns.`}
         />
       </div>
-      <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
+      <CatalogueSelect
+        label={
+          <FormattedMessage
+            description="Objects API registration options 'catalogue' label"
+            defaultMessage="Catalogue"
+          />
+        }
+        isDisabled={!objectsApiGroup}
+        loading={loadingCatalogues}
+        optionGroups={catalogueOptionGroups}
+      />
       <DocumentType
         name="iotSubmissionReport"
         label={

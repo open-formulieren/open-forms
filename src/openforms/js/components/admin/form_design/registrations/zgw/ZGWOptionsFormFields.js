@@ -11,10 +11,12 @@ import {
   ValidationErrorContext,
   ValidationErrorsProvider,
 } from 'components/admin/forms/ValidationErrors';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import {
   CaseType,
+  CatalogueSelect,
   ConfidentialityLevel,
   DocumentType,
   MedewerkerRoltype,
@@ -93,6 +95,17 @@ const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => 
                 return confirmSwitch;
               }}
             />
+            <ErrorBoundary
+              errorMessage={
+                <FormattedMessage
+                  description="ZGW APIs registrations options: catalogue select error"
+                  defaultMessage={`Something went wrong retrieving the available catalogues.
+                    Please check that the services in the selected API group are configured correctly.`}
+                />
+              }
+            >
+              <CatalogueSelect />
+            </ErrorBoundary>
             <CaseType />
             <DocumentType />
           </Fieldset>

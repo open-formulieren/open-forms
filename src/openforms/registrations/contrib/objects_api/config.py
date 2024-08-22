@@ -10,11 +10,11 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
-from openforms.api.validators import AllOrNoneTruthyFieldsValidator
+from openforms.contrib.zgw.serializers import CatalogueSerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
+from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
@@ -24,41 +24,6 @@ from .typing import RegistrationOptions
 class VersionChoices(IntegerChoices):
     V1 = 1, _("v1, template based")
     V2 = 2, _("v2, variables mapping")
-
-
-class CatalogueSerializer(serializers.Serializer):
-    """
-    Specify which catalogus to use to look up document types.
-
-    This matches the fields ``catalogue_domain`` and ``catalogue_rsin`` on the
-    :class:`ObjectsAPIGroupConfig` model.
-    """
-
-    domain = serializers.CharField(
-        label=_("domain"),
-        required=False,
-        max_length=5,
-        help_text=_(
-            "The 'domein' attribute for the Catalogus resource in the Catalogi API."
-        ),
-        default="",
-        validators=[validate_uppercase],
-    )
-    rsin = serializers.CharField(
-        label=_("RSIN"),
-        required=False,
-        max_length=9,
-        validators=[RSINValidator()],
-        help_text=_(
-            "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
-        ),
-        default="",
-    )
-
-    class Meta:
-        validators = [
-            AllOrNoneTruthyFieldsValidator("domain", "rsin"),
-        ]
 
 
 @extend_schema_serializer(

@@ -34,6 +34,7 @@ from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
+from .typing import RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = logging.getLogger(__name__)
@@ -96,7 +97,7 @@ def wrap_api_errors(func):
 
 
 @register("zgw-create-zaak")
-class ZGWRegistration(BasePlugin):
+class ZGWRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
 
@@ -148,7 +149,7 @@ class ZGWRegistration(BasePlugin):
 
     @wrap_api_errors
     def pre_register_submission(
-        self, submission: "Submission", options: dict
+        self, submission: "Submission", options: RegistrationOptions
     ) -> PreRegistrationResult:
         """
         Create a Zaak, so that we can have a registration ID.
@@ -187,7 +188,9 @@ class ZGWRegistration(BasePlugin):
         )
 
     @wrap_api_errors
-    def register_submission(self, submission: Submission, options: dict) -> dict | None:
+    def register_submission(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> dict | None:
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
@@ -458,7 +461,9 @@ class ZGWRegistration(BasePlugin):
         return result
 
     @wrap_api_errors
-    def update_payment_status(self, submission: Submission, options: dict):
+    def update_payment_status(
+        self, submission: Submission, options: RegistrationOptions
+    ):
         zgw = options["zgw_api_group"]
         assert submission.registration_result
         zaak = submission.registration_result["zaak"]
@@ -477,7 +482,7 @@ class ZGWRegistration(BasePlugin):
         ]
 
     def register_submission_to_objects_api(
-        self, submission: Submission, options: dict
+        self, submission: Submission, options: RegistrationOptions
     ) -> dict:
         object_mapping = {
             "geometry": FieldConf(

@@ -2,16 +2,13 @@ import {fn, userEvent, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
 
 import {
-  mockCataloguesGet,
-  mockDocumentTypesGet,
-} from 'components/admin/form_design/registrations/objectsapi/mocks';
-import {
   FeatureFlagsDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
 
 import ZGWFormFields from './ZGWOptionsFormFields';
+import {mockCataloguesGet} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
@@ -51,7 +48,7 @@ export default {
   },
   parameters: {
     msw: {
-      handlers: [mockCataloguesGet(), mockDocumentTypesGet()],
+      handlers: [mockCataloguesGet()],
     },
   },
 };

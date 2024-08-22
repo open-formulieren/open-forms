@@ -4,6 +4,19 @@ from rest_framework import serializers
 
 
 class CatalogueSerializer(serializers.Serializer):
+    """
+    Serialize a catalogue option retrieved from the Catalogi API.
+
+    The serializer includes the necessary fiels to display a human readable label,
+    build the composite key that uniquely identifiers a catalogue (rsin + domain) and
+    the API resource URL for subsequent filtering of resources inside the catalogue,
+    like case and document types.
+
+    If you need to store a reference to a catalogue, it's better to use another
+    serializer (:class:`openforms.contrib.zgw.serializers.CatalogueSerializer`) instead,
+    which only stores the composite key.
+    """
+
     domain = serializers.CharField(label=_("domain"))
     rsin = serializers.CharField(label=_("rsin"))
     label = serializers.CharField(  # type: ignore

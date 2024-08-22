@@ -17,7 +17,7 @@ TEST_FILES = Path(__file__).parent / "files"
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = TEST_FILES
-    endpoint = reverse_lazy("api:zgw_apis:catalogi-list")
+    endpoint = reverse_lazy("api:zgw_apis:catalogue-list")
 
     @classmethod
     def setUpTestData(cls):

@@ -6,9 +6,9 @@ app_name = "zgw_apis"
 
 urlpatterns = [
     path(
-        "catalogi",
+        "catalogues",
         CatalogueListView.as_view(),
-        name="catalogi-list",
+        name="catalogue-list",
     ),
     path(
         "informatieobjecttypen",
