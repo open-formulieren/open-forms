@@ -45,6 +45,7 @@ Core
 
     core/index
     core/formio
+    core/email-verification
     core/submissions
     core/submission-renderer
     core/variables
