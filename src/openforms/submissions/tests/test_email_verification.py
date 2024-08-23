@@ -12,7 +12,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import EmailVerification
 
-from .factories import SubmissionFactory
+from .factories import EmailVerificationFactory, SubmissionFactory
 from .mixins import SubmissionsMixin
 
 
@@ -190,3 +190,161 @@ class VerificationCreationTests(SubmissionsMixin, APITestCase):
             """,
             message_html,
         )
+
+
+class VerifyEmailTests(SubmissionsMixin, APITestCase):
+    """
+    Test the flow for verifying an email address with a code.
+    """
+
+    endpoint = reverse_lazy("api:submissions:verify-email")
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.form = FormFactory.create(
+            name_nl="Testformulier",
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "email",
+                        "key": "emailAddress",
+                        "label": "Email address",
+                        "openForms": {
+                            "requireVerification": True,
+                        },
+                    }
+                ]
+            },
+        )
+
+    def test_requires_submission_in_session(self):
+        submission = SubmissionFactory.create(form=self.form)
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+            "code": "123456",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_requires_ownership_of_submission(self):
+        submission = SubmissionFactory.create(form=self.form)
+        other_submission = SubmissionFactory.create(form=self.form)
+        self._add_submission_to_session(other_submission)
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+            "code": "123456",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["name"], "submission")
+        self.assertEqual(error["code"], "does_not_exist")
+
+    def test_invalid_verification_code(self):
+        submission = SubmissionFactory.create(form=self.form)
+        self._add_submission_to_session(submission)
+        EmailVerificationFactory.create(
+            submission=submission,
+            email="openforms@example.com",
+            component_key="emailAddress",
+            verification_code="AAAAAA",
+        )
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+            "code": "XXXXXX",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()["invalidParams"][0]
+        self.assertEqual(error["name"], "code")
+        self.assertEqual(error["code"], "invalid")
+
+    def test_valid_verification_code(self):
+        submission = SubmissionFactory.create(form=self.form)
+        self._add_submission_to_session(submission)
+        verification = EmailVerificationFactory.create(
+            submission=submission,
+            email="openforms@example.com",
+            component_key="emailAddress",
+            verification_code="AAAAAA",
+        )
+        assert not verification.verified_on
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+            "code": "AAAAAA",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        verification.refresh_from_db()
+        self.assertIsNotNone(verification.verified_on)
+
+    def test_multiple_verification_codes_exist(self):
+        submission = SubmissionFactory.create(form=self.form)
+        self._add_submission_to_session(submission)
+        verification = EmailVerificationFactory.create(
+            submission=submission,
+            email="openforms@example.com",
+            component_key="emailAddress",
+            verification_code="AAAAAA",
+        )
+        EmailVerificationFactory.create(
+            submission=submission,
+            email="openforms@example.com",
+            component_key="emailAddress",
+            verification_code="BBBBBB",
+        )
+        # theoretically possible - the same verification code being generated multiple
+        # times
+        EmailVerificationFactory.create(
+            submission=submission,
+            email="openforms@example.com",
+            component_key="emailAddress",
+            verification_code="AAAAAA",
+        )
+        assert not verification.verified_on
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+            "code": "AAAAAA",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        verification.refresh_from_db()
+        self.assertIsNotNone(verification.verified_on)

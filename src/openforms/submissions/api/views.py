@@ -1,11 +1,14 @@
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import CreateAPIView, DestroyAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
@@ -14,7 +17,7 @@ from openforms.submissions.models.email_verification import EmailVerification
 from ..models import TemporaryFileUpload
 from .permissions import AnyActiveSubmissionPermission, OwnsTemporaryUploadPermission
 from .renderers import FileRenderer
-from .serializers import EmailVerificationSerializer
+from .serializers import EmailVerificationSerializer, VerifyEmailSerializer
 
 
 @extend_schema(
@@ -96,3 +99,34 @@ class EmailVerificationCreateView(CreateAPIView):
         verification = serializer.instance
         assert isinstance(verification, EmailVerification)
         transaction.on_commit(verification.send_email)
+
+
+@extend_schema(
+    summary=_("Verify email address"),
+    description=_(
+        "Using the code obtained from the verification email, mark the email address "
+        "as verified. Using an invalid code results in validation errors in the error "
+        "response."
+    ),
+)
+class VerifyEmailView(APIView):
+    authentication_classes = (AnonCSRFSessionAuthentication,)
+    permission_classes = (AnyActiveSubmissionPermission,)
+
+    def get_serializer_class(self):
+        return VerifyEmailSerializer
+
+    def get_serializer_context(self):
+        return {"request": self.request, "view": self}
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()(
+            data=request.data,
+            context=self.get_serializer_context(),
+        )
+        serializer.is_valid(raise_exception=True)
+        verification = serializer.instance
+        assert isinstance(verification, EmailVerification)
+        verification.verified_on = timezone.now()
+        verification.save()
+        return Response(serializer.data)
