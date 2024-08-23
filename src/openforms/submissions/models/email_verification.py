@@ -14,8 +14,10 @@ from django.utils import translation
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
 from openforms.formio.validators import variable_key_validator
+from openforms.template import render_from_string
 
 from .submission import Submission
 
@@ -84,15 +86,24 @@ class EmailVerification(models.Model):
         Send the verification email.
         """
         with translation.override(self.submission.language_code):
+            config = GlobalConfiguration.get_solo()
             form_name = self.submission.form.name
-            # TODO: make templates configureable and set up template context.
-            send_mail_html(
-                subject=f"{form_name} - email verification code",
-                html_body=f"""
-                    <p>Your requested verification code is: <strong>{self.verification_code}</strong>.</p>
-                    <p>If you did not request this, you can ignore this email.</p>
-                """,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[self.email],
-                theme=self.submission.form.theme,
+            context = {
+                "form_name": form_name,
+                "code": self.verification_code,
+            }
+
+            subject = render_from_string(
+                config.email_verification_request_subject, context
             )
+            content = render_from_string(
+                config.email_verification_request_content, context
+            )
+
+        send_mail_html(
+            subject=subject,
+            html_body=content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.email],
+            theme=self.submission.form.theme,
+        )

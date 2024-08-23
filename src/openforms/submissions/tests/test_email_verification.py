@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import EmailVerification
 
@@ -27,6 +28,7 @@ class VerificationCreationTests(SubmissionsMixin, APITestCase):
         super().setUpTestData()
 
         cls.form = FormFactory.create(
+            name_nl="Testformulier",
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
                 "components": [
@@ -41,6 +43,10 @@ class VerificationCreationTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
+
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_requires_submission_in_session(self):
         submission = SubmissionFactory.create(form=self.form)
@@ -147,3 +153,40 @@ class VerificationCreationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(EmailVerification.objects.count(), 2)
         self.assertEqual(len(mail.outbox), 2)
+
+    def test_custom_email_subject_and_body(self):
+        config = GlobalConfiguration.get_solo()
+        config.email_verification_request_subject_nl = (  # type: ignore
+            r"Verifieer e-mailadres '{{ form_name }}'"
+        )
+        config.email_verification_request_content_nl = (  # type: ignore
+            r"<p>Verificatiecode: {{ code }}</p>" r"<p>Formulier: {{ form_name }}</p>"
+        )
+        config.save()
+
+        submission = SubmissionFactory.create(form=self.form, language_code="nl")
+        self._add_submission_to_session(submission)
+        submission_endpoint = reverse(
+            "api:submission-detail", kwargs={"uuid": submission.uuid}
+        )
+        body = {
+            "submission": f"http://testserver{submission_endpoint}",
+            "componentKey": "emailAddress",
+            "email": "openforms@example.com",
+        }
+
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(self.endpoint, body)
+
+        self.assertEqual(len(mail.outbox), 1)
+        verification = EmailVerification.objects.get()
+        msg = mail.outbox[0]
+        self.assertEqual(msg.subject, "Verifieer e-mailadres 'Testformulier'")
+        message_html: str = msg.alternatives[0][0]  # type: ignore
+        self.assertInHTML(
+            f"""
+            <p>Verificatiecode: {verification.verification_code}</p>
+            <p>Formulier: Testformulier</p>
+            """,
+            message_html,
+        )
