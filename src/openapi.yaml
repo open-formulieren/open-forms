@@ -9669,7 +9669,9 @@ components:
           title: Required authentication attribute
           description: The authentication attribute required for this plugin to lookup
             remote data.
+        extraData: {}
       required:
+      - extraData
       - id
       - label
       - requiresAuth

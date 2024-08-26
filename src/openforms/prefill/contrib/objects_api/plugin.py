@@ -4,7 +4,10 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.objects_api.checks import check_config
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.models import (
+    ObjectsAPIConfig,
+    ObjectsAPIGroupConfig,
+)
 
 from ...base import BasePlugin
 from ...registry import register
@@ -37,3 +40,11 @@ class ObjectsAPIPrefill(BasePlugin):
                 ),
             ),
         ]
+
+    @property
+    def extra_data(self):
+        return {
+            "api_groups": [
+                (group.pk, group.name) for group in ObjectsAPIGroupConfig.objects.all()
+            ]
+        }

@@ -1,4 +1,5 @@
 import {useField, useFormikContext} from 'formik';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {useUpdateEffect} from 'react-use';
@@ -7,26 +8,30 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
-  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField('objectsApiGroup');
+const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck, prefix = undefined}) => {
+  const namePrefix = prefix ? `${prefix}.` : '';
+  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(
+    `${namePrefix}objectsApiGroup`
+  );
   const {setValues} = useFormikContext();
   const {value} = fieldProps;
 
   // reset the objecttype specific-configuration whenever the API group changes
   useUpdateEffect(() => {
-    setValues(prevValues => ({
-      ...prevValues,
-      objecttype: '',
-      objecttypeVersion: undefined,
-      variablesMapping: [],
-    }));
+    setValues(prevValues => {
+      const newValues = {...prevValues};
+      _.set(newValues, `${namePrefix}objecttype`, '');
+      _.set(newValues, `${namePrefix}objecttypeVersion`, undefined);
+      _.set(newValues, `${namePrefix}variablesMapping`, []);
+      return newValues;
+    });
   }, [setValues, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
       <Field
-        name="objectsApiGroup"
+        name={`${namePrefix}objectsApiGroup`}
         required
         label={
           <FormattedMessage
@@ -43,7 +48,7 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
         noManageChildProps
       >
         <ReactSelect
-          name="objectsApiGroup"
+          name={`${namePrefix}objectsApiGroup`}
           options={options}
           required
           onChange={selectedOption => {

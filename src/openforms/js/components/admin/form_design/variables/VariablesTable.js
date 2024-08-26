@@ -161,6 +161,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
           attribute={variable.prefillAttribute}
           identifierRole={variable.prefillIdentifierRole}
           errors={variable.errors}
+          prefillOptions={variable.prefillOptions}
           onChange={({plugin, attribute, identifierRole}) =>
             onChange(variable.key, '', {
               prefillPlugin: plugin,

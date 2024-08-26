@@ -1,4 +1,5 @@
 import {useField, useFormikContext} from 'formik';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {usePrevious, useUpdateEffect} from 'react-use';
@@ -20,13 +21,15 @@ const getAvailableObjectTypes = async apiGroupID => {
   return response.data;
 };
 
-const ObjectTypeSelect = ({onChangeCheck}) => {
-  const [fieldProps, , fieldHelpers] = useField('objecttype');
+const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
+  const namePrefix = prefix ? `${prefix}.` : '';
+  const [fieldProps, , fieldHelpers] = useField(`${namePrefix}objecttype`);
   const {
-    values: {objectsApiGroup = null},
+    values,
     setFieldValue,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
+  const objectsApiGroup = _.get(values, `${namePrefix}objectsApiGroup`, null);
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
 
@@ -48,7 +51,7 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
       ]);
   const options = choices.map(([value, label]) => ({value, label}));
 
-  useSynchronizeSelect('objecttype', loading, choices);
+  useSynchronizeSelect(`${namePrefix}objecttype`, loading, choices);
 
   const previousValue = usePrevious(value);
 
@@ -56,13 +59,13 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
   useUpdateEffect(() => {
     if (loading) return;
     if (value === initialObjecttype || value === previousValue) return;
-    setFieldValue('objecttypeVersion', undefined); // clears the value
+    setFieldValue(`${namePrefix}objecttypeVersion`, undefined); // clears the value
   }, [loading, value]);
 
   return (
     <FormRow>
       <Field
-        name="objecttype"
+        name={`${namePrefix}objecttype`}
         required
         label={
           <FormattedMessage
@@ -79,7 +82,7 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
         noManageChildProps
       >
         <ReactSelect
-          name="objecttype"
+          name={`${namePrefix}objecttype`}
           options={options}
           isLoading={loading}
           isDisabled={!objectsApiGroup}

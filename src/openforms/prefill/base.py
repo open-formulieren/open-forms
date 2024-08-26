@@ -89,3 +89,7 @@ class BasePlugin(AbstractBasePlugin):
             and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
+
+    @property
+    def extra_data(self):
+        return None

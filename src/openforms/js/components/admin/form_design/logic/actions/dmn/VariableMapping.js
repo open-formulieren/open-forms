@@ -1,4 +1,5 @@
 import {FieldArray, useFormikContext} from 'formik';
+import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -15,8 +16,10 @@ const VariableMappingRow = ({
   loading,
   prefix,
   onRemove,
+  targets,
+  targetsFieldName,
+  selectAriaLabel,
   includeStaticVariables = false,
-  dmnVariables,
   alreadyMapped = [],
 }) => {
   const intl = useIntl();
@@ -27,10 +30,9 @@ const VariableMappingRow = ({
     defaultMessage: 'Are you sure that you want to remove this mapping?',
   });
 
-  const dmnVariableProps = getFieldProps(`${prefix}.dmnVariable`);
-
-  const dmnVariableChoices = dmnVariables.filter(
-    ([value]) => value === dmnVariableProps.value || !alreadyMapped.includes(value)
+  const targetsProps = getFieldProps(`${prefix}.${targetsFieldName}`);
+  const targetsChoices = targets.filter(
+    ([value]) => value === targetsProps.value || !alreadyMapped.includes(value)
   );
 
   const mapping = getFieldProps(prefix).value;
@@ -51,17 +53,14 @@ const VariableMappingRow = ({
         </Field>
       </td>
       <td>
-        <Field htmlFor={`${prefix}.dmnVariable`} name={`${prefix}.dmnVariable`}>
+        <Field htmlFor={`${prefix}.${targetsFieldName}`} name={`${prefix}.${targetsFieldName}`}>
           <Select
-            id={`${prefix}.dmnVariable`}
+            id={`${prefix}.${targetsFieldName}`}
             allowBlank
             disabled={loading}
-            choices={dmnVariableChoices}
-            {...dmnVariableProps}
-            aria-label={intl.formatMessage({
-              description: 'Accessible label for DMN variable dropdown',
-              defaultMessage: 'DMN variable',
-            })}
+            choices={targetsChoices}
+            {...targetsProps}
+            aria-label={selectAriaLabel}
           />
         </Field>
       </td>
@@ -76,7 +75,9 @@ const VariableMappingRow = ({
 VariableMappingRow.propTypes = {
   loading: PropTypes.bool.isRequired,
   prefix: PropTypes.string.isRequired,
-  dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  targets: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  targetsFieldName: PropTypes.string.isRequired,
+  selectAriaLabel: PropTypes.string.isRequired,
   onRemove: PropTypes.func.isRequired,
   includeStaticVariables: PropTypes.bool,
   alreadyMapped: PropTypes.arrayOf(PropTypes.string),
@@ -85,7 +86,11 @@ VariableMappingRow.propTypes = {
 const VariableMapping = ({
   loading,
   mappingName,
-  dmnVariables,
+  targets,
+  targetsFieldName,
+  targetsColumnLabel,
+  selectAriaLabel,
+  cssBlockName,
   includeStaticVariables = false,
   alreadyMapped = [],
 }) => {
@@ -95,7 +100,7 @@ const VariableMapping = ({
     <FieldArray
       name={mappingName}
       render={arrayHelpers => (
-        <div className="logic-dmn__mapping-table">
+        <div className={`${cssBlockName}__mapping-table`}>
           <table>
             <thead>
               <tr>
@@ -105,33 +110,32 @@ const VariableMapping = ({
                     description="Open Forms variable label"
                   />
                 </th>
-                <th>
-                  <FormattedMessage
-                    defaultMessage="DMN variable"
-                    description="DMN variable label"
-                  />
-                </th>
+                <th>{targetsColumnLabel}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {values[mappingName].map((_, index) => (
+              {get(values, mappingName).map((_, index) => (
                 <VariableMappingRow
                   key={index}
                   prefix={`${mappingName}.${index}`}
                   onRemove={() => arrayHelpers.remove(index)}
                   loading={loading}
                   includeStaticVariables={includeStaticVariables}
-                  dmnVariables={dmnVariables}
+                  targets={targets}
+                  targetsFieldName={targetsFieldName}
+                  selectAriaLabel={selectAriaLabel}
                   alreadyMapped={alreadyMapped}
                 />
               ))}
             </tbody>
           </table>
           <ButtonContainer
-            onClick={() =>
-              arrayHelpers.insert(values[mappingName].length, {formVariable: '', dmnVariable: ''})
-            }
+            onClick={() => {
+              const initial = {formVariable: ''};
+              initial[targetsFieldName] = '';
+              arrayHelpers.insert(get(values, mappingName).length, initial);
+            }}
           >
             <FormattedMessage description="Add variable button" defaultMessage="Add variable" />
           </ButtonContainer>
@@ -145,7 +149,11 @@ VariableMapping.propTypes = {
   loading: PropTypes.bool,
   mappingName: PropTypes.string,
   includeStaticVariables: PropTypes.bool,
-  dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  targets: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  targetsFieldName: PropTypes.string,
+  targetsColumnLabel: PropTypes.string.isRequired,
+  selectAriaLabel: PropTypes.string.isRequired,
+  cssBlockName: PropTypes.string,
   alreadyMapped: PropTypes.arrayOf(PropTypes.string),
 };
 

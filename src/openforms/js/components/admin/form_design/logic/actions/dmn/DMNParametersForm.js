@@ -101,6 +101,7 @@ const processInputParams = params => {
 };
 
 const DMNParametersForm = () => {
+  const intl = useIntl();
   const {values, setValues} = useFormikContext();
   const {pluginId, decisionDefinitionId, decisionDefinitionVersion, inputMapping, outputMapping} =
     values;
@@ -172,6 +173,15 @@ const DMNParametersForm = () => {
     dmnParams,
   ]);
 
+  const dmnVariableColumnLabel = intl.formatMessage({
+    description: 'DMN variable label',
+    defaultMessage: 'DMN variable',
+  });
+  const dmnVariableSelectAriaLabel = intl.formatMessage({
+    description: 'Accessible label for DMN variable dropdown',
+    defaultMessage: 'DMN variable',
+  });
+
   return (
     <div className="logic-dmn">
       <div className="logic-dmn__mapping-config">
@@ -182,7 +192,11 @@ const DMNParametersForm = () => {
           <VariableMapping
             loading={loading}
             mappingName="inputMapping"
-            dmnVariables={dmnParams.inputs}
+            targets={dmnParams.inputs}
+            targetsFieldName="dmnVariable"
+            targetsColumnLabel={dmnVariableColumnLabel}
+            selectAriaLabel={dmnVariableSelectAriaLabel}
+            cssBlockName="logic-dmn"
             alreadyMapped={inputMapping.map(mapping => mapping.dmnVariable)}
             includeStaticVariables
           />
@@ -195,7 +209,11 @@ const DMNParametersForm = () => {
           <VariableMapping
             loading={loading}
             mappingName="outputMapping"
-            dmnVariables={dmnParams.outputs}
+            targets={dmnParams.outputs}
+            targetsFieldName="dmnVariable"
+            targetsColumnLabel={dmnVariableColumnLabel}
+            selectAriaLabel={dmnVariableSelectAriaLabel}
+            cssBlockName="logic-dmn"
             alreadyMapped={outputMapping.map(mapping => mapping.dmnVariable)}
           />
         </div>

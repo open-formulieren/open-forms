@@ -1,4 +1,5 @@
 import {useFormikContext} from 'formik';
+import _ from 'lodash';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -24,10 +25,11 @@ const getAvailableVersions = async (uuid, apiGroupID) => {
   return versions.sort((v1, v2) => v2.version - v1.version);
 };
 
-const ObjectTypeVersionSelect = () => {
-  const {
-    values: {objectsApiGroup = null, objecttype = ''},
-  } = useFormikContext();
+const ObjectTypeVersionSelect = ({prefix = undefined}) => {
+  const namePrefix = prefix ? `${prefix}.` : '';
+  const {values} = useFormikContext();
+  const objectsApiGroup = _.get(values, `${namePrefix}objectsApiGroup`, null);
+  const objecttype = _.get(values, `${namePrefix}objecttype`, '');
 
   const {
     loading,
@@ -43,13 +45,13 @@ const ObjectTypeVersionSelect = () => {
     ? []
     : versions.map(version => [version.version, `${version.version} (${version.status})`]);
 
-  useSynchronizeSelect('objecttypeVersion', loading, choices);
+  useSynchronizeSelect(`${namePrefix}objecttypeVersion`, loading, choices);
 
   const options = choices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
       <Field
-        name="objecttypeVersion"
+        name={`${namePrefix}objecttypeVersion`}
         required
         label={
           <FormattedMessage
@@ -60,7 +62,7 @@ const ObjectTypeVersionSelect = () => {
         noManageChildProps
       >
         <ReactSelect
-          name="objecttypeVersion"
+          name={`${namePrefix}objecttypeVersion`}
           required
           options={options}
           isLoading={loading}

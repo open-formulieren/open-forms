@@ -1,6 +1,6 @@
 import {Formik, useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 import useUpdateEffect from 'react-use/esm/useUpdateEffect';
@@ -12,8 +12,13 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
+import VariableMapping from '../../logic/actions/dmn/VariableMapping';
+import ObjectTypeSelect from '../../registrations/objectsapi/fields/ObjectTypeSelect';
+import ObjectTypeVersionSelect from '../../registrations/objectsapi/fields/ObjectTypeVersionSelect';
+import ObjectsAPIGroup from '../../registrations/objectsapi/fields/ObjectsAPIGroup';
 import {IDENTIFIER_ROLE_CHOICES} from '../constants';
 
 const PrefillConfigurationForm = ({
@@ -21,82 +26,50 @@ const PrefillConfigurationForm = ({
   plugin = '',
   attribute = '',
   identifierRole = 'main',
+  prefillOptions = {
+    objectsApiGroup: '',
+    objecttype: '',
+    objecttypeVersion: null,
+    variablesMapping: [],
+  },
   errors,
-}) => (
-  // XXX: we're not using formik's initialErrors yet because it doesn't support arrays of
-  // error messages, which our backend *can* produce.
-  <Formik
-    initialValues={{
-      plugin,
-      attribute,
-      identifierRole,
-    }}
-    onSubmit={(values, actions) => {
-      onSubmit(values);
-      actions.setSubmitting(false);
-    }}
-  >
-    {({handleSubmit}) => (
-      <>
-        <Fieldset>
-          <FormRow>
-            <Field
-              name="plugin"
-              label={
-                <FormattedMessage
-                  description="Variable prefill plugin label"
-                  defaultMessage="Plugin"
-                />
-              }
-              errors={errors.plugin}
-            >
-              <PluginField />
-            </Field>
-          </FormRow>
+}) => {
+  return (
+    <Formik
+      initialValues={{
+        plugin,
+        attribute,
+        identifierRole,
+        prefillOptions,
+      }}
+      onSubmit={(values, actions) => {
+        // TODO should be implemented in https://github.com/open-formulieren/open-forms/issues/4693
+        console.log(values);
+        onSubmit(values);
+        actions.setSubmitting(false);
+      }}
+    >
+      {({handleSubmit, values}) => (
+        <>
+          {values.plugin === 'objects_api' ? (
+            <ObjectsAPIPrefillFields values={values} errors={errors} />
+          ) : (
+            <PrefillFields values={values} errors={errors} />
+          )}
 
-          <FormRow>
-            <Field
-              name="attribute"
-              label={
-                <FormattedMessage
-                  description="Variable prefill attribute label"
-                  defaultMessage="Attribute"
-                />
-              }
-              errors={errors.attribute}
-            >
-              <AttributeField />
-            </Field>
-          </FormRow>
-
-          <FormRow>
-            <Field
-              name="identifierRole"
-              label={
-                <FormattedMessage
-                  description="Variable prefill identifier role label"
-                  defaultMessage="Identifier role"
-                />
-              }
-              errors={errors.identifierRole}
-            >
-              <IdentifierRoleField />
-            </Field>
-          </FormRow>
-        </Fieldset>
-
-        <SubmitRow>
-          <SubmitAction
-            onClick={event => {
-              event.preventDefault();
-              handleSubmit(event);
-            }}
-          />
-        </SubmitRow>
-      </>
-    )}
-  </Formik>
-);
+          <SubmitRow>
+            <SubmitAction
+              onClick={event => {
+                event.preventDefault();
+                handleSubmit(event);
+              }}
+            />
+          </SubmitRow>
+        </>
+      )}
+    </Formik>
+  );
+};
 
 PrefillConfigurationForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
@@ -128,37 +101,18 @@ const PluginField = () => {
   return <Select allowBlank choices={choices} id="id_plugin" {...fieldProps} />;
 };
 
-const AttributeField = () => {
+const AttributeField = ({prefillAttributes}) => {
   const [fieldProps] = useField('attribute');
   const {
     values: {plugin},
   } = useFormikContext();
 
-  // Load the possible prefill attributes
-  // XXX: this would benefit from client-side caching
-  const {
-    loading,
-    value = [],
-    error,
-  } = useAsync(async () => {
-    if (!plugin) return [];
-
-    const endpoint = `/api/v2/prefill/plugins/${plugin}/attributes`;
-    // XXX: clean up error handling here at some point...
-    const response = await get(endpoint);
-    if (!response.ok) throw response.data;
-    return response.data.map(attribute => [attribute.id, attribute.label]);
-  }, [plugin]);
-
-  // throw errors to the nearest error boundary
-  if (error) throw error;
-  const choices = loading ? LOADING_OPTION : value;
   return (
     <Select
       allowBlank
-      choices={choices}
+      choices={prefillAttributes}
       id="id_attribute"
-      disabled={loading || !plugin}
+      disabled={!plugin}
       {...fieldProps}
     />
   );
@@ -175,6 +129,220 @@ const IdentifierRoleField = () => {
       capfirstChoices
       {...fieldProps}
     />
+  );
+};
+
+const PrefillFields = ({values, errors}) => {
+  // Load the possible prefill attributes
+  // XXX: this would benefit from client-side caching
+  const plugin = values.plugin;
+  const {
+    loading,
+    value = [],
+    error,
+  } = useAsync(async () => {
+    if (!plugin) return [];
+
+    const endpoint = `/api/v2/prefill/plugins/${plugin}/attributes`;
+    // XXX: clean up error handling here at some point...
+    const response = await get(endpoint);
+    if (!response.ok) throw response.data;
+    return response.data.map(attribute => [attribute.id, attribute.label]);
+  }, [plugin]);
+
+  // throw errors to the nearest error boundary
+  if (error) throw error;
+  const prefillAttributes = loading ? LOADING_OPTION : value;
+
+  return (
+    <Fieldset>
+      <FormRow>
+        <Field
+          name="plugin"
+          label={
+            <FormattedMessage description="Variable prefill plugin label" defaultMessage="Plugin" />
+          }
+          errors={errors.plugin}
+        >
+          <PluginField />
+        </Field>
+      </FormRow>
+
+      <FormRow>
+        <Field
+          name="attribute"
+          label={
+            <FormattedMessage
+              description="Variable prefill attribute label"
+              defaultMessage="Attribute"
+            />
+          }
+          errors={errors.attribute}
+        >
+          <AttributeField prefillAttributes={prefillAttributes} />
+        </Field>
+      </FormRow>
+
+      <FormRow>
+        <Field
+          name="identifierRole"
+          label={
+            <FormattedMessage
+              description="Variable prefill identifier role label"
+              defaultMessage="Identifier role"
+            />
+          }
+          errors={errors.identifierRole}
+        >
+          <IdentifierRoleField />
+        </Field>
+      </FormRow>
+    </Fieldset>
+  );
+};
+
+const ObjectsAPIPrefillFields = ({values, errors}) => {
+  const intl = useIntl();
+  const plugin = values.plugin;
+
+  const {
+    plugins: {availablePrefillPlugins},
+  } = useContext(FormContext);
+  const {setFieldValue} = useFormikContext();
+  const objectsPlugin = availablePrefillPlugins.find(elem => elem.id === 'objects_api');
+
+  const apiGroups = objectsPlugin.extraData.apiGroups;
+
+  const prefillAttributeLabel = intl.formatMessage({
+    description: 'Accessible label for prefill attribute dropdown',
+    defaultMessage: 'Prefill attribute',
+  });
+
+  const {objecttype, objecttypeVersion, objectsApiGroup} = values.prefillOptions;
+
+  // Load the possible prefill attributes
+  // XXX: this would benefit from client-side caching
+  const {
+    loading,
+    value = [],
+    error,
+  } = useAsync(async () => {
+    if (!plugin || !objecttype || !objecttypeVersion || !objectsApiGroup) return [];
+
+    const endpoint = `/api/v2/prefill/plugins/objects-api/objecttypes/${objecttype}/versions/${objecttypeVersion}/properties`;
+    const params = new URLSearchParams({objects_api_group: objectsApiGroup});
+    // XXX: clean up error handling here at some point...
+    const response = await get(`${endpoint}?${params.toString()}`);
+    if (!response.ok) throw response.data;
+
+    return response.data.map(attribute => [attribute.targetPath, attribute.targetPath.join(' > ')]);
+  }, [plugin, objecttype, objecttypeVersion, objectsApiGroup]);
+
+  // throw errors to the nearest error boundary
+  if (error) throw error;
+  const prefillAttributes = loading ? LOADING_OPTION : value;
+
+  return (
+    <>
+      <Fieldset>
+        <FormRow>
+          <Field
+            name="plugin"
+            label={
+              <FormattedMessage
+                description="Variable prefill plugin label"
+                defaultMessage="Plugin"
+              />
+            }
+            errors={errors.plugin}
+          >
+            <PluginField />
+          </Field>
+        </FormRow>
+
+        {/* TODO copied from V2ConfigFields, should probably be reused */}
+        <ObjectsAPIGroup
+          prefix="prefillOptions"
+          errors={errors['prefillOptions.apiGroup']}
+          apiGroupChoices={apiGroups}
+          onChangeCheck={() => {
+            if (values.prefillOptions.variablesMapping.length === 0) return true;
+            const confirmSwitch = window.confirm(
+              intl.formatMessage({
+                description:
+                  'Objects API registration options: warning message when changing the api group',
+                defaultMessage: `Changing the api group will remove the existing variables mapping.
+                Are you sure you want to continue?`,
+              })
+            );
+            if (!confirmSwitch) return false;
+            setFieldValue('prefillOptions.variablesMapping', []);
+            return true;
+          }}
+        />
+        <ErrorBoundary
+          errorMessage={
+            <FormattedMessage
+              description="Objects API registrations options: object type select error"
+              defaultMessage="Something went wrong retrieving the available object types."
+            />
+          }
+        >
+          <ObjectTypeSelect
+            prefix="prefillOptions"
+            onChangeCheck={() => {
+              if (values.prefillOptions.variablesMapping.length === 0) return true;
+              const confirmSwitch = window.confirm(
+                intl.formatMessage({
+                  description:
+                    'Objects API registration options: warning message when changing the object type',
+                  defaultMessage: `Changing the objecttype will remove the existing variables mapping.
+                  Are you sure you want to continue?`,
+                })
+              );
+              if (!confirmSwitch) return false;
+              setFieldValue('prefillOptions.variablesMapping', []);
+              return true;
+            }}
+          />
+        </ErrorBoundary>
+
+        <ErrorBoundary
+          errorMessage={
+            <FormattedMessage
+              description="Objects API registrations options: object type version select error"
+              defaultMessage="Something went wrong retrieving the available object type versions."
+            />
+          }
+        >
+          <ObjectTypeVersionSelect prefix="prefillOptions" />
+        </ErrorBoundary>
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Objects API prefill mappings fieldset title"
+            defaultMessage="Mappings"
+          />
+        }
+      >
+        <FormRow>
+          <VariableMapping
+            loading={false}
+            mappingName="prefillOptions.variablesMapping"
+            targets={prefillAttributes}
+            targetsFieldName="prefillAttribute"
+            targetsColumnLabel={prefillAttributeLabel}
+            selectAriaLabel={prefillAttributeLabel}
+            cssBlockName="objects-prefill"
+            alreadyMapped={values.prefillOptions.variablesMapping.map(
+              mapping => mapping.prefillAttribute
+            )}
+          />
+        </FormRow>
+      </Fieldset>
+    </>
   );
 };
 

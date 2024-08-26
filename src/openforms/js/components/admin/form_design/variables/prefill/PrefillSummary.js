@@ -14,6 +14,7 @@ const PrefillSummary = ({
   plugin = '',
   attribute = '',
   identifierRole = 'main',
+  prefillOptions = undefined,
   onChange = undefined,
   errors = {},
 }) => {
@@ -90,6 +91,7 @@ const PrefillSummary = ({
               plugin={plugin}
               attribute={attribute}
               identifierRole={identifierRole}
+              prefillOptions={prefillOptions}
               onSubmit={values => {
                 onChange(values);
                 setModalOpen(false);

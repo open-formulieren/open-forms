@@ -19,6 +19,7 @@ class PrefillPluginSerializer(PluginBaseSerializer):
         ),
         allow_null=True,
     )
+    extra_data = serializers.JSONField()
 
 
 class PrefillPluginQueryParameterSerializer(serializers.Serializer):
