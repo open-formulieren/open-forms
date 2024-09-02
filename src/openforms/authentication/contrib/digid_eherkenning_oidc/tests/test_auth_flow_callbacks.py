@@ -156,6 +156,20 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
+    @tag("gh-4627")
+    @mock_eherkenning_config(acting_subject_claim=["does not exist"])
+    def test_failure_with_missing_acting_subject_claim(self):
+        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(start_response["Location"])
+
+        # complete the login flow on our end
+        self.app.get(redirect_uri, auto_follow=True)
+
     @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
