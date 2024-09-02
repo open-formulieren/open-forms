@@ -6,6 +6,8 @@ from pathlib import Path
 from uuid import UUID
 
 import django
+from django.db import connections
+from django.db.migrations.recorder import MigrationRecorder
 
 import click
 from tabulate import tabulate
@@ -65,12 +67,26 @@ def check_objecttype_urls() -> bool:
     return False
 
 
+def get_applied_migrations(database="default"):
+    connection = connections[database]
+    recorder = MigrationRecorder(connection)
+    applied_migrations = recorder.applied_migrations()
+    return applied_migrations
+
+
 def main(skip_setup: bool = False) -> bool:
     from openforms.setup import setup_env
 
     if not skip_setup:
         setup_env()
         django.setup()
+
+    # a data migration converts from URLs to UUIDs, if it's been executed, no point
+    # in checking for valid URLs as a UUID will never be a valid URL
+    applied_migrations = get_applied_migrations()
+    target_migration = ("registrations_objects_api", "0020_objecttype_url_to_uuid")
+    if target_migration in applied_migrations:
+        return True
 
     return check_objecttype_urls()
 
