@@ -2,6 +2,20 @@
 Changelog
 =========
 
+2.7.5 (2024-09-02)
+==================
+
+Periodic bugfix release
+
+* Applied the latest security patches for dependencies.
+* [:backend:`4380`] Added missing ability to store payment provider payment ID references.
+* [:backend:`4597`] Revert message for not-filled-in-fields in confirmation PDF back to
+  just empty space.
+* Fixed processing of empty file upload components in the Objects API registration plugin.
+* Fixed an upgrade check incorrectly reporting problems.
+* [:backend:`4627`] Fixed a crash in the eHerkenning-via-OIDC plugin if no ActingSubjectID
+  claim is present.
+
 2.7.4 (2024-08-06)
 ==================
 
