@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.6.14 (2024-09-02)
+==================
+
+Periodic bugfix release
+
+* [#4597] Revert message for not-filled-in-fields in confirmation PDF back to
+  just empty space.
+* Fixed processing of empty file upload components in the Objects API registration plugin.
+
 2.6.13 (2024-07-29)
 ===================
 
