@@ -188,7 +188,7 @@ class EHClaims(TypedDict):
 
     identifier_type_claim: NotRequired[str]
     legal_subject_claim: str
-    acting_subject_claim: str
+    acting_subject_claim: NotRequired[str]
     branch_number_claim: NotRequired[str]
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
@@ -219,9 +219,9 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
             "value": normalized_claims["legal_subject_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
             "acting_subject_identifier_type": "opaque",
-            "acting_subject_identifier_value": normalized_claims[
-                "acting_subject_claim"
-            ],
+            "acting_subject_identifier_value": normalized_claims.get(
+                "acting_subject_claim", ""
+            ),
         }
         if service_restriction := normalized_claims.get("branch_number_claim", ""):
             form_auth["legal_subject_service_restriction"] = service_restriction

@@ -168,7 +168,9 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         redirect_uri = keycloak_login(start_response["Location"])
 
         # complete the login flow on our end
-        self.app.get(redirect_uri, auto_follow=True)
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):
