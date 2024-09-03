@@ -17,7 +17,7 @@ Periodic bugfix release
   claim is present.
 
 2.6.14 (2024-09-02)
-==================
+===================
 
 Periodic bugfix release
 
