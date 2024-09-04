@@ -63,35 +63,68 @@ const FormDetailFields = ({form: {slug, translations, appointmentOptions}, onCha
             </FormRow>
 
             {!isAppointment && (
-              <FormRow>
-                <Field
-                  name={`form.translations.${langCode}.explanationTemplate`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Explanation template"
-                      description="Start page explanation text label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
-                      description="Start page explanation text"
-                    />
-                  }
-                >
-                  <TinyMCEEditor
-                    content={translations[langCode].explanationTemplate}
-                    onEditorChange={(newValue, editor) =>
-                      onChange({
-                        target: {
-                          name: `form.translations.${langCode}.explanationTemplate`,
-                          value: newValue,
-                        },
-                      })
+              <>
+                <FormRow>
+                  <Field
+                    name={`form.translations.${langCode}.introductionPageContent`}
+                    label={
+                      <FormattedMessage
+                        description="form.introductionPageContent label"
+                        defaultMessage="Introduction page"
+                      />
                     }
-                  />
-                </Field>
-              </FormRow>
+                    helpText={
+                      <FormattedMessage
+                        description="form.introductionPageContent help text"
+                        defaultMessage={`Content for the introduction page that leads to the start page of the
+                          form. Leave blank to disable the introduction page.`}
+                      />
+                    }
+                  >
+                    <TinyMCEEditor
+                      content={translations[langCode].introductionPageContent}
+                      onEditorChange={(newValue, editor) =>
+                        onChange({
+                          target: {
+                            name: `form.translations.${langCode}.introductionPageContent`,
+                            value: newValue,
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                </FormRow>
+
+                <FormRow>
+                  <Field
+                    name={`form.translations.${langCode}.explanationTemplate`}
+                    label={
+                      <FormattedMessage
+                        defaultMessage="Explanation template"
+                        description="Start page explanation text label"
+                      />
+                    }
+                    helpText={
+                      <FormattedMessage
+                        defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
+                        description="Start page explanation text"
+                      />
+                    }
+                  >
+                    <TinyMCEEditor
+                      content={translations[langCode].explanationTemplate}
+                      onEditorChange={(newValue, editor) =>
+                        onChange({
+                          target: {
+                            name: `form.translations.${langCode}.explanationTemplate`,
+                            value: newValue,
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                </FormRow>
+              </>
             )}
           </>
         )}
