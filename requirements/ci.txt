@@ -131,7 +131,7 @@ click-repl==0.2.0
     #   celery
 coverage==7.4.0
     # via -r requirements/test-tools.in
-cryptography==42.0.4
+cryptography==43.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -159,7 +159,7 @@ diff-match-patch==20230430
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-import-export
-django==4.2.15
+django==4.2.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -730,7 +730,7 @@ pyjwt==2.6.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-pyopenssl==24.0.0
+pyopenssl==24.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

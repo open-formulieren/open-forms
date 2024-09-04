@@ -145,7 +145,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==42.0.4
+cryptography==43.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -176,7 +176,7 @@ diff-match-patch==20230430
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==4.2.15
+django==4.2.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -826,7 +826,7 @@ pyjwt==2.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-pyopenssl==24.0.0
+pyopenssl==24.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
