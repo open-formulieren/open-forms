@@ -775,6 +775,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "django_yubin.tasks.delete_old_emails",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
+    "update-saml-digid-eherkenning": {
+        "task": "openforms.authentication.tasks.update_saml_metadata",
+        "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
