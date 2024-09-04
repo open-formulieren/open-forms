@@ -3536,6 +3536,12 @@
       "value": "Weet u zeker dat u dit wilt verwijderen?"
     }
   ],
+  "Z5lydZ": [
+    {
+      "type": 0,
+      "value": "Introduction page"
+    }
+  ],
   "ZB6mnn": [
     {
       "type": 0,
@@ -4167,6 +4173,12 @@
       },
       "type": 5,
       "value": "configured"
+    }
+  ],
+  "dyBb9g": [
+    {
+      "type": 0,
+      "value": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
     }
   ],
   "e6SsfR": [
