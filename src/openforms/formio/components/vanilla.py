@@ -30,6 +30,7 @@ from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
+from openforms.submissions.models import EmailVerification
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -66,6 +67,7 @@ from ..typing import (
     SelectComponent,
     TextFieldComponent,
 )
+from ..typing.base import OpenFormsConfig
 from .translations import translate_options
 from .utils import _normalize_pattern
 
@@ -130,6 +132,27 @@ class TextField(BasePlugin[TextFieldComponent]):
         return serializers.ListField(child=base) if multiple else base
 
 
+class EmailVerificationValidator:
+    message = _("The email address {value} has not been verified yet.")
+    requires_context = True
+
+    def __init__(self, component_key: str):
+        self.component_key = component_key
+
+    def __call__(self, value: str, field: serializers.Field) -> None:
+        submission: Submission = field.context["submission"]
+        has_verification = EmailVerification.objects.filter(
+            submission=submission,
+            component_key=self.component_key,
+            email=value,
+            verified_on__isnull=False,
+        ).exists()
+        if not has_verification:
+            raise serializers.ValidationError(
+                self.message.format(value=value), code="unverified"
+            )
+
+
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
@@ -137,9 +160,11 @@ class Email(BasePlugin):
     def build_serializer_field(
         self, component: Component
     ) -> serializers.EmailField | serializers.ListField:
+        extensions: OpenFormsConfig = component.get("openForms", {})
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
         required = validate.get("required", False)
+        verification_required = extensions.get("requireVerification", False)
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
@@ -149,6 +174,9 @@ class Email(BasePlugin):
         validators = []
         if plugin_ids := validate.get("plugins", []):
             validators.append(PluginValidator(plugin_ids))
+
+        if verification_required:
+            validators.append(EmailVerificationValidator(component["key"]))
 
         if validators:
             extra["validators"] = validators

@@ -43,6 +43,7 @@ class OpenFormsConfig(TypedDict):
     maxDate: NotRequired[DateConstraintConfiguration | None]
     translations: NotRequired[TranslationsDict]
     components: NotRequired[AddressValidationComponents]
+    requireVerification: NotRequired[bool]
 
 
 class OpenFormsOptionExtension(TypedDict):
