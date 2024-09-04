@@ -95,6 +95,6 @@ class PaymentFlowTests(E2ETestCase):
                     "Bevestiging: "
                 )
 
-                payment_specific_text = page.get_by_text("Uw betaling is ontvangen.")
+                payment_specific_text = page.get_by_text("De betaling is ontvangen.")
 
                 await expect(payment_specific_text).to_be_visible()

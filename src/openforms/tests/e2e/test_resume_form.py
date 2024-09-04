@@ -57,7 +57,7 @@ class ResumeFormTests(E2ETestCase):
 
                 await page.get_by_role("button", name="Tussentijds opslaan").click()
 
-                await page.get_by_label("Uw e-mailadres").fill("test@test.nl")
+                await page.get_by_label("Je e-mailadres").fill("test@test.nl")
 
                 await page.get_by_role("button", name="Later verdergaan").click()
 
