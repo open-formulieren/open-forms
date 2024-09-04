@@ -1,11 +1,13 @@
 import dataclasses
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
+from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
 
@@ -14,6 +16,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks import on_post_submission_event, pre_registration
 from openforms.submissions.tests.factories import (
@@ -21,6 +24,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionValueVariableFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from stuf.stuf_zds.client import PaymentStatus as StuFPaymentStatus
 from stuf.stuf_zds.models import StufZDSConfig
@@ -29,7 +33,11 @@ from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_hi
 from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
-from ..plugin import PartialDate, StufZDSRegistration
+from ..options import default_payment_status_update_mapping
+from ..plugin import PLUGIN_IDENTIFIER, PartialDate, StufZDSRegistration
+from ..typing import RegistrationOptions
+
+TESTS_DIR = Path(__file__).parent.resolve()
 
 
 class StufZDSHelperTests(StUFZDSTestBase):
@@ -3047,3 +3055,148 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
             "//zkn:betalingsIndicatie",
             StuFPaymentStatus.NVT,
         )
+
+
+@temp_private_root()
+class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+            "payment_status_update_mapping": default_payment_status_update_mapping(),
+        }
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "label": "Voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={"voornaam": "Foo"},
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        # can't pass this as part of `SubmissionFactory.from_components`
+        cls.submission.price = Decimal("40.00")
+        cls.submission.save()
+        SubmissionPaymentFactory.create(
+            submission=cls.submission,
+            amount=Decimal("25.00"),
+            public_order_id="foo",
+            status=PaymentStatus.completed,
+            provider_payment_id="123456",
+        )
+        SubmissionPaymentFactory.create(
+            submission=cls.submission,
+            amount=Decimal("15.00"),
+            public_order_id="bar",
+            status=PaymentStatus.registered,
+            provider_payment_id="654321",
+        )
+        # failed payment, should be ignored
+        SubmissionPaymentFactory.create(
+            submission=cls.submission,
+            amount=Decimal("15.00"),
+            public_order_id="baz",
+            status=PaymentStatus.failed,
+            provider_payment_id="6789",
+        )
+
+    def test_set_zaak_payment(self):
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        plugin.update_payment_status(self.submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+        expected_items = {
+            "payment_completed": "true",
+            "payment_amount": "40.0",
+            "payment_public_order_ids.0": "foo",
+            "payment_public_order_ids.1": "bar",
+            "provider_payment_ids.0": "123456",
+            "provider_payment_ids.1": "654321",
+        }
+        for name, value in expected_items.items():
+            with self.subTest(extra_element=name, value=value):
+                self.assertXPathEqual(
+                    xml_doc,
+                    f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
+                    value,
+                )
+
+    def test_set_zaak_payment_incorrect_payment_status_update_mapping(self):
+        """
+        Non-existent fields in the payment_status_update_mapping should be ignored
+        """
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+        options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+            "payment_status_update_mapping": [
+                {"form_variable": "payment_amount", "stuf_name": "paymentAmount"},
+                {"form_variable": "non-existent-field", "stuf_name": "foo"},
+            ],
+        }
+
+        plugin.update_payment_status(self.submission, options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqual(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='paymentAmount']",
+            "40.0",
+        )
+
+    def test_register_submission_with_payment(self):
+        """
+        Assert that payment attributes are included when creating the zaak, in case
+        the registration is deferred until the payment is received
+        """
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        plugin.register_submission(self.submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+        self.assertSoapXMLCommon(xml_doc)
+        expected_items = {
+            "payment_completed": "true",
+            "payment_amount": "40.0",
+            "payment_public_order_ids.0": "foo",
+            "payment_public_order_ids.1": "bar",
+            "provider_payment_ids.0": "123456",
+            "provider_payment_ids.1": "654321",
+        }
+        for name, value in expected_items.items():
+            with self.subTest(extra_element=name, value=value):
+                self.assertXPathEqual(
+                    xml_doc,
+                    f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
+                    value,
+                )

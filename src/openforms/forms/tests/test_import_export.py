@@ -1682,3 +1682,59 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             registration_backend.options["zgw_api_group"],
             zgw_group.pk,
         )
+
+
+class ImportStUFZDSTests(TempdirMixin, TestCase):
+    def test_extension_plugin_id_is_converted(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "zds-from-extension",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "stuf-zds-create-zaak:ext-utrecht",
+                            "options": {
+                                "zds_zaaktype_code": "TEST",
+                                "zds_documenttype_omschrijving_inzending": "omschrijving",
+                                "zds_zaakdoc_vertrouwelijkheid": "VERTROUWELIJK",
+                                "payment_status_update_mapping": [
+                                    {
+                                        "form_variable": "provider_payment_ids",
+                                        "stuf_name": "providerPaymentID",
+                                    }
+                                ],
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(registration_backend.backend, "stuf-zds-create-zaak")
+        self.assertEqual(
+            registration_backend.options,
+            {
+                "zds_zaaktype_code": "TEST",
+                "zds_documenttype_omschrijving_inzending": "omschrijving",
+                "zds_zaakdoc_vertrouwelijkheid": "VERTROUWELIJK",
+                "payment_status_update_mapping": [
+                    {
+                        "form_variable": "provider_payment_ids",
+                        "stuf_name": "providerPaymentID",
+                    }
+                ],
+            },
+        )
