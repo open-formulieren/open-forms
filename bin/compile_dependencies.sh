@@ -54,10 +54,4 @@ uv pip compile \
     "$@" \
     requirements/extensions.in
 
-# Dependencies for (temporary) Utrecht StUF-ZDS extension
-uv pip compile \
-    --output-file requirements/utrecht_zds.txt \
-    "$@" \
-    requirements/utrecht_zds.in
-
 cd "${cwd}"
