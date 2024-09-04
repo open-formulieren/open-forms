@@ -1,7 +1,11 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 from rest_framework import serializers
 
+from openforms.submissions.tests.factories import (
+    EmailVerificationFactory,
+    SubmissionFactory,
+)
 from openforms.typing import JSONValue
 from openforms.validations.base import BasePlugin
 
@@ -94,3 +98,64 @@ class EmailValidationTests(SimpleTestCase):
                 )
 
                 self.assertFalse(is_valid)
+
+
+class EmailValidationDBTests(TestCase):
+    def test_require_email_verification(self):
+        submission = SubmissionFactory.create()
+        # create some *unrelated* verification records
+        ev = EmailVerificationFactory.create(
+            component_key="foo", email="foobar@example.com", verified=True
+        )
+        assert ev.submission != submission
+        EmailVerificationFactory(
+            submission=submission,
+            component_key="foo",
+            email="foobar@example.com",
+            verified=False,
+        )
+        EmailVerificationFactory(
+            submission=submission,
+            component_key="bar",
+            email="foobar@example.com",
+            verified=True,
+        )
+        EmailVerificationFactory(
+            submission=submission,
+            component_key="foo",
+            email="other@example.com",
+            verified=True,
+        )
+
+        component: Component = {
+            "type": "email",
+            "key": "foo",
+            "label": "Test",
+            "openForms": {
+                "requireVerification": True,
+            },
+        }
+        data: JSONValue = {"foo": "foobar@example.com"}
+
+        with self.subTest("not verified"):
+            is_valid, errors = validate_formio_data(
+                component, data, submission=submission
+            )
+
+            self.assertFalse(is_valid)
+            error = extract_error(errors, "foo")
+            self.assertEqual(error.code, "unverified")
+
+        with self.subTest("verified"):
+            # multiple successful verifications should not be a problem
+            EmailVerificationFactory.create_batch(
+                2,
+                submission=submission,
+                component_key="foo",
+                email="foobar@example.com",
+                verified=True,
+            )
+
+            is_valid, _ = validate_formio_data(component, data, submission=submission)
+
+            self.assertTrue(is_valid)
