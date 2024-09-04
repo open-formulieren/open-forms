@@ -401,5 +401,7 @@
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} of {{ lastLabel }}",
   "Note that any family member without a BSN will not be displayed.": "Let op, gezinsleden zonder BSN worden niet getoond.",
   "invalidDatetime": "Ongeldige datum/tijd",
+  "Verify": "Bevestigen",
+  "You must verify this email address to continue.": "Om door te gaan moet je dit e-mailadres bevestigen.",
   "": ""
 }
