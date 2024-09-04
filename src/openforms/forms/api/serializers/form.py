@@ -272,6 +272,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "deactivate_on",
             "is_deleted",
             "submission_confirmation_template",
+            "introduction_page_content",
             "explanation_template",
             "submission_allowed",
             "suspension_allowed",
@@ -296,6 +297,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         public_fields = (
             "uuid",
             "name",
+            "introduction_page_content",
             "explanation_template",
             "login_required",
             "authentication_backends",
