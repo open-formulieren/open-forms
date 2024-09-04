@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><md:EntitiesDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi" ID="_74eb6371-b6e6-4a98-a3ac-8eb7c6656ea3" cacheDuration="P7D"><ds:Signature>
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+<ds:Reference URI="#_74eb6371-b6e6-4a98-a3ac-8eb7c6656ea3">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+<ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xacml-saml"/>
+</ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>wlAXjLMXcBaAnMSeTPMWtXAXz3aw2JutKmrINJ9K0Zs=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+djwJqVPxyHhwc+cEcNGHUDvfiq4hqzfw+etregUdSYXbxHZ/0y0H82f/rrFnX5gLzaJVGMGL7CXO
+D2D0g03pRroEHOayI000SZgJIHaP6Pij8jnBwgVBvhhEh8e0y2NqEkyc3haiukA2nFfjQ2aZj5c2
+3LVgfShPStdGdJzYrnU7SdEVdAP4j6oooTtEUL6ZyKf8H8WXzvWGpil8ccPFTTjaiVTIyUsAMTrs
+1HdokjTLi+uliR89Q5E8ttpQjHXPlkq1wLS2PWP2szg7DMgJtIB+RfJ2V7at4UwOXYVuTZOw/xBe
+cMvsbRRqa0kLFaf2qqHgzsp1y4cOwDi2x0KhBLfeEH376PFBxDX0ferNK7zuMji/6mBxK8Y/je7G
+4jk6eTR3kNHhvLYTZbfXIpohEnyB+Nkn7uinfO/IGFykNcoKEco31IjjZcmxFQ8uOydirtI44tZ3
+Ki/jX8WDr84Ty16ZdDaX2wJbHbb8DVt1aTSD+vOljZuAYhdo1GjTJLC9y8ch4hC1YNNJROtYgnqs
+xW4aNJMkUvI+a7GVv/fADxZacj5sgD1V/fFkBqXd1RqxoxItDF2jvJ4UG1kNAi/l/Li61gcXZ/F6
+1aniA/4a+MhTOKLskZzy1tpjooXhjjHgnaSsMVl6GYtI4kJAGFfRxbIB0wBTyD5ZvhOizFuty40=
+</ds:SignatureValue>
+<ds:KeyInfo>
+<ds:KeyName>e6e04e0a22bbc8a036a8a243abc9655e92907f73a4ba5a2ad28485ec3f4c82d1</ds:KeyName>
+</ds:KeyInfo>
+</ds:Signature>
+  <md:Extensions/>
+  <md:EntityDescriptor xmlns:ns0="urn:etoegang:1.13:metadata-extension" entityID="urn:etoegang:HM:00000003520354760000:entities:9632" ns0:version="1.13">
+    <md:Extensions>
+      <attr:EntityAttributes xmlns:attr="urn:oasis:names:tc:SAML:metadata:attribute">
+        <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+          <saml:AttributeValue>urn:etoegang:core:assurance-class:loa4</saml:AttributeValue>
+        </saml:Attribute>
+      </attr:EntityAttributes>
+    </md:Extensions>
+    <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo>
+          <ds:KeyName>e6e04e0a22bbc8a036a8a243abc9655e92907f73a4ba5a2ad28485ec3f4c82d1</ds:KeyName>
+          <ds:X509Data>
+            <ds:X509Certificate>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</ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://eh02.staging.iwelcome.nl/broker/ars/1.13" index="1"/>
+      <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://eh02.staging.iwelcome.nl/broker/ars/1.13" index="0"/>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://eh01.staging.iwelcome.nl/broker/slo/1.13"/>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eh01.staging.iwelcome.nl/broker/slo/1.13"/>
+      <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eh01.staging.iwelcome.nl/broker/slo/1.13"/>
+      <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:KvKnr</md:NameIDFormat>
+      <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:Pseudo</md:NameIDFormat>
+      <md:NameIDFormat>urn:etoegang:1.9:EntityConcernedID:RSIN</md:NameIDFormat>
+      <md:NameIDFormat>urn:etoegang:1.11:EntityConcernedID:eIDASLegalIdentifier</md:NameIDFormat>
+      <md:NameIDFormat>urn:etoegang:1.12:EntityConcernedID:BSN</md:NameIDFormat>
+      <md:NameIDFormat>urn:etoegang:1.12:EntityConcernedID:PseudoID</md:NameIDFormat>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://eh01.staging.iwelcome.nl/broker/sso/1.13"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eh01.staging.iwelcome.nl/broker/sso/1.13"/>
+      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eh01.staging.iwelcome.nl/broker/sso/1.13"/>
+    </md:IDPSSODescriptor>
+    <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+        <ds:KeyInfo>
+          <ds:KeyName>e6e04e0a22bbc8a036a8a243abc9655e92907f73a4ba5a2ad28485ec3f4c82d1</ds:KeyName>
+          <ds:X509Data>
+            <ds:X509Certificate>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</ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://eh02.staging.iwelcome.nl/broker/ars/1.13" index="1"/>
+      <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://eh02.staging.iwelcome.nl/broker/ars/1.13" index="0"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://eh01.staging.iwelcome.nl/broker/acs/1.13" index="1" isDefault="true"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://eh01.staging.iwelcome.nl/broker/acs/1.13" index="2" isDefault="false"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eh01.staging.iwelcome.nl/broker/acs/1.13" index="3" isDefault="false"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eh01.staging.iwelcome.nl/broker/acs/1.13" index="4" isDefault="false"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://eh01.staging.iwelcome.nl/broker/acs/1.13" index="5" isDefault="false"/>
+    </md:SPSSODescriptor>
+    <md:Organization>
+      <md:OrganizationName xml:lang="en">iWelcome B.V.</md:OrganizationName>
+      <md:OrganizationDisplayName xml:lang="en">iWelcome Broker 1.13 (Pre-production)</md:OrganizationDisplayName>
+      <md:OrganizationURL xml:lang="en">https://www.iwelcome.com/</md:OrganizationURL>
+    </md:Organization>
+    <md:ContactPerson contactType="administrative">
+      <md:Company>iWelcome</md:Company>
+      <md:EmailAddress>eherkenning@iwelcome.com</md:EmailAddress>
+      <md:TelephoneNumber>026 3724 295</md:TelephoneNumber>
+    </md:ContactPerson>
+  </md:EntityDescriptor>
+</md:EntitiesDescriptor>
