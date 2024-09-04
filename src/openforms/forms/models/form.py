@@ -226,6 +226,16 @@ class Form(models.Model):
             "Leave blank to get value from global configuration."
         ),
     )
+    introduction_page_content = CSPPostProcessedWYSIWYGField(
+        HTMLField(
+            blank=True,
+            verbose_name=_("introduction page"),
+            help_text=_(
+                "Content for the introduction page that leads to the start page of the "
+                "form. Leave blank to disable the introduction page."
+            ),
+        ),
+    )
     explanation_template = CSPPostProcessedWYSIWYGField(
         HTMLField(
             blank=True,
