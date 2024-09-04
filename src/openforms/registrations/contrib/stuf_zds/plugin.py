@@ -7,7 +7,7 @@ from typing import Any
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import serializers
+from json_logic.typing import Primitive
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin, PreRegistrationResult
@@ -23,60 +23,25 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.variables.service import get_static_variables
 from stuf.stuf_zds.client import (
     NoServiceConfigured,
     PaymentStatus,
     ZaakOptions,
     get_client,
 )
-from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
 
 from ...registry import register
 from ...utils import execute_unless_result_exists
+from .options import ZaakOptionsSerializer
+from .registration_variables import register as variables_registry
+from .typing import RegistrationOptions
 from .utils import flatten_data
 
 logger = logging.getLogger(__name__)
 
 PLUGIN_IDENTIFIER = "stuf-zds-create-zaak"
-
-
-class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    zds_zaaktype_code = serializers.CharField(
-        required=True,
-        help_text=_("Zaaktype code for newly created Zaken in StUF-ZDS"),
-    )
-    zds_zaaktype_omschrijving = serializers.CharField(
-        required=False,
-        help_text=_("Zaaktype description for newly created Zaken in StUF-ZDS"),
-    )
-
-    zds_zaaktype_status_code = serializers.CharField(
-        required=False,
-        help_text=_("Zaaktype status code for newly created zaken in StUF-ZDS"),
-    )
-    zds_zaaktype_status_omschrijving = serializers.CharField(
-        required=False,
-        help_text=_("Zaaktype status omschrijving for newly created zaken in StUF-ZDS"),
-    )
-
-    zds_documenttype_omschrijving_inzending = serializers.CharField(
-        required=True,
-        help_text=_("Documenttype description for newly created zaken in StUF-ZDS"),
-    )
-
-    zds_zaakdoc_vertrouwelijkheid = serializers.ChoiceField(
-        label=_("Document confidentiality level"),
-        choices=VertrouwelijkheidsAanduidingen.choices,
-        # older versions from before this version was added do not have this field in
-        # the saved data. In those cases, the default is used.
-        default=VertrouwelijkheidsAanduidingen.vertrouwelijk,
-        help_text=_(
-            "Indication of the level to which extend the dossier of the ZAAK is meant "
-            "to be public. This is set on the documents created for the ZAAK."
-        ),
-    )
 
 
 @dataclass
@@ -158,8 +123,40 @@ def _gender_choices(value):
     return value
 
 
+def _prepare_value(value: Any):
+    match value:
+        case bool():
+            return "true" if value else "false"
+        case float():
+            return str(value)
+        case _:
+            return value
+
+
+def _get_extra_payment_variables(submission: Submission, options: RegistrationOptions):
+    key_mapping = {
+        mapping["form_variable"]: mapping["stuf_name"]
+        for mapping in options.get("payment_status_update_mapping", [])
+    }
+    return {
+        key_mapping[variable.key]: _prepare_value(variable.initial_value)
+        for variable in get_static_variables(
+            submission=submission,
+            variables_registry=variables_registry,
+        )
+        if variable.key
+        in [
+            "payment_completed",
+            "payment_amount",
+            "payment_public_order_ids",
+            "provider_payment_ids",
+        ]
+        and variable.key in key_mapping
+    }
+
+
 @register(PLUGIN_IDENTIFIER)
-class StufZDSRegistration(BasePlugin):
+class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
 
@@ -200,9 +197,13 @@ class StufZDSRegistration(BasePlugin):
     }
 
     def pre_register_submission(
-        self, submission: "Submission", options: ZaakOptions
+        self, submission: "Submission", options: RegistrationOptions
     ) -> PreRegistrationResult:
-        with get_client(options=options) as client:
+        zaak_options: ZaakOptions = {
+            **options,
+            "omschrijving": submission.form.admin_name,
+        }
+        with get_client(options=zaak_options) as client:
             # obtain a zaaknummer & save it - first, check if we have an intermediate result
             # from earlier attempts. if we do, do not generate a new number
             zaak_id = execute_unless_result_exists(
@@ -215,12 +216,14 @@ class StufZDSRegistration(BasePlugin):
         return PreRegistrationResult(reference=zaak_id)
 
     def get_extra_data(
-        self, submission: Submission, options: ZaakOptions
+        self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any]:
-        return get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
+        data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
+        payment_extra = _get_extra_payment_variables(submission, options)
+        return {**data, **payment_extra}
 
     def register_submission(
-        self, submission: Submission, options: ZaakOptions
+        self, submission: Submission, options: RegistrationOptions
     ) -> dict | None:
         """
         Register the submission by creating a ZAAK.
@@ -232,8 +235,12 @@ class StufZDSRegistration(BasePlugin):
         prevents Open Forms from reserving case numbers over and over again (for
         example). See #1183 for a reported issue about this.
         """
-        options["omschrijving"] = submission.form.admin_name
-        with get_client(options=options) as client:
+        zaak_options: ZaakOptions = {
+            **options,
+            "omschrijving": submission.form.admin_name,
+        }
+
+        with get_client(options=zaak_options) as client:
             # Zaak ID reserved during the pre-registration phase
             zaak_id = submission.public_registration_reference
 
@@ -241,16 +248,19 @@ class StufZDSRegistration(BasePlugin):
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
             )
             if zaak_data.get("locatie"):
-                zaak_data["locatie"]["key"] = get_component(
+                component = get_component(
                     submission,
                     RegistrationAttribute.locatie_coordinaat,
                     REGISTRATION_ATTRIBUTE,
-                )["key"]
+                )
+                assert component is not None
+                zaak_data["locatie"]["key"] = component["key"]
 
             extra_data = self.get_extra_data(submission, options)
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
 
+            assert submission.registration_result is not None
             if internal_reference := submission.registration_result.get(
                 "temporary_internal_reference",
             ):
@@ -258,6 +268,7 @@ class StufZDSRegistration(BasePlugin):
 
             # Add medewerker to the data
             if submission.has_registrator:
+                assert submission.registrator is not None
                 zaak_data.update(
                     {
                         "registrator": {
@@ -267,14 +278,6 @@ class StufZDSRegistration(BasePlugin):
                         }
                     }
                 )
-
-            class LangInjection:
-                """Ensures the first extra element is the submission language
-                and isn't shadowed by a form field with the same key"""
-
-                def items(self):
-                    yield ("language_code", submission.language_code)
-                    yield from extra_data.items()
 
             payment_status = (
                 PaymentStatus.NVT
@@ -288,7 +291,12 @@ class StufZDSRegistration(BasePlugin):
             zaak_data.update({"betalings_indicatie": payment_status})
 
             execute_unless_result_exists(
-                partial(client.create_zaak, zaak_id, zaak_data, LangInjection()),
+                partial(
+                    client.create_zaak,
+                    zaak_id,
+                    zaak_data,
+                    LangInjection(submission, extra_data),
+                ),
                 submission,
                 "intermediate.zaak_created",
                 default=False,
@@ -316,7 +324,7 @@ class StufZDSRegistration(BasePlugin):
                 attachment_doc_id = execute_unless_result_exists(
                     client.create_document_identificatie,
                     submission,
-                    f"intermediate.document_nummers.{attachment.id}",
+                    f"intermediate.document_nummers.{attachment.id}",  # type: ignore
                     default="",
                 )
                 execute_unless_result_exists(
@@ -327,7 +335,7 @@ class StufZDSRegistration(BasePlugin):
                         attachment,
                     ),
                     submission,
-                    f"intermediate.documents_created.{attachment.id}",
+                    f"intermediate.documents_created.{attachment.id}",  # type: ignore
                     default=False,
                     result=True,
                 )
@@ -338,10 +346,21 @@ class StufZDSRegistration(BasePlugin):
         }
         return result
 
-    def update_payment_status(self, submission: "Submission", options: ZaakOptions):
-        with get_client(options) as client:
+    def update_payment_status(
+        self, submission: Submission, options: RegistrationOptions
+    ):
+        # The extraElement tag of StUF-ZDS expects primitive types
+        extra_data = flatten_data(self.get_extra_data(submission, options))
+
+        zaak_options: ZaakOptions = {
+            **options,
+            "omschrijving": submission.form.admin_name,
+        }
+        with get_client(zaak_options) as client:
+            assert submission.registration_result is not None
             client.set_zaak_payment(
                 submission.registration_result["zaak"],
+                extra=LangInjection(submission, extra_data),
             )
 
     def check_config(self):
@@ -376,3 +395,16 @@ class StufZDSRegistration(BasePlugin):
                 ),
             ),
         ]
+
+
+class LangInjection:
+    """Ensures the first extra element is the submission language
+    and isn't shadowed by a form field with the same key"""
+
+    def __init__(self, submission: Submission, extra_data: dict[str, Primitive]):
+        self.submission = submission
+        self.extra_data = extra_data
+
+    def items(self):
+        yield ("language_code", self.submission.language_code)
+        yield from self.extra_data.items()

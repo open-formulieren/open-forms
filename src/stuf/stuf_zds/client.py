@@ -4,11 +4,12 @@ import uuid
 from collections import OrderedDict
 from datetime import datetime
 from functools import partial
-from typing import Callable, Literal, TypedDict
+from typing import Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from json_logic.typing import Primitive
 from lxml import etree
 from lxml.etree import _Element
 from requests import RequestException
@@ -77,9 +78,9 @@ def xml_value(xml, xpath, namespaces=nsmap):
 class ZaakOptions(TypedDict):
     # from stuf_zds.plugin.ZaakOptionsSerializer
     zds_zaaktype_code: str
-    zds_zaaktype_omschrijving: str
-    zds_zaaktype_status_code: str
-    zds_zaaktype_status_omschrijving: str
+    zds_zaaktype_omschrijving: NotRequired[str]
+    zds_zaaktype_status_code: NotRequired[str]
+    zds_zaaktype_status_omschrijving: NotRequired[str]
     zds_documenttype_omschrijving_inzending: str
     zds_zaakdoc_vertrouwelijkheid: Literal[
         "ZEER GEHEIM",
@@ -93,7 +94,6 @@ class ZaakOptions(TypedDict):
     ]
     # extra's
     omschrijving: str
-    referentienummer: str
 
 
 class NoServiceConfigured(RuntimeError):
@@ -120,6 +120,10 @@ def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
         success_log_callback=partial(logevent.stuf_zds_success_response, service),
         **init_kwargs,
     )
+
+
+class ExtraData(Protocol):
+    def items(self) -> Iterator[tuple[str, Primitive]]: ...
 
 
 class Client(BaseClient):
@@ -219,7 +223,7 @@ class Client(BaseClient):
         self,
         zaak_identificatie: str,
         zaak_data: dict,
-        extra_data,
+        extra_data: ExtraData,
     ) -> None:
         now = timezone.now()
         context = {
@@ -260,14 +264,20 @@ class Client(BaseClient):
             endpoint_type=EndpointType.ontvang_asynchroon,
         )
 
-    def set_zaak_payment(self, zaak_identificatie: str, partial: bool = False) -> dict:
+    def set_zaak_payment(
+        self,
+        zaak_identificatie: str,
+        partial: bool = False,
+        extra: ExtraData | None = None,
+    ) -> None:
         data = {
             "betalings_indicatie": (
                 PaymentStatus.PARTIAL if partial else PaymentStatus.FULL
             ),
             "laatste_betaaldatum": fmt_soap_date(timezone.now()),
+            "extra": extra,
         }
-        return self.partial_update_zaak(zaak_identificatie, data)
+        self.partial_update_zaak(zaak_identificatie, data)
 
     def create_document_identificatie(self) -> str:
         xml = self.execute_call(
