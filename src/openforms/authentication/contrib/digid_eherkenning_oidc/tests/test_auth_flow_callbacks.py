@@ -11,16 +11,18 @@ These tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
-from django.test import tag
+from django.test import override_settings, tag
 
 import requests
 from furl import furl
+from rest_framework.reverse import reverse
 
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+from openforms.submissions.models import Submission
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import keycloak_login
 
@@ -171,6 +173,34 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         callback_response = self.app.get(redirect_uri, auto_follow=True)
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
 
     @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):
