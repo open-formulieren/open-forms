@@ -10,6 +10,7 @@ export const initialFormTranslations = {
   previousText: '',
   beginText: '',
   submissionConfirmationTemplate: '',
+  introductionPageContent: '',
   explanationTemplate: '',
 };
 

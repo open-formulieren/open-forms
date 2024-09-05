@@ -98,9 +98,9 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
     extractMissingTranslations(
       form.translations,
       <FormattedMessage defaultMessage="Form" description="Form fields tab title" />,
-      ['name', 'explanationTemplate'],
+      ['name', 'introductionPageContent', 'explanationTemplate'],
       undefined,
-      ['explanationTemplate']
+      ['introductionPageContent', 'explanationTemplate']
     ),
     extractMissingTranslations(
       form.translations,

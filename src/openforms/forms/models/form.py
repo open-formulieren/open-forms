@@ -165,6 +165,27 @@ class Form(models.Model):
         ),
         default=True,
     )
+    ask_privacy_consent = models.CharField(
+        _("ask privacy consent"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree to the privacy policy before submitting a form."
+        ),
+    )
+    ask_statement_of_truth = models.CharField(
+        _("ask statement of truth"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree that they filled out the form "
+            "truthfully before submitting it."
+        ),
+    )
+
+    # Content displayed to end users
     begin_text = models.CharField(
         _("begin text"),
         max_length=50,
@@ -205,6 +226,16 @@ class Form(models.Model):
             "Leave blank to get value from global configuration."
         ),
     )
+    introduction_page_content = CSPPostProcessedWYSIWYGField(
+        HTMLField(
+            blank=True,
+            verbose_name=_("introduction page"),
+            help_text=_(
+                "Content for the introduction page that leads to the start page of the "
+                "form. Leave blank to disable the introduction page."
+            ),
+        ),
+    )
     explanation_template = CSPPostProcessedWYSIWYGField(
         HTMLField(
             blank=True,
@@ -212,25 +243,6 @@ class Form(models.Model):
             help_text=_(
                 "Content that will be shown on the start page of the form, below the title and above the log in text."
             ),
-        ),
-    )
-    ask_privacy_consent = models.CharField(
-        _("ask privacy consent"),
-        max_length=50,
-        choices=StatementCheckboxChoices.choices,
-        default=StatementCheckboxChoices.global_setting,
-        help_text=_(
-            "If enabled, the user will have to agree to the privacy policy before submitting a form."
-        ),
-    )
-    ask_statement_of_truth = models.CharField(
-        _("ask statement of truth"),
-        max_length=50,
-        choices=StatementCheckboxChoices.choices,
-        default=StatementCheckboxChoices.global_setting,
-        help_text=_(
-            "If enabled, the user will have to agree that they filled out the form "
-            "truthfully before submitting it."
         ),
     )
 

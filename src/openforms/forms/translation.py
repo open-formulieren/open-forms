@@ -13,6 +13,7 @@ class FormTranslationOptions(TranslationOptions):
         "change_text",
         "confirm_text",
         "explanation_template",
+        "introduction_page_content",
     )
 
 

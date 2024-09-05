@@ -7588,6 +7588,11 @@ components:
           description: The content of the submission confirmation page. It can contain
             variables that will be templated from the submitted form data. If not
             specified, the global template will be used.
+        introductionPageContent:
+          type: string
+          title: Introduction page
+          description: Content for the introduction page that leads to the start page
+            of the form. Leave blank to disable the introduction page.
         explanationTemplate:
           type: string
           description: Content that will be shown on the start page of the form, below
@@ -7999,6 +8004,12 @@ components:
             the form is filled in correctly. Leave blank to get value from global
             configuration.
           maxLength: 50
+        introductionPageContent:
+          type: string
+          nullable: true
+          title: Introduction page [en]
+          description: Content for the introduction page that leads to the start page
+            of the form. Leave blank to disable the introduction page.
         explanationTemplate:
           type: string
           nullable: true
@@ -8164,6 +8175,12 @@ components:
             the form is filled in correctly. Leave blank to get value from global
             configuration.
           maxLength: 50
+        introductionPageContent:
+          type: string
+          nullable: true
+          title: Introduction page [nl]
+          description: Content for the introduction page that leads to the start page
+            of the form. Leave blank to disable the introduction page.
         explanationTemplate:
           type: string
           nullable: true
@@ -9226,6 +9243,11 @@ components:
           description: The content of the submission confirmation page. It can contain
             variables that will be templated from the submitted form data. If not
             specified, the global template will be used.
+        introductionPageContent:
+          type: string
+          title: Introduction page
+          description: Content for the introduction page that leads to the start page
+            of the form. Leave blank to disable the introduction page.
         explanationTemplate:
           type: string
           description: Content that will be shown on the start page of the form, below
