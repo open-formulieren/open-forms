@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.7.6 (2024-09-05)
+==================
+
+Hotfix release.
+
+* [:backend:`4627`] The previous patch was incomplete, fixed another crash that would
+  occur if no ActingSubjectID is present.
+
 2.7.5 (2024-09-02)
 ==================
 
