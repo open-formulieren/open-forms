@@ -11,16 +11,18 @@ These tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
-from django.test import tag
+from django.test import override_settings, tag
 
 import requests
 from furl import furl
+from rest_framework.reverse import reverse
 
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+from openforms.submissions.models import Submission
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import keycloak_login
 
@@ -171,6 +173,50 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         callback_response = self.app.get(redirect_uri, auto_follow=True)
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
+    @tag("gh-4627")
+    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
+    @mock_eherkenning_config(acting_subject_claim=["does not exist"])
+    def test_failure_with_missing_acting_subject_claim_strict_mode(self):
+        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
+        start_response = self.app.get(start_url)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(start_response["Location"])
+
+        # complete the login flow on our end
+        response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertIn("of-auth-problem", response.request.GET)
 
     @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):

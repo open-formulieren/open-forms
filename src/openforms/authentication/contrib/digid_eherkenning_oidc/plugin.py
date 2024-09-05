@@ -11,6 +11,7 @@ from django.http import (
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.oidc.models import BaseConfig
+from flags.state import flag_enabled
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
@@ -210,6 +211,18 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
     def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
+        acting_subject_identifier_value = normalized_claims.get(
+            "acting_subject_claim", ""
+        )
+        strict_mode = flag_enabled("DIGID_EHERKENNING_OIDC_STRICT")
+
+        if strict_mode and not acting_subject_identifier_value:
+            raise ValueError(
+                "The acting_subject_claim value must be set to a non-empty value in "
+                "strict mode. You may have to contact your identity provider to ensure "
+                "it is present in the OIDC claims."
+            )
+
         form_auth: FormAuth = {
             "plugin": self.identifier,
             # TODO: look at `identifier_type_claim` and return kvk or rsin accordingly.
@@ -219,9 +232,8 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
             "value": normalized_claims["legal_subject_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
             "acting_subject_identifier_type": "opaque",
-            "acting_subject_identifier_value": normalized_claims.get(
-                "acting_subject_claim", ""
-            ),
+            "acting_subject_identifier_value": acting_subject_identifier_value
+            or "dummy-set-by@openforms",
         }
         if service_restriction := normalized_claims.get("branch_number_claim", ""):
             form_auth["legal_subject_service_restriction"] = service_restriction
