@@ -11,12 +11,10 @@ import {
   ValidationErrorContext,
   ValidationErrorsProvider,
 } from 'components/admin/forms/ValidationErrors';
-import ErrorBoundary from 'components/errors/ErrorBoundary';
 
+import BasicOptionsFieldset from './BasicOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import {
-  CaseTypeSelect,
-  CatalogueSelect,
   ConfidentialityLevel,
   DocumentType,
   LegacyCaseType,
@@ -24,35 +22,15 @@ import {
   ObjectType,
   ObjectTypeVersion,
   OrganisationRSIN,
-  ZGWAPIGroup,
 } from './fields';
 import {filterErrors} from './utils';
 
 const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => {
-  const intl = useIntl();
   const {
-    values: {
-      zaaktype,
-      informatieobjecttype,
-      medewerkerRoltype,
-      propertyMappings = [],
-      objecttype,
-      objecttypeVersion,
-      contentJson,
-    },
+    values: {propertyMappings = []},
   } = useFormikContext();
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
-
-  const hasAnyFieldConfigured =
-    [
-      zaaktype,
-      informatieobjecttype,
-      medewerkerRoltype,
-      objecttype,
-      objecttypeVersion,
-      contentJson,
-    ].some(v => !!v) || propertyMappings.length > 0;
 
   const numCasePropertyErrors = filterErrors(`${name}.propertyMappings`, validationErrors).length;
   const numBaseErrors = relevantErrors.length - numCasePropertyErrors;
@@ -80,45 +58,7 @@ const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => 
 
         {/* Base configuration */}
         <TabPanel>
-          <Fieldset>
-            <ZGWAPIGroup
-              apiGroupChoices={apiGroupChoices}
-              onChangeCheck={() => {
-                if (!hasAnyFieldConfigured) return true;
-                const confirmSwitch = window.confirm(
-                  intl.formatMessage({
-                    description:
-                      'ZGW APIs registration options: warning message when changing the api group',
-                    defaultMessage: `Changing the api group will clear the existing configuration.
-                    Are you sure you want to continue?`,
-                  })
-                );
-                return confirmSwitch;
-              }}
-            />
-            <ErrorBoundary
-              errorMessage={
-                <FormattedMessage
-                  description="ZGW APIs registrations options: catalogue select error"
-                  defaultMessage={`Something went wrong retrieving the available catalogues.
-                    Please check that the services in the selected API group are configured correctly.`}
-                />
-              }
-            >
-              <CatalogueSelect />
-            </ErrorBoundary>
-            <ErrorBoundary
-              errorMessage={
-                <FormattedMessage
-                  description="ZGW APIs registrations options: case type select error"
-                  defaultMessage={`Something went wrong retrieving the available case types.
-                    Please check that the services in the selected API group are configured correctly.`}
-                />
-              }
-            >
-              <CaseTypeSelect />
-            </ErrorBoundary>
-          </Fieldset>
+          <BasicOptionsFieldset apiGroupChoices={apiGroupChoices} />
 
           <Fieldset
             title={
