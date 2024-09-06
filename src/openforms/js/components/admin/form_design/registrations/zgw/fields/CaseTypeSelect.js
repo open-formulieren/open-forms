@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
@@ -41,7 +42,7 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
   }));
 };
 
-const CaseTypeSelect = ({onChangeCheck}) => {
+const CaseTypeSelect = ({catalogueUrl}) => {
   const [fieldProps, , fieldHelpers] = useField('case_type_identification');
   const {
     values: {zgwApiGroup = null},
@@ -55,8 +56,8 @@ const CaseTypeSelect = ({onChangeCheck}) => {
     error,
   } = useAsync(async () => {
     if (!zgwApiGroup) return [];
-    return await getAvailableCaseTypes(zgwApiGroup);
-  }, [zgwApiGroup]);
+    return await getAvailableCaseTypes(zgwApiGroup, catalogueUrl);
+  }, [zgwApiGroup, catalogueUrl]);
   if (error) throw error;
 
   return (
@@ -88,8 +89,7 @@ const CaseTypeSelect = ({onChangeCheck}) => {
           required={false}
           isClearable
           onChange={selectedOption => {
-            const okToProceed = onChangeCheck === undefined || onChangeCheck();
-            if (okToProceed) setValue(selectedOption.value);
+            setValue(selectedOption ? selectedOption.value : undefined);
           }}
         />
       </Field>
@@ -98,7 +98,7 @@ const CaseTypeSelect = ({onChangeCheck}) => {
 };
 
 CaseTypeSelect.propTypes = {
-  onChangeCheck: PropTypes.func,
+  catalogueUrl: PropTypes.string,
 };
 
 export default CaseTypeSelect;

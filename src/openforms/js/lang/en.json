@@ -399,11 +399,6 @@
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
   },
-  "9HyRBr": {
-    "defaultMessage": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly.",
-    "description": "ZGW APIs registrations options: catalogue select error",
-    "originalDefault": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly."
-  },
   "9LdZVP": {
     "defaultMessage": "Attribute",
     "description": "Variable prefill attribute label",
@@ -1073,6 +1068,11 @@
     "defaultMessage": "The selected trigger step could not be found in this form! Please change it!",
     "description": "Warning missing trigger step",
     "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
+  },
+  "LkrFow": {
+    "defaultMessage": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly.",
+    "description": "ZGW APIs registrations options: generic error",
+    "originalDefault": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
   },
   "LrlAVD": {
     "defaultMessage": "Data extraction",
@@ -2378,11 +2378,6 @@
     "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
     "description": "Errored Submissions Removal Method help text",
     "originalDefault": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
-  },
-  "qe9DEL": {
-    "defaultMessage": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly.",
-    "description": "ZGW APIs registrations options: case type select error",
-    "originalDefault": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly."
   },
   "qo1UbS": {
     "defaultMessage": "Export",

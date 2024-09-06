@@ -4,7 +4,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import Fieldset from 'components/admin/forms/Fieldset';
-import {groupAndSortCatalogueOptions} from 'components/admin/forms/zgw';
+import {getCatalogueOption, groupAndSortCatalogueOptions} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
@@ -70,9 +70,9 @@ const BasicOptionsFieldset = ({apiGroupChoices}) => {
         errorMessage={
           <FormattedMessage
             description="ZGW APIs registrations options: generic error"
-            defaultMessage={`Something went wrong retrieving the available catalogues
-            or types defined in the selected catalogue. Please check that the services
-            in the selected API group are configured correctly.`}
+            defaultMessage={`Something went wrong while retrieving the available
+            catalogues or case/document types defined in the selected catalogue. Please
+            check that the services in the selected API group are configured correctly.`}
           />
         }
       >
@@ -94,7 +94,9 @@ BasicOptionsFieldset.propTypes = {
 };
 
 const CatalogiApiFields = () => {
-  const {values: zgwApiGroup = null} = useFormikContext();
+  const {
+    values: {zgwApiGroup = null, catalogue = undefined},
+  } = useFormikContext();
 
   // fetch available catalogues and re-use the result
   const {
@@ -107,10 +109,15 @@ const CatalogiApiFields = () => {
   }, [zgwApiGroup]);
   if (cataloguesError) throw cataloguesError;
 
+  const catalogueValue = getCatalogueOption(catalogueOptionGroups, catalogue || {});
+  const catalogueUrl = catalogueValue?.url;
+
+  // TODO: if the catalogue changes, reset the select case type
+
   return (
     <>
       <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
-      <CaseTypeSelect />
+      <CaseTypeSelect catalogueUrl={catalogueUrl} />
     </>
   );
 };

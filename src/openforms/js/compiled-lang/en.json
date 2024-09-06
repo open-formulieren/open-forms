@@ -987,12 +987,6 @@
       "value": "Please select the logic type:"
     }
   ],
-  "9HyRBr": [
-    {
-      "type": 0,
-      "value": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly."
-    }
-  ],
   "9LdZVP": [
     {
       "type": 0,
@@ -2345,6 +2339,12 @@
     {
       "type": 0,
       "value": "The selected trigger step could not be found in this form! Please change it!"
+    }
+  ],
+  "LkrFow": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
     }
   ],
   "LrlAVD": [
@@ -5329,12 +5329,6 @@
     {
       "type": 0,
       "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
-    }
-  ],
-  "qe9DEL": [
-    {
-      "type": 0,
-      "value": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly."
     }
   ],
   "qmBAmr": [
