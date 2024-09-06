@@ -40,6 +40,7 @@ const CatalogueSelect = () => {
   // TODO: make required when case type can be selected in a dropdown AND there is no
   // legacy case type or document type URL specified. Probably best to do this as
   // backend validation so that new registration backends must select a catalogue.
+  // TODO: ensure that case_type_identification is reset when the group is changed
   return (
     <GenericCatalogueSelect
       label={

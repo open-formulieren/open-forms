@@ -41,6 +41,12 @@
       "value": "Remove"
     }
   ],
+  "+dcHiF": [
+    {
+      "type": 0,
+      "value": "A case of this type will be created during registration."
+    }
+  ],
   "+dcsE0": [
     {
       "type": 0,
@@ -123,6 +129,40 @@
     {
       "type": 0,
       "value": "Set the text of the 'Save row' button."
+    }
+  ],
+  "/vM+b5": [
+    {
+      "type": 1,
+      "value": "description"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "(not published)"
+                }
+              ],
+              "type": 8,
+              "value": "draft"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isPublished"
     }
   ],
   "/yDnA3": [
@@ -2371,6 +2411,12 @@
     {
       "type": 0,
       "value": "Form variables configuration"
+    }
+  ],
+  "N5Hv+1": [
+    {
+      "type": 0,
+      "value": "Case type"
     }
   ],
   "NE5h2q": [
@@ -5285,6 +5331,12 @@
       "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
     }
   ],
+  "qe9DEL": [
+    {
+      "type": 0,
+      "value": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly."
+    }
+  ],
   "qmBAmr": [
     {
       "type": 0,
@@ -5677,6 +5729,12 @@
       "value": "Errored Submissions Removal Method"
     }
   ],
+  "wLfQfD": [
+    {
+      "type": 0,
+      "value": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
+    }
+  ],
   "wOMoEs": [
     {
       "type": 0,
@@ -5751,6 +5809,12 @@
     {
       "type": 0,
       "value": "Component where products for an appointment will be shown"
+    }
+  ],
+  "wrdDVu": [
+    {
+      "type": 0,
+      "value": "Legacy configuration"
     }
   ],
   "x+ORaW": [

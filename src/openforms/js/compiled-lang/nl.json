@@ -41,6 +41,12 @@
       "value": "Verwijderen"
     }
   ],
+  "+dcHiF": [
+    {
+      "type": 0,
+      "value": "A case of this type will be created during registration."
+    }
+  ],
   "+dcsE0": [
     {
       "type": 0,
@@ -123,6 +129,40 @@
     {
       "type": 0,
       "value": "Geef de knoptekst om een groep te bewaren op."
+    }
+  ],
+  "/vM+b5": [
+    {
+      "type": 1,
+      "value": "description"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "(not published)"
+                }
+              ],
+              "type": 8,
+              "value": "draft"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isPublished"
     }
   ],
   "/yDnA3": [
@@ -2392,6 +2432,12 @@
     {
       "type": 0,
       "value": "Formuliervariabelenconfiguratie"
+    }
+  ],
+  "N5Hv+1": [
+    {
+      "type": 0,
+      "value": "Case type"
     }
   ],
   "NE5h2q": [
@@ -5307,6 +5353,12 @@
       "value": "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "qe9DEL": [
+    {
+      "type": 0,
+      "value": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly."
+    }
+  ],
   "qmBAmr": [
     {
       "type": 0,
@@ -5699,6 +5751,12 @@
       "value": "Opschoonmethode voor niet voltooide inzendingen"
     }
   ],
+  "wLfQfD": [
+    {
+      "type": 0,
+      "value": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
+    }
+  ],
   "wOMoEs": [
     {
       "type": 0,
@@ -5773,6 +5831,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare producten voor een afspraak komen te staan"
+    }
+  ],
+  "wrdDVu": [
+    {
+      "type": 0,
+      "value": "Legacy configuration"
     }
   ],
   "x+ORaW": [

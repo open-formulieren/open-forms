@@ -19,6 +19,11 @@
     "description": "ZGW APIs registration: default overrides fieldset title",
     "originalDefault": "Optional ZGW configuration"
   },
+  "+dcHiF": {
+    "defaultMessage": "A case of this type will be created during registration.",
+    "description": "ZGW APIs registration options 'case type' helpText",
+    "originalDefault": "A case of this type will be created during registration."
+  },
   "+dcsE0": {
     "defaultMessage": "Reset waarde",
     "description": "Delete datetime value",
@@ -58,6 +63,11 @@
     "defaultMessage": "Instellingen",
     "description": "Service fetch config configuration tab title",
     "originalDefault": "Configuration"
+  },
+  "/vM+b5": {
+    "defaultMessage": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "description": "Case type option label",
+    "originalDefault": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
   "0M2B7B": {
     "defaultMessage": "DMN-variabele",
@@ -1121,6 +1131,11 @@
     "defaultMessage": "Formuliervariabelenconfiguratie",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
+  },
+  "N5Hv+1": {
+    "defaultMessage": "Case type",
+    "description": "ZGW APIs registration options 'case type' label",
+    "originalDefault": "Case type"
   },
   "NE5h2q": {
     "defaultMessage": "Omschrijving",
@@ -2383,6 +2398,11 @@
     "description": "Errored Submissions Removal Method help text",
     "originalDefault": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
   },
+  "qe9DEL": {
+    "defaultMessage": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly.",
+    "description": "ZGW APIs registrations options: case type select error",
+    "originalDefault": "Something went wrong retrieving the available case types. Please check that the services in the selected API group are configured correctly."
+  },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
     "description": "Export form button",
@@ -2588,6 +2608,11 @@
     "description": "Errored Submissions Removal Method field label",
     "originalDefault": "Errored Submissions Removal Method"
   },
+  "wLfQfD": {
+    "defaultMessage": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored.",
+    "description": "ZGW APIs legacy config options informative message",
+    "originalDefault": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
+  },
   "wOMoEs": {
     "defaultMessage": "Bron",
     "description": "JSON editor: value source selector label",
@@ -2607,6 +2632,11 @@
     "defaultMessage": "Veld waar beschikbare producten voor een afspraak komen te staan",
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
+  },
+  "wrdDVu": {
+    "defaultMessage": "Legacy configuration",
+    "description": "ZGw APIs registration: legacy configuration options fieldset title",
+    "originalDefault": "Legacy configuration"
   },
   "x+ORaW": {
     "defaultMessage": "Deactiveren op",

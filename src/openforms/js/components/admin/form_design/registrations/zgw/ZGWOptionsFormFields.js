@@ -15,6 +15,7 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import {
+  CaseTypeSelect,
   CatalogueSelect,
   ConfidentialityLevel,
   DocumentType,
@@ -105,6 +106,17 @@ const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => 
               }
             >
               <CatalogueSelect />
+            </ErrorBoundary>
+            <ErrorBoundary
+              errorMessage={
+                <FormattedMessage
+                  description="ZGW APIs registrations options: case type select error"
+                  defaultMessage={`Something went wrong retrieving the available case types.
+                    Please check that the services in the selected API group are configured correctly.`}
+                />
+              }
+            >
+              <CaseTypeSelect />
             </ErrorBoundary>
           </Fieldset>
 
