@@ -1,5 +1,6 @@
 import {fn, userEvent, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
+import selectEvent from 'react-select-event';
 
 import {
   FeatureFlagsDecorator,
@@ -97,5 +98,25 @@ export const ValidationErrorsCasePropertiesTab = {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole('tab', {name: /Zaakeigenschappen/}));
+  },
+};
+
+export const SelectCaseType = {
+  args: {
+    formData: {
+      zgwApiGroup: 1,
+      zaaktype: '',
+      propertyMappings: [],
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const catalogueSelect = canvas.getByLabelText('Catalogue');
+    await selectEvent.select(catalogueSelect, 'Catalogus 1');
+
+    const caseTypeSelect = canvas.getByLabelText('Case type');
+    await selectEvent.select(caseTypeSelect, 'Request passport');
   },
 };
