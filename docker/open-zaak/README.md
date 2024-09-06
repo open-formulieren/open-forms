@@ -32,6 +32,7 @@ docker compose -f docker-compose.open-zaak.yml run openzaak-web.local \
         --output /app/fixtures/open_zaak_fixtures.json \
         authorizations.applicatie \
         vng_api_common.jwtsecret \
+        config.featureflags \
         catalogi
 ```
 
