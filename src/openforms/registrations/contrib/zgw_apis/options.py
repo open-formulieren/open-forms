@@ -54,8 +54,22 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "and document types specified will be resolved against this catalogue."
         ),
     )
+    case_type_identification = serializers.CharField(
+        required=False,  # either this field or zaaktype (legacy) must be provided
+        label=_("Case type identification"),
+        help_text=_(
+            "The case type will be retrieved in the specified catalogue. The version "
+            "will automatically be selected based on the submission completion "
+            "timestamp. When you specify this field, you MUST also specify a catalogue."
+        ),
+        default="",
+    )
+
+    # DeprecationWarning - deprecated, will be removed in OF 3.0 or 4.0
     zaaktype = serializers.URLField(
-        required=True, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
+        required=False,
+        help_text=_("URL of the ZAAKTYPE in the Catalogi API"),
+        default="",
     )
     informatieobjecttype = serializers.URLField(
         required=True,
@@ -131,6 +145,16 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         return fields
 
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
+        # Legacy forms will have zaaktype set, new forms can set case_type_identification.
+        # Both may be set - in that case, `case_type_identification` is preferred.
+        if not attrs["case_type_identification"] and not attrs["zaaktype"]:
+            raise serializers.ValidationError(
+                {
+                    "case_type_identification": _("You must specify a case type."),
+                },
+                code="required",
+            )
+
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
@@ -194,6 +218,9 @@ def _validate_catalogue_case_and_doc_type(
     catalogus = None
     catalogue_option = attrs.get("catalogue")
 
+    case_type_identification = attrs["case_type_identification"]
+
+    # legacy
     case_type_url = attrs["zaaktype"]
     document_type_url = attrs["informatieobjecttype"]
 
@@ -221,8 +248,19 @@ def _validate_catalogue_case_and_doc_type(
         code="not-found",
     )
 
-    # DB check constraint + serializer validation guarantee that both or none
-    # are empty at the same time
+    # DB check constraint + serializer validation guarantee that both `domain` and
+    # `rsin` or none of them are empty at the same time
+    if case_type_identification and (not domain):
+        raise serializers.ValidationError(
+            {
+                "catalogue": _(
+                    "You must specify a catalogue when passing a case type "
+                    "identification"
+                ),
+            },
+            code="required",
+        )
+
     if domain and rsin:
         catalogus = client.find_catalogus(domain=domain, rsin=rsin)
         if catalogus is None:
@@ -236,8 +274,20 @@ def _validate_catalogue_case_and_doc_type(
                 code="invalid-catalogue",
             )
 
-        if case_type_url not in catalogus["zaaktypen"]:
+        # if a case type identification is provided, we validate (and use) it, otherwise
+        # we must fall back to the legacy zaaktype url. Earlier validation guarantees
+        # either one is provided (possibly both, but then we ignore the legacy URL).
+        if case_type_identification:
+            case_type_versions = client.find_case_types(
+                catalogus=catalogus["url"],
+                identification=case_type_identification,
+            )
+            if case_type_versions is None:
+                _errors["case_type_identification"] = err_invalid_case_type
+        elif case_type_url not in catalogus["zaaktypen"]:
             _errors["zaaktype"] = err_invalid_case_type
+
+        # Validate document type reference
         if document_type_url not in catalogus["informatieobjecttypen"]:
             _errors["informatieobjecttype"] = err_invalid_document_type
 

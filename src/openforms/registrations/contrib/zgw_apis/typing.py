@@ -19,7 +19,8 @@ class PropertyMapping(TypedDict):
 class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
     catalogue: NotRequired[CatalogueOption]
-    zaaktype: str
+    case_type_identification: str
+    zaaktype: str  # DeprecationWarning
     informatieobjecttype: str
     organisatie_rsin: NotRequired[str]
     zaak_vertrouwelijkheidaanduiding: NotRequired[

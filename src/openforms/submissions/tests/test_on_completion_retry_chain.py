@@ -274,6 +274,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             submission,
             {
                 "zgw_api_group": zgw_group,
+                "case_type_identification": "",
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             },

@@ -154,16 +154,35 @@ class CatalogiClient(NLXClient):
             return None
         return data["results"][0]
 
-    def get_all_case_types(self, *, catalogus: str = "") -> Iterator[CaseType]:
-        params: CaseTypeListParams = {}
-        if catalogus:
-            params["catalogus"] = catalogus
+    def get_all_case_types(self, *, catalogus: str) -> Iterator[CaseType]:
+        params: CaseTypeListParams = {
+            "catalogus": catalogus,
+        }
         if self.allow_drafts:
             params["status"] = "alles"
         response = self.get("zaaktypen", params=params)  # type: ignore
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
+
+    def find_case_types(
+        self,
+        *,
+        catalogus: str,
+        identification: str,
+    ) -> list[CaseType] | None:
+        params: CaseTypeListParams = {
+            "catalogus": catalogus,
+            "identificatie": identification,
+        }
+        response = self.get("zaaktypen", params=params)  # type: ignore
+        response.raise_for_status()
+
+        data: PaginatedResponseData[CaseType] = response.json()
+        if data["count"] == 0:
+            return None
+
+        return list(pagination_helper(self, data))
 
     def get_all_informatieobjecttypen(
         self, *, catalogus: str = ""

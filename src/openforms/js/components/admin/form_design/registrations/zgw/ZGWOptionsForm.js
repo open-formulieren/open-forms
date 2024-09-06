@@ -143,7 +143,7 @@ ZGWOptionsForm.propTypes = {
         componentKey: PropTypes.string,
         eigenschap: PropTypes.string,
       })
-    ).isRequired,
+    ),
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,

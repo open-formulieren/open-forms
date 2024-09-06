@@ -42,7 +42,7 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
   }));
 };
 
-const CaseTypeSelect = ({catalogueUrl}) => {
+const CaseTypeSelect = ({catalogueUrl = ''}) => {
   const [fieldProps, , fieldHelpers] = useField('case_type_identification');
   const {
     values: {zgwApiGroup = null},
@@ -55,7 +55,7 @@ const CaseTypeSelect = ({catalogueUrl}) => {
     value: caseTypes = [],
     error,
   } = useAsync(async () => {
-    if (!zgwApiGroup) return [];
+    if (!zgwApiGroup || !catalogueUrl) return [];
     return await getAvailableCaseTypes(zgwApiGroup, catalogueUrl);
   }, [zgwApiGroup, catalogueUrl]);
   if (error) throw error;

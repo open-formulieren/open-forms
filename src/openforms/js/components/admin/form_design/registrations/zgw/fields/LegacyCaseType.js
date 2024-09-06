@@ -9,7 +9,7 @@ import {TextInput} from 'components/admin/forms/Inputs';
  * @todo - convert to omschrijving & use URL-based field as legacy/deprecated option
  */
 const CaseType = () => {
-  const [fieldProps] = useField('zaaktype');
+  const [{value = '', ...fieldProps}] = useField('zaaktype');
   const {
     values: {case_type_identification},
   } = useFormikContext();
@@ -31,7 +31,12 @@ const CaseType = () => {
           />
         }
       >
-        <TextInput id="id_zaaktype" required={!case_type_identification} {...fieldProps} />
+        <TextInput
+          id="id_zaaktype"
+          required={!case_type_identification}
+          value={value}
+          {...fieldProps}
+        />
       </Field>
     </FormRow>
   );

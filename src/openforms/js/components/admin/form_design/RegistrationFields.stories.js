@@ -7,7 +7,10 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
-import {mockCataloguesGet as mockZGWApisCataloguesGet} from 'components/admin/form_design/registrations/zgw/mocks';
+import {
+  mockCaseTypesGet,
+  mockCataloguesGet as mockZGWApisCataloguesGet,
+} from 'components/admin/form_design/registrations/zgw/mocks';
 import {
   FormDecorator,
   ValidationErrorsDecorator,
@@ -204,7 +207,7 @@ export default {
           mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
         ],
-        zgwMocks: [mockZGWApisCataloguesGet()],
+        zgwMocks: [mockZGWApisCataloguesGet(), mockCaseTypesGet()],
       },
     },
   },

@@ -329,3 +329,80 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertIn("informatieobjecttype", serializer.errors)
         err = serializer.errors["informatieobjecttype"][0]
         self.assertEqual(err.code, "not-found")
+
+    def test_case_type_identification_or_zaaktype_url_required(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("case_type_identification", serializer.errors)
+        err = serializer.errors["case_type_identification"][0]
+        self.assertEqual(err.code, "required")
+
+    def test_catalogue_required_when_case_type_identification_provided(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "case_type_identification": "ZT-001",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("catalogue", serializer.errors)
+        err = serializer.errors["catalogue"][0]
+        self.assertEqual(err.code, "required")
+
+    def test_validate_case_type_exists_when_case_type_identification_is_provided(self):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+
+        with self.subTest("case type exists"):
+            data = {
+                **base,
+                "case_type_identification": "ZT-001",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("case type does not exist"):
+            data = {
+                **base,
+                "case_type_identification": "i-am-a-bad-reference",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("case_type_identification", serializer.errors)
+            err = serializer.errors["case_type_identification"][0]
+            self.assertEqual(err.code, "not-found")
