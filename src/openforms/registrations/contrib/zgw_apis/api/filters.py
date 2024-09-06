@@ -38,3 +38,19 @@ class ListInformatieObjectTypenQueryParamsSerializer(
     ZGWAPIGroupMixin, DocumentTypesFilter
 ):
     pass
+
+
+class ListCaseTypesQueryParamsSerializer(ZGWAPIGroupMixin, serializers.Serializer):
+    catalogue_url = serializers.URLField(
+        label=_("catalogus URL"),
+        help_text=_("Filter case types against this catalogue URL."),
+        required=True,
+    )
+
+    def get_fields(self):
+        fields = super().get_fields()
+        fields["zgw_api_group"].help_text = _(
+            "The primary key of the ZGW API group to use. The case types from the "
+            "Catalogi API in this group will be returned."
+        )
+        return fields

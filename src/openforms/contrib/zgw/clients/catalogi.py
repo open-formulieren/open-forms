@@ -45,6 +45,7 @@ class CaseType(TypedDict):
     catalogus: str  # URL pointer to the catalogue
     identificatie: str
     omschrijving: str
+    concept: NotRequired[bool]
 
 
 class InformatieObjectType(TypedDict):
@@ -71,6 +72,14 @@ CatalogiAPIVersion: TypeAlias = tuple[
     int,  # minor
     int,  # patch
 ]
+
+
+class CaseTypeListParams(TypedDict, total=False):
+    catalogus: str
+    identificatie: str
+    status: Literal["alles", "concept", "definitief"]
+    datumGeldigheid: str
+    page: int
 
 
 class InformatieObjectTypeListParams(TypedDict, total=False):
@@ -144,6 +153,17 @@ class CatalogiClient(NLXClient):
         if num_results == 0:
             return None
         return data["results"][0]
+
+    def get_all_case_types(self, *, catalogus: str = "") -> Iterator[CaseType]:
+        params: CaseTypeListParams = {}
+        if catalogus:
+            params["catalogus"] = catalogus
+        if self.allow_drafts:
+            params["status"] = "alles"
+        response = self.get("zaaktypen", params=params)  # type: ignore
+        response.raise_for_status()
+        data = response.json()
+        yield from pagination_helper(self, data)
 
     def get_all_informatieobjecttypen(
         self, *, catalogus: str = ""
