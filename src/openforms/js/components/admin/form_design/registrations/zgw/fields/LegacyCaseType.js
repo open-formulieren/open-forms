@@ -9,15 +9,15 @@ import {TextInput} from 'components/admin/forms/Inputs';
  * @todo - convert to omschrijving & use URL-based field as legacy/deprecated option
  */
 const CaseType = () => {
-  const [{value = '', ...fieldProps}] = useField('zaaktype');
+  const [fieldProps] = useField('zaaktype');
   const {
-    values: {case_type_identification},
+    values: {caseTypeIdentification},
   } = useFormikContext();
   return (
     <FormRow>
       <Field
         name="zaaktype"
-        required={!case_type_identification}
+        required={!caseTypeIdentification}
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'CaseType' label"
@@ -31,12 +31,7 @@ const CaseType = () => {
           />
         }
       >
-        <TextInput
-          id="id_zaaktype"
-          required={!case_type_identification}
-          value={value}
-          {...fieldProps}
-        />
+        <TextInput id="id_zaaktype" required={!caseTypeIdentification} {...fieldProps} />
       </Field>
     </FormRow>
   );

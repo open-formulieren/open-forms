@@ -24,8 +24,8 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
     value: identification,
     label: (
       <span
-        className={classNames('case-type-option', {
-          'case-type-option--draft': !isPublished,
+        className={classNames('catalogi-type-option', {
+          'catalogi-type-option--draft': !isPublished,
         })}
       >
         <FormattedMessage
@@ -34,7 +34,7 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
           values={{
             description,
             isPublished,
-            draft: chunks => <span className="case-type-option__draft-suffix">{chunks}</span>,
+            draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
           }}
         />
       </span>
@@ -43,7 +43,7 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
 };
 
 const CaseTypeSelect = ({catalogueUrl = ''}) => {
-  const [fieldProps, , fieldHelpers] = useField('case_type_identification');
+  const [fieldProps, , fieldHelpers] = useField('caseTypeIdentification');
   const {
     values: {zgwApiGroup = null},
   } = useFormikContext();
@@ -63,7 +63,7 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
   return (
     <FormRow>
       <Field
-        name="case_type_identification"
+        name="caseTypeIdentification"
         // TODO: make required once legacy config is dropped
         required={false}
         label={
@@ -81,7 +81,7 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
         noManageChildProps
       >
         <ReactSelect
-          name="case_type_identification"
+          name="caseTypeIdentification"
           options={caseTypes}
           isLoading={loading}
           isDisabled={!zgwApiGroup}

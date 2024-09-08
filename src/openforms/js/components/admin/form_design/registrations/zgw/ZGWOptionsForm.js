@@ -80,6 +80,15 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
         >
           <Formik
             initialValues={{
+              // defaults
+              caseTypeIdentification: '',
+              zaaktype: '',
+              informatieobjecttype: '',
+              organisatieRsin: '',
+              zaakVertrouwelijkheidaanduiding: '',
+              medewerkerRoltype: '',
+              propertyMappings: [],
+              // saved data, overwrites defaults
               ...formData,
               // Ensure that if there's only one option, it is automatically selected.
               zgwApiGroup: formData.zgwApiGroup ?? defaultGroup,

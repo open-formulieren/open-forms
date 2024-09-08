@@ -44,8 +44,8 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
     value: omschrijving,
     label: (
       <span
-        className={classNames('document-type-option', {
-          'document-type-option--draft': !isPublished,
+        className={classNames('catalogi-type-option', {
+          'catalogi-type-option--draft': !isPublished,
         })}
       >
         <FormattedMessage
@@ -54,7 +54,7 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
           values={{
             omschrijving,
             isPublished,
-            draft: chunks => <span className="document-type-option__draft-suffix">{chunks}</span>,
+            draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
           }}
         />
       </span>
