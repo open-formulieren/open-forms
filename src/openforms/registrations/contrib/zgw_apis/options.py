@@ -1,3 +1,6 @@
+from functools import partial
+from typing import Iterator, Protocol, TypedDict
+
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -7,7 +10,12 @@ from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
-from openforms.contrib.zgw.clients.catalogi import CatalogiClient, omschrijving_matcher
+from openforms.contrib.zgw.clients.catalogi import (
+    CaseType,
+    CatalogiClient,
+    Catalogus,
+    omschrijving_matcher,
+)
 from openforms.contrib.zgw.serializers import CatalogueSerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
@@ -42,9 +50,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Which ZGW API set to use."),
         label=_("ZGW API set"),
     )
-    # TODO: if selected, the informatieobjecttypen should also be limited to this
-    # catalogue, but that requires moving the registration options from the component
-    # to the registration options!
+    # TODO: if selected, the informatieobjecttypen from file components should also be
+    # limited to this catalogue, but that requires moving the registration options from
+    # the component configuration to the registration options!
     catalogue = CatalogueSerializer(
         label=_("catalogue"),
         required=False,
@@ -183,6 +191,22 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         return attrs
 
 
+class CaseTypeVersionsIterator(Protocol):
+    def __call__(self, case_type_identification: str) -> Iterator[CaseType]: ...
+
+
+def _iter_case_type_versions(
+    client: CatalogiClient, catalogue: Catalogus, case_type_identification: str
+) -> Iterator[CaseType]:
+    case_type_versions = client.find_case_types(
+        catalogus=catalogue["url"],
+        identification=case_type_identification,
+    )
+    assert case_type_versions is not None
+    for version in case_type_versions:
+        yield version
+
+
 def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
     """
     Validate the configuration options against the specified catalogi API.
@@ -204,14 +228,30 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
     with get_catalogi_client(attrs["zgw_api_group"]) as client:
         # validate the catalogue itself - the queryset in the field guarantees that
         # api_group.ztc_service is not null.
-        _validate_catalogue_case_and_doc_type(client, attrs)
-        _validate_case_type_properties(client, attrs)
-        _validate_medewerker_roltype(client, attrs)
+        result = _validate_catalogue_case_and_doc_type(client, attrs)
+
+        if catalogue := result["catalogue"]:
+            iter_case_type_versions = partial(
+                _iter_case_type_versions, client, catalogue
+            )
+        else:
+            iter_case_type_versions = None
+
+        _validate_case_type_properties(
+            client, attrs, iter_case_type_versions=iter_case_type_versions
+        )
+        _validate_medewerker_roltype(
+            client, attrs, iter_case_type_versions=iter_case_type_versions
+        )
+
+
+class _CatalogueAndTypeValidationResult(TypedDict):
+    catalogue: Catalogus | None
 
 
 def _validate_catalogue_case_and_doc_type(
     client: CatalogiClient, attrs: RegistrationOptions
-) -> None:
+) -> _CatalogueAndTypeValidationResult:
     _errors = {}
 
     api_group = attrs["zgw_api_group"]
@@ -243,7 +283,7 @@ def _validate_catalogue_case_and_doc_type(
     err_invalid_document_type = ErrorDetail(
         _(
             "The provided informatieobjecttype does not exist in the specified "
-            "Catalogi API."
+            "selected case type or Catalogi API."
         ),  # type: ignore
         code="not-found",
     )
@@ -255,7 +295,7 @@ def _validate_catalogue_case_and_doc_type(
             {
                 "catalogue": _(
                     "You must specify a catalogue when passing a case type "
-                    "identification"
+                    "identification."
                 ),
             },
             code="required",
@@ -274,6 +314,8 @@ def _validate_catalogue_case_and_doc_type(
                 code="invalid-catalogue",
             )
 
+        valid_document_type_urls = catalogus["informatieobjecttypen"]
+
         # if a case type identification is provided, we validate (and use) it, otherwise
         # we must fall back to the legacy zaaktype url. Earlier validation guarantees
         # either one is provided (possibly both, but then we ignore the legacy URL).
@@ -284,11 +326,19 @@ def _validate_catalogue_case_and_doc_type(
             )
             if case_type_versions is None:
                 _errors["case_type_identification"] = err_invalid_case_type
+            else:
+                # narrow down the possible document type URLs for validation
+                valid_document_type_urls = {
+                    iot_url
+                    for ct in case_type_versions
+                    for iot_url in ct.get("informatieobjecttypen", [])
+                }
+
         elif case_type_url not in catalogus["zaaktypen"]:
             _errors["zaaktype"] = err_invalid_case_type
 
         # Validate document type reference
-        if document_type_url not in catalogus["informatieobjecttypen"]:
+        if document_type_url not in valid_document_type_urls:
             _errors["informatieobjecttype"] = err_invalid_document_type
 
     else:
@@ -313,15 +363,26 @@ def _validate_catalogue_case_and_doc_type(
     if _errors:
         raise serializers.ValidationError(_errors)
 
+    return {"catalogue": catalogus}
+
 
 def _validate_case_type_properties(
-    client: CatalogiClient, attrs: RegistrationOptions
+    client: CatalogiClient,
+    attrs: RegistrationOptions,
+    iter_case_type_versions: CaseTypeVersionsIterator | None,
 ) -> None:
     # Make sure the property (eigenschap) related to the zaaktype exists
     if not (mappings := attrs.get("property_mappings")):
         return
 
-    eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
+    if case_type_identification := attrs["case_type_identification"]:
+        assert iter_case_type_versions is not None
+        eigenschappen = []
+        for version in iter_case_type_versions(case_type_identification):
+            eigenschappen += client.list_eigenschappen(zaaktype=version["url"])
+    else:  # DeprecationWarning
+        eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
+
     eigenschappen_names = {eigenschap["naam"] for eigenschap in eigenschappen}
 
     _errors: dict[int, dict] = {}
@@ -346,15 +407,30 @@ def _validate_case_type_properties(
 
 
 def _validate_medewerker_roltype(
-    client: CatalogiClient, attrs: RegistrationOptions
+    client: CatalogiClient,
+    attrs: RegistrationOptions,
+    iter_case_type_versions: CaseTypeVersionsIterator | None,
 ) -> None:
     if not (description := attrs.get("medewerker_roltype")):
         return
 
-    roltypen = client.list_roltypen(
-        zaaktype=attrs["zaaktype"],
-        matcher=omschrijving_matcher(description),
-    )
+    if case_type_identification := attrs["case_type_identification"]:
+        assert iter_case_type_versions is not None
+        roltypen = []
+        for version in iter_case_type_versions(case_type_identification):
+            roltypen += client.list_roltypen(
+                zaaktype=version["url"],
+                matcher=omschrijving_matcher(description),
+            )
+            if roltypen:
+                break
+
+    else:  # DeprecationWarning
+        roltypen = client.list_roltypen(
+            zaaktype=attrs["zaaktype"],
+            matcher=omschrijving_matcher(description),
+        )
+
     if not roltypen:
         raise serializers.ValidationError(
             {

@@ -46,6 +46,7 @@ class CaseType(TypedDict):
     identificatie: str
     omschrijving: str
     concept: NotRequired[bool]
+    informatieobjecttypen: NotRequired[list[str]]  # URL pointers to document types
 
 
 class InformatieObjectType(TypedDict):
