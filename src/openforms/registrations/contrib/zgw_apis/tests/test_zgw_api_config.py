@@ -13,6 +13,7 @@ from openforms.submissions.tests.factories import (
 )
 
 from ..plugin import ZGWRegistration
+from ..typing import RegistrationOptions
 from .factories import ZGWApiGroupConfigFactory
 
 
@@ -318,8 +319,9 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             form_key="field1",
             _component_configuration_path="components.0",
         )
-        zgw_form_options = {
+        zgw_form_options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group2,
+            "case_type_identification": "",
             "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
         }
@@ -352,14 +354,15 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             form_key="field1",
             _component_configuration_path="components.0",
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group2,  # Configure to use the second ZGW API
-            zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",
-            informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
-            organisatie_rsin="000000123",
-            zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.confidentieel,
-            doc_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.geheim,
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group2,  # Configure to use the second ZGW API
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/2",
+            "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
+            "organisatie_rsin": "000000123",
+            "zaak_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.confidentieel,  # type: ignore
+            "doc_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.geheim,  # type: ignore
+        }
 
         self.install_mocks(m)
 
@@ -441,14 +444,15 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             form_key="field1",
             _component_configuration_path="components.0",
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group2,
-            zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",
-            informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
-            organisatie_rsin="000000123",
-            zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.confidentieel,
-            doc_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.geheim,
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group2,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/2",
+            "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
+            "organisatie_rsin": "000000123",
+            "zaak_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.confidentieel,  # type: ignore
+            "doc_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.geheim,  # type: ignore
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")

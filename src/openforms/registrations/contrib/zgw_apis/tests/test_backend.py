@@ -240,14 +240,15 @@ class ZGWBackendTests(TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -461,14 +462,15 @@ class ZGWBackendTests(TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -668,14 +670,15 @@ class ZGWBackendTests(TestCase):
             completed=True,
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -745,14 +748,15 @@ class ZGWBackendTests(TestCase):
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -952,15 +956,16 @@ class ZGWBackendTests(TestCase):
             },
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-            medewerker_roltype="Some description",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "medewerker_roltype": "Some description",
+        }
         self.install_mocks(m)
         m.get(
             "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
@@ -1025,14 +1030,15 @@ class ZGWBackendTests(TestCase):
                 }
             },
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
         roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
             {
@@ -1096,14 +1102,15 @@ class ZGWBackendTests(TestCase):
             form__payment_backend="demo",
         )
         self.assertTrue(submission.payment_required)
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+        }
         self.install_mocks(m)
         m.patch(
             "https://zaken.nl/api/v1/zaken/1",
@@ -1180,13 +1187,14 @@ class ZGWBackendTests(TestCase):
             },
             completed=True,
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+        }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
@@ -1288,11 +1296,12 @@ class ZGWBackendTests(TestCase):
             submission_step__submission__with_report=True,
         )
         submission = attachment.submission_step.submission
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -1359,11 +1368,12 @@ class ZGWBackendTests(TestCase):
             submission_step__submission__with_report=True,
         )
         submission = attachment.submission_step.submission
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -1410,12 +1420,13 @@ class ZGWBackendTests(TestCase):
             },
         )
         submission = attachment.submission_step.submission
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            auteur="",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "auteur": "",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -1442,13 +1453,14 @@ class ZGWBackendTests(TestCase):
             completed_not_preregistered=True,
             with_report=True,
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            auteur="",
-            zaak_vertrouwelijkheidaanduiding="",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "auteur": "",
+            "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
+        }
         self.install_mocks(m)
         plugin = ZGWRegistration("zgw")
 
@@ -1499,13 +1511,14 @@ class ZGWBackendTests(TestCase):
             ],
             completed=True,
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+        }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             content__data=b"content",
@@ -1703,16 +1716,17 @@ class ZGWBackendTests(TestCase):
                 }
             },
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
-            objecttype_version=1,
-        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
+            "objecttype_version": 1,
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -1813,18 +1827,19 @@ class ZGWBackendTests(TestCase):
                 }
             },
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-            property_mappings=[
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "property_mappings": [
                 {"component_key": "textField1", "eigenschap": "a property name"},
                 {"component_key": "textField2", "eigenschap": "second property"},
             ],
-        )
+        }
         self.install_mocks(m)
 
         m.get(
@@ -2016,19 +2031,20 @@ class ZGWBackendTests(TestCase):
                 }
             },
         )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
-            property_mappings=[
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "property_mappings": [
                 {"component_key": "textField1", "eigenschap": "a property name"},
                 {"component_key": "textField2", "eigenschap": "second property"},
                 {"component_key": "textField3.blah", "eigenschap": "third property"},
             ],
-        )
+        }
         self.install_mocks(m)
 
         m.get(
@@ -2243,13 +2259,14 @@ class ZGWBackendTests(TestCase):
                 with_report=True,
                 form__name="Short name",
             )
-            zgw_form_options = dict(
-                zgw_api_group=self.zgw_group,
-                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-                informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                auteur="",
-                zaak_vertrouwelijkheidaanduiding="",
-            )
+            zgw_form_options: RegistrationOptions = {
+                "zgw_api_group": self.zgw_group,
+                "case_type_identification": "",
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "auteur": "",
+                "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
+            }
             self.install_mocks(m)
             plugin = ZGWRegistration("zgw")
 
@@ -2267,13 +2284,14 @@ class ZGWBackendTests(TestCase):
                 with_report=True,
                 form__name="Long name that will most definitely be truncated to 80 characters right???????????",
             )
-            zgw_form_options = dict(
-                zgw_api_group=self.zgw_group,
-                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-                informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                auteur="",
-                zaak_vertrouwelijkheidaanduiding="",
-            )
+            zgw_form_options: RegistrationOptions = {
+                "zgw_api_group": self.zgw_group,
+                "case_type_identification": "",
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "auteur": "",
+                "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
+            }
             self.install_mocks(m)
             plugin = ZGWRegistration("zgw")
 
