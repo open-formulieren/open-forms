@@ -45,6 +45,8 @@ class CaseType(TypedDict):
     catalogus: str  # URL pointer to the catalogue
     identificatie: str
     omschrijving: str
+    beginGeldigheid: str  # ISO 8601 date string
+    eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
     concept: NotRequired[bool]
     informatieobjecttypen: NotRequired[list[str]]  # URL pointers to document types
 
@@ -181,11 +183,19 @@ class CatalogiClient(NLXClient):
         *,
         catalogus: str,
         identification: str,
+        valid_on: date | None = None,
     ) -> list[CaseType] | None:
+        _supports_filtering_valid_on = self.api_version >= (1, 2, 0)
+
         params: CaseTypeListParams = {
             "catalogus": catalogus,
             "identificatie": identification,
         }
+        if valid_on and _supports_filtering_valid_on:
+            params["datumGeldigheid"] = valid_on.isoformat()
+        if self.allow_drafts:
+            params["status"] = "alles"
+
         response = self.get("zaaktypen", params=params)  # type: ignore
         response.raise_for_status()
 
@@ -193,7 +203,29 @@ class CatalogiClient(NLXClient):
         if data["count"] == 0:
             return None
 
-        return list(pagination_helper(self, data))
+        all_versions = sorted(
+            list(pagination_helper(self, data)),
+            key=itemgetter("beginGeldigheid"),
+        )
+
+        # otherwise do the filtering manually
+        if valid_on and not _supports_filtering_valid_on:
+            date_str = valid_on.isoformat()
+            all_versions = [
+                version
+                for version in all_versions
+                if version["beginGeldigheid"] <= date_str
+                if (end := version.get("eindeGeldigheid")) is None or end > date_str
+            ]
+        elif (
+            valid_on and _supports_filtering_valid_on and (num := len(all_versions)) > 1
+        ):
+            raise StandardViolation(
+                f"Got {num} case type versions within a catalogue with identification "
+                f"'{identification}'. Version (date) ranges may not overlap."
+            )
+
+        return all_versions
 
     def get_all_informatieobjecttypen(
         self, *, catalogus: str = ""

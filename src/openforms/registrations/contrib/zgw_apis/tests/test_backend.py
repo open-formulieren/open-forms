@@ -1,7 +1,8 @@
 import json
 import textwrap
-from datetime import date
+from datetime import date, datetime, timezone
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings, tag
@@ -13,6 +14,7 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.contrib.zgw.clients.zaken import CRS_HEADERS
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.registrations.contrib.objects_api.tests.factories import (
     ObjectsAPIGroupConfigFactory,
@@ -24,10 +26,15 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
+from ..client import get_zaken_client
 from ..plugin import ZGWRegistration
+from ..typing import RegistrationOptions
 from .factories import ZGWApiGroupConfigFactory
+
+TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
 @temp_private_root()
@@ -2279,4 +2286,110 @@ class ZGWBackendTests(TestCase):
             self.assertEqual(
                 body["omschrijving"],
                 "Long name that will most definitely be truncated to 80 characters right????????\u2026",
+            )
+
+
+@temp_private_root()
+class ZGWBackendVCRTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zgw_group = ZGWApiGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+
+    def test_create_zaak_with_case_identification_reference(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        RegistratorInfoFactory.create(submission=submission, value="employee-123")
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "zaaktype": "",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "medewerker_roltype": "Baliemedewerker",
+            "property_mappings": [
+                {
+                    "component_key": "someText",
+                    "eigenschap": "a property name",
+                }
+            ],
+        }
+
+        plugin = ZGWRegistration("zgw")
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("pre-registration"):
+            pre_registration_result = plugin.pre_register_submission(
+                submission, options
+            )
+            assert submission.registration_result is not None
+            submission.registration_result.update(pre_registration_result.data)  # type: ignore
+            submission.save()
+
+            zaak_url = pre_registration_result.data["zaak"]["url"]  # type: ignore
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+
+            # Zaaktype version with UUID 1f41885e-23fc-4462-bbc8-80be4ae484dc, see the
+            # docker/open-zaak fixtures. This version is valid on 2024-9-9
+            self.assertEqual(
+                zaak_data["zaaktype"],
+                "http://localhost:8003/catalogi/api/v1/zaaktypen/"
+                "1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            )
+
+        with self.subTest("full registration"):
+            result = plugin.register_submission(submission, options)
+            assert result is not None
+            zaak_url = result["zaak"]["url"]
+
+        with self.subTest("verify case properties"):
+            # check created eigenschap
+            zaak_eigenschappen = client.get(f"{zaak_url}/zaakeigenschappen").json()
+            self.assertEqual(len(zaak_eigenschappen), 1)
+
+        with self.subTest("verify registrator role"):
+            rollen = client.get("rollen", params={"zaak": zaak_url}).json()["results"]
+
+            self.assertEqual(len(rollen), 2)
+            employee_role = next(
+                rol for rol in rollen if rol["betrokkeneType"] == "medewerker"
+            )
+            self.assertEqual(
+                employee_role["betrokkeneIdentificatie"]["identificatie"],
+                "employee-123",
+            )
+            # Roltype with UUID 7f1887e8-bf22-47e7-ae52-ed6848d7e70e, see the
+            # docker/open-zaak fixtures.
+            self.assertEqual(
+                employee_role["roltype"],
+                "http://localhost:8003/catalogi/api/v1/roltypen/"
+                "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
             )

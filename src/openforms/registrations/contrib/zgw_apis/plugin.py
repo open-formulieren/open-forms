@@ -177,10 +177,38 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
 
+        # resolve zaaktype to use
+        if case_type_identification := options["case_type_identification"]:
+            catalogue = options.get("catalogue")
+            assert catalogue is not None  # enforced by validation
+            version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
+
+            with get_catalogi_client(zgw) as catalogi_client:
+                catalogus = catalogi_client.find_catalogus(**catalogue)
+                if catalogus is None:
+                    raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+                versions = catalogi_client.find_case_types(
+                    catalogus=catalogus["url"],
+                    identification=case_type_identification,
+                    valid_on=version_valid_on,
+                )
+
+            if versions is None:
+                raise RuntimeError(
+                    "Could not find a case type with identification "
+                    f"'{case_type_identification}' that is valid on "
+                    f"{version_valid_on.isoformat()}."
+                )
+
+            version = versions[0]
+            zaaktype_url = version["url"]
+        else:
+            zaaktype_url = options["zaaktype"]
+
         with get_zaken_client(zgw) as zaken_client:
             _create_zaak = partial(
                 zaken_client.create_zaak,
-                zaaktype=options["zaaktype"],
+                zaaktype=zaaktype_url,
                 omschrijving=Truncator(submission.form.name).chars(80),
                 bronorganisatie=options["organisatie_rsin"],
                 vertrouwelijkheidaanduiding=options.get(
@@ -446,7 +474,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
             eigenschappen = execute_unless_result_exists(
-                partial(catalogi_client.list_eigenschappen, options["zaaktype"]),
+                partial(catalogi_client.list_eigenschappen, zaak["zaaktype"]),
                 submission,
                 "intermediate.zaaktype_eigenschappen",
             )
