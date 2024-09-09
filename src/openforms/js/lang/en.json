@@ -369,6 +369,11 @@
     "description": "JSON editor: 'type' header label",
     "originalDefault": "Type"
   },
+  "8ZSQ9s": {
+    "defaultMessage": "Whether to display the short progress summary, indicating the current step number and total amount of steps.",
+    "description": "Summary of the progress help text",
+    "originalDefault": "Whether to display the short progress summary, indicating the current step number and total amount of steps."
+  },
   "8hSjw4": {
     "defaultMessage": "Component {label} ({key}) uses a non-existent component key {missingKey} in the simple logic.",
     "description": "Wrong simple logic warning",
@@ -503,6 +508,11 @@
     "defaultMessage": "Form",
     "description": "Form fields tab title",
     "originalDefault": "Form"
+  },
+  "Bc8xyG": {
+    "defaultMessage": "Show summary progress",
+    "description": "showSummaryProgress field label",
+    "originalDefault": "Show summary progress"
   },
   "BcuXrg": {
     "defaultMessage": "Boolean",

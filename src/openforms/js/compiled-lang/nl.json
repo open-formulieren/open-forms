@@ -899,6 +899,12 @@
       "value": "Type"
     }
   ],
+  "8ZSQ9s": [
+    {
+      "type": 0,
+      "value": "Whether to display the short progress summary, indicating the current step number and total amount of steps."
+    }
+  ],
   "8hSjw4": [
     {
       "type": 0,
@@ -1223,6 +1229,12 @@
     {
       "type": 0,
       "value": "Indien opgegeven, dan moet de gebruiker minimaal dit aantal opties aanvinken."
+    }
+  ],
+  "Bc8xyG": [
+    {
+      "type": 0,
+      "value": "Show summary progress"
     }
   ],
   "BcuXrg": [

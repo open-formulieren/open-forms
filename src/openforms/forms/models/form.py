@@ -146,6 +146,14 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         ),
     )
+    show_summary_progress = models.BooleanField(
+        _("show summary of the progress"),
+        default=False,
+        help_text=_(
+            "Whether to display the short progress summary, indicating the current step "
+            "number and total amount of steps."
+        ),
+    )
     display_main_website_link = models.BooleanField(
         _("display main website link"),
         default=True,

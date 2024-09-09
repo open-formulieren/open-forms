@@ -7565,6 +7565,11 @@ components:
           type: boolean
           description: Whether the step progression should be displayed in the UI
             or not.
+        showSummaryProgress:
+          type: boolean
+          title: Show summary of the progress
+          description: Whether to display the short progress summary, indicating the
+            current step number and total amount of steps.
         maintenanceMode:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
@@ -9220,6 +9225,11 @@ components:
           type: boolean
           description: Whether the step progression should be displayed in the UI
             or not.
+        showSummaryProgress:
+          type: boolean
+          title: Show summary of the progress
+          description: Whether to display the short progress summary, indicating the
+            current step number and total amount of steps.
         maintenanceMode:
           type: boolean
           description: Users will not be able to start the form if it is in maintenance
