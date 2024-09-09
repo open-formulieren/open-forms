@@ -141,7 +141,7 @@ class CatalogiClientTests(TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_server_supports_filtering_but_doesnt_enforce_unique_versions(
+    def test_server_supports_filtering_document_types_but_doesnt_enforce_unique_versions(
         self, m: requests_mock.Mocker
     ):
         client = CatalogiClient(base_url="https://dummy/")
@@ -185,5 +185,111 @@ class CatalogiClientTests(TestCase):
             client.find_informatieobjecttypen(
                 catalogus="https://dummy/catalogus",
                 description="Attachment",
+                valid_on=date(2024, 8, 8),
+            )
+
+    @requests_mock.Mocker()
+    def test_server_does_not_support_filtering_case_types_on_valid_date(
+        self,
+        m: requests_mock.Mocker,
+    ):
+        client = CatalogiClient(base_url="https://dummy/")
+        client._api_version = (1, 0, 0)
+        endpoint = furl("https://dummy/zaaktypen").set(
+            {
+                "catalogus": "https://dummy/catalogus",
+                "identificatie": "ZT-007",
+            }
+        )
+        m.get(
+            str(endpoint),
+            headers={"API-Version": "1.0.0"},
+            json={
+                "next": None,
+                "previous": None,
+                "count": 3,
+                "results": [
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/1",
+                        "identificatie": "ZT-007",
+                        "omschrijving": "Zaaktype 007",
+                        "beginGeldigheid": "2023-01-01",
+                        "eindeGeldigheid": "2023-12-31",
+                    },
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/2",
+                        "identificatie": "ZT-007",
+                        "omschrijving": "Zaaktype 7",
+                        "beginGeldigheid": "2024-01-01",
+                        "eindeGeldigheid": "2024-12-31",
+                    },
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/3",
+                        "identificatie": "ZT-007",
+                        "omschrijving": "Zaaktype 7",
+                        "beginGeldigheid": "2025-01-01",
+                        "eindeGeldigheid": None,
+                    },
+                ],
+            },
+        )
+
+        results = client.find_case_types(
+            catalogus="https://dummy/catalogus",
+            identification="ZT-007",
+            valid_on=date(2024, 8, 8),
+        )
+
+        assert results is not None
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["url"], "https://dummy/api/v1/zaaktypen/2")
+
+    @requests_mock.Mocker()
+    def test_server_supports_filtering_case_types_but_doesnt_enforce_unique_versions(
+        self, m: requests_mock.Mocker
+    ):
+        client = CatalogiClient(base_url="https://dummy/")
+        client._api_version = (1, 2, 0)
+        endpoint = furl("https://dummy/zaaktypen").set(
+            {
+                "catalogus": "https://dummy/catalogus",
+                "identificatie": "ZT-007",
+                "datumGeldigheid": "2024-08-08",
+            }
+        )
+        m.get(
+            str(endpoint),
+            headers={"API-Version": "1.2.0"},
+            json={
+                "next": None,
+                "previous": None,
+                "count": 2,
+                "results": [
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/1",
+                        "identificatie": "ZT-007",
+                        "omschrijving": "Zaaktype 7",
+                        "beginGeldigheid": "2023-01-01",
+                        "eindeGeldigheid": "2024-12-31",
+                    },
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/2",
+                        "identificatie": "ZT-007",
+                        "omschrijving": "Zaaktype 7",
+                        "beginGeldigheid": "2024-01-01",
+                        "eindeGeldigheid": None,
+                    },
+                ],
+            },
+        )
+
+        with self.assertRaisesMessage(
+            StandardViolation,
+            "Got 2 case type versions within a catalogue with identification "
+            "'ZT-007'. Version (date) ranges may not overlap.",
+        ):
+            client.find_case_types(
+                catalogus="https://dummy/catalogus",
+                identification="ZT-007",
                 valid_on=date(2024, 8, 8),
             )
