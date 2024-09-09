@@ -16,6 +16,18 @@ class PropertyMapping(TypedDict):
     eigenschap: str
 
 
+type VertrouwelijkheidAanduiding = Literal[
+    "openbaar",
+    "beperkt_openbaar",
+    "intern",
+    "zaakvertrouwelijk",
+    "vertrouwelijk",
+    "confidentieel",
+    "geheim",
+    "zeer_geheim",
+]
+
+
 class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
     catalogue: NotRequired[CatalogueOption]
@@ -23,20 +35,12 @@ class RegistrationOptions(TypedDict):
     zaaktype: str  # DeprecationWarning
     informatieobjecttype: str
     organisatie_rsin: NotRequired[str]
-    zaak_vertrouwelijkheidaanduiding: NotRequired[
-        Literal[
-            "openbaar",
-            "beperkt_openbaar",
-            "intern",
-            "zaakvertrouwelijk",
-            "vertrouwelijk",
-            "confidentieel",
-            "geheim",
-            "zeer_geheim",
-        ]
-    ]
+    zaak_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
     medewerker_roltype: NotRequired[str]
     objecttype: NotRequired[str]
     objecttype_version: NotRequired[int]
     content_json: NotRequired[str]
     property_mappings: NotRequired[list[PropertyMapping]]
+    # keys set in ZGWApiGroupConfig.apply_defaults_to
+    doc_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
+    auteur: NotRequired[str]

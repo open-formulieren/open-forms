@@ -38,7 +38,7 @@ class ZgwConfig(SingletonModel):
         null=True,
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         verbose_name = _("ZGW API's configuration")
 
 

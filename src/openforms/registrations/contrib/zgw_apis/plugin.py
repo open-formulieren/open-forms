@@ -13,8 +13,12 @@ from glom import assign
 from openforms.config.data import Action
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
-from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
+from openforms.contrib.zgw.clients.catalogi import (
+    EigenschapSpecificatie,
+    omschrijving_matcher,
+)
 from openforms.contrib.zgw.service import (
+    DocumentOptions,
     create_attachment_document,
     create_report_document,
 )
@@ -57,7 +61,8 @@ def get_property_mappings_from_submission(
     simple_mappings = {
         mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
     }
-    variable_values = submission.submissionvaluevariable_set.filter(
+    variable_values: list[tuple[str, str]]
+    variable_values = submission.submissionvaluevariable_set.filter(  # type: ignore
         key__in=simple_mappings
     ).values_list("key", "value")
 
@@ -94,6 +99,11 @@ def wrap_api_errors(func):
             raise RegistrationFailed from exc
 
     return decorator
+
+
+class _Eigenschap(TypedDict):
+    url: str
+    specificatie: EigenschapSpecificatie
 
 
 @register("zgw-create-zaak")
@@ -159,6 +169,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         """
         zgw: ZGWApiGroupConfig = options["zgw_api_group"]
         zgw.apply_defaults_to(options)
+        # help the type checker a little... it doesn't understand the mutations in
+        # apply_defaults_to
+        assert "organisatie_rsin" in options
 
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
@@ -196,6 +209,11 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         """
         zgw: ZGWApiGroupConfig = options["zgw_api_group"]
         zgw.apply_defaults_to(options)
+        # help the type checker a little... it doesn't understand the mutations in
+        # apply_defaults_to
+        assert "organisatie_rsin" in options
+        assert "doc_vertrouwelijkheidaanduiding" in options
+        assert "auteur" in options
 
         result = submission.registration_result
         assert result, "Result should have been set by pre-registration"
@@ -234,13 +252,21 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             get_catalogi_client(zgw) as catalogi_client,
         ):
             # Upload the summary PDF
+            pdf_options: DocumentOptions = {
+                "informatieobjecttype": options["informatieobjecttype"],
+                "organisatie_rsin": options["organisatie_rsin"],
+                "auteur": options["auteur"],
+                "doc_vertrouwelijkheidaanduiding": options[
+                    "doc_vertrouwelijkheidaanduiding"
+                ],
+            }
             summary_pdf_document = execute_unless_result_exists(
                 partial(
                     create_report_document,
                     client=documents_client,
                     name=submission.form.admin_name,
                     submission_report=submission_report,
-                    options=options,
+                    options=pdf_options,
                     language=submission_report.submission.language_code,
                 ),
                 submission,
@@ -269,12 +295,15 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.rol",
             )
 
+            medewerker_rol: dict[str, Any] | None = None
             if submission.has_registrator:
                 assert submission.registrator
 
+                roltype_omschrijving = options.get("medewerker_roltype")
+                assert roltype_omschrijving
                 roltypen = catalogi_client.list_roltypen(
                     zaaktype=zaak["zaaktype"],
-                    matcher=omschrijving_matcher(options["medewerker_roltype"]),
+                    matcher=omschrijving_matcher(roltype_omschrijving),
                 )
                 roltype = roltypen[0]
 
@@ -327,10 +356,13 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 titel = attachment.titel or options.get(
                     "titel", attachment.get_display_name()
                 )
-                doc_options = {
-                    **options,
+                doc_options: DocumentOptions = {
                     "informatieobjecttype": iot,
                     "organisatie_rsin": bronorganisatie,
+                    "auteur": options["auteur"],
+                    "doc_vertrouwelijkheidaanduiding": options[
+                        "doc_vertrouwelijkheidaanduiding"
+                    ],
                     "titel": titel,
                 }
 
@@ -356,7 +388,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         language=attachment.submission_step.submission.language_code,  # assume same as submission
                     ),
                     submission,
-                    f"intermediate.documents.{attachment.id}.document",
+                    f"intermediate.documents.{attachment.id}.document",  # type: ignore
                 )
                 execute_unless_result_exists(
                     partial(
@@ -365,7 +397,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                         document=attachment_document,
                     ),
                     submission,
-                    f"intermediate.documents.{attachment.id}.relation",
+                    f"intermediate.documents.{attachment.id}.relation",  # type: ignore
                 )
 
             result.update(
@@ -376,7 +408,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 }
             )
 
-        if submission.has_registrator:
+        if medewerker_rol:
             result["medewerker_rol"] = medewerker_rol
 
         # Register submission to Objects API if configured
@@ -419,7 +451,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.zaaktype_eigenschappen",
             )
 
-            retrieved_eigenschappen = {
+            retrieved_eigenschappen: dict[str, _Eigenschap] = {
                 eigenschap["naam"]: {
                     "url": eigenschap["url"],
                     "specificatie": eigenschap["specificatie"],
@@ -484,6 +516,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     def register_submission_to_objects_api(
         self, submission: Submission, options: RegistrationOptions
     ) -> dict:
+        assert "objecttype" in options
+        assert "objecttype_version" in options
+        assert "content_json" in options
+
         object_mapping = {
             "geometry": FieldConf(
                 RegistrationAttribute.locatie_coordinaat,
@@ -503,9 +539,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         }
 
         data = render_to_json(options["content_json"], context)
+        assert isinstance(data, dict)
         record_data = prepare_data_for_registration(
             data=data,
-            objecttype_version=options["objecttype_version"],
+            objecttype_version=options.get("objecttype_version", 1),
         )
 
         apply_data_mapping(
@@ -513,9 +550,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         )
 
         # In a follow up PR: the group will be configurable:
-        with get_objects_client(
-            ObjectsAPIGroupConfig.objects.order_by("pk").first()
-        ) as objects_client:
+        api_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
+        if not api_group:  # pragma: no cover
+            raise RegistrationFailed("No API group available at all")
+        with get_objects_client(api_group) as objects_client:
             response = execute_unless_result_exists(
                 partial(
                     objects_client.create_object,

@@ -60,12 +60,22 @@ class InformatieObjectType(TypedDict):
     concept: NotRequired[bool]
 
 
+class EigenschapSpecificatie(TypedDict):
+    groep: NotRequired[str]
+    formaat: Literal["tekst", "getal", "datum", "datum_tijd"]
+    lengte: str  # string rather than number!
+    kardinaliteit: str  # 3 chars or less. why str??
+    waardenverzameling: NotRequired[list[str]]
+
+
 class Eigenschap(TypedDict):
     # there are more attributes, but we currently don't use them. See the Catalogi
     # API spec
     url: str
     naam: str
     zaaktype: str  # URL pointer to the case type
+    # required since 1.1.0, before that the spec was defect
+    specificatie: EigenschapSpecificatie
 
 
 CatalogiAPIVersion: TypeAlias = tuple[

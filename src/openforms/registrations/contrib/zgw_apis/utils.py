@@ -1,16 +1,8 @@
 from datetime import date, datetime
-from typing import Literal, NotRequired, TypedDict
 
+from openforms.contrib.zgw.clients.catalogi import EigenschapSpecificatie
 from openforms.typing import JSONValue
 from openforms.utils.date import datetime_in_amsterdam
-
-
-class EigenschapSpecificatie(TypedDict):
-    groep: NotRequired[str]
-    formaat: Literal["tekst", "getal", "datum", "datum_tijd"]
-    lengte: str  # string rather than number!
-    kardinaliteit: str  # 3 chars or less. why str??
-    waardenverzameling: NotRequired[list[str]]
 
 
 def process_according_to_eigenschap_format(

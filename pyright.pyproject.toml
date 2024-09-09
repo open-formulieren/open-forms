@@ -36,6 +36,7 @@ include = [
     "src/openforms/registrations/contrib/objects_api/plugin.py",
     "src/openforms/registrations/contrib/objects_api/submission_registration.py",
     "src/openforms/registrations/contrib/objects_api/typing.py",
+    "src/openforms/registrations/contrib/zgw_apis/",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
@@ -44,6 +45,7 @@ include = [
 exclude = [
     "**/__pycache__",
     "src/openforms/formio/formatters/tests/",
+    "src/openforms/registrations/contrib/zgw_apis/tests/",
 ]
 ignore = []
 

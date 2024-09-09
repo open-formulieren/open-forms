@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 
 from glom import assign, glom
 
@@ -7,13 +7,15 @@ from openforms.submissions.models import Submission
 unset = object()
 
 
-def execute_unless_result_exists(
-    callback: Callable,
+def execute_unless_result_exists[
+    R
+](
+    callback: Callable[[], R],
     submission: Submission,
     spec: str,
     default=None,
     result=unset,
-) -> Any:
+) -> R:
     if submission.registration_result is None:
         submission.registration_result = {}
 
