@@ -97,6 +97,7 @@ const FormConfigurationFields = ({
     internalName,
     slug,
     showProgressIndicator,
+    showSummaryProgress,
     active,
     category,
     theme,
@@ -281,6 +282,25 @@ const FormConfigurationFields = ({
           }
           checked={showProgressIndicator}
           onChange={event => onCheckboxChange(event, showProgressIndicator)}
+        />
+      </FormRow>
+      <FormRow>
+        <Checkbox
+          name="form.showSummaryProgress"
+          label={
+            <FormattedMessage
+              defaultMessage="Show summary progress"
+              description="showSummaryProgress field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Whether to display the short progress summary, indicating the current step number and total amount of steps."
+              description="Summary of the progress help text"
+            />
+          }
+          checked={showSummaryProgress}
+          onChange={event => onCheckboxChange(event, showSummaryProgress)}
         />
       </FormRow>
       <FormRow>
@@ -512,6 +532,7 @@ FormConfigurationFields.propTypes = {
     uuid: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
+    showSummaryProgress: PropTypes.bool.isRequired,
     active: PropTypes.bool.isRequired,
     isDeleted: PropTypes.bool.isRequired,
     maintenanceMode: PropTypes.bool.isRequired,
