@@ -26,6 +26,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
@@ -2411,3 +2412,52 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/roltypen/"
                 "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
             )
+
+    @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
+    def test_allow_registration_with_unpublished_case_types(self):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="DRAFT",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": zgw_group,
+            "case_type_identification": "DRAFT-01",
+            "zaaktype": "",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"
+            ),
+        }
+        plugin = ZGWRegistration("zgw")
+
+        # creates the case
+        result = plugin.pre_register_submission(submission, options)
+
+        assert result.data is not None
+        zaak_url = result.data["zaak"]["url"]
+        with get_zaken_client(zgw_group) as client:
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+
+        self.assertEqual(
+            zaak_data["zaaktype"],
+            "http://localhost:8003/catalogi/api/v1/"
+            "zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1",
+        )
