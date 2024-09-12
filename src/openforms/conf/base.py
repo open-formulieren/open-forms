@@ -212,6 +212,7 @@ INSTALLED_APPS = [
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
     "openforms.contrib.microsoft.apps.MicrosoftApp",
+    "openforms.contrib.objects_api",
     "openforms.dmn",
     "openforms.dmn.contrib.camunda",
     "openforms.registrations",

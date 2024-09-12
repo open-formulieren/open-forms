@@ -7,6 +7,8 @@ from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
 from openforms.authentication.service import AuthAttribute
+from openforms.contrib.objects_api.clients import get_documents_client
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
@@ -16,7 +18,6 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
-from ..client import get_documents_client
 from ..models import (
     ObjectsAPIConfig,
     ObjectsAPIRegistrationData,
@@ -25,7 +26,6 @@ from ..models import (
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
-from .factories import ObjectsAPIGroupConfigFactory
 
 TEST_FILES = Path(__file__).parent / "files"
 FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")

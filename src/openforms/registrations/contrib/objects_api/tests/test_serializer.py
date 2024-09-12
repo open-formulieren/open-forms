@@ -2,10 +2,10 @@ from pathlib import Path
 
 from django.test import TestCase
 
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
-from .factories import ObjectsAPIGroupConfigFactory
 
 FILES_DIR = Path(__file__).parent / "files"
 

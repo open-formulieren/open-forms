@@ -3,10 +3,10 @@ from django.test import TestCase
 import requests
 import requests_mock
 
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
-from .factories import ObjectsAPIGroupConfigFactory
 
 
 class ConfigCheckTests(TestCase):

@@ -11,7 +11,7 @@ from openforms.contrib.zgw.validators import (
     validate_catalogue_reference as _validate_catalogue_reference,
 )
 
-from .client import get_catalogi_client
+from .clients import get_catalogi_client
 from .models import ObjectsAPIGroupConfig
 
 

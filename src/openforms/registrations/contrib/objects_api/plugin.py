@@ -8,18 +8,22 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.data import Action
+from openforms.contrib.objects_api.clients import (
+    get_objects_client,
+    get_objecttypes_client,
+)
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin
 from ...registry import register
 from .checks import check_config
-from .client import get_objects_client, get_objecttypes_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 from .registration_variables import register as variables_registry
 from .submission_registration import HANDLER_MAPPING
 from .typing import RegistrationOptions
+from .utils import apply_defaults_to
 
 if TYPE_CHECKING:
     from openforms.forms.models import FormVariable
@@ -39,7 +43,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     @staticmethod
     def set_defaults(options: RegistrationOptions) -> None:
         config_group = options["objects_api_group"]
-        config_group.apply_defaults_to(options)
+        apply_defaults_to(config_group, options)
 
         if options["version"] == 1:
             global_config = ObjectsAPIConfig.get_solo()
@@ -113,9 +117,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         return [
             (
                 _("Manage API groups"),
-                reverse(
-                    "admin:registrations_objects_api_objectsapigroupconfig_changelist"
-                ),
+                reverse("admin:objects_api_objectsapigroupconfig_changelist"),
             ),
             (
                 _("Defaults configuration"),

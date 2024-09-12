@@ -6,10 +6,11 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.utils.translation import gettext as _
 
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIGroupConfig
-from .factories import ObjectsAPIGroupConfigFactory
+from ..utils import apply_defaults_to
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -85,7 +86,7 @@ class ObjectsAPIGroupTests(TestCase):
                 "iot_attachment": "",
             }
 
-            api_group.apply_defaults_to(partial_opts)
+            apply_defaults_to(api_group, partial_opts)
 
             self.assertEqual(
                 partial_opts,
@@ -112,7 +113,7 @@ class ObjectsAPIGroupTests(TestCase):
                 "iot_attachment": "",
             }
 
-            api_group.apply_defaults_to(partial_opts)
+            apply_defaults_to(api_group, partial_opts)
 
             self.assertEqual(
                 partial_opts,
@@ -144,7 +145,7 @@ class ObjectsAPIGroupTests(TestCase):
                 "iot_attachment": "other",
             }
 
-            api_group.apply_defaults_to(partial_opts)
+            apply_defaults_to(api_group, partial_opts)
 
             self.assertEqual(
                 partial_opts,
@@ -178,7 +179,7 @@ class ObjectsAPIGroupTests(TestCase):
                 },
             }
 
-            api_group.apply_defaults_to(partial_opts)
+            apply_defaults_to(api_group, partial_opts)
 
             self.assertEqual(
                 partial_opts,
@@ -212,7 +213,7 @@ class ObjectsAPIGroupTests(TestCase):
                 },
             }
 
-            api_group.apply_defaults_to(partial_opts)
+            apply_defaults_to(api_group, partial_opts)
 
             self.assertEqual(
                 partial_opts,

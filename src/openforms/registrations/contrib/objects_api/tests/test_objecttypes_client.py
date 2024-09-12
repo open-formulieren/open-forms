@@ -5,9 +5,9 @@ from django.test import TestCase
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
+from openforms.contrib.objects_api.clients import get_objecttypes_client
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_objecttypes_client
 from ..models import ObjectsAPIGroupConfig
 
 

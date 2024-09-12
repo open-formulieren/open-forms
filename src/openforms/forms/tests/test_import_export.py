@@ -15,13 +15,11 @@ from freezegun import freeze_time
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.config.tests.factories import ThemeFactory
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
-from openforms.registrations.contrib.objects_api.tests.factories import (
-    ObjectsAPIGroupConfigFactory,
-)
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )

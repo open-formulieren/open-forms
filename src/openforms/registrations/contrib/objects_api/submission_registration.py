@@ -12,6 +12,12 @@ import glom
 from glom import PathAccessError
 
 from openforms.authentication.service import AuthAttribute
+from openforms.contrib.objects_api.clients import (
+    CatalogiClient,
+    DocumentenClient,
+    get_catalogi_client,
+    get_documents_client,
+)
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.service import (
@@ -38,12 +44,6 @@ from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
-from .client import (
-    CatalogiClient,
-    DocumentenClient,
-    get_catalogi_client,
-    get_documents_client,
-)
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import (
     PAYMENT_VARIABLE_NAMES,

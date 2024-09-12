@@ -9,6 +9,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from openforms.authentication.service import AuthAttribute
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
@@ -23,7 +24,6 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
-from .factories import ObjectsAPIGroupConfigFactory
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
