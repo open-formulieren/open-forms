@@ -19,6 +19,11 @@
     "description": "ZGW APIs registration: default overrides fieldset title",
     "originalDefault": "Optional ZGW configuration"
   },
+  "+dcHiF": {
+    "defaultMessage": "A case of this type will be created during registration.",
+    "description": "ZGW APIs registration options 'case type' helpText",
+    "originalDefault": "A case of this type will be created during registration."
+  },
   "+dcsE0": {
     "defaultMessage": "Remove value",
     "description": "Delete datetime value",
@@ -58,6 +63,11 @@
     "defaultMessage": "Configuration",
     "description": "Service fetch config configuration tab title",
     "originalDefault": "Configuration"
+  },
+  "/vM+b5": {
+    "defaultMessage": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "description": "Case type option label",
+    "originalDefault": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
   "0M2B7B": {
     "defaultMessage": "DMN variable",
@@ -393,11 +403,6 @@
     "defaultMessage": "Please select the logic type:",
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
-  },
-  "9HyRBr": {
-    "defaultMessage": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly.",
-    "description": "ZGW APIs registrations options: catalogue select error",
-    "originalDefault": "Something went wrong retrieving the available catalogues. Please check that the services in the selected API group are configured correctly."
   },
   "9LdZVP": {
     "defaultMessage": "Attribute",
@@ -1074,6 +1079,11 @@
     "description": "Warning missing trigger step",
     "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
   },
+  "LkrFow": {
+    "defaultMessage": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly.",
+    "description": "ZGW APIs registrations options: generic error",
+    "originalDefault": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
+  },
   "LrlAVD": {
     "defaultMessage": "Data extraction",
     "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
@@ -1123,6 +1133,11 @@
     "defaultMessage": "Form variables configuration",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
+  },
+  "N5Hv+1": {
+    "defaultMessage": "Case type",
+    "description": "ZGW APIs registration options 'case type' label",
+    "originalDefault": "Case type"
   },
   "NE5h2q": {
     "defaultMessage": "Description",
@@ -2579,6 +2594,11 @@
     "description": "Errored Submissions Removal Method field label",
     "originalDefault": "Errored Submissions Removal Method"
   },
+  "wLfQfD": {
+    "defaultMessage": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored.",
+    "description": "ZGW APIs legacy config options informative message",
+    "originalDefault": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
+  },
   "wOMoEs": {
     "defaultMessage": "Source",
     "description": "JSON editor: value source selector label",
@@ -2598,6 +2618,11 @@
     "defaultMessage": "Component where products for an appointment will be shown",
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
+  },
+  "wrdDVu": {
+    "defaultMessage": "Legacy configuration",
+    "description": "ZGw APIs registration: legacy configuration options fieldset title",
+    "originalDefault": "Legacy configuration"
   },
   "x+ORaW": {
     "defaultMessage": "Deactivate on",

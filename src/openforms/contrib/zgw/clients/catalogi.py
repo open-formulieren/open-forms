@@ -45,6 +45,10 @@ class CaseType(TypedDict):
     catalogus: str  # URL pointer to the catalogue
     identificatie: str
     omschrijving: str
+    beginGeldigheid: str  # ISO 8601 date string
+    eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
+    concept: NotRequired[bool]
+    informatieobjecttypen: NotRequired[list[str]]  # URL pointers to document types
 
 
 class InformatieObjectType(TypedDict):
@@ -58,12 +62,22 @@ class InformatieObjectType(TypedDict):
     concept: NotRequired[bool]
 
 
+class EigenschapSpecificatie(TypedDict):
+    groep: NotRequired[str]
+    formaat: Literal["tekst", "getal", "datum", "datum_tijd"]
+    lengte: str  # string rather than number!
+    kardinaliteit: str  # 3 chars or less. why str??
+    waardenverzameling: NotRequired[list[str]]
+
+
 class Eigenschap(TypedDict):
     # there are more attributes, but we currently don't use them. See the Catalogi
     # API spec
     url: str
     naam: str
     zaaktype: str  # URL pointer to the case type
+    # required since 1.1.0, before that the spec was defect
+    specificatie: EigenschapSpecificatie
 
 
 CatalogiAPIVersion: TypeAlias = tuple[
@@ -71,6 +85,14 @@ CatalogiAPIVersion: TypeAlias = tuple[
     int,  # minor
     int,  # patch
 ]
+
+
+class CaseTypeListParams(TypedDict, total=False):
+    catalogus: str
+    identificatie: str
+    status: Literal["alles", "concept", "definitief"]
+    datumGeldigheid: str
+    page: int
 
 
 class InformatieObjectTypeListParams(TypedDict, total=False):
@@ -144,6 +166,66 @@ class CatalogiClient(NLXClient):
         if num_results == 0:
             return None
         return data["results"][0]
+
+    def get_all_case_types(self, *, catalogus: str) -> Iterator[CaseType]:
+        params: CaseTypeListParams = {
+            "catalogus": catalogus,
+        }
+        if self.allow_drafts:
+            params["status"] = "alles"
+        response = self.get("zaaktypen", params=params)  # type: ignore
+        response.raise_for_status()
+        data = response.json()
+        yield from pagination_helper(self, data)
+
+    def find_case_types(
+        self,
+        *,
+        catalogus: str,
+        identification: str,
+        valid_on: date | None = None,
+    ) -> list[CaseType] | None:
+        _supports_filtering_valid_on = self.api_version >= (1, 2, 0)
+
+        params: CaseTypeListParams = {
+            "catalogus": catalogus,
+            "identificatie": identification,
+        }
+        if valid_on and _supports_filtering_valid_on:
+            params["datumGeldigheid"] = valid_on.isoformat()
+        if self.allow_drafts:
+            params["status"] = "alles"
+
+        response = self.get("zaaktypen", params=params)  # type: ignore
+        response.raise_for_status()
+
+        data: PaginatedResponseData[CaseType] = response.json()
+        if data["count"] == 0:
+            return None
+
+        all_versions = sorted(
+            list(pagination_helper(self, data)),
+            key=itemgetter("beginGeldigheid"),
+        )
+
+        # otherwise do the filtering manually
+        if valid_on and not _supports_filtering_valid_on:
+            date_str = valid_on.isoformat()
+            all_versions = [
+                version
+                for version in all_versions
+                if version["beginGeldigheid"] <= date_str
+                if (end := version.get("eindeGeldigheid")) is None or end > date_str
+            ]
+        elif (
+            valid_on and _supports_filtering_valid_on and (num := len(all_versions)) > 1
+        ):
+            raise StandardViolation(
+                f"Got {num} case type versions within a catalogue with identification "
+                f"'{identification}'. Version (date) ranges may not overlap."
+            )
+
+        return all_versions
 
     def get_all_informatieobjecttypen(
         self, *, catalogus: str = ""

@@ -4054,6 +4054,54 @@ paths:
         schema:
           type: string
         required: true
+  /api/v2/registration/plugins/zgw-api/case-types:
+    get:
+      operationId: registration_plugins_zgw_api_case_types_list
+      description: |-
+        Fetch and serialize a list of objects.
+
+        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
+        backed collections of objects.
+      summary: List the available case types within a catalogue (ZGW APIs)
+      parameters:
+      - in: query
+        name: catalogue_url
+        schema:
+          type: string
+          format: uri
+          title: catalogus URL
+          minLength: 1
+        description: Filter case types against this catalogue URL.
+        required: true
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+        description: The primary key of the ZGW API group to use. The case types from
+          the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CaseType'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins/zgw-api/catalogues:
     get:
       operationId: registration_plugins_zgw_api_catalogues_list
@@ -6925,6 +6973,26 @@ components:
           description: Email given when making the appointment
       required:
       - email
+    CaseType:
+      type: object
+      properties:
+        identification:
+          type: string
+          description: The unique identification within the catalogue for a given
+            case type. Note that multiple versions of the same case type with the
+            same identification exist.
+        description:
+          type: string
+          description: The name/kind of case type based on which people can recognize/search
+            a particular case type.
+        isPublished:
+          type: boolean
+          description: Unpublished case types may be returned when the feature flag
+            'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
+      required:
+      - description
+      - identification
+      - isPublished
     Catalogue:
       type: object
       properties:

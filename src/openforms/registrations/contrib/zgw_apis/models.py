@@ -38,7 +38,7 @@ class ZgwConfig(SingletonModel):
         null=True,
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         verbose_name = _("ZGW API's configuration")
 
 
@@ -181,6 +181,14 @@ class ZGWApiGroupConfig(models.Model):
 
     def apply_defaults_to(self, options):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
+
+        # now, normalize the catalogue information and associated document types
+        has_catalogue_override = (catalogue := options.get("catalogue")) is not None
+        if not has_catalogue_override and self.catalogue_domain:
+            # domain implies RSIN is set
+            catalogue = {"domain": self.catalogue_domain, "rsin": self.catalogue_rsin}
+        options.setdefault("catalogue", catalogue)
+
         options.setdefault(
             "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding
         )

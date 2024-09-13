@@ -2,6 +2,8 @@ from pathlib import Path
 
 from django.test import TestCase, override_settings
 
+from typing_extensions import deprecated
+
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import ZaakOptionsSerializer
@@ -48,6 +50,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertFalse(is_valid)
         self.assertIn("zgw_api_group", serializer.errors)
 
+    @deprecated("Legacy zaaktype URL")
     def test_bad_case_type_document_type_api_roots(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -61,6 +64,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertIn("zaaktype", serializer.errors)
         self.assertIn("informatieobjecttype", serializer.errors)
 
+    @deprecated("Legacy zaaktype URL")
     def test_existing_provided_variable_in_specific_zaaktype(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -82,6 +86,35 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertTrue(is_valid)
         self.assertNotIn("property_mappings", serializer.errors)
 
+    def test_property_mappings_validated_against_case_type_identification(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "property_mappings": [
+                {"component_key": "textField", "eigenschap": "a property name"},
+                {"component_key": "textField", "eigenschap": "wrong property name"},
+            ],
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("property_mappings", serializer.errors)
+        self.assertNotIn(0, serializer.errors["property_mappings"])
+        self.assertIn(1, serializer.errors["property_mappings"])
+        self.assertIn("eigenschap", serializer.errors["property_mappings"][1])
+        error = serializer.errors["property_mappings"][1]["eigenschap"]
+        self.assertEqual(error.code, "not-found")
+
+    @deprecated("Legacy zaaktype URL")
     def test_provided_variable_does_not_exist_in_specific_zaaktype(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -111,6 +144,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "Could not find a property with the name 'wrong variable' in the case type",
         )
 
+    @deprecated("Legacy zaaktype URL")
     def test_validate_zaaktype_within_configured_ztc_service(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -153,6 +187,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         error = serializer.errors["informatieobjecttype"][0]
         self.assertEqual(error.code, "not-found")
 
+    @deprecated("Legacy zaaktype URL")
     def test_valid_omschrijving(self):
         data = {
             "zgw_api_group": self.zgw_group.pk,
@@ -173,6 +208,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
 
         self.assertTrue(is_valid)
 
+    @deprecated("Legacy zaaktype URL")
     @override_settings(LANGUAGE_CODE="en")
     def test_invalid_roltype_omschrijving(self):
         data = {
@@ -198,6 +234,41 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "Could not find a roltype with this description related to the zaaktype.",
             serializer.errors["medewerker_roltype"][0],
         )
+
+    def test_roltype_omschrijving_validated_against_case_type_identification(self):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+
+        with self.subTest("valid"):
+            data = {**base, "medewerker_roltype": "Baliemedewerker"}
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("invalid"):
+            data = {**base, "medewerker_roltype": "Absent roltype"}
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("medewerker_roltype", serializer.errors)
+            self.assertEqual(
+                "Could not find a roltype with this description related to the zaaktype.",
+                serializer.errors["medewerker_roltype"][0],
+            )
 
     def test_catalogue_reference_badly_formatted_data(self):
         base = {
@@ -329,3 +400,80 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertIn("informatieobjecttype", serializer.errors)
         err = serializer.errors["informatieobjecttype"][0]
         self.assertEqual(err.code, "not-found")
+
+    def test_case_type_identification_or_zaaktype_url_required(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("case_type_identification", serializer.errors)
+        err = serializer.errors["case_type_identification"][0]
+        self.assertEqual(err.code, "required")
+
+    def test_catalogue_required_when_case_type_identification_provided(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "case_type_identification": "ZT-001",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("catalogue", serializer.errors)
+        err = serializer.errors["catalogue"][0]
+        self.assertEqual(err.code, "required")
+
+    def test_validate_case_type_exists_when_case_type_identification_is_provided(self):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+
+        with self.subTest("case type exists"):
+            data = {
+                **base,
+                "case_type_identification": "ZT-001",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("case type does not exist"):
+            data = {
+                **base,
+                "case_type_identification": "i-am-a-bad-reference",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("case_type_identification", serializer.errors)
+            err = serializer.errors["case_type_identification"][0]
+            self.assertEqual(err.code, "not-found")

@@ -1,4 +1,4 @@
-import {useField} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -10,11 +10,14 @@ import {TextInput} from 'components/admin/forms/Inputs';
  */
 const CaseType = () => {
   const [fieldProps] = useField('zaaktype');
+  const {
+    values: {caseTypeIdentification},
+  } = useFormikContext();
   return (
     <FormRow>
       <Field
         name="zaaktype"
-        required
+        required={!caseTypeIdentification}
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'CaseType' label"
@@ -28,7 +31,7 @@ const CaseType = () => {
           />
         }
       >
-        <TextInput id="id_zaaktype" required {...fieldProps} />
+        <TextInput id="id_zaaktype" required={!caseTypeIdentification} {...fieldProps} />
       </Field>
     </FormRow>
   );

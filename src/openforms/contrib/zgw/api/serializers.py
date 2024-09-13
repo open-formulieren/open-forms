@@ -31,6 +31,31 @@ class CatalogueSerializer(serializers.Serializer):
     )
 
 
+class CaseTypeSerializer(serializers.Serializer):
+    identification = serializers.CharField(
+        label=_("identification"),
+        help_text=_(
+            "The unique identification within the catalogue for a given case type. "
+            "Note that multiple versions of the same case type with the same "
+            "identification exist."
+        ),
+    )
+    description = serializers.CharField(
+        label=_("description"),
+        help_text=_(
+            "The name/kind of case type based on which people can recognize/search "
+            "a particular case type."
+        ),
+    )
+    is_published = serializers.BooleanField(
+        label=_("Is published"),
+        help_text=_(
+            "Unpublished case types may be returned when the feature flag "
+            "'ZGW_APIS_INCLUDE_DRAFTS' is enabled."
+        ),
+    )
+
+
 # TODO: OF 3.0 -> use English instead of Dutch.
 class InformatieObjectTypeSerializer(serializers.Serializer):
     url = serializers.URLField(label=_("url"))

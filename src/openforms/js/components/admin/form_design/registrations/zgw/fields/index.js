@@ -1,6 +1,7 @@
 export {default as ZGWAPIGroup} from './ZGWAPIGroup';
 export {default as CatalogueSelect} from './CatalogueSelect';
-export {default as CaseType} from './CaseType';
+export {default as CaseTypeSelect} from './CaseTypeSelect';
+export {default as LegacyCaseType} from './LegacyCaseType';
 export {default as DocumentType} from './DocumentType';
 export {default as OrganisationRSIN} from './OrganisationRSIN';
 export {default as ConfidentialityLevel} from './ConfidentialityLevel';
