@@ -15,7 +15,7 @@ version: '3.4'
 
 services:
   db:
-    image: postgres:${PG_VERSION:-14}
+    image: postgres:${PG_VERSION:-15}  # Minimum required version is 12
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:

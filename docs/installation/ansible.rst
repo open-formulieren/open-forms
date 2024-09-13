@@ -26,7 +26,7 @@ Server preparation
 You can configure the Ansible playbook to install relevant services, do it
 manually, or have these pre-installed. You will need:
 
-* PostgreSQL 10 or above
+* PostgreSQL 12 or above
 * Nginx
 * Docker
 * Python 3.6+ (needed for Ansible, not Open Forms)
