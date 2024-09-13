@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 import {usePrevious, useUpdateEffect} from 'react-use';
 import useAsync from 'react-use/esm/useAsync';
 
-import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
+import {OBJECTS_API_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
@@ -13,7 +13,7 @@ import {get} from 'utils/fetch';
 import {useSynchronizeSelect} from './hooks';
 
 const getAvailableObjectTypes = async apiGroupID => {
-  const response = await get(REGISTRATION_OBJECTTYPES_ENDPOINT, {objects_api_group: apiGroupID});
+  const response = await get(OBJECTS_API_OBJECTTYPES_ENDPOINT, {objects_api_group: apiGroupID});
   if (!response.ok) {
     throw new Error('Loading available object types failed');
   }

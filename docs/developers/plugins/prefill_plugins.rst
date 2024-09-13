@@ -25,6 +25,9 @@ You can find an example implementation in :mod:`openforms.prefill.contrib.demo`.
 Implementation
 --------------
 
+Plugins must be added to the ``INSTALLED_APPS`` setting in :mod:`openforms.conf.base`. See the demo 
+app (:class:`openforms.prefill.contrib.demo.apps.DemoApp`) as an example.
+
 Plugins must implement the interface from :class:`openforms.prefill.base.BasePlugin`.
 It's safe to use this as a base class.
 

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.data import Action
+from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import (
     get_objects_client,
     get_objecttypes_client,
@@ -17,7 +18,6 @@ from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin
 from ...registry import register
-from .checks import check_config
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 from .registration_variables import register as variables_registry

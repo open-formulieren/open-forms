@@ -5,25 +5,10 @@ from django.test import TestCase
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
-from openforms.contrib.objects_api.clients import get_objecttypes_client
 from openforms.utils.tests.vcr import OFVCRMixin
 
+from ..clients import get_objecttypes_client
 from ..models import ObjectsAPIGroupConfig
-
-
-def get_test_config() -> ObjectsAPIGroupConfig:
-    """Returns a preconfigured ``ObjectsAPIGroupConfig`` instance matching the docker compose configuration."""
-
-    return ObjectsAPIGroupConfig(
-        objecttypes_service=Service(
-            api_root="http://localhost:8001/api/v2/",
-            api_type=APITypes.orc,
-            oas="https://example.com/",
-            header_key="Authorization",
-            header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-            auth_type=AuthTypes.api_key,
-        )
-    )
 
 
 class ObjecttypesClientTest(OFVCRMixin, TestCase):
@@ -33,7 +18,16 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         super().setUpTestData()
-        cls.test_config = get_test_config()
+        cls.test_config = ObjectsAPIGroupConfig(
+            objecttypes_service=Service(
+                api_root="http://localhost:8001/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+                auth_type=AuthTypes.api_key,
+            )
+        )
 
     def test_list_objecttypes(self):
         with get_objecttypes_client(self.test_config) as client:
