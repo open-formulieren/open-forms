@@ -14,11 +14,9 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.contrib.zgw.clients.zaken import CRS_HEADERS
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
-from openforms.registrations.contrib.objects_api.tests.factories import (
-    ObjectsAPIGroupConfigFactory,
-)
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tasks import pre_registration

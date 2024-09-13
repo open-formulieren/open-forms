@@ -7,16 +7,16 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
+from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_objects_client
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
-from .factories import ObjectsAPIGroupConfigFactory
 
 TEST_FILES = Path(__file__).parent / "files"
 

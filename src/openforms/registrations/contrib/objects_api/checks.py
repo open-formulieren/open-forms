@@ -2,15 +2,15 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration
-
-from .client import (
+from openforms.contrib.objects_api.clients import (
     NoServiceConfigured,
     get_catalogi_client,
     get_documents_client,
     get_objects_client,
     get_objecttypes_client,
 )
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+
 from .models import ObjectsAPIGroupConfig
 
 

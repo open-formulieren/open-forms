@@ -7,10 +7,10 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..tests.factories import ObjectsAPIGroupConfigFactory
 from .test_objecttypes_client import get_test_config
 
 TEST_FILES = Path(__file__).parent / "files"

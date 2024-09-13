@@ -20,7 +20,7 @@
     "qmatic.QmaticConfig",
     "registrations_email.EmailConfig",
     "registrations_microsoft_graph.MSGraphRegistrationConfig",
-    "registrations_objects_api.ObjectsAPIGroupConfig",
+    "objects_api.ObjectsAPIGroupConfig",
     "registrations_objects_api.ObjectsAPIConfig",
     "stuf.StufService",
     "stuf_bg.StufBGConfig",

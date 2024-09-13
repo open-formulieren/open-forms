@@ -8,7 +8,12 @@ from django.test import TestCase
 import requests_mock
 from zgw_consumers.test import generate_oas_component
 
+from openforms.contrib.objects_api.clients import (
+    get_documents_client,
+    get_objects_client,
+)
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.registrations.contrib.objects_api.models import (
@@ -24,11 +29,9 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_documents_client, get_objects_client
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
-from .factories import ObjectsAPIGroupConfigFactory
 
 
 @requests_mock.Mocker()

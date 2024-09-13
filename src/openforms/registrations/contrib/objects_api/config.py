@@ -10,13 +10,16 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.contrib.objects_api.clients import (
+    get_catalogi_client,
+    get_objecttypes_client,
+)
 from openforms.contrib.zgw.serializers import CatalogueSerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
-from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
 from .typing import RegistrationOptions
 

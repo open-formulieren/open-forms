@@ -24,7 +24,7 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
         user = SuperUserFactory.create()
 
         response = self.app.get(
-            reverse("admin:registrations_objects_api_objectsapigroupconfig_changelist"),
+            reverse("admin:objects_api_objectsapigroupconfig_changelist"),
             user=user,
         )
 
@@ -41,7 +41,7 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
             catalogue_rsin="",
         )
         change_url = reverse(
-            "admin:registrations_objects_api_objectsapigroupconfig_change",
+            "admin:objects_api_objectsapigroupconfig_change",
             args=(api_group.pk,),
         )
 
@@ -65,7 +65,7 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
             catalogue_rsin="",
         )
         change_url = reverse(
-            "admin:registrations_objects_api_objectsapigroupconfig_change",
+            "admin:objects_api_objectsapigroupconfig_change",
             args=(api_group.pk,),
         )
         expected_error = _(
@@ -100,7 +100,7 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
             catalogue_rsin="",
         )
         change_url = reverse(
-            "admin:registrations_objects_api_objectsapigroupconfig_change",
+            "admin:objects_api_objectsapigroupconfig_change",
             args=(api_group.pk,),
         )
 

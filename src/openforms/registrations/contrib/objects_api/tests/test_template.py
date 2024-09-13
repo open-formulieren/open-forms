@@ -9,6 +9,7 @@ import requests_mock
 import tablib
 from freezegun import freeze_time
 
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -17,7 +18,6 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
-from .factories import ObjectsAPIGroupConfigFactory
 
 
 class JSONTemplatingTests(TestCase):

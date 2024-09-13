@@ -5,9 +5,7 @@ from django.urls import Resolver404, resolve, reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 
-from openforms.registrations.contrib.objects_api.tests.factories import (
-    ObjectsAPIGroupConfigFactory,
-)
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
