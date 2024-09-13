@@ -23,7 +23,7 @@ You need the following libraries and/or programs:
 
 * `Python`_ 3.12
 * Python `Virtualenv`_ and `Pip`_
-* `PostgreSQL`_ 10 or above
+* `PostgreSQL`_ 12 or above
 * `Redis`_ for `Celery`_ to work
 * `Node.js`_, see ``.nvmrc`` for the exact version. Using nvm_ is recommended.
 * `npm`_
