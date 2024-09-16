@@ -2,16 +2,6 @@
 
 from django.db import migrations
 
-from django.db.migrations.state import StateApps
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-
-
-def set_legacy_true(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    """Alter existing ``TemporaryFileUpload`` instances to have ``legacy`` set to ``True`` by default."""
-
-    TemporaryFileUpload = apps.get_model("submissions", "TemporaryFileUpload")
-    TemporaryFileUpload.objects.update(legacy=True)
-
 
 class Migration(migrations.Migration):
 
@@ -19,9 +9,5 @@ class Migration(migrations.Migration):
         ("submissions", "0005_temporaryfileupload_legacy_and_more"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            set_legacy_true,
-            migrations.RunPython.noop,
-        ),
-    ]
+    # RunPython operation removed as part of the 2.8.0 release cycle
+    operations = []

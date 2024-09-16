@@ -2,33 +2,6 @@
 
 from django.db import migrations
 
-CONFIG_PK = 1
-
-# from prefill -> haalcentraal app
-FIELD_MAPPING = {
-    "service": "brp_personen_service",
-    "version": "brp_personen_version",
-}
-
-
-def code_factory(mapping: dict, forward: bool):
-    def copy_config(apps, _):
-        old_app = "prefill_haalcentraal" if forward else "haalcentraal"
-        new_app = "haalcentraal" if forward else "prefill_haalcentraal"
-
-        OldConfig = apps.get_model(old_app, "HaalCentraalConfig")
-        NewConfig = apps.get_model(new_app, "HaalCentraalConfig")
-
-        old_config, _ = OldConfig.objects.get_or_create(pk=CONFIG_PK)
-        new_config, _ = NewConfig.objects.get_or_create(pk=CONFIG_PK)
-
-        for old_field, new_field in mapping.items():
-            value = getattr(old_config, old_field)
-            setattr(new_config, new_field, value)
-            new_config.save()
-
-    return copy_config
-
 
 class Migration(migrations.Migration):
 
@@ -37,9 +10,5 @@ class Migration(migrations.Migration):
         ("prefill_haalcentraal", "0003_haalcentraalconfig_version"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            code_factory(FIELD_MAPPING, forward=True),
-            code_factory({v: k for k, v in FIELD_MAPPING.items()}, forward=False),
-        ),
-    ]
+    # RunPython operation removed as part of the 2.8.0 release cycle
+    operations = []
