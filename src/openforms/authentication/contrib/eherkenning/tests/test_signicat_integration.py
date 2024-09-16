@@ -30,7 +30,9 @@ CERT = TEST_FILES / "our_certificate.pem"
 METADATA = TEST_FILES / "signicat_metadata.xml"
 
 SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
-SELECT_EHERKENNING_SIM = SIGNICAT_BROKER_BASE / "authn/simulator/selection/eh"
+SELECT_EHERKENNING_SIM = (
+    SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/eherkenning"
+)
 
 
 @patch(

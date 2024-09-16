@@ -11,13 +11,17 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add
   response:
     body:
       string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add"}},"_embedded":{}}'
     headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - '*'
       Api-Version:
       - 2.0.0
       Connection:
@@ -26,14 +30,29 @@ interactions:
       - gzip
       Content-Length:
       - '133'
+      Content-Security-Policy:
+      - 'default-src ''self''; script-src ''self''; connect-src ''self''; style-src
+        ''self''; img-src ''self'' data:; object-src ''self''; font-src ''self'' https://*.kadaster.nl;
+        media-src ''self'' data: https://*.kadaster.nl; frame-src ''self''; frame-ancestors
+        ''self'';'
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 21 Mar 2024 12:15:11 GMT
+      - Mon, 16 Sep 2024 13:35:03 GMT
       Keep-Alive:
       - timeout=60
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
       Server:
       - Unspecified
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - 1; mode=block
     status:
       code: 200
       message: ''

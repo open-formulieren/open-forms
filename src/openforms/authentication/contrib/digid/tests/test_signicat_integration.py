@@ -146,7 +146,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select DigiD from the Signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -181,7 +181,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select DigiD from the Signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -243,7 +243,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -303,7 +303,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -364,7 +364,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -412,7 +412,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -462,7 +462,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
         # select digid from the signicat simulator selection screen
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         self.assertTrue(sim_response.ok)
 
@@ -555,7 +555,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         # do the JS submit to get redirected to signicat broker
         method, redirect_url, form_values = _parse_form(our_faux_redirect)
         session.request(method, redirect_url, data=form_values)
-        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/selection/digid"
+        select_digid_sim = SIGNICAT_BROKER_BASE / "authn/simulator/authenticate/digid"
         sim_response = session.get(select_digid_sim)
         sim_method, sim_action_url, sim_form = _parse_form(sim_response)
         auth_response = session.request(
