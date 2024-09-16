@@ -113,10 +113,12 @@ export const SelectCaseType = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const catalogueSelect = canvas.getByLabelText('Catalogue');
+    const catalogueSelect = canvas.getByLabelText('Catalogus');
     await selectEvent.select(catalogueSelect, 'Catalogus 1');
 
-    const caseTypeSelect = canvas.getByLabelText('Case type');
+    const caseTypeSelect = canvas.getByLabelText('Zaaktype', {
+      selector: '#id_caseTypeIdentification',
+    });
     await selectEvent.select(caseTypeSelect, 'Request passport');
   },
 };

@@ -15,12 +15,12 @@
     "originalDefault": "Path"
   },
   "+Te82K": {
-    "defaultMessage": "Optional ZGW configuration",
+    "defaultMessage": "Niet-verplichte instellingen",
     "description": "ZGW APIs registration: default overrides fieldset title",
     "originalDefault": "Optional ZGW configuration"
   },
   "+dcHiF": {
-    "defaultMessage": "A case of this type will be created during registration.",
+    "defaultMessage": "Tijdens de registratie wordt een zaak van dit zaaktype aangemaakt.",
     "description": "ZGW APIs registration options 'case type' helpText",
     "originalDefault": "A case of this type will be created during registration."
   },
@@ -65,7 +65,7 @@
     "originalDefault": "Configuration"
   },
   "/vM+b5": {
-    "defaultMessage": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "defaultMessage": "{description} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
     "description": "Case type option label",
     "originalDefault": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
@@ -384,7 +384,7 @@
     "originalDefault": "Type"
   },
   "8ZSQ9s": {
-    "defaultMessage": "Whether to display the short progress summary, indicating the current step number and total amount of steps.",
+    "defaultMessage": "Vink aan om het korte voortgangsoverzicht weer te geven. Dit overzicht toont de huidige stap en het totaal aantal stappen, typisch onder de formuliertitel.",
     "description": "Summary of the progress help text",
     "originalDefault": "Whether to display the short progress summary, indicating the current step number and total amount of steps."
   },
@@ -519,7 +519,7 @@
     "originalDefault": "Form"
   },
   "Bc8xyG": {
-    "defaultMessage": "Show summary progress",
+    "defaultMessage": "Toon voortgangsoverzicht",
     "description": "showSummaryProgress field label",
     "originalDefault": "Show summary progress"
   },
@@ -671,7 +671,7 @@
     "originalDefault": "Logic"
   },
   "DyF32d": {
-    "defaultMessage": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens.",
+    "defaultMessage": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten-API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens.",
     "description": "Objects API registration: uploadSubmissionCsv helpText",
     "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
   },
@@ -822,7 +822,7 @@
     "originalDefault": "Null"
   },
   "GwOWGv": {
-    "defaultMessage": "Plugin configuration: ZGW APIs",
+    "defaultMessage": "Plugin-instellingen: Zaakgericht Werken API's",
     "description": "ZGW APIs registration options modal title",
     "originalDefault": "Plugin configuration: ZGW APIs"
   },
@@ -1022,7 +1022,7 @@
     "originalDefault": "Manually defined"
   },
   "KtVIGz": {
-    "defaultMessage": "Documenttypen (verouderd)",
+    "defaultMessage": "Documenttypen (oud)",
     "description": "Objects registration: document types (legacy)",
     "originalDefault": "Document types (legacy)"
   },
@@ -1037,7 +1037,7 @@
     "originalDefault": "Payment provider"
   },
   "L4EVfI": {
-    "defaultMessage": "Changing the api group will clear the existing configuration. Are you sure you want to continue?",
+    "defaultMessage": "Let op! Als je een andere groep selecteert, dan worden de bestaande instellingen gereset. Ben je zeker dat je door wil gaan?",
     "description": "ZGW APIs registration options: warning message when changing the api group",
     "originalDefault": "Changing the api group will clear the existing configuration. Are you sure you want to continue?"
   },
@@ -1087,7 +1087,7 @@
     "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
   },
   "LkrFow": {
-    "defaultMessage": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly.",
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi, zaak- of documenttypen. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
     "description": "ZGW APIs registrations options: generic error",
     "originalDefault": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
   },
@@ -1143,7 +1143,7 @@
     "originalDefault": "Form variables configuration"
   },
   "N5Hv+1": {
-    "defaultMessage": "Case type",
+    "defaultMessage": "Zaaktype",
     "description": "ZGW APIs registration options 'case type' label",
     "originalDefault": "Case type"
   },
@@ -1168,7 +1168,7 @@
     "originalDefault": "Catalogue"
   },
   "Nfn2qu": {
-    "defaultMessage": "Case type API resource URL in the Catalogi API.",
+    "defaultMessage": "Zaaktype-API-resource URL in de Catalogi-API.",
     "description": "ZGW APIs registration options 'CaseType' help text",
     "originalDefault": "Case type API resource URL in the Catalogi API."
   },
@@ -1178,7 +1178,7 @@
     "originalDefault": "Component where locations for an appointment will be shown"
   },
   "NyyJMK": {
-    "defaultMessage": "The API group specifies which ZGW services to use.",
+    "defaultMessage": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden.",
     "description": "ZGW APIs group field help text",
     "originalDefault": "The API group specifies which ZGW services to use."
   },
@@ -1467,7 +1467,7 @@
     "originalDefault": "All Submissions Removal Limit"
   },
   "UOofxD": {
-    "defaultMessage": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "defaultMessage": "{omschrijving} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
     "description": "Document type option label",
     "originalDefault": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
@@ -1523,7 +1523,7 @@
     "originalDefault": "Date/time"
   },
   "WNPDeM": {
-    "defaultMessage": "Catalogue",
+    "defaultMessage": "Catalogus",
     "description": "ZGW APIs registration options 'catalogue' label",
     "originalDefault": "Catalogue"
   },
@@ -1545,7 +1545,7 @@
     "originalDefault": "Logic"
   },
   "WnKF/i": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen.",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor de bijlagen.",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
   },
@@ -1620,7 +1620,7 @@
     "originalDefault": "Add item"
   },
   "Yyvvx1": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document.",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het CSV-document.",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
   },
@@ -1630,7 +1630,7 @@
     "originalDefault": "Are you sure you want to delete this?"
   },
   "Z5lydZ": {
-    "defaultMessage": "Introduction page",
+    "defaultMessage": "Introductiepagina",
     "description": "form.introductionPageContent label",
     "originalDefault": "Introduction page"
   },
@@ -1670,7 +1670,7 @@
     "originalDefault": "Set the registration backend to use for the submission"
   },
   "ZiARkY": {
-    "defaultMessage": "Any configuration option specified here overrides the matching option of the selected API group.",
+    "defaultMessage": "Elke instelling in deze groep overschrijft de eventuele overeenkomstige standaardinstelling van de geselecteerde API-groep.",
     "description": "ZGW APIs defaults override informative message",
     "originalDefault": "Any configuration option specified here overrides the matching option of the selected API group."
   },
@@ -1833,7 +1833,7 @@
     "originalDefault": "Product request type"
   },
   "cuivC6": {
-    "defaultMessage": "Version",
+    "defaultMessage": "Versie",
     "description": "ZGW APIs registration options 'objecttypeVersion' label",
     "originalDefault": "Version"
   },
@@ -1888,7 +1888,7 @@
     "originalDefault": "Date"
   },
   "dyBb9g": {
-    "defaultMessage": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page.",
+    "defaultMessage": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen.",
     "description": "form.introductionPageContent help text",
     "originalDefault": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
   },
@@ -1898,7 +1898,7 @@
     "originalDefault": "Manage process variables"
   },
   "eBtStW": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document.",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het PDF-document.",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
@@ -2063,7 +2063,7 @@
     "originalDefault": "Configure"
   },
   "hxssl8": {
-    "defaultMessage": "Objects API integration",
+    "defaultMessage": "Objecten-API-integratie",
     "description": "ZGW APIs registration: Objects API fieldset title",
     "originalDefault": "Objects API integration"
   },
@@ -2229,7 +2229,7 @@
     "originalDefault": "Add item"
   },
   "ln72CJ": {
-    "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
+    "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
@@ -2339,7 +2339,7 @@
     "originalDefault": "Complex process variables"
   },
   "p5Iv+R": {
-    "defaultMessage": "Document type API resource URL in the Catalogi API.",
+    "defaultMessage": "Documenttype-API-resource-URL in de Catalogi-API.",
     "description": "ZGW APIs registration options 'DocumentType' help text",
     "originalDefault": "Document type API resource URL in the Catalogi API."
   },
@@ -2349,7 +2349,7 @@
     "originalDefault": "Add action"
   },
   "p9zrjb": {
-    "defaultMessage": "The value ''{value}' is set but could not be found. {draftsEnabled, select, true {Possibly the draft was deleted.} other {Perhaps this document type is not published yet?} }",
+    "defaultMessage": "De waarde ''{value}' is ingesteld, maar kon niet gevonden worden. {draftsEnabled, select, true {Mogelijks was de conceptversie verwijderd.} other {Misschien is dit documenttype nog niet gepubliceerd?} }",
     "description": "Warning message about missing document type option.",
     "originalDefault": "The value ''{value}' is set but could not be found. {draftsEnabled, select, true {Possibly the draft was deleted.} other {Perhaps this document type is not published yet?} }"
   },
@@ -2389,7 +2389,7 @@
     "originalDefault": "Confirm"
   },
   "q3kxsb": {
-    "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
+    "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
   },
@@ -2539,7 +2539,7 @@
     "originalDefault": "Name"
   },
   "tzwS3S": {
-    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.",
+    "defaultMessage": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen.",
     "description": "Objects API registration options 'medewerkerRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
@@ -2614,7 +2614,7 @@
     "originalDefault": "Errored Submissions Removal Method"
   },
   "wLfQfD": {
-    "defaultMessage": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored.",
+    "defaultMessage": "De instellingen hieronder zijn verouderd. Ze werken nog, maar we raden aan om te upgraden naar de instellingen hierboven. Wanneer een nieuwe instelling gezet is, dan zal de overeenkomstige oude instelling genegeerd worden.",
     "description": "ZGW APIs legacy config options informative message",
     "originalDefault": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
   },
@@ -2639,7 +2639,7 @@
     "originalDefault": "Component where products for an appointment will be shown"
   },
   "wrdDVu": {
-    "defaultMessage": "Legacy configuration",
+    "defaultMessage": "Instellingen (oud)",
     "description": "ZGw APIs registration: legacy configuration options fieldset title",
     "originalDefault": "Legacy configuration"
   },
@@ -2674,7 +2674,7 @@
     "originalDefault": "Create definition"
   },
   "xyVtKp": {
-    "defaultMessage": "Plugin-instellingen: Objecten API",
+    "defaultMessage": "Plugin-instellingen: Objecten-API",
     "description": "Objects API registration options modal title",
     "originalDefault": "Plugin configuration: Objects API"
   },
@@ -2694,13 +2694,14 @@
     "originalDefault": "Authorizee"
   },
   "yLt2lv": {
-    "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt.",
+    "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
   },
   "yTfQNG": {
     "defaultMessage": "Objecttype",
     "description": "ZGW APIs registration options 'objecttype' label",
+    "isTranslated": true,
     "originalDefault": "Objecttype"
   },
   "yTpHh0": {
