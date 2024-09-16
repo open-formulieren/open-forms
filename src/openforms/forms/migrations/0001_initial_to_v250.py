@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("products", "0001_initial"),
+        ("products", "0001_initial_to_v270"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("variables", "0001_initial_to_openforms_v230"),
         ("config", "0001_initial_to_v250"),

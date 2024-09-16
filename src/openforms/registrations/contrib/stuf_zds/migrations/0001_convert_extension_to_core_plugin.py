@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("timeline_logger", "0004_alter_fields"),
-        ("forms", "0103_rename_identifier_role_prefill"),
+        ("forms", "0097_v267_to_v270"),
     ]
 
     operations = [

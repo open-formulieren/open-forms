@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("zgw_apis", "0010_zgwapigroupconfig_content_json"),
-        ("forms", "0096_fix_invalid_validate_configuration"),
+        ("forms", "0092_v250_to_v267"),
     ]
 
     operations = [

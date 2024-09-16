@@ -13,17 +13,6 @@ import csp_post_processor.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("products", "0001_initial"),
-        ("products", "0002_auto_20210521_1352"),
-        ("products", "0003_auto_20210816_1635"),
-        ("products", "0004_set_product_uuid"),
-        ("products", "0005_auto_20210816_1639"),
-        ("products", "0006_product_information"),
-        ("products", "0007_auto_20220201_1213"),
-        ("products", "0008_alter_product_price"),
-    ]
-
     initial = True
 
     dependencies = []

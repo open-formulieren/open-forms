@@ -33,18 +33,8 @@ def rename_authorizee_enum(apps: StateApps, _):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("forms", "0097_fix_multiple_empty_default_value"),
-        ("forms", "0098_fix_forms_conditionals"),
-        ("forms", "0099_auto_20240613_0654"),
-        ("forms", "0100_add_default_objects_api_group"),
-        ("forms", "0101_objecttype_url_to_uuid"),
-        ("forms", "0102_alter_formvariable_prefill_identifier_role"),
-        ("forms", "0103_rename_identifier_role_prefill"),
-    ]
-
     dependencies = [
-        ("forms", "0096_fix_invalid_validate_configuration"),
+        ("forms", "0092_v250_to_v267"),
     ]
 
     operations = [

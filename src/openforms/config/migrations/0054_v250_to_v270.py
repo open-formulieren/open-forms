@@ -61,18 +61,6 @@ def move_from_flagstate_to_config(apps, _):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("config", "0054_enable_new_builder"),
-        ("config", "0055_remove_globalconfiguration_enable_react_formio_builder"),
-        ("config", "0056_globalconfiguration_enable_backend_formio_validation"),
-        ("config", "0057_migrate_to_order_id_template"),
-        ("config", "0058_remove_globalconfiguration_enable_backend_formio_validation"),
-        ("config", "0059_theme_email_logo"),
-        ("config", "0058_globalconfiguration_cosign_request_template_and_more"),
-        ("config", "0060_merge_20240517_1517"),
-        ("config", "0061_move_feature_flags"),
-    ]
-
     dependencies = [
         ("config", "0001_initial_to_v250"),
         ("upgrades", "0001_initial"),

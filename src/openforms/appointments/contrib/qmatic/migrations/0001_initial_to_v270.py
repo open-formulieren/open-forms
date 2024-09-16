@@ -10,12 +10,6 @@ import openforms.appointments.contrib.qmatic.models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("qmatic", "0001_initial"),
-        ("qmatic", "0002_qmaticconfig_required_customer_fields"),
-        ("qmatic", "0003_strip_qmatic_service_v1"),
-    ]
-
     initial = True
 
     dependencies = [

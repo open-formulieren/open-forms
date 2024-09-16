@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("zgw_apis", "0012_remove_zgwapigroupconfig_informatieobjecttype_and_more"),
-        ("forms", "0100_add_default_objects_api_group"),
+        ("forms", "0097_v267_to_v270"),
     ]
 
     operations = [
