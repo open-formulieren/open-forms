@@ -46,6 +46,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    2.1.0       2.4.0               n/a
    2.2.0       2.4.0               2.6.x
    2.3.0       2.7.0               n/a
+   2.4.0       2.8.0               n/a
    =========== =================== ===================
 
 End-of-life versions are not listed in this table.
@@ -73,6 +74,8 @@ Version         Release date    API specification
 ==============  ==============  =============================
 latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__
+2.8.0           2024-09-16      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.8.0-beta.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.8.0-beta.0/src/openapi.yaml>`__
 2.7.0           2024-07-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.7.0/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.7.0/src/openapi.yaml>`__
 2.6.0           2024-03-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.6.0/src/openapi.yaml>`__,
@@ -142,6 +145,7 @@ backend version.
    =============== ===========
    Backend version API version
    =============== ===========
+   2.8.x           2.8.y
    2.7.x           2.7.y
    2.6.x           2.6.y
    2.5.x           2.5.y
