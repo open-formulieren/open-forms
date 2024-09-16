@@ -3451,6 +3451,166 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/objects-api/catalogues:
+    get:
+      operationId: objects_api_catalogues_list
+      description: List the available catalogues.
+      summary: List available Catalogi from the provided Objects API group
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - contrib
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Catalogue'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/objects-api/informatieobjecttypen:
+    get:
+      operationId: objects_api_informatieobjecttypen_list
+      description: |-
+        List the available InformatieObjectTypen.
+
+        Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
+        and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
+        only one entry is returned.
+      summary: List the available InformatieObjectTypen from the provided Objects
+        API group
+      parameters:
+      - in: query
+        name: catalogus_url
+        schema:
+          type: string
+          format: uri
+          default: ''
+          minLength: 1
+        description: Filter informatieobjecttypen against this catalogus URL.
+      - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - contrib
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectType'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/objects-api/object-types:
+    get:
+      operationId: objects_api_object_types_list
+      description: |-
+        List the available Objecttypes.
+
+        Note that the response data is essentially proxied from the configured Objecttypes API.
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: string
+        description: Which Objects API group to use.
+      tags:
+      - contrib
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Objecttype'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/objects-api/object-types/{objecttype_uuid}/versions:
+    get:
+      operationId: objects_api_object_types_versions_list
+      description: |-
+        List the available versions for an Objecttype.
+
+        Note that the response data is essentially proxied from the configured Objecttypes API.
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: string
+        description: Which Objects API group to use.
+      - in: path
+        name: objecttype_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - contrib
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObjecttypeVersion'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/payment/plugins:
     get:
       operationId: payment_plugins_list
@@ -3576,6 +3736,50 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PrefillAttribute'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/prefill/plugins/objects-api/objecttypes/{objecttype_uuid}/versions/{objecttype_version}/properties:
+    get:
+      operationId: prefill_plugins_objects_api_objecttypes_versions_properties_list
+      description: List the available JSON properties defined on a particular objecttype.
+      summary: List available attributes for Objects API
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: string
+        description: Which Objects API group to use.
+      - in: path
+        name: objecttype_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: objecttype_version
+        schema:
+          type: integer
+        required: true
+      tags:
+      - prefill
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrefillTargetPaths'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -3843,166 +4047,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ProcessDefinition'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/objects-api/catalogues:
-    get:
-      operationId: registration_plugins_objects_api_catalogues_list
-      description: List the available catalogues.
-      summary: List available Catalogi from the provided Objects API group
-      parameters:
-      - in: query
-        name: objects_api_group
-        schema:
-          type: integer
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
-          from the Catalogi API in this group will be returned.
-        required: true
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Catalogue'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/objects-api/informatieobjecttypen:
-    get:
-      operationId: registration_plugins_objects_api_informatieobjecttypen_list
-      description: |-
-        List the available InformatieObjectTypen.
-
-        Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
-        and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
-        only one entry is returned.
-      summary: List the available InformatieObjectTypen from the provided Objects
-        API group
-      parameters:
-      - in: query
-        name: catalogus_url
-        schema:
-          type: string
-          format: uri
-          default: ''
-          minLength: 1
-        description: Filter informatieobjecttypen against this catalogus URL.
-      - in: query
-        name: objects_api_group
-        schema:
-          type: integer
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
-          from the Catalogi API in this group will be returned.
-        required: true
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InformatieObjectType'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/objects-api/object-types:
-    get:
-      operationId: registration_plugins_objects_api_object_types_list
-      description: |-
-        List the available Objecttypes.
-
-        Note that the response data is essentially proxied from the configured Objecttypes API.
-      parameters:
-      - in: query
-        name: objects_api_group
-        schema:
-          type: string
-        description: Which Objects API group to use.
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Objecttype'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/objects-api/object-types/{submission_uuid}/versions:
-    get:
-      operationId: registration_plugins_objects_api_object_types_versions_list
-      description: |-
-        List the available versions for an Objecttype.
-
-        Note that the response data is essentially proxied from the configured Objecttypes API.
-      parameters:
-      - in: query
-        name: objects_api_group
-        schema:
-          type: string
-        description: Which Objects API group to use.
-      - in: path
-        name: submission_uuid
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ObjecttypeVersion'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -9629,6 +9673,23 @@ components:
       - id
       - label
       - requiresAuth
+    PrefillTargetPaths:
+      type: object
+      properties:
+        targetPath:
+          type: array
+          items:
+            type: string
+            title: Segment of a JSON path
+          description: Representation of the JSON target location as a list of string
+            segments.
+        jsonSchema:
+          type: object
+          additionalProperties: {}
+          description: Corresponding (sub) JSON Schema of the target path.
+      required:
+      - jsonSchema
+      - targetPath
     PrivacyPolicyInfo:
       type: object
       properties:

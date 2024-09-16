@@ -23,7 +23,7 @@ const getInformatieObjectTypen = async (backend, options) => {
       });
     }
     case 'objects_api':
-      return await get('/api/v2/registration/plugins/objects-api/informatieobjecttypen', {
+      return await get('/api/v2/objects-api/informatieobjecttypen', {
         objects_api_group: options.objectsApiGroup,
       });
     default:

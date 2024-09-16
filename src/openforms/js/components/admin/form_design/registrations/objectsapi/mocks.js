@@ -3,20 +3,14 @@ import {rest} from 'msw';
 import {API_BASE_URL} from 'utils/fetch';
 
 export const mockObjecttypesGet = objecttypes =>
-  rest.get(
-    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/object-types`,
-    (req, res, ctx) => {
-      return res(ctx.json(objecttypes));
-    }
-  );
+  rest.get(`${API_BASE_URL}/api/v2/objects-api/object-types`, (req, res, ctx) => {
+    return res(ctx.json(objecttypes));
+  });
 
 export const mockObjecttypeVersionsGet = versions =>
-  rest.get(
-    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/object-types/:uuid/versions`,
-    (req, res, ctx) => {
-      return res(ctx.json(versions));
-    }
-  );
+  rest.get(`${API_BASE_URL}/api/v2/objects-api/object-types/:uuid/versions`, (req, res, ctx) => {
+    return res(ctx.json(versions));
+  });
 
 export const mockObjecttypesError = () =>
   rest.all(`${API_BASE_URL}/api/v2/*`, (req, res, ctx) => {
@@ -57,12 +51,9 @@ const CATALOGUES = [
 ];
 
 export const mockCataloguesGet = () =>
-  rest.get(
-    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/catalogues`,
-    (req, res, ctx) => {
-      return res(ctx.json(CATALOGUES));
-    }
-  );
+  rest.get(`${API_BASE_URL}/api/v2/objects-api/catalogues`, (req, res, ctx) => {
+    return res(ctx.json(CATALOGUES));
+  });
 
 const DOCUMENT_TYPES = {
   'https://example.com/catalogi/api/v1/catalogussen/1': [
@@ -122,11 +113,8 @@ const DOCUMENT_TYPES = {
 };
 
 export const mockDocumentTypesGet = () =>
-  rest.get(
-    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/informatieobjecttypen`,
-    (req, res, ctx) => {
-      const catalogusUrl = req.url.searchParams.get('catalogus_url');
-      const match = DOCUMENT_TYPES[catalogusUrl] ?? [];
-      return res(ctx.json(match));
-    }
-  );
+  rest.get(`${API_BASE_URL}/api/v2/objects-api/informatieobjecttypen`, (req, res, ctx) => {
+    const catalogusUrl = req.url.searchParams.get('catalogus_url');
+    const match = DOCUMENT_TYPES[catalogusUrl] ?? [];
+    return res(ctx.json(match));
+  });

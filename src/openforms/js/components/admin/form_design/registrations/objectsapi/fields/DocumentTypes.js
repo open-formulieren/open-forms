@@ -20,8 +20,8 @@ import {get} from 'utils/fetch';
 
 // Data fetching
 
-const CATALOGUES_ENDPOINT = '/api/v2/registration/plugins/objects-api/catalogues';
-const IOT_ENDPOINT = '/api/v2/registration/plugins/objects-api/informatieobjecttypen';
+const CATALOGUES_ENDPOINT = '/api/v2/objects-api/catalogues';
+const IOT_ENDPOINT = '/api/v2/objects-api/informatieobjecttypen';
 
 const getCatalogues = async apiGroupID => {
   const response = await get(CATALOGUES_ENDPOINT, {objects_api_group: apiGroupID});

@@ -2,15 +2,15 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 
-from openforms.contrib.objects_api.clients import (
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+
+from .clients import (
     NoServiceConfigured,
     get_catalogi_client,
     get_documents_client,
     get_objects_client,
     get_objecttypes_client,
 )
-from openforms.plugins.exceptions import InvalidPluginConfiguration
-
 from .models import ObjectsAPIGroupConfig
 
 
@@ -47,7 +47,8 @@ def check_documents_service(config: ObjectsAPIGroupConfig):
 def check_catalogi_service(config: ObjectsAPIGroupConfig):
     with get_catalogi_client(config) as client:
         resp = client.get("informatieobjecttypen")
-        resp.raise_for_status()
+
+    resp.raise_for_status()
 
 
 def check_config():

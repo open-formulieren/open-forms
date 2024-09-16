@@ -10,11 +10,7 @@ import {get} from 'utils/fetch';
 import {useSynchronizeSelect} from './hooks';
 
 const getObjecttypeVersionsEndpoint = uuid => {
-  const bits = [
-    '/api/v2/registration/plugins/objects-api/object-types',
-    encodeURIComponent(uuid),
-    'versions',
-  ];
+  const bits = ['/api/v2/objects-api/object-types', encodeURIComponent(uuid), 'versions'];
   return bits.join('/');
 };
 
