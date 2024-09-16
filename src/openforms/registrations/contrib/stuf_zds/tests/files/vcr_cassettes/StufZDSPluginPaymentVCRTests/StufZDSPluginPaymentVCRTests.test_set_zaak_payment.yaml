@@ -5,13 +5,13 @@ interactions:
       \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
       \       \n\n<ZKN:zakLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
-      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>0376b366-dcbd-463f-ab4d-9144e47d2b83</StUF:referentienummer>\n<StUF:tijdstipBericht>20240904120111</StUF:tijdstipBericht>\n\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-3</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-3</StUF:applicatie>\n<StUF:administratie>zender_administratie-3</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-3</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-3</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-3</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-3</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-3</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>3cd7c79d-3001-44ad-8286-c3812ae05758</StUF:referentienummer>\n<StUF:tijdstipBericht>20240916135054</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>W</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"W\" StUF:entiteittype=\"ZAK\">\n
       \       <ZKN:identificatie>1234</ZKN:identificatie>\n        <ZKN:betalingsIndicatie>Geheel</ZKN:betalingsIndicatie>\n
-      \       <ZKN:laatsteBetaaldatum>20240904</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
+      \       <ZKN:laatsteBetaaldatum>20240916</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
       naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_completed\">true</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_amount\">40.0</StUF:extraElement>\n\n<StUF:extraElement naam=\"payment_public_order_ids.0\">foo</StUF:extraElement>\n\n<StUF:extraElement
       naam=\"payment_public_order_ids.1\">bar</StUF:extraElement>\n\n<StUF:extraElement
@@ -59,7 +59,7 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Wed, 04 Sep 2024 12:01:11 GMT
+      - Mon, 16 Sep 2024 13:50:54 GMT
       Server:
       - Werkzeug/3.0.4 Python/3.12.5
     status:
