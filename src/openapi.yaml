@@ -3465,7 +3465,7 @@ paths:
           from the Catalogi API in this group will be returned.
         required: true
       tags:
-      - objects-api
+      - contrib
       security:
       - cookieAuth: []
       responses:
@@ -3514,7 +3514,7 @@ paths:
           from the Catalogi API in this group will be returned.
         required: true
       tags:
-      - objects-api
+      - contrib
       security:
       - cookieAuth: []
       responses:
@@ -3549,7 +3549,7 @@ paths:
           type: string
         description: Which Objects API group to use.
       tags:
-      - registration
+      - contrib
       security:
       - cookieAuth: []
       responses:
@@ -3590,7 +3590,7 @@ paths:
           format: uuid
         required: true
       tags:
-      - registration
+      - contrib
       security:
       - cookieAuth: []
       responses:

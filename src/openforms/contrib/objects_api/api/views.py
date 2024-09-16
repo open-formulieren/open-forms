@@ -33,7 +33,7 @@ OBJECTS_API_GROUP_QUERY_PARAMETER = OpenApiParameter(
 
 
 @extend_schema(
-    tags=["registration"],
+    tags=["contrib"],
     parameters=[OBJECTS_API_GROUP_QUERY_PARAMETER],
 )
 class ObjecttypesListView(ListMixin, views.APIView):
@@ -60,7 +60,7 @@ class ObjecttypesListView(ListMixin, views.APIView):
 
 
 @extend_schema(
-    tags=["registration"],
+    tags=["contrib"],
     parameters=[OBJECTS_API_GROUP_QUERY_PARAMETER],
 )
 class ObjecttypeVersionsListView(ListMixin, views.APIView):
@@ -89,6 +89,7 @@ class ObjecttypeVersionsListView(ListMixin, views.APIView):
 @extend_schema_view(
     get=extend_schema(
         summary=_("List available Catalogi from the provided Objects API group"),
+        tags=["contrib"],
         parameters=[APIGroupQueryParamsSerializer],
     ),
 )
@@ -101,6 +102,7 @@ class CatalogueListView(BaseCatalogueListView):
         summary=_(
             "List the available InformatieObjectTypen from the provided Objects API group"
         ),
+        tags=["contrib"],
         parameters=[ListInformatieObjectTypenQueryParamsSerializer],
     ),
 )
