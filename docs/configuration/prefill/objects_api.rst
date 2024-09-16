@@ -29,13 +29,18 @@ Configuration
 4. Navigate to: **Variables** tab
 5. Navigate to: **User defined** subtab
 6. Click **Add variable** and fill in the data from the available options:
+
    * **Plugin**: Choose the *Objects API* plugin
-   * **API Group**: Select the appropriate API group. These API groups should be set up by an administrator, 
-   via **Admin** > **Configuration** > **Prefill plugins** > **Objects API** > **Manage API groups**
+   * **API Group**: Select the appropriate API group. These API groups should be set up
+     by an administrator, via **Admin** > **Configuration** > **Prefill plugins** >
+     **Objects API** > **Manage API groups**
    * **Objecttype**: Select the expected object type from the dropdown.
-   * **Mappings**: Configure which property from the Objects API record needs to be assigned to which form variable. 
-   For each form variable you want to pre-fill, add a new mapping. Then, on the left select the desired form variable, 
-   and on the right you can specify which property from the object type contains the value.
+   * **Mappings**: Configure which property from the Objects API record needs to be
+     assigned to which form variable.
+
+     For each form variable you want to pre-fill, add a new mapping. Then, on the left
+     select the desired form variable, and on the right you can specify which property
+     from the object type contains the value.
 
 7. Click **Save**
 8. Save the form
