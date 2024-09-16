@@ -10,9 +10,12 @@ class MigrateFeatureFlagsTests(TestMigrations):
 
     def setUpBeforeMigration(self, apps: StateApps):
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-        GlobalConfiguration.objects.create(
-            enable_demo_plugins=True,
-            display_sdk_information=False,
+        GlobalConfiguration.objects.update_or_create(
+            pk=1,
+            defaults={
+                "enable_demo_plugins": True,
+                "display_sdk_information": False,
+            },
         )
         FlagState = apps.get_model("flags", "FlagState")
         FlagState.objects.all().delete()
@@ -49,7 +52,7 @@ class ReverseMigrateFeatureFlagsTests(TestMigrations):
         )
 
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-        GlobalConfiguration.objects.create()
+        GlobalConfiguration.objects.get_or_create(pk=1)
 
     def test_feature_flags_created(self):
         GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
