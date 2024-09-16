@@ -81,21 +81,6 @@ UPGRADE_PATHS = {
             VersionRange(minimum="2.7.4"),
         },
     ),
-    "2.7": UpgradeConstraint(
-        valid_ranges={
-            # 2.6.x: more migration squashing and removing squashed sources
-            # 2.6.7: patch release with new migrations, easiest is to force people to
-            # have executed that one
-            VersionRange(minimum="2.6.7"),
-        },
-        scripts={"check_objecttype_urls", "check_zgw_groups"},
-    ),
-    "2.6": UpgradeConstraint(
-        valid_ranges={
-            # more migration squashing and removing squashed sources
-            VersionRange(minimum="2.5.2"),
-        },
-    ),
 }
 
 
