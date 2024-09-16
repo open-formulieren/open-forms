@@ -32,7 +32,7 @@
   "+Te82K": [
     {
       "type": 0,
-      "value": "Optional ZGW configuration"
+      "value": "Niet-verplichte instellingen"
     }
   ],
   "+XwAuT": [
@@ -44,7 +44,7 @@
   "+dcHiF": [
     {
       "type": 0,
-      "value": "A case of this type will be created during registration."
+      "value": "Tijdens de registratie wordt een zaak van dit zaaktype aangemaakt."
     }
   ],
   "+dcsE0": [
@@ -148,7 +148,7 @@
               "children": [
                 {
                   "type": 0,
-                  "value": "(not published)"
+                  "value": "(concept)"
                 }
               ],
               "type": 8,
@@ -942,7 +942,7 @@
   "8ZSQ9s": [
     {
       "type": 0,
-      "value": "Whether to display the short progress summary, indicating the current step number and total amount of steps."
+      "value": "Vink aan om het korte voortgangsoverzicht weer te geven. Dit overzicht toont de huidige stap en het totaal aantal stappen, typisch onder de formuliertitel."
     }
   ],
   "8hSjw4": [
@@ -1268,7 +1268,7 @@
   "Bc8xyG": [
     {
       "type": 0,
-      "value": "Show summary progress"
+      "value": "Toon voortgangsoverzicht"
     }
   ],
   "BcuXrg": [
@@ -1611,7 +1611,7 @@
   "DyF32d": [
     {
       "type": 0,
-      "value": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
+      "value": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten-API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
     }
   ],
   "E/biiX": [
@@ -1933,7 +1933,7 @@
   "GwOWGv": [
     {
       "type": 0,
-      "value": "Plugin configuration: ZGW APIs"
+      "value": "Plugin-instellingen: Zaakgericht Werken API's"
     }
   ],
   "H3dRU6": [
@@ -2281,7 +2281,7 @@
   "KtVIGz": [
     {
       "type": 0,
-      "value": "Documenttypen (verouderd)"
+      "value": "Documenttypen (oud)"
     }
   ],
   "KwatvH": [
@@ -2305,7 +2305,7 @@
   "L4EVfI": [
     {
       "type": 0,
-      "value": "Changing the api group will clear the existing configuration. Are you sure you want to continue?"
+      "value": "Let op! Als je een andere groep selecteert, dan worden de bestaande instellingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
   "L97GKs": [
@@ -2377,7 +2377,7 @@
   "LkrFow": [
     {
       "type": 0,
-      "value": "Something went wrong while retrieving the available catalogues or case/document types defined in the selected catalogue. Please check that the services in the selected API group are configured correctly."
+      "value": "Er ging iets fout bij het ophalen van de beschikbare catalogi, zaak- of documenttypen. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
   "LrlAVD": [
@@ -2449,7 +2449,7 @@
   "N5Hv+1": [
     {
       "type": 0,
-      "value": "Case type"
+      "value": "Zaaktype"
     }
   ],
   "NE5h2q": [
@@ -2495,7 +2495,7 @@
   "Nfn2qu": [
     {
       "type": 0,
-      "value": "Case type API resource URL in the Catalogi API."
+      "value": "Zaaktype-API-resource URL in de Catalogi-API."
     }
   ],
   "Nsifca": [
@@ -2519,7 +2519,7 @@
   "NyyJMK": [
     {
       "type": 0,
-      "value": "The API group specifies which ZGW services to use."
+      "value": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden."
     }
   ],
   "O/wKJh": [
@@ -3127,7 +3127,7 @@
               "children": [
                 {
                   "type": 0,
-                  "value": "(not published)"
+                  "value": "(concept)"
                 }
               ],
               "type": 8,
@@ -3351,7 +3351,7 @@
   "WNPDeM": [
     {
       "type": 0,
-      "value": "Catalogue"
+      "value": "Catalogus"
     }
   ],
   "WQCs+M": [
@@ -3393,7 +3393,7 @@
   "WnKF/i": [
     {
       "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen."
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor de bijlagen."
     }
   ],
   "WxwqZJ": [
@@ -3585,7 +3585,7 @@
   "Yyvvx1": [
     {
       "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document."
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het CSV-document."
     }
   ],
   "YzLSHY": [
@@ -3597,7 +3597,7 @@
   "Z5lydZ": [
     {
       "type": 0,
-      "value": "Introduction page"
+      "value": "Introductiepagina"
     }
   ],
   "ZB6mnn": [
@@ -3694,7 +3694,7 @@
   "ZiARkY": [
     {
       "type": 0,
-      "value": "Any configuration option specified here overrides the matching option of the selected API group."
+      "value": "Elke instelling in deze groep overschrijft de eventuele overeenkomstige standaardinstelling van de geselecteerde API-groep."
     }
   ],
   "ZzjFxE": [
@@ -4074,7 +4074,7 @@
   "cuivC6": [
     {
       "type": 0,
-      "value": "Version"
+      "value": "Versie"
     }
   ],
   "czUDSQ": [
@@ -4236,7 +4236,7 @@
   "dyBb9g": [
     {
       "type": 0,
-      "value": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
+      "value": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen."
     }
   ],
   "e6SsfR": [
@@ -4254,7 +4254,7 @@
   "eBtStW": [
     {
       "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document."
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi-API die wordt gebruikt voor het PDF-document."
     }
   ],
   "eC2etA": [
@@ -4600,7 +4600,7 @@
   "hxssl8": [
     {
       "type": 0,
-      "value": "Objects API integration"
+      "value": "Objecten-API-integratie"
     }
   ],
   "hzx+WF": [
@@ -4950,7 +4950,7 @@
   "ln72CJ": [
     {
       "type": 0,
-      "value": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+      "value": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd."
     }
   ],
   "loKqis": [
@@ -5202,7 +5202,7 @@
   "p5Iv+R": [
     {
       "type": 0,
-      "value": "Document type API resource URL in the Catalogi API."
+      "value": "Documenttype-API-resource-URL in de Catalogi-API."
     }
   ],
   "p7g2h+": [
@@ -5220,7 +5220,7 @@
   "p9zrjb": [
     {
       "type": 0,
-      "value": "The value '"
+      "value": "De waarde '"
     },
     {
       "type": 1,
@@ -5228,7 +5228,7 @@
     },
     {
       "type": 0,
-      "value": "' is set but could not be found. "
+      "value": "' is ingesteld, maar kon niet gevonden worden. "
     },
     {
       "options": {
@@ -5236,7 +5236,7 @@
           "value": [
             {
               "type": 0,
-              "value": "Perhaps this document type is not published yet?"
+              "value": "Misschien is dit documenttype nog niet gepubliceerd?"
             }
           ]
         },
@@ -5244,7 +5244,7 @@
           "value": [
             {
               "type": 0,
-              "value": "Possibly the draft was deleted."
+              "value": "Mogelijks was de conceptversie verwijderd."
             }
           ]
         }
@@ -5344,7 +5344,7 @@
   "q3kxsb": [
     {
       "type": 0,
-      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
+      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
     }
   ],
   "qUYLVg": [
@@ -5608,7 +5608,7 @@
   "tzwS3S": [
     {
       "type": 0,
-      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+      "value": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen."
     }
   ],
   "u3P/1E": [
@@ -5760,7 +5760,7 @@
   "wLfQfD": [
     {
       "type": 0,
-      "value": "The configuration options here are legacy options. They will continue working, but you should upgrade to the new configuration options above. If a new configuration option is specified, the matching legacy option will be ignored."
+      "value": "De instellingen hieronder zijn verouderd. Ze werken nog, maar we raden aan om te upgraden naar de instellingen hierboven. Wanneer een nieuwe instelling gezet is, dan zal de overeenkomstige oude instelling genegeerd worden."
     }
   ],
   "wOMoEs": [
@@ -5842,7 +5842,7 @@
   "wrdDVu": [
     {
       "type": 0,
-      "value": "Legacy configuration"
+      "value": "Instellingen (oud)"
     }
   ],
   "x+ORaW": [
@@ -5896,7 +5896,7 @@
   "xyVtKp": [
     {
       "type": 0,
-      "value": "Plugin-instellingen: Objecten API"
+      "value": "Plugin-instellingen: Objecten-API"
     }
   ],
   "y4U0aW": [
@@ -5960,7 +5960,7 @@
   "yLt2lv": [
     {
       "type": 0,
-      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt."
+      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt."
     }
   ],
   "yQUV3M": [
