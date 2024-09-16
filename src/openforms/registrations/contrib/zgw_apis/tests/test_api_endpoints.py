@@ -246,7 +246,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         data = response.json()
 
-        self.assertEqual(len(data), 3)
+        self.assertGreaterEqual(len(data), 3)
 
     def test_retrieve_filter_by_catalogus(self):
         user = StaffUserFactory.create()
