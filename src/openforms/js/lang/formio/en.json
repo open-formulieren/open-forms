@@ -36,5 +36,6 @@
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "The uploaded file is not of an allowed type. It must be: {{ pattern }}.",
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} or {{ lastLabel }}",
   "invalid_time": "Only times between {{ minTime }} and {{ maxTime }} are allowed.",
+  "You must select at least {{minCount}} items.": "Ensure this field has at least {{minCount}} checked options.",
   "": ""
 }
