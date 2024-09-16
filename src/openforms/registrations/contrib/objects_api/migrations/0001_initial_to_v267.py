@@ -10,33 +10,6 @@ import openforms.utils.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("registrations_objects_api", "0001_initial"),
-        ("registrations_objects_api", "0002_auto_20210802_1131"),
-        ("registrations_objects_api", "0003_auto_20210831_1310"),
-        ("registrations_objects_api", "0004_auto_20210902_2120"),
-        ("registrations_objects_api", "0005_auto_20211015_1334"),
-        ("registrations_objects_api", "0006_objectsapiconfig_catalogi_service"),
-        ("registrations_objects_api", "0007_objectsapiconfig_content_json"),
-        ("registrations_objects_api", "0008_replace_content_json_hardcoded_variable"),
-        (
-            "registrations_objects_api",
-            "0009_objectsapiconfig_payment_status_update_json",
-        ),
-        ("registrations_objects_api", "0010_objectsapiconfig_objecttypes_service"),
-        ("registrations_objects_api", "0011_create_objecttypesypes_service_from_url"),
-        ("registrations_objects_api", "0012_fill_required_fields"),
-        ("registrations_objects_api", "0013_objectsapiregistrationdata"),
-        (
-            "registrations_objects_api",
-            "0014_remove_objectsapiregistrationdata_attachment_urls_and_more",
-        ),
-        (
-            "registrations_objects_api",
-            "0015_alter_objectsapiconfig_objecttype_and_more",
-        ),
-    ]
-
     initial = True
 
     dependencies = [

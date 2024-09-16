@@ -8,17 +8,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("payments", "0001_initial"),
-        ("payments", "0002_submissionpayment_public_order_id"),
-        ("payments", "0003_set_public_order_id"),
-        ("payments", "0004_auto_20211028_1141"),
-        ("payments", "0005_remove_submissionpayment_form_url"),
-        ("payments", "0006_auto_20211111_1614"),
-        ("payments", "0007_alter_submissionpayment_plugin_options"),
-        ("payments", "0008_auto_20240130_1436"),
-    ]
-
     initial = True
 
     dependencies = [

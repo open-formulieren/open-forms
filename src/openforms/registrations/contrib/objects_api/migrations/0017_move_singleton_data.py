@@ -2,36 +2,6 @@
 
 from django.db import migrations
 
-from django.db.migrations.state import StateApps
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-
-
-def move_singleton_data_to_objects_api_group_model(
-    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
-) -> None:
-    ObjectsAPIConfig = apps.get_model("registrations_objects_api", "ObjectsAPIConfig")
-    ObjectsAPIGroupConfig = apps.get_model(
-        "registrations_objects_api", "ObjectsAPIGroupConfig"
-    )
-
-    solo_model = ObjectsAPIConfig.objects.first()
-    if not solo_model:
-        return
-
-    new_config_set = ObjectsAPIGroupConfig(
-        name="Objects APIs",
-        objects_service=solo_model.objects_service,
-        objecttypes_service=solo_model.objecttypes_service,
-        drc_service=solo_model.drc_service,
-        catalogi_service=solo_model.catalogi_service,
-        informatieobjecttype_submission_report=solo_model.informatieobjecttype_submission_report,
-        informatieobjecttype_submission_csv=solo_model.informatieobjecttype_submission_csv,
-        informatieobjecttype_attachment=solo_model.informatieobjecttype_attachment,
-        organisatie_rsin=solo_model.organisatie_rsin,
-    )
-
-    new_config_set.save()
-
 
 class Migration(migrations.Migration):
 
@@ -39,9 +9,5 @@ class Migration(migrations.Migration):
         ("registrations_objects_api", "0016_objectsapigroupconfig"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            move_singleton_data_to_objects_api_group_model,
-            migrations.RunPython.noop,
-        ),
-    ]
+    # RunPython operation removed as part of the 2.8.0 release cycle
+    operations = []

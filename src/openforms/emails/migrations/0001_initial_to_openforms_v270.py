@@ -9,20 +9,6 @@ import openforms.template.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("emails", "0001_initial"),
-        ("emails", "0002_auto_20210521_1352"),
-        ("emails", "0003_auto_20210909_1707"),
-        ("emails", "0004_auto_20211025_1419"),
-        ("emails", "0005_auto_20211117_1658"),
-        ("emails", "0006_auto_20211117_1729"),
-        ("emails", "0007_auto_20220106_1239"),
-        ("emails", "0008_auto_20221024_1507"),
-        ("emails", "0009_auto_20230113_1641"),
-        ("emails", "0010_add_cosign_templatetag"),
-        ("emails", "0011_auto_20230615_1507"),
-    ]
-
     dependencies = [
         ("forms", "0001_initial_to_v250"),
     ]

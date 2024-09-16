@@ -2,40 +2,13 @@
 
 from django.db import migrations
 
-from django.db.migrations.state import StateApps
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-
-
-def objecttype_url_to_uuid(
-    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
-) -> None:
-    """Change the objects API registration options to reference the objecttype UUID instead of the URL."""
-
-    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
-
-    for registration_backend in FormRegistrationBackend.objects.filter(
-        backend="objects_api"
-    ):
-
-        objecttype_url = registration_backend.options.get("objecttype")
-        if objecttype_url is not None and "/" in objecttype_url:
-            # If it is `None`, we are dealing with broken confs. and upgrade checks where bypassed.
-            registration_backend.options["objecttype"] = objecttype_url.rsplit("/", 1)[
-                1
-            ]
-            registration_backend.save()
-
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ("registrations_objects_api", "0019_add_default_objects_api_group"),
-        ("forms", "0100_add_default_objects_api_group"),
+        ("forms", "0097_v267_to_v270"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            objecttype_url_to_uuid,
-            migrations.RunPython.noop,
-        ),
-    ]
+    # RunPython operation removed as part of the 2.8.0 release cycle
+    operations = []

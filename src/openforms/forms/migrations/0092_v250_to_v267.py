@@ -6,15 +6,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("forms", "0092_formstatistics"),
-        ("forms", "0093_fix_prefill_bis"),
-        ("forms", "0094_remove_formdefinition_component_translations"),
-        ("forms", "0094_convert_old_service_fetch_config"),
-        ("forms", "0095_merge_20240313_1742"),
-        ("forms", "0096_fix_invalid_validate_configuration"),
-    ]
-
     dependencies = [
         ("variables", "0012_servicefetchconfiguration_cache_timeout"),
         ("forms", "0001_initial_to_v250"),
