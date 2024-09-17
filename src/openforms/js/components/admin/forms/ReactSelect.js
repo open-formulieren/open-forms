@@ -1,8 +1,8 @@
 import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/components/formio/select';
+import classNames from 'classnames';
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
 import ReactSelect from 'react-select';
-import classNames from 'classnames';
 
 const initialStyles = getReactSelectStyles();
 const styles = {
@@ -32,6 +32,32 @@ const styles = {
   }),
 };
 
+const getValueRecursively = (options, value) => {
+  if (!value) {
+    return null;
+  }
+
+  const option = options.find(opt => opt.value === value);
+  if (option) {
+    return option;
+  }
+
+  // Search for the option recursively
+  for (let i = 0; i < options.length; i++) {
+    const opt = options[i];
+    if (!opt.options) {
+      continue;
+    }
+
+    const option = getValueRecursively(opt.options, value);
+    if (option) {
+      return option;
+    }
+  }
+
+  return null;
+};
+
 /**
  * A select dropdown backed by react-select for legacy usage.
  *
@@ -41,8 +67,8 @@ const styles = {
  * variant.
  */
 const SelectWithoutFormik = ({name, options, value, className, onChange, ...props}) => {
-  const classes = classNames("admin-react-select", {
-    [`${className}`]: className
+  const classes = classNames('admin-react-select', {
+    [`${className}`]: className,
   });
   return (
     <ReactSelect
@@ -53,7 +79,7 @@ const SelectWithoutFormik = ({name, options, value, className, onChange, ...prop
       styles={styles}
       menuPlacement="auto"
       options={options}
-      value={options.find(opt => opt.value === value) || null}
+      value={getValueRecursively(options, value)}
       onChange={selectedOption => {
         onChange(selectedOption === null ? undefined : selectedOption.value);
       }}
@@ -71,8 +97,8 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
   const [fieldProps, , fieldHelpers] = useField(name);
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
-  const classes = classNames("admin-react-select", {
-    [`${className}`]: className
+  const classes = classNames('admin-react-select', {
+    [`${className}`]: className,
   });
   return (
     <ReactSelect
@@ -83,7 +109,7 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
       menuPlacement="auto"
       options={options}
       {...fieldProps}
-      value={options.find(opt => opt.value === value) || null}
+      value={getValueRecursively(options, value)}
       onChange={selectedOption => {
         // clear the value
         if (selectedOption == null) {
@@ -99,6 +125,7 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
 
 SelectWithoutFormik.propTypes = {
   name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.object),
 };
 
