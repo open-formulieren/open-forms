@@ -403,5 +403,6 @@
   "invalidDatetime": "Ongeldige datum/tijd",
   "Verify": "Bevestigen",
   "You must verify this email address to continue.": "Om door te gaan moet je dit e-mailadres bevestigen.",
+  "You must select at least {{minCount}} items.": "Zorg dat dit veld {{minCount}} of meer opties aangevinkt heeft.",
   "": ""
 }
