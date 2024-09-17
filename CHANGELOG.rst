@@ -2,6 +2,78 @@
 Changelog
 =========
 
+2.8.0-beta.0 (2024-09-17)
+=========================
+
+The (first) beta version for 2.8.0 is available for testing now.
+
+.. warning:: We encourage you to test out this beta version on non-production
+   environments and report your findings back to use. This release is not suitable for
+   production yet though.
+
+Upgrade notes
+-------------
+
+There are no manual actions required - all upgrades and migrations are automatic.
+
+.. note:: The UX rework in the ZGW APIs registration plugin is not entirely finished
+   yet. The Objects API integration in particular can be a bit confusing since it's not
+   possible yet to select which Objects API should be used. The plugin now uses the API
+   group that's listed first in the admin interface (**Admin** > **Miscellaneous** >
+   **Objects API Groups**).
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4577`] We improved the user experience when configuring the Objects API
+  registration plugin. Copy-pasting URLs is being phased out - you can now select the
+  relevant configurations in dropdowns.
+* [:backend:`4606`] Improved the user experience of the ZGW APIs registration plugin.
+  We're making this consistent with the Objects API. More improvements will be done in
+  the future.
+* [:backend:`4542`] Email components now support optional verification - when enabled,
+  users must verify their email address before they can continue submitting the form.
+* [:backend:`4582`] The SAML metadata for the DigiD/eHerkenning identity providers is
+  now automatically refreshed on a weekly basis.
+* [:backend:`4380`] The StUF-ZDS registration plugin now supports sending payment
+  details in the ``extraElementen`` data. For 2.7 this was available in an extension,
+  which has been merged in core - migrating is automatic.
+* [:backend:`4545`] You can now optionally configure an introduction page, which is
+  displayed before the start of the form.
+* [:backend:`4543`] You can now optionally enable a short progress summary showing the
+  current step number and the total number of steps in a form.
+
+.. note:: The ``addressNL`` component is not yet a fully capable replacement for
+   individual address fields. Currently, it's only recommended for BRK-validation
+   purposes.
+
+**Bugfixes**
+
+* [:backend:`4597`] Revert message for not-filled-in-fields in confirmation PDF back to
+  just empty space.
+* Fixed processing of empty file upload components in the Objects API registration plugin.
+* Fixed an upgrade check incorrectly reporting problems.
+* [:backend:`4627`] Fixed a crash in the eHerkenning-via-OIDC plugin if no ActingSubjectID
+  claim is present.
+* [:backend:`4602`] Fixed missing Dutch translation for minimum required checked items
+  error message in the selectboxes component.
+* [:backend:`4587`] Fixed the product not being copied along when copying a form.
+
+**Project maintenance**
+
+* Addressed broken test isolation in CI leading to flaky tests.
+* Upgraded a number of dependencies to their latest (security) releases.
+* Improved the static type annotations in the codebase.
+* Failing end-to-end tests now produce Playwright traces in CI to help debug the problem.
+* Added a utility script to find VCR cassette directories.
+* [:backend:`4646`, :backend:`4396`] Restructured the Objects API configuration to be
+  in a shared code package, which can be used by the registration and prefill plugins.
+* [:backend:`4648`] Corrected the documentation about the minimum PostgreSQL version
+  (v12) and confirmed support for PostgreSQL 15.
+* Squashed migrations.
+
 2.7.6 (2024-09-05)
 ==================
 

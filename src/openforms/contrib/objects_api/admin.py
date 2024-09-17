@@ -28,7 +28,10 @@ class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
         "drc_service",
         "catalogi_service",
     )
-    ordering = ("name",)
+    ordering = (
+        "id",
+        "name",
+    )
     fieldsets = [
         (None, {"fields": ["name"]}),
         (
