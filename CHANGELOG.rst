@@ -14,7 +14,13 @@ The (first) beta version for 2.8.0 is available for testing now.
 Upgrade notes
 -------------
 
-Nothing to remark - all migrations and upgrades are automatic.
+There are no manual actions required - all upgrades and migrations are automatic.
+
+.. note:: The UX rework in the ZGW APIs registration plugin is not entirely finished
+   yet. The Objects API integration in particular can be a bit confusing since it's not
+   possible yet to select which Objects API should be used. The plugin now uses the API
+   group that's listed first in the admin interface (**Admin** > **Miscellaneous** >
+   **Objects API Groups**).
 
 Detailed changes
 ----------------
