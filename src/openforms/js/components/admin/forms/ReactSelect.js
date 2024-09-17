@@ -2,6 +2,7 @@ import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/compone
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
 import ReactSelect from 'react-select';
+import classNames from 'classnames';
 
 const initialStyles = getReactSelectStyles();
 const styles = {
@@ -32,18 +33,51 @@ const styles = {
 };
 
 /**
- * A select dropdown backed by react-select for Formik forms.
+ * A select dropdown backed by react-select for legacy usage.
  *
- * Any additional props are forwarded to the underlyng ReactSelect component.
+ * Any additional props are forwarded to the underlying ReactSelect component.
+ *
+ * @deprecated - if possible, refactor the form to use Formik and use the Formik-enabled
+ * variant.
  */
-const Select = ({name, options, ...props}) => {
-  const [fieldProps, , fieldHelpers] = useField(name);
-  const {value} = fieldProps;
-  const {setValue} = fieldHelpers;
+const SelectWithoutFormik = ({name, options, value, className, onChange, ...props}) => {
+  const classes = classNames("admin-react-select", {
+    [`${className}`]: className
+  });
   return (
     <ReactSelect
       inputId={`id_${name}`}
-      className="admin-react-select"
+      name={name}
+      className={classes}
+      classNamePrefix="admin-react-select"
+      styles={styles}
+      menuPlacement="auto"
+      options={options}
+      value={options.find(opt => opt.value === value) || null}
+      onChange={selectedOption => {
+        onChange(selectedOption === null ? undefined : selectedOption.value);
+      }}
+      {...props}
+    />
+  );
+};
+
+/**
+ * A select dropdown backed by react-select for Formik forms.
+ *
+ * Any additional props are forwarded to the underlying ReactSelect component.
+ */
+const SelectWithFormik = ({name, options, className, ...props}) => {
+  const [fieldProps, , fieldHelpers] = useField(name);
+  const {value} = fieldProps;
+  const {setValue} = fieldHelpers;
+  const classes = classNames("admin-react-select", {
+    [`${className}`]: className
+  });
+  return (
+    <ReactSelect
+      inputId={`id_${name}`}
+      className={classes}
       classNamePrefix="admin-react-select"
       styles={styles}
       menuPlacement="auto"
@@ -63,9 +97,15 @@ const Select = ({name, options, ...props}) => {
   );
 };
 
-Select.propTypes = {
+SelectWithoutFormik.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default Select;
+SelectWithFormik.propTypes = {
+  name: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object),
+};
+
+export default SelectWithFormik;
+export {SelectWithFormik, SelectWithoutFormik};
