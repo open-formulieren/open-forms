@@ -403,5 +403,6 @@
   "invalidDatetime": "Ongeldige datum/tijd",
   "maxDatetime": "De opgegeven datum/tijd liggen te ver in de toekomst.",
   "minDatetime": "De opgegeven datum/tijd liggen te ver in het verleden.",
+  "You must select at least {{minCount}} items.": "Zorg dat dit veld {{minCount}} of meer opties aangevinkt heeft.",
   "": ""
 }
