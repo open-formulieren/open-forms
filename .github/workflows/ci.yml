@@ -251,12 +251,18 @@ jobs:
           # default to version in .sdk-release file
           SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
 
-          case $VERSION in
-            # if building master -> include latest image of SDK
-            master) SDK_TAG=latest;;
-            # PRs result in version 'merge' that'll go to master -> include latest image of SDK
-            merge) SDK_TAG=latest;;
-          esac
+          # PRs have the base_ref, straight up pushes don't
+          if [[ "${{ github.base_ref }}" == stable/* ]]; then
+            echo "pull request to stable branch"
+          else
+            echo "not a pull request to a stable branch"
+            case $VERSION in
+              # if building master -> include latest image of SDK
+              master) SDK_TAG=latest;;
+              # PRs result in version 'merge' that'll go to master -> include latest image of SDK
+              merge) SDK_TAG=latest;;
+            esac
+          fi
 
           echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
 
