@@ -33,6 +33,7 @@ The following tools are supported out of the box with Open Forms.
 * `Matomo (Piwik) <https://matomo.org/>`__ (cloud and on-premise support)
 * `Piwik PRO  <https://piwikpro.nl/>`__
 * `SiteImprove <https://siteimprove.com/en/analytics/>`__
+* `KLANTINFOCUS (GovMetric CX) <https://www.klantinfocus.nl/>`__
 
 .. note::
 
