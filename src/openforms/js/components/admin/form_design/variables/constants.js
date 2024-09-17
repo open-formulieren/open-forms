@@ -85,6 +85,12 @@ const VARIABLE_SOURCES = {
   userDefined: 'user_defined',
 };
 
+const VARIABLE_SOURCES_GROUP_LABELS = {
+  userDefined: 'user variables',
+  component: 'component variables',
+  static: 'static variables',
+};
+
 const EMPTY_VARIABLE = {
   name: '',
   key: '',
@@ -113,6 +119,7 @@ const IDENTIFIER_ROLE_CHOICES = {
 export {
   COMPONENT_DATATYPES,
   VARIABLE_SOURCES,
+  VARIABLE_SOURCES_GROUP_LABELS,
   DATATYPES_CHOICES,
   EMPTY_VARIABLE,
   IDENTIFIER_ROLE_CHOICES,
