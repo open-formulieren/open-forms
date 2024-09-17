@@ -12,13 +12,14 @@ from .factories import (
     FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
+    ProductFactory,
 )
 
 
 class CopyFormTests(TestCase):
 
     def test_form_copy_with_reusable_definition(self):
-        form = FormFactory.create()
+        form = FormFactory.create(product=None)
         form_definition = FormDefinitionFactory.create(is_reusable=True)
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
 
@@ -171,3 +172,11 @@ class CopyFormTests(TestCase):
         self.assertEqual(
             new_form_logic_action["form_step_uuid"], str(new_form_step_uuid)
         )
+
+    def test_form_copy_with_product(self):
+        product = ProductFactory.create()
+        form = FormFactory.create(product=product)
+
+        copied_form = form.copy()
+
+        self.assertEqual(copied_form.product, product)

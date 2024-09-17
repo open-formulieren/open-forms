@@ -491,7 +491,7 @@ class Form(models.Model):
             else ""
         )
         copy.slug = _("{slug}-copy").format(slug=self.slug)
-        copy.product = None
+        copy.product = self.product
 
         # name translations
 
