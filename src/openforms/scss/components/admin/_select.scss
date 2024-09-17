@@ -1,3 +1,35 @@
 .form-variable-dropdown {
+  --of-admin-select-min-inline-size: 300px;
+  min-inline-size: var(--of-admin-select-min-inline-size);
   max-inline-size: var(--of-admin-select-max-inline-size);
+
+  &__option {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    row-gap: 4px;
+
+    &__label {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      row-gap: 4px;
+    }
+
+    &__form-definition {
+      width: 100%;
+      font-size: 12px;
+      color: var(--body-quiet-color);
+    }
+  }
+
+  // The selected option only shows the label
+  .admin-react-select__value-container & {
+    &__option {
+      &__key,
+      &__form-definition {
+        display: none;
+      }
+    }
+  }
 }

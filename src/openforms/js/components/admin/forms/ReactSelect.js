@@ -1,4 +1,5 @@
 import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/components/formio/select';
+import classNames from 'classnames';
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
 import ReactSelect from 'react-select';
@@ -31,25 +32,84 @@ const styles = {
   }),
 };
 
+const getValueRecursively = (options, value) => {
+  if (!value) {
+    return null;
+  }
+
+  const option = options.find(opt => opt.value === value);
+  if (option) {
+    return option;
+  }
+
+  // Search for the option recursively
+  for (let i = 0; i < options.length; i++) {
+    const opt = options[i];
+    if (!opt.options) {
+      continue;
+    }
+
+    const option = getValueRecursively(opt.options, value);
+    if (option) {
+      return option;
+    }
+  }
+
+  return null;
+};
+
 /**
- * A select dropdown backed by react-select for Formik forms.
+ * A select dropdown backed by react-select for legacy usage.
  *
- * Any additional props are forwarded to the underlyng ReactSelect component.
+ * Any additional props are forwarded to the underlying ReactSelect component.
+ *
+ * @deprecated - if possible, refactor the form to use Formik and use the Formik-enabled
+ * variant.
  */
-const Select = ({name, options, ...props}) => {
-  const [fieldProps, , fieldHelpers] = useField(name);
-  const {value} = fieldProps;
-  const {setValue} = fieldHelpers;
+const SelectWithoutFormik = ({name, options, value, className, onChange, ...props}) => {
+  const classes = classNames('admin-react-select', {
+    [`${className}`]: className,
+  });
   return (
     <ReactSelect
       inputId={`id_${name}`}
-      className="admin-react-select"
+      name={name}
+      className={classes}
+      classNamePrefix="admin-react-select"
+      styles={styles}
+      menuPlacement="auto"
+      options={options}
+      value={getValueRecursively(options, value)}
+      onChange={selectedOption => {
+        onChange(selectedOption === null ? undefined : selectedOption.value);
+      }}
+      {...props}
+    />
+  );
+};
+
+/**
+ * A select dropdown backed by react-select for Formik forms.
+ *
+ * Any additional props are forwarded to the underlying ReactSelect component.
+ */
+const SelectWithFormik = ({name, options, className, ...props}) => {
+  const [fieldProps, , fieldHelpers] = useField(name);
+  const {value} = fieldProps;
+  const {setValue} = fieldHelpers;
+  const classes = classNames('admin-react-select', {
+    [`${className}`]: className,
+  });
+  return (
+    <ReactSelect
+      inputId={`id_${name}`}
+      className={classes}
       classNamePrefix="admin-react-select"
       styles={styles}
       menuPlacement="auto"
       options={options}
       {...fieldProps}
-      value={options.find(opt => opt.value === value) || null}
+      value={getValueRecursively(options, value)}
       onChange={selectedOption => {
         // clear the value
         if (selectedOption == null) {
@@ -63,9 +123,16 @@ const Select = ({name, options, ...props}) => {
   );
 };
 
-Select.propTypes = {
+SelectWithoutFormik.propTypes = {
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object),
+};
+
+SelectWithFormik.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default Select;
+export default SelectWithFormik;
+export {SelectWithFormik, SelectWithoutFormik};
