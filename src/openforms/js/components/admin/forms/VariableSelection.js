@@ -3,7 +3,7 @@ import React, {useContext} from 'react';
 
 import {FormContext} from 'components/admin/form_design/Context';
 
-import Select from './Select';
+import {SelectWithoutFormik} from './ReactSelect';
 
 const allowAny = () => true;
 
@@ -30,20 +30,16 @@ const VariableSelection = ({
       const label = formDefinitionsNames[variable.formDefinition]
         ? `${formDefinitionsNames[variable.formDefinition]}: ${variable.name} (${variable.key})`
         : `${variable.name} (${variable.key})`;
-      return [variable.key, label];
+      return {value: variable.key, label};
     });
 
-  {
-    /*TODO: This should be a searchable select for when there are a billion variables -> react-select */
-  }
   return (
-    <Select
+    <SelectWithoutFormik
       id={id}
       className="form-variable-dropdown"
       name={name}
-      choices={choices}
-      allowBlank
-      onChange={onChange}
+      options={choices}
+      onChange={newValue => onChange({target: {name, value: newValue}})}
       value={value}
       {...props}
     />

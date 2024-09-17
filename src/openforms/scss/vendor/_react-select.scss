@@ -20,5 +20,9 @@
     --border-color: var(--error-fg);
   }
 
-  inline-size: clamp(200px, 100%, var(--of-admin-select-max-inline-size));
+  inline-size: clamp(
+    var(--of-admin-select-min-inline-size),
+    100%,
+    var(--of-admin-select-max-inline-size)
+  );
 }
