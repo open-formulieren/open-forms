@@ -2,8 +2,8 @@ import {useArgs} from '@storybook/preview-api';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 
-import VariableSelection from './VariableSelection';
 import {VARIABLE_SOURCES} from '../form_design/variables/constants';
+import VariableSelection from './VariableSelection';
 
 const render = ({name, includeStaticVariables, filter}) => {
   const [{value}, updateArgs] = useArgs();
