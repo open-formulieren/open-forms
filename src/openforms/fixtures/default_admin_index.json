@@ -223,6 +223,10 @@
                 "certificate"
             ],
             [
+                "simple_certmanager",
+                "signingrequest"
+            ],
+            [
                 "soap",
                 "soapservice"
             ],
