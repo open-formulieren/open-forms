@@ -65,6 +65,17 @@ class MimeTypeValidator:
             whole_file = head + value.read()
             mime_type = magic.from_buffer(whole_file, mime=True)
 
+        # gh #4658
+        # Windows use application/x-zip-compressed as a mimetype for .zip files, which
+        # is deprecated but still we need to support it. Instead, the common case for
+        # zip files is application/zip or application/zip-compressed mimetype.
+        if (
+            value.content_type
+            in ["application/x-zip-compressed", "application/zip-compressed"]
+            and mime_type == "application/zip"
+        ):
+            value.content_type = "application/zip"
+
         if mime_type == "image/heif":
             mime_type = "image/heic"
 

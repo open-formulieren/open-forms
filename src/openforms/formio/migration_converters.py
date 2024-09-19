@@ -127,6 +127,22 @@ def fix_file_default_value(component: Component) -> bool:
             return False
 
 
+def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
+    component = cast(FileComponent, component)
+    if not (file_type := glom(component, "file.type", default=None)):
+        return False
+
+    if "application/zip" in file_type:
+        if "application/x-zip-compressed" not in file_type:
+            file_type.append("application/x-zip-compressed")
+        if "application/zip-compressed" not in file_type:
+            file_type.append("application/zip-compressed")
+            "application/zip-compressed"
+
+        assign(component, "file.type", file_type)
+        return True
+
+
 def ensure_licensplate_validate_pattern(component: Component) -> bool:
     # assume that it's the correct pattern if it's set
     if "validate" in component and "pattern" in component["validate"]:
@@ -283,6 +299,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "file": {
         "fix_default_value": fix_file_default_value,
+        "ensure_extra_zip_mimetypes_exist_in_file_type": ensure_extra_zip_mimetypes_exist_in_file_type,
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
