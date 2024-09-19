@@ -339,7 +339,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-django-simple-certmanager[testutils]==2.0.0
+django-simple-certmanager[testutils]==2.4.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
