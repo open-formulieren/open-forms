@@ -7,17 +7,8 @@ on:
       - master
       - stable/*
     tags:
-    paths:
-      - '**.py'
-      - '**.json'
-      - '**.yaml'
-      - '**.in'
+      - '*'
   pull_request:
-    paths:
-      - '**.py'
-      - '**.json'
-      - '**.yaml'
-      - '**.in'
   workflow_dispatch:
 
 jobs:
