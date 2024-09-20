@@ -101,6 +101,16 @@ class MimeTypeValidator:
             "image/heif",
         ):
             return
+
+        # gh #4658
+        # Windows use application/x-zip-compressed as a mimetype for .zip files, which
+        # is deprecated but still we need to support it. Instead, the common case for
+        # zip files is application/zip or application/zip-compressed mimetype.
+        elif mime_type == "application/zip" and value.content_type in (
+            "application/zip-compressed",
+            "application/x-zip-compressed",
+        ):
+            return
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
                 _("The provided file is not a {file_type}.").format(
