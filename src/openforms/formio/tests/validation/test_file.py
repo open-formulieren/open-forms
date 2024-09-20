@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.settings import api_settings
 
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.typing.vanilla import EditGridComponent
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     TemporaryFileUploadFactory,
@@ -185,6 +186,49 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
         self.assertIn(component["key"], errors)
         error = extract_error(errors, component["key"])
         self.assertEqual(error.code, "max_length")
+
+    @tag("gh-4656")
+    def test_file_nested_in_editgrid(self):
+        submission = SubmissionFactory.create()
+        temporary_file_uploads = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
+        component: EditGridComponent = {  # type: ignore
+            "type": "editgrid",
+            "key": "parent",
+            "label": "Repeating group",
+            "components": [
+                {
+                    "type": "file",
+                    "key": "foo",
+                    "label": "Test",
+                    "storage": "url",
+                    "url": "",
+                    "useConfigFiletypes": False,
+                    "filePattern": "",
+                    "file": {"allowedTypesLabels": []},
+                    "multiple": True,
+                    "maxNumberOfFiles": 2,
+                }
+            ],
+        }
+
+        is_valid, _ = validate_formio_data(
+            component,
+            data={
+                "parent": [
+                    {
+                        "foo": [
+                            SubmittedFileFactory.create(temporary_upload=file)
+                            for file in temporary_file_uploads
+                        ]
+                    }
+                ]
+            },
+            submission=submission,
+        )
+
+        self.assertTrue(is_valid)
 
 
 class FileValidationTests(TestCase):
