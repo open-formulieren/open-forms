@@ -85,7 +85,10 @@ class UploadFileType(models.TextChoices):
         "application/vnd.oasis.opendocument.*,application/vnd.stardivision.*,application/vnd.sun.xml.*",
         _("Open Office"),
     )
-    zip = "application/zip", _(".zip")
+    zip = (
+        "application/zip,application/zip-compressed,application/x-zip-compressed",
+        _(".zip"),
+    )
     rar = "application/vnd.rar", _(".rar")
     tar = "application/x-tar", _(".tar")
     msg = "application/vnd.ms-outlook", _(".msg")

@@ -127,6 +127,33 @@ def fix_file_default_value(component: Component) -> bool:
             return False
 
 
+def ensure_extra_zip_mimetypes_exist_in_file_type(component: Component) -> bool:
+    component = cast(FileComponent, component)
+    if not (file_type := glom(component, "file.type", default=None)) or not (
+        file_pattern := component.get("filePattern", None)
+    ):
+        return False
+
+    file_pattern_list = file_pattern.split(",")
+    needed_mime_types = ("application/x-zip-compressed", "application/zip-compressed")
+
+    def add_if_missing(current_list: list[str]):
+        for item in needed_mime_types:
+            if item not in current_list:
+                current_list.append(item)
+
+    if not ("application/zip" in file_type or "application/zip" in file_pattern_list):
+        return False
+
+    # file type
+    add_if_missing(file_type)
+    assign(component, "file.type", file_type)
+    # file pattern
+    add_if_missing(file_pattern_list)
+    component["filePattern"] = ",".join(file_pattern_list)
+    return True
+
+
 def ensure_licensplate_validate_pattern(component: Component) -> bool:
     # assume that it's the correct pattern if it's set
     if "validate" in component and "pattern" in component["validate"]:
@@ -289,6 +316,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "file": {
         "fix_default_value": fix_file_default_value,
+        "ensure_extra_zip_mimetypes_exist_in_file_type": ensure_extra_zip_mimetypes_exist_in_file_type,
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
