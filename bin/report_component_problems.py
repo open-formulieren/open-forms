@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
+import logging
 import sys
 from collections.abc import Sequence
+from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -19,6 +21,8 @@ sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
 def check_component(component: Component) -> str | None:
+    from openforms.formio.migration_converters import convert_simple_conditionals
+
     match component:
         case {"type": "file", "defaultValue": list() as default_value}:
             if None in default_value:
@@ -66,6 +70,17 @@ def check_component(component: Component) -> str | None:
                     return "invalid translations structure"
                 if bool(translation_dict.get("defaultValue")):
                     return "defaultValue has a translation"
+
+    # Run checks for a converter that is applied during data migrations
+    _logger = logging.getLogger("openforms.formio.migration_converters")
+    _original_level = _logger.level
+    _logger.setLevel(logging.CRITICAL)
+    try:
+        convert_simple_conditionals(deepcopy(component))  # type: ignore
+    except Exception:
+        return "convert_simple_conditionals unexpectedly crashes"
+    finally:
+        _logger.setLevel(_original_level)
 
 
 def report_problems(component_types: Sequence[str]) -> bool:

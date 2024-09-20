@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase, tag
 
 from openforms.formio.typing import EditGridComponent
+from openforms.formio.typing.base import Component
 from openforms.typing import JSONObject
 
 from ..migration_converters import convert_simple_conditionals
@@ -94,5 +95,29 @@ class RegressionTests(SimpleTestCase):
 
         try:
             convert_simple_conditionals(configuration)
+        except Exception as exc:
+            raise self.failureException("Unexpected crash") from exc
+
+    @tag("gh-4680")
+    def test_malformed_eq_json(self):
+        reference: Component = {
+            "type": "number",
+            "key": "watIsHetZaaknummer",
+            "label": "Wat is het zaaknummer?",
+        }
+        component: Component = {
+            "type": "content",
+            "key": "contentOgenblikGeduld",
+            "label": "Content",
+            "conditional": {  # type: ignore
+                "eq": "",
+                "show": False,
+                "when": "watIsHetZaaknummer",
+            },
+        }
+        configuration = {"components": [reference, component]}
+
+        try:
+            convert_simple_conditionals(configuration)  # type: ignore
         except Exception as exc:
             raise self.failureException("Unexpected crash") from exc
