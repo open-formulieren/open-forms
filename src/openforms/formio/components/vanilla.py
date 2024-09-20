@@ -818,6 +818,11 @@ class EditGridField(serializers.Field):
             # conditional.when values resolve, as these look like `editgridparent.child`.
             data = FormioData({**self.root.initial_data, self.field_name: item}).data
             nested_serializer = self._build_child(data=data)
+
+            # this is explicitly bound to the parent because we need to have access to the
+            # context of the parent in the children
+            nested_serializer.bind(field_name=self.field_name, parent=self)
+
             try:
                 result.append(nested_serializer.run_validation(item))
             except serializers.ValidationError as e:
