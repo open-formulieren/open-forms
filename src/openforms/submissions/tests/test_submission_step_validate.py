@@ -7,6 +7,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.formio.tests.factories import (
+    SubmittedFileFactory,
+    TemporaryFileUploadFactory,
+)
 from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
@@ -449,3 +453,108 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 self.assertTrue(
                     all(name.startswith("data.selectboxes") for name in error_names)
                 )
+
+    def test_validate_step_with_nested_files_in_columns(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create()
+        file = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
+        submission = temporary_file_upload.submission
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "columns",
+                        "key": "columns",
+                        "label": "Columns",
+                        "columns": [
+                            {
+                                "size": 6,
+                                "components": [
+                                    {
+                                        "key": "fileUpload1",
+                                        "file": {
+                                            "name": "",
+                                            "type": [],
+                                            "allowedTypesLabels": [],
+                                        },
+                                        "type": "file",
+                                        "label": "File Upload 1",
+                                    },
+                                ],
+                            },
+                            {
+                                "size": 6,
+                                "components": [
+                                    {
+                                        "key": "fileUpload2",
+                                        "file": {
+                                            "name": "",
+                                            "type": [],
+                                            "allowedTypesLabels": [],
+                                        },
+                                        "type": "file",
+                                        "label": "File Upload 2",
+                                    },
+                                ],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse(
+                "api:submission-steps-validate",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+            {"data": {"columns": [{"fileUpload1": [file], "fileUpload2": [file]}]}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_validate_step_with_nested_files_in_fieldset(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create()
+        file = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
+        submission = temporary_file_upload.submission
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "components": [
+                            {
+                                "key": "fileUpload1",
+                                "file": {
+                                    "name": "",
+                                    "type": [],
+                                    "allowedTypesLabels": [],
+                                },
+                                "type": "file",
+                                "label": "File Upload 1",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse(
+                "api:submission-steps-validate",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+            {"data": {"fieldset": [{"fileUpload1": [file]}]}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
