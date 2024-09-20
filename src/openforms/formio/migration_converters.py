@@ -210,6 +210,12 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
             # only strings can be loaded
             if not isinstance(eq, str):
                 continue
+
+            if eq == "":
+                component["conditional"]["eq"] = None
+                config_modified = True
+                continue
+
             component["conditional"]["eq"] = json.loads(eq)
             config_modified = True
 
