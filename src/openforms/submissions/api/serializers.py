@@ -19,6 +19,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
+from openforms.contrib.objects_api.validators import validate_object_ownership
 from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.formio.service import build_serializer
 from openforms.formio.utils import iter_components
@@ -198,6 +199,13 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         validated_data.pop("anonymous", None)
         return super().create(validated_data)
+
+    def validate(self, attrs: dict):
+        if initial_data_reference := attrs.get("initial_data_reference"):
+            session = self.context["request"].session
+            validate_object_ownership(attrs["form"], session, initial_data_reference)
+
+        return attrs
 
     def to_representation(self, instance):
         check_submission_logic(instance, unsaved_data=self.context.get("unsaved_data"))
