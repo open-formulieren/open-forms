@@ -2,7 +2,7 @@ import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
 import produce from 'immer';
 import React, {useEffect} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';

@@ -574,6 +574,11 @@
     "description": "'Map to geometry field' checkbox help text",
     "originalDefault": "Whether to map this variable to the {geometryPath} attribute"
   },
+  "CGTS1p": {
+    "defaultMessage": "Prefill attribute",
+    "description": "Accessible label for prefill attribute dropdown",
+    "originalDefault": "Prefill attribute"
+  },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
     "description": "Delete icon title",
@@ -905,6 +910,11 @@
     "defaultMessage": "Object- en/of productaanvraagdefinitie",
     "description": "Objects registration: object definition",
     "originalDefault": "Object and/or product request definition"
+  },
+  "I9+K9f": {
+    "defaultMessage": "Mappings",
+    "description": "Objects API prefill mappings fieldset title",
+    "originalDefault": "Mappings"
   },
   "IhIqdj": {
     "defaultMessage": "Beslisdefinitie-ID",
