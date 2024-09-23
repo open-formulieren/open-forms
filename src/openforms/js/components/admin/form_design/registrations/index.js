@@ -1,6 +1,5 @@
-import {WysiwygWidget} from 'components/admin/RJSFWrapper';
-
 import CamundaOptionsForm from './camunda';
+import EmailOptionsForm from './email';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
@@ -35,15 +34,7 @@ export const BACKEND_OPTIONS_FORMS = {
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
   email: {
-    uiSchema: {
-      emailContentTemplateText: {
-        'ui:widget': 'textarea',
-        'ui:options': {
-          rows: 5,
-        },
-      },
-      emailContentTemplateHtml: {'ui:widget': WysiwygWidget},
-    },
+    form: EmailOptionsForm,
   },
   'zgw-create-zaak': {
     form: ZGWOptionsForm,
