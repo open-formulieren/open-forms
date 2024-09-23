@@ -2,6 +2,24 @@
 Changelog
 =========
 
+2.7.7 (2024-09-23)
+==================
+
+Periodic bugfix release
+
+* [:backend:`4653`] Fixed the missing paragraph/headings style options in WYSIWYG
+  editors.
+* [:backend:`4602`] Fixed missing Dutch translation for minimum required checked items
+  error message in the selectboxes component.
+* [:backend:`4680`] Fixed a crash that can occur with certain Formio broken
+  configurations when upgrading from 2.6 to 2.7.
+* [:backend:`4656`] Fixed a crash during validation when you have file upload components
+  inside repeating groups.
+* [:backend:`4658`] Fixed certain variants of ZIP files not passing validation on
+  Windows.
+* [:backend:`4652`] Fixed misaligned validation errors in the form designer UI.
+* Fixed a misconfiguration for automated end-to-end testing in CI.
+
 2.8.0-beta.0 (2024-09-17)
 =========================
 
