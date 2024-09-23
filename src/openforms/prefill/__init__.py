@@ -65,14 +65,26 @@ def _fetch_prefill_values(
     def invoke_plugin(
         item: tuple[str, str, list[str]]
     ) -> tuple[str, str, dict[str, Any]]:
-        plugin_id, identifier_role, fields = item
+        plugin_id, identifier_role, fields, prefill_options = item
 
         plugin = register[plugin_id]
         if not plugin.is_enabled:
             raise PluginNotEnabled()
 
         try:
-            values = plugin.get_prefill_values(submission, fields, identifier_role)
+            if plugin_id == "objects_api":
+                values = plugin.get_prefill_values(
+                    submission=submission,
+                    prefill_options=prefill_options,
+                    identifier_role=identifier_role,
+                )
+            else:
+                values = plugin.get_prefill_values(
+                    submission=submission,
+                    attributes=fields,
+                    identifier_role=identifier_role,
+                    prefill_options=prefill_options,
+                )
         except Exception as e:
             logger.exception(f"exception in prefill plugin '{plugin_id}'")
             logevent.prefill_retrieve_failure(submission, plugin, e)
@@ -86,9 +98,11 @@ def _fetch_prefill_values(
         return plugin_id, identifier_role, values
 
     invoke_plugin_args = []
-    for plugin_id, field_groups in grouped_fields.items():
-        for identifier_role, fields in field_groups.items():
-            invoke_plugin_args.append((plugin_id, identifier_role, fields))
+    for plugin, identifiers in grouped_fields.items():
+        for identifier, data in identifiers.items():
+            invoke_plugin_args.append(
+                (plugin, identifier, data["fields"], data["options"])
+            )
 
     with parallel() as executor:
         results = executor.map(invoke_plugin, invoke_plugin_args)
@@ -169,17 +183,31 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     variables_to_prefill = state.get_prefill_variables()
 
     # grouped_fields is a dict of the following shape:
-    # {"plugin_id": {"identifier_role": ["attr_1", "attr_2"]}}
+    # example = {
+    #     "plugin_id": {
+    #         "identifier_role": {
+    #             "fields": ["attr_1", "attr_2"],
+    #             "options": {
+    #                 "option1": "value1",
+    #                 "option2": "value2",
+    #             },
+    #         }
+    #     }
+    # }
     # "identifier_role" is either "main" or "authorizee"
-    grouped_fields: defaultdict[str, defaultdict[str, list[str]]] = defaultdict(
-        lambda: defaultdict(list)
+    # options are of type _BasePrefillOptions or ObjectsAPIPrefillOptions
+
+    grouped_fields: dict[str, dict[str, dict[str, list[str] | str]]] = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(list))
     )
     for variable in variables_to_prefill:
         plugin_id = variable.form_variable.prefill_plugin
         identifier_role = variable.form_variable.prefill_identifier_role
         attribute_name = variable.form_variable.prefill_attribute
+        prefill_options = variable.form_variable.prefill_options
 
-        grouped_fields[plugin_id][identifier_role].append(attribute_name)
+        grouped_fields[plugin_id][identifier_role]["fields"].append(attribute_name)
+        grouped_fields[plugin_id][identifier_role]["options"] = prefill_options
 
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
