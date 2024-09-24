@@ -569,7 +569,7 @@ jobs:
       - docker_build
       - oas-lint
       - oas-postman
-      - oas-generate-sdks
+      # - oas-generate-sdks
 
     name: Push Docker image
     runs-on: ubuntu-latest
