@@ -4,6 +4,27 @@ from django.db import migrations, models
 
 import django_jsonform.models.fields
 
+from openforms.config.constants import UploadFileType
+
+
+def add_extra_zip_mimetypes(apps, _):
+    """
+    Set up the correct zip mimetypes.
+
+    This ensures all the allowed mimetypes concerning zip files are included.
+    """
+    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+    if not GlobalConfiguration.objects.exists():
+        return
+
+    config = GlobalConfiguration.objects.get()
+    if "application/zip" not in config.form_upload_default_file_types:
+        return
+
+    config.form_upload_default_file_types.remove("application/zip")
+    config.form_upload_default_file_types.append(UploadFileType.zip)
+    config.save(update_fields=("form_upload_default_file_types",))
+
 
 class Migration(migrations.Migration):
 
@@ -59,5 +80,9 @@ class Migration(migrations.Migration):
                 size=None,
                 verbose_name="Default allowed file upload types",
             ),
+        ),
+        migrations.RunPython(
+            add_extra_zip_mimetypes,
+            migrations.RunPython.noop,
         ),
     ]
