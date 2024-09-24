@@ -4,6 +4,7 @@ import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
 import {onCamundaStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
+import StufZDSOptionsForm from './stufzds/StufZDSOptionsForm';
 import {onObjectsAPIUserDefinedVariableEdit} from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 
@@ -41,14 +42,6 @@ export const BACKEND_OPTIONS_FORMS = {
     onStepEdit: onZGWStepEdit,
   },
   'stuf-zds-create-zaak:ext-utrecht': {
-    uiSchema: {
-      paymentStatusUpdateMapping: {
-        'ui:orderable': false,
-        items: {
-          'ui:orderable': false,
-          'ui:removable': false,
-        },
-      },
-    },
+    form: StufZDSOptionsForm,
   },
 };
