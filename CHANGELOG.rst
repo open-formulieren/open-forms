@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.5.13 addendum (2024-09-24)
+============================
+
+2.5.13 was the final bugfix release in the ``2.5.x`` series.
+
+Since then, no bugfixes become available to release. This version is now no longer
+supported.
+
 2.7.7 (2024-09-23)
 ==================
 
