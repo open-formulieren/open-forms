@@ -2,6 +2,21 @@
 Changelog
 =========
 
+2.7.8 (2024-09-23)
+==================
+
+Hotfix for 2.7.7 issue
+
+.. warning::
+
+    If you updated to 2.7.7 before, please update to 2.7.8 and then run the
+    ``/app/bin/fix_globalconfig_zip.py`` script to fix the misconfiguration.
+
+    If you update from a version older than 2.7.7, you don't need to run this script.
+
+* [:backend:`4658`] Fixed missing global configuration update, causing runtime crashes
+  when ZIP files are enabled in the global configuration.
+
 2.7.7 (2024-09-23)
 ==================
 
