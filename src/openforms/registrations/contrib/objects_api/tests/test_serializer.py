@@ -76,7 +76,29 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
-                "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/1",
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465"
+                ),
+            },
+        )
+
+        self.assertFalse(options.is_valid())
+        self.assertIn("informatieobjecttype_attachment", options.errors)
+        error = options.errors["informatieobjecttype_attachment"][0]
+        self.assertEqual(error.code, "not-found")
+
+    def test_using_zaaktype_instead_of_informatieobjecttype(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "informatieobjecttype_attachment": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "zaaktypen/5e48c3a3-9b12-4692-98ee-5c4576b13465"  # incorrect endpoint
+                ),
             },
         )
 

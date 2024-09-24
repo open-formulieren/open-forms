@@ -5,6 +5,7 @@ from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
+from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -288,26 +289,40 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
 
         objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
         with get_catalogi_client(objects_api_group) as catalogi_client:
-            informatieobjecttypen = catalogi_client.get_all_informatieobjecttypen()
-
-        for field in (
-            "informatieobjecttype_submission_report",
-            "informatieobjecttype_submission_csv",
-            "informatieobjecttype_attachment",
-        ):
-            url = attrs.get(field)
-            if url is not None and not any(
-                informatieobjecttype["url"] == url
-                for informatieobjecttype in informatieobjecttypen
+            for field in (
+                "informatieobjecttype_submission_report",
+                "informatieobjecttype_submission_csv",
+                "informatieobjecttype_attachment",
             ):
-                raise serializers.ValidationError(
-                    {
-                        field: _(
-                            "The provided {field} does not exist in the Catalogi API."
-                        ).format(field=field)
-                    },
-                    code="not-found",
-                )
+                url = attrs.get(field)
+                if not url:
+                    continue
+
+                err_tpl = _("The provided {field} does not exist in the Catalogi API.")
+                err_msg = err_tpl.format(field=field)
+
+                assert objects_api_group.catalogi_service
+                iotypen_endpoint = (
+                    furl(objects_api_group.catalogi_service.api_root)
+                    / "informatieobjecttypen/"
+                ).url
+
+                if not url.startswith(iotypen_endpoint):
+                    raise serializers.ValidationError(
+                        {field: err_msg}, code="not-found"
+                    )
+
+                response = catalogi_client.get(url)
+
+                if response.status_code != 200:
+                    raise serializers.ValidationError(
+                        {
+                            field: _(
+                                "The provided {field} does not exist in the Catalogi API."
+                            ).format(field=field)
+                        },
+                        code="not-found",
+                    )
 
         with get_objecttypes_client(objects_api_group) as objecttypes_client:
             objecttypes = objecttypes_client.list_objecttypes()
