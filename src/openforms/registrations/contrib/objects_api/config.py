@@ -5,6 +5,7 @@ from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
+from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -411,9 +412,13 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
 
             informatieobjecttypen_urls = catalogus["informatieobjecttypen"]
         else:
-            informatieobjecttypen_urls = [
-                iot["url"] for iot in client.get_all_informatieobjecttypen()
-            ]
+            # Previously all informatieobjecttypen were fetched here, if there were no
+            # catalogue domain and RSIN specified and the legacy fields were used.
+            # This led to bad performance if the Catalogi service has a lot of IOtypen however
+            # So instead we validate each URL separately by checking if the prefix of the
+            # URL matches and if we can retrieve it (see below)
+            # issue: https://github.com/open-formulieren/open-forms/issues/4695
+            informatieobjecttypen_urls = None
 
         _errors = {}
         for field in (
@@ -446,27 +451,55 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
         if _errors:
             raise serializers.ValidationError(_errors)
 
-    # Remove these legacy fields in Open Forms 3.0
-    for field in (
-        "informatieobjecttype_submission_report",
-        "informatieobjecttype_submission_csv",
-        "informatieobjecttype_attachment",
-    ):
-        url = attrs.get(field)
-        if url:
+        # Remove these legacy fields in Open Forms 3.0
+        for field in (
+            "informatieobjecttype_submission_report",
+            "informatieobjecttype_submission_csv",
+            "informatieobjecttype_attachment",
+        ):
+            url = attrs.get(field)
+            if not url:
+                continue
+
             warnings.warn(
                 "URL references to document types are deprecated and will be remove in "
                 "Open Forms 3.0",
                 DeprecationWarning,
             )
-        if url and url not in informatieobjecttypen_urls:
+
             err_tpl = (
                 _("The provided {field} does not exist in the Catalogi API.")
                 if catalogus is None
                 else _("The provided {field} does not exist in the selected catalogue.")
             )
             err_msg = err_tpl.format(field=field)
-            raise serializers.ValidationError({field: err_msg}, code="not-found")
+
+            if informatieobjecttypen_urls is not None:
+                if url not in informatieobjecttypen_urls:
+                    raise serializers.ValidationError(
+                        {field: err_msg}, code="not-found"
+                    )
+            else:
+                assert api_group.catalogi_service
+                iotypen_endpoint = (
+                    furl(api_group.catalogi_service.api_root) / "informatieobjecttypen/"
+                ).url
+
+                if not url.startswith(iotypen_endpoint):
+                    raise serializers.ValidationError(
+                        {field: err_msg}, code="not-found"
+                    )
+
+                response = (
+                    client.head(url)
+                    if client.api_version >= (1, 1, 0)
+                    else client.get(url)
+                )
+
+                if response.status_code != 200:
+                    raise serializers.ValidationError(
+                        {field: err_msg}, code="not-found"
+                    )
 
 
 def _validate_objecttype_and_version(attrs: RegistrationOptions) -> None:
