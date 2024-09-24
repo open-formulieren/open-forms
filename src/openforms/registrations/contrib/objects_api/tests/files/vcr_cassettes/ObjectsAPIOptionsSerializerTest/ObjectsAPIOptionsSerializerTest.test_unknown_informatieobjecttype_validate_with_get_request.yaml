@@ -7,16 +7,17 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcyNzE2NDE1NywiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.CSC5wsXZm7PtIWsiJh1CvkxVL6v17lmi22AwZIzHQY8
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcyNzE3NjAzMSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.uinuVRpht4kQ3mmgoIeKKswerdxpAWJioPj8j0QD9vo
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
-    method: HEAD
+    method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen/5e48c3a3-9b12-4692-98ee-5c4576b13465
   response:
     body:
-      string: ''
+      string: '{"type":"http://localhost:8003/ref/fouten/NotFound/","code":"not_found","title":"Niet
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:5fc06676-764b-425f-ab16-df814e859b19"}'
     headers:
       API-version:
       - 1.3.1
