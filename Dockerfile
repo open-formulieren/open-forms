@@ -92,6 +92,7 @@ COPY \
     ./bin/report_component_problems.py \
     ./bin/check_objecttype_urls.py \
     ./bin/check_zgw_groups.py \
+    ./bin/fix_globalconfig_zip.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
