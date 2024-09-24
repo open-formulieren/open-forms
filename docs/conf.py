@@ -114,6 +114,7 @@ linkcheck_ignore = [
     r"https://hub\.docker\.com/r/.*",  # HTTP 429, presumably docker hub is blocking/limiting Github CI runners
     r"https://stackoverflow\.com/.*",  # SO 403s when running on github actions :/
     r"https://sequencediagram\.org/index\.html",  # anchor are not server side
+    r"https://www\.miniwebtool\.com/django-secret-key-generator/",  # seems to block the requests user agent
 ]
 
 extlinks = {
