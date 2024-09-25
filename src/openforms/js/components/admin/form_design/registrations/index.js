@@ -4,7 +4,7 @@ import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
 import {onCamundaStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
-import StufZDSOptionsForm from './stufzds/StufZDSOptionsForm';
+import StufZDSOptionsForm from './stufzds';
 import {onObjectsAPIUserDefinedVariableEdit} from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 

@@ -28,7 +28,6 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
       }
     });
   }
-  console.log({schema});
 
   return (
     <Field name={name} label={label}>

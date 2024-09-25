@@ -1,0 +1,14 @@
+.payment-status-mapping-fields {
+  &,
+  // Making sure that the spacing left is zero
+  .aligned & {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  &__item {
+    display: flex;
+    margin-bottom: 0.5em;
+  }
+}

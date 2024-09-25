@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import {useContext} from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
@@ -35,7 +36,24 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
         <CaseStatusDescription />
         <DocumentDescription />
         <DocumentConfidentialityLevel options={zdsZaakdocVertrouwelijkheidChoices} />
-        <PaymentStatusUpdateMapping schema={schema} />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="StUF-ZDS registration paymentStatusUpdateMapping label"
+            defaultMessage="payment status update variable mapping"
+          />
+        }
+        fieldNames={['paymentStatusUpdateMapping']}
+      >
+        <div className="description mb-2">
+          <FormattedMessage
+            description="StUF-ZDS registration paymentStatusUpdateMapping message"
+            defaultMessage="This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen."
+          />
+        </div>
+        <PaymentStatusUpdateMapping />
       </Fieldset>
     </ValidationErrorsProvider>
   );
