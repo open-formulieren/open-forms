@@ -52,72 +52,74 @@ const PaymentStatusUpdateMappingInputs = ({
   });
 
   return (
-    <div className="array-multiple-inputs">
-      {inputGroups.map(({formVariable, stufName}, index) => (
-        <div key={index} className="array-multiple-inputs__item">
-          <DeleteIcon
-            onConfirm={onDelete.bind(null, index)}
-            message={
-              deleteConfirmationMessage ||
-              intl.formatMessage({
-                description: 'Confirmation message to delete an item from a multi-value input',
-                defaultMessage: 'Are you sure you want to delete this item?',
-              })
-            }
-            icon="times"
-          />
-          <div>
-            <Field
-              name={`formVariable-${index}`}
-              label={
-                <FormattedMessage
-                  description="StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' label"
-                  defaultMessage="Form variable"
+    <>
+      <ul className="payment-status-mapping-fields">
+        {inputGroups.map(({formVariable, stufName}, index) => (
+          <li key={index} className="payment-status-mapping-fields__item">
+            <div>
+              <Field
+                name={`formVariable-${index}`}
+                label={
+                  <FormattedMessage
+                    description="StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' label"
+                    defaultMessage="Form variable"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    description="StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' helpText"
+                    defaultMessage="The name of the form variable to be mapped"
+                  />
+                }
+              >
+                <TextInput
+                  type="string"
+                  value={formVariable}
+                  onChange={onInputChange.bind(null, index)}
                 />
-              }
-              helpText={
-                <FormattedMessage
-                  description="StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' helpText"
-                  defaultMessage="The name of the form variable to be mapped"
+              </Field>
+              <Field
+                name={`stufName-${index}`}
+                label={
+                  <FormattedMessage
+                    description="StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' label"
+                    defaultMessage="StUF-ZDS name"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    description="StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' helpText"
+                    defaultMessage="The name in StUF-ZDS to which the form variable should be mapped"
+                  />
+                }
+              >
+                <TextInput
+                  type="string"
+                  value={stufName}
+                  onChange={onInputChange.bind(null, index)}
                 />
+              </Field>
+            </div>
+            <DeleteIcon
+              onConfirm={onDelete.bind(null, index)}
+              message={
+                deleteConfirmationMessage ||
+                intl.formatMessage({
+                  description: 'Confirmation message to delete an item from a multi-value input',
+                  defaultMessage: 'Are you sure you want to delete this item?',
+                })
               }
-            >
-              <TextInput
-                type="string"
-                value={formVariable}
-                onChange={onInputChange.bind(null, index)}
-              />
-            </Field>
-            <Field
-              name={`stufName-${index}`}
-              label={
-                <FormattedMessage
-                  description="StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' label"
-                  defaultMessage="StUF-ZDS name"
-                />
-              }
-              helpText={
-                <FormattedMessage
-                  description="StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' helpText"
-                  defaultMessage="The name in StUF-ZDS to which the form variable should be mapped"
-                />
-              }
-            >
-              <TextInput
-                type="string"
-                value={stufName}
-                onChange={onInputChange.bind(null, index)}
-              />
-            </Field>
-          </div>
-        </div>
-      ))}
+              icon="times"
+            />
+          </li>
+        ))}
+      </ul>
       <ButtonContainer onClick={onAdd}>
         {addButtonMessage || (
           <FormattedMessage description="Add item to multi-input field" defaultMessage="Add item" />
         )}
       </ButtonContainer>
-    </div>
+    </>
   );
 };
 
