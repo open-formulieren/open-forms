@@ -69,6 +69,11 @@
     "description": "Case type option label",
     "originalDefault": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
+  "01mWK2": {
+    "defaultMessage": "The format(s) of the attachment(s) containing the submission details",
+    "description": "Email registration options 'attachmentFormats' label",
+    "originalDefault": "The format(s) of the attachment(s) containing the submission details"
+  },
   "0M2B7B": {
     "defaultMessage": "DMN variable",
     "description": "DMN variable label",
@@ -139,6 +144,11 @@
     "description": "ZGW APIs registration options 'organisationRSIN' help text",
     "originalDefault": "RSIN of the organization, which creates and owns the case and documents."
   },
+  "1z/bNS": {
+    "defaultMessage": "Zds zaaktype code",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeCode' label",
+    "originalDefault": "Zds zaaktype code"
+  },
   "20K9To": {
     "defaultMessage": "Service fetch configuration",
     "description": "Service fetch configuration selection modal title",
@@ -153,6 +163,11 @@
     "defaultMessage": "Number",
     "description": "JSON variable type \"number\" representation",
     "originalDefault": "Number"
+  },
+  "2P7mDI": {
+    "defaultMessage": "Content of the registration email message (as text).",
+    "description": "Email registration options 'emailContentTemplateText' helpText",
+    "originalDefault": "Content of the registration email message (as text)."
   },
   "2Z/hNo": {
     "defaultMessage": "Type",
@@ -198,6 +213,11 @@
     "defaultMessage": "Ask statement of truth",
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
+  },
+  "3baawY": {
+    "defaultMessage": "StUF-ZDS name",
+    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' label",
+    "originalDefault": "StUF-ZDS name"
   },
   "3z1hhJ": {
     "defaultMessage": "Toggle JSON Schema",
@@ -339,6 +359,11 @@
     "description": "Form step next text label",
     "originalDefault": "Next text"
   },
+  "7ZdEaP": {
+    "defaultMessage": "Documenttype description for newly created zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsDocumenttypeOmschrijvingInzending' helpText",
+    "originalDefault": "Documenttype description for newly created zaken in StUF-ZDS"
+  },
   "7cfkp6": {
     "defaultMessage": "Expected input expressions",
     "description": "DMN input expressions title",
@@ -354,6 +379,11 @@
     "description": "Variable table registration title",
     "originalDefault": "Registration"
   },
+  "7hc31v": {
+    "defaultMessage": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)",
+    "description": "Email registration options 'paymentEmails' label",
+    "originalDefault": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
+  },
   "833GAg": {
     "defaultMessage": "Input mapping",
     "description": "Input mapping title",
@@ -363,6 +393,11 @@
     "defaultMessage": "Is reusable?",
     "description": "Form step is reusable label",
     "originalDefault": "Is reusable?"
+  },
+  "8IItwi": {
+    "defaultMessage": "The name in StUF-ZDS to which the form variable should be mapped",
+    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' helpText",
+    "originalDefault": "The name in StUF-ZDS to which the form variable should be mapped"
   },
   "8LLxRg": {
     "defaultMessage": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration.",
@@ -388,6 +423,11 @@
     "defaultMessage": "Component {label} ({key}) uses a non-existent component key {missingKey} in the simple logic.",
     "description": "Wrong simple logic warning",
     "originalDefault": "Component {label} ({key}) uses a non-existent component key {missingKey} in the simple logic."
+  },
+  "8nY+h7": {
+    "defaultMessage": "Zaaktype description for newly created Zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' helpText",
+    "originalDefault": "Zaaktype description for newly created Zaken in StUF-ZDS"
   },
   "8pemD3": {
     "defaultMessage": "Edit variable {name}",
@@ -423,6 +463,11 @@
     "defaultMessage": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?",
     "description": "Objects API registration options: warning message when changing the object type",
     "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
+  },
+  "9akVrT": {
+    "defaultMessage": "Zds documenttype omschrijving inzending",
+    "description": "StUF-ZDS registration options 'zdsDocumenttypeOmschrijvingInzending' label",
+    "originalDefault": "Zds documenttype omschrijving inzending"
   },
   "9bGp7h": {
     "defaultMessage": "Active",
@@ -493,6 +538,11 @@
     "defaultMessage": "Confirm",
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
+  },
+  "B5RSyi": {
+    "defaultMessage": "Email payment subject",
+    "description": "Email registration options 'emailPaymentSubject' label",
+    "originalDefault": "Email payment subject"
   },
   "BCjZNo": {
     "defaultMessage": "Component where the phone number should be entered",
@@ -573,6 +623,11 @@
     "defaultMessage": "Delete",
     "description": "Delete icon title",
     "originalDefault": "Delete"
+  },
+  "CNJ2TT": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen.",
+    "description": "StUF-ZDS registration paymentStatusUpdateMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen."
   },
   "CXKQZZ": {
     "defaultMessage": "Confirmation",
@@ -723,6 +778,11 @@
     "defaultMessage": "The co-sign component requires at least one authentication plugin to be enabled.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
+  },
+  "FQ1JZc": {
+    "defaultMessage": "Zaaktype code for newly created Zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeCode' helpText",
+    "originalDefault": "Zaaktype code for newly created Zaken in StUF-ZDS"
   },
   "FQswyM": {
     "defaultMessage": "Mode",
@@ -904,6 +964,11 @@
     "description": "Decision definition ID label",
     "originalDefault": "Decision definition ID"
   },
+  "Ihbi6N": {
+    "defaultMessage": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
+    "originalDefault": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+  },
   "Ika4IH": {
     "defaultMessage": "Submissions will be deleted",
     "description": "delete_permanently removal method option label",
@@ -1074,6 +1139,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LeVpdf": {
+    "defaultMessage": "Plugin configuration: Email",
+    "description": "Email registration options modal title",
+    "originalDefault": "Plugin configuration: Email"
+  },
   "LiXrER": {
     "defaultMessage": "The selected trigger step could not be found in this form! Please change it!",
     "description": "Warning missing trigger step",
@@ -1229,6 +1299,11 @@
     "description": "data type datetime",
     "originalDefault": "Datetime"
   },
+  "P4JMHA": {
+    "defaultMessage": "Zaaktype status code for newly created zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' helpText",
+    "originalDefault": "Zaaktype status code for newly created zaken in StUF-ZDS"
+  },
   "PC7ICN": {
     "defaultMessage": "Enabled",
     "description": "Manage process vars enabled checkbox column title",
@@ -1248,6 +1323,11 @@
     "defaultMessage": "Add rule",
     "description": "Add form logic rule button",
     "originalDefault": "Add rule"
+  },
+  "PhN977": {
+    "defaultMessage": "Plugin configuration: StUF-ZDS",
+    "description": "StUF-ZDS registration options modal title",
+    "originalDefault": "Plugin configuration: StUF-ZDS"
   },
   "PiB6Y1": {
     "defaultMessage": "Times Component",
@@ -1294,6 +1374,11 @@
     "description": "option \"no_with_overview\" of \"submission_allowed\"",
     "originalDefault": "No (with overview page)"
   },
+  "QljfI7": {
+    "defaultMessage": "Email subject",
+    "description": "Email registration options 'emailSubject' label",
+    "originalDefault": "Email subject"
+  },
   "Qr2wnR": {
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
@@ -1333,6 +1418,11 @@
     "defaultMessage": "Language",
     "description": "Readable label for the language",
     "originalDefault": "Language"
+  },
+  "RjWycp": {
+    "defaultMessage": "Form variable",
+    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' label",
+    "originalDefault": "Form variable"
   },
   "Rk13i+": {
     "defaultMessage": "Initial value",
@@ -1504,6 +1594,11 @@
     "description": "Variable table sensitive data title",
     "originalDefault": "Sensitive data"
   },
+  "Vu09Ne": {
+    "defaultMessage": "Zds zaaktype status omschrijving",
+    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
+    "originalDefault": "Zds zaaktype status omschrijving"
+  },
   "WHqkYA": {
     "defaultMessage": "Date/time",
     "description": "Date/time column header",
@@ -1613,6 +1708,11 @@
     "defaultMessage": "Are you sure you want to delete this?",
     "description": "Default delete confirmation message",
     "originalDefault": "Are you sure you want to delete this?"
+  },
+  "Z/wFhz": {
+    "defaultMessage": "Content of the registration email message (as html).",
+    "description": "Email registration options 'emailContentTemplateHtml' helpText",
+    "originalDefault": "Content of the registration email message (as html)."
   },
   "Z5lydZ": {
     "defaultMessage": "Introduction page",
@@ -1899,6 +1999,11 @@
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
+  "eO6MNT": {
+    "defaultMessage": "Zds zaaktype status code",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
+    "originalDefault": "Zds zaaktype status code"
+  },
   "evbysh": {
     "defaultMessage": "Variable definition",
     "description": "Camunda complex variable definition title",
@@ -1908,6 +2013,11 @@
     "defaultMessage": "Begin text",
     "description": "literals.beginText form label",
     "originalDefault": "Begin text"
+  },
+  "f8lihY": {
+    "defaultMessage": "Subject of the email sent to the registration backend. You can use the expressions '{{ form_name }}' and '{{ public_reference }}' to include the form name and the reference number to the submission in the subject.",
+    "description": "Email registration options 'emailSubject' helpText",
+    "originalDefault": "Subject of the email sent to the registration backend. You can use the expressions '{{ form_name }}' and '{{ public_reference }}' to include the form name and the reference number to the submission in the subject."
   },
   "f9Zr9D": {
     "defaultMessage": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
@@ -1928,6 +2038,11 @@
     "defaultMessage": "Object",
     "description": "data type object",
     "originalDefault": "Object"
+  },
+  "ffvbQm": {
+    "defaultMessage": "payment status update variable mapping",
+    "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
+    "originalDefault": "payment status update variable mapping"
   },
   "fpX4ei": {
     "defaultMessage": "Mapping expression language",
@@ -1959,6 +2074,11 @@
     "description": "No service fetch configuration configured yet message",
     "originalDefault": "(not configured yet)"
   },
+  "gDAZQ1": {
+    "defaultMessage": "Zds zaaktype status omschrijving",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeStatusOmschrijving' label",
+    "originalDefault": "Zds zaaktype status omschrijving"
+  },
   "gGNIdG": {
     "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
     "description": "literals.previousText help text",
@@ -1983,6 +2103,11 @@
     "defaultMessage": "App version",
     "description": "App version column header",
     "originalDefault": "App version"
+  },
+  "gtjPWc": {
+    "defaultMessage": "The name of the form variable to be mapped",
+    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' helpText",
+    "originalDefault": "The name of the form variable to be mapped"
   },
   "gz32s2": {
     "defaultMessage": "If desired, you can specify a different process variable name.",
@@ -2018,6 +2143,16 @@
     "defaultMessage": "Add registration backend",
     "description": "Button text to add registration backend",
     "originalDefault": "Add registration backend"
+  },
+  "hQ7xjd": {
+    "defaultMessage": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeStatusOmschrijving' helpText",
+    "originalDefault": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+  },
+  "hSvi+z": {
+    "defaultMessage": "Email content template text",
+    "description": "Email registration options 'emailContentTemplateText' label",
+    "originalDefault": "Email content template text"
   },
   "hWRRHx": {
     "defaultMessage": "Form design",
@@ -2179,6 +2314,11 @@
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
   },
+  "kWAxhF": {
+    "defaultMessage": "Subject of the email sent to the registration backend to notify a change in the payment status.",
+    "description": "Email registration options 'emailPaymentSubject' helpText",
+    "originalDefault": "Subject of the email sent to the registration backend to notify a change in the payment status."
+  },
   "klKZV5": {
     "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead.",
     "description": "Objects API registration: updateExistingObject helpText",
@@ -2269,6 +2409,11 @@
     "description": "Logic trigger heading",
     "originalDefault": "Trigger condition"
   },
+  "nNbK3G": {
+    "defaultMessage": "Email content template HTML",
+    "description": "Email registration options 'emailContentTemplateHtml' label",
+    "originalDefault": "Email content template HTML"
+  },
   "neCqv9": {
     "defaultMessage": "The registration result will be an object from the selected type.",
     "description": "Objects API registration options 'Objecttype' helpText",
@@ -2284,6 +2429,11 @@
     "description": "Form 'BRP Personen purpose limitation header value' field help text",
     "originalDefault": "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
   },
+  "o6Ju6l": {
+    "defaultMessage": "The email addresses to which the submission details will be sent",
+    "description": "Email registration options 'attachFilesToEmail' label",
+    "originalDefault": "The email addresses to which the submission details will be sent"
+  },
   "o8CfuS": {
     "defaultMessage": "String",
     "description": "JSON variable type \"string\" representation",
@@ -2293,6 +2443,11 @@
     "defaultMessage": "Save",
     "description": "Save service fetch configuration button label",
     "originalDefault": "Save"
+  },
+  "oVwrVo": {
+    "defaultMessage": "Attach files to email",
+    "description": "Email registration options 'attachFilesToEmail' label",
+    "originalDefault": "Attach files to email"
   },
   "oYmpN5": {
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
@@ -2358,6 +2513,11 @@
     "defaultMessage": "Form definition",
     "description": "Variable table form definition title",
     "originalDefault": "Form definition"
+  },
+  "ppZHsm": {
+    "defaultMessage": "Configure options",
+    "description": "Link label to open StUF-ZDS options modal",
+    "originalDefault": "Configure options"
   },
   "pqCru3": {
     "defaultMessage": "Fetch configuration:",
@@ -2463,6 +2623,11 @@
     "defaultMessage": "Whether to send a confirmation email to the end-user who submitted the form.",
     "description": "Help text of form field 'Send the confirmation email'",
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
+  },
+  "sNGN82": {
+    "defaultMessage": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit.",
+    "description": "Email registration options 'attachFilesToEmail' helpText",
+    "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
   },
   "sptpzv": {
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
@@ -2674,6 +2839,11 @@
     "description": "Identifier role (for mandate context) label for authorizee",
     "originalDefault": "Authorizee"
   },
+  "yJiaOl": {
+    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "description": "StUF-ZDS registration validation errors icon next to button",
+    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
+  },
   "yLt2lv": {
     "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
@@ -2703,6 +2873,11 @@
     "defaultMessage": "Action",
     "description": "Action column header",
     "originalDefault": "Action"
+  },
+  "z4zEf7": {
+    "defaultMessage": "Zds zaaktype omschrijving",
+    "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
+    "originalDefault": "Zds zaaktype omschrijving"
   },
   "zGMQ75": {
     "defaultMessage": "User defined",

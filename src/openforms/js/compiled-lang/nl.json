@@ -171,6 +171,12 @@
       "value": "Geef aan of deze waarde in de (bevestigings-)PDF moet getoond worden. Deze PDF wordt vaak ook als bijlage meegestuurd tijdens de registratie."
     }
   ],
+  "01mWK2": [
+    {
+      "type": 0,
+      "value": "The format(s) of the attachment(s) containing the submission details"
+    }
+  ],
   "0D+m56": [
     {
       "type": 0,
@@ -329,6 +335,12 @@
       "value": "RSIN van de organisatie die eigenaar is van de zaak en documenten en deze aanmaakt."
     }
   ],
+  "1z/bNS": [
+    {
+      "type": 0,
+      "value": "Zds zaaktype code"
+    }
+  ],
   "2/2h2C": [
     {
       "type": 0,
@@ -363,6 +375,12 @@
     {
       "type": 0,
       "value": "Getal (number)"
+    }
+  ],
+  "2P7mDI": [
+    {
+      "type": 0,
+      "value": "Content of the registration email message (as text)."
     }
   ],
   "2Z/hNo": [
@@ -471,6 +489,12 @@
     {
       "type": 0,
       "value": "Vraag verklaring invullen naar waarheid"
+    }
+  ],
+  "3baawY": [
+    {
+      "type": 0,
+      "value": "StUF-ZDS name"
     }
   ],
   "3h215E": [
@@ -869,6 +893,12 @@
       "value": "'Volgende' tekst"
     }
   ],
+  "7ZdEaP": [
+    {
+      "type": 0,
+      "value": "Documenttype description for newly created zaken in StUF-ZDS"
+    }
+  ],
   "7b9pD8": [
     {
       "type": 0,
@@ -891,6 +921,12 @@
     {
       "type": 0,
       "value": "Registratie"
+    }
+  ],
+  "7hc31v": [
+    {
+      "type": 0,
+      "value": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
     }
   ],
   "7qqbU9": [
@@ -919,6 +955,12 @@
     {
       "type": 0,
       "value": "Is herbruikbaar?"
+    }
+  ],
+  "8IItwi": [
+    {
+      "type": 0,
+      "value": "The name in StUF-ZDS to which the form variable should be mapped"
     }
   ],
   "8LLxRg": [
@@ -973,6 +1015,12 @@
     {
       "type": 0,
       "value": " in de eenvoudige logica."
+    }
+  ],
+  "8nY+h7": [
+    {
+      "type": 0,
+      "value": "Zaaktype description for newly created Zaken in StUF-ZDS"
     }
   ],
   "8pemD3": [
@@ -1051,6 +1099,12 @@
     {
       "type": 0,
       "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
+    }
+  ],
+  "9akVrT": [
+    {
+      "type": 0,
+      "value": "Zds documenttype omschrijving inzending"
     }
   ],
   "9bGp7h": [
@@ -1183,6 +1237,12 @@
     {
       "type": 0,
       "value": "Locatie"
+    }
+  ],
+  "B5RSyi": [
+    {
+      "type": 0,
+      "value": "Email payment subject"
     }
   ],
   "BCjZNo": [
@@ -1387,6 +1447,12 @@
     {
       "type": 0,
       "value": "Verwijderen"
+    }
+  ],
+  "CNJ2TT": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen."
     }
   ],
   "CRN74c": [
@@ -1784,6 +1850,12 @@
       "value": "Label"
     }
   ],
+  "FQ1JZc": [
+    {
+      "type": 0,
+      "value": "Zaaktype code for newly created Zaken in StUF-ZDS"
+    }
+  ],
   "FQswyM": [
     {
       "type": 0,
@@ -2090,6 +2162,12 @@
       "value": "Beslisdefinitie-ID"
     }
   ],
+  "Ihbi6N": [
+    {
+      "type": 0,
+      "value": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+    }
+  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -2368,6 +2446,12 @@
       "value": "Variabele toevoegen"
     }
   ],
+  "LeVpdf": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Email"
+    }
+  ],
   "LiXrER": [
     {
       "type": 0,
@@ -2640,6 +2724,12 @@
       "value": "Datumtijd (datetime)"
     }
   ],
+  "P4JMHA": [
+    {
+      "type": 0,
+      "value": "Zaaktype status code for newly created zaken in StUF-ZDS"
+    }
+  ],
   "PC7ICN": [
     {
       "type": 0,
@@ -2662,6 +2752,12 @@
     {
       "type": 0,
       "value": "Regel toevoegen"
+    }
+  ],
+  "PhN977": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: StUF-ZDS"
     }
   ],
   "PhXIai": [
@@ -2748,6 +2844,12 @@
     {
       "type": 0,
       "value": "Voorbeeld"
+    }
+  ],
+  "QljfI7": [
+    {
+      "type": 0,
+      "value": "Email subject"
     }
   ],
   "Qr2wnR": [
@@ -2846,6 +2948,12 @@
     {
       "type": 0,
       "value": "Je moet een datum opgeven."
+    }
+  ],
+  "RjWycp": [
+    {
+      "type": 0,
+      "value": "Form variable"
     }
   ],
   "Rk13i+": [
@@ -3318,6 +3426,12 @@
       "value": "Gevoelige gegevens"
     }
   ],
+  "Vu09Ne": [
+    {
+      "type": 0,
+      "value": "Zds zaaktype status omschrijving"
+    }
+  ],
   "VyA4fK": [
     {
       "type": 0,
@@ -3592,6 +3706,12 @@
     {
       "type": 0,
       "value": "Weet u zeker dat u dit wilt verwijderen?"
+    }
+  ],
+  "Z/wFhz": [
+    {
+      "type": 0,
+      "value": "Content of the registration email message (as html)."
     }
   ],
   "Z5lydZ": [
@@ -4275,6 +4395,12 @@
       "value": "Geavanceerde opties"
     }
   ],
+  "eO6MNT": [
+    {
+      "type": 0,
+      "value": "Zds zaaktype status code"
+    }
+  ],
   "eUowhH": [
     {
       "type": 0,
@@ -4321,6 +4447,12 @@
     {
       "type": 0,
       "value": "'Start' tekst"
+    }
+  ],
+  "f8lihY": [
+    {
+      "type": 0,
+      "value": "Subject of the email sent to the registration backend. You can use the expressions {{ form_name }} and {{ public_reference }} to include the form name and the reference number to the submission in the subject."
     }
   ],
   "f9Zr9D": [
@@ -4389,6 +4521,12 @@
       "value": "Geef een JsonLogic expressie voor de lijst van mogelijke opties. Evaluatie van de expressie moet een lijst teruggeven, waarbij elk element een lijst (array) is van [waarde, label] combinaties."
     }
   ],
+  "ffvbQm": [
+    {
+      "type": 0,
+      "value": "payment status update variable mapping"
+    }
+  ],
   "fhVFUY": [
     {
       "type": 0,
@@ -4437,6 +4575,12 @@
       "value": "Geef de knoptekst om een groep te verwijderen op."
     }
   ],
+  "gDAZQ1": [
+    {
+      "type": 0,
+      "value": "Zds zaaktype status omschrijving"
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -4473,6 +4617,12 @@
     {
       "type": 0,
       "value": "Applicatieversie"
+    }
+  ],
+  "gtjPWc": [
+    {
+      "type": 0,
+      "value": "The name of the form variable to be mapped"
     }
   ],
   "guySt0": [
@@ -4553,6 +4703,18 @@
     {
       "type": 0,
       "value": "Registratiepluginoptie toevoegen"
+    }
+  ],
+  "hQ7xjd": [
+    {
+      "type": 0,
+      "value": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+    }
+  ],
+  "hSvi+z": [
+    {
+      "type": 0,
+      "value": "Email content template text"
     }
   ],
   "hWRRHx": [
@@ -4853,6 +5015,12 @@
       "value": "uitgeschakeld"
     }
   ],
+  "kWAxhF": [
+    {
+      "type": 0,
+      "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
+    }
+  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -5079,6 +5247,12 @@
       "value": "Triggervoorwaarde"
     }
   ],
+  "nNbK3G": [
+    {
+      "type": 0,
+      "value": "Email content template HTML"
+    }
+  ],
   "nSRkSW": [
     {
       "type": 0,
@@ -5121,6 +5295,12 @@
       "value": "Inclusief kinderen"
     }
   ],
+  "o6Ju6l": [
+    {
+      "type": 0,
+      "value": "The email addresses to which the submission details will be sent"
+    }
+  ],
   "o83CBr": [
     {
       "type": 0,
@@ -5143,6 +5323,12 @@
     {
       "type": 0,
       "value": "Minimaal aantal aangevinkte opties (bijv. 1)"
+    }
+  ],
+  "oVwrVo": [
+    {
+      "type": 0,
+      "value": "Attach files to email"
     }
   ],
   "oWJX5K": [
@@ -5323,6 +5509,12 @@
       "value": "Formulierdefinitie"
     }
   ],
+  "ppZHsm": [
+    {
+      "type": 0,
+      "value": "Configure options"
+    }
+  ],
   "pq7q6N": [
     {
       "type": 0,
@@ -5477,6 +5669,12 @@
     {
       "type": 0,
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
+    }
+  ],
+  "sNGN82": [
+    {
+      "type": 0,
+      "value": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
     }
   ],
   "sR9GVQ": [
@@ -5951,6 +6149,40 @@
       "value": "Gemachtigde"
     }
   ],
+  "yJiaOl": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
+    }
+  ],
   "yL9Ql7": [
     {
       "type": 0,
@@ -6027,6 +6259,12 @@
     {
       "type": 0,
       "value": "Waarde in decimale graden, tussen -180 en +180."
+    }
+  ],
+  "z4zEf7": [
+    {
+      "type": 0,
+      "value": "Zds zaaktype omschrijving"
     }
   ],
   "z7HXSS": [
