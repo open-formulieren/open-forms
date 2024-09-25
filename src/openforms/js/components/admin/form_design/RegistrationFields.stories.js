@@ -57,6 +57,114 @@ export default {
         },
       },
       {
+        id: 'stuf-zds-create-zaak',
+        label: 'StUF-ZDS',
+        // real schema is defined, but irrelevant because of our react components
+        schema: {
+          type: 'object',
+          properties: {
+            zdsZaaktypeCode: {
+              type: 'string',
+              minLength: 1,
+              title: 'Zds zaaktype code',
+              description: 'Zaaktype code for newly created Zaken in StUF-ZDS',
+            },
+            zdsZaaktypeOmschrijving: {
+              type: 'string',
+              minLength: 1,
+              title: 'Zds zaaktype omschrijving',
+              description: 'Zaaktype description for newly created Zaken in StUF-ZDS',
+            },
+            zdsZaaktypeStatusCode: {
+              type: 'string',
+              minLength: 1,
+              title: 'Zds zaaktype status code',
+              description: 'Zaaktype status code for newly created zaken in StUF-ZDS',
+            },
+            zdsZaaktypeStatusOmschrijving: {
+              type: 'string',
+              minLength: 1,
+              title: 'Zds zaaktype status omschrijving',
+              description: 'Zaaktype status omschrijving for newly created zaken in StUF-ZDS',
+            },
+            zdsDocumenttypeOmschrijvingInzending: {
+              type: 'string',
+              minLength: 1,
+              title: 'Zds documenttype omschrijving inzending',
+              description: 'Documenttype description for newly created zaken in StUF-ZDS',
+            },
+            zdsZaakdocVertrouwelijkheid: {
+              type: 'string',
+              enum: [
+                'ZEER GEHEIM',
+                'GEHEIM',
+                'CONFIDENTIEEL',
+                'VERTROUWELIJK',
+                'ZAAKVERTROUWELIJK',
+                'INTERN',
+                'BEPERKT OPENBAAR',
+                'OPENBAAR',
+              ],
+              enumNames: [
+                'Zeer geheim',
+                'Geheim',
+                'Confidentieel',
+                'Vertrouwelijk',
+                'Zaakvertrouwelijk',
+                'Intern',
+                'Beperkt openbaar',
+                'Openbaar',
+              ],
+              title: 'Document confidentiality level',
+              description:
+                'Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.',
+            },
+            paymentStatusUpdateMapping: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  formVariable: {
+                    type: 'string',
+                    minLength: 1,
+                    title: 'Form variable',
+                    description: 'The name of the form variable to be mapped',
+                  },
+                  stufName: {
+                    type: 'string',
+                    minLength: 1,
+                    title: 'StUF-ZDS name',
+                    description: 'The name in StUF-ZDS to which the form variable should be mapped',
+                  },
+                },
+                required: ['formVariable', 'stufName'],
+              },
+              title: 'payment status update variable mapping',
+              description:
+                'This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen.',
+              default: [
+                {
+                  formVariable: 'payment_completed',
+                  stufName: 'payment_completed',
+                },
+                {
+                  formVariable: 'payment_amount',
+                  stufName: 'payment_amount',
+                },
+                {
+                  formVariable: 'payment_public_order_ids',
+                  stufName: 'payment_public_order_ids',
+                },
+                {
+                  formVariable: 'provider_payment_ids',
+                  stufName: 'provider_payment_ids',
+                },
+              ],
+            },
+          },
+        },
+      },
+      {
         id: 'email',
         label: 'Email registration',
         schema: {
@@ -282,6 +390,37 @@ export const ConfiguredBackends = {
         options: {
           driveId: '',
           folderPath: '',
+        },
+      },
+      {
+        key: 'backend6',
+        name: 'StUF ZDS',
+        backend: 'stuf-zds-create-zaak',
+        options: {
+          paymentStatusUpdateMapping: [
+            {
+              formVariable: 'payment_completed',
+              stufName: 'payment_completed',
+            },
+            {
+              formVariable: 'payment_amount',
+              stufName: 'payment_amount',
+            },
+            {
+              formVariable: 'payment_public_order_ids',
+              stufName: 'payment_public_order_ids',
+            },
+            {
+              formVariable: 'provider_payment_ids',
+              stufName: 'provider_payment_ids',
+            },
+          ],
+          zdsDocumenttypeOmschrijvingInzending: '',
+          zdsZaakdocVertrouwelijkheid: 'OPENBAAR',
+          zdsZaaktypeCode: '',
+          zdsZaaktypeOmschrijving: '',
+          zdsZaaktypeStatusCode: '',
+          zdsZaaktypeStatusOmschrijving: '',
         },
       },
     ],
