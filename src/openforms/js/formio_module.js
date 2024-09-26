@@ -18,6 +18,7 @@ import IbanField from './components/form/iban';
 import LicensePlate from './components/form/licenseplate';
 import Map from './components/form/map';
 import NpFamilyMembers from './components/form/np-family-members';
+import ProductPrice from './components/form/productPrice';
 import NumberField from './components/form/number';
 import PasswordField from './components/form/password';
 import PhoneNumberField from './components/form/phoneNumber';
@@ -59,6 +60,7 @@ const FormIOModule = {
     coSign: CoSignFieldOld,
     cosign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
+    productPrice: ProductPrice,
     columns: ColumnField,
     content: ContentField,
     currency: CurrencyField,

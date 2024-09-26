@@ -85,6 +85,7 @@ def _move_translations(component: Component, locale: str, translations: dict[str
             | "bsn"
             | "addressNL"
             | "npFamilyMembers"
+            | "productPrice"
             | "cosign"
             | "map"
             | "postcode"
