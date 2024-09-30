@@ -1,10 +1,12 @@
 .form-row {
-  // bootstrap styles compete with django .form-row styles...
-  display: block !important;
-
   > div > .flex-container > label {
     box-sizing: initial;
   }
+}
+
+// bootstrap styles compete with django .form-row styles...
+.model-formdefinition .form-row > .errorlist {
+  width: 100%;
 }
 
 div:has(> .help):not(:has(> .fieldBox)) {
