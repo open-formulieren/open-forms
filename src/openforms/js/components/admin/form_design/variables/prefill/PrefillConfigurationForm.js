@@ -13,12 +13,14 @@ import FormRow from 'components/admin/forms/FormRow';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import VariableMapping from 'components/admin/forms/VariableMapping';
+import {
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+} from 'components/admin/forms/objects_api';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import ObjectTypeSelect from '../../registrations/objectsapi/fields/ObjectTypeSelect';
-import ObjectTypeVersionSelect from '../../registrations/objectsapi/fields/ObjectTypeVersionSelect';
-import ObjectsAPIGroup from '../../registrations/objectsapi/fields/ObjectsAPIGroup';
 import {IDENTIFIER_ROLE_CHOICES} from '../constants';
 
 const PrefillConfigurationForm = ({

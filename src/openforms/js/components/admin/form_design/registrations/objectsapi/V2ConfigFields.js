@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
+import {
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+} from 'components/admin/forms/objects_api';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
-  ObjectTypeSelect,
-  ObjectTypeVersionSelect,
-  ObjectsAPIGroup,
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,

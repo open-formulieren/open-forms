@@ -6,14 +6,16 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+} from 'components/admin/forms/objects_api';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
-  ObjectTypeSelect,
-  ObjectTypeVersionSelect,
-  ObjectsAPIGroup,
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,
