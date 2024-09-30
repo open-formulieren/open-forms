@@ -12,6 +12,20 @@ import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
 import {detectMappingProblems} from '../form_design/logic/actions/dmn/utils';
 
+const containsElement = (arr, value) => {
+  // If value is a string, use simple includes
+  if (typeof value === 'string') {
+    return arr.includes(value);
+  }
+
+  // If value is an array, use some() with a deep comparison
+  if (Array.isArray(value)) {
+    return arr.some(innerArray => JSON.stringify(innerArray) === JSON.stringify(value));
+  }
+
+  return false;
+};
+
 const VariableMappingRow = ({
   loading,
   prefix,
@@ -32,7 +46,9 @@ const VariableMappingRow = ({
   const fullTargetName = `${prefix}.${targetsFieldName}`;
   const targetsProps = getFieldProps(fullTargetName);
   const targetsChoices = targets.filter(
-    ([value]) => value === targetsProps.value || !alreadyMapped.includes(value)
+    ([value]) =>
+      JSON.stringify(value) === JSON.stringify(targetsProps.value) ||
+      !containsElement(alreadyMapped, value)
   );
 
   const mapping = getFieldProps(prefix).value;

@@ -242,6 +242,15 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
   if (error) throw error;
   const prefillProperties = loading ? LOADING_OPTION : value;
 
+  // Because the prefillProperties are converted to comma separated values by the select,
+  // make sure they are converted back into lists
+  values.prefillOptions.variablesMapping = values.prefillOptions.variablesMapping.map(mapping => {
+    if (typeof mapping.prefillProperty === 'string') {
+      mapping.prefillProperty = mapping.prefillProperty.split(',');
+    }
+    return mapping;
+  });
+
   return (
     <>
       <Fieldset>
