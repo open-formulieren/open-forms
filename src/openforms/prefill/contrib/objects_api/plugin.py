@@ -8,6 +8,7 @@ from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIConfig,
     ObjectsAPIGroupConfig,
 )
+from openforms.typing import JSONObject
 
 from ...base import BasePlugin
 from ...registry import register
@@ -41,10 +42,11 @@ class ObjectsAPIPrefill(BasePlugin):
             ),
         ]
 
-    @property
-    def extra_data(self):
+    @classmethod
+    def configuration_context(cls) -> JSONObject | None:
         return {
             "api_groups": [
-                (group.pk, group.name) for group in ObjectsAPIGroupConfig.objects.all()
+                [group.pk, group.name]
+                for group in ObjectsAPIGroupConfig.objects.iterator()
             ]
         }

@@ -1,5 +1,4 @@
 import {useField, useFormikContext} from 'formik';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {usePrevious, useUpdateEffect} from 'react-use';
@@ -27,9 +26,10 @@ const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
   const {
     values,
     setFieldValue,
+    getFieldProps,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
-  const objectsApiGroup = _.get(values, `${namePrefix}objectsApiGroup`, null);
+  const objectsApiGroup = getFieldProps(`${namePrefix}objectsApiGroup`).value ?? null;
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
 

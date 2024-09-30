@@ -19,11 +19,14 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck, prefix = undefined}) =
   // reset the objecttype specific-configuration whenever the API group changes
   useUpdateEffect(() => {
     setValues(prevValues => {
-      const newValues = {...prevValues};
-      _.set(newValues, `${namePrefix}objecttype`, '');
-      _.set(newValues, `${namePrefix}objecttypeVersion`, undefined);
-      _.set(newValues, `${namePrefix}variablesMapping`, []);
-      return newValues;
+      const targetObject = prefix ? prevValues[prefix] : prevValues;
+      const newObject = {
+        ...targetObject,
+        objecttype: '',
+        objecttypeVersion: undefined,
+        variablesMapping: [],
+      };
+      return prefix ? {...prevValues, [prefix]: newObject} : newObject;
     });
   }, [setValues, value]);
 

@@ -12,10 +12,10 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import VariableMapping from 'components/admin/forms/VariableMapping';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import VariableMapping from '../../logic/actions/dmn/VariableMapping';
 import ObjectTypeSelect from '../../registrations/objectsapi/fields/ObjectTypeSelect';
 import ObjectTypeVersionSelect from '../../registrations/objectsapi/fields/ObjectTypeVersionSelect';
 import ObjectsAPIGroup from '../../registrations/objectsapi/fields/ObjectsAPIGroup';
@@ -49,24 +49,24 @@ const PrefillConfigurationForm = ({
         actions.setSubmitting(false);
       }}
     >
-      {({handleSubmit, values}) => (
-        <>
-          {values.plugin === 'objects_api' ? (
-            <ObjectsAPIPrefillFields values={values} errors={errors} />
-          ) : (
-            <PrefillFields values={values} errors={errors} />
-          )}
+      {({handleSubmit, values}) => {
+        const PluginFormComponent =
+          PLUGIN_COMPONENT_MAPPING[values.plugin] || PLUGIN_COMPONENT_MAPPING.default;
+        return (
+          <>
+            {<PluginFormComponent values={values} errors={errors} />}
 
-          <SubmitRow>
-            <SubmitAction
-              onClick={event => {
-                event.preventDefault();
-                handleSubmit(event);
-              }}
-            />
-          </SubmitRow>
-        </>
-      )}
+            <SubmitRow>
+              <SubmitAction
+                onClick={event => {
+                  event.preventDefault();
+                  handleSubmit(event);
+                }}
+              />
+            </SubmitRow>
+          </>
+        );
+      }}
     </Formik>
   );
 };
@@ -211,16 +211,16 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
   const {setFieldValue} = useFormikContext();
   const objectsPlugin = availablePrefillPlugins.find(elem => elem.id === 'objects_api');
 
-  const apiGroups = objectsPlugin.extraData.apiGroups;
+  const apiGroups = objectsPlugin.configurationContext.apiGroups;
 
-  const prefillAttributeLabel = intl.formatMessage({
-    description: 'Accessible label for prefill attribute dropdown',
-    defaultMessage: 'Prefill attribute',
+  const prefillPropertyLabel = intl.formatMessage({
+    description: 'Accessible label for prefill property dropdown',
+    defaultMessage: 'Prefill property',
   });
 
   const {objecttype, objecttypeVersion, objectsApiGroup} = values.prefillOptions;
 
-  // Load the possible prefill attributes
+  // Load the possible prefill properties
   // XXX: this would benefit from client-side caching
   const {
     loading,
@@ -235,12 +235,12 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
     const response = await get(`${endpoint}?${params.toString()}`);
     if (!response.ok) throw response.data;
 
-    return response.data.map(attribute => [attribute.targetPath, attribute.targetPath.join(' > ')]);
+    return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
   }, [plugin, objecttype, objecttypeVersion, objectsApiGroup]);
 
   // throw errors to the nearest error boundary
   if (error) throw error;
-  const prefillAttributes = loading ? LOADING_OPTION : value;
+  const prefillProperties = loading ? LOADING_OPTION : value;
 
   return (
     <>
@@ -331,19 +331,23 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           <VariableMapping
             loading={false}
             mappingName="prefillOptions.variablesMapping"
-            targets={prefillAttributes}
-            targetsFieldName="prefillAttribute"
-            targetsColumnLabel={prefillAttributeLabel}
-            selectAriaLabel={prefillAttributeLabel}
-            cssBlockName="objects-prefill"
+            targets={prefillProperties}
+            targetsFieldName="prefillProperty"
+            targetsColumnLabel={prefillPropertyLabel}
+            selectAriaLabel={prefillPropertyLabel}
             alreadyMapped={values.prefillOptions.variablesMapping.map(
-              mapping => mapping.prefillAttribute
+              mapping => mapping.prefillProperty
             )}
           />
         </FormRow>
       </Fieldset>
     </>
   );
+};
+
+const PLUGIN_COMPONENT_MAPPING = {
+  objects_api: ObjectsAPIPrefillFields,
+  default: PrefillFields,
 };
 
 export default PrefillConfigurationForm;

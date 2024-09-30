@@ -6,10 +6,10 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
+import VariableMapping from 'components/admin/forms/VariableMapping';
 import {get} from 'utils/fetch';
 
 import InputsOverview from './InputsOverview';
-import VariableMapping from './VariableMapping';
 import {namePattern} from './utils';
 
 const EMPTY_DMN_PARAMS = {
@@ -196,7 +196,6 @@ const DMNParametersForm = () => {
             targetsFieldName="dmnVariable"
             targetsColumnLabel={dmnVariableColumnLabel}
             selectAriaLabel={dmnVariableSelectAriaLabel}
-            cssBlockName="logic-dmn"
             alreadyMapped={inputMapping.map(mapping => mapping.dmnVariable)}
             includeStaticVariables
           />
@@ -213,7 +212,6 @@ const DMNParametersForm = () => {
             targetsFieldName="dmnVariable"
             targetsColumnLabel={dmnVariableColumnLabel}
             selectAriaLabel={dmnVariableSelectAriaLabel}
-            cssBlockName="logic-dmn"
             alreadyMapped={outputMapping.map(mapping => mapping.dmnVariable)}
           />
         </div>

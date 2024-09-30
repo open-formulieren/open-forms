@@ -112,19 +112,19 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": AuthAttribute.bsn,
-                "extraData": None,
+                "configurationContext": None,
             },
             {
                 "id": "onlyvars",
                 "label": "Only Vars",
                 "requiresAuth": AuthAttribute.bsn,
-                "extraData": None,
+                "configurationContext": None,
             },
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": AuthAttribute.bsn,
-                "extraData": None,
+                "configurationContext": None,
             },
         ]
 
@@ -142,14 +142,14 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": AuthAttribute.bsn,
-                "extraData": None,
+                "configurationContext": None,
             },
             # spec'd for licenseplate
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
                 "requiresAuth": AuthAttribute.bsn,
-                "extraData": None,
+                "configurationContext": None,
             },
         ]
 

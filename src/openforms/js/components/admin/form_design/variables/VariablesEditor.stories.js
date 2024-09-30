@@ -1,7 +1,7 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
 
 import {
-  mockObjectsAPIPrefillAttributesGet,
+  mockObjectsAPIPrefillPropertiesGet,
   mockPrefillAttributesGet,
 } from 'components/admin/form_design/mocks';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
@@ -81,7 +81,7 @@ const VARIABLES = [
       objectsApiGroup: 1,
       objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
-      variablesMapping: [{formVariable: 'formioComponent', prefillAttribute: 'firstName'}],
+      variablesMapping: [{formVariable: 'formioComponent', prefillProperty: 'firstName'}],
     },
   },
 ];
@@ -91,7 +91,6 @@ export default {
   component: VariablesEditor,
   decorators: [FormDecorator],
   args: {
-    // TODO are both needed?
     variables: VARIABLES,
     availableFormVariables: VARIABLES,
     availableStaticVariables: [
@@ -133,7 +132,7 @@ export default {
       {
         id: 'objects_api',
         label: 'Objects API',
-        extraData: {
+        configurationContext: {
           apiGroups: [
             [1, 'Objects API group 1'],
             [2, 'Objects API group 2'],
@@ -166,7 +165,7 @@ export default {
               {id: 'age', label: 'Age'},
             ],
           }),
-          mockObjectsAPIPrefillAttributesGet({
+          mockObjectsAPIPrefillPropertiesGet({
             '2c77babf-a967-4057-9969-0200320d23f2': {
               1: [
                 {
@@ -610,9 +609,9 @@ export const ConfigurePrefillObjectsAPI = {
 
     // Wait until the API call to retrieve the prefillAttributes is done
     await waitFor(async () => {
-      const prefillAttributeSelect = await screen.findByLabelText('Prefill attribute');
-      expect(prefillAttributeSelect).toBeVisible();
-      await expect(prefillAttributeSelect.value).toBe('firstName');
+      const prefillPropertySelect = await screen.findByLabelText('Prefill property');
+      expect(prefillPropertySelect).toBeVisible();
+      expect(prefillPropertySelect).toHaveValue('firstName');
     });
   },
 };

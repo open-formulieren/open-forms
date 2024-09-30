@@ -10,7 +10,7 @@ import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
-import {detectMappingProblems} from './utils';
+import {detectMappingProblems} from '../form_design/logic/actions/dmn/utils';
 
 const VariableMappingRow = ({
   loading,
@@ -29,8 +29,8 @@ const VariableMappingRow = ({
     description: 'Confirmation message to remove a mapping',
     defaultMessage: 'Are you sure that you want to remove this mapping?',
   });
-
-  const targetsProps = getFieldProps(`${prefix}.${targetsFieldName}`);
+  const fullTargetName = `${prefix}.${targetsFieldName}`;
+  const targetsProps = getFieldProps(fullTargetName);
   const targetsChoices = targets.filter(
     ([value]) => value === targetsProps.value || !alreadyMapped.includes(value)
   );
@@ -53,9 +53,9 @@ const VariableMappingRow = ({
         </Field>
       </td>
       <td>
-        <Field htmlFor={`${prefix}.${targetsFieldName}`} name={`${prefix}.${targetsFieldName}`}>
+        <Field htmlFor={fullTargetName} name={fullTargetName}>
           <Select
-            id={`${prefix}.${targetsFieldName}`}
+            id={fullTargetName}
             allowBlank
             disabled={loading}
             choices={targetsChoices}
@@ -90,7 +90,6 @@ const VariableMapping = ({
   targetsFieldName,
   targetsColumnLabel,
   selectAriaLabel,
-  cssBlockName,
   includeStaticVariables = false,
   alreadyMapped = [],
 }) => {
@@ -100,7 +99,7 @@ const VariableMapping = ({
     <FieldArray
       name={mappingName}
       render={arrayHelpers => (
-        <div className={`${cssBlockName}__mapping-table`}>
+        <div className={'mapping-table'}>
           <table>
             <thead>
               <tr>
@@ -132,9 +131,9 @@ const VariableMapping = ({
           </table>
           <ButtonContainer
             onClick={() => {
-              const initial = {formVariable: ''};
-              initial[targetsFieldName] = '';
-              arrayHelpers.insert(get(values, mappingName).length, initial);
+              const initial = {formVariable: '', [targetsFieldName]: ''};
+              const mapping = get(values, mappingName);
+              arrayHelpers.insert(mapping.length, initial);
             }}
           >
             <FormattedMessage description="Add variable button" defaultMessage="Add variable" />
@@ -153,7 +152,6 @@ VariableMapping.propTypes = {
   targetsFieldName: PropTypes.string,
   targetsColumnLabel: PropTypes.string.isRequired,
   selectAriaLabel: PropTypes.string.isRequired,
-  cssBlockName: PropTypes.string,
   alreadyMapped: PropTypes.arrayOf(PropTypes.string),
 };
 

@@ -1,0 +1,8 @@
+@use 'microscope-sass/lib/bem';
+
+.mapping-table {
+  @include bem.modifier('stretch') {
+    table-layout: fixed;
+    inline-size: 100%;
+  }
+}
