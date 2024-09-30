@@ -20,16 +20,20 @@ const getAvailableObjectTypes = async apiGroupID => {
   return response.data;
 };
 
-const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
-  const namePrefix = prefix ? `${prefix}.` : '';
-  const [fieldProps, , fieldHelpers] = useField(`${namePrefix}objecttype`);
+const ObjectTypeSelect = ({
+  onChangeCheck,
+  objectTypeName = 'objecttype',
+  objectTypeVersionName = 'objecttypeVersion',
+  apiGroupName = 'objectsApiGroup',
+}) => {
+  const [fieldProps, , fieldHelpers] = useField(objectTypeName);
   const {
     values,
     setFieldValue,
     getFieldProps,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
-  const objectsApiGroup = getFieldProps(`${namePrefix}objectsApiGroup`).value ?? null;
+  const objectsApiGroup = getFieldProps(apiGroupName).value ?? null;
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
 
@@ -51,7 +55,7 @@ const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
       ]);
   const options = choices.map(([value, label]) => ({value, label}));
 
-  useSynchronizeSelect(`${namePrefix}objecttype`, loading, choices);
+  useSynchronizeSelect(objectTypeName, loading, choices);
 
   const previousValue = usePrevious(value);
 
@@ -59,13 +63,13 @@ const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
   useUpdateEffect(() => {
     if (loading) return;
     if (value === initialObjecttype || value === previousValue) return;
-    setFieldValue(`${namePrefix}objecttypeVersion`, undefined); // clears the value
+    setFieldValue(objectTypeVersionName, undefined); // clears the value
   }, [loading, value]);
 
   return (
     <FormRow>
       <Field
-        name={`${namePrefix}objecttype`}
+        name={objectTypeName}
         required
         label={
           <FormattedMessage
@@ -82,7 +86,7 @@ const ObjectTypeSelect = ({onChangeCheck, prefix = undefined}) => {
         noManageChildProps
       >
         <ReactSelect
-          name={`${namePrefix}objecttype`}
+          name={objectTypeName}
           options={options}
           isLoading={loading}
           isDisabled={!objectsApiGroup}

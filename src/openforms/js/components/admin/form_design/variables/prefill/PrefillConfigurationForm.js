@@ -274,7 +274,8 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
         {/* TODO copied from V2ConfigFields, should probably be reused */}
         <ObjectsAPIGroup
           prefix="prefillOptions"
-          errors={errors['prefillOptions.apiGroup']}
+          apiGroupName="prefillOptions.objectsApiGroup"
+          errors={errors['prefillOptions.objectsApiGroup']}
           apiGroupChoices={apiGroups}
           onChangeCheck={() => {
             if (values.prefillOptions.variablesMapping.length === 0) return true;
@@ -300,7 +301,9 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           }
         >
           <ObjectTypeSelect
-            prefix="prefillOptions"
+            objectTypeName="prefillOptions.objecttype"
+            objectTypeVersionName="prefillOptions.objecttypeVersion"
+            apiGroupName="prefillOptions.objectsApiGroup"
             onChangeCheck={() => {
               if (values.prefillOptions.variablesMapping.length === 0) return true;
               const confirmSwitch = window.confirm(
@@ -326,7 +329,11 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
             />
           }
         >
-          <ObjectTypeVersionSelect prefix="prefillOptions" />
+          <ObjectTypeVersionSelect
+            objectTypeName="prefillOptions.objecttype"
+            objectTypeVersionName="prefillOptions.objecttypeVersion"
+            apiGroupName="prefillOptions.objectsApiGroup"
+          />
         </ErrorBoundary>
       </Fieldset>
 

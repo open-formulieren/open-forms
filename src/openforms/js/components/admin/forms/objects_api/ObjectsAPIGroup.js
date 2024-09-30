@@ -8,11 +8,13 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck, prefix = undefined}) => {
-  const namePrefix = prefix ? `${prefix}.` : '';
-  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(
-    `${namePrefix}objectsApiGroup`
-  );
+const ObjectsAPIGroup = ({
+  apiGroupChoices,
+  onChangeCheck,
+  apiGroupName = 'objectsApiGroup',
+  prefix = undefined,
+}) => {
+  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(apiGroupName);
   const {setValues} = useFormikContext();
   const {value} = fieldProps;
 
@@ -34,7 +36,7 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck, prefix = undefined}) =
   return (
     <FormRow>
       <Field
-        name={`${namePrefix}objectsApiGroup`}
+        name={apiGroupName}
         required
         label={
           <FormattedMessage
@@ -51,7 +53,7 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck, prefix = undefined}) =
         noManageChildProps
       >
         <ReactSelect
-          name={`${namePrefix}objectsApiGroup`}
+          name={apiGroupName}
           options={options}
           required
           onChange={selectedOption => {
