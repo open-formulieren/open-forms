@@ -1,0 +1,16 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import VariableMapping from './VariableMapping';
+import * as VariableMappingStories from './VariableMapping.stories';
+
+<Meta of={VariableMappingStories} />
+
+# Variable selection dropdown
+
+Widget to map form variables to (configurable) targets
+
+<Canvas of={VariableMappingStories.Default} />
+
+### Props
+
+<ArgTypes of={VariableMapping} />
