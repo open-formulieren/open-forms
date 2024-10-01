@@ -428,6 +428,11 @@
     "description": "Objects API registration options: warning message when changing the object type",
     "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
   },
+  "9aLRWy": {
+    "defaultMessage": "Prefill property",
+    "description": "Accessible label for prefill property dropdown",
+    "originalDefault": "Prefill property"
+  },
   "9bGp7h": {
     "defaultMessage": "Actief",
     "description": "Form active field label",
@@ -573,11 +578,6 @@
     "defaultMessage": "Vink aan om deze variabele te koppelen aan het {geometryPath}-attribuut.",
     "description": "'Map to geometry field' checkbox help text",
     "originalDefault": "Whether to map this variable to the {geometryPath} attribute"
-  },
-  "CGTS1p": {
-    "defaultMessage": "Prefill attribute",
-    "description": "Accessible label for prefill attribute dropdown",
-    "originalDefault": "Prefill attribute"
   },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",

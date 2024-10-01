@@ -1053,6 +1053,12 @@
       "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
+  "9aLRWy": [
+    {
+      "type": 0,
+      "value": "Prefill property"
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -1381,12 +1387,6 @@
     {
       "type": 0,
       "value": "-attribuut."
-    }
-  ],
-  "CGTS1p": [
-    {
-      "type": 0,
-      "value": "Prefill attribute"
     }
   ],
   "CN9j+L": [
