@@ -1,19 +1,85 @@
 from collections import defaultdict
 
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from openforms.api.fields import RelatedFieldFromContext
+from openforms.api.fields import (
+    PrimaryKeyRelatedAsChoicesField,
+    RelatedFieldFromContext,
+)
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import get_static_variables
 
 from ...models import Form, FormDefinition, FormVariable
+
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            name="Variable mapping example",
+            value={
+                "variable_key": "a_component_variable",
+                "target_path": ["path", "to.the", "target"],
+            },
+        )
+    ]
+)
+class ObjecttypeVariableMappingSerializer(serializers.Serializer):
+    """A mapping between a form variable key and the corresponding Objecttype attribute."""
+
+    variable_key = FormioVariableKeyField(
+        label=_("variable key"),
+        help_text=_(
+            "The 'dotted' path to a form variable key. The format should comply to how Formio handles nested component keys."
+        ),
+    )
+    target_path = serializers.ListField(
+        child=serializers.CharField(label=_("Segment of a JSON path")),
+        label=_("target path"),
+        help_text=_(
+            "Representation of the JSON target location as a list of string segments."
+        ),
+    )
+
+
+class FormVariableOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.exclude(
+            Q(objects_service=None)
+            | Q(objecttypes_service=None)
+            | Q(drc_service=None)
+            | Q(catalogi_service=None)
+        ),
+        label=("Objects API group"),
+        required=False,
+        help_text=_("Which Objects API group to use."),
+    )
+    objecttype_uuid = serializers.UUIDField(
+        label=_("objecttype"),
+        required=False,
+        help_text=_("UUID of the objecttype in the Objecttypes API. "),
+    )
+    objecttype_version = serializers.IntegerField(
+        label=_("objecttype version"),
+        required=False,
+        help_text=_("Version of the objecttype in the Objecttypes API."),
+    )
+    variables_mapping = ObjecttypeVariableMappingSerializer(
+        label=_("variables mapping"),
+        many=True,
+        required=False,
+    )
 
 
 class FormVariableListSerializer(ListWithChildSerializer):
@@ -110,6 +176,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
     service_fetch_configuration = ServiceFetchConfigurationSerializer(
         required=False, allow_null=True
     )
+    prefill_options = FormVariableOptionsSerializer(required=False)
 
     class Meta:
         model = FormVariable
@@ -124,6 +191,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "prefill_plugin",
             "prefill_attribute",
             "prefill_identifier_role",
+            "prefill_options",
             "data_type",
             "data_format",
             "is_sensitive_data",
@@ -177,18 +245,37 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                     }
                 )
 
-        # prefill plugin and attribute must both or both not be set
+        # Check the combination of the provided prefill-attributes (see the model constraints)
+        source = attrs.get("source") or ""
         prefill_plugin = attrs.get("prefill_plugin") or ""
         prefill_attribute = attrs.get("prefill_attribute") or ""
-        if (prefill_plugin and not prefill_attribute) or (
-            not prefill_plugin and prefill_attribute
-        ):
+        prefill_options = attrs.get("prefill_options")
+
+        if prefill_plugin and prefill_options and prefill_attribute:
             raise ValidationError(
                 {
-                    "prefill_attribute": _(
-                        "Prefill plugin and attribute must both be specified."
+                    "prefill_attribute_options": _(
+                        "Prefill plugin, attribute and options can not be specified at the same time."
                     ),
                 }
             )
+
+        if source == FormVariableSources.component:
+            if prefill_options:
+                raise ValidationError(
+                    {
+                        "component_prefill_attribute": _(
+                            "Prefill options should not be specified for component variables."
+                        ),
+                    }
+                )
+            if not prefill_plugin and prefill_attribute:
+                raise ValidationError(
+                    {
+                        "component_prefill_attribute": _(
+                            "Prefill attribute cannot be specified without prefill plugin for component variables."
+                        ),
+                    }
+                )
 
         return attrs

@@ -8554,6 +8554,8 @@ components:
 
             * `main` - Main
             * `authorizee` - Authorizee
+        prefillOptions:
+          $ref: '#/components/schemas/FormVariableOptions'
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'
@@ -8585,6 +8587,24 @@ components:
       - key
       - name
       - source
+    FormVariableOptions:
+      type: object
+      properties:
+        objectsApiGroup:
+          type: integer
+          description: Which Objects API group to use.
+        objecttypeUuid:
+          type: string
+          format: uuid
+          title: objecttype
+          description: 'UUID of the objecttype in the Objecttypes API. '
+        objecttypeVersion:
+          type: integer
+          description: Version of the objecttype in the Objecttypes API.
+        variablesMapping:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjecttypeVariableMapping'
     FormVersion:
       type: object
       properties:
@@ -9138,6 +9158,26 @@ components:
       - namePlural
       - url
       - uuid
+    ObjecttypeVariableMapping:
+      type: object
+      description: A mapping between a form variable key and the corresponding Objecttype
+        attribute.
+      properties:
+        variableKey:
+          type: string
+          description: The 'dotted' path to a form variable key. The format should
+            comply to how Formio handles nested component keys.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        targetPath:
+          type: array
+          items:
+            type: string
+            title: Segment of a JSON path
+          description: Representation of the JSON target location as a list of string
+            segments.
+      required:
+      - targetPath
+      - variableKey
     ObjecttypeVersion:
       type: object
       properties:
