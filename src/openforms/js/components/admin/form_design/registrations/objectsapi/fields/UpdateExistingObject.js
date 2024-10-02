@@ -1,11 +1,20 @@
 import {useField} from 'formik';
+import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 
 const UpdateExistingObject = () => {
   const [fieldProps] = useField({name: 'updateExistingObject', type: 'checkbox'});
+  const {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION = false} =
+    useContext(FeatureFlagsContext);
+
+  if (!REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION) {
+    return null;
+  }
+
   return (
     <FormRow>
       <Checkbox
