@@ -46,3 +46,14 @@ Configuration
 8. Save the form
 
 The Objects API configuration is now complete.
+
+.. note::
+
+   The Objects API prefill can be used not only for prefilling and showing the data to the user,
+   but it can also work together with the Objects API registration plugin
+   (see :ref:`Objects API configuration (English) <configuration_registration_objects>`) in order to make 
+   modifications to an existing object in the Objects API. This requires the form user to be the "owner"
+   of the object and the necessary configuration in the Objects API registration at the form level
+   (by choosing to update the existing object).
+
+   .. image:: _assets/update_existing_object.png
