@@ -5,6 +5,7 @@ TinyMceContext.displayName = 'TinyMceContext';
 
 const FeatureFlagsContext = React.createContext({
   ZGW_APIS_INCLUDE_DRAFTS: false,
+  REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: false,
 });
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 

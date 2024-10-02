@@ -28,7 +28,7 @@ const render = ({apiGroups, formData}) => (
 
 export default {
   title: 'Form design/Registration/Objects API',
-  decorators: [ValidationErrorsDecorator],
+  decorators: [ValidationErrorsDecorator, FeatureFlagsDecorator],
   render,
   args: {
     apiGroups: [
@@ -38,6 +38,9 @@ export default {
     formData: {},
   },
   parameters: {
+    featureFlags: {
+      REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: true,
+    },
     msw: {
       handlers: [
         mockObjecttypesGet([
@@ -326,7 +329,6 @@ export const DraftDocumentTypesFeatureFlagOn = {
       iotSubmissionCsv: 'Not-found documenttype',
     },
   },
-  decorators: [FeatureFlagsDecorator],
   parameters: {
     featureFlags: {
       ZGW_APIS_INCLUDE_DRAFTS: true,
