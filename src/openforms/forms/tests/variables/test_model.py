@@ -32,10 +32,17 @@ class FormVariableModelTests(TestCase):
         )
 
     def test_prefill_attribute_prefill_options_empty(self):
-        FormVariableFactory.create(
-            prefill_plugin="demo",
-            prefill_attribute="",
-            prefill_options={},
+        FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "Test label",
+                        "prefill": {"plugin": "demo", "attribute": ""},
+                    }
+                ]
+            }
         )
 
     def test_prefill_options_empty(self):

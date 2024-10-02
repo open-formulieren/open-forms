@@ -216,19 +216,19 @@ class FormVariable(models.Model):
                     | (
                         ~EMPTY_PREFILL_PLUGIN
                         & EMPTY_PREFILL_ATTRIBUTE
-                        & EMPTY_PREFILL_OPTIONS
+                        & ~EMPTY_PREFILL_OPTIONS
                         & USER_DEFINED
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                        & ~USER_DEFINED
                     )
                     | (
                         ~EMPTY_PREFILL_PLUGIN
                         & ~EMPTY_PREFILL_ATTRIBUTE
                         & EMPTY_PREFILL_OPTIONS
-                    )
-                    | (
-                        ~EMPTY_PREFILL_PLUGIN
-                        & EMPTY_PREFILL_ATTRIBUTE
-                        & ~EMPTY_PREFILL_OPTIONS
-                        & USER_DEFINED
                     )
                 ),
                 name="prefill_config_component_or_user_defined",
