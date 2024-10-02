@@ -2,6 +2,213 @@
 Changelog
 =========
 
+2.8.0 "Drupa" (2024-10-02)
+==========================
+
+Open Forms 2.8.0 is a feature release.
+
+.. epigraph::
+
+   "Drupa" is an establishment close to the offices of the Open Forms development team.
+   They have provided us with the necessary caffeinated beverages and occasional snack,
+   and thus indirectly and unknowingly powered the development of Open Forms 😉.
+
+   -- ☕
+
+Upgrade notes
+-------------
+
+There are no manual actions required - all upgrades and migrations are automatic.
+
+.. note:: The UX rework in the ZGW APIs registration plugin is not entirely finished
+   yet. The Objects API integration in particular can be a bit confusing since it's not
+   possible yet to select which Objects API should be used. The plugin now uses the API
+   group that's listed first in the admin interface (**Admin** > **Miscellaneous** >
+   **Objects API Groups**).
+
+Major features
+--------------
+
+**📧 Email verification**
+
+We added an additional (optional) layer of robustness for (confirmation) email delivery
+and provide stronger guarantees about ownership of an email address.
+
+You can now require email verification on email fields. Users submitting the form
+receive a verification code on the provided email address, which they must enter to
+confirm that it is indeed their email address. Forms with unverified email addresses
+fail to submit and display useful error messages to the user.
+
+**📜 Introduction page**
+
+You can now define an optional introduction page that is shown *before* the users
+starts the form submission. This is the ideal place to inform the users of the required
+documents, what the procedure looks like or how long it typically takes to fill out the
+form, for example.
+
+**🚸 User experience (UX) improvements**
+
+With Open Forms, we have every ambition to make work easier for form designers.
+When setting up the registration plugins that process the form submissions especially
+we knew we could make substantial improvements. For the Objects API's and ZGW API's
+plugins, we have reduced the need to copy-and-paste "magic" hyperlinks and aim to remove
+this need entirely in the future.
+
+For the ZGW API's, this even means you don't have to worry anymore of updating the
+configuration when you publish a new version of a "zaaktype" - the right version will
+now automatically be selected.
+
+Detailed changes
+----------------
+
+This contains the changes from the alpha, beta and fixes applied between the beta and
+stable version.
+
+
+**New features**
+
+* [:backend:`4267`, :backend:`4567`, :backend:`4577`] Improved the UX of the Objects
+  API registration options:
+
+    - Configuration is now in a modal and changes in configuration require an explicit
+      confirmation, meaning you can now explore more without potentially breaking the
+      configuration.
+    - Upgraded the API group, object type and object type version dropdowns with search
+      functionality.
+    - Configuration fields are now logically grouped. Optional settings are shown in a
+      collapsed group to declutter the UI.
+    - You can now select a catalogue from a dropdown (with search functionality) that
+      contains the document types to use.
+    - API groups (admin): you can now specify a catalogue and the descriptions of
+      document types to use rather than entering the API URL to a specific version.
+
+  These UX and configuration improvements are still work-in-progress, more will become
+  available in next releases and we will also rework the ZGW API registration options.
+* [:backend:`4051`] Added a better JSON-editor in a number of places, bringing them up
+  to parity with the editor in the form builder:
+
+    - Editing JSON logic triggers.
+    - Editing JSON logic variable assignment expressions.
+    - Editing service fetch mapping expressions.
+    - Viewing the JSON-definition of logic rules and/or actions.
+* [:backend:`4555`] Improved the UX of pre-fill configuration on the variables tab:
+
+    - There is now a single summary column for the prefill configuration, instead of
+      three separate columns.
+    - Improved the wording/language used to differentiate between authorizee/authorised
+      roles.
+    - Editing the configuration is now done in a separate modal.
+
+* [:backend:`4456`] The admin interface now clearly displays which environment you are
+  on. You can disable displaying this information, and you can change the text and
+  colors to easily differentiate between acceptance/production environments.
+* [:backend:`4488`] The submisson report PDF now no longer opens in a new tab/window,
+  the browser is forced to download it.
+* [:backend:`4432`] Improved robustness in form designer interface when crashes occur
+  because of external systems.
+* [:backend:`4442`] Improved certificate handling and DigiD/eHerkenning via SAML
+  configuration:
+
+    - You can now upload password-protected private keys.
+    - You can now configure multiple certificates for DigiD/eHerkenning. The "next"
+      certificate will be included in the generated metadata so you can seamlessly
+      transition when your old certificate is about to expire.
+    - The metadata files are now forced as download to prevent formatting and copy/paste
+      errors.
+
+* You can now configure some django-log-outgoing-requests settings with environment
+  variables.
+* [:backend:`4575`] You can now configure the ``SENDFILE_BACKEND`` with an environment
+  variable.
+* [:backend:`4577`] We improved the user experience when configuring the Objects API
+  registration plugin. Copy-pasting URLs is being phased out - you can now select the
+  relevant configurations in dropdowns.
+* [:backend:`4606`] Improved the user experience of the ZGW APIs registration plugin.
+  We're making this consistent with the Objects API. More improvements will be done in
+  the future.
+* [:backend:`4542`] Email components now support optional verification - when enabled,
+  users must verify their email address before they can continue submitting the form.
+* [:backend:`4582`] The SAML metadata for the DigiD/eHerkenning identity providers is
+  now automatically refreshed on a weekly basis.
+* [:backend:`4380`] The StUF-ZDS registration plugin now supports sending payment
+  details in the ``extraElementen`` data. For 2.7 this was available in an extension,
+  which has been merged in core - migrating is automatic.
+* [:backend:`4545`] You can now optionally configure an introduction page, which is
+  displayed before the start of the form.
+* [:backend:`4543`] You can now optionally enable a short progress summary showing the
+  current step number and the total number of steps in a form.
+
+.. note:: The ``addressNL`` component is not yet a fully capable replacement for
+   individual address fields. Currently, it's only recommended for BRK-validation
+   purposes.
+
+**Bugfixes**
+
+* Fixed a crash in the validation of form variables used in logic rules.
+* [:backend:`4516`] Fixed imports (and error feedback) of legacy exports with Objects
+  API registration backends. It should now be more clear that admins possibly need to
+  check the Objects API groups configuration.
+* [:backend:`4191`] Fixed a couple of bugs when adding a company as initator in the
+  ZGW API's registration plugin:
+
+    - Fixed the datatype of ``vestiging`` field in ZGW registration rollen/betrokkenen.
+    - Fixed the ``aoaIdentificatie`` being empty - this is not allowed.
+
+* [:backend:`4533`] Fixed Objects API registration options checkboxes not toggling.
+* [:backend:`4502`] Fixed a problem where the registration-backend routing logic is not
+  calculated again after pausing and resuming a submission.
+* [:backend:`4334`] Fixed the email registration plugin not sending a payment-received
+  email when "wait for payment to register" is enabled. This behaviour is to ensure that
+  financial departments can always be informed of payment administration.
+* [:backend:`4519`] Fixed form variable dropdowns taking up too much horizontal space.
+* Backend checks of form component validation configuration are mandatory. All components
+  support the same set of validation mechanism in frontend and backend.
+* [:backend:`4560`] Fixed more PDF generation overlapping content issues. The layout no
+  longer uses two columns, but just stacks the labels and answers below each other since
+  a compromise was not feasible.
+* Fixed upgrade check scripts for 2.7.x.
+* [:backend:`4597`] Revert message for not-filled-in-fields in confirmation PDF back to
+  just empty space.
+* Fixed processing of empty file upload components in the Objects API registration plugin.
+* Fixed an upgrade check incorrectly reporting problems.
+* [:backend:`4627`] Fixed a crash in the eHerkenning-via-OIDC plugin if no ActingSubjectID
+  claim is present.
+* [:backend:`4602`] Fixed missing Dutch translation for minimum required checked items
+  error message in the selectboxes component.
+* [:backend:`4587`] Fixed the product not being copied along when copying a form.
+
+**Project maintenance**
+
+* [:backend:`4267`] Converted more existing tests from mocks to VCR.
+* Added static type checking to the CI pipeline. We will continue to improve the
+  type-safety of the code, which should result in fewer bugs and improve the developer
+  experience.
+* Upgraded a number of third-party packages.
+* Simplified testing tools to test translation-enabled forms.
+* [:backend:`4492`] Upload IDs are no longer stored in the session, which was obsoleted
+  by relating uploads to a submission.
+* [:backend:`4534`] Applied some memory-usage optimizations when interacting with the
+  Catalogi API.
+* Swapped out pip-tools with `uv <https://github.com/astral-sh/uv>`_ because it has much
+  better performance.
+* [:backend:`3197`] Upgraded to Python 3.12 from Python 3.10.
+* Fixed some more sources of test flakiness.
+* The random state from factory boy is now reported in CI to help reproduce test
+  flakiness issues.
+* [:backend:`4380`] There is now a mock service (docker-compose based) for a StUF-ZDS
+  server.
+* Added CI job to test upgrade check scripts/machinery.
+* Addressed broken test isolation in CI leading to flaky tests.
+* Upgraded a number of dependencies to their latest (security) releases.
+* Improved the static type annotations in the codebase.
+* Failing end-to-end tests now produce Playwright traces in CI to help debug the problem.
+* Added a utility script to find VCR cassette directories.
+* [:backend:`4646`, :backend:`4396`] Restructured the Objects API configuration to be
+  in a shared code package, which can be used by the registration and prefill plugins.
+* [:backend:`4648`] Corrected the documentation about the minimum PostgreSQL version
+  (v12) and confirmed support for PostgreSQL 15.
+* Squashed migrations.
+
 2.7.8 (2024-09-23)
 ==================
 
