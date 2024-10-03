@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils.translation import gettext as _
 
 from openforms.variables.constants import FormVariableSources
@@ -171,3 +171,32 @@ class CopyFormTests(TestCase):
         self.assertEqual(
             new_form_logic_action["form_step_uuid"], str(new_form_step_uuid)
         )
+
+    @tag("gh-4628")
+    def test_copy_with_no_form_step_uuid_passed_succeeds(self):
+        """
+        Not all rules actions need to have a UUID specified for the form_step field
+        and can accept empty strings as well (see LogicComponentActionSerializer).
+        """
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test-key"}, 1]},
+            actions=[
+                {"action": {"type": "disable-next"}},
+                {"action": {"type": "disable-next"}, "form_step_uuid": None},
+                {"action": {"type": "disable-next"}, "form_step_uuid": ""},
+            ],
+        )
+
+        copied_form = form.copy()
+        copied_form_step = copied_form.formstep_set.first()
+
+        self.assertEqual(Form.objects.count(), 2)
+        self.assertEqual(FormDefinition.objects.count(), 2)
+        self.assertEqual(FormStep.objects.count(), 2)
+        self.assertNotEqual(copied_form_step.form_definition, form_step.form_definition)
