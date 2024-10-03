@@ -537,7 +537,8 @@ class Form(models.Model):
 
             # make sure we have the new uuids of the copied form steps
             for action in logic.actions:
-                if "form_step_uuid" in action:
+                # form_step_uuid is not a required field and if provided can be None as well
+                if action.get("form_step_uuid"):
                     action["form_step_uuid"] = form_step_uuid_mappings[
                         action["form_step_uuid"]
                     ]
