@@ -6,7 +6,7 @@ import {ErrorIcon} from 'components/admin/icons';
 const ErrorMessage = ({children}) => {
   if (!children) return null;
   return (
-    <div className="error-message">
+    <div className="error-message" role="alert">
       <span className="error-message__icon icon icon--danger icon--as-lead">
         <ErrorIcon text="error" />
       </span>
