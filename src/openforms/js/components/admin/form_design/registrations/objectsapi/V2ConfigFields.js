@@ -49,7 +49,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type select error"
-              defaultMessage="Something went wrong retrieving the available object types."
+              defaultMessage="Something went wrong while retrieving the available object types."
             />
           }
         >

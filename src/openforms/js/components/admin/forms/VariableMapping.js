@@ -13,6 +13,28 @@ import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 export const serializeValue = value => JSON.stringify(value);
 export const deserializeValue = value => JSON.parse(value);
 
+const LabelType = PropTypes.oneOfType([PropTypes.string, PropTypes.element]);
+
+const isChoice = (props, propName, componentName, location, propFullName) => {
+  const prop = props[propName];
+  if (!Array.isArray(prop) || prop.length !== 2) {
+    return new Error(`Invalid choice (index ${propName} passed to '${componentName}'.
+      Each choice must be an array of length 2.`);
+  }
+
+  const [value, label] = prop;
+  const error = PropTypes.checkPropTypes(
+    {value: PropTypes.any, label: LabelType.isRequired},
+    {value, label},
+    location,
+    componentName
+  );
+  if (error) {
+    return error;
+  }
+  return null;
+};
+
 const VariableMappingRow = ({
   prefix,
   loading,
@@ -112,7 +134,7 @@ VariableMappingRow.propTypes = {
    * Array of possible choices, where each item is a `[value, label]` tuple. The value
    * must already be serialized to a string.
    */
-  propertyChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  propertyChoices: PropTypes.arrayOf(isChoice),
 
   /**
    * The accessible label for the property dropdown.
@@ -215,28 +237,6 @@ const VariableMapping = ({
       )}
     />
   );
-};
-
-const LabelType = PropTypes.oneOfType([PropTypes.string, PropTypes.element]);
-
-const isChoice = (props, propName, componentName, location, propFullName) => {
-  const prop = props[propName];
-  if (!Array.isArray(prop) || prop.length !== 2) {
-    return new Error(`Invalid choice (index ${propName} passed to '${componentName}'.
-      Each choice must be an array of length 2.`);
-  }
-
-  const [value, label] = prop;
-  const error = PropTypes.checkPropTypes(
-    {value: PropTypes.any, label: LabelType.isRequired},
-    {value, label},
-    location,
-    componentName
-  );
-  if (error) {
-    return error;
-  }
-  return null;
 };
 
 VariableMapping.propTypes = {

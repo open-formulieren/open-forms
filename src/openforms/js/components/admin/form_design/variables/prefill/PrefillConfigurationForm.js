@@ -28,6 +28,7 @@ const PrefillConfigurationForm = ({
   plugin = '',
   attribute = '',
   identifierRole = 'main',
+  // TODO: find a better way to specify this based on the selected plugin
   prefillOptions = {
     objectsApiGroup: '',
     objecttype: '',
@@ -53,7 +54,7 @@ const PrefillConfigurationForm = ({
     >
       {({handleSubmit, values}) => {
         const PluginFormComponent =
-          PLUGIN_COMPONENT_MAPPING[values.plugin] || PLUGIN_COMPONENT_MAPPING.default;
+          PLUGIN_COMPONENT_MAPPING[values.plugin] ?? PLUGIN_COMPONENT_MAPPING.default;
         return (
           <>
             {<PluginFormComponent values={values} errors={errors} />}
@@ -215,11 +216,6 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
 
   const apiGroups = objectsPlugin.configurationContext.apiGroups;
 
-  const prefillPropertyLabel = intl.formatMessage({
-    description: 'Accessible label for prefill property dropdown',
-    defaultMessage: 'Prefill property',
-  });
-
   const {objecttype, objecttypeVersion, objectsApiGroup} = values.prefillOptions;
 
   // Load the possible prefill properties
@@ -232,9 +228,8 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
     if (!plugin || !objecttype || !objecttypeVersion || !objectsApiGroup) return [];
 
     const endpoint = `/api/v2/prefill/plugins/objects-api/objecttypes/${objecttype}/versions/${objecttypeVersion}/properties`;
-    const params = new URLSearchParams({objects_api_group: objectsApiGroup});
     // XXX: clean up error handling here at some point...
-    const response = await get(`${endpoint}?${params.toString()}`);
+    const response = await get(endpoint, {objects_api_group: objectsApiGroup});
     if (!response.ok) throw response.data;
 
     return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
@@ -243,15 +238,6 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
   // throw errors to the nearest error boundary
   if (error) throw error;
   const prefillProperties = loading ? LOADING_OPTION : value;
-
-  // Because the prefillProperties are converted to comma separated values by the select,
-  // make sure they are converted back into lists
-  values.prefillOptions.variablesMapping = values.prefillOptions.variablesMapping.map(mapping => {
-    if (typeof mapping.prefillProperty === 'string') {
-      mapping.prefillProperty = mapping.prefillProperty.split(',');
-    }
-    return mapping;
-  });
 
   return (
     <>
@@ -271,7 +257,6 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           </Field>
         </FormRow>
 
-        {/* TODO copied from V2ConfigFields, should probably be reused */}
         <ObjectsAPIGroup
           prefix="prefillOptions"
           apiGroupName="prefillOptions.objectsApiGroup"
@@ -296,7 +281,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type select error"
-              defaultMessage="Something went wrong retrieving the available object types."
+              defaultMessage="Something went wrong while retrieving the available object types."
             />
           }
         >
@@ -325,7 +310,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type version select error"
-              defaultMessage="Something went wrong retrieving the available object type versions."
+              defaultMessage="Something went wrong while retrieving the available object type versions."
             />
           }
         >
@@ -347,15 +332,21 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
       >
         <FormRow>
           <VariableMapping
-            loading={false}
-            mappingName="prefillOptions.variablesMapping"
-            targets={prefillProperties}
-            targetsFieldName="prefillProperty"
-            targetsColumnLabel={prefillPropertyLabel}
-            selectAriaLabel={prefillPropertyLabel}
-            alreadyMapped={values.prefillOptions.variablesMapping.map(
-              mapping => mapping.prefillProperty
-            )}
+            name="prefillOptions.variablesMapping"
+            loading={loading}
+            propertyName="prefillProperty"
+            propertyChoices={prefillProperties}
+            propertyHeading={
+              <FormattedMessage
+                description="Prefill / Objects API: column header for object type property selection"
+                defaultMessage="Source path"
+              />
+            }
+            propertySelectLabel={intl.formatMessage({
+              description:
+                'Prefill / Objects API: accessible label for object type property selection',
+              defaultMessage: 'Select a property from the object type',
+            })}
           />
         </FormRow>
       </Fieldset>

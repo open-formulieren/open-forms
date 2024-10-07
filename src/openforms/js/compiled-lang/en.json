@@ -1049,12 +1049,6 @@
       "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
     }
   ],
-  "9aLRWy": [
-    {
-      "type": 0,
-      "value": "Prefill property"
-    }
-  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -2757,6 +2751,12 @@
       "value": "Prefill configuration"
     }
   ],
+  "QzZdVz": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available object types."
+    }
+  ],
   "R/XadM": [
     {
       "type": 0,
@@ -2805,12 +2805,6 @@
       },
       "type": 5,
       "value": "viewMode"
-    }
-  ],
-  "RM89fL": [
-    {
-      "type": 0,
-      "value": "Something went wrong retrieving the available object types."
     }
   ],
   "RN628y": [
@@ -5081,6 +5075,12 @@
       "value": "Bronorganisatie"
     }
   ],
+  "nYePys": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available object type versions."
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -5681,6 +5681,12 @@
       "value": "Do not display the configured label and top line as the header in the fieldset."
     }
   ],
+  "vAZDY4": [
+    {
+      "type": 0,
+      "value": "Source path"
+    }
+  ],
   "vNRiMn": [
     {
       "type": 0,
@@ -6089,6 +6095,12 @@
     {
       "type": 0,
       "value": "Use logic rules to determine the price"
+    }
+  ],
+  "zwOwrD": [
+    {
+      "type": 0,
+      "value": "Select a property from the object type"
     }
   ]
 }

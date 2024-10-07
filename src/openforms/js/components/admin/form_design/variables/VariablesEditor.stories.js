@@ -7,6 +7,7 @@ import {
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
 
+import {serializeValue} from '../../forms/VariableMapping';
 import {mockObjecttypeVersionsGet, mockObjecttypesGet} from '../registrations/objectsapi/mocks';
 import {FormDecorator} from '../story-decorators';
 import VariablesEditor from './VariablesEditor';
@@ -602,16 +603,18 @@ export const ConfigurePrefillObjectsAPI = {
     const pluginDropdown = await screen.findByLabelText('Plugin');
     expect(pluginDropdown).toBeVisible();
 
-    await userEvent.selectOptions(pluginDropdown, 'objects_api');
+    await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
     const variableSelect = await screen.findByLabelText('Formuliervariabele');
-    await expect(variableSelect.value).toBe('formioComponent');
+    await expect(variableSelect).toHaveValue('formioComponent');
 
     // Wait until the API call to retrieve the prefillAttributes is done
     await waitFor(async () => {
-      const prefillPropertySelect = await screen.findByLabelText('Prefill property');
+      const prefillPropertySelect = await screen.findByLabelText(
+        'Select a property from the object type'
+      );
       expect(prefillPropertySelect).toBeVisible();
-      expect(prefillPropertySelect).toHaveValue('firstName');
+      expect(prefillPropertySelect).toHaveValue(serializeValue(['firstName']));
     });
   },
 };
