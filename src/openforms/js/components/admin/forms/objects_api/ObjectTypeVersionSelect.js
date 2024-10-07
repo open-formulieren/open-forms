@@ -1,5 +1,5 @@
 import {useFormikContext} from 'formik';
-import _ from 'lodash';
+import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -26,13 +26,14 @@ const getAvailableVersions = async (uuid, apiGroupID) => {
 };
 
 const ObjectTypeVersionSelect = ({
-  objectTypeName = 'objecttype',
-  objectTypeVersionName = 'objecttypeVersion',
-  apiGroupName = 'objectsApiGroup',
+  name = 'objecttypeVersion',
+  apiGroupFieldName = 'objectsApiGroup',
+  objectTypeFieldName = 'objecttype',
 }) => {
-  const {values} = useFormikContext();
-  const objectsApiGroup = _.get(values, apiGroupName, null);
-  const objecttype = _.get(values, objectTypeName, '');
+  const {getFieldProps} = useFormikContext();
+
+  const {value: objectsApiGroup = null} = getFieldProps(apiGroupFieldName);
+  const {value: objecttype = ''} = getFieldProps(objectTypeFieldName);
 
   const {
     loading,
@@ -48,13 +49,13 @@ const ObjectTypeVersionSelect = ({
     ? []
     : versions.map(version => [version.version, `${version.version} (${version.status})`]);
 
-  useSynchronizeSelect(objectTypeVersionName, loading, choices);
+  useSynchronizeSelect(name, loading, choices);
 
   const options = choices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
       <Field
-        name={objectTypeVersionName}
+        name={name}
         required
         label={
           <FormattedMessage
@@ -65,7 +66,7 @@ const ObjectTypeVersionSelect = ({
         noManageChildProps
       >
         <ReactSelect
-          name={objectTypeVersionName}
+          name={name}
           required
           options={options}
           isLoading={loading}
@@ -74,6 +75,23 @@ const ObjectTypeVersionSelect = ({
       </Field>
     </FormRow>
   );
+};
+
+ObjectTypeVersionSelect.propTypes = {
+  /**
+   * Name to use for the form field, is passed down to Formik.
+   */
+  name: PropTypes.string,
+  /**
+   * Name of the field holding the selected API group. The value is used in the API
+   * call to get the available object type versions.
+   */
+  apiGroupFieldName: PropTypes.string,
+  /**
+   * Name of the field to select the object type. The value is used in the API
+   * call to get the available object type versions.
+   */
+  objectTypeFieldName: PropTypes.string,
 };
 
 export default ObjectTypeVersionSelect;

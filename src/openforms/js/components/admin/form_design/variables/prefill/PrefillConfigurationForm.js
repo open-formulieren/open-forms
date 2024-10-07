@@ -330,9 +330,9 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           }
         >
           <ObjectTypeVersionSelect
-            objectTypeName="options.objecttype"
-            objectTypeVersionName="options.objecttypeVersion"
-            apiGroupName="options.objectsApiGroup"
+            name="options.objecttypeVersion"
+            apiGroupFieldName="options.objectsApiGroup"
+            objectTypeFieldName="options.objecttype"
           />
         </ErrorBoundary>
       </Fieldset>
