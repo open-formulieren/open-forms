@@ -21,12 +21,16 @@ class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
         qs = self.filter(status=PaymentStatus.completed)
         return qs.update(status=PaymentStatus.registered)
 
-    def get_completed_public_order_ids(self) -> list[str]:
-        return list(
-            self.filter(
-                status__in=(PaymentStatus.registered, PaymentStatus.completed)
-            ).values_list("public_order_id", flat=True)
+    def paid(self) -> models.QuerySet["SubmissionPayment"]:
+        return self.filter(
+            status__in=(PaymentStatus.registered, PaymentStatus.completed)
         )
+
+    def get_completed_public_order_ids(self) -> list[str]:
+        return list(self.paid().values_list("public_order_id", flat=True))
+
+    def get_completed_provider_payment_ids(self) -> list[str]:
+        return list(self.paid().values_list("provider_payment_id", flat=True))
 
 
 class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQuerySet)):
@@ -79,6 +83,10 @@ class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQue
     if TYPE_CHECKING:
 
         def mark_registered(self) -> int: ...
+
+        def paid(self) -> models.QuerySet["SubmissionPayment"]: ...
+
+        def get_completed_provider_payment_ids(self) -> list[str]: ...
 
         def get_completed_public_order_ids(self) -> list[str]: ...
 

@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.service import AuthAttribute, BaseAuth
-from openforms.payments.constants import PaymentStatus
 from openforms.plugins.registry import BaseRegistry
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
@@ -104,11 +103,7 @@ class ProviderPaymentIds(BaseStaticVariable):
         if submission is None:
             return None
 
-        return list(
-            submission.payments.filter(
-                status__in=(PaymentStatus.registered, PaymentStatus.completed)
-            ).values_list("provider_payment_id", flat=True)
-        )
+        return submission.payments.get_completed_provider_payment_ids()
 
 
 @register("cosign_data")

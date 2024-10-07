@@ -28,7 +28,6 @@ from openforms.contrib.zgw.service import (
 )
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
-from openforms.payments.constants import PaymentStatus
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -361,11 +360,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "completed": submission.payment_user_has_paid,
             "amount": str(amount),
             "public_order_ids": submission.payments.get_completed_public_order_ids(),
-            "provider_payment_ids": list(
-                submission.payments.filter(
-                    status__in=(PaymentStatus.registered, PaymentStatus.completed)
-                ).values_list("provider_payment_id", flat=True)
-            ),
+            "provider_payment_ids": submission.payments.get_completed_provider_payment_ids(),
         }
 
     @staticmethod
