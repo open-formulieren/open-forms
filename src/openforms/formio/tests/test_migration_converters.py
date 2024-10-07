@@ -5,6 +5,7 @@ from ..migration_converters import (
     ensure_licensplate_validate_pattern,
     ensure_postcode_validate_pattern,
     fix_multiple_empty_default_value,
+    fix_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
 )
 from ..typing import AddressNLComponent, Component
@@ -85,6 +86,74 @@ class SelectTests(SimpleTestCase):
         changed = fix_multiple_empty_default_value(component)
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
+
+
+class TextTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "multiple": True,
+            "defaultValue": [],
+        }
+        changed = fix_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "defaultValue": "",
+        }
+        changed = fix_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_changed(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "defaultValue": None,
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+
+class EmailTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "multiple": True,
+            "defaultValue": [],
+        }
+        changed = fix_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "defaultValue": "",
+        }
+        changed = fix_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_changed(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "defaultValue": None,
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
 
 
 class AddressNLTests(SimpleTestCase):

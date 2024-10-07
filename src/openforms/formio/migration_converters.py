@@ -271,6 +271,17 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
     component["prefill"]["identifierRole"] = "authorizee"
     return True
 
+def fix_empty_default_value(component: Component) -> bool:
+    if component.get("multiple", False):
+        return False
+
+    default_value = component.get("defaultValue")
+    if default_value is None:
+        component["defaultValue"] = ""
+        return True
+
+    return False
+
 
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
@@ -283,9 +294,11 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
