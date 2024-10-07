@@ -18,6 +18,7 @@ import {
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
 } from 'components/admin/forms/objects_api';
+import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
@@ -334,6 +335,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           <VariableMapping
             name="prefillOptions.variablesMapping"
             loading={loading}
+            directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
             propertyName="prefillProperty"
             propertyChoices={prefillProperties}
             propertyHeading={

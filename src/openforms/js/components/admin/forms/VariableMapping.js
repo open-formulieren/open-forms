@@ -38,6 +38,7 @@ const isChoice = (props, propName, componentName, location, propFullName) => {
 const VariableMappingRow = ({
   prefix,
   loading,
+  directionIcon,
   propertyName,
   propertyChoices,
   propertySelectLabel,
@@ -76,6 +77,9 @@ const VariableMappingRow = ({
           />
         </Field>
       </td>
+
+      {directionIcon && <td className="mapping-table__direction-icon">{directionIcon}</td>}
+
       <td>
         <Field name={fullPropertyName}>
           <Select
@@ -97,6 +101,7 @@ const VariableMappingRow = ({
           />
         </Field>
       </td>
+
       <td>
         <DeleteIcon
           onConfirm={onRemove}
@@ -122,6 +127,13 @@ VariableMappingRow.propTypes = {
    * Indicates whether the options are still loading.
    */
   loading: PropTypes.bool.isRequired,
+
+  /**
+   * Optional (icon) node to display between the form variable and other property columns.
+   *
+   * Recommended, since it can help clarify the direction of the mapping.
+   */
+  directionIcon: PropTypes.node,
 
   /**
    * Name of the property nested inside each mapping item.
@@ -172,6 +184,7 @@ VariableMappingRow.propTypes = {
 const VariableMapping = ({
   name,
   loading,
+  directionIcon,
   propertyName,
   propertyChoices,
   propertyHeading,
@@ -200,8 +213,9 @@ const VariableMapping = ({
                     description="Open Forms variable label"
                   />
                 </th>
+                {directionIcon && <th />}
                 <th>{propertyHeading}</th>
-                <th></th>
+                <th />
               </tr>
             </thead>
 
@@ -210,6 +224,7 @@ const VariableMapping = ({
                 <VariableMappingRow
                   key={index}
                   prefix={`${name}.${index}`}
+                  directionIcon={directionIcon}
                   onRemove={() => arrayHelpers.remove(index)}
                   loading={loading}
                   includeStaticVariables={includeStaticVariables}
@@ -251,6 +266,13 @@ VariableMapping.propTypes = {
    * Indicates whether the options are still loading.
    */
   loading: PropTypes.bool,
+
+  /**
+   * Optional (icon) node to display between the form variable and other property columns.
+   *
+   * Recommended, since it can help clarify the direction of the mapping.
+   */
+  directionIcon: PropTypes.node,
 
   /**
    * Name of the property nested inside each mapping item.

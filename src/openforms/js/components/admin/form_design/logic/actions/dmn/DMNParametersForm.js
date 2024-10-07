@@ -7,6 +7,7 @@ import {useAsync} from 'react-use';
 
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
 import VariableMapping from 'components/admin/forms/VariableMapping';
+import {FAIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
 
 import InputsOverview from './InputsOverview';
@@ -192,6 +193,7 @@ const DMNParametersForm = () => {
           <VariableMapping
             loading={loading}
             name="inputMapping"
+            directionIcon={<FAIcon icon="arrow-right-long" aria-hidden="true" />}
             propertyChoices={dmnParams.inputs}
             propertyName="dmnVariable"
             propertyHeading={dmnVariableColumnLabel}
@@ -208,6 +210,7 @@ const DMNParametersForm = () => {
           <VariableMapping
             loading={loading}
             name="outputMapping"
+            directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
             propertyChoices={dmnParams.outputs}
             propertyName="dmnVariable"
             propertyHeading={dmnVariableColumnLabel}
