@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import Page, expect
 
+from openforms.formio.utils import iterate_components_with_configuration_path
 from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import (
     E2ETestCase,
@@ -17,6 +18,7 @@ from openforms.tests.e2e.base import (
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ...models import Form
 from ..factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -414,6 +416,58 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # Check that the key has been made unique (textField1 vs textField)
             key_input = page.get_by_label("Property Name")
             await expect(key_input).to_have_value("textField1")
+
+    async def test_textfields_default_value_empty_string(self):
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+        form_name = "Test textfields default value empty string"
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Create and save form"):
+                form_name_input = page.get_by_role("textbox", name="Name", exact=True)
+                await form_name_input.click()
+                await form_name_input.fill(form_name)
+
+                await add_new_step(page)
+                step_name_input = page.get_by_role("textbox", name="Step name", exact=True)
+                await step_name_input.click()
+                await step_name_input.fill("Step 1")
+
+                # Add textfield and save with the defaults
+                await drag_and_drop_component(page, "Tekstveld")
+                await close_modal(page, "Save", exact=True)
+
+                # Add email field and save with the defaults
+                await drag_and_drop_component(page, "E-mail")
+                await close_modal(page, "Save", exact=True)
+
+                # Add cosign field and save with the defaults
+                await page.get_by_role("button", name="Speciale velden", exact=True).click()
+                await drag_and_drop_component(page, "Mede-ondertekenen")
+                await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role("button", name="Save and continue editing", exact=True).click()
+
+            with phase("Validate default values"):
+                @sync_to_async
+                def assertFormValues():
+                    form = Form.objects.get(name=form_name)
+                    configuration = form.formstep_set.first().form_definition.configuration
+
+                    for configuration_path, component in iterate_components_with_configuration_path(
+                        configuration, recursive=False
+                    ):
+                        self.assertEqual(
+                            component["defaultValue"],
+                            "",
+                            msg="Test failed for component %s" % (component['key'])
+                        )
+
+                await assertFormValues()
 
     @tag("gh-2805")
     async def test_enable_translations_and_create_new_step(self):
