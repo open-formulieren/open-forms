@@ -301,9 +301,9 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           }
         >
           <ObjectTypeSelect
-            objectTypeName="options.objecttype"
-            objectTypeVersionName="options.objecttypeVersion"
-            apiGroupName="options.objectsApiGroup"
+            name="options.objecttype"
+            apiGroupFieldName="options.objectsApiGroup"
+            versionFieldName="options.objecttypeVersion"
             onChangeCheck={() => {
               if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = window.confirm(

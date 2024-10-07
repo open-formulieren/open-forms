@@ -21,19 +21,19 @@ const getAvailableObjectTypes = async apiGroupID => {
 };
 
 const ObjectTypeSelect = ({
+  name = 'objecttype',
+  apiGroupFieldName = 'objectsApiGroup',
   onChangeCheck,
-  objectTypeName = 'objecttype',
-  objectTypeVersionName = 'objecttypeVersion',
-  apiGroupName = 'objectsApiGroup',
+  versionFieldName = 'objecttypeVersion',
 }) => {
-  const [fieldProps, , fieldHelpers] = useField(objectTypeName);
+  const [fieldProps, , fieldHelpers] = useField(name);
   const {
     values,
     setFieldValue,
     getFieldProps,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
-  const objectsApiGroup = getFieldProps(apiGroupName).value ?? null;
+  const objectsApiGroup = getFieldProps(apiGroupFieldName).value ?? null;
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
 
@@ -55,7 +55,7 @@ const ObjectTypeSelect = ({
       ]);
   const options = choices.map(([value, label]) => ({value, label}));
 
-  useSynchronizeSelect(objectTypeName, loading, choices);
+  useSynchronizeSelect(name, loading, choices);
 
   const previousValue = usePrevious(value);
 
@@ -63,13 +63,13 @@ const ObjectTypeSelect = ({
   useUpdateEffect(() => {
     if (loading) return;
     if (value === initialObjecttype || value === previousValue) return;
-    setFieldValue(objectTypeVersionName, undefined); // clears the value
+    setFieldValue(versionFieldName, undefined); // clears the value
   }, [loading, value]);
 
   return (
     <FormRow>
       <Field
-        name={objectTypeName}
+        name={name}
         required
         label={
           <FormattedMessage
@@ -86,7 +86,7 @@ const ObjectTypeSelect = ({
         noManageChildProps
       >
         <ReactSelect
-          name={objectTypeName}
+          name={name}
           options={options}
           isLoading={loading}
           isDisabled={!objectsApiGroup}
@@ -102,7 +102,25 @@ const ObjectTypeSelect = ({
 };
 
 ObjectTypeSelect.propTypes = {
+  /**
+   * Name to use for the form field, is passed down to Formik.
+   */
+  name: PropTypes.string,
+  /**
+   * Optional callback to confirm the change. Return `true` to continue with the change,
+   * return `false` to abort it.
+   */
   onChangeCheck: PropTypes.func,
+  /**
+   * Name of the field holding the selected API group. The value is used in the API
+   * call to get the available object types.
+   */
+  apiGroupFieldName: PropTypes.string,
+  /**
+   * Name of the field to select the object type version. When the selected object type
+   * changes, the version will be reset/unset.
+   */
+  versionFieldName: PropTypes.string,
 };
 
 export default ObjectTypeSelect;
