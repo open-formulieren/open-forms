@@ -459,7 +459,7 @@ semantic-version==2.10.0
     # via -r requirements/base.in
 sentry-sdk==2.10.0
     # via -r requirements/base.in
-simplejson==3.17.6
+simplejson==3.19.3
     # via mail-parser
 six==1.16.0
     # via

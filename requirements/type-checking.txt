@@ -980,7 +980,7 @@ sentry-sdk==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-simplejson==3.17.6
+simplejson==3.19.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
