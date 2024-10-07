@@ -1,3 +1,6 @@
+import {fn} from '@storybook/test';
+import {Form, Formik} from 'formik';
+
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
 import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
 
@@ -54,3 +57,37 @@ export const ValidationErrorsDecorator = (Story, {args, parameters}) => (
     <Story />
   </ValidationErrorsProvider>
 );
+
+/**
+ * Wrap the story in a Formik component, which provides the necessary context.
+ *
+ * Formik props can be provided via `parameters.formik`.
+ */
+export const FormikDecorator = (Story, context) => {
+  const isDisabled = context.parameters?.formik?.disable ?? false;
+  if (isDisabled) {
+    return <Story />;
+  }
+  const initialValues = context.parameters?.formik?.initialValues || {};
+  const initialErrors = context.parameters?.formik?.initialErrors || {};
+  const initialTouched = context.parameters?.formik?.initialTouched || {};
+  const wrapForm = context.parameters?.formik?.wrapForm ?? true;
+  const onSubmit = context.parameters?.formik?.onSubmit ?? fn();
+  return (
+    <Formik
+      initialValues={initialValues}
+      initialErrors={initialErrors}
+      initialTouched={initialTouched}
+      enableReinitialize
+      onSubmit={onSubmit}
+    >
+      {wrapForm ? (
+        <Form data-testid="story-form">
+          <Story />
+        </Form>
+      ) : (
+        <Story />
+      )}
+    </Formik>
+  );
+};

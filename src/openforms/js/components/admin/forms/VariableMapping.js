@@ -10,55 +10,41 @@ import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
-import {detectMappingProblems} from '../form_design/logic/actions/dmn/utils';
-
-const containsElement = (arr, value) => {
-  // If value is a string, use simple includes
-  if (typeof value === 'string') {
-    return arr.includes(value);
-  }
-
-  // If value is an array, use some() with a deep comparison
-  if (Array.isArray(value)) {
-    return arr.some(innerArray => JSON.stringify(innerArray) === JSON.stringify(value));
-  }
-
-  return false;
-};
+export const serializeValue = value => JSON.stringify(value);
+export const deserializeValue = value => JSON.parse(value);
 
 const VariableMappingRow = ({
-  loading,
   prefix,
+  loading,
+  propertyName,
+  propertyChoices,
+  propertySelectLabel,
   onRemove,
-  targets,
-  targetsFieldName,
-  selectAriaLabel,
   includeStaticVariables = false,
   alreadyMapped = [],
+  rowCheck = undefined,
 }) => {
   const intl = useIntl();
-  const {getFieldProps} = useFormikContext();
+  const {getFieldProps, setFieldValue} = useFormikContext();
 
-  const confirmationMessage = intl.formatMessage({
-    description: 'Confirmation message to remove a mapping',
-    defaultMessage: 'Are you sure that you want to remove this mapping?',
-  });
-  const fullTargetName = `${prefix}.${targetsFieldName}`;
-  const targetsProps = getFieldProps(fullTargetName);
-  const targetsChoices = targets.filter(
-    ([value]) =>
-      JSON.stringify(value) === JSON.stringify(targetsProps.value) ||
-      !containsElement(alreadyMapped, value)
+  const fullPropertyName = `${prefix}.${propertyName}`;
+  const {value: propertyValue, ...propertyProps} = getFieldProps(fullPropertyName);
+  const serializedPropertyValue = serializeValue(propertyValue);
+
+  // filter out the already mapped values
+  propertyChoices = propertyChoices.filter(
+    ([serializedValue]) =>
+      serializedValue === serializedPropertyValue || !alreadyMapped.includes(serializedValue)
   );
 
   const mapping = getFieldProps(prefix).value;
-  const errors = detectMappingProblems(mapping, intl).join(', ');
+  const errors = rowCheck?.(intl, mapping).join(', ') ?? '';
+
   return (
     <tr>
       <td>
-        <Field name={`${prefix}.formVariable`} htmlFor={`${prefix}.formVariable`}>
+        <Field name={`${prefix}.formVariable`}>
           <VariableSelection
-            id={`${prefix}.formVariable`}
             includeStaticVariables={includeStaticVariables}
             {...getFieldProps(`${prefix}.formVariable`)}
             aria-label={intl.formatMessage({
@@ -69,19 +55,34 @@ const VariableMappingRow = ({
         </Field>
       </td>
       <td>
-        <Field htmlFor={fullTargetName} name={fullTargetName}>
+        <Field name={fullPropertyName}>
           <Select
-            id={fullTargetName}
             allowBlank
             disabled={loading}
-            choices={targetsChoices}
-            {...targetsProps}
-            aria-label={selectAriaLabel}
+            choices={propertyChoices}
+            {...propertyProps}
+            value={serializedPropertyValue}
+            onChange={event => {
+              let {value} = event.target;
+              // empty string means the select was cleared/reset
+              if (value === '') value = undefined;
+              if (value !== undefined) {
+                value = deserializeValue(value);
+              }
+              setFieldValue(fullPropertyName, value);
+            }}
+            aria-label={propertySelectLabel}
           />
         </Field>
       </td>
       <td>
-        <DeleteIcon onConfirm={onRemove} message={confirmationMessage} />
+        <DeleteIcon
+          onConfirm={onRemove}
+          message={intl.formatMessage({
+            description: 'Confirmation message to remove a mapping',
+            defaultMessage: 'Are you sure that you want to remove this mapping?',
+          })}
+        />
         {errors && <WarningIcon text={errors} />}
       </td>
     </tr>
@@ -89,31 +90,83 @@ const VariableMappingRow = ({
 };
 
 VariableMappingRow.propTypes = {
-  loading: PropTypes.bool.isRequired,
+  /**
+   * Prefix for the nested fields (formVariable, $propertyName) to its parent. Used to
+   * build the fully qualified names of individual form fields.
+   */
   prefix: PropTypes.string.isRequired,
-  targets: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
-  targetsFieldName: PropTypes.string.isRequired,
-  selectAriaLabel: PropTypes.string.isRequired,
+
+  /**
+   * Indicates whether the options are still loading.
+   */
+  loading: PropTypes.bool.isRequired,
+
+  /**
+   * Name of the property nested inside each mapping item.
+   *
+   * This is the property that will be mapped to/from the form variable.
+   */
+  propertyName: PropTypes.string.isRequired,
+
+  /**
+   * Array of possible choices, where each item is a `[value, label]` tuple. The value
+   * must already be serialized to a string.
+   */
+  propertyChoices: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+
+  /**
+   * The accessible label for the property dropdown.
+   */
+  propertySelectLabel: PropTypes.string.isRequired,
   onRemove: PropTypes.func.isRequired,
+  /**
+   * Indicates if static variables can be selected for the mapping or not. Assigning
+   * to static variables is not possible, but reading from them and assigning the value
+   * to a property is possible.
+   */
   includeStaticVariables: PropTypes.bool,
+  /**
+   * Array of values that are already selected in (other) rows, in serialized form.
+   */
   alreadyMapped: PropTypes.arrayOf(PropTypes.string),
+
+  /**
+   * Optional callback function to check an individual row for problems.
+   *
+   * The callback will be invoked with `rowCheck(intl, row)` and must return an array
+   * of error messages, where `intl` is the context from react-intl's `useIntl()` hook.
+   */
+  rowCheck: PropTypes.func,
 };
 
+/**
+ * Map form variables to other properties.
+ *
+ * The form context is used to provide choices for the form variables to map to or from.
+ *
+ * The `propertyChoices` prop provides the choices for the properties to map from/to,
+ * and must be provided when using this component.
+ */
 const VariableMapping = ({
+  name,
   loading,
-  mappingName,
-  targets,
-  targetsFieldName,
-  targetsColumnLabel,
-  selectAriaLabel,
+  propertyName,
+  propertyChoices,
+  propertyHeading,
+  propertySelectLabel,
   includeStaticVariables = false,
-  alreadyMapped = [],
+  rowCheck,
 }) => {
-  const {values} = useFormikContext();
+  const {values, getFieldProps} = useFormikContext();
+  const {value: mappings = []} = getFieldProps(name);
+  // normalize all choices by JSON serializing the values
+  propertyChoices = propertyChoices.map(([value, label]) => [serializeValue(value), label]);
 
+  // grab the already mapped properties from the formik state
+  const alreadyMapped = mappings.map(row => serializeValue(row[propertyName]));
   return (
     <FieldArray
-      name={mappingName}
+      name={name}
       render={arrayHelpers => (
         <div className={'mapping-table'}>
           <table>
@@ -125,30 +178,34 @@ const VariableMapping = ({
                     description="Open Forms variable label"
                   />
                 </th>
-                <th>{targetsColumnLabel}</th>
+                <th>{propertyHeading}</th>
                 <th></th>
               </tr>
             </thead>
+
             <tbody>
-              {get(values, mappingName).map((_, index) => (
+              {mappings.map((_, index) => (
                 <VariableMappingRow
                   key={index}
-                  prefix={`${mappingName}.${index}`}
+                  prefix={`${name}.${index}`}
                   onRemove={() => arrayHelpers.remove(index)}
                   loading={loading}
                   includeStaticVariables={includeStaticVariables}
-                  targets={targets}
-                  targetsFieldName={targetsFieldName}
-                  selectAriaLabel={selectAriaLabel}
+                  propertyChoices={propertyChoices}
+                  propertyName={propertyName}
+                  propertySelectLabel={propertySelectLabel}
                   alreadyMapped={alreadyMapped}
+                  rowCheck={rowCheck}
                 />
               ))}
             </tbody>
           </table>
+
           <ButtonContainer
             onClick={() => {
-              const initial = {formVariable: '', [targetsFieldName]: ''};
-              const mapping = get(values, mappingName);
+              // TODO update
+              const initial = {formVariable: '', [propertyName]: ''};
+              const mapping = get(values, name);
               arrayHelpers.insert(mapping.length, initial);
             }}
           >
@@ -160,15 +217,80 @@ const VariableMapping = ({
   );
 };
 
+const LabelType = PropTypes.oneOfType([PropTypes.string, PropTypes.element]);
+
+const isChoice = (props, propName, componentName, location, propFullName) => {
+  const prop = props[propName];
+  if (!Array.isArray(prop) || prop.length !== 2) {
+    return new Error(`Invalid choice (index ${propName} passed to '${componentName}'.
+      Each choice must be an array of length 2.`);
+  }
+
+  const [value, label] = prop;
+  const error = PropTypes.checkPropTypes(
+    {value: PropTypes.any, label: LabelType.isRequired},
+    {value, label},
+    location,
+    componentName
+  );
+  if (error) {
+    return error;
+  }
+  return null;
+};
+
 VariableMapping.propTypes = {
+  /**
+   * Dotted path describing the name in the form data of the array with the mappings.
+   *
+   * This is passed to Formik to manage the nested fields inside.
+   */
+  name: PropTypes.string,
+
+  /**
+   * Indicates whether the options are still loading.
+   */
   loading: PropTypes.bool,
-  mappingName: PropTypes.string,
+
+  /**
+   * Name of the property nested inside each mapping item.
+   *
+   * This is the property that will be mapped to/from the form variable.
+   */
+  propertyName: PropTypes.string.isRequired,
+
+  /**
+   * Available choices for the mapped variable.
+   *
+   * Should be an array of `[value, label]` pairs, where each value must be
+   * JSON-serializable and the label is a string or react-intl formatted message.
+   */
+  propertyChoices: PropTypes.arrayOf(isChoice),
+
+  /**
+   * Heading/label for the property column displaying the property choices.
+   */
+  propertyHeading: PropTypes.node.isRequired,
+
+  /**
+   * The accessible label for the property dropdown.
+   */
+  propertySelectLabel: PropTypes.string.isRequired,
+
+  /**
+   * Indicates if static variables can be selected for the mapping or not. Assigning
+   * to static variables is not possible, but reading from them and assigning the value
+   * to a property is possible.
+   */
   includeStaticVariables: PropTypes.bool,
-  targets: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-  targetsFieldName: PropTypes.string,
-  targetsColumnLabel: PropTypes.string.isRequired,
-  selectAriaLabel: PropTypes.string.isRequired,
-  alreadyMapped: PropTypes.arrayOf(PropTypes.string),
+
+  /**
+   * Optional callback function to check an individual row for problems.
+   *
+   * The callback will be invoked with `rowCheck(intl, row)` and must return an array
+   * of error messages, where `intl` is the context from react-intl's `useIntl()` hook.
+   */
+  rowCheck: PropTypes.func,
 };
 
 export default VariableMapping;
