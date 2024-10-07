@@ -4,10 +4,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.objects_api.checks import check_config
-from openforms.registrations.contrib.objects_api.models import (
-    ObjectsAPIConfig,
-    ObjectsAPIGroupConfig,
-)
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.typing import JSONObject
 
 from ...base import BasePlugin
