@@ -14,7 +14,7 @@ const PrefillSummary = ({
   plugin = '',
   attribute = '',
   identifierRole = 'main',
-  prefillOptions = undefined,
+  options = undefined,
   onChange = undefined,
   errors = {},
 }) => {
@@ -91,7 +91,7 @@ const PrefillSummary = ({
               plugin={plugin}
               attribute={attribute}
               identifierRole={identifierRole}
-              prefillOptions={prefillOptions}
+              options={options}
               onSubmit={values => {
                 onChange(values);
                 setModalOpen(false);
@@ -119,6 +119,7 @@ PrefillSummary.propTypes = {
   plugin: PropTypes.string,
   attribute: PropTypes.string,
   identifierRole: PropTypes.string,
+  options: PropTypes.objects,
   onChange: PropTypes.func, // if defined, we can edit it in a modal
   errors: PropTypes.objectOf(AnyError),
 };

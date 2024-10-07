@@ -1,6 +1,6 @@
 import {Formik, useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 import useUpdateEffect from 'react-use/esm/useUpdateEffect';
@@ -30,7 +30,7 @@ const PrefillConfigurationForm = ({
   attribute = '',
   identifierRole = 'main',
   // TODO: find a better way to specify this based on the selected plugin
-  prefillOptions = {
+  options = {
     objectsApiGroup: '',
     objecttype: '',
     objecttypeVersion: null,
@@ -44,7 +44,7 @@ const PrefillConfigurationForm = ({
         plugin,
         attribute,
         identifierRole,
-        prefillOptions,
+        options,
       }}
       onSubmit={(values, actions) => {
         // TODO should be implemented in https://github.com/open-formulieren/open-forms/issues/4693
@@ -205,6 +205,19 @@ const PrefillFields = ({values, errors}) => {
   );
 };
 
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  options: {
+    ...prevValues.options,
+    objecttype: '',
+    objecttypeVersion: undefined,
+    variablesMapping: [],
+  },
+});
+
 const ObjectsAPIPrefillFields = ({values, errors}) => {
   const intl = useIntl();
   const plugin = values.plugin;
@@ -217,7 +230,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
 
   const apiGroups = objectsPlugin.configurationContext.apiGroups;
 
-  const {objecttype, objecttypeVersion, objectsApiGroup} = values.prefillOptions;
+  const {objecttype, objecttypeVersion, objectsApiGroup} = values.options;
 
   // Load the possible prefill properties
   // XXX: this would benefit from client-side caching
@@ -259,12 +272,11 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
         </FormRow>
 
         <ObjectsAPIGroup
-          prefix="prefillOptions"
-          apiGroupName="prefillOptions.objectsApiGroup"
-          errors={errors['prefillOptions.objectsApiGroup']}
+          name="options.objectsApiGroup"
+          prefix="options"
           apiGroupChoices={apiGroups}
           onChangeCheck={() => {
-            if (values.prefillOptions.variablesMapping.length === 0) return true;
+            if (values.options.variablesMapping.length === 0) return true;
             const confirmSwitch = window.confirm(
               intl.formatMessage({
                 description:
@@ -274,10 +286,12 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
               })
             );
             if (!confirmSwitch) return false;
-            setFieldValue('prefillOptions.variablesMapping', []);
+            setFieldValue('options.variablesMapping', []);
             return true;
           }}
+          onApiGroupChange={onApiGroupChange}
         />
+
         <ErrorBoundary
           errorMessage={
             <FormattedMessage
@@ -287,11 +301,11 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           }
         >
           <ObjectTypeSelect
-            objectTypeName="prefillOptions.objecttype"
-            objectTypeVersionName="prefillOptions.objecttypeVersion"
-            apiGroupName="prefillOptions.objectsApiGroup"
+            objectTypeName="options.objecttype"
+            objectTypeVersionName="options.objecttypeVersion"
+            apiGroupName="options.objectsApiGroup"
             onChangeCheck={() => {
-              if (values.prefillOptions.variablesMapping.length === 0) return true;
+              if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = window.confirm(
                 intl.formatMessage({
                   description:
@@ -301,7 +315,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
                 })
               );
               if (!confirmSwitch) return false;
-              setFieldValue('prefillOptions.variablesMapping', []);
+              setFieldValue('options.variablesMapping', []);
               return true;
             }}
           />
@@ -316,9 +330,9 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
           }
         >
           <ObjectTypeVersionSelect
-            objectTypeName="prefillOptions.objecttype"
-            objectTypeVersionName="prefillOptions.objecttypeVersion"
-            apiGroupName="prefillOptions.objectsApiGroup"
+            objectTypeName="options.objecttype"
+            objectTypeVersionName="options.objecttypeVersion"
+            apiGroupName="options.objectsApiGroup"
           />
         </ErrorBoundary>
       </Fieldset>
@@ -333,7 +347,7 @@ const ObjectsAPIPrefillFields = ({values, errors}) => {
       >
         <FormRow>
           <VariableMapping
-            name="prefillOptions.variablesMapping"
+            name="options.variablesMapping"
             loading={loading}
             directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
             propertyName="prefillProperty"

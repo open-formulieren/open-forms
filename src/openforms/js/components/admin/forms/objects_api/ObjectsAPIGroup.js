@@ -1,5 +1,4 @@
 import {useField, useFormikContext} from 'formik';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {useUpdateEffect} from 'react-use';
@@ -11,32 +10,24 @@ import ReactSelect from 'components/admin/forms/ReactSelect';
 const ObjectsAPIGroup = ({
   apiGroupChoices,
   onChangeCheck,
-  apiGroupName = 'objectsApiGroup',
-  prefix = undefined,
+  name = 'objectsApiGroup',
+  onApiGroupChange,
 }) => {
-  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(apiGroupName);
+  const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
   const {value} = fieldProps;
 
-  // reset the objecttype specific-configuration whenever the API group changes
+  // Call `onApiGroupChange` to get the 'reset' values whenever the API group changes.
   useUpdateEffect(() => {
-    setValues(prevValues => {
-      const targetObject = prefix ? prevValues[prefix] : prevValues;
-      const newObject = {
-        ...targetObject,
-        objecttype: '',
-        objecttypeVersion: undefined,
-        variablesMapping: [],
-      };
-      return prefix ? {...prevValues, [prefix]: newObject} : newObject;
-    });
-  }, [setValues, value]);
+    if (!onApiGroupChange) return;
+    setValues(onApiGroupChange);
+  }, [setValues, onApiGroupChange, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
       <Field
-        name={apiGroupName}
+        name={name}
         required
         label={
           <FormattedMessage
@@ -53,7 +44,7 @@ const ObjectsAPIGroup = ({
         noManageChildProps
       >
         <ReactSelect
-          name={apiGroupName}
+          name={name}
           options={options}
           required
           onChange={selectedOption => {
@@ -75,7 +66,31 @@ ObjectsAPIGroup.propTypes = {
       ])
     )
   ).isRequired,
+
+  /**
+   * Optional callback to confirm the change. Return `true` to continue with the change,
+   * return `false` to abort it.
+   */
   onChangeCheck: PropTypes.func,
+
+  /**
+   * Name to use for the form field, is passed down to Formik.
+   */
+  name: PropTypes.string,
+
+  /**
+   * Callback to invoke when the API group value changes, e.g. to reset any dependent fields.
+   *
+   * The function will be called with Formik's previous values so you can construct a new
+   * values state from that.
+   *
+   * **NOTE**
+   *
+   * It's best to define this callback at the module level, or make use of `useCallback`
+   * to obtain a stable reference to the callback, otherwise the callback will likely
+   * fire unexpectedly during re-renders.
+   */
+  onApiGroupChange: PropTypes.func,
 };
 
 export default ObjectsAPIGroup;

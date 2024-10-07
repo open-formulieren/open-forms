@@ -21,10 +21,19 @@ import {
   UploadSubmissionCsv,
 } from './fields';
 
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  objecttype: '',
+  objecttypeVersion: undefined,
+});
+
 const LegacyConfigFields = ({apiGroupChoices}) => (
   <>
     <Fieldset>
-      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} />
+      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} onApiGroupChange={onApiGroupChange} />
       <ErrorBoundary
         errorMessage={
           <FormattedMessage

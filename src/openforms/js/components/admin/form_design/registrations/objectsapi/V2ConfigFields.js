@@ -18,6 +18,16 @@ import {
   UploadSubmissionCsv,
 } from './fields';
 
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  objecttype: '',
+  objecttypeVersion: undefined,
+  variablesMapping: [],
+});
+
 const V2ConfigFields = ({apiGroupChoices}) => {
   const intl = useIntl();
   const {
@@ -44,6 +54,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
             setFieldValue('variablesMapping', []);
             return true;
           }}
+          onApiGroupChange={onApiGroupChange}
         />
         <ErrorBoundary
           errorMessage={
