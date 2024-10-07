@@ -354,7 +354,7 @@ export const detectProblems = (action, intl) => {
       const problems = [];
 
       const hasInputMappingProblems = action.action.config?.inputMapping?.some(
-        mapping => detectDMNMappingProblems(mapping, intl).length > 0
+        mapping => detectDMNMappingProblems(intl, mapping).length > 0
       );
       if (hasInputMappingProblems) {
         problems.push(
@@ -365,7 +365,7 @@ export const detectProblems = (action, intl) => {
         );
       }
       const hasOutputMappingProblems = action.action.config?.outputMapping?.some(
-        mapping => detectDMNMappingProblems(mapping, intl).length > 0
+        mapping => detectDMNMappingProblems(intl, mapping).length > 0
       );
       if (hasOutputMappingProblems) {
         problems.push(

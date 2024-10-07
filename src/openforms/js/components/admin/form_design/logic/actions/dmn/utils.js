@@ -48,7 +48,7 @@ const namePartChars = [
  */
 export const namePattern = new RegExp(`^[${nameStartChars}][${namePartChars}]*$`, 'u');
 
-export const detectMappingProblems = ({formVariable, dmnVariable}, intl) => {
+export const detectMappingProblems = (intl, {formVariable, dmnVariable}) => {
   const problems = [];
 
   if (!formVariable && dmnVariable) {

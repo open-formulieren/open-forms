@@ -10,7 +10,7 @@ import VariableMapping from 'components/admin/forms/VariableMapping';
 import {get} from 'utils/fetch';
 
 import InputsOverview from './InputsOverview';
-import {namePattern} from './utils';
+import {detectMappingProblems, namePattern} from './utils';
 
 const EMPTY_DMN_PARAMS = {
   inputClauses: [],
@@ -191,13 +191,13 @@ const DMNParametersForm = () => {
           </h3>
           <VariableMapping
             loading={loading}
-            mappingName="inputMapping"
-            targets={dmnParams.inputs}
-            targetsFieldName="dmnVariable"
-            targetsColumnLabel={dmnVariableColumnLabel}
-            selectAriaLabel={dmnVariableSelectAriaLabel}
-            alreadyMapped={inputMapping.map(mapping => mapping.dmnVariable)}
+            name="inputMapping"
+            propertyChoices={dmnParams.inputs}
+            propertyName="dmnVariable"
+            propertyHeading={dmnVariableColumnLabel}
+            propertySelectLabel={dmnVariableSelectAriaLabel}
             includeStaticVariables
+            rowCheck={detectMappingProblems}
           />
         </div>
 
@@ -207,12 +207,12 @@ const DMNParametersForm = () => {
           </h3>
           <VariableMapping
             loading={loading}
-            mappingName="outputMapping"
-            targets={dmnParams.outputs}
-            targetsFieldName="dmnVariable"
-            targetsColumnLabel={dmnVariableColumnLabel}
-            selectAriaLabel={dmnVariableSelectAriaLabel}
-            alreadyMapped={outputMapping.map(mapping => mapping.dmnVariable)}
+            name="outputMapping"
+            propertyChoices={dmnParams.outputs}
+            propertyName="dmnVariable"
+            propertyHeading={dmnVariableColumnLabel}
+            propertySelectLabel={dmnVariableSelectAriaLabel}
+            rowCheck={detectMappingProblems}
           />
         </div>
       </div>
