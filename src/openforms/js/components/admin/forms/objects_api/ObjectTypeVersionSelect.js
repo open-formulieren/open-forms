@@ -8,7 +8,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
-import {useSynchronizeSelect} from '../../form_design/registrations/objectsapi/fields/hooks';
+import {useSynchronizeSelect} from './hooks';
 
 const getObjecttypeVersionsEndpoint = uuid => {
   const bits = ['/api/v2/objects-api/object-types', encodeURIComponent(uuid), 'versions'];

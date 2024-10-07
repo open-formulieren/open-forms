@@ -10,7 +10,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
-import {useSynchronizeSelect} from '../../form_design/registrations/objectsapi/fields/hooks';
+import {useSynchronizeSelect} from './hooks';
 
 const getAvailableObjectTypes = async apiGroupID => {
   const response = await get(OBJECTS_API_OBJECTTYPES_ENDPOINT, {objects_api_group: apiGroupID});
