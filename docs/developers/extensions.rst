@@ -53,7 +53,7 @@ The flow works as follows:
      If it's NOT the case, it doesn't do anything. If it's the case, it makes the token exchange request to Keycloak
      and adds the obtained access token to the headers of the request to the downstream API.
 
-.. _token exchange: https://www.keycloak.org/docs/latest/securing_apps/#_token-exchange
+.. _token exchange: https://www.keycloak.org/securing-apps/token-exchange
 .. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
 .. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced.html#custom-authentication
 .. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py
