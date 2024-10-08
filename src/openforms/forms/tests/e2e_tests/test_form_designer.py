@@ -42,8 +42,8 @@ async def add_new_step(page: Page):
     await page.get_by_role("button", name="Create a new form definition").click()
 
 
-async def drag_and_drop_component(page: Page, component: str):
-    await page.get_by_text(component, exact=True).hover()
+async def drag_and_drop_component(page: Page, component: str, parent_ref: str = 'sidebar-groups'):
+    await page.locator(f'css=[ref="{parent_ref}"]').get_by_text(component, exact=True).hover()
     await page.mouse.down()
     # This is added to make it work for when there is already a component in the container.
     # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
