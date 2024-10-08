@@ -28,7 +28,6 @@ const ObjectTypeSelect = ({
 }) => {
   const [fieldProps, , fieldHelpers] = useField(name);
   const {
-    values,
     setFieldValue,
     getFieldProps,
     initialValues: {objecttype: initialObjecttype},

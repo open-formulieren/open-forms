@@ -119,7 +119,7 @@ PrefillSummary.propTypes = {
   plugin: PropTypes.string,
   attribute: PropTypes.string,
   identifierRole: PropTypes.string,
-  options: PropTypes.objects,
+  options: PropTypes.object,
   onChange: PropTypes.func, // if defined, we can edit it in a modal
   errors: PropTypes.objectOf(AnyError),
 };

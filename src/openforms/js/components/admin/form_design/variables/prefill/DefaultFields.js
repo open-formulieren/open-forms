@@ -12,6 +12,7 @@ import {get} from 'utils/fetch';
 import AttributeField from './AttributeField';
 import IdentifierRoleField from './IdentifierRoleField';
 import PluginField from './PluginField';
+import {ErrorsType} from './types';
 
 // Load the possible prefill attributes
 // XXX: this would benefit from client-side caching
@@ -95,11 +96,6 @@ const DefaultFields = ({errors}) => {
     </Fieldset>
   );
 };
-
-const ErrorsType = PropTypes.oneOfType([
-  PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.array])),
-  PropTypes.string,
-]);
 
 DefaultFields.propTypes = {
   errors: PropTypes.shape({
