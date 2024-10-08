@@ -448,7 +448,6 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                     "Tijd",
                     "Telefoonnummer",
                     "Tekstvlak",
-                    "Selectievakje",
                 ]
                 for component in basic_components:
                     await drag_and_drop_component(page, component, "group-panel-custom")

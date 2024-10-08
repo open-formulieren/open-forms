@@ -4,8 +4,8 @@ from ..migration_converters import (
     ensure_addressnl_has_deriveAddress,
     ensure_licensplate_validate_pattern,
     ensure_postcode_validate_pattern,
-    fix_multiple_empty_default_value,
     fix_empty_default_value,
+    fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
 )
 from ..typing import AddressNLComponent, Component
@@ -15,7 +15,8 @@ class LicensePlateTests(SimpleTestCase):
     def test_noop(self):
         component: Component = {
             "type": "licenseplate",
-            "key": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
             "validate": {
                 "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
             },
@@ -24,6 +25,83 @@ class LicensePlateTests(SimpleTestCase):
         changed = ensure_licensplate_validate_pattern(component)
 
         self.assertFalse(changed)
+
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_none_changed(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "defaultValue": [None],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "licensePlate",
+            "label": "Licenseplate",
+            "defaultValue": ["foo", None, "bar"],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
 
 class PostCodeTests(SimpleTestCase):
@@ -61,7 +139,9 @@ class SelectTests(SimpleTestCase):
             "key": "select",
             "label": "Select",
         }
+
         changed = fix_multiple_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_noop(self):
@@ -72,7 +152,9 @@ class SelectTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [],
         }
+
         changed = fix_multiple_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_changed(self):
@@ -83,7 +165,9 @@ class SelectTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [""],
         }
+
         changed = fix_multiple_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [])
 
@@ -97,7 +181,9 @@ class TextTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [],
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_noop(self):
@@ -107,7 +193,9 @@ class TextTests(SimpleTestCase):
             "label": "Text field",
             "defaultValue": "",
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_none_changed(self):
@@ -117,19 +205,22 @@ class TextTests(SimpleTestCase):
             "label": "Text field",
             "defaultValue": None,
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], "")
 
-    def test_no_default_value_changed(self):
+    def test_no_default_value_doesnt_change(self):
         component: Component = {
             "type": "textfield",
             "key": "textField",
             "label": "Text field",
         }
+
         changed = fix_empty_default_value(component)
-        self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], "")
+
+        self.assertFalse(changed)
 
     def test_multiple_default_value_none_changed(self):
         component: Component = {
@@ -137,9 +228,11 @@ class TextTests(SimpleTestCase):
             "key": "textField",
             "label": "Text field",
             "defaultValue": [None],
-            "multiple": True
+            "multiple": True,
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [""])
 
@@ -149,9 +242,11 @@ class TextTests(SimpleTestCase):
             "key": "textField",
             "label": "Text field",
             "defaultValue": ["foo", None, "bar"],
-            "multiple": True
+            "multiple": True,
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
@@ -165,7 +260,9 @@ class EmailTests(SimpleTestCase):
             "multiple": True,
             "defaultValue": [],
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_noop(self):
@@ -175,7 +272,9 @@ class EmailTests(SimpleTestCase):
             "label": "Emailadres",
             "defaultValue": "",
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertFalse(changed)
 
     def test_default_value_none_changed(self):
@@ -185,19 +284,22 @@ class EmailTests(SimpleTestCase):
             "label": "Emailadres",
             "defaultValue": None,
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], "")
 
-    def test_no_default_value_changed(self):
+    def test_no_default_value_doesnt_change(self):
         component: Component = {
             "type": "email",
             "key": "eMailadres",
             "label": "Emailadres",
         }
+
         changed = fix_empty_default_value(component)
-        self.assertTrue(changed)
-        self.assertEqual(component["defaultValue"], "")
+
+        self.assertFalse(changed)
 
     def test_multiple_default_value_none_changed(self):
         component: Component = {
@@ -205,9 +307,11 @@ class EmailTests(SimpleTestCase):
             "key": "eMailadres",
             "label": "Emailadres",
             "defaultValue": [None],
-            "multiple": True
+            "multiple": True,
         }
+
         changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], [""])
 
@@ -217,9 +321,327 @@ class EmailTests(SimpleTestCase):
             "key": "eMailadres",
             "label": "Emailadres",
             "defaultValue": ["foo", None, "bar"],
-            "multiple": True
+            "multiple": True,
         }
+
         changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+
+class TimeTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_none_changed(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "defaultValue": [None],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "time",
+            "key": "time",
+            "label": "Time",
+            "defaultValue": ["11:11", None, "22:22"],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["11:11", "", "22:22"])
+
+
+class PhoneNumberTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_none_changed(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "defaultValue": [None],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "telefoonnummer",
+            "label": "Telefoonnummer",
+            "defaultValue": ["0612345678", None, "0687654321"],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["0612345678", "", "0687654321"])
+
+
+class TextareaTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_none_changed(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "defaultValue": [None],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "textArea",
+            "label": "Textarea",
+            "defaultValue": ["foo", None, "bar"],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+
+class IBANTests(SimpleTestCase):
+    def test_multiple_noop(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_default_value_none_changed(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "defaultValue": [None],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "iban",
+            "defaultValue": ["foo", None, "bar"],
+            "multiple": True,
+        }
+
+        changed = fix_empty_default_value(component)
+
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 

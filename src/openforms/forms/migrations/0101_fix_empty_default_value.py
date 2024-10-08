@@ -13,5 +13,10 @@ class Migration(migrations.Migration):
 
     operations = [
         ConvertComponentsOperation("textfield", "fix_empty_default_value"),
-        ConvertComponentsOperation("email", "fix_empty_default_value")
+        ConvertComponentsOperation("email", "fix_empty_default_value"),
+        ConvertComponentsOperation("time", "fix_empty_default_value"),
+        ConvertComponentsOperation("phoneNumber", "fix_empty_default_value"),
+        ConvertComponentsOperation("textarea", "fix_empty_default_value"),
+        ConvertComponentsOperation("iban", "fix_empty_default_value"),
+        ConvertComponentsOperation("licenseplate", "fix_empty_default_value"),
     ]
