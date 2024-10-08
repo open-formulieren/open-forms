@@ -13,7 +13,6 @@ from openforms.contrib.haal_centraal.clients.brp import BRPClient
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.pre_requests.clients import PreRequestClientContext
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -111,10 +110,7 @@ class HaalCentraalPrefill(BasePlugin):
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, Any]:
         try:
-            client = get_brp_client(
-                submission=submission,
-                context=PreRequestClientContext(submission=submission),
-            )
+            client = get_brp_client(submission=submission)
         except NoServiceConfigured:
             return {}
 
@@ -141,10 +137,7 @@ class HaalCentraalPrefill(BasePlugin):
           the value is the prefill value to use for that attribute.
         """
         try:
-            client = get_brp_client(
-                submission=submission,
-                context=PreRequestClientContext(submission=submission),
-            )
+            client = get_brp_client(submission=submission)
         except NoServiceConfigured:
             return ({}, "")
 
