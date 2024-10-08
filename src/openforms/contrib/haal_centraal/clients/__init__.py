@@ -62,6 +62,13 @@ def get_brp_client(submission: Submission | None = None, **kwargs: Any) -> BRPCl
             f"No suitable client class configured for API version {version}"
         )
 
+    if submission:
+        kwargs.setdefault("context", {})
+        # pass submission to ensure token exchange works properly
+        # only do this if the submission is not None, to avoid unnecessary database queries
+        # done by token_exchange.auth.TokenAccessAuth
+        kwargs["context"]["submission"] = submission
+
     return build_client(
         service,
         client_factory=ClientCls,

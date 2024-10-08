@@ -1,6 +1,6 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase, tag
 
 import requests_mock
 from glom import glom
@@ -9,6 +9,8 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.authentication.service import AuthAttribute
 from openforms.authentication.utils import store_registrator_details
 from openforms.config.models import GlobalConfiguration
+from openforms.pre_requests.base import PreRequestHookBase
+from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..clients import get_brp_client
@@ -171,8 +173,40 @@ class HaalCentraalFindPersonTests:
 
         self.assertIsNone(client.pre_request_context)  # type: ignore
 
+    @tag("gh-4713")
+    def test_pre_request_hooks_called(self):
+        """
+        Regression test for #4713, assert that the pre request hooks are called with the
+        expected context to make sure that token exchange works properly
+        """
+        pre_req_register = Registry()
+        mock = MagicMock()
 
-class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
+        @pre_req_register("test")
+        class PreRequestHook(PreRequestHookBase):
+            def __call__(self, *args, **kwargs):
+                mock(*args, **kwargs)
+
+        submission_bsn = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__authentication_backends=["demo"],
+            form__formstep__form_definition__login_required=False,
+            auth_info__attribute_hashed=False,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="71291440",
+            auth_info__plugin="demo",
+        )
+        client = get_brp_client(submission_bsn)
+
+        with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
+            client.find_person("999990676", attributes=self.attributes_to_query)
+
+        self.assertEqual(mock.call_count, 1)  # 1 API calls expected
+        context = mock.call_args.kwargs["context"]
+        self.assertEqual(context, {"submission": submission_bsn})  # type: ignore
+
+
+class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
     version = BRPVersions.v13
 
     def test_find_person_succesfully(self):
@@ -369,8 +403,16 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
         )
         super().test_get_family_members()
 
+    def test_pre_request_hooks_called(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1.json"),
+        )
+        super().test_pre_request_hooks_called()
 
-class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
+
+class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
     version = BRPVersions.v20
 
     def test_find_person_succesfully(self):
@@ -545,6 +587,14 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
             },
         )
         super().test_get_family_members()
+
+    def test_pre_request_hooks_called(self):
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
+        )
+        super().test_pre_request_hooks_called()
 
 
 class ClientFactoryInvalidVersionTests(SimpleTestCase):
