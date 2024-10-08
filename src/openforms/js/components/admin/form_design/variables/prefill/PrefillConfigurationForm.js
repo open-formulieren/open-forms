@@ -1,11 +1,16 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 
 import DefaultFields from './DefaultFields';
 import ObjectsAPIFields from './ObjectsAPIFields';
+import PluginField from './PluginField';
 
 const PLUGIN_COMPONENT_MAPPING = {
   objects_api: ObjectsAPIFields,
@@ -46,6 +51,23 @@ const PrefillConfigurationForm = ({
           PLUGIN_COMPONENT_MAPPING[values.plugin] ?? PLUGIN_COMPONENT_MAPPING.default;
         return (
           <>
+            <Fieldset extraClassName="module--spaceless">
+              <FormRow>
+                <Field
+                  name="plugin"
+                  label={
+                    <FormattedMessage
+                      description="Variable prefill plugin label"
+                      defaultMessage="Plugin"
+                    />
+                  }
+                  errors={errors.plugin}
+                >
+                  <PluginField />
+                </Field>
+              </FormRow>
+            </Fieldset>
+
             <PluginFormComponent errors={errors} />
 
             <SubmitRow>

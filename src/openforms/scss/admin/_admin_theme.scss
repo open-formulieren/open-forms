@@ -80,6 +80,10 @@ div.breadcrumbs {
   }
 }
 
+.module.module--spaceless {
+  margin-block-end: 0;
+}
+
 /* Important is used because Django templates include their own style, after ours */
 #changelist-filter {
   a:focus,

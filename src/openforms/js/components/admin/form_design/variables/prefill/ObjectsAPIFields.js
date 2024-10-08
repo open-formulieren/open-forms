@@ -24,7 +24,6 @@ import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import PluginField from './PluginField';
 import {ErrorsType} from './types';
 
 const PLUGIN_ID = 'objects_api';
@@ -90,21 +89,6 @@ const ObjectsAPIFields = ({errors}) => {
   return (
     <>
       <Fieldset>
-        <FormRow>
-          <Field
-            name="plugin"
-            label={
-              <FormattedMessage
-                description="Variable prefill plugin label"
-                defaultMessage="Plugin"
-              />
-            }
-            errors={errors.plugin}
-          >
-            <PluginField />
-          </Field>
-        </FormRow>
-
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
           onChangeCheck={() => {

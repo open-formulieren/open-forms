@@ -11,7 +11,6 @@ import {get} from 'utils/fetch';
 
 import AttributeField from './AttributeField';
 import IdentifierRoleField from './IdentifierRoleField';
-import PluginField from './PluginField';
 import {ErrorsType} from './types';
 
 // Load the possible prefill attributes
@@ -52,18 +51,6 @@ const DefaultFields = ({errors}) => {
 
   return (
     <Fieldset>
-      <FormRow>
-        <Field
-          name="plugin"
-          label={
-            <FormattedMessage description="Variable prefill plugin label" defaultMessage="Plugin" />
-          }
-          errors={errors.plugin}
-        >
-          <PluginField />
-        </Field>
-      </FormRow>
-
       <FormRow>
         <Field
           name="attribute"
