@@ -39,6 +39,12 @@ class LicensePlate extends TextField {
     super(...args);
 
     patchValidateDefaults(this);
+
+    // somewhere the default emptyValue/defaultValue does not seem to be used and it forces
+    // component.defaultValue to be null, which causes issues with multiples #4659
+    if (this.component.defaultValue === null) {
+      this.component.defaultValue = '';
+    }
   }
 
   get defaultSchema() {
