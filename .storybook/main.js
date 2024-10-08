@@ -88,9 +88,7 @@ const config = {
     return config;
   },
 
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
 };
 
 export default config;
