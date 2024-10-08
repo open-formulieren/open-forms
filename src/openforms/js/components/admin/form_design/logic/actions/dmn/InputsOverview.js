@@ -21,7 +21,7 @@ const InputsOverview = ({inputClauses}) => (
       />
     </p>
 
-    <table className="logic-dmn__mapping-table logic-dmn__mapping-table--stretch">
+    <table className="mapping-table mapping-table--stretch">
       <thead>
         <tr>
           <th>

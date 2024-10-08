@@ -2058,6 +2058,12 @@
       "value": "Kind 1"
     }
   ],
+  "I9+K9f": [
+    {
+      "type": 0,
+      "value": "Mappings"
+    }
+  ],
   "IOko1U": [
     {
       "type": 0,
@@ -2762,6 +2768,12 @@
       "value": "Prefill-instellingen"
     }
   ],
+  "QzZdVz": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het ophalen van de objecttypes."
+    }
+  ],
   "R/XadM": [
     {
       "type": 0,
@@ -2810,12 +2822,6 @@
       },
       "type": 5,
       "value": "viewMode"
-    }
-  ],
-  "RM89fL": [
-    {
-      "type": 0,
-      "value": "Er ging iets fout bij het ophalen van de objecttypes."
     }
   ],
   "RN628y": [
@@ -5091,6 +5097,12 @@
       "value": "Bronorganisatie"
     }
   ],
+  "nYePys": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available object type versions."
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -5691,6 +5703,12 @@
       "value": "Verberg de koptekst en de lijn boven de veldengroep in het formulier."
     }
   ],
+  "vAZDY4": [
+    {
+      "type": 0,
+      "value": "Source path"
+    }
+  ],
   "vNRiMn": [
     {
       "type": 0,
@@ -6099,6 +6117,12 @@
     {
       "type": 0,
       "value": "Gebruik prijsregels om de prijs te bepalen"
+    }
+  ],
+  "zwOwrD": [
+    {
+      "type": 0,
+      "value": "Select a property from the object type"
     }
   ]
 }

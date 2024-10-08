@@ -19,6 +19,13 @@ class PrefillPluginSerializer(PluginBaseSerializer):
         ),
         allow_null=True,
     )
+    configuration_context = serializers.JSONField(
+        label=_("Extra configuration context"),
+        help_text=_(
+            "Extra information for option configuration that is specific to the plugin type"
+        ),
+        allow_null=True,
+    )
 
 
 class PrefillPluginQueryParameterSerializer(serializers.Serializer):

@@ -1,0 +1,45 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import VariableMapping from './VariableMapping';
+import * as VariableMappingStories from './VariableMapping.stories';
+
+<Meta of={VariableMappingStories} />
+
+# Mapping variables
+
+Often form variables (from components and user-defined, optionally including static variables) need
+to be mapped to or from another sort of variable/property. This can be achieved with the
+`VariableMapping` component.
+
+It is hardcoded to provide the form variable in one column, and takes a second column with the
+'property' to map to/from. The direction of the mapping depends on the context where it's used.
+
+<Canvas of={VariableMappingStories.Default} />
+
+## Data shape
+
+The component operates on `Formik` data - you pass it the name (e.g. `container.mappings`) that
+holds the array with the mapped items. Within each item, a key `formVariable` must be present that
+contains the value/key of the form variable. The other key must be specified through the
+`propertyName` prop.
+
+In TypeScript-like code:
+
+```ts
+// K must be the `propertyName` prop
+interface Mapping<K extends string> {
+  formVariable: string;
+  [K]: any;
+}
+
+const mappings: Mapping<'someProperty'>[] = [
+  {
+    formVariable: 'someFormComponent',
+    someProperty: 'foo',
+  },
+];
+```
+
+## Props
+
+<ArgTypes of={VariableMapping} />

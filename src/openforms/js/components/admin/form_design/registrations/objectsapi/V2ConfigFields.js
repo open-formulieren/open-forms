@@ -3,18 +3,30 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
+import {
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+} from 'components/admin/forms/objects_api';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
-  ObjectTypeSelect,
-  ObjectTypeVersionSelect,
-  ObjectsAPIGroup,
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,
 } from './fields';
+
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  objecttype: '',
+  objecttypeVersion: undefined,
+  variablesMapping: [],
+});
 
 const V2ConfigFields = ({apiGroupChoices}) => {
   const intl = useIntl();
@@ -42,12 +54,13 @@ const V2ConfigFields = ({apiGroupChoices}) => {
             setFieldValue('variablesMapping', []);
             return true;
           }}
+          onApiGroupChange={onApiGroupChange}
         />
         <ErrorBoundary
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type select error"
-              defaultMessage="Something went wrong retrieving the available object types."
+              defaultMessage="Something went wrong while retrieving the available object types."
             />
           }
         >

@@ -6,23 +6,34 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+} from 'components/admin/forms/objects_api';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
-  ObjectTypeSelect,
-  ObjectTypeVersionSelect,
-  ObjectsAPIGroup,
   OrganisationRSIN,
   UpdateExistingObject,
   UploadSubmissionCsv,
 } from './fields';
 
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  objecttype: '',
+  objecttypeVersion: undefined,
+});
+
 const LegacyConfigFields = ({apiGroupChoices}) => (
   <>
     <Fieldset>
-      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} />
+      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} onApiGroupChange={onApiGroupChange} />
       <ErrorBoundary
         errorMessage={
           <FormattedMessage

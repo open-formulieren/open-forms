@@ -899,6 +899,11 @@
     "description": "Objects registration: object definition",
     "originalDefault": "Object and/or product request definition"
   },
+  "I9+K9f": {
+    "defaultMessage": "Mappings",
+    "description": "Objects API prefill mappings fieldset title",
+    "originalDefault": "Mappings"
+  },
   "IhIqdj": {
     "defaultMessage": "Decision definition ID",
     "description": "Decision definition ID label",
@@ -1304,6 +1309,11 @@
     "description": "Variable prefill configuration modal title",
     "originalDefault": "Prefill configuration"
   },
+  "QzZdVz": {
+    "defaultMessage": "Something went wrong while retrieving the available object types.",
+    "description": "Objects API registrations options: object type select error",
+    "originalDefault": "Something went wrong while retrieving the available object types."
+  },
   "R7XVbR": {
     "defaultMessage": "Main/representee",
     "description": "Identifier role (for mandate context) label for representee",
@@ -1318,11 +1328,6 @@
     "defaultMessage": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}",
     "description": "Toggle icon for JSON logic presentation mode.",
     "originalDefault": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}"
-  },
-  "RM89fL": {
-    "defaultMessage": "Something went wrong retrieving the available object types.",
-    "description": "Objects API registrations options: object type select error",
-    "originalDefault": "Something went wrong retrieving the available object types."
   },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
@@ -2269,6 +2274,11 @@
     "description": "Logic trigger heading",
     "originalDefault": "Trigger condition"
   },
+  "nYePys": {
+    "defaultMessage": "Something went wrong while retrieving the available object type versions.",
+    "description": "Objects API registrations options: object type version select error",
+    "originalDefault": "Something went wrong while retrieving the available object type versions."
+  },
   "neCqv9": {
     "defaultMessage": "The registration result will be an object from the selected type.",
     "description": "Objects API registration options 'Objecttype' helpText",
@@ -2559,6 +2569,11 @@
     "description": "History link button",
     "originalDefault": "History"
   },
+  "vAZDY4": {
+    "defaultMessage": "Source path",
+    "description": "Prefill / Objects API: column header for object type property selection",
+    "originalDefault": "Source path"
+  },
   "vNRiMn": {
     "defaultMessage": "Theme",
     "description": "Form theme field label",
@@ -2738,5 +2753,10 @@
     "defaultMessage": "Use logic rules to determine the price",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
+  },
+  "zwOwrD": {
+    "defaultMessage": "Select a property from the object type",
+    "description": "Prefill / Objects API: accessible label for object type property selection",
+    "originalDefault": "Select a property from the object type"
   }
 }

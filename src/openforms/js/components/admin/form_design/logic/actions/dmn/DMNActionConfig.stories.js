@@ -6,6 +6,7 @@ import {
   mockDMNParametersGet,
 } from 'components/admin/form_design/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
+import {serializeValue} from 'components/admin/forms/VariableMapping';
 
 import DMNActionConfig from './DMNActionConfig';
 
@@ -233,10 +234,10 @@ export const Empty = {
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
       await userEvent.selectOptions(formVarsDropdowns, 'Name (name)');
-      await userEvent.selectOptions(dmnVarsDropdown, 'camundaVar');
+      await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');
 
-      await expect(formVarsDropdowns.value).toBe('name');
-      await expect(dmnVarsDropdown.value).toBe('camundaVar');
+      await expect(formVarsDropdowns).toHaveValue('name');
+      await expect(dmnVarsDropdown).toHaveValue(serializeValue('camundaVar'));
     });
 
     await step('Changing plugin clears decision definition, version and DMN vars', async () => {
@@ -244,14 +245,14 @@ export const Empty = {
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
-        const [formVarsDropdowns, dmnVarsDropdown] = within(
+        const [, dmnVarsDropdown] = within(
           document.querySelector('.logic-dmn__mapping-config')
         ).getAllByRole('combobox');
 
         await expect(renderedOptions.length).toBe(2);
-        await expect(decisionDefDropdown.value).toBe('');
-        await expect(decisionDefVersionDropdown.value).toBe('');
-        await expect(dmnVarsDropdown.value).toBe('');
+        await expect(decisionDefDropdown).toHaveValue('');
+        await expect(decisionDefVersionDropdown).toHaveValue('');
+        await expect(dmnVarsDropdown).toHaveValue('');
       });
     });
 
@@ -327,9 +328,9 @@ export const withInitialValues = {
       const dmnVariableDropdowns = await canvas.findAllByLabelText('DMN-variabele');
 
       await waitFor(async () => {
-        await expect(dmnVariableDropdowns[0]).toHaveValue('camundaVar');
-        await expect(dmnVariableDropdowns[1]).toHaveValue('port');
-        await expect(dmnVariableDropdowns[2]).toHaveValue('reason');
+        await expect(dmnVariableDropdowns[0]).toHaveValue(serializeValue('camundaVar'));
+        await expect(dmnVariableDropdowns[1]).toHaveValue(serializeValue('port'));
+        await expect(dmnVariableDropdowns[2]).toHaveValue(serializeValue('reason'));
       });
     });
   },
@@ -510,9 +511,9 @@ export const VersionChangePartiallyResetsMapping = {
       const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN-variabele'});
       expect(dmnVarDropdowns).toHaveLength(3);
       // check their values
-      expect(dmnVarDropdowns[0]).toHaveValue('firstName');
-      expect(dmnVarDropdowns[1]).toHaveValue('surname');
-      expect(dmnVarDropdowns[2]).toHaveValue('postcodeOutput');
+      expect(dmnVarDropdowns[0]).toHaveValue(serializeValue('firstName'));
+      expect(dmnVarDropdowns[1]).toHaveValue(serializeValue('surname'));
+      expect(dmnVarDropdowns[2]).toHaveValue(serializeValue('postcodeOutput'));
     });
 
     await step('Change definition version', async () => {
@@ -527,7 +528,7 @@ export const VersionChangePartiallyResetsMapping = {
       // check their values
       expect(dmnVarDropdowns[0]).toHaveValue('');
       expect(dmnVarDropdowns[1]).toHaveValue('');
-      expect(dmnVarDropdowns[2]).toHaveValue('postcodeOutput');
+      expect(dmnVarDropdowns[2]).toHaveValue(serializeValue('postcodeOutput'));
     });
 
     await step('Submit form', async () => {

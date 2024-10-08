@@ -3,7 +3,7 @@ from typing import Any, Container, Iterable
 from openforms.authentication.service import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
-from openforms.typing import JSONEncodable
+from openforms.typing import JSONEncodable, JSONObject
 
 from .constants import IdentifierRoles
 
@@ -89,3 +89,7 @@ class BasePlugin(AbstractBasePlugin):
             and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
+
+    @classmethod
+    def configuration_context(cls) -> JSONObject | None:
+        return None

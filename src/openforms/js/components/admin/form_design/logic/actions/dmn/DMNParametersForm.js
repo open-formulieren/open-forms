@@ -2,15 +2,16 @@ import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
 import produce from 'immer';
 import React, {useEffect} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
+import VariableMapping from 'components/admin/forms/VariableMapping';
+import {FAIcon} from 'components/admin/icons';
 import {get} from 'utils/fetch';
 
 import InputsOverview from './InputsOverview';
-import VariableMapping from './VariableMapping';
-import {namePattern} from './utils';
+import {detectMappingProblems, namePattern} from './utils';
 
 const EMPTY_DMN_PARAMS = {
   inputClauses: [],
@@ -101,6 +102,7 @@ const processInputParams = params => {
 };
 
 const DMNParametersForm = () => {
+  const intl = useIntl();
   const {values, setValues} = useFormikContext();
   const {pluginId, decisionDefinitionId, decisionDefinitionVersion, inputMapping, outputMapping} =
     values;
@@ -172,6 +174,15 @@ const DMNParametersForm = () => {
     dmnParams,
   ]);
 
+  const dmnVariableColumnLabel = intl.formatMessage({
+    description: 'DMN variable label',
+    defaultMessage: 'DMN variable',
+  });
+  const dmnVariableSelectAriaLabel = intl.formatMessage({
+    description: 'Accessible label for DMN variable dropdown',
+    defaultMessage: 'DMN variable',
+  });
+
   return (
     <div className="logic-dmn">
       <div className="logic-dmn__mapping-config">
@@ -181,10 +192,14 @@ const DMNParametersForm = () => {
           </h3>
           <VariableMapping
             loading={loading}
-            mappingName="inputMapping"
-            dmnVariables={dmnParams.inputs}
-            alreadyMapped={inputMapping.map(mapping => mapping.dmnVariable)}
+            name="inputMapping"
+            directionIcon={<FAIcon icon="arrow-right-long" aria-hidden="true" />}
+            propertyChoices={dmnParams.inputs}
+            propertyName="dmnVariable"
+            propertyHeading={dmnVariableColumnLabel}
+            propertySelectLabel={dmnVariableSelectAriaLabel}
             includeStaticVariables
+            rowCheck={detectMappingProblems}
           />
         </div>
 
@@ -194,9 +209,13 @@ const DMNParametersForm = () => {
           </h3>
           <VariableMapping
             loading={loading}
-            mappingName="outputMapping"
-            dmnVariables={dmnParams.outputs}
-            alreadyMapped={outputMapping.map(mapping => mapping.dmnVariable)}
+            name="outputMapping"
+            directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
+            propertyChoices={dmnParams.outputs}
+            propertyName="dmnVariable"
+            propertyHeading={dmnVariableColumnLabel}
+            propertySelectLabel={dmnVariableSelectAriaLabel}
+            rowCheck={detectMappingProblems}
           />
         </div>
       </div>

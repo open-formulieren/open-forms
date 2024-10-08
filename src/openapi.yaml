@@ -9669,7 +9669,13 @@ components:
           title: Required authentication attribute
           description: The authentication attribute required for this plugin to lookup
             remote data.
+        configurationContext:
+          nullable: true
+          title: Extra configuration context
+          description: Extra information for option configuration that is specific
+            to the plugin type
       required:
+      - configurationContext
       - id
       - label
       - requiresAuth

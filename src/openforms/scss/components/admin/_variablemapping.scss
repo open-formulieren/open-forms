@@ -1,0 +1,13 @@
+@use 'microscope-sass/lib/bem';
+
+.mapping-table {
+  @include bem.modifier('stretch') {
+    table-layout: fixed;
+    inline-size: 100%;
+  }
+
+  @include bem.element('direction-icon') {
+    vertical-align: middle;
+    text-align: center;
+  }
+}

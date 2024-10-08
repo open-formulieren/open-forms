@@ -4,7 +4,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.objects_api.checks import check_config
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.typing import JSONObject
 
 from ...base import BasePlugin
 from ...registry import register
@@ -37,3 +39,12 @@ class ObjectsAPIPrefill(BasePlugin):
                 ),
             ),
         ]
+
+    @classmethod
+    def configuration_context(cls) -> JSONObject | None:
+        return {
+            "api_groups": [
+                [group.pk, group.name]
+                for group in ObjectsAPIGroupConfig.objects.iterator()
+            ]
+        }
