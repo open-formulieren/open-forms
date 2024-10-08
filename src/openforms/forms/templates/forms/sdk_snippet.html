@@ -23,6 +23,7 @@
             {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
             {% if sdk_sentry_env %}sentryEnv,{% endif %}
             languageSelectorTarget: '#react-portal--language-selection',
+            onlanguagechange: () => window.location.reload(),
         }
     );
     form.init();
