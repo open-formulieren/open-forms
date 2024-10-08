@@ -100,6 +100,14 @@ Available options
     the ``lang`` attribute of the ``html`` element in the DOM - if this is not set, the
     default value of ``'nl'`` is used.
 
+``onLanguageChange``:
+    Optional function to call on language changes. By default, the SDK reloads the
+    content and changes the active language of the form. When using ``onLanguageChange``,
+    your function will be executed on language change, instead of the default logic.
+
+    The new active language will be passed as an argument to the ``onLanguageChange``
+    function as a two-letter identifier.
+
 ``sentryDSN``:
     Optional `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.
 
@@ -129,7 +137,7 @@ Minimal example
     <html>
     <head>
         <!-- Required for icons used by Open Forms -->
-        <meta charset="utf-8"> 
+        <meta charset="utf-8">
 
         <!-- Load stylesheet and SDK bundle -->
         <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
@@ -161,7 +169,7 @@ Full example
     <html lang="nl">
     <head>
         <!-- Required for icons used by Open Forms -->
-        <meta charset="utf-8"> 
+        <meta charset="utf-8">
 
         <!-- Load stylesheet and SDK bundle -->
         <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
