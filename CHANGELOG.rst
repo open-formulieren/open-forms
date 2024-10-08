@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.6.15 (2024-10-08)
+===================
+
+Final bugfix release in the `2.6.x` series.
+
+* [#4602] Fixed missing Dutch translation for minimum required checked items error
+  message in the selectboxes component.
+* [#4658] Fixed certain variants of ZIP files not passing validation on Windows.
+* [#4652] Fixed misaligned validation errors in the form designer UI.
+
 2.6.14 (2024-09-02)
 ===================
 
