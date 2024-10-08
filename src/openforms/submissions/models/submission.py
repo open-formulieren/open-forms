@@ -753,9 +753,7 @@ class Submission(models.Model):
     @property
     def payment_user_has_paid(self) -> bool:
         # TODO support partial payments
-        return self.payments.filter(
-            status__in=(PaymentStatus.registered, PaymentStatus.completed)
-        ).exists()
+        return self.payments.paid().exists()
 
     @property
     def payment_registered(self) -> bool:
