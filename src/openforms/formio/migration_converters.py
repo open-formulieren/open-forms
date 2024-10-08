@@ -272,15 +272,20 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
     return True
 
 def fix_empty_default_value(component: Component) -> bool:
-    if component.get("multiple", False):
-        return False
-
     default_value = component.get("defaultValue")
+    changed = False
+
+    if component.get("multiple", False):
+        for index, value in enumerate(default_value):
+            if value is None:
+                component["defaultValue"][index] = ""
+                changed = True
+
     if default_value is None:
         component["defaultValue"] = ""
-        return True
+        changed = True
 
-    return False
+    return changed
 
 
 DEFINITION_CONVERTERS = [
