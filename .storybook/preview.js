@@ -15,13 +15,6 @@ ReactModal.setAppElement(document.getElementById('storybook-root'));
 
 export default {
   decorators: [mswDecorator],
-  globals: {
-    locale: reactIntl.defaultLocale,
-    locales: {
-      nl: 'Nederlands',
-      en: 'English',
-    },
-  },
   parameters: {
     controls: {
       matchers: {
@@ -32,4 +25,11 @@ export default {
     reactIntl,
   },
   loaders: [mswLoader],
+  initialGlobals: {
+    locale: reactIntl.defaultLocale,
+    locales: {
+      nl: 'Nederlands',
+      en: 'English',
+    },
+  },
 };
