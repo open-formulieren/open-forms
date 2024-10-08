@@ -271,6 +271,7 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
     component["prefill"]["identifierRole"] = "authorizee"
     return True
 
+
 def fix_empty_default_value(component: Component) -> bool:
     default_value = component.get("defaultValue")
     changed = False
@@ -316,9 +317,11 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "time": {
         "move_time_validators": move_time_validators,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -332,10 +335,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
+    "checkbox": {"fix_empty_default_value": fix_empty_default_value},
     "select": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
@@ -348,10 +353,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Special components
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "licenseplate": {
         "ensure_validate_pattern": ensure_licensplate_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
