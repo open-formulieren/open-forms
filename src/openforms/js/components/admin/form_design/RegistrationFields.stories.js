@@ -574,3 +574,76 @@ export const ZGW = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
   },
 };
+
+export const Email = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend3',
+        name: 'Email',
+        backend: 'email',
+        options: {
+          toEmails: ['noreply@opengem.nl'],
+          attachmentFormats: [],
+          paymentEmails: [],
+          attachFilesToEmail: false,
+          email_subject: '',
+          email_payment_subject: '',
+          email_content_template_html: '',
+          email_content_template_text: '',
+        },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
+
+export const STUFZDS = {
+  name: 'StUF ZDS',
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend6',
+        name: 'StUF ZDS',
+        backend: 'stuf-zds-create-zaak',
+        options: {
+          paymentStatusUpdateMapping: [
+            {
+              formVariable: 'payment_completed',
+              stufName: 'payment_completed',
+            },
+            {
+              formVariable: 'payment_amount',
+              stufName: 'payment_amount',
+            },
+            {
+              formVariable: 'payment_public_order_ids',
+              stufName: 'payment_public_order_ids',
+            },
+            {
+              formVariable: 'provider_payment_ids',
+              stufName: 'provider_payment_ids',
+            },
+          ],
+          zdsDocumenttypeOmschrijvingInzending: '',
+          zdsZaakdocVertrouwelijkheid: 'OPENBAAR',
+          zdsZaaktypeCode: '',
+          zdsZaaktypeOmschrijving: '',
+          zdsZaaktypeStatusCode: '',
+          zdsZaaktypeStatusOmschrijving: '',
+        },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
