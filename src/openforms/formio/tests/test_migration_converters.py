@@ -110,7 +110,7 @@ class TextTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
         self.assertFalse(changed)
 
-    def test_default_value_changed(self):
+    def test_default_value_none_changed(self):
         component: Component = {
             "type": "textfield",
             "key": "textField",
@@ -120,6 +120,40 @@ class TextTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_changed(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "defaultValue": [None],
+            "multiple": True
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "textField",
+            "label": "Text field",
+            "defaultValue": ["foo", None, "bar"],
+            "multiple": True
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
 
 class EmailTests(SimpleTestCase):
@@ -144,7 +178,7 @@ class EmailTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
         self.assertFalse(changed)
 
-    def test_default_value_changed(self):
+    def test_default_value_none_changed(self):
         component: Component = {
             "type": "email",
             "key": "eMailadres",
@@ -154,6 +188,40 @@ class EmailTests(SimpleTestCase):
         changed = fix_empty_default_value(component)
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], "")
+
+    def test_no_default_value_changed(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "defaultValue": [None],
+            "multiple": True
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [""])
+
+    def test_multiple_default_value_with_none_changed(self):
+        component: Component = {
+            "type": "email",
+            "key": "eMailadres",
+            "label": "Emailadres",
+            "defaultValue": ["foo", None, "bar"],
+            "multiple": True
+        }
+        changed = fix_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
 
 
 class AddressNLTests(SimpleTestCase):
