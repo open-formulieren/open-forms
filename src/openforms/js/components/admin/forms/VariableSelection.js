@@ -1,9 +1,13 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
+import {useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
+import {
+  getVariableSourceLabel,
+  groupVariablesBySource,
+} from 'components/admin/form_design/variables/utils';
 
-import {VARIABLE_SOURCES, VARIABLE_SOURCES_GROUP_LABELS} from '../form_design/variables/constants';
 import {SelectWithoutFormik} from './ReactSelect';
 
 const allowAny = () => true;
@@ -18,6 +22,7 @@ const VariableSelection = ({
   ...props
 }) => {
   const {formSteps, formVariables, staticVariables} = useContext(FormContext);
+  const intl = useIntl();
 
   let formDefinitionsNames = {};
   formSteps.forEach(step => {
@@ -26,15 +31,16 @@ const VariableSelection = ({
 
   const allFormVariables = (includeStaticVariables ? staticVariables : []).concat(formVariables);
 
-  const getVariableSource = variable => {
-    if (variable.source === VARIABLE_SOURCES.userDefined) {
-      return VARIABLE_SOURCES_GROUP_LABELS.userDefined;
-    }
-    if (variable.source === VARIABLE_SOURCES.component) {
-      return VARIABLE_SOURCES_GROUP_LABELS.component;
-    }
-    return VARIABLE_SOURCES_GROUP_LABELS.static;
-  };
+  const choices = groupVariablesBySource(allFormVariables.filter(variable => filter(variable))).map(
+    variableGroup => ({
+      label: intl.formatMessage(getVariableSourceLabel(variableGroup.source)),
+      options: variableGroup.variables.map(variable => ({
+        label: variable.name,
+        value: variable.key,
+        variable: variable,
+      })),
+    })
+  );
 
   const choices = allFormVariables
     .filter(variable => filter(variable))
@@ -64,12 +70,6 @@ const VariableSelection = ({
       name={name}
       options={choices}
       onChange={newValue => onChange({target: {name, value: newValue}})}
-      formatOptionLabel={data => (
-        <span
-          className="form-variable-dropdown__option"
-          dangerouslySetInnerHTML={{__html: data.label}}
-        />
-      )}
       value={value}
       {...props}
     />
