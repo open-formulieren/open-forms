@@ -199,7 +199,7 @@ export const Empty = {
     await step('Selecting plugin, decision definition and version.', async () => {
       await userEvent.selectOptions(pluginDropdown, 'Camunda 7');
 
-      await expect(pluginDropdown.value).toBe('camunda7');
+      await expect(pluginDropdown).toHaveValue('camunda7');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
@@ -209,7 +209,7 @@ export const Empty = {
 
       await userEvent.selectOptions(decisionDefDropdown, 'Approve payment');
 
-      await expect(decisionDefDropdown.value).toBe('approve-payment');
+      await expect(decisionDefDropdown).toHaveValue('approve-payment');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefVersionDropdown).getAllByRole('option');
@@ -219,7 +219,7 @@ export const Empty = {
 
       await userEvent.selectOptions(decisionDefVersionDropdown, 'v2 (version tag: n/a)');
 
-      await expect(decisionDefVersionDropdown.value).toBe('2');
+      await expect(decisionDefVersionDropdown).toHaveValue('2');
     });
 
     await step('Adding input mappings', async () => {
@@ -380,7 +380,7 @@ export const OnePluginAvailable = {
 
     const pluginDropdown = canvas.getByLabelText('Plugin');
 
-    await expect(pluginDropdown.value).toBe('camunda7');
+    await expect(pluginDropdown).toHaveValue('camunda7');
   },
 };
 
