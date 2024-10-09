@@ -434,6 +434,11 @@
     "description": "Extra logic action prefix",
     "originalDefault": "and"
   },
+  "9fW2NX": {
+    "defaultMessage": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>.",
+    "description": "Generic admin error message",
+    "originalDefault": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>."
+  },
   "9y3/ek": {
     "defaultMessage": "Confirm",
     "description": "JSON editor: confirm edited variable definition",
@@ -2308,11 +2313,6 @@
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
-  },
-  "ow5AAO": {
-    "defaultMessage": "The form is invalid. Please correct the errors below.",
-    "description": "Generic error message",
-    "originalDefault": "The form is invalid. Please correct the errors below."
   },
   "oxYXJX": {
     "defaultMessage": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",

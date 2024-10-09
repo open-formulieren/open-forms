@@ -1061,6 +1061,36 @@
       "value": "and"
     }
   ],
+  "9fW2NX": [
+    {
+      "type": 0,
+      "value": "Sorry! Something unexpected went wrong."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": "Contact your technical administrator to investigate, or perhaps more information is available in the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "outgoing request logs"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "9lk1eS": [
     {
       "type": 0,
@@ -5163,12 +5193,6 @@
     {
       "type": 0,
       "value": "The regular expression pattern test that the city field value must pass before the form can be submitted."
-    }
-  ],
-  "ow5AAO": [
-    {
-      "type": 0,
-      "value": "The form is invalid. Please correct the errors below."
     }
   ],
   "oxYXJX": [

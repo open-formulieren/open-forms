@@ -18,7 +18,8 @@ const mountForm = wrapperProps => {
   if (!formCreationFormNodes.length) return;
 
   for (const formCreationFormNode of formCreationFormNodes) {
-    const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl} = formCreationFormNode.dataset;
+    const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl, outgoingRequestsUrl} =
+      formCreationFormNode.dataset;
 
     ReactModal.setAppElement(formCreationFormNode);
     const root = createRoot(formCreationFormNode);
@@ -28,7 +29,12 @@ const mountForm = wrapperProps => {
       // Strict mode is likely only viable once we've simplified the code substantially.
       <AppWrapper {...wrapperProps} csrftoken={csrftoken} strict={false}>
         <TinyMceContext.Provider value={tinymceUrl}>
-          <FormCreationForm formUuid={formUuid} formUrl={formUrl} formHistoryUrl={formHistoryUrl} />
+          <FormCreationForm
+            formUuid={formUuid}
+            formUrl={formUrl}
+            formHistoryUrl={formHistoryUrl}
+            outgoingRequestsUrl={outgoingRequestsUrl}
+          />
         </TinyMceContext.Provider>
       </AppWrapper>
     );

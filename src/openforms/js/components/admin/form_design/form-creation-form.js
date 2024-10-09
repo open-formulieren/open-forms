@@ -990,7 +990,7 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
+const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUrl}) => {
   const {csrftoken} = useContext(APIContext);
   const intl = useIntl();
   const initialState = {
@@ -1267,8 +1267,18 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       {Object.keys(state.errors).length ? (
         <div className="fetch-error">
           <FormattedMessage
-            defaultMessage="The form is invalid. Please correct the errors below."
-            description="Generic error message"
+            description="Generic admin error message"
+            defaultMessage={`Sorry! Something unexpected went wrong.<br></br>Contact your 
+              technical administrator to investigate, or perhaps more information is 
+              available in the <link>outgoing request logs</link>.`}
+            values={{
+              br: () => <br />,
+              link: chunks => (
+                <a href={outgoingRequestsUrl} target="_blank">
+                  {chunks}
+                </a>
+              ),
+            }}
           />
         </div>
       ) : null}
