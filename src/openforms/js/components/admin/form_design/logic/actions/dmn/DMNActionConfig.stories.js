@@ -1,4 +1,5 @@
 import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -7,6 +8,7 @@ import {
 } from 'components/admin/form_design/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {serializeValue} from 'components/admin/forms/VariableMapping';
+import {getReactSelectInput} from 'utils/storybookTestHelpers';
 
 import DMNActionConfig from './DMNActionConfig';
 
@@ -233,10 +235,10 @@ export const Empty = {
 
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
-      await userEvent.selectOptions(formVarsDropdowns, 'Name (name)');
+      await selectEvent.select(formVarsDropdowns, 'Name');
       await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');
 
-      await expect(formVarsDropdowns).toHaveValue('name');
+      await expect(getReactSelectInput(formVarsDropdowns)).toHaveValue('name');
       await expect(dmnVarsDropdown).toHaveValue(serializeValue('camundaVar'));
     });
 
@@ -318,9 +320,9 @@ export const withInitialValues = {
       const formVariableDropdowns = await canvas.findAllByLabelText('Formuliervariabele');
 
       await waitFor(async () => {
-        await expect(formVariableDropdowns[0]).toHaveValue('name');
-        await expect(formVariableDropdowns[1]).toHaveValue('surname');
-        await expect(formVariableDropdowns[2]).toHaveValue('canApply');
+        await expect(getReactSelectInput(formVariableDropdowns[0])).toHaveValue('name');
+        await expect(getReactSelectInput(formVariableDropdowns[1])).toHaveValue('surname');
+        await expect(getReactSelectInput(formVariableDropdowns[2])).toHaveValue('canApply');
       });
     });
 
