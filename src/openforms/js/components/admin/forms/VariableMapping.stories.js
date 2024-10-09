@@ -1,6 +1,8 @@
 import {expect, fn, userEvent, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {FormDecorator, FormikDecorator} from 'components/admin/form_design/story-decorators';
+import {getReactSelectOptions} from 'utils/storybookTestHelpers';
 
 import VariableMapping, {serializeValue} from './VariableMapping';
 
@@ -122,7 +124,7 @@ export const NonStringValues = {
 export const SelectOptions = {
   render: args => (
     <>
-      <VariableMapping {...args} />
+      <VariableMapping {...args} includeStaticVariables />
       <button type="submit">Submit</button>
     </>
   ),
@@ -138,10 +140,11 @@ export const SelectOptions = {
 
     await step('Check rendered values', async () => {
       const formVariableDropdown = canvas.getByLabelText('Formuliervariabele');
-      const variableOptions = within(formVariableDropdown).getAllByRole('option');
+      await selectEvent.openMenu(formVariableDropdown);
+      const variableOptions = getReactSelectOptions(formVariableDropdown);
 
       await expect(variableOptions).toHaveLength(2);
-      await expect(variableOptions[1]).toHaveValue('key2');
+      await expect(variableOptions[1]).toHaveTextContent('(key2)');
 
       const propertyDropdown = canvas.getByLabelText('Pick a property');
       const propertyOptions = within(propertyDropdown).getAllByRole('option');
