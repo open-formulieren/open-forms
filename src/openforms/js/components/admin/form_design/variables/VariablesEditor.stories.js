@@ -6,6 +6,7 @@ import {
 } from 'components/admin/form_design/mocks';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {getReactSelectInput} from 'utils/storybookTestHelpers';
 
 import {serializeValue} from '../../forms/VariableMapping';
 import {mockObjecttypeVersionsGet, mockObjecttypesGet} from '../registrations/objectsapi/mocks';
@@ -606,7 +607,7 @@ export const ConfigurePrefillObjectsAPI = {
     await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
     const variableSelect = await screen.findByLabelText('Formuliervariabele');
-    await expect(variableSelect).toHaveValue('formioComponent');
+    await expect(getReactSelectInput(variableSelect)).toHaveValue('formioComponent');
 
     // Wait until the API call to retrieve the prefillAttributes is done
     await waitFor(async () => {

@@ -1259,6 +1259,11 @@
     "description": "Times Component field label",
     "originalDefault": "Times Component"
   },
+  "PtUsDT": {
+    "defaultMessage": "User variables",
+    "description": "Variable source group label for user defined variables",
+    "originalDefault": "User variables"
+  },
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
@@ -1368,6 +1373,11 @@
     "defaultMessage": "Organisation RSIN",
     "description": "ZGW APIs registration options 'organisationRSIN' label",
     "originalDefault": "Organisation RSIN"
+  },
+  "SgdAj7": {
+    "defaultMessage": "Static variables",
+    "description": "Variable source group label for static variables",
+    "originalDefault": "Static variables"
   },
   "SjbNyf": {
     "defaultMessage": "Add variable",
@@ -2073,6 +2083,11 @@
     "defaultMessage": "Attachment informatieobjecttype",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
     "originalDefault": "Attachment informatieobjecttype"
+  },
+  "iXJKU7": {
+    "defaultMessage": "Component variables",
+    "description": "Variable source group label for component variables",
+    "originalDefault": "Component variables"
   },
   "iZESbd": {
     "defaultMessage": "is less than",

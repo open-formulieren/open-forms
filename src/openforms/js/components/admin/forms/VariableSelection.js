@@ -1,9 +1,15 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
+import {useIntl} from 'react-intl';
+import {components} from 'react-select';
 
 import {FormContext} from 'components/admin/form_design/Context';
+import {
+  getVariableSourceLabel,
+  groupVariablesBySource,
+} from 'components/admin/form_design/variables/utils';
 
-import Select from './Select';
+import {SelectWithoutFormik} from './ReactSelect';
 
 const allowAny = () => true;
 
@@ -17,6 +23,7 @@ const VariableSelection = ({
   ...props
 }) => {
   const {formSteps, formVariables, staticVariables} = useContext(FormContext);
+  const intl = useIntl();
 
   let formDefinitionsNames = {};
   formSteps.forEach(step => {
@@ -24,26 +31,45 @@ const VariableSelection = ({
   });
 
   const allFormVariables = (includeStaticVariables ? staticVariables : []).concat(formVariables);
-  const choices = allFormVariables
-    .filter(variable => filter(variable))
-    .map(variable => {
-      const label = formDefinitionsNames[variable.formDefinition]
-        ? `${formDefinitionsNames[variable.formDefinition]}: ${variable.name} (${variable.key})`
-        : `${variable.name} (${variable.key})`;
-      return [variable.key, label];
-    });
 
-  {
-    /*TODO: This should be a searchable select for when there are a billion variables -> react-select */
-  }
+  const choices = groupVariablesBySource(allFormVariables.filter(variable => filter(variable))).map(
+    variableGroup => ({
+      label: intl.formatMessage(getVariableSourceLabel(variableGroup.source)),
+      options: variableGroup.variables.map(variable => ({
+        label: variable.name,
+        value: variable.key,
+        variable: variable,
+      })),
+    })
+  );
+
+  const OptionComponent = props => {
+    const {variable} = props.data;
+    return (
+      <components.Option {...props}>
+        <span className="form-variable-dropdown__option">
+          <span className="form-variable-dropdown__option__label">
+            {variable.name}{' '}
+            <code className="form-variable-dropdown__option__key">({variable.key})</code>
+          </span>
+          {formDefinitionsNames[variable.formDefinition] && (
+            <span className="form-variable-dropdown__option__form-definition">
+              {formDefinitionsNames[variable.formDefinition]}
+            </span>
+          )}
+        </span>
+      </components.Option>
+    );
+  };
+
   return (
-    <Select
+    <SelectWithoutFormik
       id={id}
       className="form-variable-dropdown"
       name={name}
-      choices={choices}
-      allowBlank
-      onChange={onChange}
+      options={choices}
+      onChange={newValue => onChange({target: {name, value: newValue}})}
+      components={{Option: OptionComponent}}
       value={value}
       {...props}
     />

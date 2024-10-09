@@ -4,7 +4,12 @@ import {defineMessage} from 'react-intl';
 
 import {getComponentEmptyValue} from 'components/utils';
 
-import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
+import {
+  COMPONENT_DATATYPES,
+  VARIABLE_SOURCES,
+  VARIABLE_SOURCES_GROUP_LABELS,
+  VARIABLE_SOURCES_GROUP_ORDER,
+} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -218,6 +223,43 @@ const getDefaultValue = component => {
   return getComponentEmptyValue(component);
 };
 
+const getVariableSource = variable =>
+  variable.source === '' ? VARIABLE_SOURCES.static : variable.source;
+
+const getVariableSourceLabel = variableSource => {
+  switch (variableSource) {
+    case VARIABLE_SOURCES.component:
+      return VARIABLE_SOURCES_GROUP_LABELS.component;
+    case VARIABLE_SOURCES.userDefined:
+      return VARIABLE_SOURCES_GROUP_LABELS.userDefined;
+    default:
+      return VARIABLE_SOURCES_GROUP_LABELS.static;
+  }
+};
+
+const groupVariablesBySource = variables => {
+  const groupedVariables = variables.reduce((variableGroups, variable) => {
+    const variableSource = getVariableSource(variable);
+    if (!variableGroups.find(group => group.source === variableSource)) {
+      variableGroups.push({source: variableSource, variables: []});
+    }
+
+    return variableGroups.map(group => {
+      if (group.source === variableSource) {
+        group.variables.push(variable);
+      }
+      return group;
+    });
+  }, []);
+
+  groupedVariables.sort((group1, group2) => {
+    const indexKey1 = VARIABLE_SOURCES_GROUP_ORDER.indexOf(group1.source);
+    const indexKey2 = VARIABLE_SOURCES_GROUP_ORDER.indexOf(group2.source);
+    return indexKey1 - indexKey2;
+  });
+  return groupedVariables;
+};
+
 const variableHasErrors = variable => !!Object.entries(variable.errors || {}).length;
 
 export {
@@ -225,5 +267,7 @@ export {
   getFormVariables,
   getComponentDatatype,
   checkForDuplicateKeys,
+  getVariableSourceLabel,
+  groupVariablesBySource,
   variableHasErrors,
 };

@@ -9,7 +9,12 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
 from openforms.config.models import GlobalConfiguration
-from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.tests.e2e.base import (
+    E2ETestCase,
+    browser_page,
+    create_superuser,
+    rs_select_option,
+)
 from openforms.variables.constants import DataMappingTypes, FormVariableSources
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
@@ -29,8 +34,10 @@ async def add_new_variable_with_service_fetch(page: Page):
     await page.get_by_text("Add rule").click()
     await page.get_by_text("Simple").click()
 
-    await page.locator('select[name="variable"]').select_option(
-        label="Environment (environment)"
+    await rs_select_option(
+        page.locator(".form-variable-dropdown").get_by_role("combobox"),
+        option_label="environment",
+        exact=False,
     )
     await page.locator('select[name="operator"]').select_option(label="is equal to")
     await page.locator('select[name="operandType"]').select_option(label="value")
@@ -40,9 +47,10 @@ async def add_new_variable_with_service_fetch(page: Page):
     await page.locator('select[name="action.type"]').select_option(
         label="fetch the value for a variable from a service"
     )
-    # FIXME Name conflict with the select above
-    await page.locator('select[name="variable"]').last.select_option(
-        label="Variable 1 (variable1)"
+    await rs_select_option(
+        page.locator(".form-variable-dropdown").last.get_by_role("combobox"),
+        option_label="variable1",
+        exact=False,
     )
 
     await expect(

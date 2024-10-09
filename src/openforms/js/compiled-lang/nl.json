@@ -2682,6 +2682,12 @@
       "value": "Tijd veld"
     }
   ],
+  "PtUsDT": [
+    {
+      "type": 0,
+      "value": "Gebruikersvariabelen"
+    }
+  ],
   "PtZ96W": [
     {
       "type": 0,
@@ -2958,6 +2964,12 @@
     {
       "type": 0,
       "value": "RSIN Organisatie"
+    }
+  ],
+  "SgdAj7": [
+    {
+      "type": 0,
+      "value": "Vaste variabelen"
     }
   ],
   "SjbNyf": [
@@ -4667,6 +4679,12 @@
       },
       "type": 5,
       "value": "collapsed"
+    }
+  ],
+  "iXJKU7": [
+    {
+      "type": 0,
+      "value": "Component variabelen"
     }
   ],
   "iZESbd": [

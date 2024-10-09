@@ -83,7 +83,29 @@ const DATATYPES_CHOICES = [
 const VARIABLE_SOURCES = {
   component: 'component',
   userDefined: 'user_defined',
+  static: 'static',
 };
+
+const VARIABLE_SOURCES_GROUP_LABELS = {
+  userDefined: defineMessage({
+    description: 'Variable source group label for user defined variables',
+    defaultMessage: 'User variables',
+  }),
+  component: defineMessage({
+    description: 'Variable source group label for component variables',
+    defaultMessage: 'Component variables',
+  }),
+  static: defineMessage({
+    description: 'Variable source group label for static variables',
+    defaultMessage: 'Static variables',
+  }),
+};
+
+const VARIABLE_SOURCES_GROUP_ORDER = [
+  VARIABLE_SOURCES.component,
+  VARIABLE_SOURCES.userDefined,
+  VARIABLE_SOURCES.static,
+];
 
 const EMPTY_VARIABLE = {
   name: '',
@@ -113,6 +135,8 @@ const IDENTIFIER_ROLE_CHOICES = {
 export {
   COMPONENT_DATATYPES,
   VARIABLE_SOURCES,
+  VARIABLE_SOURCES_GROUP_LABELS,
+  VARIABLE_SOURCES_GROUP_ORDER,
   DATATYPES_CHOICES,
   EMPTY_VARIABLE,
   IDENTIFIER_ROLE_CHOICES,
