@@ -2691,6 +2691,12 @@
       "value": "Times Component"
     }
   ],
+  "PtUsDT": [
+    {
+      "type": 0,
+      "value": "User variables"
+    }
+  ],
   "PtZ96W": [
     {
       "type": 0,
@@ -2977,6 +2983,12 @@
     {
       "type": 0,
       "value": "Organisation RSIN"
+    }
+  ],
+  "SgdAj7": [
+    {
+      "type": 0,
+      "value": "Static variables"
     }
   ],
   "SjbNyf": [
@@ -4681,6 +4693,12 @@
       },
       "type": 5,
       "value": "collapsed"
+    }
+  ],
+  "iXJKU7": [
+    {
+      "type": 0,
+      "value": "Component variables"
     }
   ],
   "iZESbd": [
