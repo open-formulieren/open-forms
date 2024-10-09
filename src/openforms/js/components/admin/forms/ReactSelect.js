@@ -32,30 +32,23 @@ const styles = {
   }),
 };
 
-const getValueRecursively = (options, value) => {
+const getValue = (options, value) => {
   if (!value) {
     return null;
   }
 
-  const option = options.find(opt => opt.value === value);
-  if (option) {
-    return option;
-  }
-
-  // Search for the option recursively
-  for (let i = 0; i < options.length; i++) {
-    const opt = options[i];
-    if (!opt.options) {
-      continue;
-    }
-
-    const option = getValueRecursively(opt.options, value);
-    if (option) {
+  // We support grouped ReactSelect options.
+  // So we need to look in the first, and possible second level of options
+  for (let index = 0; index < options.length; index++) {
+    const option = options[index];
+    if ('value' in option && option.value === value) {
       return option;
     }
+    const foundOption = (option?.options || []).find(opt => opt.value === value);
+    if (foundOption) {
+      return foundOption;
+    }
   }
-
-  return null;
 };
 
 /**
@@ -79,7 +72,7 @@ const SelectWithoutFormik = ({name, options, value, className, onChange, ...prop
       styles={styles}
       menuPlacement="auto"
       options={options}
-      value={getValueRecursively(options, value)}
+      value={getValue(options, value)}
       onChange={selectedOption => {
         onChange(selectedOption === null ? undefined : selectedOption.value);
       }}
@@ -109,7 +102,7 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
       menuPlacement="auto"
       options={options}
       {...fieldProps}
-      value={getValueRecursively(options, value)}
+      value={getValue(options, value)}
       onChange={selectedOption => {
         // clear the value
         if (selectedOption == null) {
