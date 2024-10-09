@@ -22,14 +22,4 @@
       color: var(--body-quiet-color);
     }
   }
-
-  // The selected option only shows the label
-  .admin-react-select__value-container & {
-    &__option {
-      &__key,
-      &__form-definition {
-        display: none;
-      }
-    }
-  }
 }

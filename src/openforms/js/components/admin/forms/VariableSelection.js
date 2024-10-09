@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
+import {components} from 'react-select';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {
@@ -42,26 +43,24 @@ const VariableSelection = ({
     })
   );
 
-  const choices = allFormVariables
-    .filter(variable => filter(variable))
-    .reduce(
-      (variableGroups, variable) => {
-        let label = `<span class="form-variable-dropdown__option__label">${variable.name} <code class="form-variable-dropdown__option__key">(${variable.key})</code></span>`;
-        if (formDefinitionsNames[variable.formDefinition]) {
-          label += `<span class="form-variable-dropdown__option__form-definition">${formDefinitionsNames[variable.formDefinition]}</span>`;
-        }
-
-        variableGroups
-          .find(group => group.label === getVariableSource(variable))
-          .options.push({value: variable.key, label});
-        return variableGroups;
-      },
-      [
-        {label: VARIABLE_SOURCES_GROUP_LABELS.userDefined, options: []},
-        {label: VARIABLE_SOURCES_GROUP_LABELS.component, options: []},
-        {label: VARIABLE_SOURCES_GROUP_LABELS.static, options: []},
-      ]
+  const OptionComponent = props => {
+    const {variable} = props.data;
+    return (
+      <components.Option {...props}>
+        <span className="form-variable-dropdown__option">
+          <span className="form-variable-dropdown__option__label">
+            {variable.name}{' '}
+            <code className="form-variable-dropdown__option__key">({variable.key})</code>
+          </span>
+          {formDefinitionsNames[variable.formDefinition] && (
+            <span className="form-variable-dropdown__option__form-definition">
+              {formDefinitionsNames[variable.formDefinition]}
+            </span>
+          )}
+        </span>
+      </components.Option>
     );
+  };
 
   return (
     <SelectWithoutFormik
@@ -70,6 +69,7 @@ const VariableSelection = ({
       name={name}
       options={choices}
       onChange={newValue => onChange({target: {name, value: newValue}})}
+      components={{Option: OptionComponent}}
       value={value}
       {...props}
     />
