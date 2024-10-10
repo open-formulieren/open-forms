@@ -207,7 +207,11 @@ class ImportExportTests(TempdirMixin, TestCase):
             },
         )
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={
+                "components": [
+                    {"key": "test-key", "type": "textfield"}
+                ]
+            }
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         FormVariableFactory.create(
@@ -379,7 +383,11 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {"key": "test-key", "type": "textfield"}
+                ]
+            },
             is_reusable=True,
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -442,7 +450,11 @@ class ImportExportTests(TempdirMixin, TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            configuration={
+                "components": [
+                    {"key": "test-key", "type": "textfield"}
+                ]
+            },
             is_reusable=True,  # only re-usable FDs may be related to multiple forms
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
