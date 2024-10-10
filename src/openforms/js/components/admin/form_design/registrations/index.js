@@ -1,10 +1,10 @@
-import {WysiwygWidget} from 'components/admin/RJSFWrapper';
-
 import CamundaOptionsForm from './camunda';
+import EmailOptionsForm from './email';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
 import {onCamundaStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
+import StufZDSOptionsForm from './stufzds';
 import {onObjectsAPIUserDefinedVariableEdit} from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 
@@ -35,29 +35,13 @@ export const BACKEND_OPTIONS_FORMS = {
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
   email: {
-    uiSchema: {
-      emailContentTemplateText: {
-        'ui:widget': 'textarea',
-        'ui:options': {
-          rows: 5,
-        },
-      },
-      emailContentTemplateHtml: {'ui:widget': WysiwygWidget},
-    },
+    form: EmailOptionsForm,
   },
   'zgw-create-zaak': {
     form: ZGWOptionsForm,
     onStepEdit: onZGWStepEdit,
   },
-  'stuf-zds-create-zaak:ext-utrecht': {
-    uiSchema: {
-      paymentStatusUpdateMapping: {
-        'ui:orderable': false,
-        items: {
-          'ui:orderable': false,
-          'ui:removable': false,
-        },
-      },
-    },
+  'stuf-zds-create-zaak': {
+    form: StufZDSOptionsForm,
   },
 };
