@@ -2774,6 +2774,12 @@
       "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
     }
   ],
+  "QXsAuR": [
+    {
+      "type": 0,
+      "value": "Product waarvoor prijzen worden opgehaald"
+    }
+  ],
   "QaPqxz": [
     {
       "type": 0,
@@ -4841,6 +4847,12 @@
       "value": "Sessie gaat vervallen"
     }
   ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "optie 2: € 15,99"
+    }
+  ],
   "k1+ljn": [
     {
       "type": 0,
@@ -5555,6 +5567,12 @@
       "value": "Reguliere expressie"
     }
   ],
+  "sxdJ/8": [
+    {
+      "type": 0,
+      "value": "optie 1: € 10,99"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -5725,6 +5743,12 @@
     {
       "type": 0,
       "value": "Verberg de koptekst en de lijn boven de veldengroep in het formulier."
+    }
+  ],
+  "uuKVtO": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "vAZDY4": [
