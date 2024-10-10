@@ -60,6 +60,7 @@ class ContainerMixin:
 
         return True
 
+
 @register("textfield")
 class TextNode(ComponentNode):
     @property
@@ -77,13 +78,19 @@ class ChoicesNode(ComponentNode):
 
     @property
     def value_list(self):
-        if not self.component['type'] == 'selectboxes':
+        if not self.component["type"] == "selectboxes":
             return super().display_value
 
         values = []
-        for label, isSelected in super().value.items():
+        for value, isSelected in super().value.items():
             if isSelected:
-                values.append(label)
+                value_to_add = value
+                # Search a translation for the value
+                for choice in self.component["values"]:
+                    if choice["value"] == value:
+                        value_to_add = choice["label"]
+
+                values.append(value_to_add)
         return values
 
 
