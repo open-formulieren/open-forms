@@ -69,7 +69,16 @@ class RestoreVersionTest(TestCase):
         )
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
-            {"components": [{"test": "1", "key": "test", "type": "textfield"}]},
+            {
+                "components": [
+                    {
+                        "defaultValue": "",
+                        "test": "1",
+                        "key": "test",
+                        "type": "textfield",
+                    }
+                ]
+            },
             restored_form_definition.configuration,
         )
 
@@ -301,6 +310,7 @@ class RestoreVersionTest(TestCase):
             {
                 "components": [
                     {
+                        "defaultValue": "",
                         "type": "textfield",
                         "key": "reusable1",
                     }
