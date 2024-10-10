@@ -106,5 +106,5 @@ def render_to_pdf(template_name: str, context: dict) -> tuple[str, bytes]:
         url_fetcher=UrlFetcher(),
         base_url=settings.BASE_URL,
     )
-    pdf: bytes = html_object.write_pdf()
+    pdf: bytes = html_object.write_pdf(pdf_variant="pdf/ua-1")
     return rendered_html, pdf

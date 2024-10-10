@@ -403,7 +403,13 @@ class DownloadSubmissionReportTests(APITestCase):
 
         for component_type, localised_input in fields:
             with self.subTest(f"FormIO label for {component_type}"):
-                self.assertIn(localised_input, html_report)
+                if component_type == "selectboxes":
+                    values = localised_input.split("; ")
+                    for value in values:
+                        self.assertIn(value, html_report)
+                else:
+                    self.assertIn(localised_input, html_report)
+
                 self.assertNotIn(
                     f"Untranslated {component_type.title()} label", html_report
                 )
