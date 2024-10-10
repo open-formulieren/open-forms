@@ -25,6 +25,12 @@ if TYPE_CHECKING:
     from .form_step import FormStep
 
 
+EMPTY_PREFILL_PLUGIN = Q(prefill_plugin="")
+EMPTY_PREFILL_ATTRIBUTE = Q(prefill_attribute="")
+EMPTY_PREFILL_OPTIONS = Q(prefill_options={})
+USER_DEFINED = Q(source=FormVariableSources.user_defined)
+
+
 class FormVariableManager(models.Manager):
     use_in_migrations = True
 
@@ -161,6 +167,11 @@ class FormVariable(models.Model):
         default=IdentifierRoles.main,
         max_length=100,
     )
+    prefill_options = models.JSONField(
+        _("prefill options"),
+        default=dict,
+        blank=True,
+    )
     data_type = models.CharField(
         verbose_name=_("data type"),
         help_text=_("The type of the value that will be associated with this variable"),
@@ -197,10 +208,30 @@ class FormVariable(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(
-                    (Q(prefill_plugin="") & Q(prefill_attribute=""))
-                    | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
+                    (
+                        EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & ~EMPTY_PREFILL_OPTIONS
+                        & USER_DEFINED
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                        & ~USER_DEFINED
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & ~EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                    )
                 ),
-                name="prefill_config_empty_or_complete",
+                name="prefill_config_component_or_user_defined",
             ),
             CheckConstraint(
                 check=~Q(
@@ -245,7 +276,29 @@ class FormVariable(models.Model):
         if self.source == FormVariableSources.user_defined:
             self.initial_value = check_initial_value(self.initial_value, self.data_type)
 
+    def check_if_prefill_plugin_mapping_needed(self):
+        """
+        This is used for user_defined variables which have the mappings for pre-filling
+        component variables. These are not aware of the prefill_plugin so we have to update them.
+        """
+
+        mappings = self.prefill_options["variables_mapping"]
+        form_variable_keys = [item["variable_key"] for item in mappings]
+        form_variables_for_update = FormVariable.objects.filter(
+            key__in=form_variable_keys
+        )
+        for variable in form_variables_for_update:
+            variable.prefill_plugin = self.prefill_plugin
+
+        FormVariable.objects.bulk_update(form_variables_for_update, ["prefill_plugin"])
+
     def save(self, *args, **kwargs):
         self.check_data_type_and_initial_value()
+        if (
+            self.source == FormVariableSources.user_defined
+            and self.prefill_plugin
+            and self.prefill_options
+        ):
+            self.check_if_prefill_plugin_mapping_needed()
 
         super().save(*args, **kwargs)

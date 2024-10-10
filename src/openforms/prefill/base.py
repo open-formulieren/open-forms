@@ -1,6 +1,7 @@
 from typing import Any, Container, Iterable
 
 from openforms.authentication.service import AuthAttribute
+from openforms.forms.models import FormVariable
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -49,6 +50,26 @@ class BasePlugin(AbstractBasePlugin):
         altogether, or use ``None``.
         """
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
+
+    @classmethod
+    def get_prefill_values_from_mappings(
+        cls, submission: Submission, form_variable: FormVariable
+    ) -> dict[str, str]:
+        """
+        Given the saved form variable, which contains the prefill_options, look up the appropriate
+        values and return them.
+
+        :param submission: an active :class:`Submission` instance, which can supply
+          the required initial data reference to fetch the correct prefill values.
+        :param form_variable: The form variable for which we want to retrieve the data. Its
+        atribute prefill_options contains all the mappings that are needed for retrieving
+        and returning the values.
+        :return: a key-value dictionary, where the key is the mapped property and
+          the value is the prefill value to use for that property.
+        """
+        raise NotImplementedError(
+            "You must implement the 'get_prefill_values_from_mappings' method."
+        )
 
     @classmethod
     def get_co_sign_values(
