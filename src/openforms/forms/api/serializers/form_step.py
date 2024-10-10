@@ -10,7 +10,7 @@ from openforms.translations.api.serializers import (
 )
 
 from ...models import FormDefinition, FormStep
-from ...validators import validate_no_duplicate_keys_across_steps
+from ...validators import validate_no_duplicate_keys_across_steps, validate_price_option
 from ..validators import FormStepIsApplicableIfFirstValidator
 from .button_text import ButtonTextSerializer
 from .form_definition import FormDefinitionConfigurationSerializer
@@ -167,6 +167,10 @@ class FormStepSerializer(
 
         validate_no_duplicate_keys_across_steps(
             current_form_definition, list(other_form_definitions)
+        )
+
+        validate_price_option(
+            form.product, current_form_definition, list(other_form_definitions)
         )
 
         return current_form_definition

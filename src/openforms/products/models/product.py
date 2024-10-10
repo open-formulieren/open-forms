@@ -8,9 +8,12 @@ from django.utils.translation import gettext_lazy as _
 from tinymce.models import HTMLField
 
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
+from openforms.contrib.open_producten.models import (
+    ProductType as OpenProductenProductType,
+)
 
 
-class Product(models.Model):
+class Product(OpenProductenProductType):
     """
     Product model for a PDC (Producten en Diensten Catalogus) definition.
     """
@@ -27,6 +30,7 @@ class Product(models.Model):
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0.01"))],
+        null=True,
     )
 
     information = CSPPostProcessedWYSIWYGField(

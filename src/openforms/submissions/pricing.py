@@ -10,6 +10,8 @@ from json_logic import jsonLogic
 from openforms.logging import logevent
 from openforms.typing import JSONValue
 
+from openforms.contrib.open_producten import PRICE_OPTION_KEY
+
 if TYPE_CHECKING:
     from .models import Submission
 
@@ -44,7 +46,7 @@ def get_submission_price(submission: Submission) -> Decimal:
     ), "Price cannot be calculated on a submission without the form relation set"
     assert submission.form.product, "Form must have a related product"
     assert (
-        submission.form.product.price
+        submission.form.product.price or submission.form.product.open_producten_price
     ), "get_submission_price' may only be called for forms that require payment"
 
     form = submission.form
@@ -92,7 +94,25 @@ def get_submission_price(submission: Submission) -> Decimal:
         return rule.price
 
     #
-    # 3. More specific modes didn't produce anything, fall back to the linked product
+    # 3. Check if product has price imported from open producten.
+    #
+    if form.product.open_producten_price:
+        # method is called before form is completed at openforms.submissions.models.submission.Submission.payment_required
+        if not data.get(PRICE_OPTION_KEY):
+            return Decimal("0")
+
+        # should keep current price if already set.
+        if submission.price:
+            return submission.price
+
+        logger.debug("Price for submission set by product price option")
+        return form.product.open_producten_price.options.get(
+            uuid=data[PRICE_OPTION_KEY]
+        ).amount
+        # return data.get(PRICE_OPTION_KEY).split(':')[0].strip()
+
+    #
+    # 4. More specific modes didn't produce anything, fall back to the linked product
     #    price.
     #
     logger.debug(

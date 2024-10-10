@@ -15,16 +15,15 @@ export const getProducts = async () => {
   }));
 };
 
-const Select = Formio.Components.components.select;
+const Radio = Formio.Components.components.radio;
 
-class ProductPrice extends Select {
+class ProductPrice extends Radio {
   static schema(...extend) {
-    const schema = Select.schema(
+    const schema = Radio.schema(
       {
         label: 'Select a product',
         key: 'productPrice',
         type: 'productPrice',
-        product: ''
       },
       ...extend
     );

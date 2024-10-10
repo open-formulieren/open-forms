@@ -211,6 +211,7 @@ INSTALLED_APPS = [
     "openforms.contrib.haal_centraal",
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
+    "openforms.contrib.open_producten",
     "openforms.contrib.microsoft.apps.MicrosoftApp",
     "openforms.contrib.objects_api",
     "openforms.dmn",

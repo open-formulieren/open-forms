@@ -348,6 +348,36 @@ class NPFamilyMembers(BasePlugin):
             ]
 
 
+@register("productPrice")
+class ProductPrice(BasePlugin):
+    # not actually relevant, as we transform the component into a different type
+    formatter = DefaultFormatter
+
+    def mutate_config_dynamically(
+        self, component: Component, submission: Submission, data: DataMapping
+    ) -> None:
+        current_price = submission.form.product.open_producten_price
+
+        component.update(
+            {
+                "type": "radio",
+                "label": "select a price option",
+                "fieldSet": False,
+                "inline": False,
+                "inputType": "radio",
+                "validate": {"required": True},
+            }
+        )
+
+        component["values"] = [
+            {
+                "label": f"{option.description}: € {option.amount}",
+                "value": option.uuid,
+            }
+            for option in current_price.options.all()
+        ]
+
+
 @register("bsn")
 class BSN(BasePlugin[Component]):
     formatter = TextFieldFormatter
