@@ -10,6 +10,8 @@ from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Window
 from django.db.models.functions import RowNumber
+from django.utils.formats import localize
+from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _, override
 
 from autoslug import AutoSlugField
@@ -686,5 +688,5 @@ class FormsExport(DeleteFileFieldFilesMixin, models.Model):
     def __str__(self):
         return _("Bulk export requested by %(username)s on %(datetime)s") % {
             "username": self.user.username,
-            "datetime": self.datetime_requested,
+            "datetime": localize(localtime(self.datetime_requested)),
         }
