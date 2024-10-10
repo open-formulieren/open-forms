@@ -90,12 +90,17 @@ def send_email_cosigner(submission_id: int) -> None:
             )
             return
 
+        form_url = submission.cleaned_form_url
+        # Remove any data references, since this should already be stored on the
+        # Submission
+        form_url.query.params.pop("initial_data_reference", None)
+
         content = render_from_string(
             config.cosign_request_template,
             {
                 "code": submission.public_registration_reference,
                 "form_name": submission.form.name,
-                "form_url": submission.cleaned_form_url,
+                "form_url": form_url,
             },
         )
 
