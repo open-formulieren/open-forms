@@ -1,6 +1,4 @@
 from django.db import models, transaction
-from django.db.models import Q
-from django.db.models.deletion import ProtectedError
 
 import openforms.contrib.open_producten.api_models as api_models
 from openforms.contrib.open_producten.models import Price, PriceOption
@@ -13,8 +11,6 @@ class PriceImporter:
         self.client = client
         self.created_objects = []
         self.updated_objects = []
-        self.deleted_count = 0
-        self.soft_deleted_count = 0
         self.product_types = []
 
     def _add_to_log_list(self, instance: models.Model, created: bool):
@@ -28,12 +24,9 @@ class PriceImporter:
 
         self.product_types = self.client.get_current_prices()
         self._handle_product_types(self.product_types)
-        self._delete_non_updated_objects()
         return (
             self.created_objects,
             self.updated_objects,
-            self.deleted_count,
-            self.soft_deleted_count,
         )
 
     def _handle_options(self, options: [api_models.PriceOption], price_instance: Price):
@@ -48,11 +41,12 @@ class PriceImporter:
             )
             self._add_to_log_list(option_instance, created)
 
-    def _update_or_create_price(self, price: api_models.Price):
+    def _update_or_create_price(self, price: api_models.Price, product_type_instance):
         price_instance, created = Price.objects.update_or_create(
             uuid=price.id,
             defaults={
                 "valid_from": price.valid_from,
+                "product_type": product_type_instance,
             },
         )
         self._add_to_log_list(price_instance, created)
@@ -61,35 +55,18 @@ class PriceImporter:
     def _handle_product_types(self, product_types: list[api_models.ProductType]):
         for product_type in product_types:
 
-            if product_type.current_price:
-                price_instance = self._update_or_create_price(
-                    product_type.current_price
-                )
-                self._handle_options(product_type.current_price.options, price_instance)
-            else:
-                price_instance = None
-
             product_type_instance, created = ProductType.objects.update_or_create(
                 uuid=product_type.id,
                 defaults={
                     "name": product_type.name,
                     "upl_uri": product_type.upl_uri,
                     "upl_name": product_type.upl_name,
-                    "open_producten_price": price_instance,
                 },
             )
             self._add_to_log_list(product_type_instance, created)
 
-    def _delete_non_updated_objects(self):
-        objects_to_be_deleted = ProductType.objects.exclude(
-            Q(uuid__in=self.product_types) | Q(uuid=True)
-        )
-
-        for obj in objects_to_be_deleted:
-            try:
-                obj.delete()
-                self.deleted_count += 1
-            except ProtectedError:
-                obj.is_deleted = True
-                obj.save()
-                self.soft_deleted_count += 1
+            if product_type.current_price:
+                price_instance = self._update_or_create_price(
+                    product_type.current_price, product_type_instance
+                )
+                self._handle_options(product_type.current_price.options, price_instance)

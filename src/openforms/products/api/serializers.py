@@ -22,4 +22,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
                 "view_name": "api:product-detail",
                 "lookup_field": "uuid",
             },
+            "price": {
+                "required": True,
+            },
         }

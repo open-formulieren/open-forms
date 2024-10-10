@@ -10,8 +10,6 @@ from json_logic import jsonLogic
 from openforms.logging import logevent
 from openforms.typing import JSONValue
 
-from openforms.contrib.open_producten import PRICE_OPTION_KEY
-
 if TYPE_CHECKING:
     from .models import Submission
 
@@ -98,7 +96,17 @@ def get_submission_price(submission: Submission) -> Decimal:
     #
     if form.product.open_producten_price:
         # method is called before form is completed at openforms.submissions.models.submission.Submission.payment_required
-        if not data.get(PRICE_OPTION_KEY):
+
+        def get_price_option_key():
+            for step in form.formstep_set.all():
+                for component in step.form_definition.configuration["components"]:
+                    if component["type"] == "productPrice":
+                        return component["key"]
+            raise ValueError("Form does not have a productPrice component")
+
+        price_option_key = get_price_option_key()
+
+        if not data.get(price_option_key):
             return Decimal("0")
 
         # should keep current price if already set.
@@ -107,9 +115,8 @@ def get_submission_price(submission: Submission) -> Decimal:
 
         logger.debug("Price for submission set by product price option")
         return form.product.open_producten_price.options.get(
-            uuid=data[PRICE_OPTION_KEY]
+            uuid=data[price_option_key]
         ).amount
-        # return data.get(PRICE_OPTION_KEY).split(':')[0].strip()
 
     #
     # 4. More specific modes didn't produce anything, fall back to the linked product

@@ -27,7 +27,6 @@ from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
 from openforms.utils.urls import decorator_include
 from openforms.variables.api.viewsets import ServiceFetchConfigurationViewSet
 
-from ..contrib.open_producten.api.viewsets import PriceViewSet
 from .views import PingView
 
 # from .schema import schema_view
@@ -58,9 +57,6 @@ submissions_router.register(
 
 # products
 router.register("products", ProductViewSet)
-
-# product prices (Open Producten)
-router.register("product_prices", PriceViewSet, "prices")
 
 # services
 router.register("services", ServiceViewSet)

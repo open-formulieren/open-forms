@@ -356,26 +356,29 @@ class ProductPrice(BasePlugin):
     def mutate_config_dynamically(
         self, component: Component, submission: Submission, data: DataMapping
     ) -> None:
-        current_price = submission.form.product.open_producten_price
 
         component.update(
             {
                 "type": "radio",
-                "label": "select a price option",
                 "fieldSet": False,
                 "inline": False,
                 "inputType": "radio",
                 "validate": {"required": True},
             }
         )
+        current_price = submission.form.product.open_producten_price
+        if current_price:
+            component["values"] = [
+                {
+                    "label": f"{option.description}: € {option.amount}",
+                    "value": option.uuid,
+                }
+                for option in current_price.options.all()
+            ]
 
-        component["values"] = [
-            {
-                "label": f"{option.description}: € {option.amount}",
-                "value": option.uuid,
-            }
-            for option in current_price.options.all()
-        ]
+        if not component["values"]:
+            logger.warning("Product does not have price options.")
+            # TODO: error?
 
 
 @register("bsn")

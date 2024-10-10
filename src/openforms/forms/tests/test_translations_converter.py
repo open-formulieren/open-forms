@@ -28,6 +28,7 @@ from openforms.formio.tests.search_strategies import (
     password_component,
     phone_number_component,
     postcode_component,
+    product_price_component,
     radio_component,
     select_component,
     selectboxes_component,
@@ -192,6 +193,12 @@ class ConverterRobustnessTests(SimpleTestCase):
 
     @given(np_family_members_component())
     def test_np_family_members_component(self, component: Component):
+        do_processing(component)
+
+        self.assertLabelsTranslated(component)
+
+    @given(product_price_component())
+    def test_product_price_component(self, component: Component):
         do_processing(component)
 
         self.assertLabelsTranslated(component)

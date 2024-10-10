@@ -5,6 +5,7 @@ makes resuming possible across devices (if you have a "magic link").
 This information drives the frontend/navigation.
 """
 
+import datetime
 from decimal import Decimal
 
 from django.test import tag
@@ -14,6 +15,10 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.authentication.tests.factories import AuthInfoFactory
+from openforms.contrib.open_producten.tests.factories import (
+    PriceFactory,
+    PriceOptionFactory,
+)
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -311,3 +316,100 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
                 "hasPaid": False,
             },
         )
+
+    def test_submission_payment_uses_product_with_open_producten_options(self):
+        price = PriceFactory.create(valid_from=datetime.date(2024, 1, 1))
+        price_option = PriceOptionFactory.create(price=price)
+
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "productPrice", "key": "productPrice"}],
+            submitted_data={"productPrice": price_option.uuid},
+            form__product=price.product_type,
+            form__payment_backend="demo",
+        )
+
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": str(price_option.amount),
+                "hasPaid": False,
+            },
+        )
+
+    def test_submission_payment_uses_product_with_open_producten_options_with_changed_key(
+        self,
+    ):
+        price = PriceFactory.create(valid_from=datetime.date(2024, 1, 1))
+        price_option = PriceOptionFactory.create(price=price)
+
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "productPrice", "key": "zaq123"}],
+            submitted_data={"zaq123": price_option.uuid},
+            form__product=price.product_type,
+            form__payment_backend="demo",
+        )
+
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": str(price_option.amount),
+                "hasPaid": False,
+            },
+        )
+
+    def test_submission_payment_uses_product_with_open_producten_options_while_form_does_not_have_product_price_component(
+        self,
+    ):
+        price = PriceFactory.create(valid_from=datetime.date(2024, 1, 1))
+        price_option = PriceOptionFactory.create(price=price)
+
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "textField", "key": "productPrice"}],
+            submitted_data={"productPrice": price_option.uuid},
+            form__product=price.product_type,
+            form__payment_backend="demo",
+        )
+
+        with self.assertRaisesMessage(
+            ValueError, "Form does not have a productPrice component"
+        ):
+            submission.calculate_price()
+
+    def test_submission_payment_uses_product_with_open_producten_options_with_price_already_set(
+        self,
+    ):
+        price = PriceFactory.create(valid_from=datetime.date(2024, 1, 1))
+        price_option = PriceOptionFactory.create(price=price, amount=Decimal("20.00"))
+
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "productPrice", "key": "productPrice"}],
+            submitted_data={"productPrice": price_option.uuid},
+            form__product=price.product_type,
+            form__payment_backend="demo",
+        )
+        submission.price = Decimal("5.00")
+        submission.save()
+
+        submission.calculate_price()
+
+        self.assertEqual(submission.price, Decimal("5.00"))

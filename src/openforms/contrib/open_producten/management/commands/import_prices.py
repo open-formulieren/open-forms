@@ -21,12 +21,8 @@ class Command(BaseCommand):
         (
             created,
             updated,
-            deleted_count,
-            soft_deleted_count,
         ) = price_importer.import_product_types()
 
-        self.stdout.write(f"deleted {deleted_count} product type(s):\n")
-        self.stdout.write(f"soft deleted {soft_deleted_count} product type(s):\n")
         self.stdout.write(f"updated {len(updated)} exising product type(s)")
         self.stdout.write(f"created {len(created)} new product type(s):\n")
 

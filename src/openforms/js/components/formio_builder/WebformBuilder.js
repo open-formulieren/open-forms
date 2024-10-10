@@ -14,7 +14,6 @@ import {IntlProvider} from 'react-intl';
 import {getIntlProviderProps} from 'components/admin/i18n';
 import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getAvailableDocumentTypes} from 'components/form/file';
-import {getProducts} from '../form/productPrice';
 import {getComponentEmptyValue} from 'components/utils';
 import jsonScriptToVar from 'utils/json-script';
 import {currentTheme} from 'utils/theme';
@@ -173,7 +172,6 @@ class WebformBuilder extends WebformBuilderFormio {
             getDocumentTypes={async () => await getAvailableDocumentTypes(this)}
             getConfidentialityLevels={async () => CONFIDENTIALITY_LEVELS}
             getAuthPlugins={getAvailableAuthPlugins}
-            getProducts={getProducts}
             // Component/builder state
             isNew={isNew}
             component={builderData}

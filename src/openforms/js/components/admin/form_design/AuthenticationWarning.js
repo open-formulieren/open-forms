@@ -5,7 +5,7 @@ import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 
-const CUSTOM_FIELD_TYPES = ['npFamilyMembers']; // TODO: login required for Product Price?
+const CUSTOM_FIELD_TYPES = ['npFamilyMembers'];
 
 const AuthenticationWarning = ({loginRequired, configuration}) => {
   if (loginRequired) return null;

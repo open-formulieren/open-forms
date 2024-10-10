@@ -22,6 +22,7 @@
     "registrations_microsoft_graph.MSGraphRegistrationConfig",
     "objects_api.ObjectsAPIGroupConfig",
     "registrations_objects_api.ObjectsAPIConfig",
+    "open_producten.OpenProductenConfig",
     "stuf.StufService",
     "stuf_bg.StufBGConfig",
     "stuf_zds.StufZDSConfig",
