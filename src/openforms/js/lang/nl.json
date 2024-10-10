@@ -438,6 +438,11 @@
     "description": "Extra logic action prefix",
     "originalDefault": "and"
   },
+  "9fW2NX": {
+    "defaultMessage": "Sorry! Er is iets onverwachts misgegaan.<br></br>Neem contact op met je technische beheerder om dit te onderzoeken, of misschien is er meer informatie beschikbaar in de <link>logboeken van uitgaande verzoeken</link>.",
+    "description": "Generic admin error message",
+    "originalDefault": "Sorry! Something unexpected went wrong.<br></br>Contact your technical administrator to investigate, or perhaps more information is available in the <link>outgoing request logs</link>."
+  },
   "9y3/ek": {
     "defaultMessage": "Bevestigen",
     "description": "JSON editor: confirm edited variable definition",
@@ -2327,11 +2332,6 @@
     "defaultMessage": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
-  },
-  "ow5AAO": {
-    "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
-    "description": "Generic error message",
-    "originalDefault": "The form is invalid. Please correct the errors below."
   },
   "oxYXJX": {
     "defaultMessage": "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",

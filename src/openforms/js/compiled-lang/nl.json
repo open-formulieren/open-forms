@@ -1065,6 +1065,36 @@
       "value": "en"
     }
   ],
+  "9fW2NX": [
+    {
+      "type": 0,
+      "value": "Sorry! Er is iets onverwachts misgegaan."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": "Neem contact op met je technische beheerder om dit te onderzoeken, of misschien is er meer informatie beschikbaar in de "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "logboeken van uitgaande verzoeken"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "9lk1eS": [
     {
       "type": 0,
@@ -5185,12 +5215,6 @@
     {
       "type": 0,
       "value": "Het patroon van reguliere expressie waar de stad aan moet voldoen voor het formulier kan verstuurd worden."
-    }
-  ],
-  "ow5AAO": [
-    {
-      "type": 0,
-      "value": "De gegevens zijn ongeldig. Los de problemen hieronder op."
     }
   ],
   "oxYXJX": [

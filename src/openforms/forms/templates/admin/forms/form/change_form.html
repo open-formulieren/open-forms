@@ -30,6 +30,7 @@
     data-form-history-url="{{ history_url }}"
     data-csrftoken="{{ csrf_token }}"
     data-tinymce-url="{% static 'tinymce/tinymce.min.js' %}"
+    data-outgoing-requests-url="{% url 'admin:log_outgoing_requests_outgoingrequestslog_changelist' %}"
 > {# Managed by React #} </div>
 {% endblock %}
 
