@@ -99,9 +99,6 @@ class SubmissionStep(models.Model):
         null=True,
         blank=True,
     )
-    _data = models.JSONField(_("data"), blank=True, null=True)
-    # _data is deprecated and replaced with variables. This is still kept around to be
-    # able to automatically migrate in case there were earlier migration bugs.
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
