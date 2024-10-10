@@ -154,9 +154,6 @@ class SubmissionStep(models.Model):
             if not self.form_step_id:
                 self.form_step = self._load_form_step_from_history()
 
-    def __str__(self):
-        return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
-
     def _load_form_step_from_history(self):
         history = deepcopy(self.form_step_history)
 
