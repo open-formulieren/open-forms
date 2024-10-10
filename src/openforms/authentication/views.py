@@ -166,6 +166,11 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
     register = register
 
     def get(self, request: Request, slug: str, plugin_id: str):
+        # Store the initial data reference in the session, so it can be passed back
+        # in the `AuthenticationReturnView`
+        request.session["initial_data_reference"] = request.query_params.get(
+            "initial_data_reference"
+        )
         form = self.get_object()
         try:
             plugin = self.register[plugin_id]
@@ -300,6 +305,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         plugin. We must define ``get`` and ``post`` to have them properly show up and
         be documented in the OAS.
         """
+        initial_data_reference = request.session.pop("initial_data_reference", None)
         form = self.get_object()
         try:
             plugin = self.register[plugin_id]
@@ -339,6 +345,14 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
             authentication_success.send(sender=self.__class__, request=request)
 
+        if initial_data_reference:
+            # Pass the initial data reference back to the SDK, to allow sending it
+            # with the submission create call
+            return HttpResponseRedirect(
+                furl(response.url)
+                .add({"initial_data_reference": initial_data_reference})
+                .url
+            )
         return response
 
     def _handle_co_sign(self, form: Form, plugin: BasePlugin) -> None:

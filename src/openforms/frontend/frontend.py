@@ -26,6 +26,9 @@ def get_frontend_redirect_url(
     f = submission.cleaned_form_url
     f.query.remove("_of_action")
     f.query.remove("_of_action_params")
+    # Remove any data references, since this should already be stored on the
+    # Submission
+    f.query.remove("initial_data_reference")
     _query = {"_of_action": action} if action else {}
     if action_params:
         _query["_of_action_params"] = json.dumps(action_params)
