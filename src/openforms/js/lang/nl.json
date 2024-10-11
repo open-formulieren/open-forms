@@ -260,6 +260,11 @@
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
   },
+  "5obGLN": {
+    "defaultMessage": "Gebruikersvariabelen",
+    "description": "Variable source group label for user defined variables",
+    "originalDefault": "User defined"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -537,11 +542,6 @@
     "defaultMessage": "Opslaan",
     "description": "Text on button in modal to save design token values",
     "originalDefault": "Save changes"
-  },
-  "Bl2NMf": {
-    "defaultMessage": "Vaste variabelen",
-    "description": "Static variables tab title",
-    "originalDefault": "Static"
   },
   "BqA9of": {
     "defaultMessage": "Probeer het uit",
@@ -1386,6 +1386,11 @@
     "description": "ZGW APIs registration options 'organisationRSIN' label",
     "originalDefault": "Organisation RSIN"
   },
+  "SgdAj7": {
+    "defaultMessage": "Vaste variabelen",
+    "description": "Variable source group label for static variables",
+    "originalDefault": "Static variables"
+  },
   "SjbNyf": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add zaakeigenschap (mapping) button",
@@ -1790,12 +1795,6 @@
     "description": "Advanced logic type info text",
     "originalDefault": "Build a JsonLogic expression using raw JSON."
   },
-  "c1XyJ4": {
-    "defaultMessage": "Component",
-    "description": "Component variables tab title",
-    "isTranslated": true,
-    "originalDefault": "Component"
-  },
   "cDbGU2": {
     "defaultMessage": "bewaartermijn voor sessies",
     "description": "Incomplete Submissions Removal Limit field label",
@@ -2097,6 +2096,11 @@
     "defaultMessage": "Informatieobjecttype bijlagen",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
     "originalDefault": "Attachment informatieobjecttype"
+  },
+  "iXJKU7": {
+    "defaultMessage": "Component",
+    "description": "Variable source group label for component variables",
+    "originalDefault": "Component variables"
   },
   "iZESbd": {
     "defaultMessage": "is kleiner dan",
@@ -2738,11 +2742,6 @@
     "defaultMessage": "Actie",
     "description": "Action column header",
     "originalDefault": "Action"
-  },
-  "zGMQ75": {
-    "defaultMessage": "Gebruikersvariabelen",
-    "description": "User defined variables tab title",
-    "originalDefault": "User defined"
   },
   "zLTTBw": {
     "defaultMessage": "Veld waar beschikbare datums voor een afspraak komen te staan",

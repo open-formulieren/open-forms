@@ -259,6 +259,11 @@
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
   },
+  "5obGLN": {
+    "defaultMessage": "User defined",
+    "description": "Variable source group label for user defined variables",
+    "originalDefault": "User defined"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -533,11 +538,6 @@
     "defaultMessage": "Save changes",
     "description": "Text on button in modal to save design token values",
     "originalDefault": "Save changes"
-  },
-  "Bl2NMf": {
-    "defaultMessage": "Static",
-    "description": "Static variables tab title",
-    "originalDefault": "Static"
   },
   "BqA9of": {
     "defaultMessage": "Try it out",
@@ -1374,6 +1374,11 @@
     "description": "ZGW APIs registration options 'organisationRSIN' label",
     "originalDefault": "Organisation RSIN"
   },
+  "SgdAj7": {
+    "defaultMessage": "Static variables",
+    "description": "Variable source group label for static variables",
+    "originalDefault": "Static variables"
+  },
   "SjbNyf": {
     "defaultMessage": "Add variable",
     "description": "Add zaakeigenschap (mapping) button",
@@ -1774,11 +1779,6 @@
     "description": "Advanced logic type info text",
     "originalDefault": "Build a JsonLogic expression using raw JSON."
   },
-  "c1XyJ4": {
-    "defaultMessage": "Component",
-    "description": "Component variables tab title",
-    "originalDefault": "Component"
-  },
   "cDbGU2": {
     "defaultMessage": "Incomplete Submissions Removal Limit",
     "description": "Incomplete Submissions Removal Limit field label",
@@ -2078,6 +2078,11 @@
     "defaultMessage": "Attachment informatieobjecttype",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
     "originalDefault": "Attachment informatieobjecttype"
+  },
+  "iXJKU7": {
+    "defaultMessage": "Component variables",
+    "description": "Variable source group label for component variables",
+    "originalDefault": "Component variables"
   },
   "iZESbd": {
     "defaultMessage": "is less than",
@@ -2718,11 +2723,6 @@
     "defaultMessage": "Action",
     "description": "Action column header",
     "originalDefault": "Action"
-  },
-  "zGMQ75": {
-    "defaultMessage": "User defined",
-    "description": "User defined variables tab title",
-    "originalDefault": "User defined"
   },
   "zLTTBw": {
     "defaultMessage": "Component where dates for an appointment will be shown",

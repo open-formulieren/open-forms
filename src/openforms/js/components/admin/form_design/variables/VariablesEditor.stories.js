@@ -589,32 +589,39 @@ export const ConfigurePrefill = {
 };
 
 export const ConfigurePrefillObjectsAPI = {
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
-    expect(userDefinedVarsTab).toBeVisible();
-    await userEvent.click(userDefinedVarsTab);
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
 
-    // open modal for configuration
-    const editIcon = canvas.getByTitle('Prefill instellen');
-    await userEvent.click(editIcon);
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await screen.findByRole('dialog')).toBeVisible();
+    });
 
-    const pluginDropdown = await screen.findByLabelText('Plugin');
-    expect(pluginDropdown).toBeVisible();
+    await step('Configure Objects API prefill', async () => {
+      const modal = within(await screen.findByRole('dialog'));
+      const pluginDropdown = await screen.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
-    await userEvent.selectOptions(pluginDropdown, 'Objects API');
+      // check mappings
+      const variableSelect = await screen.findByLabelText('Formuliervariabele');
+      expect(variableSelect).toBeVisible();
+      expect(modal.getByText('Form.io component')).toBeVisible();
 
-    const variableSelect = await screen.findByLabelText('Formuliervariabele');
-    await expect(variableSelect).toHaveValue('formioComponent');
-
-    // Wait until the API call to retrieve the prefillAttributes is done
-    await waitFor(async () => {
-      const prefillPropertySelect = await screen.findByLabelText(
-        'Select a property from the object type'
-      );
-      expect(prefillPropertySelect).toBeVisible();
-      expect(prefillPropertySelect).toHaveValue(serializeValue(['firstName']));
+      // Wait until the API call to retrieve the prefillAttributes is done
+      await waitFor(async () => {
+        const prefillPropertySelect = await screen.findByLabelText(
+          'Select a property from the object type'
+        );
+        expect(prefillPropertySelect).toBeVisible();
+        expect(prefillPropertySelect).toHaveValue(serializeValue(['firstName']));
+      });
     });
   },
 };

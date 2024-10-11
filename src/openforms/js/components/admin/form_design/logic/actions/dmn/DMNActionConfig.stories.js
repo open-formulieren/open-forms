@@ -1,4 +1,5 @@
-import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
+import {expect, findByRole, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -7,6 +8,7 @@ import {
 } from 'components/admin/form_design/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {serializeValue} from 'components/admin/forms/VariableMapping';
+import {getReactSelectContainer} from 'utils/storybookTestHelpers';
 
 import DMNActionConfig from './DMNActionConfig';
 
@@ -185,7 +187,7 @@ export const Empty = {
       outputMapping: [],
     },
   },
-  play: async ({canvasElement, step}) => {
+  play: async ({canvasElement, step, args}) => {
     const canvas = within(canvasElement);
     const originalConfirm = window.confirm;
     window.confirm = () => true;
@@ -197,7 +199,7 @@ export const Empty = {
     await step('Selecting plugin, decision definition and version.', async () => {
       await userEvent.selectOptions(pluginDropdown, 'Camunda 7');
 
-      await expect(pluginDropdown.value).toBe('camunda7');
+      await expect(pluginDropdown).toHaveValue('camunda7');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
@@ -207,7 +209,7 @@ export const Empty = {
 
       await userEvent.selectOptions(decisionDefDropdown, 'Approve payment');
 
-      await expect(decisionDefDropdown.value).toBe('approve-payment');
+      await expect(decisionDefDropdown).toHaveValue('approve-payment');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefVersionDropdown).getAllByRole('option');
@@ -217,7 +219,7 @@ export const Empty = {
 
       await userEvent.selectOptions(decisionDefVersionDropdown, 'v2 (version tag: n/a)');
 
-      await expect(decisionDefVersionDropdown.value).toBe('2');
+      await expect(decisionDefVersionDropdown).toHaveValue('2');
     });
 
     await step('Adding input mappings', async () => {
@@ -228,16 +230,25 @@ export const Empty = {
       const dropdowns = within(document.querySelector('.logic-dmn__mapping-config')).getAllByRole(
         'combobox'
       );
-
-      await expect(dropdowns.length).toBe(2);
+      expect(dropdowns.length).toBe(2);
 
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
-      await userEvent.selectOptions(formVarsDropdowns, 'Name (name)');
-      await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');
+      await selectEvent.select(formVarsDropdowns, 'Name');
+      // this is super flaky for some reason on both Chromium and Firefox :/
+      await waitFor(async () => {
+        await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');
+        expect(dmnVarsDropdown).toHaveValue(serializeValue('camundaVar'));
+      });
 
-      await expect(formVarsDropdowns).toHaveValue('name');
-      await expect(dmnVarsDropdown).toHaveValue(serializeValue('camundaVar'));
+      await userEvent.click(canvas.getByRole('button', {name: 'Save'}));
+      expect(args.onSave).toHaveBeenCalledWith({
+        pluginId: 'camunda7',
+        decisionDefinitionId: 'approve-payment',
+        decisionDefinitionVersion: '2',
+        inputMapping: [{formVariable: 'name', dmnVariable: 'camundaVar'}],
+        outputMapping: [],
+      });
     });
 
     await step('Changing plugin clears decision definition, version and DMN vars', async () => {
@@ -318,9 +329,15 @@ export const withInitialValues = {
       const formVariableDropdowns = await canvas.findAllByLabelText('Formuliervariabele');
 
       await waitFor(async () => {
-        await expect(formVariableDropdowns[0]).toHaveValue('name');
-        await expect(formVariableDropdowns[1]).toHaveValue('surname');
-        await expect(formVariableDropdowns[2]).toHaveValue('canApply');
+        expect(
+          await within(getReactSelectContainer(formVariableDropdowns[0])).findByText('Name')
+        ).toBeVisible();
+        expect(
+          await within(getReactSelectContainer(formVariableDropdowns[1])).findByText('Surname')
+        ).toBeVisible();
+        expect(
+          await within(getReactSelectContainer(formVariableDropdowns[2])).findByText('Can apply?')
+        ).toBeVisible();
       });
     });
 
@@ -378,7 +395,7 @@ export const OnePluginAvailable = {
 
     const pluginDropdown = canvas.getByLabelText('Plugin');
 
-    await expect(pluginDropdown.value).toBe('camunda7');
+    await expect(pluginDropdown).toHaveValue('camunda7');
   },
 };
 

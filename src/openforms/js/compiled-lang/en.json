@@ -667,6 +667,12 @@
       "value": "length"
     }
   ],
+  "5obGLN": [
+    {
+      "type": 0,
+      "value": "User defined"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -1307,12 +1313,6 @@
     {
       "type": 0,
       "value": "Save changes"
-    }
-  ],
-  "Bl2NMf": [
-    {
-      "type": 0,
-      "value": "Static"
     }
   ],
   "BqA9of": [
@@ -2979,6 +2979,12 @@
       "value": "Organisation RSIN"
     }
   ],
+  "SgdAj7": [
+    {
+      "type": 0,
+      "value": "Static variables"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
@@ -3951,12 +3957,6 @@
       "value": "Build a JsonLogic expression using raw JSON."
     }
   ],
-  "c1XyJ4": [
-    {
-      "type": 0,
-      "value": "Component"
-    }
-  ],
   "cAC5kL": [
     {
       "type": 0,
@@ -4681,6 +4681,12 @@
       },
       "type": 5,
       "value": "collapsed"
+    }
+  ],
+  "iXJKU7": [
+    {
+      "type": 0,
+      "value": "Component variables"
     }
   ],
   "iZESbd": [
@@ -6077,12 +6083,6 @@
     {
       "type": 0,
       "value": "Use globally configured map component settings"
-    }
-  ],
-  "zGMQ75": [
-    {
-      "type": 0,
-      "value": "User defined"
     }
   ],
   "zLTTBw": [

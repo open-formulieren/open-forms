@@ -69,12 +69,9 @@ $djai-padding--tablet: 30px;
 .submit-row {
   position: sticky;
   bottom: 0px;
-  /* the toolbar in the text editor has z-index: 1; */
-  z-index: 2;
 
   &.submit-row-extended {
     position: relative;
-    z-index: 3;
     margin-top: -24px;
     border-top: 0;
     padding-top: 0;
