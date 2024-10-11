@@ -235,10 +235,7 @@ class ComponentNode(Node):
             return
 
         # in export mode, only emit if the component is not a layout component
-        if self.mode != RenderModes.export or (
-            not is_layout_component(self.component)
-            and self.component["type"] != "editgrid"
-        ):
+        if self.mode != RenderModes.export or (not is_layout_component(self.component)):
             yield self
 
         for child in self.get_children():

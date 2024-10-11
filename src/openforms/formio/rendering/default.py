@@ -229,7 +229,15 @@ class EditGridNode(ContainerMixin, ComponentNode):
     display_value: str = ""
 
     @property
+    def is_layout(self) -> bool:
+        if self.mode == RenderModes.export:
+            return False
+        return True
+
+    @property
     def value(self):
+        if self.mode == RenderModes.export:
+            return super().value
         return None
 
     @property
@@ -268,6 +276,10 @@ class EditGridNode(ContainerMixin, ComponentNode):
         So we need to repeat the child nodes of the configuration and associate them with the data
         provided by the user.
         """
+        # during exports, treat the entire repeating group as a single component/column
+        if self.mode == RenderModes.export:
+            return
+
         repeats = len(self._value) if self._value else 0
 
         for node_index in range(repeats):

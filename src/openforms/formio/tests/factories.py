@@ -36,7 +36,7 @@ class SubmittedFileFactory(factory.DictFactory):
                 else TemporaryFileUploadFactory.build
             )
             temporary_upload = create_temporary_upload(
-                file_name=obj["name"], file_size=obj["size"]
+                file_name=obj["name"], file_size=obj["size"], **kwargs
             )
         new_url = f"http://localhost/api/v2/submissions/files/{temporary_upload.uuid}"
         obj["url"] = obj["data"]["url"] = new_url
