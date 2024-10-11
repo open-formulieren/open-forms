@@ -5,7 +5,7 @@ import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {VARIABLE_SOURCES} from '../form_design/variables/constants';
 import VariableSelection from './VariableSelection';
 
-const render = ({name, includeStaticVariables, filter}) => {
+const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
   const [{value}, updateArgs] = useArgs();
   return (
     <VariableSelection
@@ -14,6 +14,7 @@ const render = ({name, includeStaticVariables, filter}) => {
       includeStaticVariables={includeStaticVariables}
       onChange={event => updateArgs({value: event.target.value})}
       filter={filter}
+      menuIsOpen={menuIsOpen}
     />
   );
 };
@@ -33,7 +34,7 @@ export default {
     availableFormSteps: [
       {
         formDefinition: 'foo',
-        name: 'foo',
+        name: 'Form step foo',
         slug: '',
         url: '',
         _generatedId: '',
@@ -54,9 +55,10 @@ export default {
     availableStaticVariables: [
       {
         form: 'foo',
-        formDefinition: 'foo',
-        name: 'name1',
+        formDefinition: '',
+        name: 'Name 1',
         key: 'key1',
+        source: VARIABLE_SOURCES.static,
       },
     ],
 
@@ -64,21 +66,28 @@ export default {
       {
         form: 'bar',
         formDefinition: 'foo',
-        name: 'name2',
+        name: 'Name 2',
         key: 'key2',
         source: VARIABLE_SOURCES.component,
       },
       {
         form: 'bar',
-        formDefinition: 'bar',
-        name: 'name3',
+        formDefinition: 'foo',
+        name: 'Name 5, which is rather long compared to the other names, and wraps',
+        key: 'key5',
+        source: VARIABLE_SOURCES.component,
+      },
+      {
+        form: 'bar',
+        formDefinition: '',
+        name: 'Name 3',
         key: 'key3',
         source: VARIABLE_SOURCES.userDefined,
       },
       {
         form: 'bar',
-        formDefinition: 'bar',
-        name: 'name4',
+        formDefinition: '',
+        name: 'Name 4, which is rather long compared to the other names, and wraps',
         key: 'key4',
         source: VARIABLE_SOURCES.userDefined,
       },
@@ -106,3 +115,9 @@ export default {
 };
 
 export const Default = {};
+
+export const menuOpen = {
+  args: {
+    menuIsOpen: true,
+  },
+};

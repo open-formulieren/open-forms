@@ -1,5 +1,4 @@
-import React from 'react';
-import {FormattedMessage, defineMessage} from 'react-intl';
+import {defineMessage} from 'react-intl';
 
 const COMPONENT_DATATYPES = {
   date: 'date',
@@ -89,7 +88,7 @@ const VARIABLE_SOURCES = {
 const VARIABLE_SOURCES_GROUP_LABELS = {
   userDefined: defineMessage({
     description: 'Variable source group label for user defined variables',
-    defaultMessage: 'User variables',
+    defaultMessage: 'User defined',
   }),
   component: defineMessage({
     description: 'Variable source group label for component variables',

@@ -1,25 +1,40 @@
+@use 'microscope-sass/lib/bem';
+
 .form-variable-dropdown {
-  --of-admin-select-min-inline-size: 300px;
-  min-inline-size: var(--of-admin-select-min-inline-size);
+  min-inline-size: 300px;
   max-inline-size: var(--of-admin-select-max-inline-size);
 
-  &__option {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    row-gap: 4px;
+  .admin-react-select__menu {
+    inline-size: 150%; // content inside is quite long
+    max-inline-size: 90dvw;
+  }
+}
 
-    &__label {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      row-gap: 4px;
-    }
+.form-variable-dropdown-option {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 10px;
+  row-gap: 4px;
 
-    &__form-definition {
-      width: 100%;
-      font-size: 12px;
-      color: var(--body-quiet-color);
-    }
+  @include bem.modifier('component-variable') {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      'name key'
+      'formdef formdef';
+  }
+
+  @include bem.element('key') {
+    text-align: end;
+  }
+
+  @include bem.element('form-definition') {
+    grid-area: formdef;
+    width: 100%;
+    font-size: 12px;
+    color: var(--body-quiet-color);
+    text-align: end;
   }
 }

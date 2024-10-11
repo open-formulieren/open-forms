@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
@@ -9,10 +9,11 @@ import RegistrationVariables from './RegistrationVariables';
 import StaticData from './StaticData';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
-import {VARIABLE_SOURCES} from './constants';
+import {VARIABLE_SOURCES, VARIABLE_SOURCES_GROUP_LABELS} from './constants';
 import {variableHasErrors} from './utils';
 
 const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) => {
+  const intl = useIntl();
   const userDefinedVariables = variables.filter(
     variable => variable.source === VARIABLE_SOURCES.userDefined
   );
@@ -35,20 +36,12 @@ const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) 
         <Tabs>
           <TabList>
             <Tab hasErrors={componentVariables.some(variable => variableHasErrors(variable))}>
-              <FormattedMessage
-                defaultMessage="Component"
-                description="Component variables tab title"
-              />
+              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.component)}
             </Tab>
             <Tab hasErrors={userDefinedVariables.some(variable => variableHasErrors(variable))}>
-              <FormattedMessage
-                defaultMessage="User defined"
-                description="User defined variables tab title"
-              />
+              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.userDefined)}
             </Tab>
-            <Tab>
-              <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
-            </Tab>
+            <Tab>{intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.static)}</Tab>
             <Tab>
               <FormattedMessage
                 defaultMessage="Registration"

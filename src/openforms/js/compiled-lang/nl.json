@@ -667,6 +667,12 @@
       "value": "length"
     }
   ],
+  "5obGLN": [
+    {
+      "type": 0,
+      "value": "Gebruikersvariabelen"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -1311,12 +1317,6 @@
     {
       "type": 0,
       "value": "Opslaan"
-    }
-  ],
-  "Bl2NMf": [
-    {
-      "type": 0,
-      "value": "Vaste variabelen"
     }
   ],
   "BqA9of": [
@@ -2712,12 +2712,6 @@
       "value": "Tijd veld"
     }
   ],
-  "PtUsDT": [
-    {
-      "type": 0,
-      "value": "Gebruikersvariabelen"
-    }
-  ],
   "PtZ96W": [
     {
       "type": 0,
@@ -3985,12 +3979,6 @@
       "value": "Geef een JSON-logic expressie op in JSON."
     }
   ],
-  "c1XyJ4": [
-    {
-      "type": 0,
-      "value": "Component"
-    }
-  ],
   "cAC5kL": [
     {
       "type": 0,
@@ -4720,7 +4708,7 @@
   "iXJKU7": [
     {
       "type": 0,
-      "value": "Component variabelen"
+      "value": "Component"
     }
   ],
   "iZESbd": [
@@ -6117,12 +6105,6 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
-    }
-  ],
-  "zGMQ75": [
-    {
-      "type": 0,
-      "value": "Gebruikersvariabelen"
     }
   ],
   "zLTTBw": [

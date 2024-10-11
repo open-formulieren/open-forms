@@ -6,7 +6,7 @@
     }
   }
 
-  @at-root .flex-container:has(&) {
+  @at-root .flex-container:has(label + &) {
     // flex-grow + max-inline-size causes the help text item to be pushed all the
     // way to the right.
     min-inline-size: calc(170px + var(--of-admin-select-max-inline-size));

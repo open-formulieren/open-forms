@@ -259,6 +259,11 @@
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
   },
+  "5obGLN": {
+    "defaultMessage": "User defined",
+    "description": "Variable source group label for user defined variables",
+    "originalDefault": "User defined"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -533,11 +538,6 @@
     "defaultMessage": "Save changes",
     "description": "Text on button in modal to save design token values",
     "originalDefault": "Save changes"
-  },
-  "Bl2NMf": {
-    "defaultMessage": "Static",
-    "description": "Static variables tab title",
-    "originalDefault": "Static"
   },
   "BqA9of": {
     "defaultMessage": "Try it out",
@@ -1264,11 +1264,6 @@
     "description": "Times Component field label",
     "originalDefault": "Times Component"
   },
-  "PtUsDT": {
-    "defaultMessage": "User variables",
-    "description": "Variable source group label for user defined variables",
-    "originalDefault": "User variables"
-  },
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
@@ -1783,11 +1778,6 @@
     "defaultMessage": "Build a JsonLogic expression using raw JSON.",
     "description": "Advanced logic type info text",
     "originalDefault": "Build a JsonLogic expression using raw JSON."
-  },
-  "c1XyJ4": {
-    "defaultMessage": "Component",
-    "description": "Component variables tab title",
-    "originalDefault": "Component"
   },
   "cDbGU2": {
     "defaultMessage": "Incomplete Submissions Removal Limit",
@@ -2733,11 +2723,6 @@
     "defaultMessage": "Action",
     "description": "Action column header",
     "originalDefault": "Action"
-  },
-  "zGMQ75": {
-    "defaultMessage": "User defined",
-    "description": "User defined variables tab title",
-    "originalDefault": "User defined"
   },
   "zLTTBw": {
     "defaultMessage": "Component where dates for an appointment will be shown",
