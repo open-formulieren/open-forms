@@ -309,6 +309,10 @@ class ExportTests(TestCase):
         dataset = create_submission_export(Submission.objects.order_by("pk"))
 
         self.assertEqual(len(dataset), 2)
+        self.assertEqual(len(dataset.headers), 3)
+        self.assertEqual(dataset.headers[2], "repeatingGroup")
+        self.assertIsNotNone(dataset[0][2])
+        self.assertIsNotNone(dataset[1][2])
 
     @tag("gh-3629")
     @temp_private_root()

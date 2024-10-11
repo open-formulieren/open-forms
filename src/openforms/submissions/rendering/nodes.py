@@ -51,6 +51,8 @@ class SubmissionStepNode(Node):
 
     @property
     def is_visible(self) -> bool:
+        if self.mode == RenderModes.export:
+            return True
         # determine if the step as a whole is relevant or not. The stap may be not
         # applicable because of form logic.
         logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)

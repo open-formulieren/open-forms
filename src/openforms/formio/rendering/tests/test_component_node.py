@@ -410,7 +410,7 @@ class FormNodeTests(TestCase):
             )
             nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 19)
+        self.assertEqual(len(nodelist), 16)
         labels = [node.label for node in nodelist]
         # The fieldset/editgrid components have no labels
         self.assertEqual(
@@ -427,13 +427,10 @@ class FormNodeTests(TestCase):
                 "input8",
                 "input9",
                 "input10",
-                # The editgrid components have 2 entries each in the data
-                "input11",
-                "input11",
-                "input12",
-                "input12",
-                "input13",
-                "input13",
+                # edit grid must be treated as a leaf node instead of a layout node
+                "visibleEditGridWithVisibleChildren",
+                "hiddenEditGridWithVisibleChildren",
+                "visibleEditGridWithHiddenChildren",
                 "input14",
                 "input15",
             ],
