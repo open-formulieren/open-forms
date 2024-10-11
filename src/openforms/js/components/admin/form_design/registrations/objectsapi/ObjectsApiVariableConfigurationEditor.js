@@ -1,7 +1,7 @@
 import {FieldArray, useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
@@ -38,6 +38,9 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {components} = useContext(FormContext);
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
   const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
+
+  const hasAnyAddressNlValue = Object.values(variable.initialValue).some(value => value !== '');
+  const [isSpecificTargetsChecked, setSpecificTargets] = useState(hasAnyAddressNlValue);
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
   const {
@@ -110,6 +113,13 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
       </ErrorMessage>
     );
 
+  const isAddressNlComponent = components[variable?.key].type === 'addressNL';
+  const deriveAddress = components[variable?.key]['deriveAddress'];
+
+  const onSpecificTargetsChange = event => {
+    setSpecificTargets(event.target.checked);
+  };
+
   return (
     <Fieldset>
       <FormRow>
@@ -126,33 +136,35 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           />
         </Field>
       </FormRow>
-      <FormRow>
-        <Field
-          label={
-            <FormattedMessage
-              defaultMessage="Map to geometry field"
-              description="'Map to geometry field' checkbox label"
+      {!isAddressNlComponent && (
+        <FormRow>
+          <Field
+            label={
+              <FormattedMessage
+                defaultMessage="Map to geometry field"
+                description="'Map to geometry field' checkbox label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="'Map to geometry field' checkbox help text"
+                defaultMessage="Whether to map this variable to the {geometryPath} attribute"
+                values={{geometryPath: <code>record.geometry</code>}}
+              />
+            }
+            name="geometryVariableKey"
+            disabled={!!mappedVariable.targetPath}
+          >
+            <Checkbox
+              checked={isGeometry}
+              onChange={event => {
+                const newValue = event.target.checked ? variable.key : undefined;
+                setFieldValue('geometryVariableKey', newValue);
+              }}
             />
-          }
-          helpText={
-            <FormattedMessage
-              description="'Map to geometry field' checkbox help text"
-              defaultMessage="Whether to map this variable to the {geometryPath} attribute"
-              values={{geometryPath: <code>record.geometry</code>}}
-            />
-          }
-          name="geometryVariableKey"
-          disabled={!!mappedVariable.targetPath}
-        >
-          <Checkbox
-            checked={isGeometry}
-            onChange={event => {
-              const newValue = event.target.checked ? variable.key : undefined;
-              setFieldValue('geometryVariableKey', newValue);
-            }}
-          />
-        </Field>
-      </FormRow>
+          </Field>
+        </FormRow>
+      )}
       <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}
@@ -173,6 +185,30 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           />
         </Field>
       </FormRow>
+      {isAddressNlComponent && (
+        <FormRow>
+          <Field
+            name={`${namePrefix}.nestedMapping`}
+            label={
+              <FormattedMessage
+                defaultMessage="Define specific targets"
+                description="Define specific targets for all the fields of AddressNL component"
+              />
+            }
+          >
+            <Checkbox checked={isSpecificTargetsChecked} onChange={onSpecificTargetsChange} />
+          </Field>
+        </FormRow>
+      )}
+      {isSpecificTargetsChecked && (
+        <SpecificTargetsDisplay
+          namePrefix={namePrefix}
+          index={index}
+          choices={choices}
+          mappedVariable={mappedVariable}
+          deriveAddress={deriveAddress}
+        />
+      )}
       <div style={{marginTop: '1em'}}>
         <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
           <FormattedMessage
@@ -200,7 +236,7 @@ ObjectsApiVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-const TargetPathSelect = ({name, index, choices, mappedVariable, disabled}) => {
+const TargetPathSelect = ({id = 'targetPath', name, index, choices, mappedVariable, disabled}) => {
   // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
   // It is added only when an actual target path is selected. This way, having the empty
   // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
@@ -217,7 +253,7 @@ const TargetPathSelect = ({name, index, choices, mappedVariable, disabled}) => {
       name="variablesMapping"
       render={arrayHelpers => (
         <Select
-          id="targetPath"
+          id={id}
           name={name}
           allowBlank
           choices={choices}
@@ -264,6 +300,132 @@ TargetPathDisplay.propTypes = {
     targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
     isRequired: PropTypes.bool.isRequired,
   }).isRequired,
+};
+
+const SpecificTargetsDisplay = ({namePrefix, index, choices, mappedVariable, deriveAddress}) => {
+  console.log(mappedVariable);
+  return (
+    <Fieldset>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.postcodeTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="Postcode Schema target"
+              description="'Postcode Schema target' label"
+            />
+          }
+        >
+          <TargetPathSelect
+            id="postcodeTargetPath"
+            name={`${namePrefix}.postcodeTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.houseNumberTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="House number Schema target"
+              description="'House number Schema target' label"
+            />
+          }
+        >
+          <TargetPathSelect
+            id="houseNumberTargetPath"
+            name={`${namePrefix}.houseNumberTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.houseLetterTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="House letter Schema target"
+              description="'House letter Schema target' label"
+            />
+          }
+        >
+          <TargetPathSelect
+            id="houseLetterTargetPath"
+            name={`${namePrefix}.houseLetterTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.houseNumberAdditionTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="House number addition Schema target"
+              description="'House number addition Schema target' label"
+            />
+          }
+        >
+          <TargetPathSelect
+            id="houseNumberAdditionTargetPath"
+            name={`${namePrefix}.houseNumberAdditionTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.cityTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="City Schema target"
+              description="'City Schema target' label"
+            />
+          }
+          disabled={!deriveAddress}
+        >
+          <TargetPathSelect
+            id="cityTargetPath"
+            name={`${namePrefix}.cityTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+            disabled={!deriveAddress}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.streetNameTargetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="Street name Schema target"
+              description="'Street name Schema target' label"
+            />
+          }
+          disabled={!deriveAddress}
+        >
+          <TargetPathSelect
+            id="streetNameTargetPath"
+            name={`${namePrefix}.streetNameTargetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+            disabled={!deriveAddress}
+          />
+        </Field>
+      </FormRow>
+    </Fieldset>
+  );
 };
 
 export default ObjectsApiVariableConfigurationEditor;
