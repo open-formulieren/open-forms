@@ -99,9 +99,6 @@ class SubmissionStep(models.Model):
         null=True,
         blank=True,
     )
-    _data = models.JSONField(_("data"), blank=True, null=True)
-    # _data is deprecated and replaced with variables. This is still kept around to be
-    # able to automatically migrate in case there were earlier migration bugs.
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
@@ -153,9 +150,6 @@ class SubmissionStep(models.Model):
             # deleted form step in the form designer/import functionality)
             if not self.form_step_id:
                 self.form_step = self._load_form_step_from_history()
-
-    def __str__(self):
-        return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
 
     def _load_form_step_from_history(self):
         history = deepcopy(self.form_step_history)

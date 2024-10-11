@@ -101,15 +101,12 @@ class SubmissionTimeListFilter(admin.SimpleListFilter):
             return queryset.filter(last_register_date__gt=yesterday)
 
 
-class SubmissionStepInline(admin.StackedInline):
+class SubmissionStepInline(admin.TabularInline):
     model = SubmissionStep
     extra = 0
-    fields = (
-        "uuid",
-        "form_step",
-        "_data",
-    )
+    fields = ("uuid", "form_step", "created_on", "modified")
     raw_id_fields = ("form_step",)
+    readonly_fields = ("created_on", "modified")
 
 
 class SubmissionPaymentInline(admin.StackedInline):

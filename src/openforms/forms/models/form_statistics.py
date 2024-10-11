@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.formats import localize
+from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _
 
 
@@ -39,5 +40,6 @@ class FormStatistics(models.Model):
 
     def __str__(self):
         return _("{form_name} last submitted on {last_submitted}").format(
-            form_name=self.form_name, last_submitted=localize(self.last_submission)
+            form_name=self.form_name,
+            last_submitted=localize(localtime(self.last_submission)),
         )
