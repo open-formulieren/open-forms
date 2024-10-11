@@ -420,6 +420,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: docker-image-all-extensions-${{ needs.docker_build_setup.outputs.version }}
+
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -428,8 +429,10 @@ jobs:
           output: 'trivy-results-docker.sarif'
           ignore-unfixed: true
         env:
-          # See https://github.com/aquasecurity/trivy-action/issues/389#issuecomment-2368662097
-          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Uses the cache from trivy.yml workflow
+          TRIVY_SKIP_DB_UPDATE: true
+          TRIVY_SKIP_JAVA_DB_UPDATE: true
+
       - name: Upload results to GH Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
