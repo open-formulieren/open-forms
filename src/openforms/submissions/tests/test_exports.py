@@ -4,7 +4,9 @@ from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
+from privates.test import temp_private_root
 
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.variables.constants import FormVariableSources
 
@@ -266,3 +268,118 @@ class ExportTests(TestCase):
         export = create_submission_export(Submission.objects.all())
 
         self.assertIn(("Taalcode", "en"), zip(export.headers, export[0]))
+
+    @tag("gh-3629")
+    def test_different_number_of_items_in_repeating_groups(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "repeatingGroup",
+                        "label": "Repeating group",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "fullName",
+                                "label": "Full name",
+                            }
+                        ],
+                    }
+                ]
+            },
+        )
+        submission_1, submission_2 = SubmissionFactory.create_batch(
+            2, form=form, completed=True, completed_on=timezone.now()
+        )
+        SubmissionStepFactory.create(
+            submission=submission_1,
+            form_step=form.formstep_set.get(),
+            # no records at all, ensure first submission has less items than second
+            data={"repeatingGroup": []},
+        )
+        SubmissionStepFactory.create(
+            submission=submission_2,
+            form_step=form.formstep_set.get(),
+            # 1 record, more than the first submission
+            data={"repeatingGroup": [{"fullName": "Herman Brood"}]},
+        )
+
+        dataset = create_submission_export(Submission.objects.order_by("pk"))
+
+        self.assertEqual(len(dataset), 2)
+
+    @tag("gh-3629")
+    @temp_private_root()
+    def test_form_with_file_uploads(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "attachments",
+                        "label": "Attachments",
+                        "multiple": True,
+                    }
+                ]
+            },
+        )
+        submission_1, submission_2 = SubmissionFactory.create_batch(
+            2, form=form, completed=True, completed_on=timezone.now()
+        )
+        SubmissionStepFactory.create(
+            submission=submission_1,
+            form_step=form.formstep_set.get(),
+            data={
+                "attachments": [
+                    SubmittedFileFactory.create(
+                        temporary_upload__submission=submission_1
+                    )
+                ]
+            },
+        )
+        files_2 = SubmittedFileFactory.create_batch(
+            2, temporary_upload__submission=submission_2
+        )
+        SubmissionStepFactory.create(
+            submission=submission_2,
+            form_step=form.formstep_set.get(),
+            # 1 record, more than the first submission
+            data={"attachments": files_2},
+        )
+
+        dataset = create_submission_export(Submission.objects.order_by("pk"))
+
+        self.assertEqual(len(dataset), 2)
+
+    @tag("gh-3629")
+    def test_submission_missing_submission_step(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fullName",
+                        "label": "Full name",
+                    }
+                ]
+            },
+        )
+        submission_1, submission_2 = SubmissionFactory.create_batch(
+            2, form=form, completed=True, completed_on=timezone.now()
+        )
+        assert not submission_1.submissionstep_set.exists()
+        SubmissionStepFactory.create(
+            submission=submission_2,
+            form_step=form.formstep_set.get(),
+            data={"fullName": "Arie Kabaalstra"},
+        )
+
+        dataset = create_submission_export(Submission.objects.order_by("pk"))
+
+        self.assertEqual(len(dataset), 2)
+        self.assertEqual(len(dataset[0]), 3)
+        self.assertEqual(len(dataset[1]), 3)
