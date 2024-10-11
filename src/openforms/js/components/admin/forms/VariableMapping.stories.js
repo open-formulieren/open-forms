@@ -1,8 +1,9 @@
-import {expect, fn, userEvent, within} from '@storybook/test';
+import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {FormDecorator, FormikDecorator} from 'components/admin/form_design/story-decorators';
-import {getReactSelectOptions} from 'utils/storybookTestHelpers';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
+import {getReactSelectContainer} from 'utils/storybookTestHelpers';
 
 import VariableMapping, {serializeValue} from './VariableMapping';
 
@@ -35,8 +36,9 @@ export default {
       {
         form: 'foo',
         formDefinition: 'foo',
-        name: 'name1',
+        name: 'Name 1',
         key: 'key1',
+        source: '',
       },
     ],
 
@@ -44,8 +46,9 @@ export default {
       {
         form: 'bar',
         formDefinition: 'bar',
-        name: 'name2',
+        name: 'Name 2',
         key: 'key2',
+        source: VARIABLE_SOURCES.component,
       },
     ],
   },
@@ -124,10 +127,14 @@ export const NonStringValues = {
 export const SelectOptions = {
   render: args => (
     <>
-      <VariableMapping {...args} includeStaticVariables />
+      <VariableMapping {...args} />
       <button type="submit">Submit</button>
     </>
   ),
+
+  args: {
+    includeStaticVariables: true,
+  },
 
   parameters: {
     formik: {
@@ -140,18 +147,23 @@ export const SelectOptions = {
 
     await step('Check rendered values', async () => {
       const formVariableDropdown = canvas.getByLabelText('Formuliervariabele');
-      await selectEvent.openMenu(formVariableDropdown);
-      const variableOptions = getReactSelectOptions(formVariableDropdown);
+      selectEvent.openMenu(formVariableDropdown);
 
-      await expect(variableOptions).toHaveLength(2);
-      await expect(variableOptions[1]).toHaveTextContent('(key2)');
+      const formVarOptions = await within(
+        getReactSelectContainer(formVariableDropdown)
+      ).findAllByRole('option');
+
+      expect(formVarOptions).toHaveLength(2);
+      expect(formVarOptions[0]).toHaveTextContent('key2');
+      expect(formVarOptions[0]).toHaveTextContent('Name 2');
+      await userEvent.click(formVariableDropdown); // close the menu again
 
       const propertyDropdown = canvas.getByLabelText('Pick a property');
       const propertyOptions = within(propertyDropdown).getAllByRole('option');
 
-      await expect(propertyOptions).toHaveLength(3);
-      await expect(propertyOptions[1]).toHaveValue(serializeValue('option_1'));
-      await expect(propertyOptions[2]).toHaveValue(serializeValue('option_2'));
+      expect(propertyOptions).toHaveLength(3);
+      expect(propertyOptions[1]).toHaveValue(serializeValue('option_1'));
+      expect(propertyOptions[2]).toHaveValue(serializeValue('option_2'));
     });
 
     await step('Select different option and submit', async () => {
