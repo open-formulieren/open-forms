@@ -108,7 +108,7 @@ Validatie
 ---------
 
 * **Verplicht**: Indien aangevinkt dan is dit veld verplicht voor de 
-  eindgebruiker.
+  eindgebruiker. Sommige velden ondersteunen :ref:`niet-blokkerende verplichting <manual_forms_soft_required_fields>`.
 
 * **Plugin**: U kunt gebruik maken van een externe plugin om een veld te 
   valideren. De waarde van het veld wordt naar de plugin gestuurd en 
