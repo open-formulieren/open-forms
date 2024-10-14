@@ -70,6 +70,7 @@ const getBuilderOptions = () => {
           content: true,
           fieldset: true,
           columns: true,
+          softRequiredErrors: true,
         },
       },
       custom_preset: {

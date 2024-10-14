@@ -67,7 +67,7 @@ div.flatpickr-calendar.open {
   .tab-pane.active {
     min-block-size: 50vh;
 
-    &:has(.formio-component-content) {
+    &:has(.formio-component-content, .formio-component-softRequiredErrors) {
       min-block-size: 0;
     }
   }
