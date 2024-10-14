@@ -85,6 +85,21 @@ const VARIABLES = [
       variablesMapping: [{formVariable: 'formioComponent', prefillProperty: ['firstName']}],
     },
   },
+  {
+    form: 'http://localhost:8000/api/v2/forms/36612390',
+    formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+    name: 'AddressNL',
+    key: 'addressNl',
+    source: 'component',
+    prefillPlugin: '',
+    prefillAttribute: '',
+    prefillIdentifierRole: 'main',
+    dataType: 'string',
+    dataFormat: undefined,
+    isSensitiveData: false,
+    serviceFetchConfiguration: undefined,
+    initialValue: {postcode: '', house_letter: '', house_number: '', house_number_addition: ''},
+  },
 ];
 
 export default {
@@ -678,5 +693,155 @@ export const WithValidationErrors = {
     // open modal for configuration
     const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
+  },
+};
+
+export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
+  args: {
+    availableComponents: {
+      addressNl: {
+        key: 'addresNl',
+        type: 'addressNL',
+        deriveAddress: false,
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'addresNl',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
+      ],
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    userEvent.click(editIcons[3]);
+
+    const specificTargetsCheckbox = await screen.findByRole('checkbox');
+    userEvent.click(specificTargetsCheckbox);
+
+    const postcodeSelect = await screen.findByLabelText('Postcode Schema target');
+    const houseNumberSelect = await screen.findByLabelText('House number Schema target');
+    const houseLetterSelect = await screen.findByLabelText('House letter Schema target');
+    const houseNumberAdditionSelect = await screen.findByLabelText(
+      'House number addition Schema target'
+    );
+    const citySelect = await screen.findByLabelText('City Schema target');
+    const streetNameSelect = await screen.findByLabelText('Street name Schema target');
+
+    await expect(postcodeSelect).toBeVisible();
+    await expect(houseNumberSelect).toBeVisible();
+    await expect(houseLetterSelect).toBeVisible();
+    await expect(houseNumberAdditionSelect).toBeVisible();
+    await expect(citySelect).toBeVisible();
+    await expect(streetNameSelect).toBeVisible();
+
+    await expect(citySelect).toBeDisabled();
+    await expect(streetNameSelect).toBeDisabled();
+  },
+};
+
+export const AddressNLMappingSpecificTargetsDeriveAddress = {
+  args: {
+    availableComponents: {
+      addressNl: {
+        key: 'addresNl',
+        type: 'addressNL',
+        deriveAddress: true,
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'addresNl',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
+      ],
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    userEvent.click(editIcons[3]);
+
+    const specificTargetsCheckbox = await screen.findByRole('checkbox');
+    userEvent.click(specificTargetsCheckbox);
+
+    const postcodeSelect = await screen.findByLabelText('Postcode Schema target');
+    const houseNumberSelect = await screen.findByLabelText('House number Schema target');
+    const houseLetterSelect = await screen.findByLabelText('House letter Schema target');
+    const houseNumberAdditionSelect = await screen.findByLabelText(
+      'House number addition Schema target'
+    );
+    const citySelect = await screen.findByLabelText('City Schema target');
+    const streetNameSelect = await screen.findByLabelText('Street name Schema target');
+
+    await expect(postcodeSelect).toBeVisible();
+    await expect(houseNumberSelect).toBeVisible();
+    await expect(houseLetterSelect).toBeVisible();
+    await expect(houseNumberAdditionSelect).toBeVisible();
+    await expect(citySelect).toBeVisible();
+    await expect(streetNameSelect).toBeVisible();
+
+    await expect(citySelect).not.toBeDisabled();
+    await expect(streetNameSelect).not.toBeDisabled();
   },
 };

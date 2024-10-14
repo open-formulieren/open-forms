@@ -119,8 +119,8 @@ const Checkbox = ({name, label, helpText, noVCheckbox = false, ...extraProps}) =
 };
 
 Checkbox.propTypes = {
-  name: PropTypes.string.isRequired,
-  label: PropTypes.node.isRequired,
+  name: PropTypes.string,
+  label: PropTypes.node,
   helpText: PropTypes.node,
   noVCheckbox: PropTypes.bool,
 };
