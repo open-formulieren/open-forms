@@ -33,6 +33,7 @@
   "npFamilyMembers": "Family members",
   "array_nonempty": "This field must have at least one value.",
   "maxFileSizeMessage": "The maximum file size is {{maxFileSize}}.",
+  "removeFileMessage": "Remove {{fileName}}",
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "The uploaded file is not of an allowed type. It must be: {{ pattern }}.",
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} or {{ lastLabel }}",
   "invalid_time": "Only times between {{ minTime }} and {{ maxTime }} are allowed.",

@@ -31,6 +31,7 @@
   "Component": "component",
   "Save": "Opslaan",
   "Remove": "Verwijderen",
+  "removeFileMessage": "Verwijder {{fileName}}",
   "Preview": "Voorbeeld",
   "Drag and Drop a form component": "Sleep een component in het formulier en laat de muisknop los",
   "No Matches Found": "Geen overeenkomsten gevonden",
