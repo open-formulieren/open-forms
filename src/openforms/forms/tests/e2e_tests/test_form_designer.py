@@ -7,7 +7,6 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import Page, expect
 
-from openforms.formio.utils import iterate_components_with_configuration_path
 from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import (
     E2ETestCase,
@@ -18,7 +17,6 @@ from openforms.tests.e2e.base import (
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ...models import Form
 from ..factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -422,19 +420,28 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await expect(key_input).to_have_value("textField1")
 
     async def test_textfields_default_value_empty_string(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Test textfields default value empty string",
+                name_nl="Test textfields default value empty string",
+                generate_minimal_setup=False,
+            )
+            return form
+
         await create_superuser()
-        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
-        form_name = "Test textfields default value empty string"
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
 
         async with browser_page() as page:
             await self._admin_login(page)
             await page.goto(str(admin_url))
 
-            with phase("Create and save form"):
-                form_name_input = page.get_by_role("textbox", name="Name", exact=True)
-                await form_name_input.click()
-                await form_name_input.fill(form_name)
-
+            with phase("Populate and save form"):
                 await add_new_step(page)
                 step_name_input = page.get_by_role(
                     "textbox", name="Step name", exact=True
@@ -485,31 +492,19 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 await page.get_by_role(
                     "button", name="Save and continue editing", exact=True
                 ).click()
+                await page.wait_for_url(admin_url)
 
             with phase("Validate default values"):
 
                 @sync_to_async
                 def assertFormValues():
-                    form = Form.objects.get(name=form_name)
-                    configuration = (
-                        form.formstep_set.first().form_definition.configuration
-                    )
-
-                    for (
-                        configuration_path,
-                        component,
-                    ) in iterate_components_with_configuration_path(
-                        configuration, recursive=False
-                    ):
-                        expected = ""
-                        if component.get("multiple", False):
-                            expected = [""]
+                    for component in form.iter_components():
+                        expected = [""] if component.get("multiple", False) else ""
 
                         self.assertEqual(
                             component["defaultValue"],
                             expected,
-                            msg="Test failed for component %s with multiple set to %s"
-                            % (component["key"], component.get("multiple", False)),
+                            msg=f"Test failed for component {component['key']} with multiple set to {component.get('multiple', False)}",
                         )
 
                 await assertFormValues()
