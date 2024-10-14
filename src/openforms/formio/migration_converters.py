@@ -273,6 +273,9 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
 
 
 def fix_empty_default_value(component: Component) -> bool:
+    if "defaultValue" not in component:
+        return False
+
     default_value = component.get("defaultValue")
     changed = False
 
