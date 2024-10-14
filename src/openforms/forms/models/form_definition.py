@@ -141,6 +141,8 @@ class FormDefinition(models.Model):
         to be used in bulk Form Definition querysets, you should use prefetch queries
         for that.
         """
+        if not self.pk:
+            return Form.objects.none()
         return (
             Form.objects.filter(
                 _is_deleted=False,
