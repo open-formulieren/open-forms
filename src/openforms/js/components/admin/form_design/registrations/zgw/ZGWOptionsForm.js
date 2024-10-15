@@ -18,8 +18,12 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const validationErrors = useContext(ValidationErrorContext);
 
-  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding} = schema.properties;
+  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding, objectsApiGroup} = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(zgwApiGroup.enum, zgwApiGroup.enumNames);
+  const objectsApiGroupChoices = getChoicesFromSchema(
+    objectsApiGroup.enum,
+    objectsApiGroup.enumNames
+  );
   const confidentialityLevelChoices = getChoicesFromSchema(
     zaakVertrouwelijkheidaanduiding.enum,
     zaakVertrouwelijkheidaanduiding.enumNames
@@ -92,6 +96,7 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
               ...formData,
               // Ensure that if there's only one option, it is automatically selected.
               zgwApiGroup: formData.zgwApiGroup ?? defaultGroup,
+              objectsApiGroup: formData.objectsApiGroup,
             }}
             onSubmit={(values, actions) => {
               onChange({formData: values});
@@ -104,6 +109,7 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
                 <ZGWFormFields
                   name={name}
                   apiGroupChoices={apiGroupChoices}
+                  objectsApiGroupChoices={objectsApiGroupChoices}
                   confidentialityLevelChoices={confidentialityLevelChoices}
                 />
 
