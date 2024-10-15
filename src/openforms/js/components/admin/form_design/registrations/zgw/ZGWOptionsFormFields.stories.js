@@ -13,13 +13,14 @@ import {mockCaseTypesGet, mockCataloguesGet} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
-const render = ({apiGroups, confidentialityLevelChoices, formData}) => (
+const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices, formData}) => (
   <Formik initialValues={formData} onSubmit={fn()}>
     <Form data-testid="test-form">
       <ZGWFormFields
         index={0}
         name={NAME}
         apiGroupChoices={apiGroups}
+        objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
       />
     </Form>
@@ -33,6 +34,7 @@ export default {
   render,
   args: {
     apiGroups: [[1, 'ZGW API']],
+    objectsApiGroupChoices: [[1, 'Objects API']],
     confidentialityLevelChoices: [
       ['openbaar', 'Openbaar'],
       ['geheim', 'Geheim'],
