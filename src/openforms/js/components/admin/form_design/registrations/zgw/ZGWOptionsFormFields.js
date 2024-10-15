@@ -12,6 +12,7 @@ import {
   ValidationErrorsProvider,
   filterErrors,
 } from 'components/admin/forms/ValidationErrors';
+import {ObjectsAPIGroup} from 'components/admin/forms/objects_api';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
@@ -25,7 +26,21 @@ import {
   OrganisationRSIN,
 } from './fields';
 
-const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => {
+/**
+ * Callback to invoke when the API group changes - used to reset the dependent fields.
+ */
+const onApiGroupChange = prevValues => ({
+  ...prevValues,
+  objecttype: '',
+  objecttypeVersion: undefined,
+});
+
+const ZGWFormFields = ({
+  name,
+  apiGroupChoices,
+  objectsApiGroupChoices,
+  confidentialityLevelChoices,
+}) => {
   const {
     values: {propertyMappings = []},
   } = useFormikContext();
@@ -112,6 +127,10 @@ const ZGWFormFields = ({name, apiGroupChoices, confidentialityLevelChoices}) => 
             collapsible
             fieldNames={['objecttype', 'objecttypeVersion', 'contentJson']}
           >
+            <ObjectsAPIGroup
+              apiGroupChoices={objectsApiGroupChoices}
+              onApiGroupChange={onApiGroupChange}
+            />
             <ObjectType />
             <ObjectTypeVersion />
             <ContentJSON />
@@ -137,6 +156,14 @@ ZGWFormFields.propTypes = {
       ])
     )
   ).isRequired,
+  objectsApiGroupChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.number, // value
+        PropTypes.string, // label
+      ])
+    )
+  ),
   confidentialityLevelChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string) // value & label are both string
   ).isRequired,

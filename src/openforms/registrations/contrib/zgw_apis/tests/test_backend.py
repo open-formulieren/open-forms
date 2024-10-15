@@ -1583,7 +1583,12 @@ class ZGWBackendTests(TestCase):
             ),
         )
 
+        # unused group
         ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten2.nl/api/v1/",
+            organisatie_rsin="111222333",
+        )
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
             organisatie_rsin="000000000",
         )
@@ -1723,6 +1728,7 @@ class ZGWBackendTests(TestCase):
             "organisatie_rsin": "000000000",
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": objects_api_group,
             "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
             "objecttype_version": 1,
         }

@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
 
 if TYPE_CHECKING:
+    from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+
     from .models import ZGWApiGroupConfig
 
 
@@ -37,6 +39,7 @@ class RegistrationOptions(TypedDict):
     organisatie_rsin: NotRequired[str]
     zaak_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
     medewerker_roltype: NotRequired[str]
+    objects_api_group: NotRequired[ObjectsAPIGroupConfig]
     objecttype: NotRequired[str]
     objecttype_version: NotRequired[int]
     content_json: NotRequired[str]

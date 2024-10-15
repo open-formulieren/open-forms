@@ -578,7 +578,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         )
 
         # In a follow up PR: the group will be configurable:
-        api_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
+        api_group = options.get(
+            "objects_api_group", ObjectsAPIGroupConfig.objects.order_by("pk").first()
+        )
         if not api_group:  # pragma: no cover
             raise RegistrationFailed("No API group available at all")
         with get_objects_client(api_group) as objects_client:
