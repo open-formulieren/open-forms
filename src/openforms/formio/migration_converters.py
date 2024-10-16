@@ -280,6 +280,10 @@ def fix_empty_default_value(component: Component) -> bool:
     changed = False
 
     if component.get("multiple", False):
+        if default_value is None:
+            component["defaultValue"] = []
+            return True
+
         for index, value in enumerate(default_value):
             if value is None:
                 component["defaultValue"][index] = ""

@@ -222,7 +222,7 @@ class TextTests(SimpleTestCase):
 
         self.assertFalse(changed)
 
-    def test_multiple_default_value_none_changed(self):
+    def test_multiple_default_value_none_in_array_changed(self):
         component: Component = {
             "type": "textfield",
             "key": "textField",
@@ -249,6 +249,20 @@ class TextTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertEqual(component["defaultValue"], ["foo", "", "bar"])
+
+    def test_multiple_default_value_none_changed(self):
+        component: Component = {
+            "key": "textField",
+            "label": "Text Field",
+            "type": "textfield",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
 
 
 class EmailTests(SimpleTestCase):
