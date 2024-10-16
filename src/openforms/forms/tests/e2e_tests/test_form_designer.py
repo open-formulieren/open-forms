@@ -40,8 +40,12 @@ async def add_new_step(page: Page):
     await page.get_by_role("button", name="Create a new form definition").click()
 
 
-async def drag_and_drop_component(page: Page, component: str):
-    await page.get_by_text(component, exact=True).hover()
+async def drag_and_drop_component(
+    page: Page, component: str, parent_ref: str = "sidebar-groups"
+):
+    await page.locator(f'css=[ref="{parent_ref}"]').get_by_text(
+        component, exact=True
+    ).hover()
     await page.mouse.down()
     # This is added to make it work for when there is already a component in the container.
     # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
@@ -414,6 +418,96 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # Check that the key has been made unique (textField1 vs textField)
             key_input = page.get_by_label("Property Name")
             await expect(key_input).to_have_value("textField1")
+
+    async def test_textfields_default_value_empty_string(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Test textfields default value empty string",
+                name_nl="Test textfields default value empty string",
+                generate_minimal_setup=False,
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Populate and save form"):
+                await add_new_step(page)
+                step_name_input = page.get_by_role(
+                    "textbox", name="Step name", exact=True
+                )
+                await step_name_input.click()
+                await step_name_input.fill("Step 1")
+
+                basic_components = [
+                    "Tekstveld",
+                    "E-mail",
+                    "Tijd",
+                    "Telefoonnummer",
+                    "Tekstvlak",
+                ]
+                for component in basic_components:
+                    await drag_and_drop_component(page, component, "group-panel-custom")
+                    await close_modal(page, "Save", exact=True)
+
+                basic_components_with_multiple = [
+                    "Tekstveld",
+                    "E-mail",
+                    "Tijd",
+                    "Telefoonnummer",
+                    "Tekstvlak",
+                ]
+                for component in basic_components_with_multiple:
+                    await drag_and_drop_component(page, component, "group-panel-custom")
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    await close_modal(page, "Save", exact=True)
+
+                # Open the special fields list
+                await page.get_by_role(
+                    "button", name="Speciale velden", exact=True
+                ).click()
+
+                special_components = ["IBAN", "Kenteken", "Mede-ondertekenen"]
+                for component in special_components:
+                    await drag_and_drop_component(page, component)
+                    await close_modal(page, "Save", exact=True)
+
+                special_components_with_multiple = ["IBAN", "Kenteken"]
+                for component in special_components_with_multiple:
+                    await drag_and_drop_component(page, component)
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role(
+                    "button", name="Save and continue editing", exact=True
+                ).click()
+                await page.wait_for_url(admin_url)
+
+            with phase("Validate default values"):
+
+                @sync_to_async
+                def assertFormValues():
+                    for component in form.iter_components():
+                        expected = [""] if component.get("multiple", False) else ""
+
+                        self.assertEqual(
+                            component["defaultValue"],
+                            expected,
+                            msg=f"Test failed for component {component['key']} with multiple set to {component.get('multiple', False)}",
+                        )
+
+                await assertFormValues()
 
     @tag("gh-2805")
     async def test_enable_translations_and_create_new_step(self):

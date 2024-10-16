@@ -272,6 +272,26 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
     return True
 
 
+def fix_empty_default_value(component: Component) -> bool:
+    if "defaultValue" not in component:
+        return False
+
+    default_value = component.get("defaultValue")
+    changed = False
+
+    if component.get("multiple", False):
+        for index, value in enumerate(default_value):
+            if value is None:
+                component["defaultValue"][index] = ""
+                changed = True
+
+    if default_value is None:
+        component["defaultValue"] = ""
+        changed = True
+
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -283,9 +303,11 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -298,9 +320,11 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "time": {
         "move_time_validators": move_time_validators,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "phoneNumber": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -314,6 +338,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
@@ -330,10 +355,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Special components
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "licenseplate": {
         "ensure_validate_pattern": ensure_licensplate_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "fix_empty_default_value": fix_empty_default_value,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
