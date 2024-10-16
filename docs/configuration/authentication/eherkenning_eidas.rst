@@ -34,7 +34,7 @@ that describes the authenticated entity (person or company).
     EH4         hoog/high       urn:etoegang:core:assurance-class:loa4
     =========== =============== ===========================================
 
-    Source: `Afsprakenstelsel eToegang <https://afsprakenstelsel.etoegang.nl/Startpagina/v1/level-of-assurance>`_
+    Source: `Afsprakenstelsel eToegang <https://afsprakenstelsel.etoegang.nl/Startpagina/v3/level-of-assurance>`_
 
 .. note::
 
