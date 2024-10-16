@@ -2,8 +2,6 @@ import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal
 
-from django.conf import settings
-
 from glom import Path, assign, glom
 
 from openforms.submissions.models import SubmissionStep
@@ -119,10 +117,7 @@ class ComponentNode(Node):
 
         # everything is emitted in export mode to get consistent columns
         # the same happens with the registration in order to include hidden fields as well
-        visible_modes = {RenderModes.export, RenderModes.registration}
-        if settings.DISABLE_SENDING_HIDDEN_FIELDS:
-            visible_modes.remove(RenderModes.registration)
-        if self.mode in visible_modes:
+        if self.mode in {RenderModes.export, RenderModes.registration}:
             return True
 
         # explicitly hidden components never show up. Note that this property can be set
