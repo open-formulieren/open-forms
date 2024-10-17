@@ -57,6 +57,13 @@ class ContainerMixin:
         return True
 
 
+@register("textfield")
+class TextNode(ComponentNode):
+    @property
+    def value_list(self):
+        return super().value
+
+
 @register("selectboxes")
 @register("radio")
 class ChoicesNode(ComponentNode):
@@ -65,6 +72,23 @@ class ChoicesNode(ComponentNode):
         for choice in self.component["values"]:
             choice["label"] = f(choice["label"])
 
+    @property
+    def value_list(self):
+        if not self.component["type"] == "selectboxes":
+            return super().display_value
+
+        values = []
+        for value, isSelected in super().value.items():
+            if isSelected:
+                value_to_add = value
+                # Search the label for the value
+                for choice in self.component["values"]:
+                    if choice["value"] == value:
+                        value_to_add = choice["label"]
+
+                values.append(value_to_add)
+        return values
+
 
 @register("select")
 class SelectNode(ComponentNode):
@@ -72,6 +96,14 @@ class SelectNode(ComponentNode):
         super().apply_to_labels(f)
         for choice in self.component["data"]["values"]:
             choice["label"] = f(choice["label"])
+
+    @property
+    def value_list(self) -> list:
+        values = []
+        for choice in self.component["data"]["values"]:
+            if choice["value"] in super().value:
+                values.append(choice["label"])
+        return values
 
 
 @register("fieldset")

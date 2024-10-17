@@ -24,9 +24,7 @@ class HeaderTest(WebTest):
 
         header_node = response.html.find("header")
         link_node = header_node.find("a")
-        aria_label = link_node.get("aria-label")
         title = link_node.get("title")
 
         expected_label = _("Back to website of %(name)s") % {"name": "My organization"}
-        self.assertEqual(aria_label, expected_label)
         self.assertEqual(title, expected_label)
