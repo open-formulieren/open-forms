@@ -142,6 +142,6 @@ For reference, the backend script:
 This script can handle current and future NPM packages published in the
 @open-formulieren namespace that comply with the package layout conventions.
 
-.. _FormatJS: https://formatjs.io/
+.. _FormatJS: https://formatjs.github.io/
 .. _react-intl: https://formatjs.io/docs/getting-started/installation
 .. _react-intl storybook addon: https://storybook.js.org/addons/storybook-react-intl
