@@ -16,7 +16,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.prefill import prefill_variables
+from openforms.prefill.service import prefill_variables
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..models import SubmissionValueVariable
@@ -209,7 +209,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
     @tag("gh-1899")
     @patch(
-        "openforms.prefill._fetch_prefill_values",
+        "openforms.prefill.service.fetch_prefill_values_for_component",
         return_value={
             "postcode": {"main": {"static": "1015CJ"}},
         },
