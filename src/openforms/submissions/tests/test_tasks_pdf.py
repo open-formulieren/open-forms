@@ -262,6 +262,135 @@ class SubmissionReportGenerationTests(TestCase):
 
         self.assertEqual(reference_node.text, "Report created on: Jan. 1, 2024, 1 a.m.")
 
+    def test_list_fields_are_rendered_as_html(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Selectbox Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Selectbox Option 2",
+                        },
+                        {
+                            "value": "option3",
+                            "label": "Selectbox Option 3",
+                        },
+                    ],
+                },
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {
+                            "value": "firstradiooption",
+                            "label": "First radio option",
+                        },
+                        {
+                            "value": "secondradiooption",
+                            "label": "Second radio option",
+                        },
+                    ],
+                },
+                {
+                    "type": "select",
+                    "key": "select-single",
+                    "label": "Select single",
+                    "multiple": False,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {"label": "Single select Option 1", "value": "option1"},
+                            {"label": "Single select Option 2", "value": "option2"},
+                        ]
+                    },
+                },
+                {
+                    "type": "select",
+                    "key": "select-multiple",
+                    "label": "Select multiple",
+                    "multiple": True,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {
+                                "label": "Multiple select Option 1",
+                                "value": "option1",
+                            },
+                            {
+                                "label": "Multiple select Option 2",
+                                "value": "option2",
+                            },
+                            {
+                                "label": "Multiple select Option 3",
+                                "value": "option3",
+                            },
+                        ]
+                    },
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield-single",
+                    "label": "Textfield single",
+                    "multiple": False,
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield-multiple",
+                    "label": "Textfield multiple",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={
+                "selectboxes": {
+                    "option1": True,
+                    "option3": True,
+                },
+                "radio": "secondradiooption",
+                "select-single": "option1",
+                "select-multiple": ["option1", "option3"],
+                "textfield-single": "foo",
+                "textfield-multiple": ["foo", "bar"],
+            },
+            completed=True,
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        self.assertIn("Selectboxes", html)
+        self.assertInHTML(
+            "<ul><li>Selectbox Option 1</li><li>Selectbox Option 3</li></ul>", html
+        )
+
+        self.assertIn("Radio", html)
+        self.assertIn("Second radio option", html)
+
+        self.assertIn("Select single", html)
+        self.assertInHTML("<ul><li>Single select Option 1</li></ul>", html)
+
+        self.assertIn("Select multiple", html)
+        self.assertInHTML(
+            "<ul><li>Multiple select Option 1</li><li>Multiple select Option 3</li></ul>",
+            html,
+        )
+
+        self.assertIn("Textfield single", html)
+        self.assertInHTML("foo", html)
+
+        self.assertIn("Textfield multiple", html)
+        self.assertInHTML("<ul><li>foo</li><li>bar</li></ul>", html)
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
