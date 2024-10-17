@@ -1,6 +1,5 @@
 import re
 from collections import UserDict
-from collections.abc import Hashable
 from typing import Iterator, cast
 
 from glom import PathAccessError, assign, glom
@@ -162,16 +161,42 @@ class FormioData(UserDict):
     """
 
     data: dict[str, JSONValue]
+    _keys: set[str]
+    """
+    A collection of flattened key names, for quicker __contains__ access
+    """
 
-    def __getitem__(self, key: Hashable):
+    def __init__(self, *args, **kwargs):
+        self._keys = set()
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key: str):
+        if "." not in key:
+            return self.data[key]
         return cast(JSONValue, glom(self.data, key))
 
-    def __setitem__(self, key: Hashable, value: JSONValue):
+    def __setitem__(self, key: str, value: JSONValue):
         assign(self.data, key, value, missing=dict)
+        self._keys.add(key)
 
-    def __contains__(self, key: Hashable) -> bool:
+    def __contains__(self, key: object) -> bool:
+        """
+        Check if the key is present in the data container.
+
+        This gets called via ``formio_data.get(...)`` to check if the default needs to
+        be returned or not. Keys are expected to be strings taken from ``variable.key``
+        fields.
+        """
+        if not isinstance(key, str):
+            raise TypeError("Only string keys are supported")
+
+        # for direct keys, we can optimize access and bypass glom + its exception
+        # throwing.
+        if "." not in key:
+            return key in self._keys
+
         try:
             self[key]
+            return True
         except PathAccessError:
             return False
-        return True
