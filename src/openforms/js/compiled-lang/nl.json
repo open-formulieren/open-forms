@@ -933,6 +933,12 @@
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "8M403q": [
+    {
+      "type": 0,
+      "value": "Aangeraden velden moeten in principe ingevuld worden, maar ontbrekende waarden blokkeren de voortgang niet. Dit is soms nodig voor juridische redenen. Een component kan niet tegelijk verplicht en aangeraden zijn."
+    }
+  ],
   "8NbOpb": [
     {
       "type": 0,
@@ -2756,6 +2762,12 @@
       "value": "Selecteer een bestaande formulierdefinitie"
     }
   ],
+  "QL4SGQ": [
+    {
+      "type": 0,
+      "value": "Aangeraden (niet-blokkerend verplicht)"
+    }
+  ],
   "QLTh2N": [
     {
       "type": 0,
@@ -2772,12 +2784,6 @@
     {
       "type": 0,
       "value": "Geeft aan of de gebruiker het formulier kan inzenden of niet, en of een overzichtspagina getoond wordt indien niet."
-    }
-  ],
-  "QXsAuR": [
-    {
-      "type": 0,
-      "value": "Product waarvoor prijzen worden opgehaald"
     }
   ],
   "QaPqxz": [
@@ -5749,12 +5755,6 @@
     {
       "type": 0,
       "value": "Verberg de koptekst en de lijn boven de veldengroep in het formulier."
-    }
-  ],
-  "uuKVtO": [
-    {
-      "type": 0,
-      "value": "Product"
     }
   ],
   "vAZDY4": [

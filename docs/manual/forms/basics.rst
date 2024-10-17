@@ -142,7 +142,7 @@ stap.
 
 In deze sectie kunt u velden (ook wel componenten genoemd) naar de formulier
 stap slepen en configureren. Kijk voor alle mogelijkheden naar het overzicht van
-:ref:`formulier velden <manual_form_fields>` en naar de
+:ref:`formuliervelden <manual_form_fields>` en naar de
 :ref:`voorbeelden <manual_examples>`.
 
 Bevestiging

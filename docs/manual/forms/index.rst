@@ -11,6 +11,7 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    variables
    form_fields
    logic
+   soft_required_fields
    logic_dmn
    translations
    registrator

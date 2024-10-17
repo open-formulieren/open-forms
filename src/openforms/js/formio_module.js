@@ -26,6 +26,7 @@ import RadioField from './components/form/radio';
 import SelectField from './components/form/select';
 import SelectBoxesField from './components/form/selectBoxes';
 import SignatureField from './components/form/signature';
+import SoftRequiredErrors from './components/form/softRequiredErrors';
 import TextArea from './components/form/textarea';
 import TextField from './components/form/textfield';
 import TimeField from './components/form/time';
@@ -64,6 +65,7 @@ const FormIOModule = {
     editgrid: EditGrid,
     datamap: Datamap,
     addressNL: AddressNL,
+    softRequiredErrors: SoftRequiredErrors,
   },
   builders: {
     webform: WebformBuilder,

@@ -435,6 +435,14 @@ class FormDefinitionTestCase(TestCase):
 
         self.assertEqual(fd._num_components, 2)
 
+    def test_used_in_for_unsaved_fds(self):
+        FormFactory.create(generate_minimal_setup=False)
+        fd = FormDefinitionFactory.build()
+
+        used_in_num = fd.used_in.count()
+
+        self.assertEqual(used_in_num, 0)
+
 
 class FormStepTestCase(TestCase):
     def test_str(self):
