@@ -89,6 +89,34 @@ class FormioDataTests(TestCase):
 
         self.assertEqual(formio_data, expected)
 
+    def test_key_access_must_be_string(self):
+        formio_data = FormioData({"foo": "bar"})
+
+        bad_keys = (
+            3,
+            None,
+            4.3,
+            ("foo",),
+        )
+
+        for key in bad_keys:
+            with self.assertRaises(TypeError):
+                key in formio_data  # type: ignore
+
+    def test_keyerror_for_absent_keys(self):
+        formio_data = FormioData({})
+        bad_keys = (
+            "foo",
+            "bar.baz",
+        )
+
+        for key in bad_keys:
+            with (
+                self.subTest(key=key),
+                self.assertRaises(KeyError),
+            ):
+                formio_data[key]
+
 
 class FormioConfigurationWrapperTests(TestCase):
 
