@@ -85,7 +85,7 @@ class ChoicesNode(ComponentNode):
         for value, isSelected in super().value.items():
             if isSelected:
                 value_to_add = value
-                # Search a translation for the value
+                # Search the label for the value
                 for choice in self.component["values"]:
                     if choice["value"] == value:
                         value_to_add = choice["label"]
