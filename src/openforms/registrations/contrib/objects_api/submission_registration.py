@@ -9,7 +9,6 @@ from typing import Any, Generic, Iterator, TypeVar, cast
 from django.db.models import F
 
 import glom
-from glom import PathAccessError
 from typing_extensions import override
 
 from openforms.authentication.service import AuthAttribute
@@ -468,7 +467,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         for key, variable in state.variables.items():
             try:
                 submission_value = dynamic_values[key]
-            except PathAccessError:
+            except KeyError:
                 continue
 
             # special casing documents - we transform the formio file upload data into
