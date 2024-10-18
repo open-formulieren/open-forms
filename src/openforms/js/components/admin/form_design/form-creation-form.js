@@ -1448,10 +1448,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
                 onChange={onFieldChange}
               />
               <PriceLogic
+                variableKey={state.form.priceVariableKey}
                 rules={state.priceRules}
                 onChange={onPriceRuleChange}
                 onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
                 onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
+                onFieldChange={onFieldChange}
               />
             </TabPanel>
           )}

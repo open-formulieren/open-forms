@@ -257,6 +257,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "payment_backend",
             "payment_backend_options",
             "payment_options",
+            "price_variable_key",
             "appointment_options",
             "literals",
             "product",

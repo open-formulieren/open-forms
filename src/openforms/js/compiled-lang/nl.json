@@ -927,6 +927,12 @@
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "8M403q": [
+    {
+      "type": 0,
+      "value": "Aangeraden velden moeten in principe ingevuld worden, maar ontbrekende waarden blokkeren de voortgang niet. Dit is soms nodig voor juridische redenen. Een component kan niet tegelijk verplicht en aangeraden zijn."
+    }
+  ],
   "8NbOpb": [
     {
       "type": 0,
@@ -1457,6 +1463,12 @@
     {
       "type": 0,
       "value": "Selecteer de toegestane authenticatie-plugins om in te loggen aan het begin van het formulier."
+    }
+  ],
+  "Ckzpff": [
+    {
+      "type": 0,
+      "value": "Gebruik een variabele"
     }
   ],
   "CtjZFq": [
@@ -2718,6 +2730,12 @@
     {
       "type": 0,
       "value": "Selecteer een bestaande formulierdefinitie"
+    }
+  ],
+  "QL4SGQ": [
+    {
+      "type": 0,
+      "value": "Aangeraden (niet-blokkerend verplicht)"
     }
   ],
   "QLTh2N": [
@@ -4805,6 +4823,12 @@
       "value": "Sessie gaat vervallen"
     }
   ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "optie 2: € 15,99"
+    }
+  ],
   "k1+ljn": [
     {
       "type": 0,
@@ -5519,6 +5543,12 @@
       "value": "Reguliere expressie"
     }
   ],
+  "sxdJ/8": [
+    {
+      "type": 0,
+      "value": "optie 1: € 10,99"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -5855,6 +5885,12 @@
     {
       "type": 0,
       "value": "Annuleren"
+    }
+  ],
+  "x6oxfg": [
+    {
+      "type": 0,
+      "value": "Variabele"
     }
   ],
   "xI6md8": [

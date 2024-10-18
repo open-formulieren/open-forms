@@ -14,7 +14,7 @@ from openforms.forms.models import Form
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 
 if TYPE_CHECKING:
     from log_outgoing_requests.models import OutgoingRequestsLog
@@ -306,6 +306,20 @@ def confirmation_email_skip(submission: Submission):
 
 
 # - - -
+
+
+def price_calculation_variable_error(
+    submission: Submission,
+    variable: str,
+    error: Exception,
+    value: JSONValue = None,
+):
+    _create_log(
+        submission,
+        "price_calculation_variable_error",
+        extra_data={"variable": variable, "value": value},
+        error=error,
+    )
 
 
 def payment_flow_start(payment: SubmissionPayment, plugin, from_email: bool = False):
