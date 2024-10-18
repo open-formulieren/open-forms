@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -9,6 +9,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {NumberInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import VariableSelection from 'components/admin/forms/VariableSelection';
 import {DeleteIcon} from 'components/admin/icons';
 import {getTranslatedChoices} from 'utils/i18n';
 
@@ -33,6 +34,13 @@ const PRICING_MODES = [
     }),
   ],
   [
+    'variable',
+    defineMessage({
+      description: 'variable pricing mode label',
+      defaultMessage: 'Use a variable for the price',
+    }),
+  ],
+  [
     'dynamic',
     defineMessage({
       description: 'dynamic pricing mode label',
@@ -41,24 +49,22 @@ const PRICING_MODES = [
   ],
 ];
 
-const PricingMode = ({hasDynamicPricing, onChange}) => {
+const PricingMode = ({mode = 'static', onChange}) => {
   const intl = useIntl();
   return (
-    <Select
-      choices={getTranslatedChoices(intl, PRICING_MODES)}
-      value={hasDynamicPricing ? 'dynamic' : 'static'}
-      onChange={onChange}
-    />
+    <Select choices={getTranslatedChoices(intl, PRICING_MODES)} value={mode} onChange={onChange} />
   );
 };
 
 PricingMode.propTypes = {
-  hasDynamicPricing: PropTypes.bool.isRequired,
+  mode: PropTypes.oneOf(PRICING_MODES.map(item => item[0])),
   onChange: PropTypes.func.isRequired,
 };
 
-export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
-  const hasDynamicPricing = rules.length > 0;
+export const PriceLogic = ({variableKey, rules = [], onChange, onDelete, onAdd, onFieldChange}) => {
+  const initialPricingMode =
+    variableKey !== '' ? 'variable' : rules.length > 0 ? 'dynamic' : 'static';
+  const [pricingMode, setPricingMode] = useState(initialPricingMode);
 
   const validationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'priceRules');
 
@@ -66,23 +72,51 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
 
   const onPricingModeChange = event => {
     const {value} = event.target;
-    // toggle from static to dynamic -> ensure at least one rule exists
-    if (value === 'dynamic' && !hasDynamicPricing) {
-      onAdd();
-      // toggle from dynamic to static -> delete all the rules
-    } else if (value === 'static' && hasDynamicPricing) {
-      // XXX: iterate in reverse so we delete all rules by removing the last one
-      // every time.
-      // State updates in event handlers are batched by React, so removing index 0, 1,...
-      // in success causes issues since the local `rules` does no langer match the
-      // parent component state - draft.priceRules.length !== rules.length.
-      // By reversing, we essentially pop the last element every time which
-      // works around this.
-      const maxIndex = rules.length - 1;
-      for (let offset = 0; offset < rules.length; offset++) {
-        onDelete(maxIndex - offset);
+
+    const resetVariableKey = () => {
+      if (variableKey) {
+        onFieldChange({target: {name: 'form.priceVariableKey', value: ''}});
+      }
+    };
+
+    const resetRules = () => {
+      if (rules.length > 0) {
+        // XXX: iterate in reverse so we delete all rules by removing the last one
+        // every time.
+        // State updates in event handlers are batched by React, so removing index 0, 1,...
+        // in success causes issues since the local `rules` does no langer match the
+        // parent component state - draft.priceRules.length !== rules.length.
+        // By reversing, we essentially pop the last element every time which
+        // works around this.
+        const maxIndex = rules.length - 1;
+        for (let offset = 0; offset < rules.length; offset++) {
+          onDelete(maxIndex - offset);
+        }
+      }
+    };
+
+    switch (value) {
+      case 'variable': {
+        resetRules();
+        break;
+      }
+      case 'dynamic': {
+        // toggle from static to dynamic -> ensure at least one rule exists
+        if (rules.length === 0) {
+          onAdd();
+        }
+        resetVariableKey();
+        break;
+      }
+      case 'static': {
+        // toggle from dynamic to static -> delete all the rules
+        resetRules();
+        resetVariableKey();
+        break;
       }
     }
+
+    setPricingMode(value);
   };
 
   return (
@@ -100,7 +134,7 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
           name="pricing.mode"
           label={<FormattedMessage description="Pricing mode label" defaultMessage="Mode" />}
         >
-          <PricingMode hasDynamicPricing={hasDynamicPricing} onChange={onPricingModeChange} />
+          <PricingMode mode={pricingMode} onChange={onPricingModeChange} />
         </Field>
       </FormRow>
 
@@ -114,18 +148,47 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
         />
       ))}
 
-      <ButtonContainer onClick={onAdd}>
-        <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
-      </ButtonContainer>
+      {pricingMode === 'dynamic' && (
+        <ButtonContainer onClick={onAdd}>
+          <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
+        </ButtonContainer>
+      )}
+
+      {pricingMode === 'variable' && (
+        <FormRow>
+          <Field
+            name="form.priceVariableKey"
+            label={
+              <FormattedMessage description="Price variable label" defaultMessage="Variable" />
+            }
+          >
+            <VariableSelection
+              id="form_priceVariableKey"
+              name="form.priceVariableKey"
+              value={variableKey || ''}
+              onChange={onFieldChange}
+              filter={variable => {
+                // See constant `DATATYPES_CHOICES` in
+                // src/openforms/js/components/admin/form_design/variables/constants.js
+                // XXX we *could* consider strings here but then they must be string
+                // representations of numbers.
+                return ['int', 'float'].includes(variable.dataType) || variable.key === variableKey;
+              }}
+            />
+          </Field>
+        </FormRow>
+      )}
     </Fieldset>
   );
 };
 
 PriceLogic.propTypes = {
+  variableKey: PropTypes.string.isRequired,
   rules: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
+  onFieldChange: PropTypes.func.isRequired,
 };
 
 const Rule = ({jsonLogicTrigger, price = '', onChange, onDelete, errors = {}}) => {
