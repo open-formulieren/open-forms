@@ -20,7 +20,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 
-from .. import prefill_variables
+from ..service import prefill_variables
 
 CONFIGURATION = {
     "display": "form",
@@ -50,13 +50,10 @@ CONFIGURATION = {
 
 
 class PrefillVariablesTests(TestCase):
+
     @patch(
-        "openforms.prefill._fetch_prefill_values",
-        return_value={
-            "demo": {
-                "main": {"random_string": "Not so random string", "random_number": 123}
-            }
-        },
+        "openforms.prefill.service.fetch_prefill_values_for_component",
+        return_value={"voornamen": "Not so random string", "age": 123},
     )
     def test_applying_prefill_plugins(self, m_prefill):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
@@ -87,11 +84,8 @@ class PrefillVariablesTests(TestCase):
         )
 
     @patch(
-        "openforms.prefill._fetch_prefill_values",
-        return_value={
-            "postcode": {"main": {"static": "1015CJ"}},
-            "birthDate": {"main": {"static": "19990615"}},
-        },
+        "openforms.prefill.service.fetch_prefill_values_for_component",
+        return_value={"postcode": "1015CJ", "birthDate": "19990615"},
     )
     def test_normalization_applied(self, m_prefill):
         form = FormFactory.create()
