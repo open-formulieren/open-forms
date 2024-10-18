@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with variable=log.extra_data.variable lead=log.fmt_lead error=log.extra_data.error %}
+   {{ lead }}: Could not get the price from variable '{{ variable }}'. Error: {{ error }}.
+{% endblocktrans %}{% if log.extra_data.from_email %} {% trans "Flow entered via email link." %}{% endif %}
