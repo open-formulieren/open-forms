@@ -23,6 +23,7 @@ from openforms.authentication.registry import register as authentication_registe
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import Component
+from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -89,6 +90,16 @@ class Form(models.Model):
     payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
     payment_backend_options = models.JSONField(
         _("payment backend options"), default=dict, blank=True, null=True
+    )
+    # XXX a Foreign Key to FormVariable would be nicer, but we can't do this yet since
+    # the frontend saves the variables *after* the form record itself is saved.
+    price_variable_key = models.TextField(
+        _("price variable key"),
+        blank=True,
+        help_text=_(
+            "Key of the variable that contains the calculated submission price."
+        ),
+        validators=[variable_key_validator],
     )
 
     # authentication
