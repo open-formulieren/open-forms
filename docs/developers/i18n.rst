@@ -79,7 +79,7 @@ this is also done by the CI to create the Docker image.
 
     npm run build
 
-.. _react-intl: https://formatjs.io/docs/getting-started/installation
+.. _react-intl: https://formatjs.github.io/docs/getting-started/installation
 
 FormIO
 ------
