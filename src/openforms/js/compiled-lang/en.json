@@ -2055,6 +2055,12 @@
       "value": "Successful Submissions Removal Method field label"
     }
   ],
+  "I3bGFV": [
+    {
+      "type": 0,
+      "value": "House number Schema target"
+    }
+  ],
   "I3zyib": [
     {
       "type": 0,
@@ -4289,6 +4295,12 @@
       "value": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
     }
   ],
+  "eD5x1W": [
+    {
+      "type": 0,
+      "value": "House letter Schema target"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -4973,6 +4985,12 @@
       "value": "Authentication method"
     }
   ],
+  "lT3yf5": [
+    {
+      "type": 0,
+      "value": "Define specific targets"
+    }
+  ],
   "lVEpR9": [
     {
       "type": 0,
@@ -5133,6 +5151,12 @@
     {
       "type": 0,
       "value": "Something went wrong while retrieving the available object type versions."
+    }
+  ],
+  "ndWy6O": [
+    {
+      "type": 0,
+      "value": "City Schema target"
     }
   ],
   "neCqv9": [
@@ -5523,6 +5547,12 @@
       "value": "If specified, the user must check at most this many options."
     }
   ],
+  "sTZk2h": [
+    {
+      "type": 0,
+      "value": "Street name Schema target"
+    }
+  ],
   "sU/n0S": [
     {
       "type": 0,
@@ -5665,6 +5695,12 @@
     {
       "type": 0,
       "value": "Footer"
+    }
+  ],
+  "u7m/jP": [
+    {
+      "type": 0,
+      "value": "Postcode Schema target"
     }
   ],
   "uBO/Al": [
@@ -5935,6 +5971,12 @@
     {
       "type": 0,
       "value": "Create definition"
+    }
+  ],
+  "xhwyFo": [
+    {
+      "type": 0,
+      "value": "House number addition Schema target"
     }
   ],
   "xxVNeU": [
