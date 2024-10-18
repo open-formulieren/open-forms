@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.prefill.registry import register
 from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.models import ServiceFetchConfiguration
@@ -110,6 +111,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
     service_fetch_configuration = ServiceFetchConfigurationSerializer(
         required=False, allow_null=True
     )
+    prefill_options = serializers.JSONField(required=False)
 
     class Meta:
         model = FormVariable
@@ -124,6 +126,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "prefill_plugin",
             "prefill_attribute",
             "prefill_identifier_role",
+            "prefill_options",
             "data_type",
             "data_format",
             "is_sensitive_data",
@@ -177,18 +180,47 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                     }
                 )
 
-        # prefill plugin and attribute must both or both not be set
+        # Check the combination of the provided prefill-attributes (see the model constraints)
+        source = attrs.get("source") or ""
         prefill_plugin = attrs.get("prefill_plugin") or ""
         prefill_attribute = attrs.get("prefill_attribute") or ""
-        if (prefill_plugin and not prefill_attribute) or (
-            not prefill_plugin and prefill_attribute
-        ):
+        prefill_options = attrs.get("prefill_options")
+
+        if prefill_plugin and prefill_options and prefill_attribute:
             raise ValidationError(
                 {
-                    "prefill_attribute": _(
-                        "Prefill plugin and attribute must both be specified."
+                    "prefill_attribute_options": _(
+                        "Prefill plugin, attribute and options can not be specified at the same time."
                     ),
                 }
             )
+
+        if source == FormVariableSources.component:
+            if prefill_options:
+                raise ValidationError(
+                    {
+                        "component_prefill_attribute": _(
+                            "Prefill options should not be specified for component variables."
+                        ),
+                    }
+                )
+            if not prefill_plugin and prefill_attribute:
+                raise ValidationError(
+                    {
+                        "component_prefill_attribute": _(
+                            "Prefill attribute cannot be specified without prefill plugin for component variables."
+                        ),
+                    }
+                )
+
+        # check the specific validation options of the prefill plugin
+        if prefill_plugin:
+            plugin = register[prefill_plugin]
+            serializer = plugin.options(data=prefill_options)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except serializers.ValidationError as e:
+                detail = {"options": e.detail}
+                raise serializers.ValidationError(detail) from e
 
         return attrs

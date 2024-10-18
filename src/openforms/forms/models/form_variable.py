@@ -25,6 +25,12 @@ if TYPE_CHECKING:
     from .form_step import FormStep
 
 
+EMPTY_PREFILL_PLUGIN = Q(prefill_plugin="")
+EMPTY_PREFILL_ATTRIBUTE = Q(prefill_attribute="")
+EMPTY_PREFILL_OPTIONS = Q(prefill_options={})
+USER_DEFINED = Q(source=FormVariableSources.user_defined)
+
+
 class FormVariableManager(models.Manager):
     use_in_migrations = True
 
@@ -161,6 +167,11 @@ class FormVariable(models.Model):
         default=IdentifierRoles.main,
         max_length=100,
     )
+    prefill_options = models.JSONField(
+        _("prefill options"),
+        default=dict,
+        blank=True,
+    )
     data_type = models.CharField(
         verbose_name=_("data type"),
         help_text=_("The type of the value that will be associated with this variable"),
@@ -197,10 +208,24 @@ class FormVariable(models.Model):
         constraints = [
             CheckConstraint(
                 check=Q(
-                    (Q(prefill_plugin="") & Q(prefill_attribute=""))
-                    | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
+                    (
+                        EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & EMPTY_PREFILL_ATTRIBUTE
+                        & ~EMPTY_PREFILL_OPTIONS
+                        & USER_DEFINED
+                    )
+                    | (
+                        ~EMPTY_PREFILL_PLUGIN
+                        & ~EMPTY_PREFILL_ATTRIBUTE
+                        & EMPTY_PREFILL_OPTIONS
+                    )
                 ),
-                name="prefill_config_empty_or_complete",
+                name="prefill_config_component_or_user_defined",
             ),
             CheckConstraint(
                 check=~Q(

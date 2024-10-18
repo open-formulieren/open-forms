@@ -5,17 +5,85 @@ from django.test import TestCase
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
-from ..factories import FormFactory, FormVariableFactory
+from ..factories import FormFactory, FormStepFactory, FormVariableFactory
 
 
 class FormVariableModelTests(TestCase):
-    def test_prefill_plugin_empty_prefill_attribute_filled(self):
-        with self.assertRaises(IntegrityError):
-            FormVariableFactory.create(prefill_plugin="", prefill_attribute="demo")
+    # valid cases (constraint: prefill_config_component_or_user_defined)
+    def test_prefill_plugin_prefill_attribute_prefill_options_empty(self):
+        # user defined
+        FormVariableFactory.create(
+            prefill_plugin="",
+            prefill_attribute="",
+            prefill_options={},
+        )
+        # component
+        FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "Test label",
+                        "prefill": {"plugin": "", "attribute": ""},
+                    }
+                ]
+            }
+        )
 
-    def test_prefill_plugin_filled_prefill_attribute_empty(self):
+    def test_prefill_options_empty(self):
+        FormVariableFactory.create(
+            prefill_plugin="demo",
+            prefill_attribute="demo",
+            prefill_options={},
+        )
+
+    def test_prefill_attribute_empty(self):
+        FormVariableFactory.create(
+            prefill_plugin="demo",
+            prefill_attribute="",
+            prefill_options={"variables_mapping": [{"variable_key": "data"}]},
+        )
+
+    # invalid cases (constraint: prefill_config_component_or_user_defined)
+    def test_prefill_plugin_prefill_attribute_empty(self):
         with self.assertRaises(IntegrityError):
-            FormVariableFactory.create(prefill_plugin="demo", prefill_attribute="")
+            FormVariableFactory.create(
+                prefill_plugin="",
+                prefill_attribute="",
+                prefill_options={"variables_mapping": [{"variable_key": "data"}]},
+            )
+
+    def test_prefill_plugin_prefill_options_empty(self):
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                prefill_plugin="",
+                prefill_attribute="demo",
+                prefill_options={},
+            )
+
+    def test_prefill_plugin_prefill_attribute_prefill_options_not_empty(self):
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                prefill_plugin="demo",
+                prefill_attribute="demo",
+                prefill_options={"variables_mapping": [{"variable_key": "data"}]},
+            )
+
+    def test_prefill_attribute_prefill_options_empty(self):
+        with self.assertRaises(IntegrityError):
+            FormStepFactory.create(
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "test-key",
+                            "label": "Test label",
+                            "prefill": {"plugin": "demo", "attribute": ""},
+                        }
+                    ]
+                }
+            )
 
     def test_valid_prefill_plugin_config(self):
         try:
