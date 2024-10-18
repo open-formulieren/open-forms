@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING
 
 from json_logic import jsonLogic
 
+from openforms.logging import logevent
+from openforms.typing import JSONValue
+
 if TYPE_CHECKING:
     from .models import Submission
 
@@ -15,8 +18,12 @@ logger = logging.getLogger(__name__)
 
 
 class InvalidPrice(Exception):
-    def __init__(self, message: str, *args, **kwargs):
+    def __init__(
+        self, message: str, variable: str, value: JSONValue = None, *args, **kwargs
+    ):
         self.message = message
+        self.variable = variable
+        self.value = value
         super().__init__(message, *args, **kwargs)
 
 
@@ -45,37 +52,19 @@ def get_submission_price(submission: Submission) -> Decimal:
     #
     # 1. If a variable key is configured, try that.
     #
-    if var_key := form.price_variable_key:
-        values_state = submission.load_submission_value_variables_state()
-        # user defined variables don't show up in `values_state.get_data()` :( so we
-        # need to access them differently.
-        # XXX these data structures can be cleaned up - Victorien did an attempt already
-        # and it revealed it's not easy.
-        if var_key not in values_state.variables:
-            # Discussed with DH - it's better to crash hard than the possibly make them
-            # pay the wrong price.
-            raise InvalidPrice(
-                f"No variable '{var_key}' present in the submission data, refusing the "
-                "temptation to guess.",
-            )
-        value = values_state.get_variable(var_key).value
-        logger.debug(
-            "Price for submission %s obtained from variable with key '%s'. Value: %r",
-            submission.uuid,
-            var_key,
-            value,
+    try:
+        price = _price_from_variable(submission)
+    except InvalidPrice as exc:
+        logevent.price_calculation_variable_error(
+            submission=submission,
+            variable=exc.variable,
+            error=exc,
+            value=exc.value,
         )
-
-        invalid_type_error = InvalidPrice(
-            f"Got an incompatible value type for the price variable '{var_key}': "
-            f"{type(value)}. We require a value that can be cast to a decimal."
-        )
-        if not isinstance(value, (str, float, int)) or isinstance(value, bool):
-            raise invalid_type_error
-        try:
-            return Decimal(value)
-        except decimal.InvalidOperation as exc:
-            raise invalid_type_error from exc
+        raise
+    else:
+        if price is not None:
+            return price
 
     #
     # 2. Check if there are any logic rules defined that match.
@@ -108,3 +97,41 @@ def get_submission_price(submission: Submission) -> Decimal:
         len(price_rules),
     )
     return form.product.price
+
+
+def _price_from_variable(submission: Submission) -> Decimal | None:
+    if not (var_key := submission.form.price_variable_key):
+        return None
+
+    values_state = submission.load_submission_value_variables_state()
+    # user defined variables don't show up in `values_state.get_data()` :( so we
+    # need to access them differently.
+    # XXX these data structures can be cleaned up - Victorien did an attempt already
+    # and it revealed it's not easy.
+    if var_key not in values_state.variables:
+        # Discussed with DH - it's better to crash hard than the possibly make them
+        # pay the wrong price.
+        raise InvalidPrice(
+            f"No variable '{var_key}' present in the submission data, refusing the "
+            "temptation to guess.",
+            variable=var_key,
+        )
+    value = values_state.get_variable(var_key).value
+    logger.debug(
+        "Price for submission %s obtained from variable with key '%s'. Value: %r",
+        submission.uuid,
+        var_key,
+        value,
+    )
+
+    invalid_type_error = InvalidPrice(
+        f"Got an incompatible value type for the price variable '{var_key}': "
+        f"{type(value)}. We require a value that can be cast to a decimal.",
+        variable=var_key,
+    )
+    if not isinstance(value, (str, float, int)) or isinstance(value, bool):
+        raise invalid_type_error
+    try:
+        return Decimal(value)
+    except decimal.InvalidOperation as exc:
+        raise invalid_type_error from exc
