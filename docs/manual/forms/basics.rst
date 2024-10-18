@@ -199,10 +199,37 @@ product bevat een prijs die gebruikt kan worden als betaald moet worden voor
 het product. Betaling kan ingesteld worden door de juiste **Betaalprovider** te
 selecteren.
 
-Ten slotte kunt u ervoor kiezen om de prijs van het gekoppeld product te
-gebruiken of logica regels op te stellen voor het bepalen van de prijs. Dit
-laatste kunt u instellen onder **Prijslogica**. De **Prijslogica** volgt verder
-dezelfde regels als reguliere **Logica**.
+Er zijn drie manieren om de prijs van een inzending te bepalen:
+
+**Gebruik de prijs van het gekoppeld product**
+
+Dit is de meest eenvoudige variant. Er geldt een vaste prijs, die ingesteld wordt op
+het product.
+
+**Gebruik een variabele**
+
+Dit is de meest flexibele variant - met behulp van normale **Logica** kan je de waarde
+van een variabele zetten om de prijs te berekenen. In het formulier wijs je naar deze
+variabele en de waarde van de variabele wordt als prijs gebruikt. Je kan enkel
+variabelen selecteren die een numeriek gegevenstype hebben (integer, float).
+
+Let op - er moet altijd een prijs ingesteld staan op het product om de betalingsmodule
+te activeren.
+
+.. warning:: Deze methode is foutgevoelig - indien de waarde van de variabele niet
+   geschikt is om als prijs te gebruiken of er komt geen geldig getal uit, dan zal
+   de eindgebruiker fouten in het formulier ervaren. Zorg ervoor dat de formulieren
+   goed getest zijn!
+
+.. versionadded:: 2.8.1 Uitzonderlijk is deze functionaliteit in een patch-release
+   toegevoegd. Versie 2.8.0 en ouder hebben deze functionaliteit niet.
+
+**Gebruik prijslogica**
+
+Voor eenvoudige condities kan je prijslogic instellen. Onder een bepaalde conditie geldt
+een bepaalde, vaste, prijs. Indien aan geen enkele conditie voldaan is, dan wordt de
+prijs van het gekoppeld product gebruikt. De **Prijslogica** volgt verder dezelfde
+regels als reguliere **Logica**.
 
 Zie ook: :ref:`configuration_payment_index`
 
