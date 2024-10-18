@@ -115,7 +115,6 @@ linkcheck_ignore = [
     r"https://stackoverflow\.com/.*",  # SO 403s when running on github actions :/
     r"https://sequencediagram\.org/index\.html",  # anchor are not server side
     r"https://www\.miniwebtool\.com/django-secret-key-generator/",  # seems to block the requests user agent
-    r"https://json-schema\.org",  # reached out to them, but no resolution yet
 ]
 
 extlinks = {
