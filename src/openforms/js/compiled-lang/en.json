@@ -923,6 +923,12 @@
       "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
     }
   ],
+  "8M403q": [
+    {
+      "type": 0,
+      "value": "Soft required fields should be filled out, but empty values don't block the users' progress. Sometimes this is needed for legal reasons. A component cannot be hard and soft required at the same time."
+    }
+  ],
   "8NbOpb": [
     {
       "type": 0,
@@ -1453,6 +1459,12 @@
     {
       "type": 0,
       "value": "Select the allowed authentication plugins to log in at the start of the form."
+    }
+  ],
+  "Ckzpff": [
+    {
+      "type": 0,
+      "value": "Use a variable for the price"
     }
   ],
   "CtjZFq": [
@@ -2701,6 +2713,12 @@
     {
       "type": 0,
       "value": "Select existing form definition"
+    }
+  ],
+  "QL4SGQ": [
+    {
+      "type": 0,
+      "value": "Soft required"
     }
   ],
   "QLTh2N": [
@@ -4783,6 +4801,12 @@
       "value": "Session will expire"
     }
   ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "option 2: € 15,99"
+    }
+  ],
   "k1+ljn": [
     {
       "type": 0,
@@ -5497,6 +5521,12 @@
       "value": "Regular expression for city"
     }
   ],
+  "sxdJ/8": [
+    {
+      "type": 0,
+      "value": "option 1: € 10,99"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -5833,6 +5863,12 @@
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "x6oxfg": [
+    {
+      "type": 0,
+      "value": "Variable"
     }
   ],
   "xI6md8": [
