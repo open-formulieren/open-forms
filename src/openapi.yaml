@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 2.8.0
+  version: 2.8.1
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -1330,6 +1330,7 @@ paths:
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
+        - `priceVariableKey`
         - `product`
         - `category`
         - `theme`
@@ -1403,6 +1404,7 @@ paths:
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
+        - `priceVariableKey`
         - `product`
         - `category`
         - `theme`
@@ -1920,6 +1922,7 @@ paths:
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
+        - `priceVariableKey`
         - `product`
         - `category`
         - `theme`
@@ -1999,6 +2002,7 @@ paths:
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
+        - `priceVariableKey`
         - `product`
         - `category`
         - `theme`
@@ -2082,6 +2086,7 @@ paths:
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
+        - `priceVariableKey`
         - `product`
         - `category`
         - `theme`
@@ -7576,7 +7581,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7639,6 +7644,11 @@ components:
           items:
             $ref: '#/components/schemas/PaymentOption'
           readOnly: true
+        priceVariableKey:
+          type: string
+          description: Key of the variable that contains the calculated submission
+            price.
+          pattern: ^(\w|\w[\w.\-]*\w)$
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
@@ -8077,7 +8087,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8248,7 +8258,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -9236,7 +9246,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -9299,6 +9309,11 @@ components:
           items:
             $ref: '#/components/schemas/PaymentOption'
           readOnly: true
+        priceVariableKey:
+          type: string
+          description: Key of the variable that contains the calculated submission
+            price.
+          pattern: ^(\w|\w[\w.\-]*\w)$
         appointmentOptions:
           allOf:
           - $ref: '#/components/schemas/AppointmentOptions'
