@@ -1495,6 +1495,12 @@
       "value": "Selecteer de toegestane authenticatie-plugins om in te loggen aan het begin van het formulier."
     }
   ],
+  "Ckzpff": [
+    {
+      "type": 0,
+      "value": "Gebruik een variabele"
+    }
+  ],
   "CtjZFq": [
     {
       "type": 0,
@@ -5927,6 +5933,12 @@
     {
       "type": 0,
       "value": "Annuleren"
+    }
+  ],
+  "x6oxfg": [
+    {
+      "type": 0,
+      "value": "Variabele"
     }
   ],
   "xI6md8": [
