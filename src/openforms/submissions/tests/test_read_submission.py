@@ -227,6 +227,42 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             },
         )
 
+    def test_submission_payment_information_uses_price_variable(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=True,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+            form__price_variable_key="",
+        )
+        FormVariableFactory.create(
+            user_defined=True,
+            key="calculatedPrice",
+            form=submission.form,
+            data_type=FormVariableDataTypes.float,
+            initial_value=420.69,
+        )
+        submission.form.price_variable_key = "calculatedPrice"
+        submission.form.save()
+        submission.refresh_from_db()
+        submission.calculate_price()
+        with self.subTest(part="check data setup"):
+            self.assertTrue(submission.payment_required)
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": "420.69",
+                "hasPaid": False,
+            },
+        )
+
     @tag("gh-2709")
     def test_submission_payment_with_logic_using_user_defined_variables(self):
         submission = SubmissionFactory.from_components(

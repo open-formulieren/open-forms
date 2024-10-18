@@ -370,6 +370,8 @@ class Submission(models.Model):
         super().refresh_from_db(*args, **kwargs)
         if hasattr(self, "_execution_state"):
             del self._execution_state
+        if hasattr(self, "_variables_state"):
+            del self._variables_state
 
     def save_registration_status(
         self, status: RegistrationStatuses, result: dict, record_attempt: bool = False
