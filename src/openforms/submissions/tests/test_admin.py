@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
@@ -11,9 +12,11 @@ from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models.submission import Submission
+from openforms.variables.constants import FormVariableDataTypes
 
 from ...config.models import GlobalConfiguration
 from ..admin import SubmissionAdmin, SubmissionTimeListFilter
@@ -219,6 +222,31 @@ class TestSubmissionAdmin(WebTest):
             "admin:submissions_submission_change", kwargs={"object_id": "0"}
         )
         self.app.get(change_url, user=self.user, status=404)
+
+    def test_change_view_with_broken_price_variable_config(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=False,
+            form__product__price=Decimal("123.45"),
+            form__payment_backend="demo",
+            form__price_variable_key="",
+        )
+        FormVariableFactory.create(
+            user_defined=True,
+            key="calculatedPrice",
+            form=submission.form,
+            data_type=FormVariableDataTypes.string,
+            initial_value="bwoken",
+        )
+        submission.form.price_variable_key = "calculatedPrice"
+        submission.form.save()
+        change_url = reverse(
+            "admin:submissions_submission_change", kwargs={"object_id": submission.pk}
+        )
+
+        change_page = self.app.get(change_url, user=self.user)
+
+        self.assertEqual(change_page.status_code, 200)
 
 
 class TestSubmissionTimeListFilterAdmin(TestCase):

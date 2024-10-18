@@ -55,6 +55,10 @@ def get_submission_price(submission: Submission) -> Decimal:
     try:
         price = _price_from_variable(submission)
     except InvalidPrice as exc:
+        # Dirty, dirty hack - don't create new log records when viewing this in the
+        # admin.
+        if getattr(submission, "_in_admin_display", False):  # pragma: no cover
+            raise
         logevent.price_calculation_variable_error(
             submission=submission,
             variable=exc.variable,
