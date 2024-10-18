@@ -1491,6 +1491,12 @@
       "value": "Select the allowed authentication plugins to log in at the start of the form."
     }
   ],
+  "Ckzpff": [
+    {
+      "type": 0,
+      "value": "Use a variable for the price"
+    }
+  ],
   "CtjZFq": [
     {
       "type": 0,
@@ -5905,6 +5911,12 @@
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "x6oxfg": [
+    {
+      "type": 0,
+      "value": "Variable"
     }
   ],
   "xI6md8": [
