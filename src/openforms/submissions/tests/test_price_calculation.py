@@ -82,26 +82,26 @@ class PriceCalculationTests(TestCase):
         self.assertEqual(price, Decimal(420.69))
 
     def test_price_from_form_variable_error_cases(self):
-        # # Variable references can be broken in various ways, in those situation we
-        # # expected hard crashes.
-        # with self.subTest("broken variable reference"):
-        #     submission = SubmissionFactory.create(
-        #         completed=True,
-        #         form__generate_minimal_setup=False,
-        #         form__product__price=Decimal("123.45"),
-        #         form__payment_backend="demo",
-        #         form__price_variable_key="",
-        #     )
-        #     submission.form.price_variable_key = "badVariable.reference"
-        #     submission.form.save()
-        #     submission.refresh_from_db()
+        # Variable references can be broken in various ways, in those situation we
+        # expected hard crashes.
+        with self.subTest("broken variable reference"):
+            submission = SubmissionFactory.create(
+                completed=True,
+                form__generate_minimal_setup=False,
+                form__product__price=Decimal("123.45"),
+                form__payment_backend="demo",
+                form__price_variable_key="",
+            )
+            submission.form.price_variable_key = "badVariable.reference"
+            submission.form.save()
+            submission.refresh_from_db()
 
-        #     with self.assertRaisesMessage(
-        #         InvalidPrice,
-        #         "No variable 'badVariable.reference' present in the submission data, "
-        #         "refusing the temptation to guess."
-        #     ):
-        #         get_submission_price(submission)
+            with self.assertRaisesMessage(
+                InvalidPrice,
+                "No variable 'badVariable.reference' present in the submission data, "
+                "refusing the temptation to guess.",
+            ):
+                get_submission_price(submission)
 
         invalid_values = (
             ("foo", FormVariableDataTypes.string),
