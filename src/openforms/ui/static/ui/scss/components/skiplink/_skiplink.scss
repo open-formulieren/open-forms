@@ -1,7 +1,16 @@
 .skiplink {
   position: absolute;
-  top: -100vh;
-  left: -100vh;
+  padding: 6px;
+  background-color: var(--of-skiplink-bg, var(--of-button-primary-bg));
+  color: var(--of-skiplink-fg, var(--of-button-primary-fg));
+  border-bottom-right-radius: 6px;
+  border-right: 1px solid var(--of-skiplink-color-border, var(--of-button-primary-color-border));
+  border-bottom: 1px solid var(--of-skiplink-color-border, var(--of-button-primary-color-border));
+
+  &:not(&:focus) {
+    top: -100vh;
+    left: -100vh;
+  }
 
   @media print {
     display: none;
