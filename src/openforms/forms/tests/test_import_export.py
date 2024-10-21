@@ -1681,6 +1681,58 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             zgw_group.pk,
         )
 
+    def test_import_form_with_zgw_registration_backend_with_objects_api_group_apply_default(
+        self,
+    ):
+        """
+        In legacy imports, `options.objects_api_group` was not required, because the plugin
+        always used the ObjectsAPIGroup with the lowest primary key at runtime. Because
+        `options.objects_api_group` has now been made required, this should be injected
+        into the import data to make sure the import still works
+        """
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "zgw-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "zgw-create-zaak",
+                            "options": {
+                                "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+                                "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                                "version": 2,
+                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objects_api_group"],
+            objects_api_group.pk,
+        )
+
 
 class ImportStUFZDSTests(TempdirMixin, TestCase):
     def test_extension_plugin_id_is_converted(self):

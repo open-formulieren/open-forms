@@ -15,7 +15,11 @@ from django.utils.translation import override
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
+from openforms.formio.migration_converters import (
+    CONVERTERS,
+    DEFINITION_CONVERTERS,
+    REGISTRATION_BACKEND_CONVERTERS,
+)
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
@@ -234,6 +238,9 @@ def import_form_data(
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
 
+            if "registration_backends" in entry:
+                apply_registration_backend_conversions(entry["registration_backends"])
+
             serializer_kwargs = {
                 "data": entry,
                 "context": {
@@ -384,6 +391,11 @@ def apply_component_conversions(configuration):
 
 def apply_definition_conversions(configuration: JSONObject) -> None:
     for converter in DEFINITION_CONVERTERS:
+        converter(configuration)
+
+
+def apply_registration_backend_conversions(configuration: list[dict]) -> None:
+    for converter in REGISTRATION_BACKEND_CONVERTERS:
         converter(configuration)
 
 
