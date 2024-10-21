@@ -2076,6 +2076,12 @@
       "value": "Opschoonmethode voor voltooide inzendingen"
     }
   ],
+  "I3bGFV": [
+    {
+      "type": 0,
+      "value": "House number Schema target"
+    }
+  ],
   "I3zyib": [
     {
       "type": 0,
@@ -4311,6 +4317,12 @@
       "value": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele."
     }
   ],
+  "eD5x1W": [
+    {
+      "type": 0,
+      "value": "House letter Schema target"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -4995,6 +5007,12 @@
       "value": "Authenticatiemethode"
     }
   ],
+  "lT3yf5": [
+    {
+      "type": 0,
+      "value": "Define specific targets"
+    }
+  ],
   "lVEpR9": [
     {
       "type": 0,
@@ -5155,6 +5173,12 @@
     {
       "type": 0,
       "value": "Something went wrong while retrieving the available object type versions."
+    }
+  ],
+  "ndWy6O": [
+    {
+      "type": 0,
+      "value": "City Schema target"
     }
   ],
   "neCqv9": [
@@ -5545,6 +5569,12 @@
       "value": "Indien opgegeven, dan mag de gebruiker maximaal dit aantal opties aanvinken."
     }
   ],
+  "sTZk2h": [
+    {
+      "type": 0,
+      "value": "Street name Schema target"
+    }
+  ],
   "sU/n0S": [
     {
       "type": 0,
@@ -5687,6 +5717,12 @@
     {
       "type": 0,
       "value": "Voettekst"
+    }
+  ],
+  "u7m/jP": [
+    {
+      "type": 0,
+      "value": "Postcode Schema target"
     }
   ],
   "uBO/Al": [
@@ -5957,6 +5993,12 @@
     {
       "type": 0,
       "value": "Formulierdefinitie aanmaken"
+    }
+  ],
+  "xhwyFo": [
+    {
+      "type": 0,
+      "value": "House number addition Schema target"
     }
   ],
   "xxVNeU": [

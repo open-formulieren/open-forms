@@ -894,6 +894,11 @@
     "description": "Successful Submissions Removal Method",
     "originalDefault": "Successful Submissions Removal Method field label"
   },
+  "I3bGFV": {
+    "defaultMessage": "House number Schema target",
+    "description": "'House number Schema target' label",
+    "originalDefault": "House number Schema target"
+  },
   "I3zyib": {
     "defaultMessage": "Select form definition",
     "description": "Form definition select label",
@@ -1899,6 +1904,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
     "originalDefault": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
   },
+  "eD5x1W": {
+    "defaultMessage": "House letter Schema target",
+    "description": "'House letter Schema target' label",
+    "originalDefault": "House letter Schema target"
+  },
   "eJEu3L": {
     "defaultMessage": "Are you sure you want to delete this rule?",
     "description": "Price rule deletion confirm message",
@@ -2219,6 +2229,11 @@
     "description": "Label for 'value' in MappingArrayInput table column",
     "originalDefault": "Value"
   },
+  "lT3yf5": {
+    "defaultMessage": "Define specific targets",
+    "description": "Define specific targets for all the fields of AddressNL component",
+    "originalDefault": "Define specific targets"
+  },
   "lcR5L6": {
     "defaultMessage": "Add item",
     "description": "Add item to multi-input field",
@@ -2288,6 +2303,11 @@
     "defaultMessage": "Something went wrong while retrieving the available object type versions.",
     "description": "Objects API registrations options: object type version select error",
     "originalDefault": "Something went wrong while retrieving the available object type versions."
+  },
+  "ndWy6O": {
+    "defaultMessage": "City Schema target",
+    "description": "'City Schema target' label",
+    "originalDefault": "City Schema target"
   },
   "neCqv9": {
     "defaultMessage": "The registration result will be an object from the selected type.",
@@ -2479,6 +2499,11 @@
     "description": "Help text of form field 'Send the confirmation email'",
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
   },
+  "sTZk2h": {
+    "defaultMessage": "Street name Schema target",
+    "description": "'Street name Schema target' label",
+    "originalDefault": "Street name Schema target"
+  },
   "sptpzv": {
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
     "description": "Objects API registration backend: v2 switch warning message",
@@ -2543,6 +2568,11 @@
     "defaultMessage": "RSIN of the organization, which creates and owns the INFORMATIEOBJECTs.",
     "description": "Objects API registration options 'organisationRSIN' helpText",
     "originalDefault": "RSIN of the organization, which creates and owns the INFORMATIEOBJECTs."
+  },
+  "u7m/jP": {
+    "defaultMessage": "Postcode Schema target",
+    "description": "'Postcode Schema target' label",
+    "originalDefault": "Postcode Schema target"
   },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
@@ -2673,6 +2703,11 @@
     "defaultMessage": "Create definition",
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
+  },
+  "xhwyFo": {
+    "defaultMessage": "House number addition Schema target",
+    "description": "'House number addition Schema target' label",
+    "originalDefault": "House number addition Schema target"
   },
   "xyVtKp": {
     "defaultMessage": "Plugin configuration: Objects API",
