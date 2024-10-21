@@ -45,7 +45,9 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         zaakVertrouwelijkheidaanduiding: '',
         medewerkerRoltype: '',
         propertyMappings: [],
-        objectsApiGroup: undefined,
+        // Ensure that this is explicitly set to null instead of undefined,
+        // because the field is required by the serializer
+        objectsApiGroup: null,
         // saved data, overwrites defaults
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
@@ -74,6 +76,10 @@ ZGWOptionsForm.propTypes = {
       }).isRequired,
       zaakVertrouwelijkheidaanduiding: PropTypes.shape({
         enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+        enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }).isRequired,
+      objectsApiGroup: PropTypes.shape({
+        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
     }).isRequired,

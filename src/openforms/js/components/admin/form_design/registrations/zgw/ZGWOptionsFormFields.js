@@ -130,6 +130,7 @@ const ZGWFormFields = ({
             <ObjectsAPIGroup
               apiGroupChoices={objectsApiGroupChoices}
               onApiGroupChange={onApiGroupChange}
+              isClearable
             />
             <ObjectType />
             <ObjectTypeVersion />
