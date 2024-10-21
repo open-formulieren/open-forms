@@ -48,6 +48,8 @@
   "Press to open ": "Klik om te openen ",
   "or": "of",
   "browse": "blader",
+  "browseFile": "selecteer een '{{ fileFieldLabel }}'-bestand",
+  "browseFiles": "selecteer '{{ fileFieldLabel }}'-bestanden",
   "Switch to file upload": "Overschakelen naar bestandsupload",
   "Complete": "Afgerond",
   "File API & FileReader API not supported": "File API en FileReader API worden niet ondersteund",
