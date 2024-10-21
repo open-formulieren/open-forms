@@ -30,6 +30,10 @@
 </head>
 
 <body class="utrecht-page">
+    {% block skiplink %}
+        <a class="skiplink utrecht-link" href="#main-content">{% translate "Show content." %}</a>
+    {% endblock %}
+
     {# No point in putting this in a <template> tag, since it targets noscript #}
     {% if enable_analytics and analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
         {# Load the second part of the Google tag manager snippet #}
@@ -42,12 +46,10 @@
     {% block content %}
         {% block header %}
             {% include "includes/page-header.html" %}
-            <a class="skiplink" href="#main-content">{% translate "Show content." %}</a>
         {% endblock %}
 
         <div class="utrecht-page__content utrecht-page-content">
-            <main class="utrecht-page-content__main">
-                <span class="skiplink-target" id="main-content"></span>
+            <main class="utrecht-page-content__main" id="main-content">
                 {% block inner-content %}
                     Override <code>{% verbatim %}{% block inner-content %}{% endverbatim %}</code>
                     to get some actual content.

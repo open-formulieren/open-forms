@@ -1,7 +1,10 @@
 .skiplink {
   position: absolute;
-  top: -100vh;
-  left: -100vh;
+
+  &:not(&:focus) {
+    top: -100vh;
+    left: -100vh;
+  }
 
   @media print {
     display: none;
