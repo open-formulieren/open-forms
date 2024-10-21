@@ -23,7 +23,6 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.date import datetime_in_amsterdam
@@ -444,6 +443,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             (object_type := options.get("objecttype"))
             and (object_type_version := options.get("objecttype_version"))
             and options.get("content_json")
+            and options.get("objects_api_group")
         ):
             result["objects_api_object"] = execute_unless_result_exists(
                 partial(self.register_submission_to_objects_api, submission, options),
@@ -547,6 +547,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         assert "objecttype" in options
         assert "objecttype_version" in options
         assert "content_json" in options
+        assert "objects_api_group" in options
 
         object_mapping = {
             "geometry": FieldConf(
@@ -577,12 +578,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             submission, object_mapping, REGISTRATION_ATTRIBUTE, record_data
         )
 
-        # In a follow up PR: the group will be configurable:
-        api_group = options.get(
-            "objects_api_group", ObjectsAPIGroupConfig.objects.order_by("pk").first()
-        )
-        if not api_group:  # pragma: no cover
-            raise RegistrationFailed("No API group available at all")
+        api_group = options["objects_api_group"]
+        assert api_group is not None
         with get_objects_client(api_group) as objects_client:
             response = execute_unless_result_exists(
                 partial(

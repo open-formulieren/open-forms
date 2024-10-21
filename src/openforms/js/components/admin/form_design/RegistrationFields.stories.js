@@ -53,6 +53,10 @@ export default {
               enum: ['openbaar', 'geheim'],
               enumNames: ['Openbaar', 'Geheim'],
             },
+            objectsApiGroup: {
+              enum: [1],
+              enumNames: ['Objects API Group'],
+            },
           },
         },
       },

@@ -12,6 +12,7 @@ const ObjectsAPIGroup = ({
   onChangeCheck,
   name = 'objectsApiGroup',
   onApiGroupChange,
+  isClearable = false,
 }) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
@@ -49,8 +50,12 @@ const ObjectsAPIGroup = ({
           required
           onChange={selectedOption => {
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
-            if (okToProceed) setValue(selectedOption.value);
+            if (okToProceed) {
+              if (selectedOption === null) setValue(null);
+              else setValue(selectedOption.value);
+            }
           }}
+          isClearable={isClearable}
         />
       </Field>
     </FormRow>
@@ -91,6 +96,12 @@ ObjectsAPIGroup.propTypes = {
    * fire unexpectedly during re-renders.
    */
   onApiGroupChange: PropTypes.func,
+
+  /**
+   * Optional boolean to indicate whether or not it should be possible to clear the
+   * select (default `false`)
+   */
+  isClearable: PropTypes.bool,
 };
 
 export default ObjectsAPIGroup;

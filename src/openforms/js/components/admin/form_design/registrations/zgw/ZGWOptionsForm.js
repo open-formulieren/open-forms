@@ -96,7 +96,9 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
               ...formData,
               // Ensure that if there's only one option, it is automatically selected.
               zgwApiGroup: formData.zgwApiGroup ?? defaultGroup,
-              objectsApiGroup: formData.objectsApiGroup,
+              // Ensure that this is explicitly set to null instead of undefined,
+              // because the field is required by the serializer
+              objectsApiGroup: formData.objectsApiGroup ?? null,
             }}
             onSubmit={(values, actions) => {
               onChange({formData: values});
@@ -142,6 +144,10 @@ ZGWOptionsForm.propTypes = {
       }).isRequired,
       zaakVertrouwelijkheidaanduiding: PropTypes.shape({
         enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+        enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }).isRequired,
+      objectsApiGroup: PropTypes.shape({
+        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
     }).isRequired,
