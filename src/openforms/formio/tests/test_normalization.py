@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from ..service import normalize_value_for_component
 
@@ -63,3 +63,13 @@ class NormalizationTests(SimpleTestCase):
         result = normalize_value_for_component(component, "foo.bar-baz")
 
         self.assertEqual(result, "foo.bar-baz")  # unmodified
+
+    @tag("gh-4774")
+    def test_textfield_normalization_non_str(self):
+        component = {"type": "textfield"}
+
+        int_result = normalize_value_for_component(component, 9)
+        float_result = normalize_value_for_component(component, 9.9)
+
+        self.assertEqual(int_result, "9")
+        self.assertEqual(float_result, "9.9")
