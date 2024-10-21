@@ -1038,6 +1038,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             completed=True,
         )
@@ -1070,6 +1071,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             completed_not_preregistered=True,
         )
