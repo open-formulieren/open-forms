@@ -89,6 +89,12 @@ class Default(BasePlugin):
 class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
 
+    @staticmethod
+    def normalizer(component: Component, value: str) -> str:
+        if isinstance(value, (int, float)):
+            return str(value)
+        return value
+
     def build_serializer_field(
         self, component: TextFieldComponent
     ) -> serializers.CharField | serializers.ListField:
