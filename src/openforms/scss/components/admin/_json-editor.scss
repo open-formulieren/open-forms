@@ -1,3 +1,13 @@
+$json_editor_min_inline_size: var(
+  --of-json-widget-min-inline-size,
+  // assume monospace font, multiply the width of one char times the number of cols requested
+  // and add the space for the editor margin
+  calc(
+      var(--of-json-widget-cols, 10) * var(--of-json-widget-char-size, 8.44px) +
+        var(--of-json-widget-margin-inline-size, 68px)
+    )
+);
+
 // Set up height/width based on the number of requested rows/cols.
 // You can customize this per instance by providing an inline style attribute for
 // the rows/cols.
@@ -6,15 +16,7 @@
   flex-direction: column;
 
   block-size: calc(var(--of-json-widget-rows, 3) * var(--_of-json-widget-row-block-size, 19px));
-  min-inline-size: var(
-    --of-json-widget-min-inline-size,
-    // assume monospace font, multiply the width of one char times the number of cols requested
-    // and add the space for the editor margin
-    calc(
-        var(--of-json-widget-cols, 10) * var(--of-json-widget-char-size, 8.44px) +
-          var(--of-json-widget-margin-inline-size, 68px)
-      )
-  );
+  min-inline-size: $json_editor_min_inline_size;
   max-inline-size: var(--of-json-widget-max-inline-size, var(--of-admin-input-field-size));
 
   border: 1px solid var(--border-color);

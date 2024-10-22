@@ -4,8 +4,13 @@ import React from 'react';
 
 import ErrorList from 'components/admin/forms/ErrorList';
 
-const DSLEditorNode = ({errors, children}) => (
-  <div className={classNames('dsl-editor__node', {'dsl-editor__node--errors': !!errors})}>
+const DSLEditorNode = ({errors, flexGrow, children}) => (
+  <div
+    className={classNames('dsl-editor__node', {
+      'dsl-editor__node--errors': !!errors,
+      'dsl-editor__node--flex-grow-1': !!flexGrow,
+    })}
+  >
     <ErrorList classNamePrefix="logic-action">{errors}</ErrorList>
     {children}
   </div>
@@ -13,6 +18,7 @@ const DSLEditorNode = ({errors, children}) => (
 
 DSLEditorNode.propTypes = {
   children: PropTypes.node,
+  flexGrow: PropTypes.bool,
   errors: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.string]),
 };
 

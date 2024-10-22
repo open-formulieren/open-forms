@@ -96,8 +96,8 @@ const ActionVariableValue = ({action, errors, onChange}) => (
     <DSLEditorNode errors={errors.variable}>
       <VariableSelection name="variable" onChange={onChange} value={action.variable} />
     </DSLEditorNode>
-    <DSLEditorNode errors={errors.action?.value}>
-      <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
+    <DSLEditorNode errors={errors.action?.value} flexGrow>
+      <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} isResizable />
     </DSLEditorNode>
   </>
 );
