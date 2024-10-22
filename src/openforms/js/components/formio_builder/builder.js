@@ -161,7 +161,8 @@ const getBuilderOptions = () => {
               input: true,
               inputMask: '9999 AA',
               validateOn: 'blur',
-              // The validate config doesn't seem to be used. Its also missing in the form definition BD
+              // The validate config doesn't seem to be used. It's also missing in the form definition BD
+              // See for more information: https://github.com/open-formulieren/open-forms/issues/4719#issuecomment-2429166434
               validate: {
                 customMessage: 'Invalid Postcode',
                 // Dutch postcode has 4 numbers and 2 letters (case insensitive). Letter combinations SS, SD and SA
