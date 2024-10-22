@@ -54,6 +54,11 @@ def fetch_prefill_values_from_attribute(
         if not plugin.is_enabled:
             raise PluginNotEnabled()
 
+        # If an `initial_data_reference` was passed, we must verify that the
+        # authenticated user is the owner of the referenced object
+        if submission.initial_data_reference:
+            plugin.verify_initial_data_ownership(submission)
+
         attributes = [attribute for field in fields for attribute in field]
         try:
             values = plugin.get_prefill_values(submission, attributes, identifier_role)

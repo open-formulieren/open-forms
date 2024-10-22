@@ -13,6 +13,7 @@ from openforms.contrib.objects_api.clients import (
     get_objects_client,
     get_objecttypes_client,
 )
+from openforms.contrib.objects_api.validators import validate_object_ownership
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -170,3 +171,6 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     @override
     def get_variables(self) -> list[FormVariable]:
         return get_static_variables(variables_registry=variables_registry)
+
+    def verify_initial_data_ownership(self, submission: Submission) -> None:
+        validate_object_ownership(submission)

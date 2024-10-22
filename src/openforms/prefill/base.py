@@ -129,3 +129,14 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     @classmethod
     def configuration_context(cls) -> JSONObject | None:
         return None
+
+    def verify_initial_data_ownership(self, submission: Submission) -> None:
+        """
+        Hook to check if the authenticated user is the owner of the object
+        referenced to by `initial_data_reference
+
+        :param submission: an active :class:`Submission` instance
+        """
+        raise NotImplementedError(
+            "You must implement the 'verify_initial_data_ownership' method."
+        )

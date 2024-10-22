@@ -8,6 +8,7 @@ from glom import Path, PathAccessError, glom
 from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.contrib.objects_api.validators import validate_object_ownership
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -18,6 +19,7 @@ from .api.serializers import ObjectsAPIOptionsSerializer
 from .typing import ObjectsAPIOptions
 
 logger = logging.getLogger(__name__)
+
 
 PLUGIN_IDENTIFIER = "objects_api"
 
@@ -79,3 +81,6 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
                 for group in ObjectsAPIGroupConfig.objects.iterator()
             ]
         }
+
+    def verify_initial_data_ownership(self, submission: Submission) -> None:
+        validate_object_ownership(submission)
