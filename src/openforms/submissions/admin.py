@@ -34,6 +34,7 @@ from .models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
+from .pricing import InvalidPrice
 from .tasks import on_post_submission_event
 
 
@@ -381,7 +382,14 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     @admin.display(description=_("Payment required"), boolean=True)
     def get_payment_required(self, obj):
-        return obj.payment_required
+        obj._in_admin_display = True
+        try:
+            return obj.payment_required
+        # InvalidPrice means that pricing/payment was set up and configured, but a
+        # semi-expected crash happened when trying to calculate the price because of
+        # mis-configuration.
+        except InvalidPrice:
+            return True
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)

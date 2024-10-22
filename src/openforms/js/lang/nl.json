@@ -599,6 +599,11 @@
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
+  "Ckzpff": {
+    "defaultMessage": "Gebruik een variabele",
+    "description": "variable pricing mode label",
+    "originalDefault": "Use a variable for the price"
+  },
   "CtjZFq": {
     "defaultMessage": "Inzenden toegestaan",
     "description": "Form submissionAllowed field label",
@@ -2652,6 +2657,11 @@
     "defaultMessage": "Annuleren",
     "description": "JSON editor: cancel variable edit",
     "originalDefault": "Cancel"
+  },
+  "x6oxfg": {
+    "defaultMessage": "Variabele",
+    "description": "Price variable label",
+    "originalDefault": "Variable"
   },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",

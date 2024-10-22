@@ -594,6 +594,11 @@
     "description": "Auth plugin field help text",
     "originalDefault": "Select the allowed authentication plugins to log in at the start of the form."
   },
+  "Ckzpff": {
+    "defaultMessage": "Use a variable for the price",
+    "description": "variable pricing mode label",
+    "originalDefault": "Use a variable for the price"
+  },
   "CtjZFq": {
     "defaultMessage": "Submission allowed",
     "description": "Form submissionAllowed field label",
@@ -2633,6 +2638,11 @@
     "defaultMessage": "Cancel",
     "description": "JSON editor: cancel variable edit",
     "originalDefault": "Cancel"
+  },
+  "x6oxfg": {
+    "defaultMessage": "Variable",
+    "description": "Price variable label",
+    "originalDefault": "Variable"
   },
   "xJBMaf": {
     "defaultMessage": "Submission confirmation template",
