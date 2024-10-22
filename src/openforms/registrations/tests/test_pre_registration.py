@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.core.exceptions import PermissionDenied
+from django.test import TestCase, tag
 
 from rest_framework.exceptions import ValidationError
 from testfixtures import LogCapture
@@ -374,3 +375,54 @@ class PreRegistrationTests(TestCase):
         submission.refresh_from_db()
 
         self.assertNotIn("traceback", submission.registration_result)
+
+    @tag("gh-4398")
+    def test_verify_initial_data_ownership(self):
+        with self.subTest(
+            "verify_initial_data_ownership is not called if no initial_data_reference is specified"
+        ):
+            submission = SubmissionFactory.create(
+                form__registration_backend="demo",
+                completed_not_preregistered=True,
+            )
+
+            with patch(
+                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership"
+            ) as mock_verify_ownership:
+                pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+                mock_verify_ownership.assert_not_called()
+
+        with self.subTest(
+            "verify_initial_data_ownership is called if initial_data_reference exists is specified"
+        ):
+            submission = SubmissionFactory.create(
+                form__registration_backend="demo",
+                completed_not_preregistered=True,
+                initial_data_reference="1234",
+            )
+
+            with patch(
+                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership"
+            ) as mock_verify_ownership:
+                pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+                mock_verify_ownership.assert_called_once_with(submission)
+
+        with self.subTest(
+            "verify_initial_data_ownership raising error causes pre registration to fail"
+        ):
+            submission = SubmissionFactory.create(
+                form__registration_backend="demo",
+                completed_not_preregistered=True,
+                initial_data_reference="1234",
+            )
+
+            with patch(
+                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership",
+                side_effect=PermissionDenied,
+            ) as mock_verify_ownership:
+                with self.assertRaises(PermissionDenied):
+                    pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+                mock_verify_ownership.assert_called_once_with(submission)

@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import requests_mock
@@ -18,6 +19,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
+from openforms.prefill.contrib.demo.constants import Attributes
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -318,3 +320,101 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")
+
+    def test_verify_initial_data_ownership(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": Attributes.random_string,
+                        },
+                        "defaultValue": "",
+                    }
+                ]
+            }
+        )
+
+        with self.subTest(
+            "verify_initial_data_ownership is not called if initial_data_reference is not specified"
+        ):
+            submission_step = SubmissionStepFactory.create(
+                submission__form=form_step.form,
+                form_step=form_step,
+                submission__auth_info__value="999990676",
+                submission__auth_info__attribute=AuthAttribute.bsn,
+            )
+
+            with patch(
+                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
+            ) as mock_verify_ownership:
+                prefill_variables(submission=submission_step.submission)
+
+                mock_verify_ownership.assert_not_called()
+
+            logs = TimelineLogProxy.objects.filter(
+                object_id=submission_step.submission.id
+            )
+            self.assertEqual(
+                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
+            )
+
+        with self.subTest(
+            "verify_initial_data_ownership is called if initial_data_reference is specified"
+        ):
+            submission_step = SubmissionStepFactory.create(
+                submission__form=form_step.form,
+                form_step=form_step,
+                submission__auth_info__value="999990676",
+                submission__auth_info__attribute=AuthAttribute.bsn,
+                submission__initial_data_reference="1234",
+            )
+
+            with patch(
+                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
+            ) as mock_verify_ownership:
+                prefill_variables(submission=submission_step.submission)
+
+                mock_verify_ownership.assert_called_once_with(
+                    submission_step.submission
+                )
+
+            logs = TimelineLogProxy.objects.filter(
+                object_id=submission_step.submission.id
+            )
+            self.assertEqual(
+                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
+            )
+
+        with self.subTest(
+            "verify_initial_data_ownership raising error causes prefill to fail"
+        ):
+            submission_step = SubmissionStepFactory.create(
+                submission__form=form_step.form,
+                form_step=form_step,
+                submission__auth_info__value="999990676",
+                submission__auth_info__attribute=AuthAttribute.bsn,
+                submission__initial_data_reference="1234",
+            )
+
+            with patch(
+                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership",
+                side_effect=PermissionDenied,
+            ) as mock_verify_ownership:
+                with self.assertRaises(PermissionDenied):
+                    prefill_variables(submission=submission_step.submission)
+
+                mock_verify_ownership.assert_called_once_with(
+                    submission_step.submission
+                )
+
+            logs = TimelineLogProxy.objects.filter(
+                object_id=submission_step.submission.id
+            )
+            self.assertEqual(
+                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+            )
