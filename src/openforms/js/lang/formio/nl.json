@@ -360,7 +360,7 @@
   "Form fields": "Formuliervelden",
   "Presets": "Voorgedefinieerd",
   "Deprecated": "Verouderd",
-  "Invalid Postcode": "Ongeldige Postcode",
+  "Invalid Postcode": "De opgegeven waarde voldoet niet aan het postcode formaat: 1234 AB",
   "Clear on hide": "Wissen als veld verborgen is",
   "Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!": "Verwijder de waarde van dit veld van de inzending als dit veld verborgen is. Let op: De waarde van dit veld wordt dan ook niet gebruikt in logica regels!",
   "Column sizes": "Grootte van de kolommen",
