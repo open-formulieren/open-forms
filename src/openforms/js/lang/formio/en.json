@@ -38,5 +38,6 @@
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} or {{ lastLabel }}",
   "invalid_time": "Only times between {{ minTime }} and {{ maxTime }} are allowed.",
   "You must select at least {{minCount}} items.": "Ensure this field has at least {{minCount}} checked options.",
+  "Invalid Postcode": "The submitted value does not match the postcode pattern: 1234 AB",
   "": ""
 }
