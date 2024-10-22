@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import jsonLogic from 'json-logic-js';
 import {isEqual} from 'lodash';
 import PropTypes from 'prop-types';
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useIntl} from 'react-intl';
 import {useGlobalState} from 'state-pool';
 
@@ -79,7 +79,7 @@ const JsonWidget = ({
     >
       {isExpanded && (
         <div
-          className="json-widget__input"
+          className="json-widget__input json-widget__input--resizable"
           style={{
             '--of-json-widget-cols': cols,
             '--of-json-widget-rows': Math.min(maxRows, Math.max(MIN_LINES, numRows)),
@@ -90,6 +90,7 @@ const JsonWidget = ({
             onChange={onJsonChange}
             lineCountCallback={(numLines = 1) => setNumRows(numLines)}
             theme={theme}
+            automaticLayout={true}
           />
         </div>
       )}
