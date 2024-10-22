@@ -18,6 +18,8 @@ Open Forms 2.8.0 is a feature release.
 Upgrade notes
 -------------
 
+* Ensure you upgrade to (at least) Open Forms 2.7.4 before upgrading to 2.8.
+
 There are no manual actions required - all upgrades and migrations are automatic.
 
 .. note:: The UX rework in the ZGW APIs registration plugin is not entirely finished
