@@ -364,21 +364,31 @@ class ProductPrice(BasePlugin):
                 "inline": False,
                 "inputType": "radio",
                 "validate": {"required": True},
+                "values": [],
             }
         )
-        current_price = submission.form.product.open_producten_price
-        if current_price:
-            component["values"] = [
-                {
-                    "label": f"{option.description}: € {option.amount}",
-                    "value": option.uuid,
-                }
-                for option in current_price.options.all()
-            ]
 
-        if not component["values"]:
-            logger.warning("Product does not have price options.")
-            # TODO: error?
+        # TODO: errors instead of logs?
+        if not submission.form.product:
+            logger.error("Form is not linked to product.")
+
+        else:
+            current_price = submission.form.product.open_producten_price
+
+            if not current_price:
+                logger.error("Product does not have an active price.")
+
+            elif not current_price.options.count():
+                logger.error("Product does not have price options.")
+
+            else:
+                component["values"] = [
+                    {
+                        "label": f"{option.description}: € {option.amount}",
+                        "value": option.uuid,
+                    }
+                    for option in current_price.options.all()
+                ]
 
 
 @register("bsn")

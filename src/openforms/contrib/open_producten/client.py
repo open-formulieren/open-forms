@@ -19,7 +19,8 @@ class OpenProductenClient(APIClient):
             response.raise_for_status()
         except requests.RequestException as exc:
             logger.exception(
-                "exception while making KVK basisprofiel request", exc_info=exc
+                "exception while fetching current prices from Open Producten",
+                exc_info=exc,
             )
             raise exc
 
