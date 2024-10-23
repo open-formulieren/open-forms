@@ -2,6 +2,60 @@
 Changelog
 =========
 
+3.0.0-alpha.0 (2024-10-25)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**Breaking changes**
+
+* [:backend:`4375`] Removed environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
+  Objects API.
+
+**New features**
+
+* [:backend:`4546`] Added configuration options for soft-required validation of (file upload)
+  fields to the form designer.
+* [:backend:`4709`] Improved the error feedback if unexpected errors happening during form
+  saving in the form designer.
+* [:backend:`4524`, :backend:`4675`] Selecting a form variable is now more user friendly.
+  Variables are logically grouped and a search box was added.
+* [:backend:`4764`] You can now use a form variable as the source of the submission price
+  to be paid.
+
+**Bugfixes**
+
+* [:backend:`3705`] Ensure timestamps are consistently displayed in the correct timezone
+  in the admin interface.
+* [:backend:`4600`] Fixed not all the content on the page getting translated after changing
+  the form language.
+* [:backend:`4659`] Fixed ``null`` default values for text-based fields.
+* [:backend:`4733`] Fixed a segmentation fault that could occur in dev environments.
+* [:backend:`4711`] Fixed broken submission form row styling.
+* [:backend:`4695`] Fixed performance regression in Objects API (legacy) validation.
+* [:backend:`4628`] Fixed a crash when copying a form with a "block next step" logic
+  action.
+* [:backend:`4713`] Fixed pre-request hook not running for all "Haal Centraal BRP
+  Personen bevragen" operations (fixes Token Exchange extension).
+* [:backend:`3629`] Fixed submission bulk export crashing when the form has repeating
+  groups.
+
+* [:backend:`4528`] Fixed vague error/log out situation when logging in with OIDC.
+* [:backend:`4744`] Fixed a performance regression in the logic check calls and general
+  submission processing.
+* [:backend:`4774`] Fixed ``textfield`` data not being converted to a string when
+  numeric data is received from a prefill plugin.
+
+**Project maintenance**
+
+* Updated Trivy image scanning CI pipeline.
+* [:backend:`4588`] Reduced code duplication in payment related code.
+* [:backend:`4721`] Updated the screenshots in the documentation for prefill and the
+  Objects API manual.
+
 2.6.15 (2024-10-08)
 ===================
 
