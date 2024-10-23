@@ -73,8 +73,12 @@ all configured on the same obfuscated URL (e.g. ``http://localhost:8080``), for 
 
 Instructions and (pointers to) credentials are documented in our internal Taiga.
 
-Set ``VCR_RECORD_MODE=all`` in your environment to force re-recording of the cassettes,
-and then commit the results/changes.
+Delete the existing/recorded cassettes and then commit the results/changes.
+
+.. note::
+
+    Setting ``VCR_RECORD_MODE=all`` in your environment appends new episodes instead of
+    overwriting them, which is not the desired result.
 
 **Updating the changelog**
 

@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {}, "startAt": "2024-09-16"}}'
+      "record": {"typeVersion": 1, "data": {}, "startAt": "2024-10-22"}}'
     headers:
       Accept:
       - '*/*'
@@ -23,7 +23,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/61ef7c5e-9c69-496c-a8ed-42451eefacb8","uuid":"61ef7c5e-9c69-496c-a8ed-42451eefacb8","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2024-09-16","endAt":null,"registrationAt":"2024-09-16","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/c2378afa-210c-4472-b249-fa8215d5de4b","uuid":"c2378afa-210c-4472-b249-fa8215d5de4b","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2024-10-22","endAt":null,"registrationAt":"2024-10-22","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -38,9 +38,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 16 Sep 2024 14:19:30 GMT
+      - Tue, 22 Oct 2024 10:41:38 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/61ef7c5e-9c69-496c-a8ed-42451eefacb8
+      - http://localhost:8002/api/v2/objects/c2378afa-210c-4472-b249-fa8215d5de4b
       Referrer-Policy:
       - same-origin
       Server:
@@ -85,7 +85,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 16 Sep 2024 14:19:30 GMT
+      - Tue, 22 Oct 2024 10:41:38 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -122,10 +122,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/61ef7c5e-9c69-496c-a8ed-42451eefacb8
+    uri: http://localhost:8002/api/v2/objects/c2378afa-210c-4472-b249-fa8215d5de4b
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/61ef7c5e-9c69-496c-a8ed-42451eefacb8","uuid":"61ef7c5e-9c69-496c-a8ed-42451eefacb8","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"],"payment_ids":["12345"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-09-16","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/c2378afa-210c-4472-b249-fa8215d5de4b","uuid":"c2378afa-210c-4472-b249-fa8215d5de4b","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"],"payment_ids":["12345"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-10-22","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -140,7 +140,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 16 Sep 2024 14:19:30 GMT
+      - Tue, 22 Oct 2024 10:41:38 GMT
       Referrer-Policy:
       - same-origin
       Server:

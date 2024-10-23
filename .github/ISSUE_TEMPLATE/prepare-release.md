@@ -8,8 +8,8 @@ assignees: sergei-maertens
 
 - [ ] Resolve release blockers
   - [ ] ...
-- [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga). You can find all test
-      cases with `grep OFVCRMixin -r src`
+- [ ] Re-generate VCR cassettes (delete the old ones and then) for API tests (see instructions on
+      Taiga). You can find all test cases with `grep OFVCRMixin -r src`
   - [ ] Accounts (`openforms.accounts.tests.test_oidc`)
   - Appoinments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
   - Authentication plugins
@@ -23,14 +23,19 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.brk`
     - [ ] `openforms.contrib.haal_centraal.tests.test_integration`
     - [ ] `openforms.contrib.kvk`
+    - [ ] `openforms.contrib.objects_api.tests`
     - [ ] `soap.tests.test_client`
     - `suwinet.tests.test_client` (testenv access has been retracted and won't be reinstated)
-  - [ ] Form imports: `openforms.forms.tests.test_import_export`
+  - Forms
+    - [ ] `openforms.forms.tests.test_import_export`
+    - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
   - Payment plugins
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
+  - [ ] Prefill (`openforms.prefill.contrib.objects_api.tests.test_endpoints`)
   - Registration plugins:
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
+    - [ ] StUF_ZDS APIs: `openforms.registrations.contrib.stuf_zds.tests.test_backend`
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations

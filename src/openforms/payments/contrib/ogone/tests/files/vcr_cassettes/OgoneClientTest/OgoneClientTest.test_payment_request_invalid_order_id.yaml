@@ -51,12 +51,12 @@ interactions:
         hidden;\">Overige gegevens / Annuleren</h2>\r\n<table class=ncoltable3 border=\"0\"
         cellpadding=\"2\" cellspacing=\"0\" width=\"95%\" id=\"ie_cc\" style=\"behavior:url(#default#clientCaps)\">\r\n\t<tr><td
         class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"></td><td
-        class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=8&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=CCCBEF7C118C7C361DDBAE07A9351875ECC498A3&CSRFTS=20240916153643\"
+        class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=8&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=4586C4BF909D6285AE015FDE7B79A0E8DAB3EAB0&CSRFTS=20241022124001\"
         target=\"_blank\"><img border=\"0\" src=\"https&#58;//ogone.test.v-psp.com/images/pp_WorldLine8.png\"
         alt=\"Betaling verwerkt door Worldline\" title=\"Betaling verwerkt door Worldline\"
-        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=8&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=BDF2142CFF41AF4F50D51EB36BD773DAB8E9926A&amp;CSRFTS=20240916153643\"
-        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=4D30CD8674E88DF49F268DD65AF317494419A6F5&amp;CSRFTS=20240916153643\"
-        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=7341CCEECED5067642839FD2ABB0929DBB9FD945&amp;CSRFTS=20240916153643\"
+        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=8&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=C8783E4F030581C65AC42849AAEDABD239016742&amp;CSRFTS=20241022124001\"
+        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=42A3428CBEC839D6DBA2DEB98DD4663F932B18C4&amp;CSRFTS=20241022124001\"
+        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=34C40A3B4C485E914D2F2008C1F6B8F81B2F7FCF&amp;CSRFTS=20241022124001\"
         target=\"_blank\">Wettelijke informatie<!--Legal--></a></small></small></td><td
         class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\">&nbsp;</td></tr>\r\n\r\n</table>\r\n</font></html>"
     headers:
@@ -67,14 +67,16 @@ interactions:
       content-type:
       - text/html; Charset=utf-8
       date:
-      - Mon, 16 Sep 2024 13:36:43 GMT
+      - Tue, 22 Oct 2024 10:40:02 GMT
       expires:
-      - Mon, 16 Sep 2024 13:35:43 GMT
+      - Tue, 22 Oct 2024 10:39:01 GMT
       set-cookie:
-      - sessionTest=e425e15a-f8cf-48d3-b551-412e90483959; path=/ncol/test/; Secure;
+      - sessionTest=329763db-4c0c-4cb8-9789-10897e1154a2; path=/ncol/test/; Secure;
         HttpOnly
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
+      x-content-type-options:
+      - nosniff
     status:
       code: 200
       message: OK
