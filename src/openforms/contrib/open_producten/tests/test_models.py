@@ -1,11 +1,15 @@
 import datetime
+from decimal import Decimal
 from uuid import UUID
 
 from django.test import TestCase
 
 from freezegun import freeze_time
 
-from openforms.contrib.open_producten.tests.factories import PriceFactory
+from openforms.contrib.open_producten.tests.factories import (
+    PriceFactory,
+    PriceOptionFactory,
+)
 from openforms.products.tests.factories import ProductFactory
 
 
@@ -30,3 +34,19 @@ class TestProductType(TestCase):
 
     def test_open_producten_price_with_no_prices(self):
         self.assertEqual(self.product.open_producten_price, None)
+
+
+class TestPrice(TestCase):
+
+    def test_str(self):
+        price = PriceFactory(
+            product_type__upl_name="test", valid_from=datetime.date(2024, 1, 1)
+        )
+        self.assertEqual(str(price), "test 2024-01-01")
+
+
+class TestPriceOption(TestCase):
+
+    def test_str(self):
+        price = PriceOptionFactory(description="test", amount=Decimal("19.23"))
+        self.assertEqual(str(price), "test 19.23")

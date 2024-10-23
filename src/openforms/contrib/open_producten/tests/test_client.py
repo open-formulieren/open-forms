@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+import requests
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -53,6 +54,16 @@ class TestOpenProductenClient(TestCase):
             "1c3cc677-b643-46f7-8f30-cbc18e297cad",
         )
         self.assertEqual(product_type.current_price.options[0].amount, "24.00")
+
+    def test_get_current_prices_with_request_exception(self):
+        self.requests_mock.get(
+            status_code=404,
+            json={"error": "not found"},
+            url="https://test/producttypes/current-prices",
+        )
+
+        with self.assertRaises(requests.RequestException):
+            self.client.get_current_prices()
 
     def test_get_open_producten_client_without_service(self):
         OpenProductenConfig.objects.create()

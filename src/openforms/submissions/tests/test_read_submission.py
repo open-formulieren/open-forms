@@ -413,3 +413,21 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         submission.calculate_price()
 
         self.assertEqual(submission.price, Decimal("5.00"))
+
+    def test_submission_pricing_using_open_producten_called_before_option_selected(
+        self,
+    ):
+        price = PriceFactory.create(valid_from=datetime.date(2024, 1, 1))
+        PriceOptionFactory.create(price=price, amount=Decimal("20.00"))
+
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "productPrice", "key": "productPrice"}],
+            submitted_data={},
+            form__product=price.product_type,
+            form__payment_backend="demo",
+        )
+
+        submission.calculate_price()
+
+        self.assertEqual(submission.price, None)
+        self.assertEqual(submission.payment_required, False)
