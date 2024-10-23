@@ -65,6 +65,7 @@ class PartialRegistrationFailureTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
+                "objects_api_group": None,
             },
             completed_not_preregistered=True,
             bsn="111222333",
@@ -416,7 +417,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                 }"""
             ),
         )
-        ObjectsAPIGroupConfigFactory.create(
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
             organisatie_rsin="000000000",
         )
@@ -507,6 +508,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
+                "objects_api_group": objects_api_group.pk,
                 "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
                 "objecttype_version": 1,
             },
@@ -693,6 +695,7 @@ class eigenschappenPartialRegistrationFailureTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
+                "objects_api_group": None,
                 "property_mappings": [
                     {"component_key": "textField1", "eigenschap": "a property name"}
                 ],

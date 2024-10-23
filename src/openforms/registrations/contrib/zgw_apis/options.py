@@ -10,6 +10,7 @@ from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.clients.catalogi import (
     CaseType,
     CatalogiClient,
@@ -104,6 +105,14 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
     # Objects API
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.exclude(
+            Q(objects_service=None) | Q(objecttypes_service=None)
+        ),
+        help_text=_("Which Objects API set to use."),
+        label=_("Objects API set"),
+        allow_null=True,
+    )
     objecttype = serializers.URLField(
         label=_("objects API - objecttype"),
         help_text=_(
@@ -188,6 +197,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
         _validate_against_catalogi_api(attrs)
 
+        if attrs.get("objecttype"):
+            _validate_against_objects_api_group(attrs)
+
         return attrs
 
 
@@ -242,6 +254,41 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         )
         _validate_medewerker_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
+        )
+
+
+def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
+    """
+    Validate the configuration options against the specified objects API group.
+
+    1. An `objects_api_group` must be specified
+    2. The specified `objecttype` must have the same base URL as the defined `objects_api_group.objecttypes_service`
+    """
+    assert "objecttype" in attrs
+
+    objects_api_group = attrs.get("objects_api_group")
+    if not objects_api_group:
+        raise serializers.ValidationError(
+            {
+                "objects_api_group": _(
+                    "Objects API group must be specified if an objecttype is specified."
+                )
+            },
+            code="invalid",
+        )
+
+    # `objecttypes_service` is required on `ObjectsAPIGroup`
+    assert objects_api_group.objecttypes_service
+    if not attrs["objecttype"].startswith(
+        objects_api_group.objecttypes_service.api_root
+    ):
+        raise serializers.ValidationError(
+            {
+                "objecttype": _(
+                    "The API root of the objecttype does not match the Objecttypes API root in the Objects API group."
+                )
+            },
+            code="invalid",
         )
 
 
