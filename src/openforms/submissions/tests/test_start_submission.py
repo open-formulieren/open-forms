@@ -14,6 +14,7 @@ Functional requirements are:
 See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 """
 
+from sys import breakpointhook
 from unittest.mock import patch
 
 from django.test import override_settings, tag
@@ -23,11 +24,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.forms.tests.factories import (
-    FormFactory,
-    FormStepFactory,
-    FormVariableFactory,
-)
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
@@ -203,11 +200,20 @@ class SubmissionStartTests(APITestCase):
 
     @patch("openforms.logging.logevent._create_log")
     def test_start_submission_with_prefill(self, mock_logevent):
-        FormVariableFactory.create(
+        # we are creating a new step below-no need for two steps
+        self.form.formstep_set.get().delete()
+        FormStepFactory.create(
             form=self.form,
-            form_definition=self.step.form_definition,
-            prefill_plugin="demo",
-            prefill_attribute="random_string",
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test-key",
+                        "label": "Test label",
+                        "prefill": {"plugin": "demo", "attribute": "random_string"},
+                    }
+                ]
+            },
         )
         body = {
             "form": f"http://testserver.com{self.form_url}",

@@ -28,7 +28,10 @@ def disable_prefill_injection():
     """
     Disable prefill to prevent prefill-related queries.
     """
-    return patch("openforms.formio.service.inject_prefill", new=MagicMock)
+    return patch(
+        "openforms.prefill.service.inject_prefill",
+        new=MagicMock,
+    )
 
 
 TEST_CONFIGURATION = {

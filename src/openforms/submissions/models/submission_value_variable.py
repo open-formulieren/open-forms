@@ -174,15 +174,20 @@ class SubmissionValueVariablesState:
         return prefill_vars
 
     def save_prefill_data(self, data: dict[str, Any]) -> None:
-        variables_to_prefill = self.get_prefill_variables()
-        for variable in variables_to_prefill:
+        # The way we retrieve the variables has been changed here, since
+        # the new architecture of the prefill module requires access to all the
+        # variables at this point (the previous implementation with
+        # self.get_prefill_variables() gave us access to the component variables
+        # and not the user_defined ones).
+        variables = self.variables.values()
+        for variable in list(variables):
             if variable.key not in data:
                 continue
 
             variable.value = data[variable.key]
             variable.source = SubmissionValueVariableSources.prefill
 
-        SubmissionValueVariable.objects.bulk_create(variables_to_prefill)
+        SubmissionValueVariable.objects.bulk_create(variables)
 
     def set_values(self, data: DataMapping) -> None:
         """

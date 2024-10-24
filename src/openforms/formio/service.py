@@ -14,7 +14,6 @@ from typing import Any
 import elasticapm
 from rest_framework.request import Request
 
-from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 
@@ -73,6 +72,9 @@ def get_dynamic_configuration(
     The configuration is modified in the context of the provided ``submission``
     parameter.
     """
+    # Avoid circular imports
+    from openforms.prefill.service import inject_prefill
+
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
 
     # Add to each component the custom errors in the current locale
