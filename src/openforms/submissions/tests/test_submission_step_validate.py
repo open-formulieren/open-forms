@@ -16,7 +16,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.prefill import prefill_variables
+from openforms.prefill.service import prefill_variables
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..models import SubmissionValueVariable
@@ -209,10 +209,8 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
     @tag("gh-1899")
     @patch(
-        "openforms.prefill._fetch_prefill_values",
-        return_value={
-            "postcode": {"main": {"static": "1015CJ"}},
-        },
+        "openforms.prefill.service.fetch_prefill_values_from_attribute",
+        return_value={"postcode": "1015CJ"},
     )
     def test_flow_with_badly_structure_prefill_data(self, m_prefill):
         form = FormFactory.create()

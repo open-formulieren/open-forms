@@ -12,7 +12,11 @@ from openforms.formio.service import (
     get_dynamic_configuration,
 )
 from openforms.forms.models import FormVariable
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import (
@@ -20,7 +24,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 
-from .. import prefill_variables
+from ..service import prefill_variables
 
 CONFIGURATION = {
     "display": "form",
@@ -50,15 +54,12 @@ CONFIGURATION = {
 
 
 class PrefillVariablesTests(TestCase):
+
     @patch(
-        "openforms.prefill._fetch_prefill_values",
-        return_value={
-            "demo": {
-                "main": {"random_string": "Not so random string", "random_number": 123}
-            }
-        },
+        "openforms.prefill.service.fetch_prefill_values_from_attribute",
+        return_value={"voornamen": "Not so random string", "age": 123},
     )
-    def test_applying_prefill_plugins(self, m_prefill):
+    def test_applying_prefill_plugin_from_component_conf(self, m_prefill):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission_step = SubmissionStepFactory.create(
             submission__form=form_step.form, form_step=form_step
@@ -87,11 +88,99 @@ class PrefillVariablesTests(TestCase):
         )
 
     @patch(
-        "openforms.prefill._fetch_prefill_values",
-        return_value={
-            "postcode": {"main": {"static": "1015CJ"}},
-            "birthDate": {"main": {"static": "19990615"}},
-        },
+        "openforms.prefill.service.fetch_prefill_values_from_attribute",
+        return_value={"voornamen": "Not so random string"},
+    )
+    def test_applying_prefill_plugin_from_user_defined_with_attribute(self, m_prefill):
+        submission = SubmissionFactory.create()
+        FormVariableFactory.create(
+            key="voornamen",
+            form=submission.form,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+        )
+
+        prefill_variables(submission=submission)
+
+        submission_value_variables_state = (
+            submission.load_submission_value_variables_state()
+        )
+
+        self.assertEqual(1, len(submission_value_variables_state.variables))
+
+        submission_variable = submission_value_variables_state.get_variable(
+            key="voornamen"
+        )
+
+        self.assertEqual("Not so random string", submission_variable.value)
+        self.assertEqual(
+            SubmissionValueVariableSources.prefill, submission_variable.source
+        )
+
+    @patch(
+        "openforms.prefill.service.fetch_prefill_values_from_options",
+        return_value={"voornamen": "Not so random string"},
+    )
+    def test_applying_prefill_plugin_from_user_defined_with_options(self, m_prefill):
+        submission = SubmissionFactory.create()
+        FormVariableFactory.create(
+            key="voornamen",
+            form=submission.form,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": 1,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
+                ],
+            },
+        )
+
+        prefill_variables(submission=submission)
+
+        submission_value_variables_state = (
+            submission.load_submission_value_variables_state()
+        )
+
+        self.assertEqual(1, len(submission_value_variables_state.variables))
+
+        submission_variable = submission_value_variables_state.get_variable(
+            key="voornamen"
+        )
+
+        self.assertEqual("Not so random string", submission_variable.value)
+        self.assertEqual(
+            SubmissionValueVariableSources.prefill, submission_variable.source
+        )
+
+    def test_applying_prefill_plugin_from_user_defined_with_invalid_options(self):
+        submission = SubmissionFactory.create()
+        FormVariableFactory.create(
+            key="voornamen",
+            form=submission.form,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": "Wrong value",
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
+                ],
+            },
+        )
+
+        prefill_variables(submission=submission)
+
+        self.assertEqual(TimelineLogProxy.objects.count(), 1)
+        logs = TimelineLogProxy.objects.get()
+
+        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_failure")
+        self.assertIn("objects_api_group", logs.extra_data["error"])
+
+    @patch(
+        "openforms.prefill.service.fetch_prefill_values_from_attribute",
+        return_value={"postcode": "1015CJ", "birthDate": "19990615"},
     )
     def test_normalization_applied(self, m_prefill):
         form = FormFactory.create()
