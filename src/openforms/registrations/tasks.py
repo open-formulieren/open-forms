@@ -81,6 +81,12 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             submission.save()
             return
 
+        # If an `initial_data_reference` was passed, we must verify that the
+        # authenticated user is the owner of the referenced object
+        if submission.initial_data_reference:
+            # TODO can we let a PermissionDenied be raised here? or should this be caught?
+            registration_plugin.verify_initial_data_ownership(submission)
+
         options_serializer = registration_plugin.configuration_options(
             data=submission.registration_backend.options,
             context={"validate_business_logic": False},
