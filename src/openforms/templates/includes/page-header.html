@@ -17,8 +17,7 @@ Back to website of {{ name }}
         class="utrecht-link utrecht-link--openforms utrecht-page-header__openforms-return-url"
         href="{% firstof config.main_website '#' %}"
         title="{{ logo_alt }}"
-        aria-label="{{ logo_alt }}"
-    >{% if config.main_website %}{% trans "Back to website" %}{% endif %}</a>
+    >{% if config.main_website %}{{ logo_alt }}{% endif %}</a>
 
     <div id="react-portal--language-selection"></div>
 </header>
