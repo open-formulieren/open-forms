@@ -344,6 +344,16 @@ def np_family_members_component():
     )
 
 
+def product_price_component():
+    optional = {
+        "description": jsonb_text(),
+        "tooltip": jsonb_text(),
+    }
+    return st.fixed_dictionaries(
+        _minimal_component_mapping("productPrice"), optional=optional
+    )
+
+
 def signature_component():
     optional = {
         "description": jsonb_text(),
@@ -480,6 +490,7 @@ def any_component(stop_nesting=False):
         bsn_component(),
         address_nl_component(),
         np_family_members_component(),
+        product_price_component(),
         signature_component(),
         cosign_v2_component(),
         map_component(),

@@ -56,6 +56,7 @@ const getBuilderOptions = () => {
           licenseplate: true,
           bsn: true,
           npFamilyMembers: true,
+          productPrice: true,
           signature: true,
           cosign: true,
           map: true,

@@ -348,6 +348,49 @@ class NPFamilyMembers(BasePlugin):
             ]
 
 
+@register("productPrice")
+class ProductPrice(BasePlugin):
+    # not actually relevant, as we transform the component into a different type
+    formatter = DefaultFormatter
+
+    def mutate_config_dynamically(
+        self, component: Component, submission: Submission, data: DataMapping
+    ) -> None:
+
+        component.update(
+            {
+                "type": "radio",
+                "fieldSet": False,
+                "inline": False,
+                "inputType": "radio",
+                "validate": {"required": True},
+                "values": [],
+            }
+        )
+
+        # TODO: errors instead of logs?
+        if not submission.form.product:
+            logger.error("Form is not linked to product.")
+
+        else:
+            current_price = submission.form.product.open_producten_price
+
+            if not current_price:
+                logger.error("Product does not have an active price.")
+
+            elif not current_price.options.count():
+                logger.error("Product does not have price options.")
+
+            else:
+                component["values"] = [
+                    {
+                        "label": f"{option.description}: € {option.amount}",
+                        "value": option.uuid,
+                    }
+                    for option in current_price.options.all()
+                ]
+
+
 @register("bsn")
 class BSN(BasePlugin[Component]):
     formatter = TextFieldFormatter

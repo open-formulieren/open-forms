@@ -22,6 +22,7 @@ import NumberField from './components/form/number';
 import PasswordField from './components/form/password';
 import PhoneNumberField from './components/form/phoneNumber';
 import PostcodeField from './components/form/postcode';
+import ProductPrice from './components/form/productPrice';
 import RadioField from './components/form/radio';
 import SelectField from './components/form/select';
 import SelectBoxesField from './components/form/selectBoxes';
@@ -59,6 +60,7 @@ const FormIOModule = {
     coSign: CoSignFieldOld,
     cosign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
+    productPrice: ProductPrice,
     columns: ColumnField,
     content: ContentField,
     currency: CurrencyField,

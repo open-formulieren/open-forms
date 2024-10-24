@@ -44,7 +44,7 @@ def get_submission_price(submission: Submission) -> Decimal:
     ), "Price cannot be calculated on a submission without the form relation set"
     assert submission.form.product, "Form must have a related product"
     assert (
-        submission.form.product.price
+        submission.form.product.price or submission.form.product.open_producten_price
     ), "get_submission_price' may only be called for forms that require payment"
 
     form = submission.form
@@ -92,7 +92,34 @@ def get_submission_price(submission: Submission) -> Decimal:
         return rule.price
 
     #
-    # 3. More specific modes didn't produce anything, fall back to the linked product
+    # 3. Check if product has price imported from open producten.
+    #
+    if form.product.open_producten_price:
+        # method is called before form is completed at openforms.submissions.models.submission.Submission.payment_required
+
+        def get_price_option_key():
+            for step in form.formstep_set.all():
+                for component in step.form_definition.configuration["components"]:
+                    if component["type"] == "productPrice":
+                        return component["key"]
+            raise ValueError("Form does not have a productPrice component")
+
+        price_option_key = get_price_option_key()
+
+        if not data.get(price_option_key):
+            return Decimal("0")
+
+        # should keep current price if already set.
+        if submission.price:
+            return submission.price
+
+        logger.debug("Price for submission set by product price option")
+        return form.product.open_producten_price.options.get(
+            uuid=data[price_option_key]
+        ).amount
+
+    #
+    # 4. More specific modes didn't produce anything, fall back to the linked product
     #    price.
     #
     logger.debug(

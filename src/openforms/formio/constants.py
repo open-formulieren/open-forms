@@ -10,4 +10,5 @@ COMPONENT_DATATYPES = {
     "map": "array",
     "editgrid": "array",
     "datetime": "datetime",
+    # TODO: product price?
 }
