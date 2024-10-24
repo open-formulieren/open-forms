@@ -1,9 +1,12 @@
-from typing import Any, Container, Iterable
+from typing import Any, Container, Iterable, TypedDict
+
+from rest_framework import serializers
 
 from openforms.authentication.service import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import IdentifierRoles
 
@@ -14,9 +17,21 @@ class AllComponentTypes(Container[str]):
         return True
 
 
-class BasePlugin(AbstractBasePlugin):
+class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
+    pass
+
+
+class Options(TypedDict):
+    pass
+
+
+SerializerCls = type[serializers.Serializer]
+
+
+class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     requires_auth: AuthAttribute | None = None
     for_components: Container[str] = AllComponentTypes()
+    options: SerializerCls = EmptyOptions
 
     @staticmethod
     def get_available_attributes() -> Iterable[tuple[str, str]]:
@@ -49,6 +64,27 @@ class BasePlugin(AbstractBasePlugin):
         altogether, or use ``None``.
         """
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
+
+    @classmethod
+    def get_prefill_values_from_options(
+        cls,
+        submission: Submission,
+        options: OptionsT,
+    ) -> dict[str, JSONEncodable]:
+        """
+        Given the saved form variable, which contains the prefill_options, look up the appropriate
+        values and return them.
+
+        :param submission: an active :class:`Submission` instance, which can supply
+          the required initial data reference to fetch the correct prefill values.
+        :param options: contains plugin-specific configuration options.
+        :return: a mapping where the keys are form variable keys, and the values are the
+          initial/default values to assign to the matching form variable. The variable keys
+          can point to both component and user defined variables.
+        """
+        raise NotImplementedError(
+            "You must implement the 'get_prefill_values_from_options' method."
+        )
 
     @classmethod
     def get_co_sign_values(
