@@ -3445,6 +3445,12 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "af22yB": [
+    {
+      "type": 0,
+      "value": "Het veranderen van het datatype vereist een verandering aan de beginwaarde. Dit zal de beginwaarde terugbrengen naar de standaardwaarde. Weet je zeker dat je dit wilt doen?"
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,

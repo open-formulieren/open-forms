@@ -1591,6 +1591,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "af22yB": {
+    "defaultMessage": "Het veranderen van het datatype vereist een verandering aan de beginwaarde. Dit zal de beginwaarde terugbrengen naar de standaardwaarde. Weet je zeker dat je dit wilt doen?",
+    "description": "Changing user variable data type and transforming initial value confirmation message",
+    "originalDefault": "Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?"
+  },
   "auZOcD": {
     "defaultMessage": "Mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression field label",
