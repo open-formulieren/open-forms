@@ -2,6 +2,53 @@
 Changelog
 =========
 
+3.0.0-alpha.0 (2024-10-24)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4770`] Obtain submission price from variable. There is an extra option
+  for setting the price of a product, by using a form variable. The variable can only
+  be of numeric data type (integer, float) and can be chosen in the pricing logic of
+  the form.
+* [:backend:`4546`] Enable soft-required validation in the form designer. This gives
+  the ability to the form designer to mark a (document) field as soft required and this
+  will give a warning to the user if they do not upload anything.
+* [:backend:`4709`] Improved the generic form error message and added pointers on how
+  the problem can be solved. A link to outgoing request logs is also included for further
+  investigation.
+* [:backend:`4524`, :backend:`4675`] Improved the user experience of the form variable
+  select/dropdown. The variable dropdown now uses the react-select component, allowing
+  for searching within the options.
+
+.. note:: The ``soft-required`` feature is not yet fully implemented.
+
+**Bugfixes**
+
+* [:backend:`4600`] Fixed not properly translated texts by performing a reload on language
+  change by making use of ``onLanguageChange``. When the user changes the language, by default,
+  the SDK reloads the content and changes the active language of the form.
+* [:backend:`4659`] Fixed default value for textfield. This is converted to an empty string in
+  case the value is null.
+* [:backend:`4733`] Fixed segmentation errors which caused the application to crash.
+* [:backend:`4711`] Fixed broken submission form row styling.
+* [:backend:`4695`] Fixed performance regression in Objects API (legacy) validation.
+
+**Project maintenance**
+
+* [:backend:`4375`] Remove environmental variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
+  Objects API. When this was set to ``True`` the hidden fields were not sent to the Objects
+  API. This had been added in order to give some time for updating the existing forms.
+* Maintain trivy (security scanner), address trivy-action rate limit issues.
+* [:backend:`3705`] Ensure timestamps are localized and using the localtime representation.
+* [:backend:`4588`] Reduced code duplication in payment related code.
+* [:backend:`4721`] Updated docs/screenshots concerning prefill module and Objects API manual.
+
 2.6.15 (2024-10-08)
 ===================
 
