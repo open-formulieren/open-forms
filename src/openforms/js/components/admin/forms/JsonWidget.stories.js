@@ -17,3 +17,9 @@ export default {
 };
 
 export const Default = {};
+
+export const Resizable = {
+  args: {
+    isResizable: true,
+  },
+};

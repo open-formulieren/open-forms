@@ -31,6 +31,10 @@
         border: 1px solid var(--error-fg);
       }
     }
+
+    &--flex-grow-1 {
+      flex-grow: 1;
+    }
   }
 
   &__node-group {

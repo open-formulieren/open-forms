@@ -41,12 +41,14 @@ const JsonWidget = ({
   cols = 60,
   maxRows = 20,
   isExpanded = true,
+  isResizable,
   testid,
 }) => {
   const intl = useIntl();
   const [theme] = useGlobalState(currentTheme);
   const [jsonError, setJsonError] = useState('');
   const [numRows, setNumRows] = useState(MIN_LINES);
+  const containerRef = useRef(null);
 
   const initialLogicRef = useRef(logic);
 
@@ -74,13 +76,19 @@ const JsonWidget = ({
 
   return (
     <div
-      className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}
+      className={classNames('json-widget', {
+        'json-widget--collapsed': !isExpanded,
+      })}
       data-testid={testid}
+      ref={containerRef}
     >
       {isExpanded && (
         <div
-          className="json-widget__input"
+          className={classNames('json-widget__input', {
+            'json-widget__input--resizable': !!isResizable,
+          })}
           style={{
+            maxInlineSize: containerRef.current?.offsetWidth,
             '--of-json-widget-cols': cols,
             '--of-json-widget-rows': Math.min(maxRows, Math.max(MIN_LINES, numRows)),
           }}
@@ -90,10 +98,12 @@ const JsonWidget = ({
             onChange={onJsonChange}
             lineCountCallback={(numLines = 1) => setNumRows(numLines)}
             theme={theme}
+            automaticLayout={isResizable}
           />
         </div>
       )}
       {jsonError.length ? <div className="json-widget__error">{jsonError}</div> : null}
+      <div className="json-widget__error">{invalidLogicMessage}</div>
     </div>
   );
 };
@@ -104,6 +114,7 @@ JsonWidget.propTypes = {
   onChange: PropTypes.func.isRequired,
   cols: PropTypes.number,
   isExpanded: PropTypes.bool,
+  isResizable: PropTypes.bool,
   testid: PropTypes.string,
 };
 
