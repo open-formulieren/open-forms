@@ -780,6 +780,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.authentication.tasks.update_saml_metadata",
         "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
     },
+    "import-open-producten-prices": {
+        "task": "openforms.contrib.open_producten.tasks.import_product_type_prices",
+        "schedule": crontab(hour=0, minute=0, day_of_week="*"),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
