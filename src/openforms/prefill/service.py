@@ -170,19 +170,12 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     total_config_wrapper = submission.total_configuration_wrapper
     for variable_key, prefill_value in prefill_data.items():
         if key_source_mappings[variable_key] == FormVariableSources.component:
-            try:
-                component = total_config_wrapper.component_map[variable_key]
-            except KeyError:
-                return None
-
             component = total_config_wrapper[variable_key]
             normalized_prefill_value = normalize_value_for_component(
                 component, prefill_value
             )
-            variable = state.get_variable(variable_key)
-            variable.value = normalized_prefill_value
-            prefill_data[variable_key] = normalized_prefill_value
-        elif key_source_mappings[variable_key] == FormVariableSources.user_defined:
-            prefill_data[variable_key] = prefill_value
+            prefill_value = normalized_prefill_value
+
+        prefill_data[variable_key] = prefill_value
 
     state.save_prefill_data(prefill_data)
