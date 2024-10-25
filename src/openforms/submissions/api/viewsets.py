@@ -24,7 +24,7 @@ from openforms.authentication.service import is_authenticated_with_an_allowed_pl
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
-from openforms.prefill import prefill_variables
+from openforms.prefill.service import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step

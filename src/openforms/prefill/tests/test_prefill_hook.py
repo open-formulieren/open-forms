@@ -16,11 +16,11 @@ from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from .. import inject_prefill, prefill_variables
 from ..base import BasePlugin
 from ..constants import IdentifierRoles
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry, register as prefill_register
+from ..service import inject_prefill, prefill_variables
 
 register = Registry()
 

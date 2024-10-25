@@ -8564,6 +8564,7 @@ components:
 
             * `main` - Main
             * `authorizee` - Authorizee
+        prefillOptions: {}
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'

@@ -8,8 +8,8 @@ from privates.test import temp_private_root
 from openforms.authentication.service import AuthAttribute
 from openforms.authentication.utils import store_auth_details, store_registrator_details
 from openforms.config.models import GlobalConfiguration
-from openforms.prefill import prefill_variables
 from openforms.prefill.contrib.haalcentraal_brp.plugin import PLUGIN_IDENTIFIER
+from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONValue
 from openforms.utils.tests.vcr import OFVCRMixin

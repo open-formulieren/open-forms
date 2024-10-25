@@ -45,17 +45,8 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
             "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
             return_value=ObjectsAPIConfig(),
         )
-        attributes_patcher = patch(
-            "openforms.prefill.contrib.objects_api.plugin.ObjectsAPIPrefill.get_available_attributes",
-            return_value=[
-                ("value one", "value one (string)"),
-                ("another value", "another value (string)"),
-            ],
-        )
         self.mock_get_config = config_patcher.start()
-        self.mock_attributes = attributes_patcher.start()
         self.addCleanup(config_patcher.stop)
-        self.addCleanup(attributes_patcher.stop)
 
         self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True

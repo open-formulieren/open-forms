@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.test import override_settings
+from django.utils.translation import gettext_lazy as _
 
 from factory.django import FileField
 from rest_framework import status
@@ -901,38 +902,119 @@ class FormVariableViewsetTest(APITestCase):
         # The variable is considered valid
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
-    def test_validate_prefill_consistency(self):
-        user = SuperUserFactory.create()
+    def test_bulk_create_and_update_with_prefill_constraints(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user)
+
         form = FormFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        form_definition = form_step.form_definition
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
-        data = [
-            {
-                "form": form_url,
-                "form_definition": "",
-                "name": "Variable 1",
-                "key": "variable1",
-                "source": FormVariableSources.user_defined,
-                "dataType": FormVariableDataTypes.string,
-                "prefillPlugin": "demo",
-                "prefillAttribute": "",
-            }
-        ]
-
-        response = self.client.put(
-            reverse(
-                "api:form-variables",
-                kwargs={"uuid_or_slug": form.uuid},
-            ),
-            data=data,
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
         )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        error = response.json()
-        self.assertEqual(error["code"], "invalid")
-        self.assertEqual(len(error["invalidParams"]), 1)
-        self.assertEqual(
-            error["invalidParams"][0]["name"],
-            "0.prefillAttribute",
-        )
+        with self.subTest("component source with prefill options"):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": form_definition.configuration["components"][0]["key"],
+                    "name": "Test",
+                    "service_fetch_configuration": None,
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.component,
+                    "prefill_options": {
+                        "variables_mapping": [
+                            {"variable_key": "data", "target_path": ["test"]}
+                        ]
+                    },
+                }
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+            self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
+            self.assertEqual(
+                response.json()["invalidParams"][0]["reason"],
+                _("Prefill options should not be specified for component variables."),
+            )
+
+        with self.subTest(
+            "component source with prefill attribute and not prefill plugin"
+        ):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": form_definition.configuration["components"][0]["key"],
+                    "name": "Test",
+                    "service_fetch_configuration": None,
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.component,
+                    "prefill_attribute": "test",
+                }
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+            self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
+            self.assertEqual(
+                response.json()["invalidParams"][0]["reason"],
+                _("Prefill plugin and attribute must both be specified."),
+            )
+
+        with self.subTest(
+            "both sources with prefill plugin, prefill attribute and prefill options"
+        ):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": form_definition.configuration["components"][0]["key"],
+                    "name": "Test",
+                    "service_fetch_configuration": None,
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.user_defined,
+                    "prefill_plugin": "demo",
+                    "prefill_attribute": "test",
+                    "prefill_options": {
+                        "variables_mapping": [
+                            {"variable_key": "data", "target_path": ["test"]}
+                        ]
+                    },
+                }
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+            self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
+            self.assertEqual(
+                response.json()["invalidParams"][0]["reason"],
+                _(
+                    "Prefill plugin, attribute and options can not be specified at the same time."
+                ),
+            )
