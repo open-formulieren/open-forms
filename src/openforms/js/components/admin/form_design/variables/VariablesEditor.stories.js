@@ -617,7 +617,7 @@ export const ConfigurePrefillObjectsAPI = {
       // Wait until the API call to retrieve the prefillAttributes is done
       await waitFor(async () => {
         const prefillPropertySelect = await screen.findByLabelText(
-          'Select a property from the object type'
+          'Selecteer een attribuut uit het objecttype'
         );
         expect(prefillPropertySelect).toBeVisible();
         expect(prefillPropertySelect).toHaveValue(serializeValue(['firstName']));

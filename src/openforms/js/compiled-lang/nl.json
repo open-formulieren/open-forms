@@ -2103,7 +2103,7 @@
   "I9+K9f": [
     {
       "type": 0,
-      "value": "Mappings"
+      "value": "Variabelekoppelingen"
     }
   ],
   "IOko1U": [
@@ -5160,7 +5160,7 @@
   "nYePys": [
     {
       "type": 0,
-      "value": "Something went wrong while retrieving the available object type versions."
+      "value": "Er ging iets fout bij het ophalen van de objecttypeversies."
     }
   ],
   "neCqv9": [
@@ -5766,7 +5766,7 @@
   "vAZDY4": [
     {
       "type": 0,
-      "value": "Source path"
+      "value": "Bronpad"
     }
   ],
   "vNRiMn": [
@@ -6182,7 +6182,7 @@
   "zwOwrD": [
     {
       "type": 0,
-      "value": "Select a property from the object type"
+      "value": "Selecteer een attribuut uit het objecttype"
     }
   ]
 }

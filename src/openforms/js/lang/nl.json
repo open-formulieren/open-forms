@@ -917,7 +917,7 @@
     "originalDefault": "Object and/or product request definition"
   },
   "I9+K9f": {
-    "defaultMessage": "Mappings",
+    "defaultMessage": "Variabelekoppelingen",
     "description": "Objects API prefill mappings fieldset title",
     "originalDefault": "Mappings"
   },
@@ -2308,7 +2308,7 @@
     "originalDefault": "Trigger condition"
   },
   "nYePys": {
-    "defaultMessage": "Something went wrong while retrieving the available object type versions.",
+    "defaultMessage": "Er ging iets fout bij het ophalen van de objecttypeversies.",
     "description": "Objects API registrations options: object type version select error",
     "originalDefault": "Something went wrong while retrieving the available object type versions."
   },
@@ -2598,7 +2598,7 @@
     "originalDefault": "History"
   },
   "vAZDY4": {
-    "defaultMessage": "Source path",
+    "defaultMessage": "Bronpad",
     "description": "Prefill / Objects API: column header for object type property selection",
     "originalDefault": "Source path"
   },
@@ -2784,7 +2784,7 @@
     "originalDefault": "Use logic rules to determine the price"
   },
   "zwOwrD": {
-    "defaultMessage": "Select a property from the object type",
+    "defaultMessage": "Selecteer een attribuut uit het objecttype",
     "description": "Prefill / Objects API: accessible label for object type property selection",
     "originalDefault": "Select a property from the object type"
   }
