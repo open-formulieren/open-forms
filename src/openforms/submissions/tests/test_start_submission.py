@@ -23,7 +23,11 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
@@ -199,20 +203,11 @@ class SubmissionStartTests(APITestCase):
 
     @patch("openforms.logging.logevent._create_log")
     def test_start_submission_with_prefill(self, mock_logevent):
-        # we are creating a new step below-no need for two steps
-        self.form.formstep_set.get().delete()
-        FormStepFactory.create(
+        FormVariableFactory.create(
             form=self.form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "test-key",
-                        "label": "Test label",
-                        "prefill": {"plugin": "demo", "attribute": "random_string"},
-                    }
-                ]
-            },
+            form_definition=self.step.form_definition,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
         )
         body = {
             "form": f"http://testserver.com{self.form_url}",

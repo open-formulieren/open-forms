@@ -179,15 +179,16 @@ class SubmissionValueVariablesState:
         # variables at this point (the previous implementation with
         # self.get_prefill_variables() gave us access to the component variables
         # and not the user_defined ones).
-        variables = self.variables.values()
-        for variable in list(variables):
+        variables_to_create: list[SubmissionValueVariable] = []
+        for variable in self.variables.values():
             if variable.key not in data:
                 continue
 
             variable.value = data[variable.key]
             variable.source = SubmissionValueVariableSources.prefill
+            variables_to_create.append(variable)
 
-        SubmissionValueVariable.objects.bulk_create(variables)
+        SubmissionValueVariable.objects.bulk_create(variables_to_create)
 
     def set_values(self, data: DataMapping) -> None:
         """
