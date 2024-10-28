@@ -58,7 +58,7 @@ class WebformBuilder extends WebformBuilderFormio {
         value = false;
       }
       component.validate = {
-        ...componentSchema.validate,
+        ...component.validate,
         required: value,
       };
     }
