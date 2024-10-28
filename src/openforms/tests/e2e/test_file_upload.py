@@ -69,7 +69,7 @@ class FillInFormTests(E2ETestCase):
 
                 await page.wait_for_load_state("networkidle")
 
-                uploaded_file = page.get_by_text("test.txt")
+                uploaded_file = page.get_by_role("link", name="test.txt")
                 await expect(uploaded_file).to_be_visible()
 
                 await page.get_by_role("button", name="Volgende").click()
