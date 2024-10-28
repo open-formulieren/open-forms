@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {useIntl} from 'react-intl';
 
+import useConfirm from 'components/admin/form_design/useConfirm';
+
 import FAIcon from './FAIcon';
 
 const DeleteIcon = ({onConfirm, message, icon = 'trash-can'}) => {
@@ -17,19 +19,23 @@ const DeleteIcon = ({onConfirm, message, icon = 'trash-can'}) => {
     defaultMessage: 'Delete',
   });
 
-  const onClick = () => {
-    if (window.confirm(confirmMessage)) {
+  const [ConfirmationModal, confirm] = useConfirm(confirmMessage);
+  const onClick = async () => {
+    if (await confirm()) {
       onConfirm();
     }
   };
 
   return (
-    <FAIcon
-      icon={icon}
-      extraClassname="icon icon--danger actions__action"
-      title={iconTitle}
-      onClick={onClick}
-    />
+    <>
+      <FAIcon
+        icon={icon}
+        extraClassname="icon icon--danger actions__action"
+        title={iconTitle}
+        onClick={onClick}
+      />
+      <ConfirmationModal />
+    </>
   );
 };
 

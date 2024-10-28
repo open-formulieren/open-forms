@@ -5,6 +5,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
+import useConfirm from 'components/admin/form_design/useConfirm';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
@@ -35,7 +36,10 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
     description: 'Objects API registration backend: v2 switch warning message',
   });
 
-  const changeVersion = tabIndex => {
+  const [ConfirmationModalV1, confirmUsingV1] = useConfirm(v1SwitchMessage);
+  const [ConfirmationModalV2, confirmUsingV2] = useConfirm(v2SwitchMessage);
+
+  const changeVersion = async tabIndex => {
     const newVersion = tabIndex + 1;
 
     // change form fields values depending on the newly selected version
@@ -43,14 +47,14 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
 
     switch (newVersion) {
       case 1: {
-        const confirmV1Switch = window.confirm(v1SwitchMessage);
+        const confirmV1Switch = await confirmUsingV1();
         if (!confirmV1Switch) return;
         delete newValues.variablesMapping;
         delete newValues.geometryVariableKey;
         break;
       }
       case 2: {
-        const confirmV2Switch = window.confirm(v2SwitchMessage);
+        const confirmV2Switch = await confirmUsingV2();
         if (!confirmV2Switch) return;
         newValues.variablesMapping = [];
         newValues.geometryVariableKey = '';
@@ -96,6 +100,8 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
           <V2ConfigFields apiGroupChoices={apiGroupChoices} />
         </TabPanel>
       </Tabs>
+      <ConfirmationModalV1 />
+      <ConfirmationModalV2 />
     </ValidationErrorsProvider>
   );
 };

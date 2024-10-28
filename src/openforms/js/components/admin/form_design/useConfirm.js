@@ -1,13 +1,13 @@
 import {useState} from 'react';
 
-import ActionButton from '../forms/ActionButton';
-import {Modal} from '../modals';
+import ActionButton from 'components/admin/forms/ActionButton';
+import {Modal} from 'components/admin/modals';
 
-const useConfirm = (title, message) => {
+const useConfirm = (message, title = '') => {
   const [promise, setPromise] = useState(null);
 
   const confirm = () =>
-    new Promise((resolve, reject) => {
+    new Promise(resolve => {
       setPromise({resolve});
     });
 
@@ -29,7 +29,7 @@ const useConfirm = (title, message) => {
     <Modal
       title={title}
       isOpen={promise !== null}
-      contentModifiers={['with-form']}
+      contentModifiers={['with-form', 'small']}
       closeModal={handleCancel}
     >
       <div style={{flexGrow: 1}}>{message}</div>
