@@ -977,7 +977,9 @@ class FormVariableViewsetTest(APITestCase):
             self.assertEqual(response.json()["invalidParams"][0]["code"], "invalid")
             self.assertEqual(
                 response.json()["invalidParams"][0]["reason"],
-                _("Prefill plugin and attribute must both be specified."),
+                _(
+                    "Prefill plugin must be specified with either prefill attribute or prefill options."
+                ),
             )
 
         with self.subTest(
@@ -1018,6 +1020,34 @@ class FormVariableViewsetTest(APITestCase):
                     "Prefill plugin, attribute and options can not be specified at the same time."
                 ),
             )
+
+        with self.subTest(
+            "user_defined with prefill plugin and prefill options is allowed"
+        ):
+            data = [
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "key": "userdefined",
+                    "name": "Test",
+                    "service_fetch_configuration": None,
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.user_defined,
+                    "prefill_plugin": "objects_api",
+                    "prefill_attribute": "",
+                    "prefill_options": {"foo": "bar"},
+                }
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_bulk_create_and_update_with_non_camel_case_initial_values(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])

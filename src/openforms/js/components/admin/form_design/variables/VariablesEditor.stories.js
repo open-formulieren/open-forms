@@ -80,9 +80,9 @@ const VARIABLES = [
     initialValue: [],
     prefillOptions: {
       objectsApiGroup: 1,
-      objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
+      objecttypeUuid: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
-      variablesMapping: [{formVariable: 'formioComponent', prefillProperty: ['firstName']}],
+      variablesMapping: [{variableKey: 'formioComponent', targetPath: ['firstName']}],
     },
   },
 ];

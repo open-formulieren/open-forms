@@ -23,25 +23,25 @@ const PrefillConfigurationForm = ({
   attribute = '',
   identifierRole = 'main',
   // TODO: find a better way to specify this based on the selected plugin
-  options = {
-    objectsApiGroup: '',
-    objecttype: '',
-    objecttypeVersion: null,
-    variablesMapping: [],
-  },
+  prefillOptions = {},
   errors,
 }) => {
+  const defaults = {
+    objectsApiGroup: '',
+    objecttypeUuid: '',
+    objecttypeVersion: null,
+    variablesMapping: [],
+  };
+  prefillOptions = {...defaults, ...prefillOptions};
   return (
     <Formik
       initialValues={{
         plugin,
         attribute,
         identifierRole,
-        options,
+        prefillOptions,
       }}
       onSubmit={(values, actions) => {
-        // TODO should be implemented in https://github.com/open-formulieren/open-forms/issues/4693
-        console.log(values);
         onSubmit(values);
         actions.setSubmitting(false);
       }}

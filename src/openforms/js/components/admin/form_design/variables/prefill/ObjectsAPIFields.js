@@ -34,9 +34,9 @@ const PLUGIN_ID = 'objects_api';
  */
 const onApiGroupChange = prevValues => ({
   ...prevValues,
-  options: {
-    ...prevValues.options,
-    objecttype: '',
+  prefillOptions: {
+    ...prevValues.prefillOptions,
+    objecttypeUuid: '',
     objecttypeVersion: undefined,
     variablesMapping: [],
   },
@@ -44,8 +44,8 @@ const onApiGroupChange = prevValues => ({
 
 // Load the possible prefill properties
 // XXX: this would benefit from client-side caching
-const getProperties = async (objectsApiGroup, objecttype, objecttypeVersion) => {
-  const endpoint = `/api/v2/prefill/plugins/objects-api/objecttypes/${objecttype}/versions/${objecttypeVersion}/properties`;
+const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion) => {
+  const endpoint = `/api/v2/prefill/plugins/objects-api/objecttypes/${objecttypeUuid}/versions/${objecttypeVersion}/properties`;
   // XXX: clean up error handling here at some point...
   const response = await get(endpoint, {objects_api_group: objectsApiGroup});
   if (!response.ok) throw response.data;
@@ -57,7 +57,7 @@ const ObjectsAPIFields = ({errors}) => {
   const {
     values: {
       plugin,
-      options: {objecttype, objecttypeVersion, objectsApiGroup},
+      prefillOptions: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
     },
     setFieldValue,
   } = useFormikContext();
@@ -86,13 +86,13 @@ const ObjectsAPIFields = ({errors}) => {
     value = [],
     error,
   } = useAsync(async () => {
-    if (!plugin || !objecttype || !objecttypeVersion || !objectsApiGroup) return [];
+    if (!plugin || !objecttypeUuid || !objecttypeVersion || !objectsApiGroup) return [];
     try {
-      return await getProperties(objectsApiGroup, objecttype, objecttypeVersion);
+      return await getProperties(objectsApiGroup, objecttypeUuid, objecttypeVersion);
     } catch (e) {
       throw e;
     }
-  }, [plugin, objecttype, objecttypeVersion, objectsApiGroup]);
+  }, [plugin, objecttypeUuid, objecttypeVersion, objectsApiGroup]);
 
   // throw errors to the nearest error boundary
   if (error) throw error;
@@ -104,17 +104,19 @@ const ObjectsAPIFields = ({errors}) => {
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
           onChangeCheck={async () => {
-            if (values.options.variablesMapping.length === 0) return true;
+            if (variablesMapping.length === 0) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
-            setFieldValue('options.variablesMapping', []);
+            setFieldValue('prefillOptions.variablesMapping', []);
             return true;
           }}
-          name="options.objectsApiGroup"
+          name="prefillOptions.objectsApiGroup"
           onApiGroupChange={onApiGroupChange}
         />
 
         <ErrorBoundary
+          // Ensure the error resets when the API group is changed
+          key={objectsApiGroup}
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type select error"
@@ -123,20 +125,22 @@ const ObjectsAPIFields = ({errors}) => {
           }
         >
           <ObjectTypeSelect
-            name="options.objecttype"
-            apiGroupFieldName="options.objectsApiGroup"
-            versionFieldName="options.objecttypeVersion"
+            name="prefillOptions.objecttypeUuid"
+            apiGroupFieldName="prefillOptions.objectsApiGroup"
+            versionFieldName="prefillOptions.objecttypeVersion"
             onChangeCheck={async () => {
-              if (values.options.variablesMapping.length === 0) return true;
+              if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
-              setFieldValue('options.variablesMapping', []);
+              setFieldValue('prefillOptions.variablesMapping', []);
               return true;
             }}
           />
         </ErrorBoundary>
 
         <ErrorBoundary
+          // Ensure the error resets when the objecttype is changed
+          key={objecttypeUuid}
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type version select error"
@@ -145,9 +149,9 @@ const ObjectsAPIFields = ({errors}) => {
           }
         >
           <ObjectTypeVersionSelect
-            name="options.objecttypeVersion"
-            apiGroupFieldName="options.objectsApiGroup"
-            objectTypeFieldName="options.objecttype"
+            name="prefillOptions.objecttypeVersion"
+            apiGroupFieldName="prefillOptions.objectsApiGroup"
+            objectTypeFieldName="prefillOptions.objecttypeUuid"
           />
         </ErrorBoundary>
       </Fieldset>
@@ -162,10 +166,11 @@ const ObjectsAPIFields = ({errors}) => {
       >
         <FormRow>
           <VariableMapping
-            name="options.variablesMapping"
+            name="prefillOptions.variablesMapping"
             loading={loading}
             directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
-            propertyName="prefillProperty"
+            variableName="variableKey"
+            propertyName="targetPath"
             propertyChoices={prefillProperties}
             propertyHeading={
               <FormattedMessage
