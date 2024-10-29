@@ -364,7 +364,7 @@ Other settings
   
 .. _django-sendfile documentation: https://django-sendfile2.readthedocs.io/en/stable/backends.html
 
-.. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
+.. _`Django DATABASE settings`: https://docs.djangoproject.com/en/4.2/ref/settings/#engine
 
 .. _installation_environment_config_feature_flags:
 
