@@ -336,3 +336,17 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
     def render(self) -> str:
         return f"{self.indent}{self.label}"
+
+
+@register("softRequiredErrors")
+class SoftRequiredErrors(ComponentNode):
+
+    @property
+    def is_visible(self) -> bool:
+        """
+        Mark soft required errors nodes as never visible.
+
+        They are rendered client-side only, so should not show in summaries, PDF,
+        registration data...
+        """
+        return False
