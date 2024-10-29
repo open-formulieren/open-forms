@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
-from django.test import RequestFactory, TestCase, TransactionTestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase, tag
 
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
@@ -19,7 +19,6 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
-from openforms.prefill.contrib.demo.constants import Attributes
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -321,6 +320,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")
 
+    @tag("gh-4398")
     def test_verify_initial_data_ownership(self):
         form_step = FormStepFactory.create(
             form_definition__configuration={
@@ -329,14 +329,21 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                         "type": "postcode",
                         "key": "postcode",
                         "inputMask": "9999 AA",
-                        "prefill": {
-                            "plugin": "demo",
-                            "attribute": Attributes.random_string,
-                        },
-                        "defaultValue": "",
                     }
                 ]
             }
+        )
+        FormVariableFactory.create(
+            key="voornamen",
+            form=form_step.form,
+            prefill_plugin="demo",
+            prefill_attribute="",
+            prefill_options={
+                "version": 2,
+                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "objects_api_group": 1,
+                "objecttype_version": 1,
+            },
         )
 
         with self.subTest(
@@ -352,9 +359,13 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
             with patch(
                 "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
             ) as mock_verify_ownership:
-                prefill_variables(submission=submission_step.submission)
+                with patch(
+                    "openforms.prefill.contrib.demo.plugin.DemoPrefill.get_prefill_values_from_options",
+                    return_value={"postcode": "1234AB"},
+                ):
+                    prefill_variables(submission=submission_step.submission)
 
-                mock_verify_ownership.assert_not_called()
+                    mock_verify_ownership.assert_not_called()
 
             logs = TimelineLogProxy.objects.filter(
                 object_id=submission_step.submission.id
@@ -377,11 +388,15 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
             with patch(
                 "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
             ) as mock_verify_ownership:
-                prefill_variables(submission=submission_step.submission)
+                with patch(
+                    "openforms.prefill.contrib.demo.plugin.DemoPrefill.get_prefill_values_from_options",
+                    return_value={"postcode": "1234AB"},
+                ):
+                    prefill_variables(submission=submission_step.submission)
 
-                mock_verify_ownership.assert_called_once_with(
-                    submission_step.submission
-                )
+                    mock_verify_ownership.assert_called_once_with(
+                        submission_step.submission
+                    )
 
             logs = TimelineLogProxy.objects.filter(
                 object_id=submission_step.submission.id
@@ -405,8 +420,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                 "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership",
                 side_effect=PermissionDenied,
             ) as mock_verify_ownership:
-                with self.assertRaises(PermissionDenied):
-                    prefill_variables(submission=submission_step.submission)
+                prefill_variables(submission=submission_step.submission)
 
                 mock_verify_ownership.assert_called_once_with(
                     submission_step.submission
@@ -417,4 +431,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
             )
             self.assertEqual(
                 logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+            )
+            self.assertEqual(
+                logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
             )

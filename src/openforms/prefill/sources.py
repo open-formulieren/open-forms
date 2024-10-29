@@ -1,6 +1,8 @@
 import logging
 from collections import defaultdict
 
+from django.core.exceptions import PermissionDenied
+
 import elasticapm
 from rest_framework.exceptions import ValidationError
 from zgw_consumers.concurrent import parallel
@@ -54,11 +56,6 @@ def fetch_prefill_values_from_attribute(
         if not plugin.is_enabled:
             raise PluginNotEnabled()
 
-        # If an `initial_data_reference` was passed, we must verify that the
-        # authenticated user is the owner of the referenced object
-        if submission.initial_data_reference:
-            plugin.verify_initial_data_ownership(submission)
-
         attributes = [attribute for field in fields for attribute in field]
         try:
             values = plugin.get_prefill_values(submission, attributes, identifier_role)
@@ -101,6 +98,16 @@ def fetch_prefill_values_from_options(
     values: dict[str, JSONEncodable] = {}
     for variable in variables:
         plugin = register[variable.form_variable.prefill_plugin]
+
+        # If an `initial_data_reference` was passed, we must verify that the
+        # authenticated user is the owner of the referenced object
+        try:
+            if submission.initial_data_reference:
+                plugin.verify_initial_data_ownership(submission)
+        except PermissionDenied as exc:
+            logevent.prefill_retrieve_failure(submission, plugin, exc)
+            continue
+
         options_serializer = plugin.options(data=variable.form_variable.prefill_options)
 
         try:
