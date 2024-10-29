@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.test import TestCase, override_settings, tag
 
 from requests.exceptions import RequestException
+from vcr.config import VCR
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -34,16 +35,25 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         cls.objects_api_group_used = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
-        # TODO fix tests failing after first run
-        with get_objects_client(cls.objects_api_group_used) as client:
-            object = client.create_object(
-                record_data=prepare_data_for_registration(
-                    data={"bsn": "111222333", "foo": "bar"},
-                    objecttype_version=1,
-                ),
-                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-            )
-        cls.object_ref = object["uuid"]
+
+        # Explicitly define a cassette for Object creation, because running this in
+        # setUpTestData doesn't record cassettes by default
+        cassette_path = Path(
+            cls.VCR_TEST_FILES
+            / "vcr_cassettes"
+            / cls.__qualname__
+            / "setUpTestData.yaml"
+        )
+        with VCR().use_cassette(cassette_path):
+            with get_objects_client(cls.objects_api_group_used) as client:
+                object = client.create_object(
+                    record_data=prepare_data_for_registration(
+                        data={"bsn": "111222333", "foo": "bar"},
+                        objecttype_version=1,
+                    ),
+                    objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+                )
+            cls.object_ref = object["uuid"]
 
     @tag("gh-4398")
     def test_user_is_owner_of_object(self):
