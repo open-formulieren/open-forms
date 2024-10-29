@@ -25,6 +25,7 @@ const ObjectTypeSelect = ({
   apiGroupFieldName = 'objectsApiGroup',
   onChangeCheck,
   versionFieldName = 'objecttypeVersion',
+  selectProps = {},
 }) => {
   const [fieldProps, , fieldHelpers] = useField(name);
   const {
@@ -94,6 +95,7 @@ const ObjectTypeSelect = ({
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
             if (okToProceed) setValue(selectedOption.value);
           }}
+          {...selectProps}
         />
       </Field>
     </FormRow>
@@ -120,6 +122,11 @@ ObjectTypeSelect.propTypes = {
    * changes, the version will be reset/unset.
    */
   versionFieldName: PropTypes.string,
+
+  /**
+   * Additional properties to be forwarded to the React select component
+   */
+  selectProps: PropTypes.object,
 };
 
 export default ObjectTypeSelect;

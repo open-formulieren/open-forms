@@ -14,6 +14,7 @@ const ObjectsAPIGroup = ({
   onApiGroupChange,
   isClearable = false,
   required = true,
+  selectProps = {},
 }) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
@@ -68,6 +69,7 @@ const ObjectsAPIGroup = ({
             }
           }}
           isClearable={isClearable}
+          {...selectProps}
         />
       </Field>
     </FormRow>
@@ -119,6 +121,11 @@ ObjectsAPIGroup.propTypes = {
    * Indicate if the field is required or optional.
    */
   required: PropTypes.bool,
+
+  /**
+   * Additional properties to be forwarded to the React select component
+   */
+  selectProps: PropTypes.object,
 };
 
 export default ObjectsAPIGroup;

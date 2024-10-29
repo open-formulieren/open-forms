@@ -29,6 +29,7 @@ const ObjectTypeVersionSelect = ({
   name = 'objecttypeVersion',
   apiGroupFieldName = 'objectsApiGroup',
   objectTypeFieldName = 'objecttype',
+  selectProps = {},
 }) => {
   const {getFieldProps} = useFormikContext();
 
@@ -71,6 +72,7 @@ const ObjectTypeVersionSelect = ({
           options={options}
           isLoading={loading}
           isDisabled={!objecttype}
+          {...selectProps}
         />
       </Field>
     </FormRow>
@@ -92,6 +94,10 @@ ObjectTypeVersionSelect.propTypes = {
    * call to get the available object type versions.
    */
   objectTypeFieldName: PropTypes.string,
+  /**
+   * Additional properties to be forwarded to the React select component
+   */
+  selectProps: PropTypes.object,
 };
 
 export default ObjectTypeVersionSelect;

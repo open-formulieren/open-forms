@@ -115,6 +115,7 @@ const ObjectsAPIFields = ({errors}) => {
           }}
           name="prefillOptions.objectsApiGroup"
           onApiGroupChange={onApiGroupChange}
+          selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
         />
 
         <ErrorBoundary
@@ -131,6 +132,7 @@ const ObjectsAPIFields = ({errors}) => {
             name="prefillOptions.objecttypeUuid"
             apiGroupFieldName="prefillOptions.objectsApiGroup"
             versionFieldName="prefillOptions.objecttypeVersion"
+            selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
             onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
@@ -155,6 +157,7 @@ const ObjectsAPIFields = ({errors}) => {
             name="prefillOptions.objecttypeVersion"
             apiGroupFieldName="prefillOptions.objectsApiGroup"
             objectTypeFieldName="prefillOptions.objecttypeUuid"
+            selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
           />
         </ErrorBoundary>
 
