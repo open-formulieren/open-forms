@@ -16,7 +16,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..validators import validate_object_ownership
 
-TEST_FILES = (Path(__file__).parent / "data").resolve()
+TEST_FILES = (Path(__file__).parent / "files").resolve()
 
 
 @override_settings(
@@ -122,6 +122,10 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         side_effect=RequestException,
     )
     def test_request_exception_when_doing_permission_check(self, mock_get_object):
+        """
+        If the object could not be fetched due to request errors, the ownership check
+        should not fail
+        """
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
@@ -140,16 +144,16 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
-        self.assertEqual(
-            str(cm.exception), "Could not fetch object for initial data reference"
-        )
+        validate_object_ownership(submission)
 
     @tag("gh-4398")
     def test_no_objects_service_configured_raises_error(
         self,
     ):
+        """
+        If the object could not be fetched due to misconfiguration, the ownership check
+        should not fail
+        """
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
@@ -172,16 +176,16 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
-        self.assertEqual(
-            str(cm.exception), "Could not fetch object for initial data reference"
-        )
+        validate_object_ownership(submission)
 
     @tag("gh-4398")
     def test_no_backends_configured_raises_error(
         self,
     ):
+        """
+        If the object could not be fetched due to misconfiguration, the ownership check
+        should not fail
+        """
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
@@ -189,16 +193,16 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         )
         FormRegistrationBackendFactory.create(form=submission.form, backend="email")
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
-        self.assertEqual(
-            str(cm.exception), "Could not fetch object for initial data reference"
-        )
+        validate_object_ownership(submission)
 
     @tag("gh-4398")
     def test_backend_without_options_raises_error(
         self,
     ):
+        """
+        If the object could not be fetched due to misconfiguration, the ownership check
+        should not fail
+        """
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
@@ -209,8 +213,4 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             form=submission.form, backend="objects_api", options={}
         )
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
-        self.assertEqual(
-            str(cm.exception), "Could not fetch object for initial data reference"
-        )
+        validate_object_ownership(submission)

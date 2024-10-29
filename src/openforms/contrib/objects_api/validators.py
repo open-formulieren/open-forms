@@ -130,7 +130,13 @@ def validate_object_ownership(submission: Submission) -> None:
             )
 
     if not object:
-        raise PermissionDenied("Could not fetch object for initial data reference")
+        # If the object cannot be found, we cannot consider the ownership check failed
+        # because it is not verified that the user is not the owner
+        logger.info(
+            "Could not find object for initial_data_reference: %s",
+            submission.initial_data_reference,
+        )
+        return
 
     # TODO should this path be configurable?
     if glom(object["record"]["data"], auth_info.attribute) != auth_info.value:
