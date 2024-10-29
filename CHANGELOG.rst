@@ -2,6 +2,25 @@
 Changelog
 =========
 
+2.8.1 (2024-10-29)
+==================
+
+Regular bugfix release.
+
+* [:backend:`4628`] Fixed a crash when copying a form with a "block next step" logic
+  action.
+* [:backend:`4713`] Fixed pre-request hook not running for all "Haal Centraal BRP
+  Personen bevragen" operations (fixes Token Exchange extension).
+* [:backend:`3629`] Fixed submission bulk export crashing when the form has repeating
+  groups.
+* [:backend:`4528`] Fixed vague error/log out situation when logging in with OIDC.
+* [:backend:`4764`] Added ability to configure a form variable to use for the
+  (calculated) submission price.
+* [:backend:`4744`] Fixed a performance regression in the logic check calls and general
+  submission processing.
+* [:backend:`4774`] Fixed ``textfield`` data not being converted to a string when
+  numeric data is received from a prefill plugin.
+
 2.8.0 "Drupa" (2024-10-02)
 ==========================
 
@@ -17,6 +36,8 @@ Open Forms 2.8.0 is a feature release.
 
 Upgrade notes
 -------------
+
+* Ensure you upgrade to (at least) Open Forms 2.7.4 before upgrading to 2.8.
 
 There are no manual actions required - all upgrades and migrations are automatic.
 
