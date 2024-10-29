@@ -40,5 +40,6 @@
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} or {{ lastLabel }}",
   "invalid_time": "Only times between {{ minTime }} and {{ maxTime }} are allowed.",
   "You must select at least {{minCount}} items.": "Ensure this field has at least {{minCount}} checked options.",
+  "Empty fields": "Fields without a value",
   "": ""
 }
