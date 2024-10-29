@@ -350,7 +350,7 @@ Other settings
 
 * ``SUBPATH``: A string with a prefix for all URL paths, for example ``/openforms``. Typically used at the infrastructure level to route to a particular application on the same (sub)domain. Defaults to empty string meaning that Open Forms is hosted at the root (``/``).
 
-.. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
+.. _`Django DATABASE settings`: https://docs.djangoproject.com/en/4.2/ref/settings/#engine
 
 Specifying the environment variables
 =====================================
