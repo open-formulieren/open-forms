@@ -626,6 +626,99 @@ export const ConfigurePrefillObjectsAPI = {
   },
 };
 
+export const ConfigurePrefillObjectsAPIWithCopyButton = {
+  args: {
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+            {
+              variableKey: 'userDefined',
+              targetPath: ['other', 'path'],
+            },
+          ],
+        },
+      },
+      {
+        backend: 'objects_api',
+        key: 'objects_api_2',
+        name: 'Other Objects API registration with a long name',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await screen.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Objects API prefill with copy button', async () => {
+      window.confirm = () => true;
+      const modal = within(await screen.findByRole('dialog'));
+      const pluginDropdown = await screen.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Objects API');
+
+      const copyButton = await modal.findByRole('button', {
+        name: 'Copy configuration from registration backend',
+      });
+      expect(copyButton).toBeVisible();
+      await userEvent.click(copyButton);
+
+      const modalForm = await screen.findByTestId('modal-form');
+      expect(modalForm).toBeVisible();
+      await waitFor(async () => {
+        expect(modalForm).toHaveFormValues({
+          'prefillOptions.objectsApiGroup': '1',
+          'prefillOptions.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
+          'prefillOptions.objecttypeVersion': '2',
+        });
+      });
+
+      // Wait until the API call to retrieve the prefillAttributes is done
+      await waitFor(async () => {
+        const prefillPropertySelect = await screen.findByLabelText(
+          'Selecteer een attribuut uit het objecttype'
+        );
+        expect(prefillPropertySelect).toBeVisible();
+        expect(prefillPropertySelect.options[1]).toHaveValue(serializeValue(['height']));
+        expect(prefillPropertySelect.options[2]).toHaveValue(serializeValue(['species']));
+      });
+    });
+  },
+};
+
 export const WithValidationErrors = {
   args: {
     variables: [

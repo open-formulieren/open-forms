@@ -11,6 +11,7 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -76,9 +77,11 @@ const ObjectsAPIFields = ({errors}) => {
 
   const {
     plugins: {availablePrefillPlugins},
+    registrationBackends,
   } = useContext(FormContext);
   const objectsPlugin = availablePrefillPlugins.find(elem => elem.id === PLUGIN_ID);
 
+  const backend = registrationBackends.find(elem => elem.backend === 'objects_api');
   const {apiGroups} = objectsPlugin.configurationContext;
 
   const {
@@ -154,6 +157,43 @@ const ObjectsAPIFields = ({errors}) => {
             objectTypeFieldName="prefillOptions.objecttypeUuid"
           />
         </ErrorBoundary>
+
+        {backend ? (
+          <button
+            type="button"
+            className="button"
+            onClick={e => {
+              e.preventDefault();
+              const confirmed = window.confirm(
+                intl.formatMessage({
+                  description: `Objects API prefill configuration: warning message
+                    when copying the config from registration backend`,
+                  defaultMessage: `Copying the configuration from the registration
+                  backend will clear the existing configuration. Are you sure you want to continue?`,
+                })
+              );
+              if (confirmed) {
+                setFieldValue('prefillOptions.objectsApiGroup', backend.options.objectsApiGroup);
+                setFieldValue('prefillOptions.objecttypeUuid', backend.options.objecttype);
+                setFieldValue(
+                  'prefillOptions.objecttypeVersion',
+                  backend.options.objecttypeVersion
+                );
+              }
+            }}
+            // admin style overrides...
+            style={{
+              marginTop: '2em',
+              paddingInline: '15px',
+              paddingBlock: '10px',
+            }}
+          >
+            <FormattedMessage
+              description="Copy Objects API prefill configuration from registration backend"
+              defaultMessage="Copy configuration from registration backend"
+            />
+          </button>
+        ) : null}
       </Fieldset>
 
       <Fieldset
