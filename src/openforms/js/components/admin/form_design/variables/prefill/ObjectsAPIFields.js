@@ -3,7 +3,7 @@
  *
  * Most other plugins can be configured with the generic form in `./DefaultFields`.
  */
-import {useFormikContext} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -11,10 +11,10 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
-import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
@@ -35,8 +35,8 @@ const PLUGIN_ID = 'objects_api';
  */
 const onApiGroupChange = prevValues => ({
   ...prevValues,
-  prefillOptions: {
-    ...prevValues.prefillOptions,
+  options: {
+    ...prevValues.options,
     objecttypeUuid: '',
     objecttypeVersion: undefined,
     variablesMapping: [],
@@ -54,11 +54,92 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
+const CopyConfigurationFromRegistrationBackend = ({backends}) => {
+  const intl = useIntl();
+  const name = 'copyConfigurationFromBackend';
+  const {setFieldValue, setValues} = useFormikContext();
+  const options = backends.map(elem => ({value: elem.key, label: elem.name}));
+  const [fieldProps] = useField(name);
+  const {value} = fieldProps;
+  const selectedBackend = backends.find(elem => elem.key === value);
+  return (
+    <FormRow>
+      <Field
+        name={name}
+        label={
+          <FormattedMessage
+            description="Copy Objects API prefill configuration from registration backend label"
+            defaultMessage="Copy configuration from registration backend"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="Copy Objects API prefill configuration from registration backend help text"
+            defaultMessage="Select a registration backend and click the button to copy the configuration."
+          />
+        }
+        noManageChildProps
+      >
+        <ReactSelect
+          name={name}
+          options={options}
+          onChange={selectedOption => {
+            setFieldValue(name, selectedOption.value);
+          }}
+          maxMenuHeight="16em"
+          menuPlacement="bottom"
+        />
+
+        <button
+          type="button"
+          className="button"
+          onClick={e => {
+            e.preventDefault();
+            const confirmed = window.confirm(
+              intl.formatMessage({
+                description: `Objects API prefill configuration: warning message
+              when copying the config from registration backend`,
+                defaultMessage: `Copying the configuration from the registration
+            backend will clear the existing configuration. Are you sure you want to continue?`,
+              })
+            );
+            if (confirmed) {
+              setValues(prevValues => ({
+                ...prevValues,
+                // Trying to set multiple nested values doesn't work, since it sets them
+                // with dots in the key
+                options: {
+                  ...prevValues.options,
+                  objectsApiGroup: selectedBackend.options.objectsApiGroup,
+                  objecttypeUuid: selectedBackend.options.objecttype,
+                  objecttypeVersion: selectedBackend.options.objecttypeVersion,
+                  variablesMapping: selectedBackend.options.variablesMapping,
+                },
+              }));
+            }
+          }}
+          // admin style overrides...
+          style={{
+            marginLeft: '1em',
+            paddingInline: '15px',
+            paddingBlock: '10px',
+          }}
+        >
+          <FormattedMessage
+            description="Copy Objects API prefill configuration from registration backend button"
+            defaultMessage="Copy"
+          />
+        </button>
+      </Field>
+    </FormRow>
+  );
+};
+
 const ObjectsAPIFields = ({errors}) => {
   const {
     values: {
       plugin,
-      prefillOptions: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
+      options: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
     },
     setFieldValue,
   } = useFormikContext();
@@ -81,7 +162,7 @@ const ObjectsAPIFields = ({errors}) => {
   } = useContext(FormContext);
   const objectsPlugin = availablePrefillPlugins.find(elem => elem.id === PLUGIN_ID);
 
-  const backend = registrationBackends.find(elem => elem.backend === 'objects_api');
+  const backends = registrationBackends.filter(elem => elem.backend === 'objects_api');
   const {apiGroups} = objectsPlugin.configurationContext;
 
   const {
@@ -110,10 +191,10 @@ const ObjectsAPIFields = ({errors}) => {
             if (variablesMapping.length === 0) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
-            setFieldValue('prefillOptions.variablesMapping', []);
+            setFieldValue('options.variablesMapping', []);
             return true;
           }}
-          name="prefillOptions.objectsApiGroup"
+          name="options.objectsApiGroup"
           onApiGroupChange={onApiGroupChange}
           selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
         />
@@ -129,15 +210,15 @@ const ObjectsAPIFields = ({errors}) => {
           }
         >
           <ObjectTypeSelect
-            name="prefillOptions.objecttypeUuid"
-            apiGroupFieldName="prefillOptions.objectsApiGroup"
-            versionFieldName="prefillOptions.objecttypeVersion"
+            name="options.objecttypeUuid"
+            apiGroupFieldName="options.objectsApiGroup"
+            versionFieldName="options.objecttypeVersion"
             selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
             onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
-              setFieldValue('prefillOptions.variablesMapping', []);
+              setFieldValue('options.variablesMapping', []);
               return true;
             }}
           />
@@ -154,49 +235,14 @@ const ObjectsAPIFields = ({errors}) => {
           }
         >
           <ObjectTypeVersionSelect
-            name="prefillOptions.objecttypeVersion"
-            apiGroupFieldName="prefillOptions.objectsApiGroup"
-            objectTypeFieldName="prefillOptions.objecttypeUuid"
+            name="options.objecttypeVersion"
+            apiGroupFieldName="options.objectsApiGroup"
+            objectTypeFieldName="options.objecttypeUuid"
             selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
           />
         </ErrorBoundary>
 
-        {backend ? (
-          <button
-            type="button"
-            className="button"
-            onClick={e => {
-              e.preventDefault();
-              const confirmed = window.confirm(
-                intl.formatMessage({
-                  description: `Objects API prefill configuration: warning message
-                    when copying the config from registration backend`,
-                  defaultMessage: `Copying the configuration from the registration
-                  backend will clear the existing configuration. Are you sure you want to continue?`,
-                })
-              );
-              if (confirmed) {
-                setFieldValue('prefillOptions.objectsApiGroup', backend.options.objectsApiGroup);
-                setFieldValue('prefillOptions.objecttypeUuid', backend.options.objecttype);
-                setFieldValue(
-                  'prefillOptions.objecttypeVersion',
-                  backend.options.objecttypeVersion
-                );
-              }
-            }}
-            // admin style overrides...
-            style={{
-              marginTop: '2em',
-              paddingInline: '15px',
-              paddingBlock: '10px',
-            }}
-          >
-            <FormattedMessage
-              description="Copy Objects API prefill configuration from registration backend"
-              defaultMessage="Copy configuration from registration backend"
-            />
-          </button>
-        ) : null}
+        {backends ? <CopyConfigurationFromRegistrationBackend backends={backends} /> : null}
       </Fieldset>
 
       <Fieldset
@@ -209,7 +255,7 @@ const ObjectsAPIFields = ({errors}) => {
       >
         <FormRow>
           <VariableMapping
-            name="prefillOptions.variablesMapping"
+            name="options.variablesMapping"
             loading={loading}
             directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
             variableName="variableKey"

@@ -1,4 +1,5 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {
   mockObjectsAPIPrefillPropertiesGet,
@@ -641,11 +642,11 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
           variablesMapping: [
             {
               variableKey: 'formioComponent',
-              targetPath: ['path', 'to.the', 'target'],
+              targetPath: ['height'],
             },
             {
               variableKey: 'userDefined',
-              targetPath: ['other', 'path'],
+              targetPath: ['species'],
             },
           ],
         },
@@ -690,30 +691,33 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
+      const copyDropdown = await modal.findByLabelText(
+        'Copy configuration from registration backend'
+      );
+      expect(copyDropdown).toBeVisible();
+      await selectEvent.select(copyDropdown, 'Example Objects API reg.');
+
       const copyButton = await modal.findByRole('button', {
-        name: 'Copy configuration from registration backend',
+        name: 'Copy',
       });
       expect(copyButton).toBeVisible();
       await userEvent.click(copyButton);
 
       const modalForm = await screen.findByTestId('modal-form');
       expect(modalForm).toBeVisible();
-      await waitFor(async () => {
-        expect(modalForm).toHaveFormValues({
-          'prefillOptions.objectsApiGroup': '1',
-          'prefillOptions.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
-          'prefillOptions.objecttypeVersion': '2',
-        });
-      });
-
       // Wait until the API call to retrieve the prefillAttributes is done
       await waitFor(async () => {
-        const prefillPropertySelect = await screen.findByLabelText(
+        expect(modalForm).toHaveFormValues({
+          'options.objectsApiGroup': '1',
+          'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
+          'options.objecttypeVersion': '2',
+        });
+
+        const propertyDropdowns = await modal.findAllByLabelText(
           'Selecteer een attribuut uit het objecttype'
         );
-        expect(prefillPropertySelect).toBeVisible();
-        expect(prefillPropertySelect.options[1]).toHaveValue(serializeValue(['height']));
-        expect(prefillPropertySelect.options[2]).toHaveValue(serializeValue(['species']));
+        expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
+        expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));
       });
     });
   },

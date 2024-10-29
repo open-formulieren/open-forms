@@ -119,7 +119,6 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
         }
       }}
       {...props}
-      // maxMenuHeight=""
     />
   );
 };

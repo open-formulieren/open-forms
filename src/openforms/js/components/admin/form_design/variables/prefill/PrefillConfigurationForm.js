@@ -23,7 +23,7 @@ const PrefillConfigurationForm = ({
   attribute = '',
   identifierRole = 'main',
   // TODO: find a better way to specify this based on the selected plugin
-  prefillOptions = {},
+  options = {},
   errors,
 }) => {
   const defaults = {
@@ -32,14 +32,14 @@ const PrefillConfigurationForm = ({
     objecttypeVersion: null,
     variablesMapping: [],
   };
-  prefillOptions = {...defaults, ...prefillOptions};
+  options = {...defaults, ...options};
   return (
     <Formik
       initialValues={{
         plugin,
         attribute,
         identifierRole,
-        prefillOptions,
+        options,
       }}
       onSubmit={(values, actions) => {
         onSubmit(values);

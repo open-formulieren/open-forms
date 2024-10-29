@@ -51,6 +51,7 @@ const VariableMappingRow = ({
   const intl = useIntl();
   const {getFieldProps, setFieldValue} = useFormikContext();
 
+  const fullVariableName = `${prefix}.${variableName}`;
   const fullPropertyName = `${prefix}.${propertyName}`;
   const {value: propertyValue, ...propertyProps} = getFieldProps(fullPropertyName);
   const serializedPropertyValue = serializeValue(propertyValue);
@@ -67,10 +68,10 @@ const VariableMappingRow = ({
   return (
     <tr>
       <td>
-        <Field name={`${prefix}.${variableName}`}>
+        <Field name={fullVariableName}>
           <VariableSelection
             includeStaticVariables={includeStaticVariables}
-            {...getFieldProps(`${prefix}.${variableName}`)}
+            {...getFieldProps(fullVariableName)}
             aria-label={intl.formatMessage({
               description: 'Accessible label for (form) variable dropdown',
               defaultMessage: 'Form variable',
