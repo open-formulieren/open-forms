@@ -18,7 +18,7 @@ ze niet om het formulier in te zenden.
 Formulierconfiguratie
 =====================
 
-.. note:: deze documentatie gaat ervan uit dat je bekend met de basis van
+.. note:: Deze documentatie gaat ervan uit dat je bekend met de basis van
    :ref:`formulieren beheren <manual_forms_basics>`.
 
 Het is belangrijk dat je in de betreffende formulierstap(pen) een component toevoegt

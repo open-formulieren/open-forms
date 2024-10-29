@@ -37,6 +37,10 @@ def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONVa
 
     Each item returns a tuple with the key and value of the formio component.
     """
+    # no server-side template evaluation here
+    if component["type"] == "softRequiredErrors":
+        return
+
     for property_name in SUPPORTED_TEMPLATE_PROPERTIES:
         property_value = component.get(property_name)
         yield (property_name, property_value)

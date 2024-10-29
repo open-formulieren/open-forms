@@ -184,3 +184,21 @@ class VariableInjectionTests(SimpleTestCase):
             result,
             {"topLevel": {"nested": "yepp"}},
         )
+
+    def test_soft_required_errors_no_server_side_template_evaluation(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "softRequiredErrors",
+                    "type": "softRequiredErrors",
+                    "html": "<p>I am hidden</p>{{ missingFields }}{% now %}",
+                },
+            ]
+        }
+
+        inject_variables(FormioConfigurationWrapper(configuration), {})
+
+        self.assertEqual(
+            configuration["components"][0]["html"],
+            "<p>I am hidden</p>{{ missingFields }}{% now %}",
+        )

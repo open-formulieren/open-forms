@@ -11,7 +11,7 @@ from ..registry import Registry
 from ..structured import render_json
 
 
-class FormNodeTests(TestCase):
+class ComponentNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -203,6 +203,13 @@ class FormNodeTests(TestCase):
                     },
                 },
                 # TODO columns
+                # soft required validation errors -> always ignored
+                {
+                    "key": "softRequiredErrors",
+                    "type": "softRequiredErrors",
+                    "html": "<p>I am hidden</p>",
+                    "label": "Soft required errors",
+                },
             ]
         }
         data = {
@@ -451,7 +458,7 @@ class FormNodeTests(TestCase):
                 )
                 nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 10)
+        self.assertEqual(len(nodelist), 11)
         labels = [node.label for node in nodelist]
         expected_labels = [
             "Input 1",
@@ -464,6 +471,7 @@ class FormNodeTests(TestCase):
             "Input 11",
             "Visible editgrid with hidden children",
             "Input 14",
+            "Soft required errors",  # not actually rendered in full render mode
         ]
         self.assertEqual(labels, expected_labels)
 
@@ -497,6 +505,7 @@ class FormNodeTests(TestCase):
             "Input 11",
             "Visible editgrid with hidden children",
             "Input 14",
+            "Soft required errors",  # not actually rendered in full render mode
         ]
         self.assertEqual(labels, expected_labels)
 

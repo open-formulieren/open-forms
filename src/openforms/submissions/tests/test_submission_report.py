@@ -424,6 +424,8 @@ class DownloadSubmissionReportTests(APITestCase):
         plugins = set(ct for ct, _ in register.items())
         # WYSIWIG seems untranslated in SDK TODO after/in issue #2475
         plugins.remove("content")
+        # soft-required errors are not shown in PDF report
+        plugins.remove("softRequiredErrors")
 
         tested_plugins = set(ct for ct, _ in fields if ct in plugins)
         # add checked structural "layout" components that don't require
