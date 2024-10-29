@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with plugin=log.fmt_plugin lead=log.fmt_lead %}
+   {{ lead }}: Registration plugin {{ plugin }} reported: authenticated user is not the owner of referenced object.
+{% endblocktrans %}

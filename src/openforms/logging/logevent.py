@@ -247,6 +247,14 @@ def registration_attempts_limited(submission: Submission):
     )
 
 
+def object_ownership_check_failure(submission: Submission, plugin=None):
+    _create_log(
+        submission,
+        "object_ownership_check_failure",
+        plugin=plugin,
+    )
+
+
 # - - -
 
 
