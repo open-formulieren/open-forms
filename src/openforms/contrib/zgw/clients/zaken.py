@@ -22,6 +22,7 @@ class ZakenClient(NLXClient):
         vertrouwelijkheidaanduiding: str = "",
         payment_required: bool = False,
         existing_reference: str = "",
+        product_url: str = "",
         **overrides,
     ):
         today = get_today()
@@ -31,6 +32,7 @@ class ZakenClient(NLXClient):
             "verantwoordelijkeOrganisatie": bronorganisatie,
             "registratiedatum": today,
             "startdatum": today,
+            "productenOfDiensten": [product_url] if product_url else [],
             "omschrijving": "Zaak naar aanleiding van ingezonden formulier",
             "toelichting": "Aangemaakt door Open Formulieren",
             "betalingsindicatie": "nog_niet" if payment_required else "nvt",

@@ -34,6 +34,7 @@ class RegistrationOptions(TypedDict):
     zgw_api_group: ZGWApiGroupConfig
     catalogue: NotRequired[CatalogueOption]
     case_type_identification: str
+    product_url: str  # URL reference to a product in the case type
     zaaktype: str  # DeprecationWarning
     informatieobjecttype: str
     organisatie_rsin: NotRequired[str]
