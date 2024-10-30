@@ -1023,6 +1023,56 @@ class ZGWBackendTests(TestCase):
             "123456782",
         )
 
+    def test_submission_with_product(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textfield": "Foo",
+            },
+            completed=True,
+        )
+        zgw_form_options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            "product_url": "https://example.com",
+        }
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
+        self.assertEqual(
+            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+        )
+
+        create_zaak = m.request_history[0]
+
+        with self.subTest("Create zaak call"):
+            create_zaak_body = create_zaak.json()
+
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(
+                create_zaak_body["productenOfDiensten"],
+                ["https://example.com"],
+            )
+            self.assertEqual(
+                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+            )
+
     def test_submission_roltype_initiator_not_found(self, m):
         submission = SubmissionFactory.create(
             completed=True,
