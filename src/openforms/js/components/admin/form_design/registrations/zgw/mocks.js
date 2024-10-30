@@ -79,3 +79,22 @@ export const mockCaseTypesGet = () =>
     const match = CASE_TYPES[catalogueUrl] ?? [];
     return res(ctx.json(match));
   });
+
+const PRODUCTS = [
+  {
+    uri: 'https://example.com/product/1234',
+  },
+  {
+    uri: 'https://example.com/product/4321',
+    description: undefined,
+  },
+  {
+    uri: 'https://example.com/product/1423',
+    description: 'Product 1423',
+  },
+];
+
+export const mockProductsGet = () =>
+  rest.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/products`, (req, res, ctx) => {
+    return res(ctx.json(PRODUCTS));
+  });

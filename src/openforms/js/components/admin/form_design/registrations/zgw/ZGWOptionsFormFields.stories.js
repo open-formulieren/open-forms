@@ -9,7 +9,7 @@ import {
 } from 'components/admin/form_design/story-decorators';
 
 import ZGWFormFields from './ZGWOptionsFormFields';
-import {mockCaseTypesGet, mockCataloguesGet} from './mocks';
+import {mockCaseTypesGet, mockCataloguesGet, mockProductsGet} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
@@ -54,7 +54,7 @@ export default {
   },
   parameters: {
     msw: {
-      handlers: [mockCataloguesGet(), mockCaseTypesGet()],
+      handlers: [mockCataloguesGet(), mockCaseTypesGet(), mockProductsGet()],
     },
   },
 };
