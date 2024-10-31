@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
@@ -265,3 +266,83 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(len(data), 3)
+
+
+class GetProductsListViewTests(OFVCRMixin, APITestCase):
+    VCR_TEST_FILES = TEST_FILES
+    endpoint = reverse_lazy("api:zgw_apis:product-list")
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+
+    def test_must_be_logged_in_as_admin(self):
+        user = UserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_invalid_filters(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": "INVALID",
+                "catalogue_url": "not-a-url",
+                "case_type_identification": "INVALID",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_missing_filters(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_param_names = {
+            item["name"] for item in response.json()["invalidParams"]
+        }
+        self.assertEqual(
+            invalid_param_names,
+            {"zgwApiGroup", "catalogueUrl", "caseTypeIdentification"},
+        )
+
+    @freeze_time("2024-10-31T18:00:00+02:00")
+    def test_fetch_products_by_case_type(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "catalogue_url": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d"
+                ),
+                "case_type_identification": "ZT-001",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        self.assertEqual(len(results), 1)
+
+        expected_products = [
+            {
+                "url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
+                "description": "",
+            }
+        ]
+        self.assertEqual(results, expected_products)

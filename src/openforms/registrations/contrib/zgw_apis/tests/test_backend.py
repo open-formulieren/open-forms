@@ -248,6 +248,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -471,6 +472,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -680,6 +682,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -759,6 +762,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -969,6 +973,7 @@ class ZGWBackendTests(TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "medewerker_roltype": "Some description",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
         m.get(
@@ -1042,6 +1047,7 @@ class ZGWBackendTests(TestCase):
             "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "product_url": "https://example.com",
+            "objects_api_group": None,
         }
         self.install_mocks(m)
 
@@ -1093,6 +1099,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
         roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
@@ -1167,6 +1174,7 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
         m.patch(
@@ -1252,6 +1260,7 @@ class ZGWBackendTests(TestCase):
             "organisatie_rsin": "000000000",
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1360,6 +1369,7 @@ class ZGWBackendTests(TestCase):
             "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -1433,6 +1443,7 @@ class ZGWBackendTests(TestCase):
             "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -1487,6 +1498,7 @@ class ZGWBackendTests(TestCase):
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "auteur": "",
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -1522,6 +1534,7 @@ class ZGWBackendTests(TestCase):
             "auteur": "",
             "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
         plugin = ZGWRegistration("zgw")
@@ -1582,6 +1595,7 @@ class ZGWBackendTests(TestCase):
             "organisatie_rsin": "000000000",
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
+            "product_url": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1796,6 +1810,7 @@ class ZGWBackendTests(TestCase):
             "objects_api_group": objects_api_group,
             "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
             "objecttype_version": 1,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -1910,6 +1925,7 @@ class ZGWBackendTests(TestCase):
                 {"component_key": "textField2", "eigenschap": "second property"},
             ],
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -2116,6 +2132,7 @@ class ZGWBackendTests(TestCase):
                 {"component_key": "textField3.blah", "eigenschap": "third property"},
             ],
             "objects_api_group": None,
+            "product_url": "",
         }
         self.install_mocks(m)
 
@@ -2339,6 +2356,7 @@ class ZGWBackendTests(TestCase):
                 "auteur": "",
                 "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
                 "objects_api_group": None,
+                "product_url": "",
             }
             self.install_mocks(m)
             plugin = ZGWRegistration("zgw")
@@ -2365,6 +2383,7 @@ class ZGWBackendTests(TestCase):
                 "auteur": "",
                 "zaak_vertrouwelijkheidaanduiding": "",  # type: ignore
                 "objects_api_group": None,
+                "product_url": "",
             }
             self.install_mocks(m)
             plugin = ZGWRegistration("zgw")
@@ -2424,6 +2443,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "product_url": "",
             "medewerker_roltype": "Baliemedewerker",
             "property_mappings": [
                 {
@@ -2487,6 +2507,56 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
             )
 
+    def test_create_zaak_with_case_identification_reference_and_product(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "zaaktype": "",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "product_url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
+            "objects_api_group": None,
+        }
+        plugin = ZGWRegistration("zgw")
+
+        result = plugin.pre_register_submission(submission, options)
+
+        assert result.data is not None
+        zaak_url = result.data["zaak"]["url"]
+        with get_zaken_client(self.zgw_group) as client:
+            zaak_data = client.get(zaak_url, headers=CRS_HEADERS).json()
+
+        self.assertEqual(
+            zaak_data["zaaktype"],
+            "http://localhost:8003/catalogi/api/v1/zaaktypen/f609b6fe-449a-46dc-a0af-de55dc5f6774",
+        )
+        self.assertEqual(
+            zaak_data["productenOfDiensten"],
+            ["http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10"],
+        )
+
     @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
     def test_allow_registration_with_unpublished_case_types(self):
         zgw_group = ZGWApiGroupConfigFactory.create(
@@ -2519,6 +2589,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/3628d25f-f491-4375-a752-39d16bf2dd59"
             ),
+            "product_url": "",
             "objects_api_group": None,
         }
         plugin = ZGWRegistration("zgw")

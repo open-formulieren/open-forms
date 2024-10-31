@@ -1,0 +1,572 @@
+{
+  "products": [
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde0a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde0a",
+      "code": "RX-0",
+      "description": "Informatieplicht incident",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde1a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde1a",
+      "code": "RX-1",
+      "description": "Advies vergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde2a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde2a",
+      "code": "RX-2",
+      "description": "Verkennen en begeleiden initiatief",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde3a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde3a",
+      "code": "RX-3",
+      "description": "Klacht",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde4a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde4a",
+      "code": "RX-4",
+      "description": "Zienswijze",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde5a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde5a",
+      "code": "RX-5",
+      "description": "Beroep",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde6a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde6a",
+      "code": "RX-6",
+      "description": "Strijdigheid Besluit bouwwerken leefomgeving (BBL)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde7a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde7a",
+      "code": "RX-7",
+      "description": "Informatieplicht starten of wijzigen milieu-belastende-activiteit",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde8a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde8a",
+      "code": "RX-8",
+      "description": "Periodieke controle",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde9a",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde9a",
+      "code": "RX-9",
+      "description": "Hercontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde10",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde10",
+      "code": "RX-10",
+      "description": "Advies vergunning met instemming",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde11",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde11",
+      "code": "RX-11",
+      "description": "Evenementenmelding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde12",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde12",
+      "code": "RX-12",
+      "description": "Advies",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde13",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde13",
+      "code": "RX-13",
+      "description": "Informatieplicht ongewone voorvallen",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde14",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde14",
+      "code": "RX-14",
+      "description": "Kansspelvergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde15",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde15",
+      "code": "RX-15",
+      "description": "Intrekken dwangsom",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde16",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde16",
+      "code": "RX-16",
+      "description": "Vooroverleg",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde17",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde17",
+      "code": "RX-17",
+      "description": "Melding brandveilig gebruik",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde18",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde18",
+      "code": "RX-18",
+      "description": "Toepassen bestuursdwang",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde19",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde19",
+      "code": "RX-19",
+      "description": "Bestuursdwangcontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde20",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde20",
+      "code": "RX-20",
+      "description": "Drank- en horecamelding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde21",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde21",
+      "code": "RX-21",
+      "description": "Drank- en horecavergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde22",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde22",
+      "code": "RX-22",
+      "description": "Klachtcontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde23",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde23",
+      "code": "RX-23",
+      "description": "Bibob onderzoek",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde24",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde24",
+      "code": "RX-24",
+      "description": "Participatietraject",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde25",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde25",
+      "code": "RX-25",
+      "description": "WKB-50 Informatieplicht beëindiging bouwwerkzaamheden",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde26",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde26",
+      "code": "RX-26",
+      "description": "Themacontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde27",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde27",
+      "code": "RX-27",
+      "description": "Voorlopige voorziening",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde28",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde28",
+      "code": "RX-28",
+      "description": "Intrekken Omgevingsvergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde29",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde29",
+      "code": "RX-29",
+      "description": "WKB-20 Informatieplicht start bouw",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde30",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde30",
+      "code": "RX-30",
+      "description": "Advies melding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde31",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde31",
+      "code": "RX-31",
+      "description": "Bezwaarschriftprocedure",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde32",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde32",
+      "code": "RX-32",
+      "description": "APV-melding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde33",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde33",
+      "code": "RX-33",
+      "description": "Gedoogcontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde34",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde34",
+      "code": "RX-34",
+      "description": "Advies informatiebericht",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde35",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde35",
+      "code": "RX-35",
+      "description": "Revisievergunning (ambtshalve)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde36",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde36",
+      "code": "RX-36",
+      "description": "Melding MBA",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde37",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde37",
+      "code": "RX-37",
+      "description": "Melding Omgevingswet",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde38",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde38",
+      "code": "RX-38",
+      "description": "Last onder dwangsom",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde39",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde39",
+      "code": "RX-39",
+      "description": "Sloopmelding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde40",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde40",
+      "code": "RX-40",
+      "description": "Voornemen last onder bestuursdwang",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde41",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde41",
+      "code": "RX-41",
+      "description": "Bouwmelding Wkb (risicobeoordeling en borgingsplan)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde42",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde42",
+      "code": "RX-42",
+      "description": "Dwangsomcontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde43",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde43",
+      "code": "RX-43",
+      "description": "Gedogen",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde44",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde44",
+      "code": "RX-44",
+      "description": "Last onder bestuursdwang",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde45",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde45",
+      "code": "RX-45",
+      "description": "APV-ontheffing",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde46",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde46",
+      "code": "RX-46",
+      "description": "Gereed melding Wkb (dossier bevoegd gezag)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde47",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde47",
+      "code": "RX-47",
+      "description": "Wijzigen Omgevingsvergunning (ambtshalve)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde48",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde48",
+      "code": "RX-48",
+      "description": "Kansspelmelding",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde49",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde49",
+      "code": "RX-49",
+      "description": "Hoger beroep",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde50",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde50",
+      "code": "RX-50",
+      "description": "Drank- en horecaontheffing",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde51",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde51",
+      "code": "RX-51",
+      "description": "Nagekomen stukken",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde52",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde52",
+      "code": "RX-52",
+      "description": "Voorval",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde53",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde53",
+      "code": "RX-53",
+      "description": "Bestuurlijke strafbeschikking",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde54",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde54",
+      "code": "RX-54",
+      "description": "Actualisatieonderzoek",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde55",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde55",
+      "code": "RX-55",
+      "description": "Ad hoc controle",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde56",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde56",
+      "code": "RX-56",
+      "description": "Innen dwangsom",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde57",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde57",
+      "code": "RX-57",
+      "description": "Beoordelen document informatieplicht",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde58",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde58",
+      "code": "RX-58",
+      "description": "Evenementenvergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde59",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde59",
+      "code": "RX-59",
+      "description": "Melding bodemsanering",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde60",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde60",
+      "code": "RX-60",
+      "description": "Omgevingsvergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde61",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde61",
+      "code": "RX-61",
+      "description": "Nadeelcompensatieverzoek",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde62",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde62",
+      "code": "RX-62",
+      "description": "Doorgeven strafrechtpartner",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde63",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde63",
+      "code": "RX-63",
+      "description": "Bestuurlijke boete",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde64",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde64",
+      "code": "RX-64",
+      "description": "WKB-30-Informatieplicht afwijking bouwbesluit/Wkb",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde65",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde65",
+      "code": "RX-65",
+      "description": "Voornemen last onder dwangsom",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde66",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde66",
+      "code": "RX-66",
+      "description": "APV-vergunning",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde67",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde67",
+      "code": "RX-67",
+      "description": "Melding toepassing bouwstoffen",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde68",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde68",
+      "code": "RX-68",
+      "description": "Opleveringscontrole",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde69",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde69",
+      "code": "RX-69",
+      "description": "Intrekken Omgevingsvergunning (ambtshalve)",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    },
+    {
+      "url": "https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde70",
+      "id": "1234abcd-12ab-34cd-56ef-12345abcde70",
+      "code": "RX-70",
+      "description": "Handhavingsverzoek",
+      "streeftermijn": "P0D",
+      "uiterlijkeTermijn": "P0D"
+    }
+  ]
+}
