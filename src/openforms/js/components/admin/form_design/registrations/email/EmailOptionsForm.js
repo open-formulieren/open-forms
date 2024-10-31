@@ -71,7 +71,11 @@ const EmailOptionsForm = ({name, label, schema, formData, onChange}) => {
           extraModifiers={['large']}
         >
           <Formik
-            initialValues={formData}
+            initialValues={{
+              ...formData,
+              // ensure we have a blank row initially
+              toEmails: formData.toEmails?.length ? formData.toEmails : [''],
+            }}
             onSubmit={(values, actions) => {
               onChange({formData: values});
               actions.setSubmitting(false);
