@@ -2,16 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import FormRjsfWrapper from 'components/admin/RJSFWrapper';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 
+import {PAYMENT_OPTIONS_FORMS} from './payments';
+
 const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}, onChange}) => {
   const backendChoices = backends.map(backend => [backend.id, backend.label]);
   const backend = backends.find(backend => backend.id === selectedBackend);
   const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
+
+  const OptionsFormComponent = backend ? PAYMENT_OPTIONS_FORMS[backend.id] : null;
 
   return (
     <Fieldset
@@ -45,24 +48,17 @@ const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}
           />
         </Field>
       </FormRow>
-      {hasOptionsForm ? (
+      {hasOptionsForm && (
         <FormRow>
-          <FormRjsfWrapper
-            name="form.paymentBackendOptions"
-            label={
-              <FormattedMessage
-                description="Payment backend options label"
-                defaultMessage="Payment backend options"
-              />
-            }
+          <OptionsFormComponent
             schema={backend.schema}
             formData={backendOptions}
-            onChange={({formData}) =>
-              onChange({target: {name: 'form.paymentBackendOptions', value: formData}})
+            onSubmit={values =>
+              onChange({target: {name: 'form.paymentBackendOptions', value: values}})
             }
           />
         </FormRow>
-      ) : null}
+      )}
     </Fieldset>
   );
 };
