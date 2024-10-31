@@ -1,4 +1,5 @@
 import CamundaOptionsForm from './camunda';
+import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
@@ -44,4 +45,8 @@ export const BACKEND_OPTIONS_FORMS = {
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,
   },
+  // demo plugins
+  demo: {form: DemoOptionsForm},
+  'failing-demo': {form: DemoOptionsForm},
+  'exception-demo': {form: DemoOptionsForm},
 };

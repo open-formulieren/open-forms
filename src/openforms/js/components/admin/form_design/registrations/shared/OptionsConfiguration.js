@@ -16,6 +16,7 @@ const OptionsConfiguration = ({
   modalTitle,
   initialFormData,
   onSubmit,
+  modalSize = 'large',
   children,
 }) => {
   const intl = useIntl();
@@ -64,7 +65,7 @@ const OptionsConfiguration = ({
           isOpen={modalOpen}
           title={modalTitle}
           closeModal={() => setModalOpen(false)}
-          extraModifiers={['large']}
+          extraModifiers={modalSize ? [modalSize] : undefined}
         >
           <Formik
             initialValues={initialFormData}
