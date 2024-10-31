@@ -4415,6 +4415,12 @@
       "value": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
     }
   ],
+  "eF9O7c": [
+    {
+      "type": 0,
+      "value": "Attachments"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -5553,12 +5559,6 @@
       "value": "Form definition"
     }
   ],
-  "ppZHsm": [
-    {
-      "type": 0,
-      "value": "Configure options"
-    }
-  ],
   "pq7q6N": [
     {
       "type": 0,
@@ -5635,6 +5635,12 @@
     {
       "type": 0,
       "value": "Manage complex process variables"
+    }
+  ],
+  "r64cfz": [
+    {
+      "type": 0,
+      "value": "Payment updates"
     }
   ],
   "r9MTrz": [
@@ -6333,12 +6339,6 @@
     {
       "type": 0,
       "value": "Use globally configured map component settings"
-    }
-  ],
-  "zGMQ75": [
-    {
-      "type": 0,
-      "value": "User defined"
     }
   ],
   "zLTTBw": [

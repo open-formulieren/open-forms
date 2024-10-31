@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import {useContext} from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
@@ -35,21 +36,33 @@ const EmailOptionsFormFields = ({name, schema}) => {
     <ValidationErrorsProvider errors={relevantErrors}>
       <Fieldset>
         <EmailRecipients />
-      </Fieldset>
-      <Fieldset>
-        <EmailAttachmentFormatsSelect options={attachmentFormatsChoices} />
-      </Fieldset>
-      <Fieldset>
-        <EmailPaymentUpdateRecipients />
-      </Fieldset>
-      <Fieldset>
-        <EmailHasAttachmentSelect options={attachFilesToEmailChoices} />
-
         <EmailSubject />
-        <EmailPaymentSubject />
-
         <EmailContentTemplateHTML />
         <EmailContentTemplateText />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Email registration: attachments fieldset title"
+            defaultMessage="Attachments"
+          />
+        }
+      >
+        <EmailAttachmentFormatsSelect options={attachmentFormatsChoices} />
+        <EmailHasAttachmentSelect options={attachFilesToEmailChoices} />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Email registration: payment configuration fieldset title"
+            defaultMessage="Payment updates"
+          />
+        }
+      >
+        <EmailPaymentUpdateRecipients />
+        <EmailPaymentSubject />
       </Fieldset>
     </ValidationErrorsProvider>
   );

@@ -2004,6 +2004,11 @@
     "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
     "originalDefault": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
   },
+  "eF9O7c": {
+    "defaultMessage": "Attachments",
+    "description": "Email registration: attachments fieldset title",
+    "originalDefault": "Attachments"
+  },
   "eJEu3L": {
     "defaultMessage": "Are you sure you want to delete this rule?",
     "description": "Price rule deletion confirm message",
@@ -2534,11 +2539,6 @@
     "description": "Variable table form definition title",
     "originalDefault": "Form definition"
   },
-  "ppZHsm": {
-    "defaultMessage": "Configure options",
-    "description": "Link label to open StUF-ZDS options modal",
-    "originalDefault": "Configure options"
-  },
   "pqCru3": {
     "defaultMessage": "Fetch configuration:",
     "description": "Currently selected service fetch configuration label",
@@ -2588,6 +2588,11 @@
     "defaultMessage": "Manage complex process variables",
     "description": "Camunda complex process vars modal title",
     "originalDefault": "Manage complex process variables"
+  },
+  "r64cfz": {
+    "defaultMessage": "Payment updates",
+    "description": "Email registration: payment configuration fieldset title",
+    "originalDefault": "Payment updates"
   },
   "r9MTrz": {
     "defaultMessage": "Request headers",
@@ -2908,11 +2913,6 @@
     "defaultMessage": "Zds zaaktype omschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
-  },
-  "zGMQ75": {
-    "defaultMessage": "User defined",
-    "description": "User defined variables tab title",
-    "originalDefault": "User defined"
   },
   "zLTTBw": {
     "defaultMessage": "Component where dates for an appointment will be shown",

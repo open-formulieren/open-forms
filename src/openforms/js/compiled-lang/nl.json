@@ -4437,6 +4437,12 @@
       "value": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele."
     }
   ],
+  "eF9O7c": [
+    {
+      "type": 0,
+      "value": "Attachments"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -5575,12 +5581,6 @@
       "value": "Formulierdefinitie"
     }
   ],
-  "ppZHsm": [
-    {
-      "type": 0,
-      "value": "Configure options"
-    }
-  ],
   "pq7q6N": [
     {
       "type": 0,
@@ -5657,6 +5657,12 @@
     {
       "type": 0,
       "value": "Beheer complexe procesvariabelen"
+    }
+  ],
+  "r64cfz": [
+    {
+      "type": 0,
+      "value": "Payment updates"
     }
   ],
   "r9MTrz": [
@@ -6355,12 +6361,6 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
-    }
-  ],
-  "zGMQ75": [
-    {
-      "type": 0,
-      "value": "Gebruikersvariabelen"
     }
   ],
   "zLTTBw": [
