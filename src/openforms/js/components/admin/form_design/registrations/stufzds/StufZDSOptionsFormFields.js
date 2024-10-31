@@ -8,13 +8,13 @@ import {
   ValidationErrorsProvider,
 } from 'components/admin/forms/ValidationErrors';
 
-import CaseCode from './fields/CaseCode';
-import CaseDescription from './fields/CaseDescription';
-import CaseStatusCode from './fields/CaseStatusCode';
-import CaseStatusDescription from './fields/CaseStatusDescription';
+import CaseTypeCode from './fields/CaseTypeCode';
+import CaseTypeDescription from './fields/CaseTypeDescription';
 import DocumentConfidentialityLevel from './fields/DocumentConfidentialityLevel';
-import DocumentDescription from './fields/DocumentDescription';
+import DocumentTypeDescription from './fields/DocumentTypeDescription';
 import PaymentStatusUpdateMapping from './fields/PaymentStatusUpdateMapping';
+import StatusTypeCode from './fields/StatusTypeCode';
+import StatusTypeDescription from './fields/StatusTypeDescription';
 import {filterErrors, getChoicesFromSchema} from './utils';
 
 const StufZDSOptionsFormFields = ({name, schema}) => {
@@ -30,11 +30,11 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
       <Fieldset>
-        <CaseCode />
-        <CaseDescription />
-        <CaseStatusCode />
-        <CaseStatusDescription />
-        <DocumentDescription />
+        <CaseTypeCode />
+        <CaseTypeDescription />
+        <StatusTypeCode />
+        <StatusTypeDescription />
+        <DocumentTypeDescription />
         <DocumentConfidentialityLevel options={zdsZaakdocVertrouwelijkheidChoices} />
       </Fieldset>
 

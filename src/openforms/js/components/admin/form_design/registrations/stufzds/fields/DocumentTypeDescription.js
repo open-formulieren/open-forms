@@ -5,7 +5,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-const DocumentDescription = () => {
+const DocumentTypeDescription = () => {
   const [fieldProps] = useField('zdsDocumenttypeOmschrijvingInzending');
   return (
     <FormRow>
@@ -30,6 +30,6 @@ const DocumentDescription = () => {
   );
 };
 
-DocumentDescription.propTypes = {};
+DocumentTypeDescription.propTypes = {};
 
-export default DocumentDescription;
+export default DocumentTypeDescription;

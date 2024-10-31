@@ -5,7 +5,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-const CaseCode = () => {
+const CaseTypeCode = () => {
   const [fieldProps] = useField('zdsZaaktypeCode');
   return (
     <FormRow>
@@ -30,6 +30,6 @@ const CaseCode = () => {
   );
 };
 
-CaseCode.propTypes = {};
+CaseTypeCode.propTypes = {};
 
-export default CaseCode;
+export default CaseTypeCode;
