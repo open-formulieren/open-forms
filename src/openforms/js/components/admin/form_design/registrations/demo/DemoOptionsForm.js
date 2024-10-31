@@ -4,7 +4,6 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -12,6 +11,7 @@ import {TextInput} from 'components/admin/forms/Inputs';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
+  filterErrors,
 } from 'components/admin/forms/ValidationErrors';
 
 const ExtraLine = () => {

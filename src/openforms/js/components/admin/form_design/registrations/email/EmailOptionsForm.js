@@ -3,8 +3,7 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
-import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 
 import EmailOptionsFormFields from './EmailOptionsFormFields';
 

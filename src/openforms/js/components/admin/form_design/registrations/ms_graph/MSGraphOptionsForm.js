@@ -3,11 +3,11 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
+  filterErrors,
 } from 'components/admin/forms/ValidationErrors';
 
 import {DriveID, FolderPath} from './fields';

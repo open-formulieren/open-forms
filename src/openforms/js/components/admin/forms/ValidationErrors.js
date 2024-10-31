@@ -26,5 +26,11 @@ ValidationErrorsProvider.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(errorArray)),
 };
 
-export {ValidationErrorsProvider, ValidationErrorContext};
+const filterErrors = (name, errors) => {
+  return errors
+    .filter(([key]) => key.startsWith(`${name}.`))
+    .map(([key, msg]) => [key.slice(name.length + 1), msg]);
+};
+
+export {ValidationErrorsProvider, ValidationErrorContext, filterErrors};
 export default ValidationErrorsProvider;

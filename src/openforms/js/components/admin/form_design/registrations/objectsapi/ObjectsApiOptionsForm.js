@@ -3,11 +3,8 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
-import {
-  filterErrors,
-  getChoicesFromSchema,
-} from 'components/admin/form_design/registrations/shared/utils';
-import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
+import {getChoicesFromSchema} from 'utils/json-schema';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 
