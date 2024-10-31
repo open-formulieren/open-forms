@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import logging
 import re
 from dataclasses import dataclass
 from functools import partial
-from typing import Any
+from typing import TYPE_CHECKING, Any, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -38,6 +40,9 @@ from .options import ZaakOptionsSerializer
 from .registration_variables import register as variables_registry
 from .typing import RegistrationOptions
 from .utils import flatten_data
+
+if TYPE_CHECKING:
+    from openforms.forms.models import FormVariable
 
 logger = logging.getLogger(__name__)
 
@@ -362,6 +367,10 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 submission.registration_result["zaak"],
                 extra=LangInjection(submission, extra_data),
             )
+
+    @override
+    def get_variables(self) -> list[FormVariable]:
+        return get_static_variables(variables_registry=variables_registry)
 
     def check_config(self):
         options: ZaakOptions = {

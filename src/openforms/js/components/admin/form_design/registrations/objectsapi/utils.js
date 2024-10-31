@@ -1,17 +1,3 @@
-// TODO This is duplicated from the ZGW registration, but will be cleaned up
-// with the backend UI refactor.
-
-const getChoicesFromSchema = (enums, enumNames) => {
-  const finalChoices = [];
-  Object.keys(enums).forEach(key => {
-    finalChoices.push([enums[key], enumNames[key]]);
-  });
-
-  return finalChoices;
-};
-
-// End TODO
-
 const VARIABLE_TYPE_MAP = {
   boolean: 'boolean',
   int: 'integer',
@@ -71,10 +57,4 @@ const asJsonSchema = (variable, components) => {
   };
 };
 
-const filterErrors = (name, errors) => {
-  return errors
-    .filter(([key]) => key.startsWith(`${name}.`))
-    .map(([key, msg]) => [key.slice(name.length + 1), msg]);
-};
-
-export {getChoicesFromSchema, asJsonSchema, filterErrors};
+export {asJsonSchema};

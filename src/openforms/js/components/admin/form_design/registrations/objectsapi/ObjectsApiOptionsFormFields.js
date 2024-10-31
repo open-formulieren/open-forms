@@ -5,6 +5,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
+import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
@@ -12,7 +13,6 @@ import {
 
 import LegacyConfigFields from './LegacyConfigFields';
 import V2ConfigFields from './V2ConfigFields';
-import {filterErrors} from './utils';
 
 const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   const intl = useIntl();
