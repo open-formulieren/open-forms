@@ -4,6 +4,10 @@ import {FormattedMessage} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
+import {
+  filterErrors,
+  getChoicesFromSchema,
+} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
@@ -17,7 +21,6 @@ import DocumentTypeDescription from './fields/DocumentTypeDescription';
 import PaymentStatusUpdateMapping from './fields/PaymentStatusUpdateMapping';
 import StatusTypeCode from './fields/StatusTypeCode';
 import StatusTypeDescription from './fields/StatusTypeDescription';
-import {filterErrors, getChoicesFromSchema} from './utils';
 
 const StufZDSOptionsFormFields = ({name, schema}) => {
   const validationErrors = useContext(ValidationErrorContext);

@@ -2,6 +2,10 @@ import PropTypes from 'prop-types';
 import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {
+  filterErrors,
+  getChoicesFromSchema,
+} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
@@ -16,7 +20,6 @@ import EmailPaymentSubject from './fields/EmailPaymentSubject';
 import EmailPaymentUpdateRecipients from './fields/EmailPaymentUpdateRecipients';
 import EmailRecipients from './fields/EmailRecipients';
 import EmailSubject from './fields/EmailSubject';
-import {filterErrors, getChoicesFromSchema} from './utils';
 
 const EmailOptionsFormFields = ({name, schema}) => {
   const validationErrors = useContext(ValidationErrorContext);

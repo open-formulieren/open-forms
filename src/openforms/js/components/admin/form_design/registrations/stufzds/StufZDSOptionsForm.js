@@ -3,10 +3,10 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
+import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import StufZDSOptionsFormFields from './StufZDSOptionsFormFields';
-import {filterErrors} from './utils';
 
 const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
