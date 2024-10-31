@@ -503,6 +503,12 @@
       "value": "Toon/verberg JSON Schema"
     }
   ],
+  "3zaZWN": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: demo"
+    }
+  ],
   "4/cCvG": [
     {
       "type": 0,
@@ -2432,6 +2438,12 @@
     {
       "type": 0,
       "value": "Er ging iets fout bij het weergeven van de registratie-opties."
+    }
+  ],
+  "LBEeSy": [
+    {
+      "type": 0,
+      "value": "Drive ID"
     }
   ],
   "LD3weJ": [
@@ -4987,6 +4999,12 @@
       "value": "Sessie gaat vervallen"
     }
   ],
+  "jpL29S": [
+    {
+      "type": 0,
+      "value": "Folder path"
+    }
+  ],
   "jtWzSW": [
     {
       "type": 0,
@@ -5155,6 +5173,68 @@
     {
       "type": 0,
       "value": "Inclusief de 'huidige datum'"
+    }
+  ],
+  "lNBZdl": [
+    {
+      "type": 0,
+      "value": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ year }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ", "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ month }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " and "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ day }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ". The path must start with "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "/"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "lOSmt+": [
@@ -6041,6 +6121,12 @@
       "value": "Na hoeveel seconden moeten gecachete resultaten vervallen."
     }
   ],
+  "wAQaa5": [
+    {
+      "type": 0,
+      "value": "Extra print statement"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -6121,6 +6207,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare tijden voor een afspraak komen te staan"
+    }
+  ],
+  "wnTTZr": [
+    {
+      "type": 0,
+      "value": "ID of the drive to use. If left empty, the default drive will be used."
     }
   ],
   "wnxKT/": [

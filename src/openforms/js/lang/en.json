@@ -219,6 +219,11 @@
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
     "originalDefault": "Toggle JSON Schema"
   },
+  "3zaZWN": {
+    "defaultMessage": "Plugin configuration: demo",
+    "description": "Demo registration options modal title",
+    "originalDefault": "Plugin configuration: demo"
+  },
   "4FQxD/": {
     "defaultMessage": "Configure",
     "description": "JSON editor: 'configure' header label",
@@ -1113,6 +1118,11 @@
     "defaultMessage": "Something went wrong while rendering the registration options",
     "description": "Registration summary error message",
     "originalDefault": "Something went wrong while rendering the registration options"
+  },
+  "LBEeSy": {
+    "defaultMessage": "Drive ID",
+    "description": "MS Graph registration options 'driveId' label",
+    "originalDefault": "Drive ID"
   },
   "LD3weJ": {
     "defaultMessage": "Advanced configuration",
@@ -2294,6 +2304,11 @@
     "description": "Model title session expiry warning",
     "originalDefault": "Session will expire"
   },
+  "jpL29S": {
+    "defaultMessage": "Folder path",
+    "description": "MS Graph registration options 'folderPath' label",
+    "originalDefault": "Folder path"
+  },
   "jy1jTd": {
     "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
     "description": "Registration validation errors icon next to button to configure options",
@@ -2358,6 +2373,11 @@
     "defaultMessage": "Value",
     "description": "Label for 'value' in MappingArrayInput table column",
     "originalDefault": "Value"
+  },
+  "lNBZdl": {
+    "defaultMessage": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>.",
+    "description": "MS Graph registration options 'folderPath' help text",
+    "originalDefault": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions <code>'{{' year '}}'</code>, <code>'{{' month '}}'</code> and <code>'{{' day '}}'</code>. The path must start with <code>/</code>."
   },
   "lcR5L6": {
     "defaultMessage": "Add item",
@@ -2779,6 +2799,11 @@
     "description": "Help text cache timeout",
     "originalDefault": "After how many seconds should the cached response expire."
   },
+  "wAQaa5": {
+    "defaultMessage": "Extra print statement",
+    "description": "Demo registration options 'extraLine' label",
+    "originalDefault": "Extra print statement"
+  },
   "wIaGgb": {
     "defaultMessage": "Errored Submissions Removal Method",
     "description": "Errored Submissions Removal Method field label",
@@ -2803,6 +2828,11 @@
     "defaultMessage": "Component where times for an appointment will be shown",
     "description": "Times Component field help text",
     "originalDefault": "Component where times for an appointment will be shown"
+  },
+  "wnTTZr": {
+    "defaultMessage": "ID of the drive to use. If left empty, the default drive will be used.",
+    "description": "MS Graph registration options 'driveId' help text",
+    "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
   },
   "wnxKT/": {
     "defaultMessage": "Component where products for an appointment will be shown",
