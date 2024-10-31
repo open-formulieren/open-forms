@@ -73,7 +73,7 @@ const StufZDSOptionsFormFields = ({name, schema}) => {
             }
             fieldNames={['paymentStatusUpdateMapping']}
           >
-            <div className="description mb-2">
+            <div className="description">
               <FormattedMessage
                 description="StUF-ZDS registration paymentStatusUpdateMapping message"
                 defaultMessage={`This mapping is used to map the variable keys to keys

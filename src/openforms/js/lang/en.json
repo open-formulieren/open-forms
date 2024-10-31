@@ -629,11 +629,6 @@
     "description": "Delete icon title",
     "originalDefault": "Delete"
   },
-  "CNJ2TT": {
-    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen.",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping message",
-    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen."
-  },
   "CXKQZZ": {
     "defaultMessage": "Confirmation",
     "description": "Form confirmation options tab title",
@@ -774,6 +769,11 @@
     "description": "\"array\" operand type",
     "originalDefault": "the array"
   },
+  "F2GYwp": {
+    "defaultMessage": "Base",
+    "description": "StUF-ZDS registration backend options, 'base' tab label",
+    "originalDefault": "Base"
+  },
   "F9ew4C": {
     "defaultMessage": "Version",
     "description": "Objects API registration options 'objecttypeVersion' label",
@@ -898,6 +898,11 @@
     "defaultMessage": "Maintenance mode",
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
+  },
+  "H7z8+8": {
+    "defaultMessage": "Extra elements",
+    "description": "StUF-ZDS registration backend options, 'extra elements' tab label",
+    "originalDefault": "Extra elements"
   },
   "HCfL9x": {
     "defaultMessage": "If enabled, the user will have to agree to the privacy policy before submitting a form.",
@@ -1388,6 +1393,11 @@
     "defaultMessage": "No (with overview page)",
     "description": "option \"no_with_overview\" of \"submission_allowed\"",
     "originalDefault": "No (with overview page)"
+  },
+  "Qb1GWo": {
+    "defaultMessage": "StUF-ZDS name",
+    "description": "StUF-ZDS extraElement name label",
+    "originalDefault": "StUF-ZDS name"
   },
   "QljfI7": {
     "defaultMessage": "Email subject",
@@ -2054,15 +2064,15 @@
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
   },
+  "fTmdl/": {
+    "defaultMessage": "Payment status update variable mapping",
+    "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
+    "originalDefault": "Payment status update variable mapping"
+  },
   "fWcg7I": {
     "defaultMessage": "Object",
     "description": "data type object",
     "originalDefault": "Object"
-  },
-  "ffvbQm": {
-    "defaultMessage": "payment status update variable mapping",
-    "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
-    "originalDefault": "payment status update variable mapping"
   },
   "fpX4ei": {
     "defaultMessage": "Mapping expression language",
@@ -2498,6 +2508,11 @@
     "defaultMessage": "Complex process variables",
     "description": "Open manage complex camunda process vars modal button",
     "originalDefault": "Complex process variables"
+  },
+  "p3t0c/": {
+    "defaultMessage": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>.",
+    "description": "StUF-ZDS registration paymentStatusUpdateMapping message",
+    "originalDefault": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in <code>extraElementen</code>."
   },
   "p5Iv+R": {
     "defaultMessage": "Document type API resource URL in the Catalogi API.",

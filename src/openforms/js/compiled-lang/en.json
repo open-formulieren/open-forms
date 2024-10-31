@@ -1481,12 +1481,6 @@
       "value": "Delete"
     }
   ],
-  "CNJ2TT": [
-    {
-      "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in extraElementen."
-    }
-  ],
   "CRN74c": [
     {
       "type": 0,
@@ -1847,6 +1841,12 @@
       "value": "the array"
     }
   ],
+  "F2GYwp": [
+    {
+      "type": 0,
+      "value": "Base"
+    }
+  ],
   "F9ew4C": [
     {
       "type": 0,
@@ -2045,6 +2045,12 @@
     {
       "type": 0,
       "value": "Maintenance mode"
+    }
+  ],
+  "H7z8+8": [
+    {
+      "type": 0,
+      "value": "Extra elements"
     }
   ],
   "HCfL9x": [
@@ -2875,6 +2881,12 @@
     {
       "type": 0,
       "value": "No (with overview page)"
+    }
+  ],
+  "Qb1GWo": [
+    {
+      "type": 0,
+      "value": "StUF-ZDS name"
     }
   ],
   "Qjl92W": [
@@ -4529,6 +4541,12 @@
       "value": "Save the value as this attribute in the registration backend system."
     }
   ],
+  "fTmdl/": [
+    {
+      "type": 0,
+      "value": "Payment status update variable mapping"
+    }
+  ],
   "fWcg7I": [
     {
       "type": 0,
@@ -4557,12 +4575,6 @@
     {
       "type": 0,
       "value": "A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component."
-    }
-  ],
-  "ffvbQm": [
-    {
-      "type": 0,
-      "value": "payment status update variable mapping"
     }
   ],
   "fhVFUY": [
@@ -5433,6 +5445,26 @@
     {
       "type": 0,
       "value": "Complex process variables"
+    }
+  ],
+  "p3t0c/": [
+    {
+      "type": 0,
+      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "extraElementen"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "p5Iv+R": [
