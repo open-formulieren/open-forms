@@ -215,11 +215,6 @@
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
-  "3baawY": {
-    "defaultMessage": "StUF-ZDS name",
-    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' label",
-    "originalDefault": "StUF-ZDS name"
-  },
   "3z1hhJ": {
     "defaultMessage": "Toon/verberg JSON Schema",
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
@@ -401,11 +396,6 @@
     "defaultMessage": "Is herbruikbaar?",
     "description": "Form step is reusable label",
     "originalDefault": "Is reusable?"
-  },
-  "8IItwi": {
-    "defaultMessage": "The name in StUF-ZDS to which the form variable should be mapped",
-    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping stufName' helpText",
-    "originalDefault": "The name in StUF-ZDS to which the form variable should be mapped"
   },
   "8LLxRg": {
     "defaultMessage": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -991,11 +981,6 @@
     "description": "Decision definition ID label",
     "originalDefault": "Decision definition ID"
   },
-  "Ihbi6N": {
-    "defaultMessage": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS",
-    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
-    "originalDefault": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
-  },
   "Ika4IH": {
     "defaultMessage": "Inzendingen worden permanent verwijderd",
     "description": "delete_permanently removal method option label",
@@ -1456,11 +1441,6 @@
     "description": "Readable label for the language",
     "originalDefault": "Language"
   },
-  "RjWycp": {
-    "defaultMessage": "Form variable",
-    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' label",
-    "originalDefault": "Form variable"
-  },
   "Rk13i+": {
     "defaultMessage": "Beginwaarde",
     "description": "Variable table initial value title",
@@ -1637,11 +1617,6 @@
     "description": "Variable table sensitive data title",
     "originalDefault": "Sensitive data"
   },
-  "Vu09Ne": {
-    "defaultMessage": "Zds zaaktype status omschrijving",
-    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
-    "originalDefault": "Zds zaaktype status omschrijving"
-  },
   "WHqkYA": {
     "defaultMessage": "Datum/tijd",
     "description": "Date/time column header",
@@ -1764,6 +1739,11 @@
     "description": "form.introductionPageContent label",
     "originalDefault": "Introduction page"
   },
+  "Z8f4hI": {
+    "defaultMessage": "Document confidentiality level",
+    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
+    "originalDefault": "Document confidentiality level"
+  },
   "ZB6mnn": {
     "defaultMessage": "De sleutel van een variabele moet uniek zijn binnen een formulier",
     "description": "Unique key error message",
@@ -1823,11 +1803,6 @@
     "defaultMessage": "Gekoppeld aan het {geometryPath}-attribuut",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
-  },
-  "aDFrqO": {
-    "defaultMessage": "{numErrors, plural, one {Er is een validatiefout.} other {Er zijn {numErrors} validatiefouten.} }",
-    "description": "Objects API registration validation errors icon next to button",
-    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "aUChz/": {
     "defaultMessage": "Product veld",
@@ -2151,11 +2126,6 @@
     "description": "App version column header",
     "originalDefault": "App version"
   },
-  "gtjPWc": {
-    "defaultMessage": "The name of the form variable to be mapped",
-    "description": "StUF-ZDS registration options 'paymentStatusUpdateMapping formVariable' helpText",
-    "originalDefault": "The name of the form variable to be mapped"
-  },
   "gz32s2": {
     "defaultMessage": "Indien gewenst, dan kunt u een alternatieve naam opgeven voor de procesvariabele.",
     "description": "Manage process vars alias help text",
@@ -2336,6 +2306,11 @@
     "defaultMessage": "Sessie gaat vervallen",
     "description": "Model title session expiry warning",
     "originalDefault": "Session will expire"
+  },
+  "jy1jTd": {
+    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "description": "Registration validation errors icon next to button to configure options",
+    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "k34Vke": {
     "defaultMessage": "dan",
@@ -2847,6 +2822,11 @@
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
   },
+  "wqCiwc": {
+    "defaultMessage": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.",
+    "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
+    "originalDefault": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+  },
   "wrdDVu": {
     "defaultMessage": "Instellingen (oud)",
     "description": "ZGw APIs registration: legacy configuration options fieldset title",
@@ -2906,11 +2886,6 @@
     "defaultMessage": "Gemachtigde",
     "description": "Identifier role (for mandate context) label for authorizee",
     "originalDefault": "Authorizee"
-  },
-  "yJiaOl": {
-    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
-    "description": "StUF-ZDS registration validation errors icon next to button",
-    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "yLt2lv": {
     "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt.",

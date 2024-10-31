@@ -17,13 +17,14 @@ const DocumentConfidentialityLevel = ({options}) => {
         label={
           <FormattedMessage
             description="StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label"
-            defaultMessage="Zds zaaktype status omschrijving"
+            defaultMessage="Document confidentiality level"
           />
         }
         helpText={
           <FormattedMessage
             description="StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText"
-            defaultMessage="Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+            defaultMessage={`Indication of the level to which extend the dossier of the ZAAK is meant
+          to be public. This is set on the documents created for the ZAAK.`}
           />
         }
       >

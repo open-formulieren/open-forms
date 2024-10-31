@@ -491,12 +491,6 @@
       "value": "Vraag verklaring invullen naar waarheid"
     }
   ],
-  "3baawY": [
-    {
-      "type": 0,
-      "value": "StUF-ZDS name"
-    }
-  ],
   "3h215E": [
     {
       "type": 0,
@@ -961,12 +955,6 @@
     {
       "type": 0,
       "value": "Is herbruikbaar?"
-    }
-  ],
-  "8IItwi": [
-    {
-      "type": 0,
-      "value": "The name in StUF-ZDS to which the form variable should be mapped"
     }
   ],
   "8LLxRg": [
@@ -2216,12 +2204,6 @@
       "value": "Beslisdefinitie-ID"
     }
   ],
-  "Ihbi6N": [
-    {
-      "type": 0,
-      "value": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
-    }
-  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -3016,12 +2998,6 @@
       "value": "Je moet een datum opgeven."
     }
   ],
-  "RjWycp": [
-    {
-      "type": 0,
-      "value": "Form variable"
-    }
-  ],
   "Rk13i+": [
     {
       "type": 0,
@@ -3498,12 +3474,6 @@
       "value": "Gevoelige gegevens"
     }
   ],
-  "Vu09Ne": [
-    {
-      "type": 0,
-      "value": "Zds zaaktype status omschrijving"
-    }
-  ],
   "VyA4fK": [
     {
       "type": 0,
@@ -3792,6 +3762,12 @@
       "value": "Introductiepagina"
     }
   ],
+  "Z8f4hI": [
+    {
+      "type": 0,
+      "value": "Document confidentiality level"
+    }
+  ],
   "ZB6mnn": [
     {
       "type": 0,
@@ -3925,40 +3901,6 @@
     {
       "type": 0,
       "value": "-attribuut"
-    }
-  ],
-  "aDFrqO": [
-    {
-      "offset": 0,
-      "options": {
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "Er is een validatiefout."
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "Er zijn "
-            },
-            {
-              "type": 1,
-              "value": "numErrors"
-            },
-            {
-              "type": 0,
-              "value": " validatiefouten."
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "numErrors"
     }
   ],
   "aUChz/": [
@@ -4691,12 +4633,6 @@
       "value": "Applicatieversie"
     }
   ],
-  "gtjPWc": [
-    {
-      "type": 0,
-      "value": "The name of the form variable to be mapped"
-    }
-  ],
   "guySt0": [
     {
       "type": 0,
@@ -5049,6 +4985,40 @@
     {
       "type": 0,
       "value": "optie 2: € 15,99"
+    }
+  ],
+  "jy1jTd": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
     }
   ],
   "k1+ljn": [
@@ -6153,6 +6123,12 @@
       "value": "Veld waar beschikbare producten voor een afspraak komen te staan"
     }
   ],
+  "wqCiwc": [
+    {
+      "type": 0,
+      "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+    }
+  ],
   "wrdDVu": [
     {
       "type": 0,
@@ -6269,40 +6245,6 @@
     {
       "type": 0,
       "value": "Gemachtigde"
-    }
-  ],
-  "yJiaOl": [
-    {
-      "offset": 0,
-      "options": {
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "There is a validation error."
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "There are "
-            },
-            {
-              "type": 1,
-              "value": "numErrors"
-            },
-            {
-              "type": 0,
-              "value": " validation errors."
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "numErrors"
     }
   ],
   "yL9Ql7": [

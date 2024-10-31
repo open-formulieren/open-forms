@@ -12,7 +12,18 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const numErrors = filterErrors(name, validationErrors).length;
 
-  const initialFormData = {...formData};
+  const initialFormData = {
+    // defaults
+    zdsZaaktypeCode: '',
+    zdsZaaktypeOmschrijving: '',
+    zdsZaaktypeStatusCode: '',
+    zdsZaaktypeStatusOmschrijving: '',
+    zdsDocumenttypeOmschrijvingInzending: '',
+    zdsZaakdocVertrouwelijkheid: '',
+    paymentStatusUpdateMapping: [],
+    // existing configuration
+    ...formData,
+  };
   const isNew = !Object.keys(formData).length;
   if (isNew) {
     Object.keys(schema.properties).forEach(propertyKey => {
