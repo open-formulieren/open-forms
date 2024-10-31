@@ -1,6 +1,7 @@
 import CamundaOptionsForm from './camunda';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
+import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
@@ -45,6 +46,7 @@ export const BACKEND_OPTIONS_FORMS = {
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,
   },
+  'microsoft-graph': {form: MSGraphOptionsForm},
   // demo plugins
   demo: {form: DemoOptionsForm},
   'failing-demo': {form: DemoOptionsForm},
