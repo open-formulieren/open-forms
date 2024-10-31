@@ -7,8 +7,15 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 const EmailHasAttachmentSelect = ({options}) => {
-  const [fieldProps, , fieldHelpers] = useField('attachFilesToEmail');
-  const {setValue} = fieldHelpers;
+  const [{value}, , {setValue}] = useField('attachFilesToEmail');
+
+  // React doesn't like null/undefined as it leads to uncontrolled component warnings,
+  // so we translate null -> '' and vice versa in the change handler
+  const normalizedValue = value === null ? '' : value;
+  const normalizedOptions = options.map(option => ({
+    ...option,
+    value: option.value === null ? '' : option.value,
+  }));
 
   return (
     <FormRow>
@@ -29,11 +36,13 @@ const EmailHasAttachmentSelect = ({options}) => {
       >
         <ReactSelect
           name="attachFilesToEmail"
-          options={options}
-          value={options.find(option => option.value === fieldProps.value)}
+          options={normalizedOptions}
+          value={normalizedOptions.find(option => option.value === normalizedValue)}
           required
-          onChange={newValue => {
-            setValue(newValue.value);
+          onChange={option => {
+            // normalize empty string back to null
+            const newValue = option.value === '' ? null : option.value;
+            setValue(newValue);
           }}
         />
       </Field>
