@@ -5,7 +5,6 @@ import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import TinyMCEEditor from './form_design/Editor';
 import Field from './forms/Field';
 import {FAIcon} from './icons';
 
@@ -142,22 +141,6 @@ CustomCheckboxWidget.propTypes = {
   onChange: PropTypes.func,
 };
 
-const WysiwygWidget = ({value, onChange}) => {
-  return (
-    <TinyMCEEditor
-      content={value}
-      onEditorChange={(newValue, editor) => {
-        onChange(newValue);
-      }}
-    />
-  );
-};
-
-WysiwygWidget.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-};
-
 const FormRjsfWrapper = ({name, label, schema, uiSchema, formData, onChange, errors}) => {
   let extraErrors = {};
 
@@ -219,5 +202,5 @@ FormRjsfWrapper.propTypes = {
   errors: PropTypes.array,
 };
 
-export {CustomFieldTemplate, WysiwygWidget};
+export {CustomFieldTemplate};
 export default FormRjsfWrapper;
