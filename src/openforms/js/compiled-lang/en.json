@@ -1265,6 +1265,12 @@
       "value": "'Remove row' text"
     }
   ],
+  "B/A1Bk": [
+    {
+      "type": 0,
+      "value": "Which merchant should be used for payments related to this form."
+    }
+  ],
   "B1ONuu": [
     {
       "type": 0,
@@ -1839,6 +1845,12 @@
     {
       "type": 0,
       "value": "Base"
+    }
+  ],
+  "F2VuCs": [
+    {
+      "type": 0,
+      "value": "Merchant ID"
     }
   ],
   "F9ew4C": [
@@ -4089,6 +4101,12 @@
       "value": "Incomplete Submissions Removal Limit"
     }
   ],
+  "cEALcN": [
+    {
+      "type": 0,
+      "value": "Configure options"
+    }
+  ],
   "cID9dz": [
     {
       "type": 0,
@@ -5815,6 +5833,40 @@
       "value": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
     }
   ],
+  "sQpH2P": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
+    }
+  ],
   "sR9GVQ": [
     {
       "type": 0,
@@ -6465,6 +6517,12 @@
       },
       "type": 5,
       "value": "hasDescription"
+    }
+  ],
+  "zYu3XI": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Ogone legacy"
     }
   ],
   "zeXZzX": [

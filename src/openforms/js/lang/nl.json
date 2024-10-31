@@ -548,6 +548,11 @@
     "description": "Form definition select confirm button",
     "originalDefault": "Confirm"
   },
+  "B/A1Bk": {
+    "defaultMessage": "Which merchant should be used for payments related to this form.",
+    "description": "Ogone legacy payment options 'merchantId' help text",
+    "originalDefault": "Which merchant should be used for payments related to this form."
+  },
   "B5RSyi": {
     "defaultMessage": "Email payment subject",
     "description": "Email registration options 'emailPaymentSubject' label",
@@ -775,6 +780,11 @@
     "defaultMessage": "Base",
     "description": "StUF-ZDS registration backend options, 'base' tab label",
     "originalDefault": "Base"
+  },
+  "F2VuCs": {
+    "defaultMessage": "Merchant ID",
+    "description": "Ogone legacy payment options 'merchantId' label",
+    "originalDefault": "Merchant ID"
   },
   "F9ew4C": {
     "defaultMessage": "Versie",
@@ -1905,6 +1915,11 @@
     "description": "Incomplete Submissions Removal Limit field label",
     "originalDefault": "Incomplete Submissions Removal Limit"
   },
+  "cEALcN": {
+    "defaultMessage": "Configure options",
+    "description": "Link label to open payment provider options modal",
+    "originalDefault": "Configure options"
+  },
   "cID9dz": {
     "defaultMessage": "(complexe waarde)",
     "description": "JSON editor: complex value representation",
@@ -2687,6 +2702,11 @@
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
   },
+  "sQpH2P": {
+    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "description": "Payment provider validation errors icon next to button to configure options",
+    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
+  },
   "sptpzv": {
     "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
     "description": "Objects API registration backend: v2 switch warning message",
@@ -2982,6 +3002,11 @@
     "defaultMessage": "Sleutel-waarde paar (object)",
     "description": "JSON variable type \"object\" representation",
     "originalDefault": "Object"
+  },
+  "zYu3XI": {
+    "defaultMessage": "Plugin configuration: Ogone legacy",
+    "description": "Ogone legacy options modal title",
+    "originalDefault": "Plugin configuration: Ogone legacy"
   },
   "zeXZzX": {
     "defaultMessage": "Gebruik prijsregels om de prijs te bepalen",
