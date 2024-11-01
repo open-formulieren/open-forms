@@ -6,7 +6,6 @@ from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 from celery_once import QueueOnce
-from furl.furl import furl
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration

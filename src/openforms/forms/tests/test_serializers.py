@@ -126,13 +126,11 @@ class LogicComponentActionSerializerTest(TestCase):
 
 
 class FormSerializerTest(TestCase):
-    @patch(
-        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(
-            cosign_request_template="{{ form_name }} cosign request."
-        ),
-    )
-    def test_form_with_cosign(self, mock_get_solo):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+    def test_form_with_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
             form__authentication_backends=["digid"],
@@ -163,7 +161,7 @@ class FormSerializerTest(TestCase):
         self.assertEqual(cosign_login_info["identifier"], "digid")
 
     @patch(
-        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
+        "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
             cosign_request_template="{{ form_name }} cosign request."
         ),
@@ -192,9 +190,10 @@ class FormSerializerTest(TestCase):
 
         cosign_login_options = serializer.data["cosign_login_options"]
         self.assertEqual(len(cosign_login_options), 1)
+        self.assertFalse(serializer.data["cosign_has_link_in_email"])
 
     @patch(
-        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
+        "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
             cosign_request_template="{{ form_url }} cosign request."
         ),
@@ -222,7 +221,8 @@ class FormSerializerTest(TestCase):
         )
 
         cosign_login_options = serializer.data["cosign_login_options"]
-        self.assertEqual(len(cosign_login_options), 0)
+        self.assertEqual(len(cosign_login_options), 1)
+        self.assertTrue(serializer.data["cosign_has_link_in_email"])
 
     def test_form_without_cosign(self):
         form_step = FormStepFactory.create(
