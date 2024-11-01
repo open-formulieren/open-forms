@@ -17,7 +17,11 @@ from tinymce.models import HTMLField
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_template
-from openforms.template import openforms_backend, render_from_string
+from openforms.template import (
+    extract_variables_used,
+    openforms_backend,
+    render_from_string,
+)
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
@@ -599,3 +603,10 @@ class GlobalConfiguration(SingletonModel):
         if none is configured.
         """
         return self.default_theme or Theme()
+
+    @property
+    def cosign_request_template_has_link(self) -> bool:
+        variables_used = extract_variables_used(
+            self.cosign_request_template, backend=openforms_backend
+        )
+        return "form_url" in variables_used

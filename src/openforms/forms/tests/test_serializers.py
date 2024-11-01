@@ -1,11 +1,13 @@
 from unittest.mock import patch
 
+from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
 
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.config.models.config import GlobalConfiguration
 from openforms.forms.api.datastructures import FormVariableWrapper
 from openforms.forms.api.serializers import FormSerializer
 from openforms.forms.api.serializers.logic.action_serializers import (
@@ -124,7 +126,13 @@ class LogicComponentActionSerializerTest(TestCase):
 
 
 class FormSerializerTest(TestCase):
-    def test_form_with_cosign(self):
+    @patch(
+        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            cosign_request_template="{{ form_name }} cosign request."
+        ),
+    )
+    def test_form_with_cosign(self, mock_get_solo):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
             form__authentication_backends=["digid"],
@@ -153,6 +161,68 @@ class FormSerializerTest(TestCase):
         self.assertEqual(cosign_login_options[0]["identifier"], "digid")
         self.assertIsNotNone(cosign_login_info)
         self.assertEqual(cosign_login_info["identifier"], "digid")
+
+    @patch(
+        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            cosign_request_template="{{ form_name }} cosign request."
+        ),
+    )
+    def test_form_without_cosign_link_used_in_email(self, mock_get_solo):
+        form_step = FormStepFactory.create(
+            form__slug="form-with-cosign",
+            form__authentication_backends=["digid"],
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "cosignField",
+                        "label": "Cosign",
+                        "type": "cosign",
+                    }
+                ]
+            },
+        )
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        request.user = AnonymousUser()
+
+        serializer = FormSerializer(
+            instance=form_step.form, context={"request": request}
+        )
+
+        cosign_login_options = serializer.data["cosign_login_options"]
+        self.assertEqual(len(cosign_login_options), 1)
+
+    @patch(
+        "openforms.authentication.api.fields.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            cosign_request_template="{{ form_url }} cosign request."
+        ),
+    )
+    def test_form_with_cosign_link_used_in_email(self, mock_get_solo):
+        form_step = FormStepFactory.create(
+            form__slug="form-with-cosign",
+            form__authentication_backends=["digid"],
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "cosignField",
+                        "label": "Cosign",
+                        "type": "cosign",
+                    }
+                ]
+            },
+        )
+        factory = RequestFactory()
+        request = factory.get("/foo")
+        request.user = AnonymousUser()
+
+        serializer = FormSerializer(
+            instance=form_step.form, context={"request": request}
+        )
+
+        cosign_login_options = serializer.data["cosign_login_options"]
+        self.assertEqual(len(cosign_login_options), 0)
 
     def test_form_without_cosign(self):
         form_step = FormStepFactory.create(
