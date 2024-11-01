@@ -65,6 +65,51 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
             fetch_redirect_response=False,
         )
 
+    def test_successfully_resolve_code_from_GET_params(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            ),
+            {"code": submission.public_registration_reference},
+        )
+
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url="http://url-to-form.nl/",
+            action="cosign",
+            action_params={
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
+        )
+
     def test_user_no_auth_details_in_session(self):
         SubmissionFactory.from_components(
             components_list=[

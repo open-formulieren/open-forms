@@ -298,7 +298,7 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
     raise_exception = True
 
     form = None
-    submission = None
+    submission: Submission | None = None
 
     def test_func(self):
         """
@@ -311,17 +311,30 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
             self.request, self.form.authentication_backend_options
         )
 
+    def get(self, request: HttpRequest, *args, **kwargs):
+        # If we have a code param in the query string, apply the shortcuts and skip
+        # the actual lookup screen - the code is already provided in the URL
+        if request.GET.get("code"):
+            form = self.get_form()
+            if form.is_valid():
+                return self.form_valid(form)
+        return super().get(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         super_kwargs = super().get_form_kwargs()
         super_kwargs["instance"] = self.form
+        if code := self.request.GET.get("code"):
+            super_kwargs["data"] = {"code": code}
         return super_kwargs
 
-    def form_valid(self, form):
+    def form_valid(self, form: SearchSubmissionForCosignForm):
         self.submission = form.cleaned_data["submission"]
+        assert self.submission
         add_submmission_to_session(self.submission, self.request.session)
         return super().form_valid(form)
 
     def get_success_url(self):
+        assert self.submission
         return get_frontend_redirect_url(
             self.submission,
             action="cosign",
