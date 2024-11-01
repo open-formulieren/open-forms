@@ -1,9 +1,16 @@
 import json
-from typing import Literal, TypeAlias
+from typing import Literal
 
 from openforms.submissions.models import Submission
 
-SDKAction: TypeAlias = Literal["resume", "afspraak-annuleren", "cosign", "payment"]
+type SDKAction = Literal[
+    "",
+    "resume",
+    "afspraak-annuleren",
+    "cosign-init",
+    "cosign",
+    "payment",
+]
 
 
 def get_frontend_redirect_url(
@@ -19,9 +26,7 @@ def get_frontend_redirect_url(
     f = submission.cleaned_form_url
     f.query.remove("_of_action")
     f.query.remove("_of_action_params")
-    _query = {
-        "_of_action": action,
-    }
+    _query = {"_of_action": action} if action else {}
     if action_params:
         _query["_of_action_params"] = json.dumps(action_params)
 

@@ -411,13 +411,12 @@ class Submission(models.Model):
         URL.
 
         See open-formulieren/open-forms#3025 for the original ticket.
-
-        TODO: check how this works with the hash-based router!
         """
-        furl_instance = furl(self.form_url)
+        furl_instance = furl(self.form_url).remove("_start")
         # if the url path ends with 'startpagina', strip it off
         if furl_instance.path.segments[-1:] == ["startpagina"]:
             furl_instance.path.segments.remove("startpagina")
+
         return furl_instance.remove(
             fragment=True
         )  # Fragments are present in hash based routing
