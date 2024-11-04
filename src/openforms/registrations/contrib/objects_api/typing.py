@@ -26,6 +26,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     objecttype: Required[UUID]
     objecttype_version: Required[int]
     update_existing_object: Required[bool]
+    auth_attribute_path: list[str]
 
     # metadata of documents created in the documents API
     upload_submission_csv: bool

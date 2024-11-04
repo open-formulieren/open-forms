@@ -14,6 +14,7 @@ import {
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  AuthAttributePath,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
@@ -108,6 +109,7 @@ const LegacyConfigFields = ({apiGroupChoices}) => (
     >
       <UploadSubmissionCsv />
       <UpdateExistingObject />
+      <AuthAttributePath />
       <OrganisationRSIN />
     </Fieldset>
   </>

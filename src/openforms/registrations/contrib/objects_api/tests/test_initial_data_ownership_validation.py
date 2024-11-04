@@ -19,6 +19,17 @@ class ObjectsAPIPreRegistrationTests(TestCase):
         objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
 
         form = FormFactory.create()
+        # An objects API backend that is missing `auth_attribute_path`
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="objects_api",
+            options={
+                "version": 2,
+                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "objects_api_group": objects_api_group_unused.pk,
+                "objecttype_version": 1,
+            },
+        )
         # An objects API backend with a different API group
         FormRegistrationBackendFactory.create(
             form=form,
@@ -28,6 +39,7 @@ class ObjectsAPIPreRegistrationTests(TestCase):
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
                 "objects_api_group": objects_api_group_unused.pk,
                 "objecttype_version": 1,
+                "auth_attribute_path": ["bsn"],
             },
         )
         # Another backend that should be ignored
@@ -41,6 +53,7 @@ class ObjectsAPIPreRegistrationTests(TestCase):
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
                 "objects_api_group": objects_api_group_used.pk,
                 "objecttype_version": 1,
+                "auth_attribute_path": ["nested", "bsn"],
             },
         )
 
@@ -92,7 +105,7 @@ class ObjectsAPIPreRegistrationTests(TestCase):
                     call2.args[1].base_url,
                     objects_api_group_used.objects_service.api_root,
                 )
-                self.assertEqual(call2.args[2], ["bsn"])
+                self.assertEqual(call2.args[2], ["nested", "bsn"])
 
         with self.subTest(
             "verify_initial_data_ownership raising error causes pre registration to fail"

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 def validate_object_ownership(
     submission: Submission,
     client: ObjectsClient,
-    object_attribute: list[str] | Path,
+    object_attribute: list[str],
 ) -> None:
     """
     Function to check whether the user associated with a Submission is the owner
@@ -52,5 +52,8 @@ def validate_object_ownership(
         )
         return
 
-    if glom(object["record"]["data"], *object_attribute) != auth_info.value:
+    if (
+        glom(object["record"]["data"], Path(*object_attribute), default=None)
+        != auth_info.value
+    ):
         raise PermissionDenied("User is not the owner of the referenced object")

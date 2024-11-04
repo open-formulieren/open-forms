@@ -44,9 +44,16 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
             )
             return
 
+        auth_attribute_path = prefill_options.get("auth_attribute_path")
+        if not auth_attribute_path:
+            logger.info(
+                "Cannot perform initial data ownership check, because `auth_attribute_path` is missing from %s",
+                prefill_options,
+            )
+            return
+
         with get_objects_client(api_group) as client:
-            # TODO configurable path
-            validate_object_ownership(submission, client, ["bsn"])
+            validate_object_ownership(submission, client, auth_attribute_path)
 
     @classmethod
     def get_prefill_values_from_options(

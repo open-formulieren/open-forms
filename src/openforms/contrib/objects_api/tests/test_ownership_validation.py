@@ -130,6 +130,43 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         )
 
     @tag("gh-4398")
+    def test_user_is_not_owner_of_object_nested_auth_attribute(self):
+        with get_objects_client(self.objects_api_group_used) as client:
+            object = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"nested": {"bsn": "111222333"}, "foo": "bar"},
+                    objecttype_version=1,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            object_ref = object["uuid"]
+
+        submission = SubmissionFactory.create(
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference=object_ref,
+        )
+
+        # The backend that should be used to perform the check
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            backend="objects_api",
+            options={
+                "version": 2,
+                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "objects_api_group": self.objects_api_group_used.pk,
+                "objecttype_version": 1,
+            },
+        )
+
+        with get_objects_client(self.objects_api_group_used) as client:
+            with self.assertRaises(PermissionDenied) as cm:
+                validate_object_ownership(submission, client, ["nested", "bsn"])
+        self.assertEqual(
+            str(cm.exception), "User is not the owner of the referenced object"
+        )
+
+    @tag("gh-4398")
     @patch(
         "openforms.contrib.objects_api.clients.objects.ObjectsClient.get_object",
         side_effect=RequestException,

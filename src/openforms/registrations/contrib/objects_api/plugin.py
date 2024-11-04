@@ -186,6 +186,13 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
             if not api_group:
                 continue
 
+            auth_attribute_path = backend.options.get("auth_attribute_path")
+            if not auth_attribute_path:
+                logger.info(
+                    "Cannot perform initial data ownership check, because backend %s has no `auth_attribute_path` configured",
+                    backend,
+                )
+                continue
+
             with get_objects_client(api_group) as client:
-                # TODO configurable path
-                validate_object_ownership(submission, client, ["bsn"])
+                validate_object_ownership(submission, client, auth_attribute_path)

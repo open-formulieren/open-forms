@@ -109,6 +109,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
                 "objects_api_group": objects_api_group_used.pk,
                 "objecttype_version": 1,
+                "auth_attribute_path": ["nested", "bsn"],
                 "variables_mapping": [
                     {"variable_key": "voornamen", "target_path": ["some", "path"]},
                 ],
@@ -142,7 +143,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                     call.args[1].base_url,
                     objects_api_group_used.objects_service.api_root,
                 )
-                self.assertEqual(call.args[2], ["bsn"])
+                self.assertEqual(call.args[2], ["nested", "bsn"])
 
             logs = TimelineLogProxy.objects.filter(
                 object_id=submission_step.submission.id
@@ -180,7 +181,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                     call.args[1].base_url,
                     objects_api_group_used.objects_service.api_root,
                 )
-                self.assertEqual(call.args[2], ["bsn"])
+                self.assertEqual(call.args[2], ["nested", "bsn"])
 
             logs = TimelineLogProxy.objects.filter(
                 object_id=submission_step.submission.id
