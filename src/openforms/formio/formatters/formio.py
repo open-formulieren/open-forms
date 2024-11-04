@@ -5,7 +5,7 @@ from typing import Any
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.formats import number_format
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
 
 from glom import glom
@@ -120,6 +120,18 @@ class SelectBoxesFormatter(FormatterBase):
         selected_labels = [
             entry["label"] for entry in component["values"] if value.get(entry["value"])
         ]
+        if self.as_html:
+            # For the html output, wrap the values in li tags and put it inside an ul tag.
+            # The selectboxes formatter handles all values at the same time,
+            # so handle the full html formatting here.
+            return format_html(
+                "<ul>{values}</ul>",
+                values=format_html_join(
+                    "",
+                    "<li>{}</li>",
+                    ((selected_label,) for selected_label in selected_labels),
+                ),
+            )
         return self.multiple_separator.join(selected_labels)
 
 
