@@ -13,7 +13,8 @@ from openforms.contrib.objects_api.clients import (
     get_objects_client,
     get_objecttypes_client,
 )
-from openforms.contrib.objects_api.validators import validate_object_ownership
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -173,4 +174,18 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         return get_static_variables(variables_registry=variables_registry)
 
     def verify_initial_data_ownership(self, submission: Submission) -> None:
-        validate_object_ownership(submission)
+        for backend in submission.form.registration_backends.filter(
+            backend=self.identifier
+        ):
+            if not backend.options:
+                continue
+
+            api_group = ObjectsAPIGroupConfig.objects.filter(
+                pk=backend.options.get("objects_api_group")
+            ).first()
+            if not api_group:
+                continue
+
+            with get_objects_client(api_group) as client:
+                # TODO configurable path
+                validate_object_ownership(submission, client, ["bsn"])

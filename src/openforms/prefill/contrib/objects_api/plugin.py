@@ -8,7 +8,7 @@ from glom import Path, PathAccessError, glom
 from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
-from openforms.contrib.objects_api.validators import validate_object_ownership
+from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -28,6 +28,25 @@ PLUGIN_IDENTIFIER = "objects_api"
 class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     verbose_name = _("Objects API")
     options = ObjectsAPIOptionsSerializer
+
+    def verify_initial_data_ownership(
+        self, submission: Submission, prefill_options: dict
+    ) -> None:
+        api_group = ObjectsAPIGroupConfig.objects.filter(
+            pk=prefill_options.get("objects_api_group")
+        ).first()
+
+        if not api_group:
+            logger.info(
+                "No api group found to perform initial_data_reference ownership check for submission %s with options %s",
+                submission,
+                prefill_options,
+            )
+            return
+
+        with get_objects_client(api_group) as client:
+            # TODO configurable path
+            validate_object_ownership(submission, client, ["bsn"])
 
     @classmethod
     def get_prefill_values_from_options(
@@ -81,6 +100,3 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
                 for group in ObjectsAPIGroupConfig.objects.iterator()
             ]
         }
-
-    def verify_initial_data_ownership(self, submission: Submission) -> None:
-        validate_object_ownership(submission)

@@ -88,7 +88,7 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
     def verify_initial_data_ownership(self, submission: Submission) -> None:
         """
         Hook to check if the authenticated user is the owner of the object
-        referenced to by `initial_data_reference
+        referenced to by `initial_data_reference`
 
         :param submission: an active :class:`Submission` instance
         """

@@ -15,7 +15,7 @@ from openforms.forms.tests.factories import FormRegistrationBackendFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..validators import validate_object_ownership
+from ..ownership_validation import validate_object_ownership
 
 TEST_FILES = (Path(__file__).parent / "files").resolve()
 
@@ -88,14 +88,16 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            validate_object_ownership(submission, client, ["bsn"])
 
     @tag("gh-4398")
     def test_permission_denied_if_user_is_not_logged_in(self):
         submission = SubmissionFactory.create(initial_data_reference=self.object_ref)
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            with self.assertRaises(PermissionDenied) as cm:
+                validate_object_ownership(submission, client, ["bsn"])
         self.assertEqual(
             str(cm.exception), "Cannot pass data reference as anonymous user"
         )
@@ -120,8 +122,9 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        with self.assertRaises(PermissionDenied) as cm:
-            validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            with self.assertRaises(PermissionDenied) as cm:
+                validate_object_ownership(submission, client, ["bsn"])
         self.assertEqual(
             str(cm.exception), "User is not the owner of the referenced object"
         )
@@ -154,39 +157,8 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        validate_object_ownership(submission)
-
-    @tag("gh-4398")
-    def test_no_objects_service_configured_raises_error(
-        self,
-    ):
-        """
-        If the object could not be fetched due to misconfiguration, the ownership check
-        should not fail
-        """
-        submission = SubmissionFactory.create(
-            auth_info__value="111222333",
-            auth_info__attribute=AuthAttribute.bsn,
-            initial_data_reference=self.object_ref,
-        )
-
-        objects_api_group_used = ObjectsAPIGroupConfigFactory.create(
-            objects_service=None,
-        )
-
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
-        validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            validate_object_ownership(submission, client, ["bsn"])
 
     @tag("gh-4398")
     def test_no_backends_configured_raises_error(
@@ -203,7 +175,8 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         )
         FormRegistrationBackendFactory.create(form=submission.form, backend="email")
 
-        validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            validate_object_ownership(submission, client, ["bsn"])
 
     @tag("gh-4398")
     def test_backend_without_options_raises_error(
@@ -223,4 +196,5 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             form=submission.form, backend="objects_api", options={}
         )
 
-        validate_object_ownership(submission)
+        with get_objects_client(self.objects_api_group_used) as client:
+            validate_object_ownership(submission, client, ["bsn"])

@@ -103,7 +103,9 @@ def fetch_prefill_values_from_options(
         # authenticated user is the owner of the referenced object
         try:
             if submission.initial_data_reference:
-                plugin.verify_initial_data_ownership(submission)
+                plugin.verify_initial_data_ownership(
+                    submission, variable.form_variable.prefill_options
+                )
         except PermissionDenied as exc:
             logevent.prefill_retrieve_failure(submission, plugin, exc)
             continue

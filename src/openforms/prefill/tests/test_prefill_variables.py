@@ -333,7 +333,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                 ]
             }
         )
-        FormVariableFactory.create(
+        variable = FormVariableFactory.create(
             key="voornamen",
             form=form_step.form,
             prefill_plugin="demo",
@@ -395,7 +395,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                     prefill_variables(submission=submission_step.submission)
 
                     mock_verify_ownership.assert_called_once_with(
-                        submission_step.submission
+                        submission_step.submission, variable.prefill_options
                     )
 
             logs = TimelineLogProxy.objects.filter(
@@ -423,7 +423,7 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                 prefill_variables(submission=submission_step.submission)
 
                 mock_verify_ownership.assert_called_once_with(
-                    submission_step.submission
+                    submission_step.submission, variable.prefill_options
                 )
 
             logs = TimelineLogProxy.objects.filter(

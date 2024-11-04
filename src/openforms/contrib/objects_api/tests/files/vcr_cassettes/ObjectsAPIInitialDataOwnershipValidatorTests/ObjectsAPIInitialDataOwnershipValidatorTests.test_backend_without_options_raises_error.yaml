@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - EPSG:4326
+      User-Agent:
+      - python-requests/2.32.2
+    method: GET
+    uri: http://localhost:8002/api/v2/objects/d36124c0-752e-48a7-a724-bf3241a2e646
+  response:
+    body:
+      string: '{"url":"http://objects-web:8000/api/v2/objects/d36124c0-752e-48a7-a724-bf3241a2e646","uuid":"d36124c0-752e-48a7-a724-bf3241a2e646","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","foo":"bar"},"geometry":null,"startAt":"2024-10-29","endAt":null,"registrationAt":"2024-10-29","correctionFor":null,"correctedBy":null}}'
+    headers:
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '422'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Mon, 04 Nov 2024 12:48:04 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.27.0
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1
