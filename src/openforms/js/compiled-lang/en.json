@@ -1583,6 +1583,12 @@
       "value": "Move down"
     }
   ],
+  "DJ8XX2": [
+    {
+      "type": 0,
+      "value": "Select a registration backend and click the button to copy the configuration."
+    }
+  ],
   "DJWATl": [
     {
       "type": 0,
@@ -3095,6 +3101,12 @@
       "value": "change a property of a component."
     }
   ],
+  "ScGRie": [
+    {
+      "type": 0,
+      "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
+    }
+  ],
   "ScbJK7": [
     {
       "type": 0,
@@ -4491,6 +4503,12 @@
       "value": "Pricing logic"
     }
   ],
+  "fQuLvm": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration backend"
+    }
+  ],
   "fRMCJI": [
     {
       "type": 0,
@@ -4941,6 +4959,12 @@
     {
       "type": 0,
       "value": "Edit complex variable"
+    }
+  ],
+  "jU6W0l": [
+    {
+      "type": 0,
+      "value": "Copy"
     }
   ],
   "jUPlH5": [

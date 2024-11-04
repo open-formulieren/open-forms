@@ -1604,6 +1604,12 @@
       "value": "Verplaats omlaag"
     }
   ],
+  "DJ8XX2": [
+    {
+      "type": 0,
+      "value": "Select a registration backend and click the button to copy the configuration."
+    }
+  ],
   "DJWATl": [
     {
       "type": 0,
@@ -3112,6 +3118,12 @@
       "value": "wijzig een attribuut van een veld/component."
     }
   ],
+  "ScGRie": [
+    {
+      "type": 0,
+      "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
+    }
+  ],
   "ScbJK7": [
     {
       "type": 0,
@@ -4513,6 +4525,12 @@
       "value": "Prijslogica"
     }
   ],
+  "fQuLvm": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration backend"
+    }
+  ],
   "fRMCJI": [
     {
       "type": 0,
@@ -4963,6 +4981,12 @@
     {
       "type": 0,
       "value": "Wijzig complexe waarde"
+    }
+  ],
+  "jU6W0l": [
+    {
+      "type": 0,
+      "value": "Copy"
     }
   ],
   "jUPlH5": [

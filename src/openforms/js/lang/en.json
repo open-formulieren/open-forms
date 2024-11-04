@@ -674,6 +674,11 @@
     "description": "Move down icon title",
     "originalDefault": "Move down"
   },
+  "DJ8XX2": {
+    "defaultMessage": "Select a registration backend and click the button to copy the configuration.",
+    "description": "Copy Objects API prefill configuration from registration backend help text",
+    "originalDefault": "Select a registration backend and click the button to copy the configuration."
+  },
   "DRG6XN": {
     "defaultMessage": "invalid input mapping(s)",
     "description": "Warning message: DMN input mapping problems detected",
@@ -1489,6 +1494,11 @@
     "description": "action type \"property\" label",
     "originalDefault": "change a property of a component."
   },
+  "ScGRie": {
+    "defaultMessage": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?",
+    "description": "Objects API prefill configuration: warning message\n              when copying the config from registration backend",
+    "originalDefault": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
+  },
   "ScbJK7": {
     "defaultMessage": "Organisation RSIN",
     "description": "ZGW APIs registration options 'organisationRSIN' label",
@@ -2079,6 +2089,11 @@
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
   },
+  "fQuLvm": {
+    "defaultMessage": "Copy configuration from registration backend",
+    "description": "Copy Objects API prefill configuration from registration backend label",
+    "originalDefault": "Copy configuration from registration backend"
+  },
   "fTmdl/": {
     "defaultMessage": "Payment status update variable mapping",
     "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
@@ -2313,6 +2328,11 @@
     "defaultMessage": "Edit complex variable",
     "description": "Camunda complex process var configuration modal title",
     "originalDefault": "Edit complex variable"
+  },
+  "jU6W0l": {
+    "defaultMessage": "Copy",
+    "description": "Copy Objects API prefill configuration from registration backend button",
+    "originalDefault": "Copy"
   },
   "jUPlH5": {
     "defaultMessage": "Resulting string",
