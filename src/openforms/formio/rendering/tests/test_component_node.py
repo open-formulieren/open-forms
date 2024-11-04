@@ -533,3 +533,412 @@ class ComponentNodeTests(TestCase):
             "Input 6",
         ]
         self.assertEqual(labels, expected_labels)
+
+    def test_render_mode_pdf_with_list_values(self):
+        config = {
+            "components": [
+                {
+                    "type": "bsn",
+                    "key": "bsn",
+                    "label": "BSN",
+                    "multiple": True,
+                },
+                {
+                    "type": "date",
+                    "key": "date",
+                    "label": "Date",
+                    "multiple": True,
+                },
+                {
+                    "type": "datetime",
+                    "key": "datetime",
+                    "label": "DateTime",
+                    "multiple": True,
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "multiple": True,
+                },
+                {
+                    "type": "iban",
+                    "key": "iban",
+                    "label": "IBAN",
+                    "multiple": True,
+                },
+                {
+                    "type": "licenseplate",
+                    "key": "licenseplate",
+                    "label": "LicensePlate",
+                    "multiple": True,
+                },
+                {
+                    "type": "phoneNumber",
+                    "key": "phoneNumber",
+                    "label": "PhoneNumber",
+                    "multiple": True,
+                },
+                {
+                    "type": "postcode",
+                    "key": "postcode",
+                    "label": "Postcode",
+                    "multiple": True,
+                },
+                {
+                    "type": "textarea",
+                    "key": "textarea",
+                    "label": "Textarea",
+                    "multiple": True,
+                },
+                {
+                    "type": "time",
+                    "key": "time",
+                    "label": "Time",
+                    "multiple": True,
+                },
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Option 2",
+                        },
+                        {
+                            "value": "option3",
+                            "label": "Option 3",
+                        },
+                    ],
+                },
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Option 2",
+                        },
+                    ],
+                },
+                {
+                    "type": "select",
+                    "key": "select-single",
+                    "label": "Select single",
+                    "multiple": False,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {"label": "Option 1", "value": "option1"},
+                            {"label": "Option 2", "value": "option2"},
+                        ]
+                    },
+                },
+                {
+                    "type": "select",
+                    "key": "select-multiple",
+                    "label": "Select multiple",
+                    "multiple": True,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {
+                                "label": "Option 1",
+                                "value": "option1",
+                            },
+                            {
+                                "label": "Option 2",
+                                "value": "option2",
+                            },
+                            {
+                                "label": "Option 3",
+                                "value": "option3",
+                            },
+                        ]
+                    },
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "multiple": True,
+                },
+            ]
+        }
+        data = {
+            "bsn": ["123456782", "987654321"],
+            "date": ["2024-11-11", "2024-11-13", "2024-11-16"],
+            "datetime": ["2022-09-08T12:00:00+02:00", "2022-10-08T15:00:00+02:00"],
+            "email": ["foo@mail.com", "bar@mail.com"],
+            "iban": ["RO09 BCYP 0000 0012 3456 7890", "RO09 BCYP 0000 0056 3456 7890"],
+            "licenseplate": ["123-aa-1", "12-aa-31"],
+            "phoneNumber": ["0612345678", "0645678923"],
+            "postcode": ["1234aa", "5678bb"],
+            "textarea": ["foo", "bar"],
+            "time": ["12:12:00", "14:02:00", "19:21:00"],
+            "selectboxes": {"option1": True, "option2": True},
+            "radio": "option1",
+            "select-single": "option1",
+            "select-multiple": ["option2", "option3"],
+            "textfield": ["Foo", "Bar"],
+        }
+
+        submission = SubmissionFactory.from_components(
+            components_list=config["components"], submitted_data=data
+        )
+        step = submission.steps[0]
+        register = Registry()
+
+        nodelist = []
+        with patch("openforms.formio.rendering.registry.register", new=register):
+            renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
+            for component in step.form_step.form_definition.configuration["components"]:
+                component_node = ComponentNode.build_node(
+                    step_data=step.data, component=component, renderer=renderer
+                )
+                nodelist += list(component_node)
+
+        self.assertEqual(len(nodelist), 15)
+
+        expected = [
+            ("BSN", "<ul><li>123456782</li><li>987654321</li></ul>"),
+            (
+                "Date",
+                "<ul><li>11 november 2024</li><li>13 november 2024</li><li>16 november 2024</li></ul>",
+            ),
+            (
+                "DateTime",
+                "<ul><li>8 september 2022 12:00</li><li>8 oktober 2022 15:00</li></ul>",
+            ),
+            ("Email", "<ul><li>foo@mail.com</li><li>bar@mail.com</li></ul>"),
+            (
+                "IBAN",
+                "<ul><li>RO09 BCYP 0000 0012 3456 7890</li><li>RO09 BCYP 0000 0056 3456 7890</li></ul>",
+            ),
+            ("LicensePlate", "<ul><li>123-aa-1</li><li>12-aa-31</li></ul>"),
+            ("PhoneNumber", "<ul><li>0612345678</li><li>0645678923</li></ul>"),
+            ("Postcode", "<ul><li>1234aa</li><li>5678bb</li></ul>"),
+            ("Textarea", "<ul><li>foo</li><li>bar</li></ul>"),
+            ("Time", "<ul><li>12:12</li><li>14:02</li><li>19:21</li></ul>"),
+            ("Selectboxes", "<ul><li>Option 1</li><li>Option 2</li></ul>"),
+            ("Radio", "Option 1"),
+            ("Select single", "Option 1"),
+            ("Select multiple", "<ul><li>Option 2</li><li>Option 3</li></ul>"),
+            ("Textfield", "<ul><li>Foo</li><li>Bar</li></ul>"),
+        ]
+        values = [(node.label, node.display_value) for node in nodelist]
+        self.assertEqual(values, expected)
+
+    def test_render_mode_summary_with_list_values(self):
+        config = {
+            "components": [
+                {
+                    "type": "bsn",
+                    "key": "bsn",
+                    "label": "BSN",
+                    "multiple": True,
+                },
+                {
+                    "type": "date",
+                    "key": "date",
+                    "label": "Date",
+                    "multiple": True,
+                },
+                {
+                    "type": "datetime",
+                    "key": "datetime",
+                    "label": "DateTime",
+                    "multiple": True,
+                },
+                {
+                    "type": "email",
+                    "key": "email",
+                    "label": "Email",
+                    "multiple": True,
+                },
+                {
+                    "type": "iban",
+                    "key": "iban",
+                    "label": "IBAN",
+                    "multiple": True,
+                },
+                {
+                    "type": "licenseplate",
+                    "key": "licenseplate",
+                    "label": "LicensePlate",
+                    "multiple": True,
+                },
+                {
+                    "type": "phoneNumber",
+                    "key": "phoneNumber",
+                    "label": "PhoneNumber",
+                    "multiple": True,
+                },
+                {
+                    "type": "postcode",
+                    "key": "postcode",
+                    "label": "Postcode",
+                    "multiple": True,
+                },
+                {
+                    "type": "textarea",
+                    "key": "textarea",
+                    "label": "Textarea",
+                    "multiple": True,
+                },
+                {
+                    "type": "time",
+                    "key": "time",
+                    "label": "Time",
+                    "multiple": True,
+                },
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Option 2",
+                        },
+                        {
+                            "value": "option3",
+                            "label": "Option 3",
+                        },
+                    ],
+                },
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Option 2",
+                        },
+                    ],
+                },
+                {
+                    "type": "select",
+                    "key": "select-single",
+                    "label": "Select single",
+                    "multiple": False,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {"label": "Option 1", "value": "option1"},
+                            {"label": "Option 2", "value": "option2"},
+                        ]
+                    },
+                },
+                {
+                    "type": "select",
+                    "key": "select-multiple",
+                    "label": "Select multiple",
+                    "multiple": True,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {
+                                "label": "Option 1",
+                                "value": "option1",
+                            },
+                            {
+                                "label": "Option 2",
+                                "value": "option2",
+                            },
+                            {
+                                "label": "Option 3",
+                                "value": "option3",
+                            },
+                        ]
+                    },
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "multiple": True,
+                },
+            ]
+        }
+        data = {
+            "bsn": ["123456782", "987654321"],
+            "date": ["2024-11-11", "2024-11-13", "2024-11-16"],
+            "datetime": ["2022-09-08T12:00:00+02:00", "2022-10-08T15:00:00+02:00"],
+            "email": ["foo@mail.com", "bar@mail.com"],
+            "iban": ["RO09 BCYP 0000 0012 3456 7890", "RO09 BCYP 0000 0056 3456 7890"],
+            "licenseplate": ["123-aa-1", "12-aa-31"],
+            "phoneNumber": ["0612345678", "0645678923"],
+            "postcode": ["1234aa", "5678bb"],
+            "textarea": ["foo", "bar"],
+            "time": ["12:12:00", "14:02:00", "19:21:00"],
+            "selectboxes": {"option1": True, "option2": True},
+            "radio": "option1",
+            "select-single": "option1",
+            "select-multiple": ["option2", "option3"],
+            "textfield": ["Foo", "Bar"],
+        }
+
+        submission = SubmissionFactory.from_components(
+            components_list=config["components"], submitted_data=data
+        )
+        step = submission.steps[0]
+        register = Registry()
+
+        nodelist = []
+        with patch("openforms.formio.rendering.registry.register", new=register):
+            renderer = Renderer(submission, mode=RenderModes.summary, as_html=False)
+            for component in step.form_step.form_definition.configuration["components"]:
+                component_node = ComponentNode.build_node(
+                    step_data=step.data, component=component, renderer=renderer
+                )
+                nodelist += list(component_node)
+
+        self.assertEqual(len(nodelist), 15)
+
+        expected = [
+            ("BSN", "123456782; 987654321"),
+            ("Date", "11 november 2024; 13 november 2024; 16 november 2024"),
+            ("DateTime", "8 september 2022 12:00; 8 oktober 2022 15:00"),
+            ("Email", "foo@mail.com; bar@mail.com"),
+            ("IBAN", "RO09 BCYP 0000 0012 3456 7890; RO09 BCYP 0000 0056 3456 7890"),
+            ("LicensePlate", "123-aa-1; 12-aa-31"),
+            ("PhoneNumber", "0612345678; 0645678923"),
+            ("Postcode", "1234aa; 5678bb"),
+            ("Textarea", "foo; bar"),
+            ("Time", "12:12; 14:02; 19:21"),
+            ("Selectboxes", "Option 1; Option 2"),
+            ("Radio", "Option 1"),
+            ("Select single", "Option 1"),
+            ("Select multiple", "Option 2; Option 3"),
+            ("Textfield", "Foo; Bar"),
+        ]
+        values = [(node.label, node.display_value) for node in nodelist]
+        self.assertEqual(values, expected)

@@ -262,6 +262,201 @@ class SubmissionReportGenerationTests(TestCase):
 
         self.assertEqual(reference_node.text, "Report created on: Jan. 1, 2024, 1 a.m.")
 
+    def test_textfield_component_with_multiple_is_rendered_as_html(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "textfield-single",
+                    "label": "Textfield single",
+                    "multiple": False,
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield-multiple",
+                    "label": "Textfield multiple",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={
+                "textfield-single": "foo",
+                "textfield-multiple": ["foo", "bar"],
+            },
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        expected = format_html(
+            """
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Textfield single</div>
+                <div class="submission-step-row__value">
+                    foo
+                </div>
+            </div>
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Textfield multiple</div>
+                <div class="submission-step-row__value">
+                    <ul><li>foo</li><li>bar</li></ul>
+                </div>
+            </div>
+            """,
+        )
+        self.assertInHTML(expected, html, count=1)
+
+    def test_select_component_with_multiple_is_rendered_as_html(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "select",
+                    "key": "select-single",
+                    "label": "Select single",
+                    "multiple": False,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {"label": "Single select Option 1", "value": "option1"},
+                            {"label": "Single select Option 2", "value": "option2"},
+                        ]
+                    },
+                },
+                {
+                    "type": "select",
+                    "key": "select-multiple",
+                    "label": "Select multiple",
+                    "multiple": True,
+                    "openForms": {
+                        "dataSrc": "manual",
+                    },
+                    "data": {
+                        "values": [
+                            {
+                                "label": "Multiple select Option 1",
+                                "value": "option1",
+                            },
+                            {
+                                "label": "Multiple select Option 2",
+                                "value": "option2",
+                            },
+                            {
+                                "label": "Multiple select Option 3",
+                                "value": "option3",
+                            },
+                        ]
+                    },
+                },
+            ],
+            submitted_data={
+                "select-single": "option1",
+                "select-multiple": ["option1", "option3"],
+            },
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        expected = format_html(
+            """
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Select single</div>
+                <div class="submission-step-row__value">
+                    Single select Option 1
+                </div>
+            </div>
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Select multiple</div>
+                <div class="submission-step-row__value">
+                    <ul><li>Multiple select Option 1</li><li>Multiple select Option 3</li></ul>
+                </div>
+            </div>
+            """,
+        )
+        self.assertInHTML(expected, html, count=1)
+
+    def test_selectboxes_component_is_rendered_as_html(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Selectbox Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Selectbox Option 2",
+                        },
+                        {
+                            "value": "option3",
+                            "label": "Selectbox Option 3",
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "selectboxes": {
+                    "option1": True,
+                    "option3": True,
+                },
+            },
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        expected = format_html(
+            """
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Selectboxes</div>
+                <div class="submission-step-row__value">
+                    <ul><li>Selectbox Option 1</li><li>Selectbox Option 3</li></ul>
+                </div>
+            </div>
+            """,
+        )
+        self.assertInHTML(expected, html, count=1)
+
+    def test_radio_component_is_rendered_as_plain_text(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {
+                            "value": "firstradiooption",
+                            "label": "First radio option",
+                        },
+                        {
+                            "value": "secondradiooption",
+                            "label": "Second radio option",
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "radio": "secondradiooption",
+            },
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        expected = format_html(
+            """
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">Radio</div>
+                <div class="submission-step-row__value">
+                    Second radio option
+                </div>
+            </div>
+            """,
+        )
+        self.assertInHTML(expected, html, count=1)
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
