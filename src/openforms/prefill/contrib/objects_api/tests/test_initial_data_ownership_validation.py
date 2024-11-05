@@ -25,6 +25,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 TEST_FILES = (Path(__file__).parent / "files").resolve()
 
 
+@tag("gh-4398")
 class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
@@ -55,40 +56,38 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                 )
             cls.object_ref = object["uuid"]
 
-    @tag("gh-4398")
-    def test_verify_initial_data_ownership(self):
-        objects_api_group_used = ObjectsAPIGroupConfigFactory.create(
+        cls.objects_api_group_used = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
-        objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
+        cls.objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
 
-        form = FormFactory.create()
+        cls.form = FormFactory.create()
         # An objects API backend with a different API group
         FormRegistrationBackendFactory.create(
-            form=form,
+            form=cls.form,
             backend="objects_api",
             options={
                 "version": 2,
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": objects_api_group_unused.pk,
+                "objects_api_group": cls.objects_api_group_unused.pk,
                 "objecttype_version": 1,
             },
         )
         # Another backend that should be ignored
-        FormRegistrationBackendFactory.create(form=form, backend="email")
+        FormRegistrationBackendFactory.create(form=cls.form, backend="email")
         # The backend that should be used to perform the check
         FormRegistrationBackendFactory.create(
-            form=form,
+            form=cls.form,
             backend="objects_api",
             options={
                 "version": 2,
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": objects_api_group_used.pk,
+                "objects_api_group": cls.objects_api_group_used.pk,
                 "objecttype_version": 1,
             },
         )
 
-        form_step = FormStepFactory.create(
+        cls.form_step = FormStepFactory.create(
             form_definition__configuration={
                 "components": [
                     {
@@ -99,15 +98,15 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                 ]
             }
         )
-        variable = FormVariableFactory.create(
+        cls.variable = FormVariableFactory.create(
             key="voornamen",
-            form=form_step.form,
+            form=cls.form_step.form,
             prefill_plugin="objects_api",
             prefill_attribute="",
             prefill_options={
                 "version": 2,
                 "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": objects_api_group_used.pk,
+                "objects_api_group": cls.objects_api_group_used.pk,
                 "objecttype_version": 1,
                 "auth_attribute_path": ["nested", "bsn"],
                 "variables_mapping": [
@@ -116,112 +115,138 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
             },
         )
 
-        with self.subTest(
-            "verify_initial_data_ownership is called if initial_data_reference is specified"
-        ):
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-                submission__initial_data_reference=self.object_ref,
-            )
+    def test_verify_initial_data_ownership_called_if_initial_data_reference_specified(
+        self,
+    ):
+        submission_step = SubmissionStepFactory.create(
+            submission__form=self.form_step.form,
+            form_step=self.form_step,
+            submission__auth_info__value="999990676",
+            submission__auth_info__attribute=AuthAttribute.bsn,
+            submission__initial_data_reference=self.object_ref,
+        )
 
-            with patch(
-                "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership"
-            ) as mock_validate_object_ownership:
-                prefill_variables(submission=submission_step.submission)
+        with patch(
+            "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership"
+        ) as mock_validate_object_ownership:
+            prefill_variables(submission=submission_step.submission)
 
-                self.assertEqual(mock_validate_object_ownership.call_count, 1)
+            self.assertEqual(mock_validate_object_ownership.call_count, 1)
 
-                # Cannot compare with `.assert_has_calls`, because the client objects
-                # won't match
-                call = mock_validate_object_ownership.mock_calls[0]
+            # Cannot compare with `.assert_has_calls`, because the client objects
+            # won't match
+            call = mock_validate_object_ownership.mock_calls[0]
 
-                self.assertEqual(call.args[0], submission_step.submission)
-                self.assertEqual(
-                    call.args[1].base_url,
-                    objects_api_group_used.objects_service.api_root,
-                )
-                self.assertEqual(call.args[2], ["nested", "bsn"])
-
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
-
+            self.assertEqual(call.args[0], submission_step.submission)
             self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
+                call.args[1].base_url,
+                self.objects_api_group_used.objects_service.api_root,
             )
+            self.assertEqual(call.args[2], ["nested", "bsn"])
 
-        with self.subTest(
-            "verify_initial_data_ownership raising error causes prefill to fail"
-        ):
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-                submission__initial_data_reference=self.object_ref,
-            )
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
 
-            with patch(
-                "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
-                side_effect=PermissionDenied,
-            ) as mock_validate_object_ownership:
-                prefill_variables(submission=submission_step.submission)
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
+        )
 
-                self.assertEqual(mock_validate_object_ownership.call_count, 1)
+    def test_verify_initial_data_ownership_raising_errors_causes_prefill_to_fail(self):
+        submission_step = SubmissionStepFactory.create(
+            submission__form=self.form_step.form,
+            form_step=self.form_step,
+            submission__auth_info__value="999990676",
+            submission__auth_info__attribute=AuthAttribute.bsn,
+            submission__initial_data_reference=self.object_ref,
+        )
 
-                # Cannot compare with `.assert_has_calls`, because the client objects
-                # won't match
-                call = mock_validate_object_ownership.mock_calls[0]
+        with patch(
+            "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
+            side_effect=PermissionDenied,
+        ) as mock_validate_object_ownership:
+            prefill_variables(submission=submission_step.submission)
 
-                self.assertEqual(call.args[0], submission_step.submission)
-                self.assertEqual(
-                    call.args[1].base_url,
-                    objects_api_group_used.objects_service.api_root,
-                )
-                self.assertEqual(call.args[2], ["nested", "bsn"])
+            self.assertEqual(mock_validate_object_ownership.call_count, 1)
 
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
+            # Cannot compare with `.assert_has_calls`, because the client objects
+            # won't match
+            call = mock_validate_object_ownership.mock_calls[0]
+
+            self.assertEqual(call.args[0], submission_step.submission)
             self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+                call.args[1].base_url,
+                self.objects_api_group_used.objects_service.api_root,
             )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
-            )
+            self.assertEqual(call.args[2], ["nested", "bsn"])
 
-        with self.subTest(
-            "verify_initial_data_ownership does not raise errors if no API group is found"
-        ):
-            variable.prefill_options["objects_api_group"] = (
-                ObjectsAPIGroupConfig.objects.last().pk + 1
-            )
-            variable.save()
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-                submission__initial_data_reference=self.object_ref,
-            )
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+        )
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
+        )
 
-            with patch(
-                "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
-            ) as mock_validate_object_ownership:
-                prefill_variables(submission=submission_step.submission)
+    def test_verify_initial_data_ownership_missing_auth_attribute_path_causes_failing_prefill(
+        self,
+    ):
+        del self.variable.prefill_options["auth_attribute_path"]
+        self.variable.save()
+        submission_step = SubmissionStepFactory.create(
+            submission__form=self.form_step.form,
+            form_step=self.form_step,
+            submission__auth_info__value="999990676",
+            submission__auth_info__attribute=AuthAttribute.bsn,
+            submission__initial_data_reference=self.object_ref,
+        )
 
-                self.assertEqual(mock_validate_object_ownership.call_count, 0)
+        with patch(
+            "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
+        ) as mock_validate_object_ownership:
+            prefill_variables(submission=submission_step.submission)
 
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
-            )
-            # Prefilling fails, because the API group does not exist
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
-            )
+            self.assertEqual(mock_validate_object_ownership.call_count, 0)
+
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+        )
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
+        )
+        self.assertEqual(
+            logs.filter(
+                extra_data__log_event="object_ownership_check_improperly_configured"
+            ).count(),
+            1,
+        )
+
+    def test_verify_initial_data_ownership_does_not_raise_errors_without_api_group(
+        self,
+    ):
+        self.variable.prefill_options["objects_api_group"] = (
+            ObjectsAPIGroupConfig.objects.last().pk + 1
+        )
+        self.variable.save()
+        submission_step = SubmissionStepFactory.create(
+            submission__form=self.form_step.form,
+            form_step=self.form_step,
+            submission__auth_info__value="999990676",
+            submission__auth_info__attribute=AuthAttribute.bsn,
+            submission__initial_data_reference=self.object_ref,
+        )
+
+        with patch(
+            "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
+        ) as mock_validate_object_ownership:
+            prefill_variables(submission=submission_step.submission)
+
+            self.assertEqual(mock_validate_object_ownership.call_count, 0)
+
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
+        )
+        # Prefilling fails, because the API group does not exist
+        self.assertEqual(
+            logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
+        )

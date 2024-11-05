@@ -83,6 +83,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 
@@ -106,6 +107,8 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
 
     def test_prefill_values_when_reference_not_found(self):
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference="048a37ca-a602-4158-9e60-9f06f3e47e2a",
             components_list=[
                 {
@@ -131,6 +134,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 
@@ -150,7 +154,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         with get_objects_client(self.objects_api_group) as client:
             created_obj = client.create_object(
                 record_data=prepare_data_for_registration(
-                    data={},
+                    data={"bsn": "111222333"},
                     objecttype_version=3,
                 ),
                 objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
@@ -184,6 +188,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 

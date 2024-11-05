@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"bsn": "111222333", "foo": "bar"}, "startAt":
-      "2024-10-29"}}'
+      "2024-11-05"}}'
     headers:
       Accept:
       - '*/*'
@@ -24,7 +24,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/d36124c0-752e-48a7-a724-bf3241a2e646","uuid":"d36124c0-752e-48a7-a724-bf3241a2e646","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","foo":"bar"},"geometry":null,"startAt":"2024-10-29","endAt":null,"registrationAt":"2024-10-29","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/300e61aa-e150-459c-aa30-d3f0fe4f5506","uuid":"300e61aa-e150-459c-aa30-d3f0fe4f5506","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","foo":"bar"},"geometry":null,"startAt":"2024-11-05","endAt":null,"registrationAt":"2024-11-05","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -39,9 +39,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 29 Oct 2024 13:38:51 GMT
+      - Tue, 05 Nov 2024 14:28:43 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/d36124c0-752e-48a7-a724-bf3241a2e646
+      - http://localhost:8002/api/v2/objects/300e61aa-e150-459c-aa30-d3f0fe4f5506
       Referrer-Policy:
       - same-origin
       Server:
