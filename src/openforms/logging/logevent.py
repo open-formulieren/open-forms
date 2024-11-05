@@ -255,6 +255,30 @@ def object_ownership_check_failure(submission: Submission, plugin=None):
     )
 
 
+def object_ownership_check_success(submission: Submission, plugin=None):
+    _create_log(
+        submission,
+        "object_ownership_check_success",
+        plugin=plugin,
+    )
+
+
+def object_ownership_check_anonymous_user(submission: Submission, plugin=None):
+    _create_log(
+        submission,
+        "object_ownership_check_anonymous_user",
+        plugin=plugin,
+    )
+
+
+def object_ownership_check_improperly_configured(submission: Submission, plugin=None):
+    _create_log(
+        submission,
+        "object_ownership_check_improperly_configured",
+        plugin=plugin,
+    )
+
+
 # - - -
 
 

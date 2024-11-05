@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with plugin=log.fmt_plugin lead=log.fmt_lead %}
+   {{ lead }}: Registration plugin {{ plugin }} reported: cannot perform initial data reference ownership check due to missing `Path to auth attribute (e.g. BSN/KVK) in objects` in configuration.
+{% endblocktrans %}

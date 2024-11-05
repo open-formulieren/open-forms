@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -9,6 +10,7 @@ from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
+from openforms.logging import logevent
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -50,10 +52,15 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
                 "Cannot perform initial data ownership check, because `auth_attribute_path` is missing from %s",
                 prefill_options,
             )
-            return
+            logevent.object_ownership_check_improperly_configured(
+                submission, plugin=self
+            )
+            raise ImproperlyConfigured(
+                f"`auth_attribute_path` missing from options {prefill_options}, cannot perform initial data ownership check"
+            )
 
         with get_objects_client(api_group) as client:
-            validate_object_ownership(submission, client, auth_attribute_path)
+            validate_object_ownership(submission, client, auth_attribute_path, self)
 
     @classmethod
     def get_prefill_values_from_options(

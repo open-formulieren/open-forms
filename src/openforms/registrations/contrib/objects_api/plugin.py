@@ -4,6 +4,7 @@ import logging
 from functools import partial
 from typing import TYPE_CHECKING, Any, override
 
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -15,6 +16,7 @@ from openforms.contrib.objects_api.clients import (
 )
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
+from openforms.logging import logevent
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -188,11 +190,16 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
 
             auth_attribute_path = backend.options.get("auth_attribute_path")
             if not auth_attribute_path:
-                logger.info(
+                logger.error(
                     "Cannot perform initial data ownership check, because backend %s has no `auth_attribute_path` configured",
                     backend,
                 )
-                continue
+                logevent.object_ownership_check_improperly_configured(
+                    submission, plugin=self
+                )
+                raise ImproperlyConfigured(
+                    f"{backend} has no `auth_attribute_path` configured, cannot perform initial data ownership check"
+                )
 
             with get_objects_client(api_group) as client:
-                validate_object_ownership(submission, client, auth_attribute_path)
+                validate_object_ownership(submission, client, auth_attribute_path, self)

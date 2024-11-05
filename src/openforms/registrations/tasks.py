@@ -2,7 +2,6 @@ import logging
 import traceback
 from contextlib import contextmanager
 
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.utils import timezone
 
@@ -79,17 +78,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     # If an `initial_data_reference` was passed, we must verify that the
     # authenticated user is the owner of the referenced object
     if registration_plugin and submission.initial_data_reference:
-        try:
-            registration_plugin.verify_initial_data_ownership(submission)
-        except PermissionDenied as e:
-            logger.exception(
-                "Submission with initial_data_reference did not pass ownership check for plugin %s",
-                registration_plugin.verbose_name,
-            )
-            logevent.object_ownership_check_failure(
-                submission, plugin=registration_plugin
-            )
-            raise e
+        registration_plugin.verify_initial_data_ownership(submission)
 
     with transaction.atomic():
         if not registration_plugin:

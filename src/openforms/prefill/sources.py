@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
 import elasticapm
 from rest_framework.exceptions import ValidationError
@@ -106,7 +106,7 @@ def fetch_prefill_values_from_options(
                 plugin.verify_initial_data_ownership(
                     submission, variable.form_variable.prefill_options
                 )
-        except PermissionDenied as exc:
+        except (PermissionDenied, ImproperlyConfigured) as exc:
             logevent.prefill_retrieve_failure(submission, plugin, exc)
             continue
 

@@ -89,11 +89,18 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(TimelineLogProxy.objects.count(), 1)
-        logs = TimelineLogProxy.objects.get()
+        self.assertEqual(TimelineLogProxy.objects.count(), 2)
+        ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
 
-        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_success")
-        self.assertEqual(logs.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            ownership_check_log.extra_data["log_event"],
+            "object_ownership_check_success",
+        )
+        self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            prefill_log.extra_data["log_event"], "prefill_retrieve_success"
+        )
+        self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
         self.assertEqual(state.variables["lastName"].value, "My last name")
         self.assertEqual(state.variables["age"].value, "45")
 
@@ -183,10 +190,15 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(TimelineLogProxy.objects.count(), 1)
-        logs = TimelineLogProxy.objects.get()
+        self.assertEqual(TimelineLogProxy.objects.count(), 2)
+        ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
 
-        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_empty")
-        self.assertEqual(logs.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            ownership_check_log.extra_data["log_event"],
+            "object_ownership_check_success",
+        )
+        self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(prefill_log.extra_data["log_event"], "prefill_retrieve_empty")
+        self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
         self.assertIsNone(state.variables["lastName"].value)
         self.assertIsNone(state.variables["age"].value)
