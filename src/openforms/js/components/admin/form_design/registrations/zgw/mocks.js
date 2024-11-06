@@ -65,6 +65,11 @@ const CASE_TYPES = {
       description: 'Draft case type',
       isPublished: false,
     },
+    {
+      identification: 'ZT23',
+      description: 'Published case type with a rather long description',
+      isPublished: true,
+    },
   ],
 };
 

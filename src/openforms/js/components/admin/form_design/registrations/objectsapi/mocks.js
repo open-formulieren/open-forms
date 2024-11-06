@@ -105,7 +105,7 @@ const DOCUMENT_TYPES = {
     },
     {
       url: 'https://example.com/catalogi/api/v1/iot/13',
-      omschrijving: 'A rather long draft description',
+      omschrijving: 'Document type 4 with a rather long draft description',
       catalogusLabel: 'TEST (111111111)',
       isPublished: false,
     },
