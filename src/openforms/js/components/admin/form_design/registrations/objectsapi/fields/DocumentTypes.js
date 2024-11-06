@@ -3,6 +3,7 @@ import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {components} from 'react-select';
 import {useAsync, usePrevious} from 'react-use';
 
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
@@ -42,7 +43,17 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
   const documentTypes = response.data.sort((a, b) => a.omschrijving.localeCompare(b.omschrijving));
   return documentTypes.map(({omschrijving, isPublished}) => ({
     value: omschrijving,
-    label: (
+    label: omschrijving,
+    isPublished: isPublished,
+  }));
+};
+
+// Components
+
+const DocumentTypeSelectOption = props => {
+  const {isPublished, label} = props.data;
+  return (
+    <components.Option {...props}>
       <span
         className={classNames('catalogi-type-option', {
           'catalogi-type-option--draft': !isPublished,
@@ -50,19 +61,17 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
       >
         <FormattedMessage
           description="Document type option label"
-          defaultMessage={`{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
+          defaultMessage={`{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
           values={{
-            omschrijving,
+            label,
             isPublished,
             draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
           }}
         />
       </span>
-    ),
-  }));
+    </components.Option>
+  );
 };
-
-// Components
 
 const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => {
   const intl = useIntl();
@@ -91,6 +100,7 @@ const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => 
               setValue(selectedOption ? selectedOption.value : undefined);
             }}
             isClearable
+            components={{Option: DocumentTypeSelectOption}}
           />
           {showWarning && (
             <WarningIcon

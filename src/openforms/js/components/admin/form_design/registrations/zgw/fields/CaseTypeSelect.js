@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
+import {components} from 'react-select';
 import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
@@ -22,7 +24,17 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
   const caseTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
   return caseTypes.map(({identification, description, isPublished}) => ({
     value: identification,
-    label: (
+    label: description,
+    isPublished: isPublished,
+  }));
+};
+
+// Components
+
+const CaseTypeSelectOption = props => {
+  const {isPublished, label} = props.data;
+  return (
+    <components.Option {...props}>
       <span
         className={classNames('catalogi-type-option', {
           'catalogi-type-option--draft': !isPublished,
@@ -30,16 +42,16 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
       >
         <FormattedMessage
           description="Case type option label"
-          defaultMessage={`{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
+          defaultMessage={`{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
           values={{
-            description,
+            label,
             isPublished,
             draft: chunks => <span className="catalogi-type-option__draft-suffix">{chunks}</span>,
           }}
         />
       </span>
-    ),
-  }));
+    </components.Option>
+  );
 };
 
 const CaseTypeSelect = ({catalogueUrl = ''}) => {
@@ -88,6 +100,7 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
           // TODO: make required once legacy config is dropped
           required={false}
           isClearable
+          components={{Option: CaseTypeSelectOption}}
           onChange={selectedOption => {
             setValue(selectedOption ? selectedOption.value : undefined);
           }}
