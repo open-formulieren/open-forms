@@ -382,6 +382,21 @@
     "fields": {
         "order": 1,
         "translations": {
+            "en": "Forms on Samen Delen",
+            "nl": "Formulieren op Samen Delen"
+        },
+        "app_group": [
+            "handige-links"
+        ],
+        "name": "Formulieren op Samen Delen",
+        "link": "https://samendelen.opengem.nl/category/formulieren/"
+    }
+},
+{
+    "model": "admin_index.applink",
+    "fields": {
+        "order": 2,
+        "translations": {
             "en": "API Documentation",
             "nl": "API Documentatie"
         },
@@ -395,7 +410,7 @@
 {
     "model": "admin_index.applink",
     "fields": {
-        "order": 2,
+        "order": 3,
         "translations": {
             "en": "Documentation",
             "nl": "Documentatie"
@@ -410,7 +425,7 @@
 {
     "model": "admin_index.applink",
     "fields": {
-        "order": 3,
+        "order": 4,
         "translations": {
             "en": "Github",
             "nl": "Github"
@@ -425,7 +440,7 @@
 {
     "model": "admin_index.applink",
     "fields": {
-        "order": 4,
+        "order": 5,
         "translations": {
             "en": "Configuration overview",
             "nl": "Configuratie overzicht"
