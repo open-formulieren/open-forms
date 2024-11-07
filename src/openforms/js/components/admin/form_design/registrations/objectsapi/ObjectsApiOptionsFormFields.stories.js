@@ -325,7 +325,7 @@ export const DraftDocumentTypesFeatureFlagOn = {
         rsin: '111111111',
         domain: 'TEST',
       },
-      iotSubmissionReport: 'A rather long draft description',
+      iotSubmissionReport: 'Document type 4 with a rather long draft description',
       iotSubmissionCsv: 'Not-found documenttype',
     },
   },
