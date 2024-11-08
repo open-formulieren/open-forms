@@ -57,6 +57,30 @@ const checkKeyChange = (mutationType, newComponent, oldComponent) => {
   return newComponent.key !== oldComponent.key;
 };
 
+const transformInitialValue = (newType, originalValue) => {
+  switch (newType) {
+    case 'array':
+      return [];
+
+    case 'boolean':
+    case 'int':
+    case 'float':
+      return undefined;
+
+    case 'object':
+      return {};
+
+    case 'string':
+    case 'datetime':
+    case 'date':
+    case 'time':
+      return '';
+
+    default:
+      return originalValue;
+  }
+};
+
 const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => {
   for (const rule of existingLogicRules) {
     if (!JSON.stringify(rule).includes(originalKey)) continue;
@@ -219,6 +243,7 @@ export {
   getFormComponents,
   findComponent,
   checkKeyChange,
+  transformInitialValue,
   updateKeyReferencesInLogic,
   updateRemovedKeyInLogic,
   getUniqueKey,

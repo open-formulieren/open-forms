@@ -70,6 +70,7 @@ import {
   getUniqueKey,
   parseValidationErrors,
   slugify,
+  transformInitialValue,
   updateKeyReferencesInLogic,
   updateRemovedKeyInLogic,
 } from './utils';
@@ -784,6 +785,14 @@ function reducer(draft, action) {
         draft.formVariables[index][propertyName] = propertyValue;
       }
 
+      // When dataType changes, a data transformation is needed
+      if (propertyName === 'dataType') {
+        draft.formVariables[index]['initialValue'] = transformInitialValue(
+          propertyValue,
+          originalVariable.initialValue
+        );
+      }
+
       // Check if there are errors that need to be reset
       if (draft.formVariables[index].errors) {
         const errorKeys = propertyName === '' ? Object.keys(propertyValue) : [propertyName];
@@ -1229,6 +1238,42 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
       payload: pluginId,
     });
   };
+  const onUserDefinedVariableChange = async (key, propertyName, propertyValue) => {
+    const originalVariable = state.formVariables.find(variable => variable.key === key);
+    // Just dispatch if anything other than dataType changes
+    // or if the initialValue is null/undefined
+    if (
+      propertyName !== 'dataType' ||
+      originalVariable?.initialValue == null ||
+      originalVariable?.initialValue === ''
+    ) {
+      dispatch({
+        type: 'CHANGE_USER_DEFINED_VARIABLE',
+        payload: {key, propertyName, propertyValue},
+      });
+      return;
+    }
+
+    // Check if the dataType change is intentional.
+    if (
+      propertyName === 'dataType' &&
+      !window.confirm(
+        intl.formatMessage({
+          description:
+            'Changing user variable data type and transforming initial value confirmation message',
+          defaultMessage:
+            'Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?',
+        })
+      )
+    ) {
+      return;
+    }
+
+    dispatch({
+      type: 'CHANGE_USER_DEFINED_VARIABLE',
+      payload: {key, propertyName, propertyValue},
+    });
+  };
 
   if (loading || state.submitting) {
     return <Loader />;
@@ -1268,8 +1313,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
         <div className="fetch-error">
           <FormattedMessage
             description="Generic admin error message"
-            defaultMessage={`Sorry! Something unexpected went wrong.<br></br>Contact your 
-              technical administrator to investigate, or perhaps more information is 
+            defaultMessage={`Sorry! Something unexpected went wrong.<br></br>Contact your
+              technical administrator to investigate, or perhaps more information is
               available in the <link>outgoing request logs</link>.`}
             values={{
               br: () => <br />,
@@ -1506,12 +1551,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 variables={state.formVariables}
                 onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
                 onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
-                onChange={(key, propertyName, propertyValue) =>
-                  dispatch({
-                    type: 'CHANGE_USER_DEFINED_VARIABLE',
-                    payload: {key, propertyName, propertyValue},
-                  })
-                }
+                onChange={onUserDefinedVariableChange}
                 onFieldChange={onFieldChange}
               />
             </TabPanel>

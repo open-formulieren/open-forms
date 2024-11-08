@@ -3909,6 +3909,12 @@
       "value": "Login required?"
     }
   ],
+  "af22yB": [
+    {
+      "type": 0,
+      "value": "Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?"
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,
