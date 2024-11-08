@@ -48,9 +48,9 @@ const ZGWAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
           name="zgwApiGroup"
           options={options}
           required
-          onChange={selectedOption => {
-            const okToProceed = onChangeCheck === undefined || onChangeCheck();
-            if (okToProceed) setValue(selectedOption.value);
+          onChange={async selectedOption => {
+            const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
+            if (okToProceed) setValue(selectedOption?.value);
           }}
         />
       </Field>
