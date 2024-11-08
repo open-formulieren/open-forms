@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FormRjsfWrapper from 'components/admin/RJSFWrapper';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -30,13 +29,18 @@ const backendKeyGenerator = (function* () {
 
 const BackendOptionsFormRow = ({backendType = null, currentOptions = {}, onChange, index}) => {
   if (!backendType) return null;
+  // if there's no configuration form, there's nothing to do
+  if (!Object.keys(backendType.schema.properties).length) return null;
 
-  const hasOptionsForm = Boolean(backendType && Object.keys(backendType.schema.properties).length);
-  // either use the custom backend-specific defined form, or fall back to the generic react-json-schema-form
-  const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backendType.id]?.form ?? FormRjsfWrapper;
-  if (!hasOptionsForm && !BACKEND_OPTIONS_FORMS[backendType.id]) {
+  // Look up the configuration form from the registry
+  const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backendType.id]?.form;
+  if (!OptionsFormComponent) {
+    console.debug(
+      `No configuration form known in the registry for plugin with ID '${backendType.id}'.`
+    );
     return null;
   }
+
   return (
     <FormRow>
       <OptionsFormComponent

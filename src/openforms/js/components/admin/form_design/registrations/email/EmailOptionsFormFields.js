@@ -2,15 +2,13 @@ import PropTypes from 'prop-types';
 import {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {
-  filterErrors,
-  getChoicesFromSchema,
-} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
+  filterErrors,
 } from 'components/admin/forms/ValidationErrors';
+import {getChoicesFromSchema} from 'utils/json-schema';
 
 import EmailAttachmentFormatsSelect from './fields/EmailAttachmentFormatsSelect';
 import EmailContentTemplateHTML from './fields/EmailContentTemplateHTML';

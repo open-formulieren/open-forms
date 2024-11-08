@@ -503,6 +503,12 @@
       "value": "Toggle JSON Schema"
     }
   ],
+  "3zaZWN": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: demo"
+    }
+  ],
   "4/cCvG": [
     {
       "type": 0,
@@ -1259,6 +1265,12 @@
       "value": "'Remove row' text"
     }
   ],
+  "B/A1Bk": [
+    {
+      "type": 0,
+      "value": "Which merchant should be used for payments related to this form."
+    }
+  ],
   "B1ONuu": [
     {
       "type": 0,
@@ -1833,6 +1845,12 @@
     {
       "type": 0,
       "value": "Base"
+    }
+  ],
+  "F2VuCs": [
+    {
+      "type": 0,
+      "value": "Merchant ID"
     }
   ],
   "F9ew4C": [
@@ -2411,6 +2429,12 @@
     {
       "type": 0,
       "value": "Something went wrong while rendering the registration options"
+    }
+  ],
+  "LBEeSy": [
+    {
+      "type": 0,
+      "value": "Drive ID"
     }
   ],
   "LD3weJ": [
@@ -4077,6 +4101,12 @@
       "value": "Incomplete Submissions Removal Limit"
     }
   ],
+  "cEALcN": [
+    {
+      "type": 0,
+      "value": "Configure options"
+    }
+  ],
   "cID9dz": [
     {
       "type": 0,
@@ -4965,6 +4995,12 @@
       "value": "Session will expire"
     }
   ],
+  "jpL29S": [
+    {
+      "type": 0,
+      "value": "Folder path"
+    }
+  ],
   "jtWzSW": [
     {
       "type": 0,
@@ -5133,6 +5169,68 @@
     {
       "type": 0,
       "value": "Including today"
+    }
+  ],
+  "lNBZdl": [
+    {
+      "type": 0,
+      "value": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ year }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ", "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ month }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " and "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ day }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ". The path must start with "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "/"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "lOSmt+": [
@@ -5735,6 +5833,40 @@
       "value": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
     }
   ],
+  "sQpH2P": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
+    }
+  ],
   "sR9GVQ": [
     {
       "type": 0,
@@ -6019,6 +6151,12 @@
       "value": "After how many seconds should the cached response expire."
     }
   ],
+  "wAQaa5": [
+    {
+      "type": 0,
+      "value": "Extra print statement"
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -6099,6 +6237,12 @@
     {
       "type": 0,
       "value": "Component where times for an appointment will be shown"
+    }
+  ],
+  "wnTTZr": [
+    {
+      "type": 0,
+      "value": "ID of the drive to use. If left empty, the default drive will be used."
     }
   ],
   "wnxKT/": [
@@ -6373,6 +6517,12 @@
       },
       "type": 5,
       "value": "hasDescription"
+    }
+  ],
+  "zYu3XI": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Ogone legacy"
     }
   ],
   "zeXZzX": [

@@ -9,13 +9,22 @@ import SubmitRow from 'components/admin/forms/SubmitRow';
 import {ErrorIcon} from 'components/admin/icons';
 import {FormModal} from 'components/admin/modals';
 
-const OptionsConfiguration = ({
+/**
+ * A generic container/wrapper for configuration options that display in a modal,
+ * after clicking the button to configure the options. Next to the button the number
+ * of validation errors is displayed.
+ *
+ * This relies on form state being managed with Formik. Pass the actual configuration
+ * fields as children.
+ */
+const ModalOptionsConfiguration = ({
   name,
   label,
   numErrors,
   modalTitle,
   initialFormData,
   onSubmit,
+  modalSize = 'large',
   children,
 }) => {
   const intl = useIntl();
@@ -64,7 +73,7 @@ const OptionsConfiguration = ({
           isOpen={modalOpen}
           title={modalTitle}
           closeModal={() => setModalOpen(false)}
-          extraModifiers={['large']}
+          extraModifiers={modalSize ? [modalSize] : undefined}
         >
           <Formik
             initialValues={initialFormData}
@@ -95,13 +104,14 @@ const OptionsConfiguration = ({
   );
 };
 
-OptionsConfiguration.propTypes = {
+ModalOptionsConfiguration.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
   modalTitle: PropTypes.node.isRequired,
   numErrors: PropTypes.number.isRequired,
   initialFormData: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  modalSize: PropTypes.oneOf(['', 'small', 'large']),
 };
 
-export default OptionsConfiguration;
+export default ModalOptionsConfiguration;

@@ -1,5 +1,7 @@
 import CamundaOptionsForm from './camunda';
+import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
+import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
@@ -10,7 +12,7 @@ import ZGWOptionsForm from './zgw';
 
 /**
  * @typedef {{
- *   form?: React.FC,
+ *   form: React.FC,
  *   uiSchema?: Object,
  *   onStepEdit?: (...args: any) => Object | null,
  *   onUserDefinedVariableEdit?: (...args: any) => Object | null,
@@ -44,4 +46,9 @@ export const BACKEND_OPTIONS_FORMS = {
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,
   },
+  'microsoft-graph': {form: MSGraphOptionsForm},
+  // demo plugins
+  demo: {form: DemoOptionsForm},
+  'failing-demo': {form: DemoOptionsForm},
+  'exception-demo': {form: DemoOptionsForm},
 };

@@ -25,20 +25,6 @@ export default {
   args: {
     availableBackends: [
       {
-        id: 'demo',
-        label: 'Demo - print to console',
-        schema: {
-          properties: {
-            extraLine: {
-              minLength: 1,
-              title: 'Extra print statement',
-              type: 'string',
-            },
-          },
-          type: 'object',
-        },
-      },
-      {
         id: 'zgw-create-zaak',
         label: "ZGW API's",
         // real schema is defined, but irrelevant because of our react components
@@ -281,6 +267,67 @@ export default {
           properties: {},
         },
       },
+      {
+        id: 'demo',
+        label: 'Demo - print to console',
+        schema: {
+          properties: {
+            extraLine: {
+              minLength: 1,
+              title: 'Extra print statement',
+              type: 'string',
+            },
+          },
+          type: 'object',
+        },
+      },
+      {
+        id: 'failing-demo',
+        label: 'Demo - fail registration',
+        schema: {
+          properties: {
+            extraLine: {
+              minLength: 1,
+              title: 'Extra print statement',
+              type: 'string',
+            },
+          },
+          type: 'object',
+        },
+      },
+      {
+        id: 'exception-demo',
+        label: 'Demo - exception during registration',
+        schema: {
+          properties: {
+            extraLine: {
+              minLength: 1,
+              title: 'Extra print statement',
+              type: 'string',
+            },
+          },
+          type: 'object',
+        },
+      },
+      {
+        id: 'microsoft-graph',
+        label: 'Microsoft Graph (OneDrive/SharePoint)',
+        schema: {
+          type: 'object',
+          properties: {
+            folderPath: {
+              type: 'string',
+              minLength: 1,
+              title: 'maplocatie',
+            },
+            driveId: {
+              type: 'string',
+              minLength: 1,
+              title: 'drive-ID',
+            },
+          },
+        },
+      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -493,6 +540,27 @@ export const ConfiguredBackends = {
           zdsZaaktypeOmschrijving: '',
           zdsZaaktypeStatusCode: '',
           zdsZaaktypeStatusOmschrijving: '',
+        },
+      },
+      {
+        key: 'backend7',
+        name: 'Failing demo',
+        backend: 'failing-demo',
+        options: {extraLine: 'Filled out option'},
+      },
+      {
+        key: 'backend8',
+        name: 'Crashing demo',
+        backend: 'exception-demo',
+        options: {extraLine: 'Filled out option'},
+      },
+      {
+        key: 'backend9',
+        name: 'MS Graph',
+        backend: 'microsoft-graph',
+        options: {
+          folderPath: '/formSubmissions',
+          driveId: 'myDrive',
         },
       },
     ],

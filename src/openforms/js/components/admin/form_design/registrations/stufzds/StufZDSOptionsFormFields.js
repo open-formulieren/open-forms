@@ -4,15 +4,13 @@ import {FormattedMessage} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
-import {
-  filterErrors,
-  getChoicesFromSchema,
-} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
+  filterErrors,
 } from 'components/admin/forms/ValidationErrors';
+import {getChoicesFromSchema} from 'utils/json-schema';
 
 import CaseTypeCode from './fields/CaseTypeCode';
 import CaseTypeDescription from './fields/CaseTypeDescription';

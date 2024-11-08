@@ -2,9 +2,8 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
-import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
+import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 
 import StufZDSOptionsFormFields from './StufZDSOptionsFormFields';
 
@@ -34,7 +33,7 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
   }
 
   return (
-    <OptionsConfiguration
+    <ModalOptionsConfiguration
       name={name}
       label={label}
       numErrors={numErrors}
@@ -48,7 +47,7 @@ const StufZDSOptionsForm = ({name, label, schema, formData, onChange}) => {
       onSubmit={values => onChange({formData: values})}
     >
       <StufZDSOptionsFormFields name={name} schema={schema} />
-    </OptionsConfiguration>
+    </ModalOptionsConfiguration>
   );
 };
 

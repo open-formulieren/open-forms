@@ -5,13 +5,12 @@ import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import {getComponentDatatype} from 'components/admin/form_design/variables/utils';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Field from 'components/admin/forms/Field';
 import {TextInput} from 'components/admin/forms/Inputs';
-import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 import {DeleteIcon} from 'components/admin/icons';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
 

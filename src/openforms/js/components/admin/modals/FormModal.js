@@ -35,6 +35,7 @@ FormModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   onFormSubmit: PropTypes.func,
   children: PropTypes.node,
+  extraModifiers: PropTypes.arrayOf(PropTypes.oneOf(['small', 'large'])),
 };
 
 export default FormModal;

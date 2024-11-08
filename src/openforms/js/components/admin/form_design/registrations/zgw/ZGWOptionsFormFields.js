@@ -6,11 +6,11 @@ import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
 import {ContentJSON} from 'components/admin/form_design/registrations/objectsapi/LegacyConfigFields';
-import {filterErrors} from 'components/admin/form_design/registrations/shared/utils';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
+  filterErrors,
 } from 'components/admin/forms/ValidationErrors';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
