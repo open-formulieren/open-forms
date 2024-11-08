@@ -1199,6 +1199,11 @@
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
   },
+  "M9JbDC": {
+    "defaultMessage": "Cancel",
+    "description": "Confirmation modal cancel button",
+    "originalDefault": "Cancel"
+  },
   "MEkGHD": {
     "defaultMessage": "Component",
     "description": "Formio component selection label",
@@ -2123,6 +2128,11 @@
     "defaultMessage": "Detected some problems in this action: {problems}.",
     "description": "Logic action warning icon text",
     "originalDefault": "Detected some problems in this action: {problems}."
+  },
+  "gpiYPI": {
+    "defaultMessage": "Confirm",
+    "description": "Confirmation modal confirm button",
+    "originalDefault": "Confirm"
   },
   "gqVGbb": {
     "defaultMessage": "Edit prefill configuration",

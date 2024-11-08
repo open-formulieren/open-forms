@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {useIntl} from 'react-intl';
 
 import ActionButton from 'components/admin/forms/ActionButton';
 import {Modal} from 'components/admin/modals';
@@ -25,20 +26,31 @@ const useConfirm = (message, title = '') => {
     handleClose();
   };
 
-  const ConfirmationModal = () => (
-    <Modal
-      title={title}
-      isOpen={promise !== null}
-      contentModifiers={['with-form', 'small']}
-      closeModal={handleCancel}
-    >
-      <div style={{flexGrow: 1}}>{message}</div>
-      <div className="button-group">
-        <ActionButton text="confirm" className="default" onClick={handleConfirm} />
-        <ActionButton text="cancel" onClick={handleCancel} />
-      </div>
-    </Modal>
-  );
+  const ConfirmationModal = () => {
+    const intl = useIntl();
+    const confirmBtnText = intl.formatMessage({
+      description: 'Confirmation modal confirm button',
+      defaultMessage: 'Confirm',
+    });
+    const cancelBtnText = intl.formatMessage({
+      description: 'Confirmation modal cancel button',
+      defaultMessage: 'Cancel',
+    });
+    return (
+      <Modal
+        title={title}
+        isOpen={promise !== null}
+        contentModifiers={['with-form', 'small']}
+        closeModal={handleCancel}
+      >
+        <div style={{flexGrow: 1}}>{message}</div>
+        <div className="button-group">
+          <ActionButton text={confirmBtnText} className="default" onClick={handleConfirm} />
+          <ActionButton text={cancelBtnText} onClick={handleCancel} />
+        </div>
+      </Modal>
+    );
+  };
   return [ConfirmationModal, confirm];
 };
 
