@@ -103,6 +103,7 @@ OptionsConfiguration.propTypes = {
   numErrors: PropTypes.number.isRequired,
   initialFormData: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  modalSize: PropTypes.oneOf(['', 'small', 'large']),
 };
 
 export default OptionsConfiguration;

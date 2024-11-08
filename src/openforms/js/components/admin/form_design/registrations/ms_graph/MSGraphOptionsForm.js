@@ -22,11 +22,11 @@ const MSGraphOptionsForm = ({name, label, formData, onChange}) => {
       numErrors={relevantErrors.length}
       modalTitle={
         <FormattedMessage
-          description="Demo registration options modal title"
-          defaultMessage="Plugin configuration: demo"
+          description="MS Graph registration options modal title"
+          defaultMessage="Plugin configuration: MS Graph"
         />
       }
-      initialFormData={{extraLine: '', ...formData}}
+      initialFormData={{folderPath: '', driveId: '', ...formData}}
       onSubmit={values => onChange({formData: values})}
       modalSize=""
     >
@@ -44,7 +44,8 @@ MSGraphOptionsForm.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
   formData: PropTypes.shape({
-    extraLine: PropTypes.string,
+    folderPath: PropTypes.string,
+    driveId: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
 };

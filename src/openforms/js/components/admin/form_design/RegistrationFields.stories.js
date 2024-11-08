@@ -309,6 +309,25 @@ export default {
           type: 'object',
         },
       },
+      {
+        id: 'microsoft-graph',
+        label: 'Microsoft Graph (OneDrive/SharePoint)',
+        schema: {
+          type: 'object',
+          properties: {
+            folderPath: {
+              type: 'string',
+              minLength: 1,
+              title: 'maplocatie',
+            },
+            driveId: {
+              type: 'string',
+              minLength: 1,
+              title: 'drive-ID',
+            },
+          },
+        },
+      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -534,6 +553,15 @@ export const ConfiguredBackends = {
         name: 'Crashing demo',
         backend: 'exception-demo',
         options: {extraLine: 'Filled out option'},
+      },
+      {
+        key: 'backend9',
+        name: 'MS Graph',
+        backend: 'microsoft-graph',
+        options: {
+          folderPath: '/formSubmissions',
+          driveId: 'myDrive',
+        },
       },
     ],
     validationErrors: [
