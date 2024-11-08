@@ -52,10 +52,10 @@ OgoneLegacyOptionsForm.propTypes = {
   schema: PropTypes.shape({
     type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
     properties: PropTypes.shape({
-      merchantId: {
+      merchantId: PropTypes.shape({
         enum: PropTypes.arrayOf(PropTypes.number),
         enumNames: PropTypes.arrayOf(PropTypes.string),
-      },
+      }),
     }),
     required: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,

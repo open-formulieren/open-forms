@@ -30,7 +30,7 @@ export const MerchantID = ({options}) => (
 MerchantID.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.bool,
+      value: PropTypes.number,
       label: PropTypes.node.isRequired,
     })
   ).isRequired,

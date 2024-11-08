@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
@@ -16,7 +16,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
   const defaultGroup = apiGroupChoices.length === 1 ? apiGroupChoices[0][0] : undefined;
 
   return (
-    <OptionsConfiguration
+    <ModalOptionsConfiguration
       name={name}
       label={label}
       numErrors={numErrors}
@@ -34,7 +34,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
       onSubmit={values => onChange({formData: values})}
     >
       <ObjectsApiOptionsFormFields index={index} name={name} apiGroupChoices={apiGroupChoices} />
-    </OptionsConfiguration>
+    </ModalOptionsConfiguration>
   );
 };
 

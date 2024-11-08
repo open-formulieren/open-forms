@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
@@ -37,7 +37,7 @@ const DemoOptionsForm = ({name, label, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
   return (
-    <OptionsConfiguration
+    <ModalOptionsConfiguration
       name={name}
       label={label}
       numErrors={relevantErrors.length}
@@ -56,7 +56,7 @@ const DemoOptionsForm = ({name, label, formData, onChange}) => {
           <ExtraLine />
         </Fieldset>
       </ValidationErrorsProvider>
-    </OptionsConfiguration>
+    </ModalOptionsConfiguration>
   );
 };
 

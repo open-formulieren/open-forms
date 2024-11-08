@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 
 import EmailOptionsFormFields from './EmailOptionsFormFields';
@@ -12,7 +12,7 @@ const EmailOptionsForm = ({name, label, schema, formData, onChange}) => {
   const numErrors = filterErrors(name, validationErrors).length;
 
   return (
-    <OptionsConfiguration
+    <ModalOptionsConfiguration
       name={name}
       label={label}
       numErrors={numErrors}
@@ -30,7 +30,7 @@ const EmailOptionsForm = ({name, label, schema, formData, onChange}) => {
       onSubmit={values => onChange({formData: values})}
     >
       <EmailOptionsFormFields name={name} schema={schema} />
-    </OptionsConfiguration>
+    </ModalOptionsConfiguration>
   );
 };
 

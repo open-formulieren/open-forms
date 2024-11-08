@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import OptionsConfiguration from 'components/admin/form_design/registrations/shared/OptionsConfiguration';
 import Fieldset from 'components/admin/forms/Fieldset';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
@@ -16,7 +16,7 @@ const MSGraphOptionsForm = ({name, label, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
   return (
-    <OptionsConfiguration
+    <ModalOptionsConfiguration
       name={name}
       label={label}
       numErrors={relevantErrors.length}
@@ -36,7 +36,7 @@ const MSGraphOptionsForm = ({name, label, formData, onChange}) => {
           <DriveID />
         </Fieldset>
       </ValidationErrorsProvider>
-    </OptionsConfiguration>
+    </ModalOptionsConfiguration>
   );
 };
 
