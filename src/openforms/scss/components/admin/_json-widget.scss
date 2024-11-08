@@ -6,6 +6,29 @@
 .json-widget {
   @include bem.element('input') {
     @include json-editor.container;
+
+    @include bem.modifier('resizable') {
+      position: relative;
+      resize: both;
+      overflow: auto;
+      padding-block-end: 0.8em;
+      inline-size: json-editor.$json_editor_min_inline_size;
+      max-inline-size: unset;
+      z-index: 0;
+
+      // Purely to give the resize handle some space from the input
+      &::after {
+        position: absolute;
+        content: '';
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 0.8em;
+        border-block-start: 1px solid var(--border-color);
+        background-color: var(--form-input-bg);
+        z-index: 1;
+      }
+    }
   }
 
   @include bem.modifier('collapsed') {
