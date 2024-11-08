@@ -1,4 +1,4 @@
-import {expect, findByRole, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fireEvent, fn, screen, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {
@@ -189,8 +189,6 @@ export const Empty = {
   },
   play: async ({canvasElement, step, args}) => {
     const canvas = within(canvasElement);
-    const originalConfirm = window.confirm;
-    window.confirm = () => true;
 
     const pluginDropdown = canvas.getByLabelText('Plugin');
     const decisionDefDropdown = canvas.getByLabelText('Beslisdefinitie-ID');
@@ -271,6 +269,12 @@ export const Empty = {
       const button = canvas.getByTitle('Verwijderen');
 
       await userEvent.click(button);
+      // Close the confirmation modal
+      await userEvent.click(
+        within(await screen.findByRole('dialog')).getByRole('button', {
+          name: 'Accepteren',
+        })
+      );
 
       const varsDropdowns = within(
         document.querySelector('.logic-dmn__mapping-config')
@@ -282,8 +286,6 @@ export const Empty = {
       await expect(varsDropdowns.length).toBe(0);
       await expect(textInput.length).toBe(0);
     });
-
-    window.confirm = originalConfirm;
   },
 };
 

@@ -1112,10 +1112,10 @@ class FormDesignerRegressionTests(E2ETestCase):
             await page.get_by_role("button", name="Confirm").click()
 
             # Delete initial form definition
-            page.on("dialog", lambda dialog: dialog.accept())
             sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
             bin_icon = sidebar.get_by_role("listitem").nth(0).get_by_title("Delete")
             await bin_icon.click()
+            await page.get_by_role("button", name="Confirm").click()
 
             await expect(page.get_by_text("Form definition 1")).not_to_be_visible()
 
@@ -1164,10 +1164,10 @@ class FormDesignerRegressionTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             # Delete the second step
-            page.on("dialog", lambda dialog: dialog.accept())
             sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
             bin_icon = sidebar.get_by_role("listitem").nth(1).get_by_title("Delete")
             await bin_icon.click()
+            await page.get_by_role("button", name="Confirm").click()
 
             await page.get_by_role("tab", name="Logic").click()
 
@@ -1804,9 +1804,9 @@ class SelectReuseableFormDefinitionsTests(E2ETestCase):
             await page.get_by_title("Sluiten").click()
 
             # Delete the second step
-            page.on("dialog", lambda dialog: dialog.accept())
             sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
             await sidebar.get_by_role("listitem").nth(1).get_by_title("Delete").click()
+            await page.get_by_role("button", name="Confirm").click()
 
             # Select third form step and open selectbox
             await sidebar.get_by_role("listitem").nth(1).get_by_text(
