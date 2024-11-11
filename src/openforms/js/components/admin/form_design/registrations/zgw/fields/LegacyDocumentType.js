@@ -1,4 +1,4 @@
-import {useField} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -10,11 +10,14 @@ import {TextInput} from 'components/admin/forms/Inputs';
  */
 const LegacyDocumentType = () => {
   const [fieldProps] = useField('informatieobjecttype');
+  const {
+    values: {documentTypeDescription},
+  } = useFormikContext();
   return (
     <FormRow>
       <Field
         name="informatieobjecttype"
-        required
+        required={!documentTypeDescription}
         label={
           <FormattedMessage
             description="ZGW APIs registration options 'DocumentType' label"

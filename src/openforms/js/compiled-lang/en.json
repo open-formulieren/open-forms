@@ -1395,6 +1395,12 @@
       "value": "Data extraction"
     }
   ],
+  "C2FSDV": [
+    {
+      "type": 0,
+      "value": "Documents produced in the form submission are registered with this document type, unless more fine grained configuration is available. Only document types available on the selected case type are shown."
+    }
+  ],
   "C48xJT": [
     {
       "type": 0,
@@ -2639,6 +2645,12 @@
     {
       "type": 0,
       "value": "Case type API resource URL in the Catalogi API."
+    }
+  ],
+  "NrF5vy": [
+    {
+      "type": 0,
+      "value": "Document type"
     }
   ],
   "Nsifca": [

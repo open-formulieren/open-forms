@@ -16,6 +16,8 @@ const ZGWAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
   useUpdateEffect(() => {
     setValues(prevValues => ({
       ...prevValues,
+      caseTypeIdentification: '',
+      documentTypeDescription: '',
       zaaktype: '',
       informatieobjecttype: '',
       medewerkerRoltype: '',

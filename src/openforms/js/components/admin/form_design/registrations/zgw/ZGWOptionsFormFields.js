@@ -68,6 +68,7 @@ const ZGWFormFields = ({
         <TabPanel>
           <BasicOptionsFieldset apiGroupChoices={apiGroupChoices} />
 
+          {/* @deprecated */}
           <Fieldset
             title={
               <FormattedMessage
@@ -75,6 +76,8 @@ const ZGWFormFields = ({
                 defaultMessage="Legacy configuration"
               />
             }
+            fieldNames={['zaaktype', 'informatieobjecttype']}
+            collapsible
           >
             <div className="description">
               <FormattedMessage

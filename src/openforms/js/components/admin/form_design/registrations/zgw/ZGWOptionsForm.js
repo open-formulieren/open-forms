@@ -39,6 +39,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
       initialFormData={{
         // defaults
         caseTypeIdentification: '',
+        documentTypeDescription: '',
         zaaktype: '',
         informatieobjecttype: '',
         organisatieRsin: '',

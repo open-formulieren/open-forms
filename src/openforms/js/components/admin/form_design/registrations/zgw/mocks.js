@@ -80,6 +80,68 @@ export const mockCaseTypesGet = () =>
     return res(ctx.json(match));
   });
 
+const DOCUMENT_TYPES = {
+  ZT01: [
+    {
+      description: 'Attachment',
+      isPublished: true,
+    },
+    {
+      description: 'Picture or scan of passport/identity card',
+      isPublished: true,
+    },
+  ],
+  ZT02: [
+    {
+      description: 'Attachment',
+      isPublished: true,
+    },
+    {
+      description: 'Other',
+      isPublished: true,
+    },
+  ],
+  ZT03: [],
+  ZT11: [
+    {
+      description: 'Attachment',
+      isPublished: true,
+    },
+  ],
+  ZT21: [
+    {
+      description: 'Attachment',
+      isPublished: true,
+    },
+  ],
+  ZT22: [
+    {
+      description: 'Draft document type for draft case type',
+      isPublished: false,
+    },
+    {
+      description: 'Published document type for draft case type',
+      isPublished: true,
+    },
+  ],
+  ZT23: [
+    {
+      description: 'Attachment',
+      isPublished: true,
+    },
+  ],
+};
+
+export const mockDocumenTypesGet = () =>
+  rest.get(
+    `${API_BASE_URL}/api/v2/registration/plugins/zgw-api/document-types`,
+    (req, res, ctx) => {
+      const caseTypeIdentification = req.url.searchParams.get('case_type_identification');
+      const match = DOCUMENT_TYPES[caseTypeIdentification] ?? [];
+      return res(ctx.json(match));
+    }
+  );
+
 const PRODUCTS = [
   {
     uri: 'https://example.com/product/1234',

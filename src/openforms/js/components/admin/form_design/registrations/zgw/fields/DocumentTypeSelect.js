@@ -11,19 +11,23 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
-const CASE_TYPES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/case-types';
+/**
+ * @todo Implement on the backend
+ */
+const DOCUMENT_TYPES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/document-types';
 
-const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
-  const response = await get(CASE_TYPES_ENDPOINT, {
+const getAvailableDocumentTypes = async (apiGroupID, catalogueUrl, caseTypeIdentification) => {
+  const response = await get(DOCUMENT_TYPES_ENDPOINT, {
     zgw_api_group: apiGroupID,
     catalogue_url: catalogueUrl,
+    case_type_identification: caseTypeIdentification,
   });
   if (!response.ok) {
     throw new Error('Loading available object types failed');
   }
-  const caseTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
-  return caseTypes.map(({identification, description, isPublished}) => ({
-    value: identification,
+  const documentTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
+  return documentTypes.map(({description, isPublished}) => ({
+    value: description,
     label: description,
     isPublished: isPublished,
   }));
@@ -31,7 +35,7 @@ const getAvailableCaseTypes = async (apiGroupID, catalogueUrl) => {
 
 // Components
 
-const CaseTypeSelectOption = props => {
+const DocumentTypeSelectOption = props => {
   const {isPublished, label} = props.data;
   return (
     <components.Option {...props}>
@@ -41,7 +45,7 @@ const CaseTypeSelectOption = props => {
         })}
       >
         <FormattedMessage
-          description="Case type option label"
+          description="Document type option label"
           defaultMessage={`{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}`}
           values={{
             label,
@@ -54,52 +58,54 @@ const CaseTypeSelectOption = props => {
   );
 };
 
-const CaseTypeSelect = ({catalogueUrl = ''}) => {
-  const [, , fieldHelpers] = useField('caseTypeIdentification');
+const DocumentTypeSelect = ({catalogueUrl = ''}) => {
+  const [, , fieldHelpers] = useField('documentTypeDescription');
   const {
-    values: {zgwApiGroup = null},
+    values: {zgwApiGroup = null, caseTypeIdentification = ''},
   } = useFormikContext();
   const {setValue} = fieldHelpers;
 
   const {
     loading,
-    value: caseTypes = [],
+    value: documentTypes = [],
     error,
   } = useAsync(async () => {
-    if (!zgwApiGroup || !catalogueUrl) return [];
-    return await getAvailableCaseTypes(zgwApiGroup, catalogueUrl);
-  }, [zgwApiGroup, catalogueUrl]);
+    if (!zgwApiGroup || !catalogueUrl || !caseTypeIdentification) return [];
+    return await getAvailableDocumentTypes(zgwApiGroup, catalogueUrl, caseTypeIdentification);
+  }, [zgwApiGroup, catalogueUrl, caseTypeIdentification]);
   if (error) throw error;
 
   return (
     <FormRow>
       <Field
-        name="caseTypeIdentification"
+        name="documentTypeDescription"
         // TODO: make required once legacy config is dropped
         required={false}
         label={
           <FormattedMessage
-            description="ZGW APIs registration options 'case type' label"
-            defaultMessage="Case type"
+            description="ZGW APIs registration options 'document type' label"
+            defaultMessage="Document type"
           />
         }
         helpText={
           <FormattedMessage
-            description="ZGW APIs registration options 'case type' helpText"
-            defaultMessage="A case of this type will be created during registration."
+            description="ZGW APIs registration options 'document type' helpText"
+            defaultMessage={`Documents produced in the form submission are registered
+            with this document type, unless more fine grained configuration is available.
+            Only document types available on the selected case type are shown.`}
           />
         }
         noManageChildProps
       >
         <ReactSelect
-          name="caseTypeIdentification"
-          options={caseTypes}
+          name="documentTypeDescription"
+          options={documentTypes}
           isLoading={loading}
-          isDisabled={!zgwApiGroup}
+          isDisabled={!zgwApiGroup || !caseTypeIdentification}
           // TODO: make required once legacy config is dropped
           required={false}
           isClearable
-          components={{Option: CaseTypeSelectOption}}
+          components={{Option: DocumentTypeSelectOption}}
           onChange={selectedOption => {
             setValue(selectedOption ? selectedOption.value : undefined);
           }}
@@ -109,8 +115,8 @@ const CaseTypeSelect = ({catalogueUrl = ''}) => {
   );
 };
 
-CaseTypeSelect.propTypes = {
+DocumentTypeSelect.propTypes = {
   catalogueUrl: PropTypes.string,
 };
 
-export default CaseTypeSelect;
+export default DocumentTypeSelect;
