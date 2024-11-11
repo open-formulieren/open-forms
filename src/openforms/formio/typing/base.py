@@ -89,6 +89,7 @@ class Component(TypedDict):
     prefill: NotRequired[PrefillConfiguration]
     openForms: NotRequired[OpenFormsConfig]
     autocomplete: NotRequired[str]
+    dataType: NotRequired[Literal["string"]]
 
 
 class FormioConfiguration(TypedDict):
