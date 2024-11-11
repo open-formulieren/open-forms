@@ -6,9 +6,9 @@ import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 /**
- * @todo - convert to omschrijving & use URL-based field as legacy/deprecated option
+ * @deprecated
  */
-const DocumentType = () => {
+const LegacyDocumentType = () => {
   const [fieldProps] = useField('informatieobjecttype');
   return (
     <FormRow>
@@ -34,6 +34,6 @@ const DocumentType = () => {
   );
 };
 
-DocumentType.propTypes = {};
+LegacyDocumentType.propTypes = {};
 
-export default DocumentType;
+export default LegacyDocumentType;
