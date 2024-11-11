@@ -73,6 +73,18 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         default="",
     )
+    document_type_description = serializers.CharField(
+        required=False,  # either htis field or informatieobjecttype (legacy) must be provided
+        label=_("Document type description"),
+        help_text=_(
+            "The document type will be retrived in the specified catalogue. The version "
+            "will automatically be selected based on the submission completion "
+            "timestamp. When you specify this field, you MUST also specify the case "
+            "type via its identification. Only document types related to the case type "
+            "are valid."
+        ),
+        default="",
+    )
     product_url = serializers.URLField(
         required=False,
         label=_("Product url"),
