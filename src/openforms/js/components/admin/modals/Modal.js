@@ -7,7 +7,7 @@ import {FAIcon} from 'components/admin/icons';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 
-export const CONTENT_MODIFIERS = ['small', 'large', 'with-form'];
+export const CONTENT_MODIFIERS = ['small', 'confirmation', 'large', 'with-form'];
 
 const Modal = ({
   isOpen = false,

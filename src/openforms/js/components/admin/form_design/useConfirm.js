@@ -40,11 +40,11 @@ const useConfirm = (message, title = '') => {
       <Modal
         title={title}
         isOpen={promise !== null}
-        contentModifiers={['with-form', 'small']}
+        contentModifiers={['confirmation']}
         closeModal={handleCancel}
       >
-        <div style={{flexGrow: 1}}>{message}</div>
-        <div className="button-group">
+        <p>{message}</p>
+        <div className="react-modal__actions">
           <ActionButton text={confirmBtnText} className="default" onClick={handleConfirm} />
           <ActionButton text={cancelBtnText} onClick={handleCancel} />
         </div>

@@ -47,6 +47,13 @@
       }
     }
 
+    &--confirmation {
+      width: 25vw;
+      min-width: 400px;
+      height: auto;
+      max-height: 25vh;
+    }
+
     &--large {
       width: 75vw;
       height: 75vh;
@@ -128,5 +135,12 @@
     .collapse:not(.show) {
       display: inherit;
     }
+  }
+
+  &__actions {
+    display: flex;
+    margin-block-start: 1.25rem;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }
