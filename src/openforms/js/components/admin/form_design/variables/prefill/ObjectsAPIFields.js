@@ -244,7 +244,7 @@ const ObjectsAPIFields = ({errors}) => {
           />
         </ErrorBoundary>
 
-        {backends ? <CopyConfigurationFromRegistrationBackend backends={backends} /> : null}
+        {backends.length ? <CopyConfigurationFromRegistrationBackend backends={backends} /> : null}
       </Fieldset>
 
       <Fieldset
