@@ -131,40 +131,6 @@
       "value": "Geef de knoptekst om een groep te bewaren op."
     }
   ],
-  "/vM+b5": [
-    {
-      "type": 1,
-      "value": "description"
-    },
-    {
-      "type": 0,
-      "value": " "
-    },
-    {
-      "options": {
-        "false": {
-          "value": [
-            {
-              "children": [
-                {
-                  "type": 0,
-                  "value": "(concept)"
-                }
-              ],
-              "type": 8,
-              "value": "draft"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isPublished"
-    }
-  ],
   "/yDnA3": [
     {
       "type": 0,
@@ -2074,6 +2040,12 @@
       "value": "Onderhoudsmodus"
     }
   ],
+  "H7WmS4": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Camunda"
+    }
+  ],
   "H7z8+8": [
     {
       "type": 0,
@@ -3143,7 +3115,7 @@
   "Su4nqf": [
     {
       "type": 0,
-      "value": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+      "value": "Welke authenticatiemethode de mede-ondertekenaar moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
     }
   ],
   "Sw6TLH": [
@@ -3288,40 +3260,6 @@
     {
       "type": 0,
       "value": "Bewaartermijn van inzendingen"
-    }
-  ],
-  "UOofxD": [
-    {
-      "type": 1,
-      "value": "omschrijving"
-    },
-    {
-      "type": 0,
-      "value": " "
-    },
-    {
-      "options": {
-        "false": {
-          "value": [
-            {
-              "children": [
-                {
-                  "type": 0,
-                  "value": "(concept)"
-                }
-              ],
-              "type": 8,
-              "value": "draft"
-            }
-          ]
-        },
-        "other": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isPublished"
     }
   ],
   "UlVtQd": [
@@ -4123,12 +4061,6 @@
       "value": "bewaartermijn voor sessies"
     }
   ],
-  "cEALcN": [
-    {
-      "type": 0,
-      "value": "Configure options"
-    }
-  ],
   "cID9dz": [
     {
       "type": 0,
@@ -4461,6 +4393,40 @@
     {
       "type": 0,
       "value": "Kolom toevoegen"
+    }
+  ],
+  "efsF8+": [
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "(concept)"
+                }
+              ],
+              "type": 8,
+              "value": "draft"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isPublished"
     }
   ],
   "eg8uKC": [
@@ -4891,6 +4857,12 @@
     {
       "type": 0,
       "value": "Succes"
+    }
+  ],
+  "ighCxq": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: MS Graph"
     }
   ],
   "inhTXo": [
@@ -5783,6 +5755,40 @@
       "value": "Datatype"
     }
   ],
+  "rGLOtz": [
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "children": [
+                {
+                  "type": 0,
+                  "value": "(concept)"
+                }
+              ],
+              "type": 8,
+              "value": "draft"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isPublished"
+    }
+  ],
   "rQy+Yq": [
     {
       "type": 0,
@@ -5853,40 +5859,6 @@
     {
       "type": 0,
       "value": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
-    }
-  ],
-  "sQpH2P": [
-    {
-      "offset": 0,
-      "options": {
-        "one": {
-          "value": [
-            {
-              "type": 0,
-              "value": "There is a validation error."
-            }
-          ]
-        },
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": "There are "
-            },
-            {
-              "type": 1,
-              "value": "numErrors"
-            },
-            {
-              "type": 0,
-              "value": " validation errors."
-            }
-          ]
-        }
-      },
-      "pluralType": "cardinal",
-      "type": 6,
-      "value": "numErrors"
     }
   ],
   "sR9GVQ": [

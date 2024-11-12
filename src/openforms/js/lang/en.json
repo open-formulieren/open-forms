@@ -64,11 +64,6 @@
     "description": "Service fetch config configuration tab title",
     "originalDefault": "Configuration"
   },
-  "/vM+b5": {
-    "defaultMessage": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
-    "description": "Case type option label",
-    "originalDefault": "{description} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
-  },
   "01mWK2": {
     "defaultMessage": "The format(s) of the attachment(s) containing the submission details",
     "description": "Email registration options 'attachmentFormats' label",
@@ -904,6 +899,11 @@
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
   },
+  "H7WmS4": {
+    "defaultMessage": "Plugin configuration: Camunda",
+    "description": "Camunda registration options modal title",
+    "originalDefault": "Plugin configuration: Camunda"
+  },
   "H7z8+8": {
     "defaultMessage": "Extra elements",
     "description": "StUF-ZDS registration backend options, 'extra elements' tab label",
@@ -1574,11 +1574,6 @@
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
   },
-  "UOofxD": {
-    "defaultMessage": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
-    "description": "Document type option label",
-    "originalDefault": "{omschrijving} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
-  },
   "Uq9Hbx": {
     "defaultMessage": "-",
     "description": "Registration summary no registration backend fallback message",
@@ -1899,11 +1894,6 @@
     "description": "Incomplete Submissions Removal Limit field label",
     "originalDefault": "Incomplete Submissions Removal Limit"
   },
-  "cEALcN": {
-    "defaultMessage": "Configure options",
-    "description": "Link label to open payment provider options modal",
-    "originalDefault": "Configure options"
-  },
   "cID9dz": {
     "defaultMessage": "(complex value)",
     "description": "JSON editor: complex value representation",
@@ -2038,6 +2028,11 @@
     "defaultMessage": "Zds zaaktype status code",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
+  },
+  "efsF8+": {
+    "defaultMessage": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "description": "Document type option label",
+    "originalDefault": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
   },
   "evbysh": {
     "defaultMessage": "Variable definition",
@@ -2248,6 +2243,11 @@
     "defaultMessage": "Case type",
     "description": "ZGW APIs registration options 'CaseType' label",
     "originalDefault": "Case type"
+  },
+  "ighCxq": {
+    "defaultMessage": "Plugin configuration: MS Graph",
+    "description": "MS Graph registration options modal title",
+    "originalDefault": "Plugin configuration: MS Graph"
   },
   "inhTXo": {
     "defaultMessage": "years",
@@ -2634,6 +2634,11 @@
     "description": "Variable table data type title",
     "originalDefault": "Data type"
   },
+  "rGLOtz": {
+    "defaultMessage": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}",
+    "description": "Case type option label",
+    "originalDefault": "{label} {isPublished, select, false {<draft>(not published)</draft>} other {}}"
+  },
   "rQy+Yq": {
     "defaultMessage": "Upload submission CSV",
     "description": "Objects API registration: uploadSubmissionCsv label",
@@ -2683,11 +2688,6 @@
     "defaultMessage": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
-  },
-  "sQpH2P": {
-    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
-    "description": "Payment provider validation errors icon next to button to configure options",
-    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "sptpzv": {
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
