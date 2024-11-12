@@ -331,15 +331,15 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertGreaterEqual(num_document_types, 6)
         # assert that multiple versions are de-duplicated
         num_unique = len(
-            {(item["omschrijving"], item["catalogusLabel"]) for item in data}
+            {(item["description"], item["catalogueLabel"]) for item in data}
         )
         self.assertEqual(num_unique, num_document_types)
 
         # check the data types of returned information
         record = data[0]
         expected = {
-            "catalogusLabel": str,
-            "omschrijving": str,
+            "catalogueLabel": str,
+            "description": str,
             "url": str,
         }
         for key, type in expected.items():
@@ -364,13 +364,13 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertGreaterEqual(len(data), 3)
         # we expect only one catalogue to be returned
-        catalogi_labels_seen = {item["catalogusLabel"] for item in data}
+        catalogi_labels_seen = {item["catalogueLabel"] for item in data}
         self.assertEqual(len(catalogi_labels_seen), 1)
         # check the data types of returned information
         record = data[0]
         expected = {
-            "catalogusLabel": str,
-            "omschrijving": str,
+            "catalogueLabel": str,
+            "description": str,
             "url": str,
         }
         for key, type in expected.items():

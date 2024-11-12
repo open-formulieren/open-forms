@@ -281,6 +281,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             {
                 "zgw_api_group": zgw_group,
                 "case_type_identification": "",
+                "document_type_description": "",
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
