@@ -426,6 +426,51 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             # Payment is required, but has already been done -> No URL
             self.assertEqual(response_data["paymentUrl"], "")
 
+    def test_succesful_processing_submission_with_cosign(self):
+        self.addCleanup(GlobalConfiguration.clear_cache)
+        config = GlobalConfiguration.get_solo()
+        config.cosign_submission_confirmation_title = "Pending ({{ public_reference }})"
+        config.cosign_submission_confirmation_template = (
+            "Email sent to {{ cosigner_email }}, reference {{ public_reference }}"
+        )
+        config.save()
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "cosign", "key": "cosign"}],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=True,
+            public_registration_reference="OF-ABCDE",
+            metadata__tasks_ids=["some-id"],
+            metadata__trigger_event=PostSubmissionEvents.on_completion,
+        )
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+
+            response = self.client.get(check_status_url)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            response_data = response.json()
+            self.assertEqual(response_data["status"], ProcessingStatuses.done)
+            self.assertEqual(response_data["result"], ProcessingResults.success)
+            self.assertEqual(response_data["publicReference"], "OF-ABCDE")
+            self.assertEqual(response_data["errorMessage"], "")
+            self.assertEqual(response_data["confirmationPageTitle"], "Pending OF-ABCDE")
+            self.assertEqual(
+                response_data["confirmationPageContent"],
+                "Email sent to test@example.com, reference OF-ABCDE",
+            )
+            self.assertTrue(
+                response_data["reportDownloadUrl"].startswith("http://testserver")
+            )
+            # no payment configured/required -> no URL
+            self.assertEqual(response_data["paymentUrl"], "")
+
 
 @patch("openforms.submissions.status.AsyncResult.forget", return_value=None)
 class CleanupTaskTests(TestCase):
