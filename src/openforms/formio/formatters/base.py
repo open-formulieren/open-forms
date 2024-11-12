@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Generic, Iterable, Sequence, TypeVar
 
 from django.utils.encoding import force_str
-from django.utils.html import format_html_join
+from django.utils.html import format_html, format_html_join
 
 from ..typing import Component
 
@@ -51,11 +51,17 @@ class FormatterBase(Generic[ComponentT]):
     def join_formatted_values(
         self, component: Component, formatted_values: Iterable[str]
     ) -> str:
-        if self.as_html:
-            args_generator = ((formatted,) for formatted in formatted_values)
-            return format_html_join(self.multiple_separator, "{}", args_generator)
-        else:
+        if not self.as_html:
             return self.multiple_separator.join(formatted_values)
+
+        args_generator = ((formatted,) for formatted in formatted_values)
+        if component.get("multiple", False):
+            return format_html(
+                "<ul>{values}</ul>",
+                values=format_html_join("", "<li>{}</li>", args_generator),
+            )
+
+        return format_html_join(self.multiple_separator, "{}", args_generator)
 
     def process_result(self, component: ComponentT, formatted: str) -> str:
         return formatted

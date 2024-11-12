@@ -8,9 +8,13 @@ include the SDK snippet directly.
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_theme as theme %}
 
-{% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
-Back to website of {{ name }}
-{% endblocktranslate %}
+{% if config.organization_name %}
+    {% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
+        Back to website of {{ name }}
+    {% endblocktranslate %}
+{% else %}
+    {% trans "Back to website" as logo_alt %}
+{% endif %}
 
 <header class="utrecht-page-header {% if theme.logo %}utrecht-page-header--openforms-with-logo{% endif %}">
     <a
@@ -18,7 +22,7 @@ Back to website of {{ name }}
         href="{% firstof config.main_website '#' %}"
         title="{{ logo_alt }}"
         aria-label="{{ logo_alt }}"
-    >{% if config.main_website %}{% trans "Back to website" %}{% endif %}</a>
+    >{% if config.main_website %}{{ logo_alt }}{% endif %}</a>
 
     <div id="react-portal--language-selection"></div>
 </header>

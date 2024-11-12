@@ -138,7 +138,7 @@ class DownloadSubmissionReportTests(APITestCase):
             ("postcode", "3744 AA"),
             ("radio", "Radio number one"),
             ("select", "A fine selection"),
-            ("selectboxes", "This; That; The Other"),
+            ("selectboxes", "<ul><li>This</li><li>That</li><li>The Other</li></ul>"),
             ("signature", SIGNATURE),
             ("textarea", "Largish predetermined ASCII"),
             ("textfield", "Short predetermined ASCII"),

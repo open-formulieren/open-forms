@@ -217,7 +217,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertTagWithTextIn("td", "foo", message_html)
         self.assertTagWithTextIn("td", "bar", message_html)
         self.assertTagWithTextIn("td", "some_list", message_html)
-        self.assertTagWithTextIn("td", "value1; value2", message_html)
+        self.assertTagWithTextIn(
+            "td", "<ul><li>value1</li><li>value2</li></ul>", message_html
+        )
 
         cosigner_line = f"{_('Co-signed by')}: Demo Person"
 
@@ -777,7 +779,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
 
         message_html = message.alternatives[0][0]
-        self.assertIn("Backend; Frontend", message_html)
+        self.assertInHTML("<ul><li>Backend</li><li>Frontend</li></ul>", message_html)
 
     @patch("openforms.registrations.contrib.email.plugin.EmailConfig.get_solo")
     def test_with_global_config_attach_files(self, mock_get_solo):

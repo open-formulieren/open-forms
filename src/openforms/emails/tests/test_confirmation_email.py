@@ -323,7 +323,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_email_template("{% summary %}", context)
 
-        self.assertIn("Value 1; Value 2", rendered_content)
+        self.assertInHTML("<ul><li>Value 1</li><li>Value 2</li></ul>", rendered_content)
 
     def test_get_confirmation_email_templates(self):
         email_template1 = ConfirmationEmailTemplateFactory.create(

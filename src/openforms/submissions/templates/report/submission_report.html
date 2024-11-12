@@ -25,13 +25,21 @@
         {% include 'includes/design-tokens.html' with skip_csp=True %}
     </head>
 
+    {% if config.organization_name %}
+        {% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
+            Logo {{ name }}
+        {% endblocktranslate %}
+    {% else %}
+        {% trans "Logo" as logo_alt %}
+    {% endif %}
+
     <body class="A4">
 
         <section class="sheet padding-10mm">
             <header class="header {% if theme.logo %}header--has-logo{% endif %}">
                 <span
                     class="header__logo"
-                    {% if theme.logo %}role="img"{% endif %}
+                    {% if theme.logo %}role="img" aria-label="{{ logo_alt }}"{% endif %}
                 ></span>
             </header>
 
