@@ -80,56 +80,58 @@ const CopyConfigurationFromRegistrationBackend = ({backends}) => {
         }
         noManageChildProps
       >
-        <ReactSelect
-          name={name}
-          options={options}
-          onChange={selectedOption => {
-            setFieldValue(name, selectedOption.value);
-          }}
-          maxMenuHeight="16em"
-          menuPlacement="bottom"
-        />
-
-        <button
-          type="button"
-          className="button"
-          onClick={e => {
-            e.preventDefault();
-            const confirmed = window.confirm(
-              intl.formatMessage({
-                description: `Objects API prefill configuration: warning message
-              when copying the config from registration backend`,
-                defaultMessage: `Copying the configuration from the registration
-            backend will clear the existing configuration. Are you sure you want to continue?`,
-              })
-            );
-            if (confirmed) {
-              setValues(prevValues => ({
-                ...prevValues,
-                // Trying to set multiple nested values doesn't work, since it sets them
-                // with dots in the key
-                options: {
-                  ...prevValues.options,
-                  objectsApiGroup: selectedBackend.options.objectsApiGroup,
-                  objecttypeUuid: selectedBackend.options.objecttype,
-                  objecttypeVersion: selectedBackend.options.objecttypeVersion,
-                  variablesMapping: selectedBackend.options.variablesMapping,
-                },
-              }));
-            }
-          }}
-          // admin style overrides...
-          style={{
-            marginLeft: '1em',
-            paddingInline: '15px',
-            paddingBlock: '10px',
-          }}
-        >
-          <FormattedMessage
-            description="Copy Objects API prefill configuration from registration backend button"
-            defaultMessage="Copy"
+        <>
+          <ReactSelect
+            name={name}
+            options={options}
+            onChange={selectedOption => {
+              setFieldValue(name, selectedOption.value);
+            }}
+            maxMenuHeight="16em"
+            menuPlacement="bottom"
           />
-        </button>
+
+          <button
+            type="button"
+            className="button"
+            onClick={e => {
+              e.preventDefault();
+              const confirmed = window.confirm(
+                intl.formatMessage({
+                  description: `Objects API prefill configuration: warning message
+                when copying the config from registration backend`,
+                  defaultMessage: `Copying the configuration from the registration
+              backend will clear the existing configuration. Are you sure you want to continue?`,
+                })
+              );
+              if (confirmed) {
+                setValues(prevValues => ({
+                  ...prevValues,
+                  // Trying to set multiple nested values doesn't work, since it sets them
+                  // with dots in the key
+                  options: {
+                    ...prevValues.options,
+                    objectsApiGroup: selectedBackend.options.objectsApiGroup,
+                    objecttypeUuid: selectedBackend.options.objecttype,
+                    objecttypeVersion: selectedBackend.options.objecttypeVersion,
+                    variablesMapping: selectedBackend.options.variablesMapping,
+                  },
+                }));
+              }
+            }}
+            // admin style overrides...
+            style={{
+              marginLeft: '1em',
+              paddingInline: '15px',
+              paddingBlock: '10px',
+            }}
+          >
+            <FormattedMessage
+              description="Copy Objects API prefill configuration from registration backend button"
+              defaultMessage="Copy"
+            />
+          </button>
+        </>
       </Field>
     </FormRow>
   );
@@ -201,7 +203,7 @@ const ObjectsAPIFields = ({errors}) => {
 
         <ErrorBoundary
           // Ensure the error resets when the API group is changed
-          key={objectsApiGroup}
+          key={objectsApiGroup || 'apiGroupErrors'}
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type select error"
@@ -226,7 +228,7 @@ const ObjectsAPIFields = ({errors}) => {
 
         <ErrorBoundary
           // Ensure the error resets when the objecttype is changed
-          key={objecttypeUuid}
+          key={objecttypeUuid || 'objecttypeErrors'}
           errorMessage={
             <FormattedMessage
               description="Objects API registrations options: object type version select error"
