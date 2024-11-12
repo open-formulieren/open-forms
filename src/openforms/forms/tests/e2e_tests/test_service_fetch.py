@@ -214,7 +214,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
-            await page.get_by_title("Sluiten").click()
+            await page.get_by_role("button", name="Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
@@ -297,7 +297,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
-            await page.get_by_title("Sluiten").click()
+            await page.get_by_role("button", name="Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
@@ -427,7 +427,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     mapping_expression=".bar",
                 ),
             )
-            await page.get_by_title("Sluiten").click()
+            await page.get_by_role("button", name="Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
@@ -565,7 +565,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     mapping_expression=".bar",
                 ),
             )
-            await page.get_by_title("Sluiten").click()
+            await page.get_by_role("button", name="Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()

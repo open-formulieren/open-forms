@@ -61,9 +61,12 @@
 
   &__close {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 12px;
+    right: 12px;
+    padding: 8px;
     cursor: pointer;
+    background: transparent;
+    border: none;
     opacity: 0.5;
     line-height: 1;
 

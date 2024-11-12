@@ -29,12 +29,9 @@ const Modal = ({
     >
       <header className="react-modal__header">
         {title ? <h2 className="react-modal__title">{title}</h2> : null}
-        <FAIcon
-          icon="close"
-          extraClassname="fa-lg react-modal__close"
-          title="Sluiten"
-          onClick={closeModal}
-        />
+        <button className="react-modal__close" aria-label="Sluiten" onClick={closeModal}>
+          <FAIcon icon="close" extraClassname="fa-lg" aria-hidden="true" />
+        </button>
       </header>
       {children}
     </ReactModal>
