@@ -35,7 +35,7 @@ const getCatalogues = async apiGroupID => {
 const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
   const response = await get(IOT_ENDPOINT, {
     objects_api_group: apiGroupID,
-    catalogus_url: catalogueUrl,
+    catalogue_url: catalogueUrl,
   });
   if (!response.ok) {
     throw new Error('Loading available document types failed');

@@ -354,7 +354,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             self.endpoint,
             {
                 "objects_api_group": self.objects_api_group.pk,
-                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
             },
         )
 
@@ -387,7 +387,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             {
                 "objects_api_group": self.objects_api_group.pk,
                 # catalogue in fixture with draft document types
-                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
             },
         )
 

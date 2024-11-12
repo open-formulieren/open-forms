@@ -232,6 +232,20 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_missing_catalogue_url_with_case_type_identification(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "case_type_identification": "ZT-001",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_retrieve_with_explicit_zgw_api_group(self):
         user = StaffUserFactory.create()
         self.client.force_login(user)
@@ -257,7 +271,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             self.endpoint,
             {
                 "zgw_api_group": self.zgw_api_group.pk,
-                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
             },
         )
 
@@ -266,6 +280,25 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(len(data), 3)
+
+    def test_retrieve_filter_by_catalogus_and_case_type(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "case_type_identification": "ZT-001",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.json()
+
+        self.assertEqual(len(data), 1)
 
 
 class GetProductsListViewTests(OFVCRMixin, APITestCase):

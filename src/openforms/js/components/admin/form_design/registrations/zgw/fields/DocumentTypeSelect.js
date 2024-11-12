@@ -11,9 +11,6 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
-/**
- * @todo Implement on the backend
- */
 const DOCUMENT_TYPES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/document-types';
 
 const getAvailableDocumentTypes = async (apiGroupID, catalogueUrl, caseTypeIdentification) => {

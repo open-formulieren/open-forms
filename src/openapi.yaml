@@ -3504,13 +3504,23 @@ paths:
         API group
       parameters:
       - in: query
-        name: catalogus_url
+        name: case_type_identification
+        schema:
+          type: string
+          default: ''
+          minLength: 1
+        description: Filter document types for a given case type. The identification
+          is unique within the catalogue for a case type. Note that multiple versions
+          of the same case type with the same identification exist. The filter returns
+          a document type if it occurs within any version of the specified case type.
+      - in: query
+        name: catalogue_url
         schema:
           type: string
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogus URL.
+        description: Filter informatieobjecttypen against this catalogue URL.
       - in: query
         name: objects_api_group
         schema:
@@ -4199,13 +4209,23 @@ paths:
         group
       parameters:
       - in: query
-        name: catalogus_url
+        name: case_type_identification
+        schema:
+          type: string
+          default: ''
+          minLength: 1
+        description: Filter document types for a given case type. The identification
+          is unique within the catalogue for a case type. Note that multiple versions
+          of the same case type with the same identification exist. The filter returns
+          a document type if it occurs within any version of the specified case type.
+      - in: query
+        name: catalogue_url
         schema:
           type: string
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogus URL.
+        description: Filter informatieobjecttypen against this catalogue URL.
       - in: query
         name: zgw_api_group
         schema:

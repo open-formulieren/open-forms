@@ -12,10 +12,9 @@ class ProvidesCatalogiClientQueryParamsSerializer(serializers.Serializer):
 
 
 class DocumentTypesFilter(serializers.Serializer):
-    # TODO -> to english
-    catalogus_url = serializers.URLField(
-        label=_("catalogus URL"),
-        help_text=_("Filter informatieobjecttypen against this catalogus URL."),
+    catalogue_url = serializers.URLField(
+        label=_("catalogue URL"),
+        help_text=_("Filter informatieobjecttypen against this catalogue URL."),
         required=False,
         default="",
     )
@@ -32,10 +31,10 @@ class DocumentTypesFilter(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        if attrs["case_type_identification"] and not attrs["catalogus_url"]:
+        if attrs["case_type_identification"] and not attrs["catalogue_url"]:
             raise serializers.ValidationError(
                 {
-                    "catalogus_url": _(
+                    "catalogue_url": _(
                         "A catalogue URL is required when filtering for a case type."
                     ),
                 },
