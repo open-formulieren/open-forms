@@ -188,6 +188,7 @@ INSTALLED_APPS = [
     "log_outgoing_requests",
     "import_export",
     "flags",
+    "django_setup_configuration",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1222,3 +1223,8 @@ OPEN_FORMS_EXTENSIONS = config("OPEN_FORMS_EXTENSIONS", split=True, default=[])
 
 if OPEN_FORMS_EXTENSIONS:
     INSTALLED_APPS += OPEN_FORMS_EXTENSIONS
+
+
+SETUP_CONFIGURATION_STEPS = [
+    "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep"
+]
