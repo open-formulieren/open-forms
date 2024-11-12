@@ -3491,9 +3491,9 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/objects-api/informatieobjecttypen:
+  /api/v2/objects-api/document-types:
     get:
-      operationId: objects_api_informatieobjecttypen_list
+      operationId: objects_api_document_types_list
       description: |-
         List the available InformatieObjectTypen.
 
@@ -4186,9 +4186,9 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/zgw-api/informatieobjecttypen:
+  /api/v2/registration/plugins/zgw-api/document-types:
     get:
-      operationId: registration_plugins_zgw_api_informatieobjecttypen_list
+      operationId: registration_plugins_zgw_api_document_types_list
       description: |-
         List the available InformatieObjectTypen.
 

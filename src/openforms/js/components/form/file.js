@@ -18,12 +18,12 @@ const BaseFileField = Formio.Components.components.file;
 const getInformatieObjectTypen = async (backend, options) => {
   switch (backend) {
     case 'zgw-create-zaak': {
-      return await get('/api/v2/registration/plugins/zgw-api/informatieobjecttypen', {
+      return await get('/api/v2/registration/plugins/zgw-api/document-types', {
         zgw_api_group: options.zgwApiGroup,
       });
     }
     case 'objects_api':
-      return await get('/api/v2/objects-api/informatieobjecttypen', {
+      return await get('/api/v2/objects-api/document-types', {
         objects_api_group: options.objectsApiGroup,
       });
     default:

@@ -22,7 +22,7 @@ import {get} from 'utils/fetch';
 // Data fetching
 
 const CATALOGUES_ENDPOINT = '/api/v2/objects-api/catalogues';
-const IOT_ENDPOINT = '/api/v2/objects-api/informatieobjecttypen';
+const IOT_ENDPOINT = '/api/v2/objects-api/document-types';
 
 const getCatalogues = async apiGroupID => {
   const response = await get(CATALOGUES_ENDPOINT, {objects_api_group: apiGroupID});

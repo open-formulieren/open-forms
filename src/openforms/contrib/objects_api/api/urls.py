@@ -26,7 +26,7 @@ urlpatterns = [
         name="catalogue-list",
     ),
     path(
-        "informatieobjecttypen",
+        "document-types",
         DocumentTypesListView.as_view(),
         name="iotypen-list",
     ),

@@ -113,7 +113,7 @@ const DOCUMENT_TYPES = {
 };
 
 export const mockDocumentTypesGet = () =>
-  rest.get(`${API_BASE_URL}/api/v2/objects-api/informatieobjecttypen`, (req, res, ctx) => {
+  rest.get(`${API_BASE_URL}/api/v2/objects-api/document-types`, (req, res, ctx) => {
     const catalogusUrl = req.url.searchParams.get('catalogus_url');
     const match = DOCUMENT_TYPES[catalogusUrl] ?? [];
     return res(ctx.json(match));
