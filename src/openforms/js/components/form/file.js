@@ -58,9 +58,9 @@ const getSetOfBackends = instance => {
  *
  * @return {Promise<{
  *   backendLabel: string;
- *   catalogusLabel: string;
+ *   catalogueLabel: string;
  *   url: string;
- *   omschrijving: string;
+ *   description: string;
  * }>[]}
  * An array of available documenttypes with the relevant backend label attached.
  */

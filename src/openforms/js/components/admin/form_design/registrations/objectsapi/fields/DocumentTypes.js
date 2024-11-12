@@ -40,10 +40,10 @@ const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
   if (!response.ok) {
     throw new Error('Loading available document types failed');
   }
-  const documentTypes = response.data.sort((a, b) => a.omschrijving.localeCompare(b.omschrijving));
-  return documentTypes.map(({omschrijving, isPublished}) => ({
-    value: omschrijving,
-    label: omschrijving,
+  const documentTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
+  return documentTypes.map(({description, isPublished}) => ({
+    value: description,
+    label: description,
     isPublished: isPublished,
   }));
 };

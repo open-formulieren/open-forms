@@ -34,9 +34,7 @@ class APIGroupQueryParamsSerializer(
     pass
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(
-    ZGWAPIGroupMixin, DocumentTypesFilter
-):
+class ListDocumentTypesQueryParamsSerializer(ZGWAPIGroupMixin, DocumentTypesFilter):
     pass
 
 

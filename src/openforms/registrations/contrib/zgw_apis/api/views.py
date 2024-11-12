@@ -14,7 +14,7 @@ from openforms.contrib.zgw.api.serializers import (
 )
 from openforms.contrib.zgw.api.views import (
     BaseCatalogueListView,
-    BaseInformatieObjectTypenListView,
+    BaseDocumentTypesListView,
 )
 from openforms.contrib.zgw.products_and_services import resolve_case_type_products
 from openforms.utils.date import datetime_in_amsterdam
@@ -22,7 +22,7 @@ from openforms.utils.date import datetime_in_amsterdam
 from .filters import (
     APIGroupQueryParamsSerializer,
     ListCaseTypesQueryParamsSerializer,
-    ListInformatieObjectTypenQueryParamsSerializer,
+    ListDocumentTypesQueryParamsSerializer,
     ListProductsQueryParamsSerializer,
 )
 
@@ -80,6 +80,18 @@ class CaseTypesListView(ListMixin[CaseType], APIView):
         return case_types
 
 
+@extend_schema_view(
+    get=extend_schema(
+        summary=_(
+            "List the available InformatieObjectTypen from the provided ZGW API group"
+        ),
+        parameters=[ListDocumentTypesQueryParamsSerializer],
+    ),
+)
+class DocumentTypesListView(BaseDocumentTypesListView):
+    filter_serializer_class = ListDocumentTypesQueryParamsSerializer
+
+
 @dataclass
 class Product:
     url: str
@@ -132,15 +144,3 @@ class ProductsListView(ListMixin[Product], APIView):
                 )
 
         return products
-
-
-@extend_schema_view(
-    get=extend_schema(
-        summary=_(
-            "List the available InformatieObjectTypen from the provided ZGW API group"
-        ),
-        parameters=[ListInformatieObjectTypenQueryParamsSerializer],
-    ),
-)
-class InformatieObjectTypenListView(BaseInformatieObjectTypenListView):
-    filter_serializer_class = ListInformatieObjectTypenQueryParamsSerializer

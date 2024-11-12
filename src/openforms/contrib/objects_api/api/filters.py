@@ -38,7 +38,5 @@ class APIGroupQueryParamsSerializer(
     pass
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(
-    ObjectsAPIGroupMixin, DocumentTypesFilter
-):
+class ListDocumentTypesQueryParamsSerializer(ObjectsAPIGroupMixin, DocumentTypesFilter):
     pass

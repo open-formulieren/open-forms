@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     CatalogueListView,
-    InformatieObjectTypenListView,
+    DocumentTypesListView,
     ObjecttypesListView,
     ObjecttypeVersionsListView,
 )
@@ -27,7 +27,7 @@ urlpatterns = [
     ),
     path(
         "informatieobjecttypen",
-        InformatieObjectTypenListView.as_view(),
+        DocumentTypesListView.as_view(),
         name="iotypen-list",
     ),
 ]

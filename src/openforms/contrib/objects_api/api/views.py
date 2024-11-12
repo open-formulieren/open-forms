@@ -9,13 +9,13 @@ from rest_framework import authentication, permissions, views
 from openforms.api.views import ListMixin
 from openforms.contrib.zgw.api.views import (
     BaseCatalogueListView,
-    BaseInformatieObjectTypenListView,
+    BaseDocumentTypesListView,
 )
 
 from ..clients import get_objecttypes_client
 from .filters import (
     APIGroupQueryParamsSerializer,
-    ListInformatieObjectTypenQueryParamsSerializer,
+    ListDocumentTypesQueryParamsSerializer,
 )
 from .serializers import (
     ObjectsAPIGroupInputSerializer,
@@ -103,8 +103,8 @@ class CatalogueListView(BaseCatalogueListView):
             "List the available InformatieObjectTypen from the provided Objects API group"
         ),
         tags=["contrib"],
-        parameters=[ListInformatieObjectTypenQueryParamsSerializer],
+        parameters=[ListDocumentTypesQueryParamsSerializer],
     ),
 )
-class InformatieObjectTypenListView(BaseInformatieObjectTypenListView):
-    filter_serializer_class = ListInformatieObjectTypenQueryParamsSerializer
+class DocumentTypesListView(BaseDocumentTypesListView):
+    filter_serializer_class = ListDocumentTypesQueryParamsSerializer

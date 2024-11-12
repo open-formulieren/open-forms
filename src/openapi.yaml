@@ -3529,7 +3529,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InformatieObjectType'
+                  $ref: '#/components/schemas/DocumentType'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4224,7 +4224,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InformatieObjectType'
+                  $ref: '#/components/schemas/DocumentType'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -7564,6 +7564,29 @@ components:
       - form
       type: string
       description: '* `form` - form'
+    DocumentType:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description uniquely identifies a document type within
+            a catalogue. Multiple versions of the same document type may exist, these
+            have non-overlapping valid from/valid until dates.
+        isPublished:
+          type: boolean
+          description: Unpublished document types may be returned when the feature
+            flag 'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
+        url:
+          type: string
+          format: uri
+        catalogueLabel:
+          type: string
+          description: A representation of the catalogue containing the document type.
+      required:
+      - catalogueLabel
+      - description
+      - isPublished
+      - url
     EmailVerification:
       type: object
       properties:
@@ -8732,31 +8755,6 @@ components:
       description: |-
         * `delete_permanently` - Submissions will be deleted
         * `make_anonymous` - Sensitive data within the submissions will be deleted
-    InformatieObjectType:
-      type: object
-      properties:
-        url:
-          type: string
-          format: uri
-        omschrijving:
-          type: string
-          title: description
-          description: The description uniquely identifies a document type within
-            a catalogue. Multiple versions of the same document type may exist, these
-            have non-overlapping valid from/valid until dates.
-        catalogusLabel:
-          type: string
-          title: catalogue label
-          description: A representation of the catalogue containing the document type.
-        isPublished:
-          type: boolean
-          description: Unpublished document types may be returned when the feature
-            flag 'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
-      required:
-      - catalogusLabel
-      - isPublished
-      - omschrijving
-      - url
     Language:
       type: object
       properties:
