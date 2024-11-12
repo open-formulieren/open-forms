@@ -290,6 +290,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                     {"version": _("Unknown version: {version}").format(version=version)}
                 )
 
+        if attrs.get("update_existing_object") and not attrs.get("auth_attribute_path"):
+            raise serializers.ValidationError(
+                {
+                    "auth_attribute_path": _(
+                        'This field is required if "Update existing object" is checked'
+                    )
+                },
+                code="required",
+            )
+
         if not self.context.get("validate_business_logic", True):
             return attrs
 

@@ -15,6 +15,7 @@ import {
   mockRoleTypesGet as mockZGWApisRoleTypesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
+  FeatureFlagsDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
@@ -24,7 +25,7 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [ValidationErrorsDecorator, FormDecorator],
+  decorators: [FeatureFlagsDecorator, ValidationErrorsDecorator, FormDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -689,6 +690,11 @@ export const ConfiguredBackends = {
 };
 
 export const ObjectsAPI = {
+  parameters: {
+    featureFlags: {
+      REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: true,
+    },
+  },
   args: {
     configuredBackends: [
       {
@@ -739,6 +745,29 @@ export const ObjectsAPI = {
       const catalogueSelect = modal.getByLabelText('Catalogus');
       await rsSelect(catalogueSelect, 'Catalogus 2');
     });
+
+    await step(
+      'Path to auth attribute is required if updating existing objects is enabled',
+      async () => {
+        const otherSettingsTitle = modal.getByRole('heading', {
+          name: 'Overige instellingen (Tonen)',
+        });
+        expect(otherSettingsTitle).toBeVisible();
+        await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
+
+        const authAttributePath = modal.getByText(
+          'Path to auth attribute (e.g. BSN/KVK) in objects'
+        );
+
+        expect(authAttributePath).not.toHaveClass('required');
+
+        const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
+        await userEvent.click(updateExistingObject);
+
+        // Checking `updateExistingObject` should make `authAttributePath` required
+        expect(authAttributePath).toHaveClass('required');
+      }
+    );
 
     await step('Submit the form', async () => {
       await userEvent.click(modal.getByRole('button', {name: 'Opslaan'}));
