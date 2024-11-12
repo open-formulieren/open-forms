@@ -10,6 +10,11 @@ amqp==5.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   kombu
+annotated-types==0.7.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   pydantic
 ape-pie==0.1.0
     # via
     #   -c requirements/ci.txt
@@ -202,6 +207,7 @@ django==4.2.16
     #   django-relativedelta
     #   django-sendfile2
     #   django-sessionprofile
+    #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
     #   django-stubs
@@ -352,6 +358,10 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
+django-setup-configuration==0.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-simple-certmanager==2.4.1
     # via
     #   -c requirements/ci.txt
@@ -788,6 +798,22 @@ pycparser==2.20
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   cffi
+pydantic==2.9.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-setup-configuration
+    #   pydantic-settings
+pydantic-core==2.23.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   pydantic
+pydantic-settings==2.6.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-setup-configuration
 pydyf==0.8.0
     # via
     #   -c requirements/ci.txt
@@ -852,10 +878,11 @@ python-decouple==3.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python-dotenv==0.14.0
+python-dotenv==1.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   pydantic-settings
 python-magic==0.4.27
     # via
     #   -c requirements/ci.txt
@@ -879,6 +906,7 @@ pyyaml==6.0.1
     #   -r requirements/ci.txt
     #   drf-spectacular
     #   jsonschema-spec
+    #   pydantic-settings
     #   tablib
     #   vcrpy
 qrcode==7.4.2
@@ -1138,6 +1166,8 @@ typing-extensions==4.11.0
     #   djangorestframework-stubs
     #   mozilla-django-oidc-db
     #   psycopg
+    #   pydantic
+    #   pydantic-core
     #   pyee
     #   qrcode
     #   types-lxml
@@ -1256,7 +1286,7 @@ zeep==4.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.32.0
+zgw-consumers==0.36.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
