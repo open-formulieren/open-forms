@@ -93,6 +93,12 @@ class SubmissionProcessingStatus:
         return "\n\n".join(error_bits)
 
     @property
+    def confirmation_page_title(self) -> str:
+        if self.result != ProcessingResults.success:
+            return ""
+        return self.submission.render_confirmation_page_title()
+
+    @property
     def confirmation_page_content(self) -> str:
         if self.result != ProcessingResults.success:
             return ""

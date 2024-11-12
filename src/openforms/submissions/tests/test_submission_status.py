@@ -34,6 +34,10 @@ from .factories import (
 
 
 class SubmissionStatusPermissionTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_valid_token(self):
         # Use empty task ID to not need a real broker
         submission = SubmissionFactory.create(
@@ -103,6 +107,10 @@ class SubmissionStatusPermissionTests(APITestCase):
 
 
 class SubmissionStatusStatusAndResultTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_no_task_id_registered(self):
         submission = SubmissionFactory.create(
             completed=True,
@@ -254,6 +262,10 @@ class SubmissionStatusExtraInformationTests(APITestCase):
 
     Only when the status is 'done' should these fields emit data.
     """
+
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_succesful_processing(self):
         submission = SubmissionFactory.create(
@@ -427,7 +439,6 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(response_data["paymentUrl"], "")
 
     def test_succesful_processing_submission_with_cosign(self):
-        self.addCleanup(GlobalConfiguration.clear_cache)
         config = GlobalConfiguration.get_solo()
         config.cosign_submission_confirmation_title = "Pending ({{ public_reference }})"
         config.cosign_submission_confirmation_template = (
@@ -460,7 +471,9 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             self.assertEqual(response_data["result"], ProcessingResults.success)
             self.assertEqual(response_data["publicReference"], "OF-ABCDE")
             self.assertEqual(response_data["errorMessage"], "")
-            self.assertEqual(response_data["confirmationPageTitle"], "Pending OF-ABCDE")
+            self.assertEqual(
+                response_data["confirmationPageTitle"], "Pending (OF-ABCDE)"
+            )
             self.assertEqual(
                 response_data["confirmationPageContent"],
                 "Email sent to test@example.com, reference OF-ABCDE",
@@ -474,6 +487,10 @@ class SubmissionStatusExtraInformationTests(APITestCase):
 
 @patch("openforms.submissions.status.AsyncResult.forget", return_value=None)
 class CleanupTaskTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_incomplete_submission(self, mock_forget):
         SubmissionFactory.create(
             completed=False,

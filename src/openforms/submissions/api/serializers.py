@@ -453,6 +453,11 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
         ),
     )
 
+    confirmation_page_title = serializers.CharField(
+        label=_("Confirmation page title"),
+        required=False,
+        help_text=_("Title of the confirmation page."),
+    )
     confirmation_page_content = CSPPostProcessedHTMLField(
         label=_("Confirmation page content"),
         required=False,
