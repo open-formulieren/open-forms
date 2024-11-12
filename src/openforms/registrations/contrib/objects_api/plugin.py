@@ -176,30 +176,27 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         return get_static_variables(variables_registry=variables_registry)
 
     def verify_initial_data_ownership(self, submission: Submission) -> None:
-        for backend in submission.form.registration_backends.filter(
-            backend=self.identifier
-        ):
-            if not backend.options:
-                continue
+        assert submission.registration_backend
+        backend = submission.registration_backend
 
-            api_group = ObjectsAPIGroupConfig.objects.filter(
-                pk=backend.options.get("objects_api_group")
-            ).first()
-            if not api_group:
-                continue
+        api_group = ObjectsAPIGroupConfig.objects.filter(
+            pk=backend.options.get("objects_api_group")
+        ).first()
+        if not api_group:
+            return
 
-            auth_attribute_path = backend.options.get("auth_attribute_path")
-            if not auth_attribute_path:
-                logger.error(
-                    "Cannot perform initial data ownership check, because backend %s has no `auth_attribute_path` configured",
-                    backend,
-                )
-                logevent.object_ownership_check_improperly_configured(
-                    submission, plugin=self
-                )
-                raise ImproperlyConfigured(
-                    f"{backend} has no `auth_attribute_path` configured, cannot perform initial data ownership check"
-                )
+        auth_attribute_path = backend.options.get("auth_attribute_path")
+        if not auth_attribute_path:
+            logger.error(
+                "Cannot perform initial data ownership check, because backend %s has no `auth_attribute_path` configured",
+                backend,
+            )
+            logevent.object_ownership_check_improperly_configured(
+                submission, plugin=self
+            )
+            raise ImproperlyConfigured(
+                f"{backend} has no `auth_attribute_path` configured, cannot perform initial data ownership check"
+            )
 
-            with get_objects_client(api_group) as client:
-                validate_object_ownership(submission, client, auth_attribute_path, self)
+        with get_objects_client(api_group) as client:
+            validate_object_ownership(submission, client, auth_attribute_path, self)

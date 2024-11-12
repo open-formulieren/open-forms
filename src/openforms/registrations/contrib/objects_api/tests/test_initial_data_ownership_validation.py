@@ -73,6 +73,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
             form=self.form,
             completed_not_preregistered=True,
             initial_data_reference="1234",
+            finalised_registration_backend_key=self.backend.key,
         )
 
         with patch(
@@ -80,25 +81,18 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
         ) as mock_validate_object_ownership:
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
-            self.assertEqual(mock_validate_object_ownership.call_count, 2)
+            self.assertEqual(mock_validate_object_ownership.call_count, 1)
 
             # Cannot compare with `.assert_has_calls`, because the client objects
             # won't match
-            call1, call2 = mock_validate_object_ownership.mock_calls
+            call = mock_validate_object_ownership.mock_calls[0]
 
-            self.assertEqual(call1.args[0], submission)
+            self.assertEqual(call.args[0], submission)
             self.assertEqual(
-                call1.args[1].base_url,
-                self.objects_api_group_unused.objects_service.api_root,
-            )
-            self.assertEqual(call1.args[2], ["bsn"])
-
-            self.assertEqual(call2.args[0], submission)
-            self.assertEqual(
-                call2.args[1].base_url,
+                call.args[1].base_url,
                 self.objects_api_group_used.objects_service.api_root,
             )
-            self.assertEqual(call2.args[2], ["nested", "bsn"])
+            self.assertEqual(call.args[2], ["nested", "bsn"])
 
     def test_verify_initial_data_ownership_raising_error_causes_failing_pre_registration(
         self,
@@ -138,6 +132,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
             form=self.form,
             completed_not_preregistered=True,
             initial_data_reference="1234",
+            finalised_registration_backend_key=self.backend.key,
         )
 
         with patch(
@@ -146,19 +141,8 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
             with self.assertRaises(ImproperlyConfigured):
                 pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
-            # Called once before crashing due to missing `auth_attribute_path`
-            self.assertEqual(mock_validate_object_ownership.call_count, 1)
-
-            # Cannot compare with `.assert_has_calls`, because the client objects
-            # won't match
-            call = mock_validate_object_ownership.mock_calls[0]
-
-            self.assertEqual(call.args[0], submission)
-            self.assertEqual(
-                call.args[1].base_url,
-                self.objects_api_group_unused.objects_service.api_root,
-            )
-            self.assertEqual(call.args[2], ["bsn"])
+            # Not called, due to missing `auth_attribute_path`
+            self.assertEqual(mock_validate_object_ownership.call_count, 0)
 
         logs = TimelineLogProxy.objects.filter(object_id=submission.id)
         self.assertEqual(
