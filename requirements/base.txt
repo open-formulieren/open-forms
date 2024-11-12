@@ -2,6 +2,8 @@
 #    ./bin/compile_dependencies.sh
 amqp==5.2.0
     # via kombu
+annotated-types==0.7.0
+    # via pydantic
 ape-pie==0.1.0
     # via
     #   -r requirements/base.in
@@ -110,6 +112,7 @@ django==4.2.16
     #   django-relativedelta
     #   django-sendfile2
     #   django-sessionprofile
+    #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
@@ -194,6 +197,8 @@ django-sendfile2==0.7.1
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
+django-setup-configuration @ git+https://github.com/maykinmedia/django-setup-configuration@a9dad5f6879c2762dcbbb847df9284fa578b429e
+    # via zgw-consumers
 django-simple-certmanager==2.4.1
     # via
     #   -r requirements/base.in
@@ -369,6 +374,14 @@ pycountry==23.12.11
     # via schwifty
 pycparser==2.20
     # via cffi
+pydantic==2.9.2
+    # via
+    #   django-setup-configuration
+    #   pydantic-settings
+pydantic-core==2.23.4
+    # via pydantic
+pydantic-settings==2.6.1
+    # via django-setup-configuration
 pydyf==0.8.0
     # via weasyprint
 pyjwt==2.6.0
@@ -389,8 +402,10 @@ python-dateutil==2.9.0.post0
     #   o365
 python-decouple==3.8
     # via -r requirements/base.in
-python-dotenv==0.14.0
-    # via -r requirements/base.in
+python-dotenv==1.0.1
+    # via
+    #   -r requirements/base.in
+    #   pydantic-settings
 python-magic==0.4.27
     # via -r requirements/base.in
 pytz==2024.1
@@ -404,6 +419,7 @@ pyyaml==6.0.1
     # via
     #   drf-spectacular
     #   jsonschema-spec
+    #   pydantic-settings
     #   tablib
 qrcode==7.4.2
     # via django-two-factor-auth
@@ -499,6 +515,8 @@ typing-extensions==4.11.0
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
     #   psycopg
+    #   pydantic
+    #   pydantic-core
     #   qrcode
     #   zgw-consumers
 tzdata==2023.3
@@ -545,7 +563,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.2.1
     # via -r requirements/base.in
-zgw-consumers==0.32.0
+zgw-consumers @ git+https://github.com/maykinmedia/zgw-consumers@8ee076ea6eca47c0441081e3ee5b1fd9ba6c561e#egg=zgw-consumers
     # via -r requirements/base.in
 zopfli==0.2.3
     # via fonttools
