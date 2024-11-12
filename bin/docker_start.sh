@@ -2,11 +2,6 @@
 
 set -ex
 
-# Wait for the database container
-# See: https://docs.docker.com/compose/startup-order/
-export PGHOST=${DB_HOST:-db}
-export PGPORT=${DB_PORT:-5432}
-
 fixtures_dir=${FIXTURES_DIR:-/app/fixtures}
 
 uwsgi_port=${UWSGI_PORT:-8000}
@@ -15,12 +10,8 @@ uwsgi_threads=${UWSGI_THREADS:-1}
 
 mountpoint=${SUBPATH:-/}
 
-until pg_isready; do
-  >&2 echo "Waiting for database connection..."
-  sleep 1
-done
-
->&2 echo "Database is up."
+# wait for required services
+${SCRIPTPATH}/wait_for_db.sh
 
 # Apply database migrations
 >&2 echo "Apply database migrations"

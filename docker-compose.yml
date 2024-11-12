@@ -88,15 +88,33 @@ services:
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
+      - ./docker/setup_configuration:/app/data
       - log:/app/log
       - certifi_ca_bundle:/app/certifi_ca_bundle
     ports:
       - 8000:8000
     depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      smtp:
+        condition: service_started
+      clamav:
+        condition: service_started
+      web-init:
+        condition: service_completed_successfully
+    networks:
+      - open-forms-dev
+
+  web-init:
+    build: .
+    environment: *web_env
+    command: /setup_configuration.sh
+    volumes: *web_volumes
+    depends_on:
       - db
       - redis
-      - smtp
-      - clamav
     networks:
       - open-forms-dev
 
