@@ -10126,6 +10126,9 @@ components:
           description: The public registration reference, sourced from the registration
             backend or otherwise uniquely generated in case the backend could not
             provide it.
+        confirmationPageTitle:
+          type: string
+          description: Title of the confirmation page.
         confirmationPageContent:
           type: string
           description: Body text of the confirmation page. May contain HTML!
