@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import ActionButton, {SubmitAction} from 'components/admin/forms/ActionButton';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
@@ -12,15 +14,6 @@ import {FormModal} from 'components/admin/modals';
 
 import ComplexProcessVariables from './ComplexProcessVariables';
 import SelectProcessVariables from './SelectProcessVariables';
-
-// use rjsf wrapper to keep consistent markup/styling
-const Wrapper = ({children}) => (
-  <form className="rjsf" name="form.registrationBackendOptions">
-    <CustomFieldTemplate displayLabel={false} rawErrors={[]}>
-      <fieldset id="root">{children}</fieldset>
-    </CustomFieldTemplate>
-  </form>
-);
 
 const EMPTY_PROCESS_VARIABLE = {
   enabled: true,
@@ -54,6 +47,121 @@ const getProcessSelectionChoices = (processDefinitions, processDefinition) => {
   return [processDefinitionChoices, versionChoices];
 };
 
+const ProcessDefinitionFields = ({
+  processDefinitionChoices,
+  processDefinition,
+  versionChoices,
+  processDefinitionVersion,
+  onChange,
+}) => (
+  <Fieldset>
+    <FormRow>
+      <Field
+        name="processDefinition"
+        label={
+          <FormattedMessage
+            description="Camunda 'process definition' label"
+            defaultMessage="Process"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="Camunda 'process definition' help text"
+            defaultMessage="The process definition for which to start a process instance."
+          />
+        }
+        required
+      >
+        <Select
+          name="processDefinition"
+          choices={processDefinitionChoices}
+          value={processDefinition}
+          onChange={onChange}
+          allowBlank
+        />
+      </Field>
+    </FormRow>
+
+    <FormRow>
+      <Field
+        name="processDefinitionVersion"
+        label={
+          <FormattedMessage
+            description="Camunda 'process definition version' label"
+            defaultMessage="Version"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="Camunda 'process definition version' help text"
+            defaultMessage="Which version of the process definition to start. The latest version is used if not specified."
+          />
+        }
+      >
+        <Select
+          name="processDefinitionVersion"
+          choices={versionChoices}
+          value={processDefinitionVersion ? `${processDefinitionVersion}` : ''}
+          onChange={onChange}
+          allowBlank
+        />
+      </Field>
+    </FormRow>
+  </Fieldset>
+);
+
+const ManageSimpleVarsButton = ({onClick, numVars}) => {
+  const intl = useIntl();
+  return (
+    <span style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
+      <ActionButton
+        text={intl.formatMessage({
+          description: 'Open manage camunda process vars modal button',
+          defaultMessage: 'Manage process variables',
+        })}
+        type="button"
+        onClick={onClick}
+      />
+      &nbsp;
+      <FormattedMessage
+        description="Managed Camunda process vars state feedback"
+        defaultMessage="{varCount, plural,
+                      =0 {}
+                      one {(1 variable mapped)}
+                      other {({varCount} variables mapped)}
+                  }"
+        values={{varCount: numVars}}
+      />
+    </span>
+  );
+};
+
+const ManageComplexVarsButton = ({onClick, numVars}) => {
+  const intl = useIntl();
+  return (
+    <span style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
+      <ActionButton
+        text={intl.formatMessage({
+          description: 'Open manage complex camunda process vars modal button',
+          defaultMessage: 'Complex process variables',
+        })}
+        type="button"
+        onClick={onClick}
+      />
+      &nbsp;
+      <FormattedMessage
+        description="Managed complex Camunda process vars state feedback"
+        defaultMessage="{varCount, plural,
+                      =0 {}
+                      one {(1 variable defined)}
+                      other {({varCount} variables defined)}
+                  }"
+        values={{varCount: numVars}}
+      />
+    </span>
+  );
+};
+
 const FormFields = ({processDefinitions, formData, onChange}) => {
   const {
     processDefinition = '',
@@ -63,8 +171,10 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
   } = formData;
 
   const intl = useIntl();
+  const [baseModalOpen, setBaseModalOpen] = useState(false);
   const [simpleVarsModalOpen, setSimpleVarsModalOpen] = useState(false);
   const [complexVarsModalOpen, setComplexVarsModalOpen] = useState(false);
+
   const [processDefinitionChoices, versionChoices] = getProcessSelectionChoices(
     processDefinitions,
     processDefinition
@@ -153,105 +263,46 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
 
   return (
     <>
-      <Wrapper>
-        <CustomFieldTemplate
-          id="camundaOptions.processDefinition"
-          label={intl.formatMessage({
-            defaultMessage: 'Process',
-            description: "Camunda 'process definition' label",
+      <div style={{display: 'flex', gap: '10px', alignItems: 'start'}}>
+        <ActionButton
+          text={intl.formatMessage({
+            description: 'Link label to open registration options modal',
+            defaultMessage: 'Configure options',
           })}
-          rawErrors={null}
-          errors={null} // TODO
-          rawDescription={intl.formatMessage({
-            description: "Camunda 'process definition' help text",
-            defaultMessage: 'The process definition for which to start a process instance.',
-          })}
-          required
-          displayLabel
-        >
-          <Select
-            name="processDefinition"
-            choices={processDefinitionChoices}
-            value={processDefinition}
-            onChange={onFieldChange}
-            allowBlank
-          />
-        </CustomFieldTemplate>
-        <CustomFieldTemplate
-          id="camundaOptions.processDefinitionVersion"
-          label={intl.formatMessage({
-            defaultMessage: 'Version',
-            description: "Camunda 'process definition version' label",
-          })}
-          rawErrors={null}
-          errors={null} // TODO
-          rawDescription={intl.formatMessage({
-            description: "Camunda 'process definition version' help text",
-            defaultMessage:
-              'Which version of the process definition to start. The latest version is used if not specified.',
-          })}
-          required={false}
-          displayLabel
-        >
-          <Select
-            name="processDefinitionVersion"
-            choices={versionChoices}
-            value={processDefinitionVersion ? `${processDefinitionVersion}` : ''}
-            onChange={onFieldChange}
-            allowBlank
-          />
-        </CustomFieldTemplate>
+          type="button"
+          onClick={() => setBaseModalOpen(!baseModalOpen)}
+        />
 
-        <CustomFieldTemplate
-          id="camundaOptions.manageProcessVars"
-          displayLabel={false}
-          rawErrors={null}
-        >
-          <ActionButton
-            text={intl.formatMessage({
-              description: 'Open manage camunda process vars modal button',
-              defaultMessage: 'Manage process variables',
-            })}
-            type="button"
-            onClick={() => setSimpleVarsModalOpen(!simpleVarsModalOpen)}
-          />
-          &nbsp;
-          <FormattedMessage
-            description="Managed Camunda process vars state feedback"
-            defaultMessage="{varCount, plural,
-                            =0 {}
-                            one {(1 variable mapped)}
-                            other {({varCount} variables mapped)}
-                        }"
-            values={{varCount: processVariables.length}}
-          />
-        </CustomFieldTemplate>
+        <ManageSimpleVarsButton
+          numVars={processVariables.length}
+          onClick={() => setSimpleVarsModalOpen(!simpleVarsModalOpen)}
+        />
 
-        <CustomFieldTemplate
-          id="camundaOptions.manageComplexProcessVars"
-          displayLabel={false}
-          rawErrors={null}
-        >
-          <ActionButton
-            text={intl.formatMessage({
-              description: 'Open manage complex camunda process vars modal button',
-              defaultMessage: 'Complex process variables',
-            })}
-            type="button"
-            onClick={() => setComplexVarsModalOpen(!complexVarsModalOpen)}
-          />
-          &nbsp;
+        <ManageComplexVarsButton
+          numVars={complexProcessVariables.length}
+          onClick={() => setComplexVarsModalOpen(!complexVarsModalOpen)}
+        />
+      </div>
+
+      <FormModal
+        isOpen={baseModalOpen}
+        title={
           <FormattedMessage
-            description="Managed complex Camunda process vars state feedback"
-            defaultMessage="{varCount, plural,
-                            =0 {}
-                            one {(1 variable defined)}
-                            other {({varCount} variables defined)}
-                        }"
-            values={{varCount: complexProcessVariables.length}}
+            description="Camunda registration options modal title"
+            defaultMessage="Plugin configuration: Camunda"
           />
-        </CustomFieldTemplate>
-      </Wrapper>
+        }
+        closeModal={() => setBaseModalOpen(false)}
+        extraModifiers={['small']}
+      >
+        <ProcessDefinitionFields
+          processDefinitionChoices={processDefinitionChoices}
+          processDefinition={processDefinition}
+          versionChoices={versionChoices}
+          processDefinitionVersion={processDefinitionVersion}
+          onChange={onFieldChange}
+        />
+      </FormModal>
 
       <FormModal
         isOpen={simpleVarsModalOpen}

@@ -1,6 +1,7 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
+import {mockProcessDefinitionsGet} from 'components/admin/form_design/registrations/camunda/mocks';
 import {
   mockDocumentTypesGet,
   mockCataloguesGet as mockObjectsApiCataloguesGet,
@@ -261,10 +262,81 @@ export default {
       {
         id: 'camunda',
         label: 'Camunda',
-        // real schema is defined, but irrelevant because of our react components
         schema: {
           type: 'object',
-          properties: {},
+          properties: {
+            processDefinition: {
+              type: 'string',
+              minLength: 1,
+              title: 'Process definition',
+              description: 'The process definition for which to start a process instance.',
+            },
+            processDefinitionVersion: {
+              type: ['integer', 'null'],
+              title: 'Process definition version',
+              description:
+                'Which version of the process definition to start. The latest version is used if not specified.',
+            },
+            processVariables: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  enabled: {
+                    type: 'boolean',
+                    title: 'enable',
+                    description: 'Only enabled variables are passed into the process',
+                  },
+                  componentKey: {
+                    type: 'string',
+                    minLength: 1,
+                    title: 'Component key',
+                    description: 'Key of the Formio.js component to take the value from.',
+                  },
+                  alias: {
+                    type: 'string',
+                    title: 'Alias',
+                    description:
+                      'If provided, the Camunda process variable will have this alias as name instead of the component key. Use this to map a component onto a different process variable name.',
+                  },
+                },
+                required: ['enabled', 'componentKey'],
+                title: 'Mapped process variables',
+              },
+              title: 'Mapped process variables',
+            },
+            complexProcessVariables: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  enabled: {
+                    type: 'boolean',
+                    title: 'enable',
+                    description: 'Only enabled variables are passed into the process',
+                  },
+                  alias: {
+                    type: 'string',
+                    minLength: 1,
+                    title: 'Alias',
+                    description:
+                      'Name of the variable in the Camunda process instance. For complex variables, the name must be supplied.',
+                  },
+                  type: {
+                    type: 'string',
+                    enum: ['object', 'array'],
+                    enumNames: ['Object', 'Array'],
+                    title: 'Type',
+                    description: 'The type determines how to interpret the variable definition.',
+                  },
+                },
+                required: ['enabled', 'alias', 'type'],
+                title: 'Complex process variables',
+              },
+              title: 'Complex process variables',
+            },
+          },
+          required: ['processDefinition', 'processVariables', 'complexProcessVariables'],
         },
       },
       {
@@ -435,6 +507,7 @@ export default {
           mockDocumentTypesGet(),
         ],
         zgwMocks: [mockZGWApisCataloguesGet(), mockCaseTypesGet()],
+        camundaMocks: [mockProcessDefinitionsGet()],
       },
     },
   },
@@ -561,6 +634,37 @@ export const ConfiguredBackends = {
         options: {
           folderPath: '/formSubmissions',
           driveId: 'myDrive',
+        },
+      },
+      {
+        key: 'backend10',
+        name: 'Camunda',
+        backend: 'camunda',
+        options: {
+          processDefinition: '',
+          processDefinitionVersion: null,
+          processVariables: [
+            {
+              enabled: true,
+              componentKey: 'textField1',
+              alias: '',
+            },
+          ],
+          complexProcessVariables: [
+            {
+              enabled: true,
+              alias: 'sampleVariable',
+              type: 'object',
+              definition: {
+                foo: {
+                  source: 'component',
+                  definition: {
+                    var: 'textField2',
+                  },
+                },
+              },
+            },
+          ],
         },
       },
     ],
