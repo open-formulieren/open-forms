@@ -208,6 +208,14 @@ def fix_multiple_empty_default_value(component: Component) -> bool:
     return False
 
 
+def set_datatype_string(component: Component):
+    # https://github.com/open-formulieren/open-forms/issues/4772
+    if component.get("dataType") != "string":
+        component["dataType"] = "string"
+        return True
+    return False
+
+
 def convert_simple_conditionals(configuration: JSONObject) -> bool:
     config_modified = False
 
@@ -350,6 +358,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "select": {
         "set_openforms_datasrc": set_openforms_datasrc,
         "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
+        "set_datatype_string": set_datatype_string,
     },
     "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
     "currency": {
