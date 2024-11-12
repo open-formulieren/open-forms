@@ -198,7 +198,6 @@ const ObjectsAPIFields = ({errors}) => {
           }}
           name="options.objectsApiGroup"
           onApiGroupChange={onApiGroupChange}
-          selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
         />
 
         <ErrorBoundary
@@ -215,7 +214,6 @@ const ObjectsAPIFields = ({errors}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
-            selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
             onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
@@ -240,7 +238,6 @@ const ObjectsAPIFields = ({errors}) => {
             name="options.objecttypeVersion"
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
-            selectProps={{maxMenuHeight: '16em', menuPlacement: 'bottom'}}
           />
         </ErrorBoundary>
 

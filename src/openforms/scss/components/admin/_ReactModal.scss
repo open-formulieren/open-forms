@@ -7,7 +7,9 @@
     align-items: center;
 
     position: fixed;
-    z-index: 1000;
+    // the base admin layout gets a z-index up until 2, so this ensures it's layered on top of the admin
+    // while leaving enough space for other UI elements on top of that (like react-select)
+    z-index: 3;
     top: 0;
     right: 0;
     bottom: 0;

@@ -82,6 +82,7 @@ const SelectWithoutFormik = ({name, options, value, className, onChange, ...prop
     classNamePrefix="admin-react-select"
     styles={styles}
     menuPlacement="auto"
+    menuPortalTarget={document.body}
     options={options}
     value={getValue(options, value)}
     onChange={selectedOption => {
@@ -107,6 +108,7 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
       classNamePrefix="admin-react-select"
       styles={styles}
       menuPlacement="auto"
+      menuPortalTarget={document.body}
       options={options}
       {...fieldProps}
       value={getValue(options, value)}
