@@ -1,0 +1,31 @@
+ZGW_CONSUMERS_CONFIG_ENABLE: True
+ZGW_CONSUMERS:
+  services:
+  - slug: objecttypen-test
+    label: Objecttypen API test
+    api_root: http://objecttypes-web:8000/api/v2/
+    api_type: orc
+    auth_type: api_key
+    header_key: Authorization
+    header_value: Token 171be5abaf41e7856b423ad513df1ef8f867ff48
+  - slug: objecten-test
+    label: Objecten API test
+    api_root: http://objects-web:8000/api/v2/
+    api_type: orc
+    auth_type: api_key
+    header_key: Authorization
+    header_value: Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
+  - slug: documenten-test
+    label: Documenten API test
+    api_root: http://openzaak-web.local:8000/documenten/api/v1/
+    api_type: drc
+    auth_type: zgw
+    client_id: test_client_id
+    secret: test_secret_key
+  - slug: catalogi-test
+    label: Catalogi API test
+    api_root: http://openzaak-web.local:8000/catalogi/api/v1/
+    api_type: ztc
+    auth_type: zgw
+    client_id: test_client_id
+    secret: test_secret_key

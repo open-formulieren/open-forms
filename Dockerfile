@@ -86,6 +86,8 @@ COPY ./bin/celery_worker.sh /celery_worker.sh
 COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
+COPY ./bin/wait_for_db.sh /wait_for_db.sh
+COPY ./bin/setup_configuration.sh /setup_configuration.sh
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
 COPY \
     ./bin/check_celery_worker_liveness.py \
