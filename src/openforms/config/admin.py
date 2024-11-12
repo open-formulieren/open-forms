@@ -26,6 +26,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             _("Submissions"),
             {
                 "fields": (
+                    "submission_confirmation_title",
                     "submission_confirmation_template",
                     "submission_report_download_link_title",
                 ),
@@ -43,6 +44,15 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                 "fields": (
                     "save_form_email_subject",
                     "save_form_email_content",
+                ),
+            },
+        ),
+        (
+            _("Submissions with cosigning"),
+            {
+                "fields": (
+                    "cosign_submission_confirmation_title",
+                    "cosign_submission_confirmation_template",
                 ),
             },
         ),

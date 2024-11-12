@@ -61,6 +61,18 @@ class GlobalConfiguration(SingletonModel):
         default=list,
     )
 
+    # Confirmation page content
+    submission_confirmation_title = models.CharField(
+        _("submission confirmation title"),
+        max_length=200,
+        help_text=_(
+            "The content of the confirmation page title. You can (and should) use the "
+            "'public_reference' variable so the users have a reference in case they "
+            "need to contact the customer service."
+        ),
+        default=runtime_gettext(_("Confirmation: {{ public_reference }}")),
+        validators=[DjangoTemplateValidator()],
+    )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
         help_text=_(
@@ -76,7 +88,29 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("The title of the link to download the report of a submission."),
         default=runtime_gettext(_("Download PDF")),
     )
+    cosign_submission_confirmation_title = models.CharField(
+        _("cosign submission confirmation title"),
+        max_length=200,
+        help_text=_(
+            "The content of the confirmation page title for submissions requiring "
+            "cosigning."
+        ),
+        default=runtime_gettext(_("Request not complete yet")),
+        validators=[DjangoTemplateValidator()],
+    )
+    cosign_submission_confirmation_template = HTMLField(
+        _("cosign submission confirmation template"),
+        help_text=_(
+            "The content of the submission confirmation page for submissions requiring "
+            "cosigning. The variables 'public_reference' and 'cosigner_email' are "
+            "available. We strongly advise you to include the 'public_reference' in "
+            "case users need to contact the customer service."
+        ),
+        default=partial(_render, "config/default_cosign_submission_confirmation.html"),
+        validators=[DjangoTemplateValidator()],
+    )
 
+    # Email templates
     confirmation_email_subject = models.CharField(
         _("subject"),
         max_length=1000,
