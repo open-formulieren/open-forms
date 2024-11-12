@@ -82,10 +82,39 @@ class BaseDocumentTypesListView(ListMixin[DocumentType], APIView):
         filter_serializer = self.filter_serializer_class(data=self.request.query_params)
         filter_serializer.is_valid(raise_exception=True)
 
-        catalogus_url = filter_serializer.validated_data["catalogus_url"]
+        catalogus_url: str = filter_serializer.validated_data["catalogus_url"]
+        case_type_identification: str = filter_serializer.validated_data[
+            "case_type_identification"
+        ]
 
         document_types: list[DocumentType] = []
         with filter_serializer.get_ztc_client() as client:
+            # if a case type identification filter is provided, filter down the list
+            # of document types to the ones present in any version of the case type
+            allowed_urls: set[str] | None
+            if case_type_identification:
+                assert catalogus_url
+                case_type_versions = client.find_case_types(
+                    catalogus=catalogus_url,
+                    identification=case_type_identification,
+                )
+                # no case type version found -> there are definitely no document types
+                # available
+                if case_type_versions is None:
+                    return []
+
+                allowed_urls = set(
+                    sum(
+                        (
+                            case_type_version.get("informatieobjecttypen", [])
+                            for case_type_version in case_type_versions
+                        ),
+                        [],
+                    )
+                )
+            else:
+                allowed_urls = None
+
             # look up the relevant catalogue information, since we need to embed
             # information in the document types for the formio-builder file component.
             _catalogues: list[dict]
@@ -108,6 +137,8 @@ class BaseDocumentTypesListView(ListMixin[DocumentType], APIView):
 
             # now, look up the document types, possibly filtered
             for iotype in client.get_all_informatieobjecttypen(catalogus=catalogus_url):
+                if allowed_urls is not None and iotype["url"] not in allowed_urls:
+                    continue
                 document_type = DocumentType(
                     url=iotype["url"],
                     description=iotype["omschrijving"],
