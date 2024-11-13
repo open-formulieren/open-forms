@@ -174,7 +174,7 @@ class DeleteSubmissionsTask(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             pending_submission_to_be_deleted.refresh_from_db()
         with self.assertRaises(ObjectDoesNotExist):
-            pending_submission_to_be_deleted.refresh_from_db()
+            in_progress_submission_to_be_deleted.refresh_from_db()
 
     def test_incomplete_submissions_with_form_settings_override_global_configuration(
         self,
