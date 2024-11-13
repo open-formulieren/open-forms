@@ -58,6 +58,34 @@ class DeleteSubmissionsTask(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             submission_to_be_deleted.refresh_from_db()
 
+    def test_successful_submissions_correctly_deleted_the_same_day_when_form_removal_limit_is_0(
+        self,
+    ):
+        form = FormFactory.create(
+            successful_submissions_removal_limit=0,
+            incomplete_submissions_removal_limit=7,
+            errored_submissions_removal_limit=7,
+            all_submissions_removal_limit=7,
+        )
+
+        with freeze_time("2024-11-12T18:00:00+01:00"):
+            # Submission not connected to form
+            SubmissionFactory.create(registration_success=True)
+
+            submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_success=True
+            )
+
+        self.assertEqual(Submission.objects.count(), 2)
+
+        with freeze_time("2024-11-12T19:00:00+01:00"):
+            delete_submissions()
+
+        # Only the submission connected to the form should be deleted
+        self.assertEqual(Submission.objects.count(), 1)
+        with self.assertRaises(ObjectDoesNotExist):
+            submission_to_be_deleted.refresh_from_db()
+
     @tag("gh-2632")
     def test_delete_successful_submission_with_deleted_form_step(self):
         config = GlobalConfiguration.get_solo()
@@ -176,6 +204,42 @@ class DeleteSubmissionsTask(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             in_progress_submission_to_be_deleted.refresh_from_db()
 
+    def test_incomplete_submissions_correctly_deleted_the_same_day_when_form_removal_limit_is_0(
+        self,
+    ):
+        form = FormFactory.create(
+            successful_submissions_removal_limit=7,
+            incomplete_submissions_removal_limit=0,
+            errored_submissions_removal_limit=7,
+            all_submissions_removal_limit=7,
+        )
+
+        with freeze_time("2024-11-12T18:00:00+01:00"):
+            # Incomplete submissions not connected to the form
+            SubmissionFactory.create(registration_status=RegistrationStatuses.pending)
+            SubmissionFactory.create(
+                registration_status=RegistrationStatuses.in_progress
+            )
+
+            SubmissionFactory.create(form=form, registration_success=True)
+            pending_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.pending
+            )
+            in_progress_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.in_progress
+            )
+
+        self.assertEqual(Submission.objects.count(), 5)
+
+        with freeze_time("2024-11-12T19:00:00+01:00"):
+            delete_submissions()
+
+        self.assertEqual(Submission.objects.count(), 3)
+        with self.assertRaises(ObjectDoesNotExist):
+            pending_submission_to_be_deleted.refresh_from_db()
+        with self.assertRaises(ObjectDoesNotExist):
+            in_progress_submission_to_be_deleted.refresh_from_db()
+
     def test_incomplete_submissions_with_form_settings_override_global_configuration(
         self,
     ):
@@ -277,6 +341,42 @@ class DeleteSubmissionsTask(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             submission_to_be_deleted.refresh_from_db()
 
+    def test_failed_submissions_correctly_deleted_the_same_day_when_form_removal_limit_is_0(
+        self,
+    ):
+        form = FormFactory.create(
+            successful_submissions_removal_limit=7,
+            incomplete_submissions_removal_limit=7,
+            errored_submissions_removal_limit=0,
+            all_submissions_removal_limit=7,
+        )
+
+        with freeze_time("2024-11-12T18:00:00+01:00"):
+            # Failed submission not connected to the form
+            SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
+
+            # Successful and incomplete submissions
+            SubmissionFactory.create(form=form, registration_success=True)
+            SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.pending
+            )
+            SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.in_progress
+            )
+
+            failed_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.failed
+            )
+
+        self.assertEqual(Submission.objects.count(), 5)
+
+        with freeze_time("2024-11-12T19:00:00+01:00"):
+            delete_submissions()
+
+        self.assertEqual(Submission.objects.count(), 4)
+        with self.assertRaises(ObjectDoesNotExist):
+            failed_submission_to_be_deleted.refresh_from_db()
+
     def test_failed_submissions_with_form_settings_override_global_configuration(self):
         config = GlobalConfiguration.get_solo()
         form_longer_limit = FormFactory.create(
@@ -338,6 +438,53 @@ class DeleteSubmissionsTask(TestCase):
         self.assertEqual(Submission.objects.count(), 1)
         with self.assertRaises(ObjectDoesNotExist):
             old_submission.refresh_from_db()
+
+    def test_all_submissions_correctly_deleted_the_same_day_when_form_removal_limit_is_0(
+        self,
+    ):
+        form = FormFactory.create(
+            successful_submissions_removal_limit=7,
+            incomplete_submissions_removal_limit=7,
+            errored_submissions_removal_limit=7,
+            all_submissions_removal_limit=0,
+        )
+
+        with freeze_time("2024-11-12T18:00:00+01:00"):
+            # Submissions not connected to the form
+            SubmissionFactory.create(registration_success=True)
+            SubmissionFactory.create(registration_status=RegistrationStatuses.pending)
+            SubmissionFactory.create(
+                registration_status=RegistrationStatuses.in_progress
+            )
+            SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
+
+            submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_success=True
+            )
+            pending_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.pending
+            )
+            in_progress_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.in_progress
+            )
+            failed_submission_to_be_deleted = SubmissionFactory.create(
+                form=form, registration_status=RegistrationStatuses.failed
+            )
+
+        self.assertEqual(Submission.objects.count(), 8)
+
+        with freeze_time("2024-11-12T19:00:00+01:00"):
+            delete_submissions()
+
+        self.assertEqual(Submission.objects.count(), 4)
+        with self.assertRaises(ObjectDoesNotExist):
+            submission_to_be_deleted.refresh_from_db()
+        with self.assertRaises(ObjectDoesNotExist):
+            pending_submission_to_be_deleted.refresh_from_db()
+        with self.assertRaises(ObjectDoesNotExist):
+            in_progress_submission_to_be_deleted.refresh_from_db()
+        with self.assertRaises(ObjectDoesNotExist):
+            failed_submission_to_be_deleted.refresh_from_db()
 
     def test_all_submissions_with_form_settings_override_global_configuration(self):
         config = GlobalConfiguration.get_solo()
