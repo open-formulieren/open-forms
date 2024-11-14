@@ -17,7 +17,7 @@ class ZGWApiGroupConfigFactory(factory.django.DjangoModelFactory):
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.ztc
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = ZGWApiGroupConfig
 
     class Params:

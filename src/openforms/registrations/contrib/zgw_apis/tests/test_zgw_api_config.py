@@ -7,6 +7,7 @@ from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.test import generate_oas_component
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.registrations.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -322,6 +323,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         zgw_form_options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group2,
             "case_type_identification": "",
+            "document_type_description": "",
             "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
@@ -334,6 +336,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             submission, zgw_form_options
         )
 
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
         submission.public_registration_reference = pre_registration_result.reference
         submission.registration_result.update(pre_registration_result.data)
         submission.save()
@@ -359,11 +363,12 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         zgw_form_options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group2,  # Configure to use the second ZGW API
             "case_type_identification": "",
+            "document_type_description": "",
             "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/2",
             "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
             "organisatie_rsin": "000000123",
-            "zaak_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.confidentieel,  # type: ignore
-            "doc_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.geheim,  # type: ignore
+            "zaak_vertrouwelijkheidaanduiding": "confidentieel",
+            "doc_vertrouwelijkheidaanduiding": "geheim",
             "objects_api_group": None,
             "product_url": "",
         }
@@ -375,6 +380,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             submission, zgw_form_options
         )
 
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
         submission.public_registration_reference = pre_registration_result.reference
         submission.registration_result.update(pre_registration_result.data)
         submission.save()
@@ -451,11 +458,12 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         zgw_form_options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group2,
             "case_type_identification": "",
+            "document_type_description": "",
             "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/2",
             "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
             "organisatie_rsin": "000000123",
-            "zaak_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.confidentieel,  # type: ignore
-            "doc_vertrouwelijkheidaanduiding": VertrouwelijkheidsAanduidingen.geheim,  # type: ignore
+            "zaak_vertrouwelijkheidaanduiding": "confidentieel",
+            "doc_vertrouwelijkheidaanduiding": "geheim",
             "objects_api_group": None,
             "product_url": "",
         }
@@ -466,6 +474,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             submission, zgw_form_options
         )
 
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
         submission.public_registration_reference = pre_registration_result.reference
         submission.registration_result.update(pre_registration_result.data)
         submission.save()
