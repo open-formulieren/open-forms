@@ -251,6 +251,7 @@ class CatalogiClient(NLXClient):
         catalogus: str,
         description: str,
         valid_on: date | None = None,
+        within_casetype: str = "",  # URL reference of a case type
     ) -> list[InformatieObjectType] | None:
         """
         Look up an informatieobjecttype within the specified catalogue.
@@ -299,6 +300,19 @@ class CatalogiClient(NLXClient):
                 f"Got {num} document type versions within a catalogue with description "
                 f"'{description}'. Version (date) ranges may not overlap."
             )
+
+        if within_casetype:
+            # Filter down the options to those present in the requested case type
+            case_type_response = self.get(within_casetype)
+            case_type_response.raise_for_status()
+            case_type: CaseType = case_type_response.json()
+            case_type_document_types = case_type.get("informatieobjecttypen", [])
+
+            all_versions = [
+                version
+                for version in all_versions
+                if version["url"] in case_type_document_types
+            ]
 
         return all_versions
 
