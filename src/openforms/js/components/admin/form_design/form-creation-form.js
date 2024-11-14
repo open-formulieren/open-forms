@@ -1072,14 +1072,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     }
   }, [loading]);
 
-  const [UserVariableConfirmationModal, confirmUserVariableChange] = useConfirm(
-    intl.formatMessage({
-      description:
-        'Changing user variable data type and transforming initial value confirmation message',
-      defaultMessage:
-        'Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?',
-    })
-  );
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
 
   /**
    * Functions for handling events
@@ -1265,7 +1258,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     }
 
     // Check if the dataType change is intentional.
-    if (propertyName === 'dataType' && !(await confirmUserVariableChange())) {
+    if (propertyName === 'dataType' && !(await openConfirmationModal())) {
       return;
     }
 
@@ -1567,7 +1560,15 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
         </Tabs>
       </FormContext.Provider>
 
-      <UserVariableConfirmationModal />
+      <ConfirmationModal
+        {...confirmationModalProps}
+        message={
+          <FormattedMessage
+            description="Changing user variable data type and transforming initial value confirmation message"
+            defaultMessage="Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?"
+          />
+        }
+      />
       <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
     </ValidationErrorsProvider>
   );

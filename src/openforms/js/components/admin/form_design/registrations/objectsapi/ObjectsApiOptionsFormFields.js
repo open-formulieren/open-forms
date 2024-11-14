@@ -36,8 +36,16 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
     description: 'Objects API registration backend: v2 switch warning message',
   });
 
-  const [ConfirmationModalV1, confirmUsingV1] = useConfirm(v1SwitchMessage);
-  const [ConfirmationModalV2, confirmUsingV2] = useConfirm(v2SwitchMessage);
+  const {
+    ConfirmationModal: ConfirmationModalV1,
+    confirmationModalProps: confirmationModalV1Props,
+    openConfirmationModal: confirmUsingV1,
+  } = useConfirm();
+  const {
+    ConfirmationModal: ConfirmationModalV2,
+    confirmationModalProps: confirmationModalV2Props,
+    openConfirmationModal: confirmUsingV2,
+  } = useConfirm();
 
   const changeVersion = async tabIndex => {
     const newVersion = tabIndex + 1;
@@ -100,8 +108,8 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
           <V2ConfigFields apiGroupChoices={apiGroupChoices} />
         </TabPanel>
       </Tabs>
-      <ConfirmationModalV1 />
-      <ConfirmationModalV2 />
+      <ConfirmationModalV1 {...confirmationModalV1Props} message={v1SwitchMessage} />
+      <ConfirmationModalV2 {...confirmationModalV2Props} message={v2SwitchMessage} />
     </ValidationErrorsProvider>
   );
 };

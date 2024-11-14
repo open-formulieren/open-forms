@@ -19,9 +19,9 @@ const DeleteIcon = ({onConfirm, message, icon = 'trash-can'}) => {
     defaultMessage: 'Delete',
   });
 
-  const [ConfirmationModal, confirm] = useConfirm(confirmMessage);
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
   const onClick = async () => {
-    if (await confirm()) {
+    if (await openConfirmationModal()) {
       onConfirm();
     }
   };
@@ -34,7 +34,7 @@ const DeleteIcon = ({onConfirm, message, icon = 'trash-can'}) => {
         title={iconTitle}
         onClick={onClick}
       />
-      <ConfirmationModal />
+      <ConfirmationModal {...confirmationModalProps} message={confirmMessage} />
     </>
   );
 };

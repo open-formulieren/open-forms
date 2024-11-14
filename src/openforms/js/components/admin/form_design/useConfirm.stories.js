@@ -6,24 +6,25 @@ import ActionButton from 'components/admin/forms/ActionButton';
 import useConfirm from './useConfirm';
 
 const ButtonWithUseConfirm = () => {
-  const [ConfirmationModal, confirm] = useConfirm(
-    'A sample confirmation message',
-    'The confirmation title'
-  );
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
   const [confirmationResult, setConfirmationResult] = useState(null);
   return (
     <div>
       <ActionButton
         text="Open confirmation modal"
         onClick={async () => {
-          const result = await confirm();
+          const result = await openConfirmationModal();
           setConfirmationResult(result);
         }}
       />
       {confirmationResult !== null ? (
         <p>Confirmation result: {confirmationResult.toString()}</p>
       ) : null}
-      <ConfirmationModal />
+      <ConfirmationModal
+        {...confirmationModalProps}
+        title="The confirmation title"
+        message="A sample confirmation message"
+      />
     </div>
   );
 };
