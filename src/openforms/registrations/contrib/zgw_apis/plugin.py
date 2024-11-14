@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from functools import partial, wraps
 from typing import Any, TypedDict
 
@@ -15,6 +16,7 @@ from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.clients.catalogi import (
+    CatalogiClient,
     EigenschapSpecificatie,
     omschrijving_matcher,
 )
@@ -37,7 +39,7 @@ from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
-from .typing import RegistrationOptions
+from .typing import CatalogueOption, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = logging.getLogger(__name__)
@@ -103,6 +105,34 @@ def wrap_api_errors(func):
 class _Eigenschap(TypedDict):
     url: str
     specificatie: EigenschapSpecificatie
+
+
+def _resolve_case_type(
+    catalogi_client: CatalogiClient,
+    catalogue: CatalogueOption,
+    identification: str,
+    submission_completed: datetime,
+):
+    version_valid_on = datetime_in_amsterdam(submission_completed).date()
+
+    catalogus = catalogi_client.find_catalogus(**catalogue)
+    if catalogus is None:
+        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+    versions = catalogi_client.find_case_types(
+        catalogus=catalogus["url"],
+        identification=identification,
+        valid_on=version_valid_on,
+    )
+
+    if versions is None:
+        raise RuntimeError(
+            "Could not find a case type with identification "
+            f"'{identification}' that is valid on "
+            f"{version_valid_on.isoformat()}."
+        )
+
+    version = versions[0]
+    return version["url"]
 
 
 @register("zgw-create-zaak")
@@ -180,27 +210,13 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         if case_type_identification := options["case_type_identification"]:
             catalogue = options.get("catalogue")
             assert catalogue is not None  # enforced by validation
-            version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
-
             with get_catalogi_client(zgw) as catalogi_client:
-                catalogus = catalogi_client.find_catalogus(**catalogue)
-                if catalogus is None:
-                    raise RuntimeError(f"Could not resolve catalogue {catalogue}")
-                versions = catalogi_client.find_case_types(
-                    catalogus=catalogus["url"],
-                    identification=case_type_identification,
-                    valid_on=version_valid_on,
+                zaaktype_url = _resolve_case_type(
+                    catalogi_client,
+                    catalogue,
+                    case_type_identification,
+                    submission.completed_on,
                 )
-
-            if versions is None:
-                raise RuntimeError(
-                    "Could not find a case type with identification "
-                    f"'{case_type_identification}' that is valid on "
-                    f"{version_valid_on.isoformat()}."
-                )
-
-            version = versions[0]
-            zaaktype_url = version["url"]
         else:
             zaaktype_url = options["zaaktype"]
 
