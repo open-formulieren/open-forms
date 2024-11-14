@@ -295,7 +295,7 @@ class Form(models.Model):
         _("successful submission removal limit"),
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             "Amount of days successful submissions of this form will remain before being removed. "
             "Leave blank to use value in General Configuration."
@@ -315,7 +315,7 @@ class Form(models.Model):
         _("incomplete submission removal limit"),
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             "Amount of days incomplete submissions of this form will remain before being removed. "
             "Leave blank to use value in General Configuration."
@@ -335,7 +335,7 @@ class Form(models.Model):
         _("errored submission removal limit"),
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             "Amount of days errored submissions of this form will remain before being removed. "
             "Leave blank to use value in General Configuration."
@@ -355,7 +355,7 @@ class Form(models.Model):
         _("all submissions removal limit"),
         blank=True,
         null=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(0)],
         help_text=_(
             "Amount of days when all submissions of this form will be permanently deleted. "
             "Leave blank to use value in General Configuration."

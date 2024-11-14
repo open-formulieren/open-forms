@@ -10240,7 +10240,7 @@ components:
         successfulSubmissionsRemovalLimit:
           type: integer
           maximum: 2147483647
-          minimum: 1
+          minimum: 0
           nullable: true
           title: Successful submission removal limit
           description: Amount of days successful submissions of this form will remain
@@ -10257,7 +10257,7 @@ components:
         incompleteSubmissionsRemovalLimit:
           type: integer
           maximum: 2147483647
-          minimum: 1
+          minimum: 0
           nullable: true
           title: Incomplete submission removal limit
           description: Amount of days incomplete submissions of this form will remain
@@ -10274,7 +10274,7 @@ components:
         erroredSubmissionsRemovalLimit:
           type: integer
           maximum: 2147483647
-          minimum: 1
+          minimum: 0
           nullable: true
           title: Errored submission removal limit
           description: Amount of days errored submissions of this form will remain
@@ -10292,7 +10292,7 @@ components:
         allSubmissionsRemovalLimit:
           type: integer
           maximum: 2147483647
-          minimum: 1
+          minimum: 0
           nullable: true
           description: Amount of days when all submissions of this form will be permanently
             deleted. Leave blank to use value in General Configuration.

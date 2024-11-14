@@ -61,7 +61,7 @@ const DataRemoval = ({submissionsRemovalOptions, onChange}) => {
           <NumberInput
             value={successfulSubmissionsRemovalLimit || ''}
             onChange={onChange}
-            min="1"
+            min="0"
           />
         </Field>
       </FormRow>
@@ -109,7 +109,7 @@ const DataRemoval = ({submissionsRemovalOptions, onChange}) => {
           <NumberInput
             value={incompleteSubmissionsRemovalLimit || ''}
             onChange={onChange}
-            min="1"
+            min="0"
           />
         </Field>
       </FormRow>
@@ -154,7 +154,7 @@ const DataRemoval = ({submissionsRemovalOptions, onChange}) => {
             />
           }
         >
-          <NumberInput value={erroredSubmissionsRemovalLimit || ''} onChange={onChange} min="1" />
+          <NumberInput value={erroredSubmissionsRemovalLimit || ''} onChange={onChange} min="0" />
         </Field>
       </FormRow>
       <FormRow>
@@ -198,7 +198,7 @@ const DataRemoval = ({submissionsRemovalOptions, onChange}) => {
             />
           }
         >
-          <NumberInput value={allSubmissionsRemovalLimit || ''} onChange={onChange} min="1" />
+          <NumberInput value={allSubmissionsRemovalLimit || ''} onChange={onChange} min="0" />
         </Field>
       </FormRow>
     </Fieldset>
