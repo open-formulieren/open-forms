@@ -552,6 +552,25 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         err = serializer.errors["objecttype"][0]
         self.assertEqual(err.code, "invalid")
 
+    def test_document_type_must_be_provided(self):
+        # either informatieobjecttype or document_type_description must be provided
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("document_type_description", serializer.errors)
+        err = serializer.errors["document_type_description"][0]
+        self.assertEqual(err.code, "required")
+
     def test_validate_document_type_exists_when_description_is_provided(self):
         base = {
             "zgw_api_group": self.zgw_group.pk,
@@ -577,6 +596,20 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             data = {
                 **base,
                 "document_type_description": "PDF Informatieobjecttype",
+            }
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("document_type_description", serializer.errors)
+            err = serializer.errors["document_type_description"][0]
+            self.assertEqual(err.code, "not-found")
+
+        with self.subTest("document type does not exist"):
+            data = {
+                **base,
+                "document_type_description": "i-do-not-exist",
             }
             serializer = ZaakOptionsSerializer(data=data)
 

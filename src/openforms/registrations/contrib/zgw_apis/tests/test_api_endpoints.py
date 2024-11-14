@@ -300,6 +300,24 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(len(data), 1)
 
+    def test_retrieve_filter_by_catalogus_and_case_type_doesnt_exist(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "case_type_identification": "i-do-not-exist",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+
+        self.assertEqual(data, [])
+
 
 class GetProductsListViewTests(OFVCRMixin, APITestCase):
     VCR_TEST_FILES = TEST_FILES
