@@ -11,7 +11,6 @@ from typing import Protocol, cast
 
 from glom import assign, glom
 
-from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
@@ -262,20 +261,6 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
     return config_modified
 
 
-def add_explicit_objects_api_groups(registration_backends: list[dict]) -> None:
-    default_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
-    for registration_backend in registration_backends:
-        if registration_backend["backend"] == "zgw-create-zaak":
-            if not registration_backend["options"].get("objecttype"):
-                registration_backend["options"]["objects_api_group"] = None
-            else:
-                # Only perform this assertion if it is attempted to import a configuration
-                # that defines an objecttype, this means that there probably will be
-                # an existing `ObjectsAPIGroupConfig` defined
-                assert default_group
-                registration_backend["options"]["objects_api_group"] = default_group.pk
-
-
 def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
     component = cast(AddressNLComponent, component)
 
@@ -411,8 +396,3 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
 Keys are ``component["type"]`` values, and values are dictionaries keyed by a
 unique converter identifier and the function to do the actual conversion.
 """
-
-
-REGISTRATION_BACKEND_CONVERTERS = [
-    add_explicit_objects_api_groups,
-]

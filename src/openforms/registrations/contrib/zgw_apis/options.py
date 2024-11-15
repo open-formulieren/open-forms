@@ -162,7 +162,36 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         fields["zgw_api_group"].required = False
         return fields
 
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        # it's already present in some form, nothing to do
+        if "objects_api_group" in self.initial_data:
+            return
+
+        # no objecttype specified, no need to set a group
+        if not attrs.get("objecttype"):
+            return
+
+        # at this point we know there's no api group provided and there *is* an
+        # objecttype specified -> add the default group mimicking the legacy behaviour
+
+        default_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
+        # can't start making up groups, unfortunately we can only let validation block
+        # the import now :(
+        if default_group is None:
+            return
+
+        # patch up the data and set the default group as explicit option. it could be
+        # the wrong one, which will be caught by downstream configuration and the only
+        # way to resolve this is by fixing the import file
+        attrs["objects_api_group"] = default_group
+
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
+        self._handle_import(attrs)
+
         # Legacy forms will have zaaktype set, new forms can set case_type_identification.
         # Both may be set - in that case, `case_type_identification` is preferred.
         if not attrs["case_type_identification"] and not attrs["zaaktype"]:
