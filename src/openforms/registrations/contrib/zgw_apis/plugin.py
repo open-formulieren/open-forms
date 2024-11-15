@@ -440,10 +440,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
         # Register submission to Objects API if configured
         if (
-            (object_type := options.get("objecttype"))
+            options["objects_api_group"]
+            and (object_type := options.get("objecttype"))
             and (object_type_version := options.get("objecttype_version"))
             and options.get("content_json")
-            and options.get("objects_api_group")
         ):
             result["objects_api_object"] = execute_unless_result_exists(
                 partial(self.register_submission_to_objects_api, submission, options),
@@ -547,7 +547,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         assert "objecttype" in options
         assert "objecttype_version" in options
         assert "content_json" in options
-        assert "objects_api_group" in options
 
         object_mapping = {
             "geometry": FieldConf(

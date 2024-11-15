@@ -112,6 +112,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Which Objects API set to use."),
         label=_("Objects API set"),
         allow_null=True,
+        default=None,
     )
     objecttype = serializers.URLField(
         label=_("objects API - objecttype"),
