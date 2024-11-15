@@ -13,6 +13,7 @@ const ObjectsAPIGroup = ({
   name = 'objectsApiGroup',
   onApiGroupChange,
   isClearable = false,
+  required = true,
 }) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
@@ -38,7 +39,7 @@ const ObjectsAPIGroup = ({
     <FormRow>
       <Field
         name={name}
-        required
+        required={required}
         label={
           <FormattedMessage
             description="Objects API group field label"
@@ -57,7 +58,7 @@ const ObjectsAPIGroup = ({
           name={name}
           options={normalizedOptions}
           value={normalizedOptions.find(option => option.value === normalizedValue)}
-          required
+          required={required}
           onChange={selectedOption => {
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
             if (okToProceed) {
@@ -113,6 +114,11 @@ ObjectsAPIGroup.propTypes = {
    * select (default `false`)
    */
   isClearable: PropTypes.bool,
+
+  /**
+   * Indicate if the field is required or optional.
+   */
+  required: PropTypes.bool,
 };
 
 export default ObjectsAPIGroup;

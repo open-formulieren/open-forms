@@ -42,7 +42,7 @@ const ZGWFormFields = ({
   confidentialityLevelChoices,
 }) => {
   const {
-    values: {propertyMappings = []},
+    values: {propertyMappings = [], objecttype = ''},
   } = useFormikContext();
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
@@ -130,6 +130,7 @@ const ZGWFormFields = ({
             <ObjectsAPIGroup
               apiGroupChoices={objectsApiGroupChoices}
               onApiGroupChange={onApiGroupChange}
+              required={!!objecttype}
               isClearable
             />
             <ObjectType />
