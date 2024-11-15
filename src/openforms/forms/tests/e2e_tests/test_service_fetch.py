@@ -349,6 +349,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 method="POST",
                 service=Service.objects.create(
                     label="Test service 2",
+                    slug="test-service",
                     api_type=APITypes.orc,
                     auth_type=AuthTypes.no_auth,
                     api_root="/foo",
@@ -487,6 +488,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 method="POST",
                 service=Service.objects.create(
                     label="Test service 2",
+                    slug="test-service-2",
                     api_type=APITypes.orc,
                     auth_type=AuthTypes.no_auth,
                     api_root="/foo",
