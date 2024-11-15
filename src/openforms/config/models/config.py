@@ -107,7 +107,11 @@ class GlobalConfiguration(SingletonModel):
             "case users need to contact the customer service."
         ),
         default=partial(_render, "config/default_cosign_submission_confirmation.html"),
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            )
+        ],
     )
 
     # Email templates

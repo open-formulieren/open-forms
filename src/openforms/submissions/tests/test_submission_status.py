@@ -14,6 +14,7 @@ from rest_framework.test import APITestCase
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.config.models import GlobalConfiguration
+from openforms.frontend import get_frontend_redirect_url
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -442,7 +443,8 @@ class SubmissionStatusExtraInformationTests(APITestCase):
         config = GlobalConfiguration.get_solo()
         config.cosign_submission_confirmation_title = "Pending ({{ public_reference }})"
         config.cosign_submission_confirmation_template = (
-            "Email sent to {{ cosigner_email }}, reference {{ public_reference }}"
+            "<p>Email sent to {{ cosigner_email }}, reference {{ public_reference }}.</p>\n"
+            "<p>Cosign now: {% cosign_button text='Cosign now' %}</p>"
         )
         config.save()
         submission = SubmissionFactory.from_components(
@@ -450,6 +452,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
             submitted_data={
                 "cosign": "test@example.com",
             },
+            form_url="http://frontend/form",
             completed=True,
             public_registration_reference="OF-ABCDE",
             metadata__tasks_ids=["some-id"],
@@ -463,26 +466,37 @@ class SubmissionStatusExtraInformationTests(APITestCase):
         with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
             mock_AsyncResult.return_value.state = states.SUCCESS
 
-            response = self.client.get(check_status_url)
+            response = self.client.get(
+                check_status_url, headers={"X-CSP-Nonce": "-dummy-"}
+            )
 
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            response_data = response.json()
-            self.assertEqual(response_data["status"], ProcessingStatuses.done)
-            self.assertEqual(response_data["result"], ProcessingResults.success)
-            self.assertEqual(response_data["publicReference"], "OF-ABCDE")
-            self.assertEqual(response_data["errorMessage"], "")
-            self.assertEqual(
-                response_data["confirmationPageTitle"], "Pending (OF-ABCDE)"
-            )
-            self.assertEqual(
-                response_data["confirmationPageContent"],
-                "Email sent to test@example.com, reference OF-ABCDE",
-            )
-            self.assertTrue(
-                response_data["reportDownloadUrl"].startswith("http://testserver")
-            )
-            # no payment configured/required -> no URL
-            self.assertEqual(response_data["paymentUrl"], "")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = response.json()
+        self.assertEqual(response_data["status"], ProcessingStatuses.done)
+        self.assertEqual(response_data["result"], ProcessingResults.success)
+        self.assertEqual(response_data["publicReference"], "OF-ABCDE")
+        self.assertEqual(response_data["errorMessage"], "")
+        self.assertEqual(response_data["confirmationPageTitle"], "Pending (OF-ABCDE)")
+        expected_cosign_url = get_frontend_redirect_url(
+            submission,
+            action="cosign-init",
+            action_params={"code": submission.public_registration_reference},
+        )
+        expected_html = f"""
+            <p>Email sent to test@example.com, reference OF-ABCDE.</p>
+            <p>Cosign now:
+            <a href="{expected_cosign_url}">
+                <button class="utrecht-button utrecht-button--primary-action" type="button">
+                    Cosign now
+                </button>
+            </a></p>
+            """
+        self.assertHTMLEqual(response_data["confirmationPageContent"], expected_html)
+        self.assertTrue(
+            response_data["reportDownloadUrl"].startswith("http://testserver")
+        )
+        # no payment configured/required -> no URL
+        self.assertEqual(response_data["paymentUrl"], "")
 
 
 @patch("openforms.submissions.status.AsyncResult.forget", return_value=None)
