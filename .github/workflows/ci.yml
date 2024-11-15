@@ -442,7 +442,8 @@ jobs:
     needs:
       - docker_build_setup
       - docker_build
-
+    env:
+      RUN_SETUP_CONFIG: "False"  # Disable running the setup_configuration
     name: Simulate upgrading instances
     runs-on: ubuntu-latest
     strategy:

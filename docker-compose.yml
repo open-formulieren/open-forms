@@ -85,6 +85,9 @@ services:
       - ENVIRONMENT_LABEL=docker-compose
       - ENVIRONMENT_BACKGROUND_COLOR=#1d63ed
       - ENVIRONMENT_FOREGROUND_COLOR=white
+      # Django-setup-configuration
+      - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
+      - SKIP_SELFTEST=${SKIP_SELFTEST:-False}
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
