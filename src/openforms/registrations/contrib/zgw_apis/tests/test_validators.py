@@ -518,7 +518,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertFalse(result)
         self.assertIn("objects_api_group", serializer.errors)
         err = serializer.errors["objects_api_group"][0]
-        self.assertEqual(err.code, "invalid")
+        self.assertEqual(err.code, "required")
 
     def test_validation_objecttype_api_root_must_match_objecttypes_service_api_root(
         self,

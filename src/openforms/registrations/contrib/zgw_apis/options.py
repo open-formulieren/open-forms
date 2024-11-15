@@ -304,7 +304,7 @@ def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
                     "Objects API group must be specified if an objecttype is specified."
                 )
             },
-            code="invalid",
+            code="required",
         )
 
     # `objecttypes_service` is required on `ObjectsAPIGroup`
