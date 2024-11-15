@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+PLUGIN_ID = "zgw-create-zaak"
+
 
 def define_explicit_objects_api_groups(apps, schema_editor):
     ObjectsAPIGroupConfig = apps.get_model("objects_api", "ObjectsAPIGroupConfig")
@@ -10,11 +12,11 @@ def define_explicit_objects_api_groups(apps, schema_editor):
     # Behaviour before the objects API group could be defined explicity: always use the
     # objects API group with the lowest primary key
     objects_api_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
-    for backend in FormRegistrationBackend.objects.filter(backend="zgw-create-zaak"):
-        if not backend.options.get("objecttype"):
-            backend.options["objects_api_group"] = None
-        else:
-            backend.options["objects_api_group"] = objects_api_group.pk
+    objects_api_group_pk = None if objects_api_group is None else objects_api_group.pk
+
+    for backend in FormRegistrationBackend.objects.filter(backend=PLUGIN_ID):
+        group = objects_api_group_pk if backend.options.get("objecttype") else None
+        backend.options["objects_api_group"] = group
         backend.save()
 
 

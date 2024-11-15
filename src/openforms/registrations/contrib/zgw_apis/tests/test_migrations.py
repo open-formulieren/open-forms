@@ -12,8 +12,8 @@ class MigrateToExplicitObjectsAPIGroupsTests(TestMigrations):
         ObjectsAPIGroupConfig = apps.get_model("objects_api", "ObjectsAPIGroupConfig")
         Form = apps.get_model("forms", "Form")
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
-        form1 = Form.objects.create()
-        form2 = Form.objects.create()
+        form1 = Form.objects.create(name="form1")
+        form2 = Form.objects.create(name="form2")
         self.objects_api_group = ObjectsAPIGroupConfig.objects.create(name="Group 1")
         ObjectsAPIGroupConfig.objects.create(name="Group 2")
         self.backend_without_api_group = FormRegistrationBackend.objects.create(
@@ -26,13 +26,18 @@ class MigrateToExplicitObjectsAPIGroupsTests(TestMigrations):
         )
 
     def test_set_explicit_objects_api_groups_on_zgw_api_group_configs(self):
-        self.backend_without_api_group.refresh_from_db()
-        self.backend_with_api_group.refresh_from_db()
-
-        self.assertEqual(
-            self.backend_without_api_group.options["objects_api_group"], None
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
         )
+        backend_without_api_group = FormRegistrationBackend.objects.get(
+            pk=self.backend_without_api_group.pk
+        )
+        backend_with_api_group = FormRegistrationBackend.objects.get(
+            pk=self.backend_with_api_group.pk
+        )
+
+        self.assertIsNone(backend_without_api_group.options["objects_api_group"])
         self.assertEqual(
-            self.backend_with_api_group.options["objects_api_group"],
+            backend_with_api_group.options["objects_api_group"],
             self.objects_api_group.pk,
         )
