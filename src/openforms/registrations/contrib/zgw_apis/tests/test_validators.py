@@ -4,6 +4,7 @@ from django.test import TestCase, override_settings
 
 from typing_extensions import deprecated
 
+from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import ZaakOptionsSerializer
@@ -56,6 +57,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://other-host.local/api/v1/zt/123",
             "informatieobjecttype": "https://other-host.local/api/v1/iot/456",
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
@@ -79,6 +81,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "property_mappings": [
                 {"component_key": "textField", "eigenschap": "a property name"}
             ],
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
@@ -102,6 +105,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 {"component_key": "textField", "eigenschap": "a property name"},
                 {"component_key": "textField", "eigenschap": "wrong property name"},
             ],
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
@@ -129,6 +133,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             "property_mappings": [
                 {"component_key": "textField", "eigenschap": "wrong variable"}
             ],
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
@@ -156,6 +161,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
 
@@ -177,6 +183,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/ca5ffa84-3806-4663-a226-f2d163b79643"  # bad UUID
             ),
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
 
@@ -200,6 +207,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
             "medewerker_roltype": "Baliemedewerker",
+            "objects_api_group": None,
         }
 
         serializer = ZaakOptionsSerializer(data=data)
@@ -222,6 +230,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
             "medewerker_roltype": "Absent roltype",
+            "objects_api_group": None,
         }
 
         serializer = ZaakOptionsSerializer(data=data)
@@ -247,6 +256,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
 
         with self.subTest("valid"):
@@ -336,6 +346,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
 
         with self.subTest("valid catalogue reference"):
@@ -388,6 +399,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/111111111-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
 
@@ -412,6 +424,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
 
@@ -430,6 +443,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
         serializer = ZaakOptionsSerializer(data=data)
 
@@ -451,6 +465,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
+            "objects_api_group": None,
         }
 
         with self.subTest("case type exists"):
@@ -477,3 +492,62 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             self.assertIn("case_type_identification", serializer.errors)
             err = serializer.errors["case_type_identification"][0]
             self.assertEqual(err.code, "not-found")
+
+    def test_validation_objects_api_group_not_null_if_objecttype_is_defined(self):
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "objects_api_group": None,
+            "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("objects_api_group", serializer.errors)
+        err = serializer.errors["objects_api_group"][0]
+        self.assertEqual(err.code, "required")
+
+    def test_validation_objecttype_api_root_must_match_objecttypes_service_api_root(
+        self,
+    ):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+        )
+        data = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+            "objects_api_group": objects_api_group.pk,
+            "objecttype": "http://incorrect.domain/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        result = serializer.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("objecttype", serializer.errors)
+        err = serializer.errors["objecttype"][0]
+        self.assertEqual(err.code, "invalid")

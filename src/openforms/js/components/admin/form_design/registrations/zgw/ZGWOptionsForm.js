@@ -11,8 +11,12 @@ import ZGWFormFields from './ZGWOptionsFormFields';
 const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
 
-  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding} = schema.properties;
+  const {zgwApiGroup, zaakVertrouwelijkheidaanduiding, objectsApiGroup} = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(zgwApiGroup.enum, zgwApiGroup.enumNames);
+  const objectsApiGroupChoices = getChoicesFromSchema(
+    objectsApiGroup.enum,
+    objectsApiGroup.enumNames
+  );
   const confidentialityLevelChoices = getChoicesFromSchema(
     zaakVertrouwelijkheidaanduiding.enum,
     zaakVertrouwelijkheidaanduiding.enumNames
@@ -41,6 +45,9 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         zaakVertrouwelijkheidaanduiding: '',
         medewerkerRoltype: '',
         propertyMappings: [],
+        // Ensure that this is explicitly set to null instead of undefined,
+        // because the field is required by the serializer
+        objectsApiGroup: null,
         // saved data, overwrites defaults
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
@@ -51,6 +58,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
       <ZGWFormFields
         name={name}
         apiGroupChoices={apiGroupChoices}
+        objectsApiGroupChoices={objectsApiGroupChoices}
         confidentialityLevelChoices={confidentialityLevelChoices}
       />
     </ModalOptionsConfiguration>
@@ -70,6 +78,10 @@ ZGWOptionsForm.propTypes = {
         enum: PropTypes.arrayOf(PropTypes.string).isRequired,
         enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
+      objectsApiGroup: PropTypes.shape({
+        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
+        enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }).isRequired,
     }).isRequired,
   }).isRequired,
   formData: PropTypes.shape({
@@ -85,6 +97,7 @@ ZGWOptionsForm.propTypes = {
         eigenschap: PropTypes.string,
       })
     ),
+    objectsApiGroup: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,

@@ -44,6 +44,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             form__payment_backend="ogone-legacy",
             registration_result={
@@ -98,6 +99,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             form__payment_backend="ogone-legacy",
             registration_result={
@@ -163,6 +165,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
@@ -200,6 +203,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
@@ -243,6 +247,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "zgw_api_group": zgw_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
@@ -277,6 +282,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "case_type_identification": "",
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "objects_api_group": None,
             },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)

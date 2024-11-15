@@ -59,7 +59,7 @@ def _get_mock_request():
     )
     server_name = first_allowed_host if first_allowed_host != "*" else "testserver"
     request = factory.get("/", SERVER_NAME=server_name)
-    request.is_mock_request = True
+    request.is_mock_request = True  # pyright: ignore[reportAttributeAccessIssue]
     return request
 
 

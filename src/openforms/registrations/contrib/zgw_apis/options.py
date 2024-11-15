@@ -10,6 +10,7 @@ from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.clients.catalogi import (
     CaseType,
     CatalogiClient,
@@ -104,6 +105,15 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
     # Objects API
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.exclude(
+            Q(objects_service=None) | Q(objecttypes_service=None)
+        ),
+        help_text=_("Which Objects API set to use."),
+        label=_("Objects API set"),
+        allow_null=True,
+        default=None,
+    )
     objecttype = serializers.URLField(
         label=_("objects API - objecttype"),
         help_text=_(
@@ -152,7 +162,36 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         fields["zgw_api_group"].required = False
         return fields
 
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        # it's already present in some form, nothing to do
+        if "objects_api_group" in self.initial_data:
+            return
+
+        # no objecttype specified, no need to set a group
+        if not attrs.get("objecttype"):
+            return
+
+        # at this point we know there's no api group provided and there *is* an
+        # objecttype specified -> add the default group mimicking the legacy behaviour
+
+        default_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
+        # can't start making up groups, unfortunately we can only let validation block
+        # the import now :(
+        if default_group is None:
+            return
+
+        # patch up the data and set the default group as explicit option. it could be
+        # the wrong one, which will be caught by downstream configuration and the only
+        # way to resolve this is by fixing the import file
+        attrs["objects_api_group"] = default_group
+
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
+        self._handle_import(attrs)
+
         # Legacy forms will have zaaktype set, new forms can set case_type_identification.
         # Both may be set - in that case, `case_type_identification` is preferred.
         if not attrs["case_type_identification"] and not attrs["zaaktype"]:
@@ -187,6 +226,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 attrs["zgw_api_group"] = existing_group
 
         _validate_against_catalogi_api(attrs)
+
+        if attrs.get("objecttype"):
+            _validate_against_objects_api_group(attrs)
 
         return attrs
 
@@ -242,6 +284,43 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         )
         _validate_medewerker_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
+        )
+
+
+def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
+    """
+    Validate the configuration options against the specified objects API group.
+
+    1. An `objects_api_group` must be specified
+    2. The specified `objecttype` must have the same base URL as the defined `objects_api_group.objecttypes_service`
+    """
+    assert "objecttype" in attrs
+
+    objects_api_group = attrs["objects_api_group"]
+    if objects_api_group is None:
+        raise serializers.ValidationError(
+            {
+                "objects_api_group": _(
+                    "Objects API group must be specified if an objecttype is specified."
+                )
+            },
+            code="required",
+        )
+
+    # `objecttypes_service` is required on `ObjectsAPIGroup`
+    assert objects_api_group.objecttypes_service
+    if not attrs["objecttype"].startswith(
+        objects_api_group.objecttypes_service.api_root
+    ):
+        raise serializers.ValidationError(
+            {
+                "objecttype": _(
+                    "The specified objecttype is not present in the selected "
+                    "Objecttypes API (the URL does not start with the API root of "
+                    "the Objecttypes API)."
+                )
+            },
+            code="invalid",
         )
 
 

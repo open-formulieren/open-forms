@@ -12,6 +12,8 @@ const ObjectsAPIGroup = ({
   onChangeCheck,
   name = 'objectsApiGroup',
   onApiGroupChange,
+  isClearable = false,
+  required = true,
 }) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
@@ -24,11 +26,20 @@ const ObjectsAPIGroup = ({
   }, [setValues, onApiGroupChange, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
+
+  // React doesn't like null/undefined as it leads to uncontrolled component warnings,
+  // so we translate null -> '' and vice versa in the change handler
+  const normalizedValue = value === null ? '' : value;
+  const normalizedOptions = options.map(option => ({
+    ...option,
+    value: option.value === null ? '' : option.value,
+  }));
+
   return (
     <FormRow>
       <Field
         name={name}
-        required
+        required={required}
         label={
           <FormattedMessage
             description="Objects API group field label"
@@ -45,12 +56,18 @@ const ObjectsAPIGroup = ({
       >
         <ReactSelect
           name={name}
-          options={options}
-          required
+          options={normalizedOptions}
+          value={normalizedOptions.find(option => option.value === normalizedValue)}
+          required={required}
           onChange={selectedOption => {
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
-            if (okToProceed) setValue(selectedOption.value);
+            if (okToProceed) {
+              // normalize empty string back to null
+              const newValue = selectedOption ? selectedOption.value : null;
+              setValue(newValue);
+            }
           }}
+          isClearable={isClearable}
         />
       </Field>
     </FormRow>
@@ -91,6 +108,17 @@ ObjectsAPIGroup.propTypes = {
    * fire unexpectedly during re-renders.
    */
   onApiGroupChange: PropTypes.func,
+
+  /**
+   * Optional boolean to indicate whether or not it should be possible to clear the
+   * select (default `false`)
+   */
+  isClearable: PropTypes.bool,
+
+  /**
+   * Indicate if the field is required or optional.
+   */
+  required: PropTypes.bool,
 };
 
 export default ObjectsAPIGroup;
