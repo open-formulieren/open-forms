@@ -97,6 +97,7 @@ ZGWOptionsForm.propTypes = {
         eigenschap: PropTypes.string,
       })
     ),
+    objectsApiGroup: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     contentJson: PropTypes.string,

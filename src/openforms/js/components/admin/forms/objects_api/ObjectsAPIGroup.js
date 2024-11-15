@@ -25,6 +25,15 @@ const ObjectsAPIGroup = ({
   }, [setValues, onApiGroupChange, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
+
+  // React doesn't like null/undefined as it leads to uncontrolled component warnings,
+  // so we translate null -> '' and vice versa in the change handler
+  const normalizedValue = value === null ? '' : value;
+  const normalizedOptions = options.map(option => ({
+    ...option,
+    value: option.value === null ? '' : option.value,
+  }));
+
   return (
     <FormRow>
       <Field
@@ -46,13 +55,15 @@ const ObjectsAPIGroup = ({
       >
         <ReactSelect
           name={name}
-          options={options}
+          options={normalizedOptions}
+          value={normalizedOptions.find(option => option.value === normalizedValue)}
           required
           onChange={selectedOption => {
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
             if (okToProceed) {
-              if (selectedOption === null) setValue(null);
-              else setValue(selectedOption.value);
+              // normalize empty string back to null
+              const newValue = selectedOption ? selectedOption.value : null;
+              setValue(newValue);
             }
           }}
           isClearable={isClearable}
