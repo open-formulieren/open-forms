@@ -267,8 +267,8 @@ def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
     """
     assert "objecttype" in attrs
 
-    objects_api_group = attrs.get("objects_api_group")
-    if not objects_api_group:
+    objects_api_group = attrs["objects_api_group"]
+    if objects_api_group is None:
         raise serializers.ValidationError(
             {
                 "objects_api_group": _(
@@ -286,7 +286,9 @@ def _validate_against_objects_api_group(attrs: RegistrationOptions) -> None:
         raise serializers.ValidationError(
             {
                 "objecttype": _(
-                    "The API root of the objecttype does not match the Objecttypes API root in the Objects API group."
+                    "The specified objecttype is not present in the selected "
+                    "Objecttypes API (the URL does not start with the API root of "
+                    "the Objecttypes API)."
                 )
             },
             code="invalid",
