@@ -61,13 +61,17 @@ class TempdirMixin:
     """
 
     def setUp(self):
-        super().setUp()
+        super().setUp()  # pyright: ignore[reportAttributeAccessIssue]
 
         test_dir = Path(tempfile.mkdtemp())
 
         self.filepath = test_dir / "export_test.zip"
-        self.addCleanup(lambda: self.filepath.unlink(missing_ok=True))
-        self.addCleanup(lambda: rmtree(test_dir, ignore_errors=True))
+        self.addCleanup(  # pyright: ignore[reportAttributeAccessIssue]
+            lambda: self.filepath.unlink(missing_ok=True)
+        )
+        self.addCleanup(  # pyright: ignore[reportAttributeAccessIssue]
+            lambda: rmtree(test_dir, ignore_errors=True)
+        )
 
 
 class ImportExportTests(TempdirMixin, TestCase):
