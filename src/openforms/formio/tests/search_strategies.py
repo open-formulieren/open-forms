@@ -1,6 +1,9 @@
 """
 Expose hypothesis derived strategies to work with Formio.js data structures.
 
+.. tip:: Use hypothesis strategies to generate random Formio form configurations to
+   test implementation robustness.
+
 All the formio component definitions must be JSON-serializable. JSON in itself can
 handle NULL bytes inside strings (they turn into \u0000), but JSONB as used by
 postgresql and Django's model.JSONField - where we persist these component definitions -
@@ -494,3 +497,6 @@ any_component = st.deferred(
         cosign_v1_component(),
     )
 )
+"""
+A search strategy returning any possible/supported Formio component dictionary.
+"""
