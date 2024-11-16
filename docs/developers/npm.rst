@@ -14,7 +14,8 @@ Note that we have "two frontends":
 Common tooling
 ==============
 
-The common tooling applies to both Open Forms and the SDK.
+The common tooling applies to Open Forms, the SDK and the supporting libraries like
+the formio-builder and types repository.
 
 **NVM**
 
@@ -38,6 +39,23 @@ formatting when a ``.prettierrc.json`` config file is available.
 
 Currently, Prettier is configured to format ``.js`` and ``.scss`` files.
 
+**Storybook**
+
+All projects/libraries have a Storybook for the UI components. When you're working on
+components that aren't in Storybook yet, please add them.
+
+The `SDK Storybook`_ contains more technical documentation for the SDK. You can usually
+run storybook with:
+
+.. code-block:: bash
+
+    npm run storybook [-- --no-open]
+
+Writing `interaction tests <https://storybook.js.org/docs/essentials/interactions>`_ is
+recommended, but please limit those to actual interactions. For more low-level tests,
+stick to writing unit tests in Jest, using
+`Testing Library <https://www.npmjs.com/package/@testing-library/react>`_.
+
 **Managing translations**
 
 Translations are extracted from the code with helper scripts, and after the
@@ -48,9 +66,9 @@ as we're currently re-organizing the tooling here.
 
 Cheat sheet:
 
-* SDK: ``yarn makemessages`` and ``yarn compilemessages``
+* SDK: ``npm run makemessages`` and ``npm run compilemessages``
 * Backend: ``./bin/makemessages_js.sh`` and ``./bin/compilemessages_js.sh``
-* Libraries: ``./bin/makemessages.sh`` and ``(yarn|npm run) compilemessages``
+* Libraries: ``./bin/makemessages.sh`` and ``npm run compilemessages``
 
 There is also a ``bin/find_untranslated_js.py`` script to point out potentially missed
 translations, as the JSON file format is not too friendly to keep track of everything.
@@ -60,24 +78,6 @@ translations, as the JSON file format is not too friendly to keep track of every
 Indent sizes and other code formatting rules are specified in the ``.editorconfig`` file,
 which should be supported by most editors. Possibly you need to install a plugin for it
 to be activated though.
-
-SDK toolchain
-=============
-
-See the `SDK Storybook`_ for more technical documentation.
-
-**Yarn**
-
-In the SDK we use yarn_ rather than NPM. There is no particular version pinned at the
-moment (since the lockfile format did not recently change). The node version is pinned
-in ``.nvmrc`` though.
-
-The Yarn CLI is almost the same as NPM.
-
-**Storybook**
-
-We are shifting isolated/component development and interaction testing towards
-storybook. Make sure to check it out and fill the gaps in documentation!
 
 .. _nvm: https://github.com/nvm-sh/nvm
 .. _yarn: https://yarnpkg.com/
