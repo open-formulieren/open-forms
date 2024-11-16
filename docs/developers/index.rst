@@ -31,7 +31,6 @@ familiarize yourself with the design principles.
    extending
    extensions
    checklists
-   manual_testing
    i18n
    csp
    npm
