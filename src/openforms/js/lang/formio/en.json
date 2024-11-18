@@ -34,6 +34,7 @@
   "array_nonempty": "This field must have at least one value.",
   "maxFileSizeMessage": "The maximum file size is {{maxFileSize}}.",
   "removeFileMessage": "Remove {{fileName}}",
+  "The name of the uploaded file cannot start with a whitespace.": "The name of the uploaded file cannot start with a whitespace.",
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "The uploaded file is not of an allowed type. It must be: {{ pattern }}.",
   "browseFile": "select '{{ fileFieldLabel }}' file",
   "browseFiles": "select '{{ fileFieldLabel }}' files",

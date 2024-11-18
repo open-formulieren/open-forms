@@ -400,6 +400,7 @@
   "Translations for literals used in this component.": "Vertalingen voor teksten die in dit component gebruikt worden.",
   "Literal": "Brontekst",
   "Translation": "Vertaling",
+  "The name of the uploaded file cannot start with a whitespace.": "De naam van het geuploaded bestand mag niet beginnen met een spatie.",
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "Het geuploaded bestand is niet van een toegestaan type. Het moet {{ pattern }} zijn.",
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} of {{ lastLabel }}",
   "Note that any family member without a BSN will not be displayed.": "Let op, gezinsleden zonder BSN worden niet getoond.",
