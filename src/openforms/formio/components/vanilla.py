@@ -379,6 +379,15 @@ class FileSerializer(serializers.Serializer):
                 {"size": _("Size does not match the uploaded file.")}
             )
 
+        if temporary_upload.file_name.startswith(" "):
+            raise serializers.ValidationError(
+                {
+                    "originalName": _(
+                        "Name of the uploaded file cannot start with whitespace."
+                    )
+                }
+            )
+
         if attrs["originalName"] != temporary_upload.file_name:
             raise serializers.ValidationError(
                 {"originalName": _("Name does not match the uploaded file.")}
