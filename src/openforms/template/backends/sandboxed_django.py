@@ -76,6 +76,7 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
+                    "openforms.submissions.templatetags.cosign",
                     "openforms.utils.templatetags.utils",
                 ]
                 + get_registration_custom_libraries(),

@@ -14,3 +14,4 @@ General configuration
    cms_integration
    virus_scan
    payment_flow
+   cosign

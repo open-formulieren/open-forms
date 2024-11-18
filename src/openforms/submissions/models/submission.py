@@ -411,13 +411,12 @@ class Submission(models.Model):
         URL.
 
         See open-formulieren/open-forms#3025 for the original ticket.
-
-        TODO: check how this works with the hash-based router!
         """
-        furl_instance = furl(self.form_url)
+        furl_instance = furl(self.form_url).remove("_start")
         # if the url path ends with 'startpagina', strip it off
         if furl_instance.path.segments[-1:] == ["startpagina"]:
             furl_instance.path.segments.remove("startpagina")
+
         return furl_instance.remove(
             fragment=True
         )  # Fragments are present in hash based routing
@@ -574,11 +573,25 @@ class Submission(models.Model):
 
         del self._execution_state
 
+    def render_confirmation_page_title(self) -> str:
+        config = GlobalConfiguration.get_solo()
+        template = (
+            config.cosign_submission_confirmation_title
+            if self.requires_cosign
+            else config.submission_confirmation_title
+        )
+        return render_from_string(
+            template,
+            context={"public_reference": self.public_registration_reference},
+        )
+
     def render_confirmation_page(self) -> str:
         from openforms.variables.utils import get_variables_for_context
 
-        if not (template := self.form.submission_confirmation_template):
-            config = GlobalConfiguration.get_solo()
+        config = GlobalConfiguration.get_solo()
+        if self.requires_cosign:
+            template = config.cosign_submission_confirmation_template
+        elif not (template := self.form.submission_confirmation_template):
             template = config.submission_confirmation_template
 
         context_data = {
@@ -588,6 +601,7 @@ class Submission(models.Model):
             "_submission": self,
             "_form": self.form,  # should be the same as self.form
             "public_reference": self.public_registration_reference,
+            "cosigner_email": self.cosigner_email or "",
             **get_variables_for_context(submission=self),
         }
         return render_from_string(template, context_data, backend=openforms_backend)
@@ -792,12 +806,18 @@ class Submission(models.Model):
                     )
 
     @property
+    def requires_cosign(self) -> bool:
+        if self.form.cosigning_required or self.cosigner_email:
+            return True
+        return False
+
+    @property
     def waiting_on_cosign(self) -> bool:
         if self.cosign_complete:
             return False
 
         # Cosign not complete, but required or the component was filled in the form
-        if self.form.cosigning_required or self.cosigner_email:
+        if self.requires_cosign:
             return True
 
         return False

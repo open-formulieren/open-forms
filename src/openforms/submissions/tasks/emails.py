@@ -10,6 +10,7 @@ from celery_once import QueueOnce
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
+from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import logevent
 from openforms.template import render_from_string
 
@@ -90,12 +91,29 @@ def send_email_cosigner(submission_id: int) -> None:
             )
             return
 
+        # build up the form URL based on the configuration - if no URLs are used in
+        # the template, then users go through the flow where they manually have to find
+        # the form and enter the OF code. However, when clickable links in emails are
+        # allowed, we can enable a bunch of shortcuts and include the necessary
+        # parameters for that.
+        has_cosign_init_link = config.cosign_request_template_has_link
+        form_url = get_frontend_redirect_url(
+            submission,
+            action="cosign-init" if has_cosign_init_link else "",
+            action_params=(
+                {
+                    "code": submission.public_registration_reference,
+                }
+                if has_cosign_init_link
+                else None
+            ),
+        )
         content = render_from_string(
             config.cosign_request_template,
             {
                 "code": submission.public_registration_reference,
                 "form_name": submission.form.name,
-                "form_url": submission.cleaned_form_url,
+                "form_url": form_url,
             },
         )
 

@@ -52,6 +52,7 @@ wysiwyg_allowed_tags = [
     "th",
     "td",
     "hr",
+    "button",
     # NOTE we don't add "style" here
 ]
 
@@ -84,17 +85,17 @@ wysiwyg_tag_allowed_attribute_map = {
     "figure": ["title", "src"],
     # CKEditor has a table designer with spans
     "td": ["colspan", "rowspan"],
+    # Button class for NL DS styling + type
+    "button": ["class", "type"],
 }
 
 wysiwyg_css_properties = list(css_sanitizer.ALLOWED_CSS_PROPERTIES)
-wysiwyg_css_properties.append(
-    [
-        # TinyMCE uses padding-left for indent
-        "padding-left",
-        # TinyMCE uses list-style-type for list styling
-        "list-style-type",
-    ]
-)
+wysiwyg_css_properties += [
+    # TinyMCE uses padding-left for indent
+    "padding-left",
+    # TinyMCE uses list-style-type for list styling
+    "list-style-type",
+]
 
 wysiwyg_svg_properties = list(css_sanitizer.ALLOWED_SVG_PROPERTIES)
 

@@ -1,0 +1,20 @@
+{% load i18n capture_tags %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+{% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
+{% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
+<p>{% trans "Your request is not yet complete." %}</p>
+<h2>{% trans "Cosigning required" %}</h2>
+<p>{% trans "You can start the cosigning process immediately by clicking the button below." %}</p>
+{% trans "Cosign now" as cosign_now_text %}
+<p>{{ tt_openblock }} cosign_button text="{{ cosign_now_text }}" {{ tt_closeblock }}</p>
+<h3>{% trans "Alternative instructions" %}</h3>
+<p>{% blocktrans trimmed %}
+  We've sent an email with a cosign request to
+  <a href="mailto:{{ tt_openvariable }} cosigner_email {{ tt_closevariable }}">{{ tt_openvariable }} cosigner_email {{ tt_closevariable }}</a>.
+  Once the submission has been cosigned we will start processing your request.
+{% endblocktrans %}</p>
+<p>{% blocktrans trimmed %}
+  If you need to contact us about this submission, you can use the reference
+  <strong>{{ tt_openvariable }} public_reference {{ tt_closevariable }}</strong>{% endblocktrans %}.
+</p>

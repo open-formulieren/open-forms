@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_array_type
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
@@ -143,6 +144,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
     cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
+    cosign_has_link_in_email = serializers.SerializerMethodField(
+        label=_("cosign request has links in email"),
+        help_text=_(
+            "Indicates whether deep links are included in the cosign request emails "
+            "or not."
+        ),
+    )
     # TODO: deprecated, remove in 3.0.0
     cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(
@@ -290,6 +298,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_options",
+            "cosign_has_link_in_email",
             "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
@@ -323,6 +332,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_options",
+            "cosign_has_link_in_email",
             "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
@@ -605,6 +615,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
 
         return [privacy_policy_checkbox, truth_declaration_checkbox]
+
+    @extend_schema_field(OpenApiTypes.BOOL)
+    def get_cosign_has_link_in_email(self, obj: Form) -> bool:
+        config = GlobalConfiguration.get_solo()
+        return config.cosign_request_template_has_link
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

@@ -13,12 +13,17 @@ Possible future features:
 * ...
 """
 
+from typing import Iterator
+
+from django.template.backends.django import Template as DjangoTemplate
+from django.template.base import Node, VariableNode
+
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
 __all__ = ["render_from_string", "parse", "sandbox_backend", "openforms_backend"]
 
 
-def parse(source: str, backend=sandbox_backend):
+def parse(source: str, backend=sandbox_backend) -> DjangoTemplate:
     """
     Parse the template fragment using the specified backend.
 
@@ -26,7 +31,9 @@ def parse(source: str, backend=sandbox_backend):
     :raises: :class:`django.template.TemplateSyntaxError` if there are any
       syntax errors
     """
-    return backend.from_string(source)
+    template = backend.from_string(source)
+    assert isinstance(template, DjangoTemplate)
+    return template
 
 
 def render_from_string(
@@ -51,3 +58,25 @@ def render_from_string(
     template = parse(source, backend=backend)
     res = template.render(context)
     return res
+
+
+def _iter_nodes(nodelist: list[Node]) -> Iterator[Node]:
+    for node in nodelist:
+        yield node
+        for attr in node.child_nodelists:
+            nested_nodelist = getattr(node, attr)
+            yield from _iter_nodes(nested_nodelist)
+
+
+def extract_variables_used(source: str, backend=sandbox_backend) -> set[str]:
+    """
+    Given a template source, return a sequence of variables used in the template.
+    """
+    template = parse(source, backend=backend)
+    nodelist = template.template.nodelist
+    variable_names = {
+        node.filter_expression.var.var
+        for node in _iter_nodes(nodelist)
+        if isinstance(node, VariableNode)
+    }
+    return variable_names
