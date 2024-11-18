@@ -1,6 +1,9 @@
 """
 Expose hypothesis derived strategies to work with Formio.js data structures.
 
+.. tip:: Use hypothesis strategies to generate random Formio form configurations to
+   test implementation robustness.
+
 All the formio component definitions must be JSON-serializable. JSON in itself can
 handle NULL bytes inside strings (they turn into \u0000), but JSONB as used by
 postgresql and Django's model.JSONField - where we persist these component definitions -
@@ -373,8 +376,8 @@ def map_component():
     return st.fixed_dictionaries(_minimal_component_mapping("map"), optional=optional)
 
 
-def nested_components(max_size=10):
-    return st.lists(any_component(stop_nesting=True), max_size=max_size)
+def nested_components():
+    return st.lists(any_component, min_size=1, max_size=5)
 
 
 def edit_grid_component():
@@ -457,8 +460,9 @@ def cosign_v1_component():
     )
 
 
-def any_component(stop_nesting=False):
-    inputs = [
+any_component = st.deferred(
+    lambda: st.one_of(
+        # INPUTS
         textfield_component(),
         email_component(),
         date_component(),
@@ -473,8 +477,7 @@ def any_component(stop_nesting=False):
         selectboxes_component(),
         currency_component(),
         radio_component(),
-    ]
-    special = [
+        # SPECIAL
         iban_component(),
         license_plate_component(),
         bsn_component(),
@@ -483,22 +486,17 @@ def any_component(stop_nesting=False):
         signature_component(),
         cosign_v2_component(),
         map_component(),
-    ]
-    # if we keep generating nested structures, we run into Python Recursion limits
-    if not stop_nesting:
-        special.append(edit_grid_component())
-    layout = [
+        edit_grid_component(),
+        # LAYOUT
         content_component(),
-    ]
-    if not stop_nesting:
-        layout += [
-            columns_component(),
-            fieldset_component(),
-        ]
-    deprecated = [
+        columns_component(),
+        fieldset_component(),
+        # DEPRECATED
         postcode_component(),
         password_component(),
         cosign_v1_component(),
-    ]
-    all_types = inputs + special + layout + deprecated
-    return st.one_of(all_types)
+    )
+)
+"""
+A search strategy returning any possible/supported Formio component dictionary.
+"""

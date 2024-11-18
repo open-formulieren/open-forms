@@ -7,6 +7,9 @@ Running tests
 The Open Forms backend comes with an extensive test suite to prevent regressions and
 also describe intended behaviour.
 
+.. tip:: See the :ref:`developers_backend_core_testing_tools` for a collection of
+   utilities that you can use when writing tests.
+
 Running the backend tests
 =========================
 
