@@ -1,4 +1,4 @@
-import {expect, fireEvent, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {
@@ -271,7 +271,7 @@ export const Empty = {
       await userEvent.click(button);
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );

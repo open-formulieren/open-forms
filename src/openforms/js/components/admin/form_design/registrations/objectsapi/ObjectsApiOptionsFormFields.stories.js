@@ -1,4 +1,4 @@
-import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
 import selectEvent from 'react-select-event';
 
@@ -82,7 +82,7 @@ export const SwitchToV2Empty = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -110,7 +110,7 @@ export const SwitchToV2Empty = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -145,7 +145,7 @@ export const SwitchToV2Existing = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -172,7 +172,7 @@ export const SwitchToV2Existing = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -208,7 +208,7 @@ export const SwitchToV2NonExisting = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -233,7 +233,7 @@ export const SwitchToV2NonExisting = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );
@@ -269,7 +269,7 @@ export const APIFetchError = {
     await waitFor(async () => {
       // Close the confirmation modal
       await userEvent.click(
-        within(await screen.findByRole('dialog')).getByRole('button', {
+        within(await canvas.findByRole('dialog')).getByRole('button', {
           name: 'Accepteren',
         })
       );

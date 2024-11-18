@@ -600,11 +600,11 @@ export const ConfigurePrefillObjectsAPI = {
       // open modal for configuration
       const editIcon = canvas.getByTitle('Prefill instellen');
       await userEvent.click(editIcon);
-      expect(await screen.findByRole('dialog')).toBeVisible();
+      expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
     await step('Configure Objects API prefill', async () => {
-      const modal = within(await screen.findByRole('dialog'));
+      const modal = within(await canvas.findByRole('dialog'));
       const pluginDropdown = await screen.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
