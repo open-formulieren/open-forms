@@ -2499,6 +2499,12 @@
       "value": "Change text"
     }
   ],
+  "M9JbDC": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "MEkGHD": [
     {
       "type": 0,
@@ -4599,6 +4605,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "gpiYPI": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "gqVGbb": [

@@ -1,8 +1,9 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
+import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {getCatalogueOption, groupAndSortCatalogueOptions} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
@@ -25,7 +26,6 @@ const getCatalogues = async apiGroupID => {
 // Components
 
 const BasicOptionsFieldset = ({apiGroupChoices}) => {
-  const intl = useIntl();
   const {
     values: {
       zaaktype,
@@ -47,22 +47,15 @@ const BasicOptionsFieldset = ({apiGroupChoices}) => {
       objecttypeVersion,
       contentJson,
     ].some(v => !!v) || propertyMappings.length > 0;
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
 
   return (
     <Fieldset>
       <ZGWAPIGroup
         apiGroupChoices={apiGroupChoices}
-        onChangeCheck={() => {
+        onChangeCheck={async () => {
           if (!hasAnyFieldConfigured) return true;
-          const confirmSwitch = window.confirm(
-            intl.formatMessage({
-              description:
-                'ZGW APIs registration options: warning message when changing the api group',
-              defaultMessage: `Changing the api group will clear the existing configuration.
-              Are you sure you want to continue?`,
-            })
-          );
-          return confirmSwitch;
+          return openConfirmationModal();
         }}
       />
 
@@ -78,6 +71,16 @@ const BasicOptionsFieldset = ({apiGroupChoices}) => {
       >
         <CatalogiApiFields />
       </ErrorBoundary>
+      <ConfirmationModal
+        {...confirmationModalProps}
+        message={
+          <FormattedMessage
+            description="ZGW APIs registration options: warning message when changing the api group"
+            defaultMessage="Changing the api group will clear the existing configuration.
+              Are you sure you want to continue?"
+          />
+        }
+      />
     </Fieldset>
   );
 };

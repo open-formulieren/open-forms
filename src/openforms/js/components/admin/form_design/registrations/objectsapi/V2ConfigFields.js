@@ -1,7 +1,8 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
+import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ObjectTypeSelect,
@@ -29,27 +30,30 @@ const onApiGroupChange = prevValues => ({
 });
 
 const V2ConfigFields = ({apiGroupChoices}) => {
-  const intl = useIntl();
   const {
     values: {variablesMapping = []},
     setFieldValue,
   } = useFormikContext();
+
+  const {
+    ConfirmationModal: ApiGroupConfirmationModal,
+    confirmationModalProps: apiGroupConfirmationModalProps,
+    openConfirmationModal: openApiGroupConfirmation,
+  } = useConfirm();
+  const {
+    ConfirmationModal: ObjectTypeConfirmationModal,
+    confirmationModalProps: objectTypeConfirmationModalProps,
+    openConfirmationModal: openObjectTypeConfirmation,
+  } = useConfirm();
 
   return (
     <>
       <Fieldset>
         <ObjectsAPIGroup
           apiGroupChoices={apiGroupChoices}
-          onChangeCheck={() => {
+          onChangeCheck={async () => {
             if (variablesMapping.length === 0) return true;
-            const confirmSwitch = window.confirm(
-              intl.formatMessage({
-                description:
-                  'Objects API registration options: warning message when changing the api group',
-                defaultMessage: `Changing the api group will remove the existing variables mapping.
-                Are you sure you want to continue?`,
-              })
-            );
+            const confirmSwitch = await openApiGroupConfirmation();
             if (!confirmSwitch) return false;
             setFieldValue('variablesMapping', []);
             return true;
@@ -65,16 +69,9 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           }
         >
           <ObjectTypeSelect
-            onChangeCheck={() => {
+            onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
-              const confirmSwitch = window.confirm(
-                intl.formatMessage({
-                  description:
-                    'Objects API registration options: warning message when changing the object type',
-                  defaultMessage: `Changing the objecttype will remove the existing variables mapping.
-                  Are you sure you want to continue?`,
-                })
-              );
+              const confirmSwitch = await openObjectTypeConfirmation();
               if (!confirmSwitch) return false;
               setFieldValue('variablesMapping', []);
               return true;
@@ -121,6 +118,27 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         <UpdateExistingObject />
         <OrganisationRSIN />
       </Fieldset>
+
+      <ApiGroupConfirmationModal
+        {...apiGroupConfirmationModalProps}
+        message={
+          <FormattedMessage
+            description="Objects API registration options: warning message when changing the api group"
+            defaultMessage="Changing the api group will remove the existing variables mapping.
+                Are you sure you want to continue?"
+          />
+        }
+      />
+      <ObjectTypeConfirmationModal
+        {...objectTypeConfirmationModalProps}
+        message={
+          <FormattedMessage
+            description="Objects API registration options: warning message when changing the object type"
+            defaultMessage="Changing the objecttype will remove the existing variables mapping.
+                  Are you sure you want to continue?"
+          />
+        }
+      />
     </>
   );
 };

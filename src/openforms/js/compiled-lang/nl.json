@@ -2520,6 +2520,12 @@
       "value": "'Wijzigen' tekst"
     }
   ],
+  "M9JbDC": [
+    {
+      "type": 0,
+      "value": "Annuleren"
+    }
+  ],
   "MEkGHD": [
     {
       "type": 0,
@@ -4621,6 +4627,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "gpiYPI": [
+    {
+      "type": 0,
+      "value": "Accepteren"
     }
   ],
   "gqVGbb": [

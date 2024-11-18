@@ -33,7 +33,10 @@ export default {
   decorators: [ValidationErrorsDecorator, FormDecorator, FeatureFlagsDecorator],
   render,
   args: {
-    apiGroups: [[1, 'ZGW API']],
+    apiGroups: [
+      [1, 'ZGW API'],
+      [2, 'ZGW API 2'],
+    ],
     objectsApiGroupChoices: [[1, 'Objects API']],
     confidentialityLevelChoices: [
       ['openbaar', 'Openbaar'],
