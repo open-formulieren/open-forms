@@ -24,6 +24,7 @@ and expertise.
    ansible
    security
    config
+   setup_configuration
    file_uploads
    self_signed
    form_hosting
