@@ -156,6 +156,10 @@ class FormDefinitionsAPITests(APITestCase):
                     ],
                 },
                 "login_required": True,
+                "translations": {
+                    "en": {"name": "Updated name"},
+                    "nl": {"name": "Bijgewerkte naam"},
+                },
             },
         )
 
@@ -163,7 +167,8 @@ class FormDefinitionsAPITests(APITestCase):
 
         definition.refresh_from_db()
 
-        self.assertEqual("Updated name", definition.name)
+        self.assertEqual("Bijgewerkte naam", definition.name)
+        self.assertEqual("Updated name", definition.name_en)
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
         self.assertIn(
@@ -217,6 +222,10 @@ class FormDefinitionsAPITests(APITestCase):
                         }
                     ],
                 },
+                "translations": {
+                    "en": {"name": "Name"},
+                    "nl": {"name": "Naam"},
+                },
             },
         )
 
@@ -224,7 +233,8 @@ class FormDefinitionsAPITests(APITestCase):
 
         definition = FormDefinition.objects.get()
 
-        self.assertEqual("Name", definition.name)
+        self.assertEqual("Naam", definition.name)
+        self.assertEqual("Name", definition.name_en)
         self.assertEqual("a-slug", definition.slug)
         self.assertEqual(
             [

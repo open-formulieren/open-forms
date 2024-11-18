@@ -3,6 +3,7 @@ import datetime
 import json
 
 from django.test import TestCase
+from django.utils import translation
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
@@ -63,7 +64,9 @@ class RestoreVersionTest(TestCase):
 
         restored_form_definition = form_steps.get().form_definition
 
-        self.assertEqual("Test Definition 1", restored_form_definition.name)
+        with translation.override("en"):
+            self.assertEqual("Test Definition 1", restored_form_definition.name)
+            self.assertEqual("Test Definitie 1", restored_form_definition.name_nl)
         self.assertEqual(
             "Test Definition Internal 1", restored_form_definition.internal_name
         )

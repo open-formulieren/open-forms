@@ -281,6 +281,10 @@ class FormAdminImportExportTests(WebTest):
                                         }
                                     ]
                                 },
+                                "translations": {
+                                    "en": {"name": "testform"},
+                                    "nl": {"name": "testformulier"},
+                                },
                             }
                         ]
                     ).encode("utf-8")

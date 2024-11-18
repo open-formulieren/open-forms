@@ -111,8 +111,7 @@ class FormDefinitionSerializer(
                 "view_name": "api:formdefinition-detail",
                 "lookup_field": "uuid",
             },
-            # TODO: enable this in v3, deprecate writing this field
-            # "name": {"read_only": True},  # writing is done via the `translations` field
+            "name": {"read_only": True},  # writing is done via the `translations` field
             "slug": {
                 "required": False,
             },
