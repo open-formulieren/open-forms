@@ -1,9 +1,12 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {createContext, useContext} from 'react';
 import ReactModal from 'react-modal';
 
 import {FAIcon} from 'components/admin/icons';
+
+export const ModalContext = createContext({});
+ModalContext.displayName = 'ModalContext';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 
@@ -17,6 +20,7 @@ const Modal = ({
   contentModifiers = [],
   ...props
 }) => {
+  const {parentSelector, ariaHideApp} = useContext(ModalContext);
   const modifiedClassNames = contentModifiers.map(modifier => `${CONTENT_CLASS_NAME}--${modifier}`);
   const className = classNames(CONTENT_CLASS_NAME, ...modifiedClassNames);
   return (
@@ -25,6 +29,8 @@ const Modal = ({
       onRequestClose={closeModal}
       className={className}
       overlayClassName="react-modal__overlay"
+      parentSelector={parentSelector}
+      ariaHideApp={ariaHideApp}
       {...props}
     >
       <header className="react-modal__header">

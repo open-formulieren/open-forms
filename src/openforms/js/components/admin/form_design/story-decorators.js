@@ -3,6 +3,7 @@ import {Form, Formik} from 'formik';
 
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
 import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
+import {ModalContext} from 'components/admin/modals';
 
 import {FormLogicContext} from './Context';
 
@@ -91,3 +92,15 @@ export const FormikDecorator = (Story, context) => {
     </Formik>
   );
 };
+
+export const withModalDecorator = Story => (
+  <ModalContext.Provider
+    value={{
+      // only for storybook integration, do not use this in real apps!
+      parentSelector: () => document.getElementById('storybook-root'),
+      ariaHideApp: false,
+    }}
+  >
+    <Story />
+  </ModalContext.Provider>
+);
