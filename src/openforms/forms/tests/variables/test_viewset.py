@@ -936,3 +936,56 @@ class FormVariableViewsetTest(APITestCase):
             error["invalidParams"][0]["name"],
             "0.prefillAttribute",
         )
+
+    def test_bulk_create_and_update_with_non_camel_case_initial_values(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user)
+
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_definition = form.formstep_set.get().form_definition
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": form_definition.configuration["components"][0]["key"],
+                "name": "Test",
+                "service_fetch_configuration": None,
+                "data_type": FormVariableDataTypes.object,
+                "source": FormVariableSources.component,
+                "initial_value": {
+                    "VALUE IN UPPERCASE": True,
+                    "VALUE-IN-UPPER-KEBAB-CASE": True,
+                    "VALUE_IN_UPPER_SNAKE_CASE": False,
+                    "value in lower case": False,
+                    "value-in-lower-kebab-case": False,
+                    "value_in_lower_snake_case": True,
+                },
+            }
+        ]
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        expected_initial_value = {
+            "VALUE IN UPPERCASE": True,
+            "VALUE-IN-UPPER-KEBAB-CASE": True,
+            "VALUE_IN_UPPER_SNAKE_CASE": False,
+            "value in lower case": False,
+            "value-in-lower-kebab-case": False,
+            "value_in_lower_snake_case": True,
+        }
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(expected_initial_value, response.json()[0]["initialValue"])
