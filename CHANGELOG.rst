@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Upgrade notes
+-------------
+
+* [:backend:`4810`] Fixed uppercase component variable values turing lowercase.
+  There are manual actions required.
+
 2.7.9 (2024-10-29)
 ==================
 
