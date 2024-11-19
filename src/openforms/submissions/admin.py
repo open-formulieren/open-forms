@@ -1,12 +1,16 @@
 from datetime import timedelta
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
 from django.http import Http404
 from django.template.defaultfilters import filesizeformat
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.html import format_html_join
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
@@ -21,6 +25,7 @@ from openforms.logging.logevent import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
+from openforms.typing import StrOrPromise
 
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
@@ -341,6 +346,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         qs = qs.select_related("form")
         return qs
 
+    def get_list_display(self, request):
+        list_display = super().get_list_display(request)
+        assert isinstance(list_display, tuple)
+        if settings.DEBUG:
+            list_display += ("dev_debug",)
+        return list_display
+
     @admin.display(description=_("Successfully processed"), boolean=True)
     def successfully_processed(self, obj) -> bool | None:
         if obj.registration_status == RegistrationStatuses.pending:
@@ -386,6 +398,27 @@ class SubmissionAdmin(admin.ModelAdmin):
         # mis-configuration.
         except InvalidPrice:
             return True
+
+    @admin.display(description="DEV/DEBUG")
+    def dev_debug(self, obj: Submission):  # pragma: no cover
+        if not settings.DEBUG:
+            raise ImproperlyConfigured("Development-only admin feature!")
+
+        links: list[tuple[str, StrOrPromise]] = [
+            (
+                reverse("dev-email-confirm", kwargs={"submission_id": obj.pk}),
+                _("Confirmation email preview"),
+            ),
+            (
+                reverse("dev-submissions-pdf", kwargs={"pk": obj.pk}),
+                _("Submission PDF preview"),
+            ),
+            (
+                reverse("dev-email-registration", kwargs={"submission_id": obj.pk}),
+                _("Registration: email plugin preview"),
+            ),
+        ]
+        return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
