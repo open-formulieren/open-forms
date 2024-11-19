@@ -208,6 +208,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_create_zaak(self, m):
         client = StufZDSClient(self.service, self.options)
+        self.options.update({"co_sign_data": {"value": "123456782"}})
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -241,6 +242,7 @@ class StufZDSClientTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
             },
         )
 

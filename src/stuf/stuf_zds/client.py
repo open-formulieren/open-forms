@@ -94,6 +94,7 @@ class ZaakOptions(TypedDict):
     ]
     # extra's
     omschrijving: str
+    co_sign_data: NotRequired[dict[str, str]]
 
 
 class NoServiceConfigured(RuntimeError):
@@ -240,6 +241,11 @@ class Client(BaseClient):
                 "zds_zaaktype_status_omschrijving"
             ),
             "zaak_omschrijving": self.zds_options["omschrijving"],
+            "co_signer": (
+                self.zds_options.get("co_sign_data", {})["value"]
+                if self.zds_options.get("co_sign_data")
+                else {}
+            ),
             "zaak_identificatie": zaak_identificatie,
             "extra": extra_data,
             "global_config": GlobalConfiguration.get_solo(),
