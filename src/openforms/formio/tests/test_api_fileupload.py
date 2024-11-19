@@ -378,6 +378,57 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual(0, len(tmpdir_contents))
 
+    def test_filename_with_spaces(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+
+        with self.subTest("File with leading spaces"):
+            file = SimpleUploadedFile(
+                "   my-file.txt", b"my content", content_type="text/plain"
+            )
+            response = self.client.post(
+                url,
+                {"file": file, "submission": self.submission_url},
+                format="multipart",
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            body = response.json()
+            self.assertEqual(body["name"], "   my-file.txt")
+
+            # check if we can retrieve the file from returned url
+            response = self.client.get(body["url"])
+            self.assertIn("my-file.txt", response["Content-Disposition"])
+
+            # use the convenient helper to check the model instance
+            upload = temporary_upload_from_url(body["url"])
+            assert upload is not None
+            self.assertEqual(upload.file_name, "   my-file.txt")
+
+        with self.subTest("File with trailing spaces"):
+            file = SimpleUploadedFile(
+                "my-file   .txt", b"my content", content_type="text/plain"
+            )
+            response = self.client.post(
+                url,
+                {"file": file, "submission": self.submission_url},
+                format="multipart",
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            body = response.json()
+            self.assertEqual(body["name"], "my-file   .txt")
+
+            # check if we can retrieve the file from returned url
+            response = self.client.get(body["url"])
+            self.assertIn("my-file   .txt", response["Content-Disposition"])
+
+            # use the convenient helper to check the model instance
+            upload = temporary_upload_from_url(body["url"])
+            assert upload is not None
+            self.assertEqual(upload.file_name, "my-file   .txt")
+
 
 @override_settings(
     # Deliberately set to cache backend to not fall in the trap of using DB row-level
