@@ -135,7 +135,7 @@ class GlobalConfiguration(SingletonModel):
                 required_template_tags=[
                     "appointment_information",
                     "payment_information",
-                    "cosign_information",
+                    "cosign_information",  # TODO: remove -> dedicated templates for cosign
                 ],
                 backend="openforms.template.openforms_backend",
             ),
@@ -171,6 +171,7 @@ class GlobalConfiguration(SingletonModel):
             URLSanitationValidator(),
         ],
     )
+    # TODO: add extra fields
 
     email_verification_request_subject = models.CharField(
         _("subject"),
