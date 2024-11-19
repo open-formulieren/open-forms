@@ -124,6 +124,17 @@
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
             </ZKN:heeftAlsInitiator>
         {% endif %}
+        {% if co_signer %}
+            <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKOBJ" StUF:verwerkingssoort="T">
+                <ZKN:gerelateerde>
+                    <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                        <BG:inp.bsn>{{ co_signer }}</BG:inp.bsn>
+                        <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                    </ZKN:natuurlijkPersoon>
+                </ZKN:gerelateerde>
+                <ZKN:omschrijving>mede_initiator</ZKN:omschrijving>
+            </ZKN:heeftAlsOverigBetrokkene>
+        {% endif %}
         {% if registrator.medewerker %}
         <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde>

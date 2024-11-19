@@ -214,6 +214,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "language_code": "Dothraki",  # some form widget defined by form designer
             },
             language_code="en",
+            co_sign_data={"value": "123456782"},
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -292,6 +293,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
             },
         )
         # extraElementen
