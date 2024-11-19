@@ -135,7 +135,6 @@ class GlobalConfiguration(SingletonModel):
                 required_template_tags=[
                     "appointment_information",
                     "payment_information",
-                    "cosign_information",  # TODO: remove -> dedicated templates for cosign
                 ],
                 backend="openforms.template.openforms_backend",
             ),
@@ -171,7 +170,34 @@ class GlobalConfiguration(SingletonModel):
             URLSanitationValidator(),
         ],
     )
-    # TODO: add extra fields
+    cosign_confirmation_email_subject = models.CharField(
+        _("cosign subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the confirmation email message when the form requires "
+            "cosigning. Can be overridden on the form level."
+        ),
+        default=partial(_render, "emails/confirmation/cosign_subject.txt"),
+        validators=[DjangoTemplateValidator()],
+    )
+    cosign_confirmation_email_content = HTMLField(
+        _("cosign content"),
+        help_text=_(
+            "Content of the confirmation email message when the form requires "
+            "cosigning. Can be overridden on the form level."
+        ),
+        default=partial(_render, "emails/confirmation/cosign_content.html"),
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "payment_information",
+                    "cosign_information",
+                ],
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
+    )
 
     email_verification_request_subject = models.CharField(
         _("subject"),
