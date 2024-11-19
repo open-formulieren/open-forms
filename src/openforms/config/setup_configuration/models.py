@@ -5,19 +5,24 @@ from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 
 
 class SingleObjectsAPIGroupConfigModel(ConfigurationModel):
-    objects_service_slug: str = DjangoModelRef(ObjectsAPIGroupConfig, "objects_service")
-    objecttypes_service_slug: str = DjangoModelRef(
+    objects_service_identifier: str = DjangoModelRef(
+        ObjectsAPIGroupConfig, "objects_service"
+    )
+    objecttypes_service_identifier: str = DjangoModelRef(
         ObjectsAPIGroupConfig, "objecttypes_service"
     )
-    drc_service_slug: str = DjangoModelRef(ObjectsAPIGroupConfig, "drc_service")
-    catalogi_service_slug: str = DjangoModelRef(
-        ObjectsAPIGroupConfig, "catalogi_service"
+    drc_service_identifier: str = DjangoModelRef(
+        ObjectsAPIGroupConfig, "drc_service", default=""
+    )
+    catalogi_service_identifier: str = DjangoModelRef(
+        ObjectsAPIGroupConfig, "catalogi_service", default=""
     )
 
     class Meta:
         django_model_refs = {
             ObjectsAPIGroupConfig: [
                 "name",
+                "identifier",
                 "catalogue_domain",
                 "catalogue_rsin",
                 "organisatie_rsin",

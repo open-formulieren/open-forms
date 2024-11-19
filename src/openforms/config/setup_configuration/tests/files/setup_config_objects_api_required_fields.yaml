@@ -1,0 +1,7 @@
+objects_api_config_enable: True
+objects_api:
+  groups:
+  - name: Config 1
+    identifier: config-1
+    objects_service_identifier: objecten-test
+    objecttypes_service_identifier: objecttypen-test

@@ -2,7 +2,6 @@ from pathlib import Path
 
 from django.test import TestCase
 
-from django_setup_configuration.exceptions import SelfTestFailed
 from django_setup_configuration.test_utils import load_step_config_from_source
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -14,14 +13,17 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..steps import ObjectsAPIConfigurationStep
 
 TEST_FILES = (Path(__file__).parent / "files").resolve()
-CONFIG_FILE_PATH = str(TEST_FILES / "objects_api.yaml")
-INVALID_CONFIG_FILE_PATH = str(TEST_FILES / "objects_api_invalid.yaml")
+CONFIG_FILE_PATH = str(TEST_FILES / "setup_config_objects_api.yaml")
+CONFIG_FILE_PATH_REQUIRED_FIELDS = str(
+    TEST_FILES / "setup_config_objects_api_required_fields.yaml"
+)
+CONFIG_FILE_PATH_ALL_FIELDS = str(
+    TEST_FILES / "setup_config_objects_api_all_fields.yaml"
+)
 
-OTHER_CATALOGUS = "http://localhost:8003/catalogi/api/v1/catalogussen/630271f6-568a-485e-b1c4-4ed2d6ab3a58"
 
-
-def get_config_model():
-    return load_step_config_from_source(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH)
+def get_config_model(path):
+    return load_step_config_from_source(ObjectsAPIConfigurationStep, path)
 
 
 class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
@@ -69,19 +71,17 @@ class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
         )
 
     def test_execute_success(self):
-        step_config_model = get_config_model()
+        step_config_model = get_config_model(CONFIG_FILE_PATH)
         step = ObjectsAPIConfigurationStep()
-
-        self.assertFalse(step.is_configured(step_config_model))
 
         step.execute(step_config_model)
 
-        self.assertTrue(step.is_configured(step_config_model))
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 2)
 
         config1, config2 = ObjectsAPIGroupConfig.objects.all()
 
         self.assertEqual(config1.name, "Config 1")
+        self.assertEqual(config1.identifier, "config-1")
         self.assertEqual(config1.objects_service, self.objects_service)
         self.assertEqual(config1.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config1.drc_service, self.drc_service)
@@ -94,6 +94,7 @@ class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
         self.assertEqual(config1.iot_attachment, "Attachment Informatieobjecttype")
 
         self.assertEqual(config2.name, "Config 2")
+        self.assertEqual(config2.identifier, "config-2")
         self.assertEqual(config2.objects_service, self.objects_service)
         self.assertEqual(config2.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config2.drc_service, self.drc_service)
@@ -104,34 +105,21 @@ class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
         self.assertEqual(config2.iot_submission_report, "")
         self.assertEqual(config2.iot_submission_csv, "")
         self.assertEqual(config2.iot_attachment, "")
-
-    def test_already_configured(self):
-        ObjectsAPIGroupConfigFactory.create(name="Config 1")
-        ObjectsAPIGroupConfigFactory.create(name="Config 2")
-
-        step_config_model = get_config_model()
-        step = ObjectsAPIConfigurationStep()
-
-        self.assertTrue(step.is_configured(step_config_model))
 
     def test_execute_update_existing_config(self):
-        ObjectsAPIGroupConfigFactory.create(
-            name="Config 1",
-        )
+        ObjectsAPIGroupConfigFactory.create(name="old name", identifier="config-1")
 
-        step_config_model = get_config_model()
+        step_config_model = get_config_model(CONFIG_FILE_PATH)
         step = ObjectsAPIConfigurationStep()
-
-        self.assertFalse(step.is_configured(step_config_model))
 
         step.execute(step_config_model)
 
-        self.assertTrue(step.is_configured(step_config_model))
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 2)
 
         config1, config2 = ObjectsAPIGroupConfig.objects.all()
 
         self.assertEqual(config1.name, "Config 1")
+        self.assertEqual(config1.identifier, "config-1")
         self.assertEqual(config1.objects_service, self.objects_service)
         self.assertEqual(config1.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config1.drc_service, self.drc_service)
@@ -144,6 +132,7 @@ class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
         self.assertEqual(config1.iot_attachment, "Attachment Informatieobjecttype")
 
         self.assertEqual(config2.name, "Config 2")
+        self.assertEqual(config2.identifier, "config-2")
         self.assertEqual(config2.objects_service, self.objects_service)
         self.assertEqual(config2.objecttypes_service, self.objecttypes_service)
         self.assertEqual(config2.drc_service, self.drc_service)
@@ -155,34 +144,79 @@ class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
         self.assertEqual(config2.iot_submission_csv, "")
         self.assertEqual(config2.iot_attachment, "")
 
-    def test_validate_result_success(self):
-        step_config_model = get_config_model()
+    def test_execute_with_required_fields(self):
+        step_config_model = get_config_model(CONFIG_FILE_PATH_REQUIRED_FIELDS)
         step = ObjectsAPIConfigurationStep()
-
-        self.assertFalse(step.is_configured(step_config_model))
 
         step.execute(step_config_model)
 
-        step.validate_result(step_config_model)
+        self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
 
-    def test_validate_result_failure(self):
-        step_config_model = load_step_config_from_source(
-            ObjectsAPIConfigurationStep, INVALID_CONFIG_FILE_PATH
-        )
+        config = ObjectsAPIGroupConfig.objects.get()
+
+        self.assertEqual(config.name, "Config 1")
+        self.assertEqual(config.identifier, "config-1")
+        self.assertEqual(config.objects_service, self.objects_service)
+        self.assertEqual(config.objecttypes_service, self.objecttypes_service)
+
+        self.assertEqual(config.drc_service, None)
+        self.assertEqual(config.catalogi_service, None)
+        self.assertEqual(config.catalogue_domain, "")
+        self.assertEqual(config.catalogue_rsin, "")
+        self.assertEqual(config.organisatie_rsin, "")
+        self.assertEqual(config.iot_submission_report, "")
+        self.assertEqual(config.iot_submission_csv, "")
+        self.assertEqual(config.iot_attachment, "")
+
+    def test_execute_with_all_fields(self):
+        step_config_model = get_config_model(CONFIG_FILE_PATH_ALL_FIELDS)
         step = ObjectsAPIConfigurationStep()
-
-        self.assertFalse(step.is_configured(step_config_model))
 
         step.execute(step_config_model)
 
-        expected_exc = (
-            "The following issue(s) occurred while testing the configuration:\n"
-            f"- No Informatieobjecttype found for catalogus {OTHER_CATALOGUS} and description PDF Informatieobjecttype\n"
-            f"- No Informatieobjecttype found for catalogus {OTHER_CATALOGUS} and description CSV Informatieobjecttype\n"
-            f"- No Informatieobjecttype found for catalogus {OTHER_CATALOGUS} and description Attachment Informatieobjecttype\n"
-            "- No catalogus found for domain WRONG and RSIN 000000000\n"
-        )
+        self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
 
-        with self.assertRaises(SelfTestFailed) as exc_info:
-            step.validate_result(step_config_model)
-        self.assertEqual(str(exc_info.exception), expected_exc)
+        config = ObjectsAPIGroupConfig.objects.get()
+
+        self.assertEqual(config.name, "Config 1")
+        self.assertEqual(config.identifier, "config-1")
+        self.assertEqual(config.objects_service, self.objects_service)
+        self.assertEqual(config.objecttypes_service, self.objecttypes_service)
+        self.assertEqual(config.drc_service, self.drc_service)
+        self.assertEqual(config.catalogi_service, self.catalogi_service)
+        self.assertEqual(config.catalogue_domain, "TEST")
+        self.assertEqual(config.catalogue_rsin, "000000000")
+        self.assertEqual(config.organisatie_rsin, "000000000")
+        self.assertEqual(config.iot_submission_report, "PDF Informatieobjecttype")
+        self.assertEqual(config.iot_submission_csv, "CSV Informatieobjecttype")
+        self.assertEqual(config.iot_attachment, "Attachment Informatieobjecttype")
+
+    def test_execute_is_idempotent(self):
+        step_config_model = get_config_model(CONFIG_FILE_PATH_ALL_FIELDS)
+        step = ObjectsAPIConfigurationStep()
+
+        def make_assertions():
+            self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
+
+            config = ObjectsAPIGroupConfig.objects.get()
+
+            self.assertEqual(config.name, "Config 1")
+            self.assertEqual(config.identifier, "config-1")
+            self.assertEqual(config.objects_service, self.objects_service)
+            self.assertEqual(config.objecttypes_service, self.objecttypes_service)
+            self.assertEqual(config.drc_service, self.drc_service)
+            self.assertEqual(config.catalogi_service, self.catalogi_service)
+            self.assertEqual(config.catalogue_domain, "TEST")
+            self.assertEqual(config.catalogue_rsin, "000000000")
+            self.assertEqual(config.organisatie_rsin, "000000000")
+            self.assertEqual(config.iot_submission_report, "PDF Informatieobjecttype")
+            self.assertEqual(config.iot_submission_csv, "CSV Informatieobjecttype")
+            self.assertEqual(config.iot_attachment, "Attachment Informatieobjecttype")
+
+        step.execute(step_config_model)
+
+        make_assertions()
+
+        step.execute(step_config_model)
+
+        make_assertions()
