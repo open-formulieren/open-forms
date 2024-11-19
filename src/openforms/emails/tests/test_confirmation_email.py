@@ -379,6 +379,61 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 self.assertEqual(subject, "Global subject")
                 self.assertIn("Global content", content)
 
+    def test_summary_heading_behaviour(self):
+        expected_heading = _("Summary")
+
+        with self.subTest("heading present"):
+            submission = SubmissionFactory.from_components(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "Visible",
+                        "showInEmail": True,
+                    }
+                ],
+                submitted_data={"text": "Snowflake text"},
+                form__send_confirmation_email=True,
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Subject",
+                content="{% summary %}{% appointment_information %}",
+            )
+            template = get_confirmation_email_templates(submission)[1]
+            context = get_confirmation_email_context_data(submission)
+
+            result = render_email_template(template, context)
+
+            self.assertIn("Snowflake text", result)
+            self.assertIn(expected_heading, result)
+
+        with self.subTest("heading absent"):
+            submission = SubmissionFactory.from_components(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "Visible",
+                        "showInEmail": False,
+                    }
+                ],
+                submitted_data={"text": "Snowflake text"},
+                form__send_confirmation_email=True,
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Subject",
+                content="{% summary %}{% appointment_information %}",
+            )
+            template = get_confirmation_email_templates(submission)[1]
+            context = get_confirmation_email_context_data(submission)
+
+            result = render_email_template(template, context)
+
+            self.assertNotIn("Snowflake text", result)
+            self.assertNotIn(expected_heading, result)
+
 
 @override_settings(
     CACHES=NOOP_CACHES,
