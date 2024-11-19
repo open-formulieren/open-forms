@@ -1,11 +1,12 @@
-OBJECTS_API_CONFIG_ENABLE: True
-OBJECTS_API:
+objects_api_config_enable: True
+objects_api:
   groups:
   - name: Config 1
-    objects_service_slug: objecten-test
-    objecttypes_service_slug: objecttypen-test
-    drc_service_slug: documenten-test
-    catalogi_service_slug: catalogi-test
+    identifier: config-1
+    objects_service_identifier: objecten-test
+    objecttypes_service_identifier: objecttypen-test
+    drc_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
     catalogue_domain: TEST
     catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
@@ -13,10 +14,11 @@ OBJECTS_API:
     iot_submission_csv: CSV Informatieobjecttype
     iot_attachment: Attachment Informatieobjecttype
   - name: Config 2
-    objects_service_slug: objecten-test
-    objecttypes_service_slug: objecttypen-test
-    drc_service_slug: documenten-test
-    catalogi_service_slug: catalogi-test
+    identifier: config-2
+    objects_service_identifier: objecten-test
+    objecttypes_service_identifier: objecttypen-test
+    drc_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
     catalogue_domain: OTHER
     catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"

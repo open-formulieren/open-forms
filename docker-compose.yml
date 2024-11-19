@@ -87,7 +87,6 @@ services:
       - ENVIRONMENT_FOREGROUND_COLOR=white
       # Django-setup-configuration
       - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
-      - SKIP_SELFTEST=${SKIP_SELFTEST:-False}
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
@@ -97,16 +96,14 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      db:
-        condition: service_started
-      redis:
-        condition: service_started
-      smtp:
-        condition: service_started
-      clamav:
-        condition: service_started
-      web-init:
-        condition: service_completed_successfully
+      - db
+      - redis
+      - smtp
+      - clamav
+      # The following pattern can be used to let the web container start after
+      # setup-configuration is done running
+      # web-init:
+      #   condition: service_completed_successfully
     networks:
       - open-forms-dev
 
