@@ -8,7 +8,6 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..steps import ObjectsAPIConfigurationStep
 
@@ -26,8 +25,7 @@ def get_config_model(path):
     return load_step_config_from_source(ObjectsAPIConfigurationStep, path)
 
 
-class ObjectsAPIConfigurationStepTests(OFVCRMixin, TestCase):
-    VCR_TEST_FILES = TEST_FILES
+class ObjectsAPIConfigurationStepTests(TestCase):
     maxDiff = None
 
     def setUp(self):

@@ -1218,5 +1218,5 @@ if OPEN_FORMS_EXTENSIONS:
 
 SETUP_CONFIGURATION_STEPS = [
     "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
-    "openforms.config.setup_configuration.steps.ObjectsAPIConfigurationStep",
+    "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
 ]
