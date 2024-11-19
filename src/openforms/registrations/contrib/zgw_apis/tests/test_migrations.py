@@ -14,8 +14,10 @@ class MigrateToExplicitObjectsAPIGroupsTests(TestMigrations):
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
         form1 = Form.objects.create(name="form1")
         form2 = Form.objects.create(name="form2")
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(name="Group 1")
-        ObjectsAPIGroupConfig.objects.create(name="Group 2")
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            identifier="group-1", name="Group 1"
+        )
+        ObjectsAPIGroupConfig.objects.create(identifier="group-2", name="Group 2")
         self.backend_without_api_group = FormRegistrationBackend.objects.create(
             form=form1, backend="zgw-create-zaak", options={}
         )
