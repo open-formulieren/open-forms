@@ -45,7 +45,6 @@ from ..formatters.formio import (
     EmailFormatter,
     FileFormatter,
     NumberFormatter,
-    PasswordFormatter,
     PhoneNumberFormatter,
     RadioFormatter,
     SelectBoxesFormatter,
@@ -500,20 +499,6 @@ class Number(BasePlugin):
         base = serializers.FloatField(
             required=required, allow_null=not required, **extra
         )
-        return serializers.ListField(child=base) if multiple else base
-
-
-@register("password")
-class Password(BasePlugin):
-    formatter = PasswordFormatter
-
-    def build_serializer_field(
-        self, component: Component
-    ) -> serializers.CharField | serializers.ListField:
-        multiple = component.get("multiple", False)
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        base = serializers.CharField(required=required, allow_blank=not required)
         return serializers.ListField(child=base) if multiple else base
 
 

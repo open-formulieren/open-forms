@@ -441,16 +441,6 @@ def postcode_component():
     )
 
 
-def password_component():
-    optional = {
-        "description": jsonb_text(),
-        "tooltip": jsonb_text(),
-    }
-    return st.fixed_dictionaries(
-        _minimal_component_mapping("password"), optional=optional
-    )
-
-
 def cosign_v1_component():
     optional = {
         "description": jsonb_text(),
@@ -493,7 +483,6 @@ any_component = st.deferred(
         fieldset_component(),
         # DEPRECATED
         postcode_component(),
-        password_component(),
         cosign_v1_component(),
     )
 )

@@ -196,32 +196,6 @@ const getBuilderOptions = () => {
               input: true,
             },
           },
-          password: {
-            title: 'Huidig wachtwoord',
-            key: 'password',
-            icon: 'asterisk',
-            schema: {
-              label: 'Huidig wachtwoord',
-              autocomplete: 'current-password',
-              tableView: true,
-              key: 'password',
-              type: 'password',
-              input: true,
-            },
-          },
-          newPassword: {
-            title: 'Nieuw wachtwoord',
-            key: 'newPassword',
-            icon: 'asterisk',
-            schema: {
-              label: 'Nieuw wachtwoord',
-              autocomplete: 'new-password',
-              tableView: true,
-              key: 'newPassword',
-              type: 'password',
-              input: true,
-            },
-          },
           url: {
             title: 'Website',
             key: 'url',
@@ -241,7 +215,6 @@ const getBuilderOptions = () => {
         weight: 15,
         components: {
           postcode: true,
-          password: true,
           coSign: true,
         },
       },

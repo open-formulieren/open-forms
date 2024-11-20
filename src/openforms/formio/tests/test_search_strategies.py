@@ -34,7 +34,6 @@ from .search_strategies import (
     map_component,
     np_family_members_component,
     number_component,
-    password_component,
     phone_number_component,
     postcode_component,
     radio_component,
@@ -212,12 +211,6 @@ class SearchStrategyTests(SimpleTestCase):
     @given(postcode_component())
     def test_postcode_component(self, component: Component):
         self.assertEqual(component["type"], "postcode")
-        self.assertIn("key", component)
-        self.assertIn("label", component)
-
-    @given(password_component())
-    def test_password_component(self, component: Component):
-        self.assertEqual(component["type"], "password")
         self.assertIn("key", component)
         self.assertIn("label", component)
 
