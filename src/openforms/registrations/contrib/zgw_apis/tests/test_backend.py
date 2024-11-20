@@ -1055,6 +1055,7 @@ class ZGWBackendTests(TestCase):
         zgw_form_options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
             "case_type_identification": "",
+            "document_type_description": "",
             "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "product_url": "https://example.com",
@@ -1066,6 +1067,8 @@ class ZGWBackendTests(TestCase):
         pre_registration_result = plugin.pre_register_submission(
             submission, zgw_form_options
         )
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
         submission.registration_result.update(pre_registration_result.data)
         submission.save()
         result = plugin.register_submission(submission, zgw_form_options)
@@ -2560,6 +2563,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "rsin": "000000000",
             },
             "case_type_identification": "ZT-001",
+            "document_type_description": "",
             "zaaktype": "",
             "informatieobjecttype": (
                 "http://localhost:8003/catalogi/api/v1/"
@@ -2667,6 +2671,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "zaaktype": "",
             "informatieobjecttype": "",
             "objects_api_group": None,
+            "product_url": "",
         }
         plugin = ZGWRegistration("zgw")
         client = get_zaken_client(self.zgw_group)
