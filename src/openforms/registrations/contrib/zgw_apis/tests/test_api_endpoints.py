@@ -276,6 +276,12 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
+        # create service for the docker-compose rx-mission instance.
+        ServiceFactory.create(
+            api_type=APITypes.orc,
+            api_root="http://localhost/product",
+            auth_type=AuthTypes.no_auth,
+        )
         cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
             for_test_docker_compose=True
         )
@@ -342,7 +348,7 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
         expected_products = [
             {
                 "url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
-                "description": "",
+                "description": "Advies vergunning met instemming",
             }
         ]
         self.assertEqual(results, expected_products)
