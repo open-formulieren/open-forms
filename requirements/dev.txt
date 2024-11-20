@@ -613,7 +613,7 @@ lxml==5.2.2
     #   pyquery
     #   xmlsec
     #   zeep
-lxml-html-clean==0.1.1
+lxml-html-clean==0.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

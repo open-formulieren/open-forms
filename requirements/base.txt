@@ -306,7 +306,7 @@ lxml==5.2.2
     #   maykin-python3-saml
     #   xmlsec
     #   zeep
-lxml-html-clean==0.1.1
+lxml-html-clean==0.4.1
     # via -r requirements/base.in
 mail-cleaner==1.2.0
     # via -r requirements/base.in
