@@ -328,7 +328,7 @@ class PhoneNumber(BasePlugin):
 class FileDataSerializer(serializers.Serializer):
     url = serializers.URLField()
     form = serializers.ChoiceField(choices=[""])
-    name = serializers.CharField()
+    name = serializers.CharField(trim_whitespace=False)
     size = serializers.IntegerField(min_value=0)
     baseUrl = serializers.URLField()
     project = serializers.ChoiceField(choices=[""])
@@ -336,7 +336,7 @@ class FileDataSerializer(serializers.Serializer):
 
 class FileSerializer(serializers.Serializer):
     name = serializers.CharField()
-    originalName = serializers.CharField()
+    originalName = serializers.CharField(trim_whitespace=False)
     size = serializers.IntegerField(min_value=0)
     storage = serializers.ChoiceField(choices=["url"])
     type = serializers.CharField(
