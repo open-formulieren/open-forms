@@ -93,6 +93,7 @@ ZGWOptionsForm.propTypes = {
     organisatieRsin: PropTypes.string,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
     medewerkerRoltype: PropTypes.string,
+    productUrl: PropTypes.string,
     propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
