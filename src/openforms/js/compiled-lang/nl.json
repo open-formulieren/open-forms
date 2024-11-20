@@ -2644,6 +2644,12 @@
       "value": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden."
     }
   ],
+  "O+M71I": [
+    {
+      "type": 0,
+      "value": "Dit product wordt op de aangemaakte zaak gezet."
+    }
+  ],
   "O/wKJh": [
     {
       "type": 0,
@@ -2754,6 +2760,12 @@
     {
       "type": 0,
       "value": "Ja"
+    }
+  ],
+  "Ox/rkB": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "P/njxS": [
@@ -5101,6 +5113,12 @@
       "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
     }
   ],
+  "kWw9qL": [
+    {
+      "type": 0,
+      "value": "Dit product wordt met inzendingen meegestuurd."
+    }
+  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -5255,6 +5273,12 @@
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "ln2iyc": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het ophalen van de beschikbare catalogi of geselecteerde zaak producten. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
   "ln72CJ": [
