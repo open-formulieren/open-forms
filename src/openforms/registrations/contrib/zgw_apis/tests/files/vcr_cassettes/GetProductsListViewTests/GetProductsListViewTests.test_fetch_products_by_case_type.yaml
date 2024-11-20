@@ -80,4 +80,36 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.2
+    method: GET
+    uri: http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10
+  response:
+    body:
+      string: "{\n  \"code\": \"RX-10\",\n  \"description\": \"Advies vergunning met
+        instemming\",\n  \"id\": \"1234abcd-12ab-34cd-56ef-12345abcde10\",\n  \"streeftermijn\":
+        \"P0D\",\n  \"uiterlijkeTermijn\": \"P0D\",\n  \"url\": \"https://example.com/product/1234abcd-12ab-34cd-56ef-12345abcde10\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '256'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 20 Nov 2024 18:23:37 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.7
+    status:
+      code: 200
+      message: OK
 version: 1
