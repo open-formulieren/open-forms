@@ -11,6 +11,8 @@ from openforms.plugins.registry import BaseRegistry
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 
+from .models import ObjectsAPISubmissionAttachment
+
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
@@ -58,6 +60,18 @@ class CsvUrl(BaseStaticVariable):
         if submission is None:
             return None
         return submission.objects_api_registration_data.csv_url
+
+
+@register("attachment_urls")
+class AttachmentUrls(BaseStaticVariable):
+    name = _("Attachment URLs")
+    data_type = FormVariableDataTypes.array
+
+    def get_initial_value(self, submission: Submission | None = None) -> list[str]:
+        attachments = ObjectsAPISubmissionAttachment.objects.filter(
+            submission_file_attachment__submission_step__submission=submission
+        )
+        return list(attachments.values_list("document_url", flat=True))
 
 
 @register("payment_completed")
