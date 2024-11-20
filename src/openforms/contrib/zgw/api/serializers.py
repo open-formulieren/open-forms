@@ -56,6 +56,18 @@ class CaseTypeSerializer(serializers.Serializer):
     )
 
 
+class CaseTypeProductSerializer(serializers.Serializer):
+    url = serializers.CharField(
+        label=_("url"),
+        help_text=_("The url of a product bound to a case type. "),
+    )
+    description = serializers.CharField(
+        label=_("description"),
+        help_text=_("The description of a product bound to a case type. "),
+        required=False,
+    )
+
+
 # TODO: OF 3.0 -> use English instead of Dutch.
 class InformatieObjectTypeSerializer(serializers.Serializer):
     url = serializers.URLField(label=_("url"))

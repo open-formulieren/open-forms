@@ -2623,6 +2623,12 @@
       "value": "The API group specifies which ZGW services to use."
     }
   ],
+  "O+M71I": [
+    {
+      "type": 0,
+      "value": "This product will be set on the created case."
+    }
+  ],
   "O/wKJh": [
     {
       "type": 0,
@@ -2733,6 +2739,12 @@
     {
       "type": 0,
       "value": "Yes"
+    }
+  ],
+  "Ox/rkB": [
+    {
+      "type": 0,
+      "value": "Product"
     }
   ],
   "P/njxS": [
@@ -5079,6 +5091,12 @@
       "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
     }
   ],
+  "kWw9qL": [
+    {
+      "type": 0,
+      "value": "This product will be send allong form submits."
+    }
+  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -5233,6 +5251,12 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "ln2iyc": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly."
     }
   ],
   "ln72CJ": [

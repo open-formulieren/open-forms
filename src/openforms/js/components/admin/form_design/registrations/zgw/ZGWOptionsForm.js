@@ -45,6 +45,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         zaakVertrouwelijkheidaanduiding: '',
         medewerkerRoltype: '',
         propertyMappings: [],
+        productUrl: '',
         // Ensure that this is explicitly set to null instead of undefined,
         // because the field is required by the serializer
         objectsApiGroup: null,

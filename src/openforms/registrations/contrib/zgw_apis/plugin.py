@@ -213,6 +213,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 vertrouwelijkheidaanduiding=options.get(
                     "zaak_vertrouwelijkheidaanduiding", ""
                 ),
+                product_url=options["product_url"],
                 payment_required=submission.payment_required,
                 existing_reference=submission.public_registration_reference,
                 **zaak_data,

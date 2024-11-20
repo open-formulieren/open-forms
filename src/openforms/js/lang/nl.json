@@ -1282,6 +1282,11 @@
     "description": "ZGW APIs group field help text",
     "originalDefault": "The API group specifies which ZGW services to use."
   },
+  "O+M71I": {
+    "defaultMessage": "Dit product wordt op de aangemaakte zaak gezet.",
+    "description": "ZGW APIs registration options 'product' helpText",
+    "originalDefault": "This product will be set on the created case."
+  },
   "O/wKJh": {
     "defaultMessage": "Waarde",
     "description": "JSON (primitive) value label",
@@ -1334,6 +1339,11 @@
     "defaultMessage": "Ja",
     "description": "Component property boolean value \"true\"",
     "originalDefault": "Yes"
+  },
+  "Ox/rkB": {
+    "defaultMessage": "Product",
+    "description": "ZGW APIs registration options 'product' label",
+    "originalDefault": "Product"
   },
   "P/njxS": {
     "defaultMessage": "Datumtijd (datetime)",
@@ -2392,6 +2402,11 @@
     "description": "Email registration options 'emailPaymentSubject' helpText",
     "originalDefault": "Subject of the email sent to the registration backend to notify a change in the payment status."
   },
+  "kWw9qL": {
+    "defaultMessage": "Dit product wordt met inzendingen meegestuurd.",
+    "description": "ZGW APIs registration options 'product' helpText",
+    "originalDefault": "This product will be send allong form submits."
+  },
   "klKZV5": {
     "defaultMessage": "Geeft aan of een bestaande record (verkregen van de eventuele voor-invulreferentie) bijgewerkt moet worden in plaats van een nieuw object aan te maken. Als er geen bestaand object is, dan wordt een nieuwe aangemaakt.",
     "description": "Objects API registration: updateExistingObject helpText",
@@ -2426,6 +2441,11 @@
     "defaultMessage": "Item toevoegen",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
+  },
+  "ln2iyc": {
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi of geselecteerde zaak producten. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
+    "description": "ZGW APIs registrations options: case product error",
+    "originalDefault": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
   "ln72CJ": {
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",

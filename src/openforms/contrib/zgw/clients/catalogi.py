@@ -48,6 +48,7 @@ class CaseType(TypedDict):
     beginGeldigheid: str  # ISO 8601 date string
     eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
     concept: NotRequired[bool]
+    productenOfDiensten: list[str]  # URL pointers to products
     informatieobjecttypen: NotRequired[list[str]]  # URL pointers to document types
 
 

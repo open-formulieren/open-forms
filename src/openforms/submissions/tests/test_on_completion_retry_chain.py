@@ -248,6 +248,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
+                "product_url": "http://example.com",
             },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
@@ -283,6 +284,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
+                "product_url": "http://example.com",
             },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)

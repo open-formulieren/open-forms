@@ -1,0 +1,15 @@
+version: '3.8'
+
+name: rx-mission
+
+services:
+  flask_app:
+    build: ./rx-mission
+    ports:
+      - "80:80"
+    volumes:
+      - ./rx-mission/:/app/
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev

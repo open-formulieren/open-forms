@@ -5,23 +5,11 @@ import {useAsync} from 'react-use';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {getCatalogueOption, groupAndSortCatalogueOptions} from 'components/admin/forms/zgw';
+import {getCatalogueOption} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
-import {get} from 'utils/fetch';
 
 import {CaseTypeSelect, CatalogueSelect, ZGWAPIGroup} from './fields';
-
-// Data fetching
-
-const CATALOGUES_ENDPOINT = '/api/v2/registration/plugins/zgw-api/catalogues';
-
-const getCatalogues = async apiGroupID => {
-  const response = await get(CATALOGUES_ENDPOINT, {zgw_api_group: apiGroupID});
-  if (!response.ok) {
-    throw new Error('Loading available catalogues failed');
-  }
-  return groupAndSortCatalogueOptions(response.data);
-};
+import {getCatalogues} from './utils';
 
 // Components
 

@@ -1,7 +1,7 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
@@ -16,15 +16,8 @@ import {ObjectsAPIGroup} from 'components/admin/forms/objects_api';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
-import {
-  ConfidentialityLevel,
-  DocumentType,
-  LegacyCaseType,
-  MedewerkerRoltype,
-  ObjectType,
-  ObjectTypeVersion,
-  OrganisationRSIN,
-} from './fields';
+import OptionalOptionsFieldset from './OptionalOptionsFieldset';
+import {DocumentType, LegacyCaseType, ObjectType, ObjectTypeVersion} from './fields';
 
 /**
  * Callback to invoke when the API group changes - used to reset the dependent fields.
@@ -96,26 +89,7 @@ const ZGWFormFields = ({
             <DocumentType />
           </Fieldset>
 
-          <Fieldset
-            title={
-              <FormattedMessage
-                description="ZGW APIs registration: default overrides fieldset title"
-                defaultMessage="Optional ZGW configuration"
-              />
-            }
-            fieldNames={['organisatieRsin']}
-          >
-            <div className="description">
-              <FormattedMessage
-                description="ZGW APIs defaults override informative message"
-                defaultMessage={`Any configuration option specified here overrides the
-                matching option of the selected API group.`}
-              />
-            </div>
-            <OrganisationRSIN />
-            <ConfidentialityLevel options={confidentialityLevelChoices} />
-            <MedewerkerRoltype />
-          </Fieldset>
+          <OptionalOptionsFieldset confidentialityLevelChoices={confidentialityLevelChoices} />
 
           <Fieldset
             title={

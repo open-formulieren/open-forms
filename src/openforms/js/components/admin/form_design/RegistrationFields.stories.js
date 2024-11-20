@@ -10,6 +10,7 @@ import {
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
 import {
   mockCaseTypesGet,
+  mockProductsGet,
   mockCataloguesGet as mockZGWApisCataloguesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
@@ -510,7 +511,7 @@ export default {
           mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
         ],
-        zgwMocks: [mockZGWApisCataloguesGet(), mockCaseTypesGet()],
+        zgwMocks: [mockZGWApisCataloguesGet(), mockCaseTypesGet(), mockProductsGet()],
         camundaMocks: [mockProcessDefinitionsGet()],
       },
     },
