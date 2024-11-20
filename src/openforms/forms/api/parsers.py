@@ -17,10 +17,13 @@ class IgnoreConfigurationFieldCamelCaseJSONParser(CamelCaseJSONParser):
 
 
 class FormVariableJSONParser(CamelCaseJSONParser):
+    # The field initial_value needs to be ignored, to prevent accidental uppercase to lowercase changes.
+    # See github issue https://github.com/open-formulieren/open-forms/issues/4810
     json_underscoreize = {
         "ignore_fields": (
             "body",
             "headers",
+            "initial_value",
             "mapping_expression",
             "query_params",
         )
@@ -28,10 +31,13 @@ class FormVariableJSONParser(CamelCaseJSONParser):
 
 
 class FormVariableJSONRenderer(CamelCaseJSONRenderer):
+    # The field initial_value needs to be ignored, to prevent accidental uppercase to lowercase changes.
+    # See github issue https://github.com/open-formulieren/open-forms/issues/4810
     json_underscoreize = {
         "ignore_fields": (
             "body",
             "headers",
+            "initial_value",
             "mapping_expression",
             "query_params",
         )
