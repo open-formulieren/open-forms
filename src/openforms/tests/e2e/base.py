@@ -150,7 +150,9 @@ async def rs_select_option(
     await dropdown.focus()
     await page.keyboard.press("ArrowDown")
 
-    listbox = dropdown_root.get_by_role("listbox")
+    # The options are appended to document.body
+    listbox = page.get_by_role("listbox")
+
     await expect(listbox).to_be_visible()
 
     option = listbox.get_by_role("option", name=option_label, exact=exact)
