@@ -691,6 +691,12 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
+      const toggleCopyDropdown = await modal.findByRole('link', {
+        name: 'Copy configuration from registration',
+      });
+      expect(toggleCopyDropdown).toBeVisible();
+      await userEvent.click(toggleCopyDropdown);
+
       const copyDropdown = await modal.findByLabelText(
         'Copy configuration from registration backend'
       );

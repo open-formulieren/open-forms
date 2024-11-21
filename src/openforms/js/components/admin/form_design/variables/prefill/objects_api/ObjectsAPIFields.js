@@ -5,7 +5,7 @@
  */
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext, useEffect} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -53,7 +53,7 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
-const ObjectsAPIFields = ({errors}) => {
+const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   const intl = useIntl();
 
   const {
@@ -120,6 +120,12 @@ const ObjectsAPIFields = ({errors}) => {
 
   return (
     <>
+      {showCopyButton && backends.length ? (
+        <CopyConfigurationFromRegistrationBackend
+          backends={backends}
+          setShowCopyButton={setShowCopyButton}
+        />
+      ) : null}
       <Fieldset>
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
@@ -192,8 +198,6 @@ const ObjectsAPIFields = ({errors}) => {
             objectTypeFieldName="options.objecttypeUuid"
           />
         </ErrorBoundary>
-
-        {backends.length ? <CopyConfigurationFromRegistrationBackend backends={backends} /> : null}
       </Fieldset>
 
       <Fieldset

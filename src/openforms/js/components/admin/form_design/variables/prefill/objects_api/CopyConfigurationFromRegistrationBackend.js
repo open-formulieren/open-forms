@@ -11,7 +11,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const CopyConfigurationFromRegistrationBackend = ({backends}) => {
+const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton}) => {
   const name = 'copyConfigurationFromBackend';
   const {setFieldValue, setValues} = useFormikContext();
   const options = backends.map(elem => ({value: elem.key, label: elem.name}));
@@ -71,6 +71,9 @@ const CopyConfigurationFromRegistrationBackend = ({backends}) => {
                     variablesMapping: selectedBackend.options.variablesMapping,
                   },
                 }));
+
+                // Collapse the registration backend selection row
+                setShowCopyButton(false);
               }
             }}
             // admin style overrides...

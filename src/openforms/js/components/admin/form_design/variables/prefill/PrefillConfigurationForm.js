@@ -1,5 +1,6 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
+import {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
@@ -35,7 +36,19 @@ const PrefillConfigurationForm = ({
     >
       {({handleSubmit, values}) => {
         const PluginFormComponent =
-          PLUGIN_COMPONENT_MAPPING[values.plugin] ?? PLUGIN_COMPONENT_MAPPING.default;
+          PLUGIN_COMPONENT_MAPPING[values.plugin]?.component ??
+          PLUGIN_COMPONENT_MAPPING.default.component;
+        const ToggleCopyComponent =
+          PLUGIN_COMPONENT_MAPPING[values.plugin]?.toggleCopyComponent ??
+          PLUGIN_COMPONENT_MAPPING.default.toggleCopyComponent;
+
+        const [showCopyButton, setShowCopyButton] = useState(false);
+
+        const handleToggle = event => {
+          event.preventDefault();
+          setShowCopyButton(!showCopyButton);
+        };
+
         return (
           <>
             <Fieldset extraClassName="module--spaceless">
@@ -50,12 +63,25 @@ const PrefillConfigurationForm = ({
                   }
                   errors={errors.plugin}
                 >
-                  <PluginField />
+                  <>
+                    <PluginField />
+                    {ToggleCopyComponent ? (
+                      <div style={{marginLeft: '10px', marginTop: '5px'}}>
+                        <ToggleCopyComponent handleToggle={handleToggle} />
+                      </div>
+                    ) : null}
+                  </>
                 </Field>
               </FormRow>
             </Fieldset>
 
-            <PluginFormComponent errors={errors} />
+            <PluginFormComponent
+              errors={errors}
+              {...(ToggleCopyComponent && {
+                showCopyButton: showCopyButton,
+                setShowCopyButton: setShowCopyButton,
+              })}
+            />
 
             <SubmitRow>
               <SubmitAction
