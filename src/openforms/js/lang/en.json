@@ -69,6 +69,11 @@
     "description": "Email registration options 'attachmentFormats' label",
     "originalDefault": "The format(s) of the attachment(s) containing the submission details"
   },
+  "0EYS7D": {
+    "defaultMessage": "Objecttype",
+    "description": "Objects API prefill options 'Objecttype' label",
+    "originalDefault": "Objecttype"
+  },
   "0M2B7B": {
     "defaultMessage": "DMN variable",
     "description": "DMN variable label",
@@ -199,6 +204,11 @@
     "description": "Logic expression generated description",
     "originalDefault": "When {desc}"
   },
+  "3SCiQR": {
+    "defaultMessage": "Copy configuration from registration",
+    "description": "Objects API prefill options: link to show copy from registration button",
+    "originalDefault": "Copy configuration from registration"
+  },
   "3W3Px9": {
     "defaultMessage": "Add another",
     "description": "Button text to add extra item",
@@ -318,6 +328,11 @@
     "defaultMessage": "Key",
     "description": "Variable table key title",
     "originalDefault": "Key"
+  },
+  "6qPITC": {
+    "defaultMessage": "Something went wrong while retrieving the available object types.",
+    "description": "Objects API prefill options: object type select error",
+    "originalDefault": "Something went wrong while retrieving the available object types."
   },
   "7/Bhpw": {
     "defaultMessage": "Please fill in the name of the previous variable before adding another",
@@ -949,6 +964,11 @@
     "description": "Form 'BRP Personen purpose limitation header value' field label",
     "originalDefault": "BRP Personen purpose limitation header value"
   },
+  "HdRpKT": {
+    "defaultMessage": "Version",
+    "description": "Objects API prefill options 'objecttypeVersion' label",
+    "originalDefault": "Version"
+  },
   "Hfdfv2": {
     "defaultMessage": "Which version of the process definition to start. The latest version is used if not specified.",
     "description": "Camunda 'process definition version' help text",
@@ -1493,11 +1513,6 @@
     "defaultMessage": "change a property of a component.",
     "description": "action type \"property\" label",
     "originalDefault": "change a property of a component."
-  },
-  "ScGRie": {
-    "defaultMessage": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?",
-    "description": "Objects API prefill configuration: warning message\n              when copying the config from registration backend",
-    "originalDefault": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
   },
   "ScbJK7": {
     "defaultMessage": "Organisation RSIN",
@@ -2404,11 +2419,6 @@
     "description": "Email registration options 'emailPaymentSubject' helpText",
     "originalDefault": "Subject of the email sent to the registration backend to notify a change in the payment status."
   },
-  "kWw9qL": {
-    "defaultMessage": "This product will be send allong form submits.",
-    "description": "ZGW APIs registration options 'product' helpText",
-    "originalDefault": "This product will be send allong form submits."
-  },
   "klKZV5": {
     "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead.",
     "description": "Objects API registration: updateExistingObject helpText",
@@ -2453,6 +2463,11 @@
     "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+  },
+  "m83ECr": {
+    "defaultMessage": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?",
+    "description": "Objects API prefill configuration: warning message when copying the config from registration backend",
+    "originalDefault": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
   },
   "mCHS+l": {
     "defaultMessage": "You have selected a catalogue - the document type URLs configured here will be ignored.",
@@ -2558,6 +2573,11 @@
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
+  },
+  "oqv4fM": {
+    "defaultMessage": "The prefill values will be taken from an object of the selected type.",
+    "description": "Objects API prefill options 'Objecttype' helpText",
+    "originalDefault": "The prefill values will be taken from an object of the selected type."
   },
   "oxYXJX": {
     "defaultMessage": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
