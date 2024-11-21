@@ -1,4 +1,5 @@
-from django_setup_configuration.models import ConfigurationModel, DjangoModelRef
+from django_setup_configuration.fields import DjangoModelRef
+from django_setup_configuration.models import ConfigurationModel
 from pydantic import Field
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
