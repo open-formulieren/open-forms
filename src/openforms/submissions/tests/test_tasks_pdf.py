@@ -9,6 +9,8 @@ from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 from testfixtures import LogCapture
 
+from openforms.config.models import GlobalConfiguration
+
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
@@ -191,6 +193,29 @@ class SubmissionReportGenerationTests(TestCase):
         inclusive_tag = doc(".inclusive")
 
         self.assertEqual(inclusive_tag.text(), "Include me!")
+
+    def test_confirmation_page_content_not_included_for_cosign_submissions(self):
+        self.addCleanup(GlobalConfiguration.clear_cache)
+        config = GlobalConfiguration.get_solo()
+        config.submission_confirmation_template = '<p class="inclusive">Include me</p>'
+        config.cosign_submission_confirmation_template = (
+            '<p class="inclusive">Include me</p>'
+        )
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            [{"key": "cosignerEmail", "type": "cosign", "label": "Cosign component"}],
+            submitted_data={"cosignerEmail": "cosign@test.nl"},
+            with_report=True,
+            form__include_confirmation_page_content_in_pdf=True,
+        )
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        inclusive_tag = doc(".inclusive")
+        self.assertEqual(inclusive_tag.text(), "")
+        self.assertIn("cosign@test.nl", html)
 
     def test_confirmation_page_content_not_included_in_pdf(self):
         """Assert that confirmation page content is not included in PDF if option is

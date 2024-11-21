@@ -17,6 +17,7 @@ from typing import Iterator
 
 from django.template.backends.django import Template as DjangoTemplate
 from django.template.base import Node, VariableNode
+from django.utils.safestring import SafeString
 
 from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
@@ -41,7 +42,7 @@ def render_from_string(
     context: dict,
     backend=sandbox_backend,
     disable_autoescape: bool = False,
-) -> str:
+) -> SafeString:
     """
     Render a template source string using the provided context.
 

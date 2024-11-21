@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-26 14:36+0100\n"
+"POT-Creation-Date: 2024-11-26 14:41+0100\n"
 "PO-Revision-Date: 2024-11-26 14:39+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -28,13 +28,12 @@ msgid ""
 "omit this header without losing functionality. We recommend favouring the "
 "nonce mechanism though."
 msgstr ""
-"De waarde van de CSP-nonce gegenereerd door de pagina die de SDK "
-"insluit/embed. Als deze meegestuurd wordt, dan worden velden met rich tekst "
-"(uit \"WYSIWYG\" editors) verwerkt om inline-styles toe te laten met de "
-"gegeven nonce. Indien de insluitende pagina een `style-src` policy heeft die"
-" `unsafe-inline` bevat, dan kan je deze header weglaten zonder "
-"functionaliteit te verliezen. We raden echter aan om het nonce-mechanisme te"
-" gebruiken."
+"De waarde van de CSP-nonce gegenereerd door de pagina die de SDK insluit/"
+"embed. Als deze meegestuurd wordt, dan worden velden met rich tekst (uit "
+"\"WYSIWYG\" editors) verwerkt om inline-styles toe te laten met de gegeven "
+"nonce. Indien de insluitende pagina een `style-src` policy heeft die `unsafe-"
+"inline` bevat, dan kan je deze header weglaten zonder functionaliteit te "
+"verliezen. We raden echter aan om het nonce-mechanisme te gebruiken."
 
 #: openforms/accounts/admin.py:39
 msgid "Groups"
@@ -226,8 +225,8 @@ msgstr "Google Analytics code"
 msgid ""
 "Typically looks like 'UA-XXXXX-Y'. Supplying this installs Google Analytics."
 msgstr ""
-"Heeft typisch het formaat 'UA-XXXXX-Y'. Schakelt Google Analytics in als een"
-" waarde ingevuld is."
+"Heeft typisch het formaat 'UA-XXXXX-Y'. Schakelt Google Analytics in als een "
+"waarde ingevuld is."
 
 #: openforms/analytics_tools/models.py:123
 msgid "enable google analytics"
@@ -244,8 +243,7 @@ msgstr "Matomo server-URL"
 #: openforms/analytics_tools/models.py:134
 msgid "The base URL of your Matomo server, e.g. 'https://matomo.example.com'."
 msgstr ""
-"De basis-URL van uw Matomo server, bijvoorbeeld "
-"'https://matomo.example.com'."
+"De basis-URL van uw Matomo server, bijvoorbeeld 'https://matomo.example.com'."
 
 #: openforms/analytics_tools/models.py:138
 msgid "Matomo site ID"
@@ -294,8 +292,8 @@ msgstr "Piwik PRO server-URL"
 
 #: openforms/analytics_tools/models.py:176
 msgid ""
-"The base URL of your Piwik PRO server, e.g. 'https://your-instance-"
-"name.piwik.pro'."
+"The base URL of your Piwik PRO server, e.g. 'https://your-instance-name."
+"piwik.pro'."
 msgstr ""
 "De basis-URL van uw Piwik PRO server, bijvoorbeeld 'https://your-instance-"
 "name.piwik.pro/'."
@@ -306,8 +304,8 @@ msgstr "Piwik PRO site-ID"
 
 #: openforms/analytics_tools/models.py:184
 msgid ""
-"The 'idsite' of the website you're tracking in Piwik PRO. "
-"https://help.piwik.pro/support/questions/find-website-id/"
+"The 'idsite' of the website you're tracking in Piwik PRO. https://help.piwik."
+"pro/support/questions/find-website-id/"
 msgstr ""
 "De 'idsite'-waarde van de website die je analyseert met Piwik PRO. Zie ook "
 "https://help.piwik.pro/support/questions/find-website-id/"
@@ -335,12 +333,12 @@ msgstr "SiteImprove ID"
 #: openforms/analytics_tools/models.py:204
 msgid ""
 "Your SiteImprove ID - you can find this from the embed snippet example, "
-"which should contain a URL like "
-"'//siteimproveanalytics.com/js/siteanalyze_XXXXX.js'. The XXXXX is your ID."
+"which should contain a URL like '//siteimproveanalytics.com/js/"
+"siteanalyze_XXXXX.js'. The XXXXX is your ID."
 msgstr ""
 "Uw SiteImprove ID - deze waarde kan je terugvinden in het embed-voorbeeld. "
-"Deze bevat normaal een URL zoals "
-"'//siteimproveanalytics.com/js/siteanalyze_XXXXX.js'. De XXXXX is uw ID."
+"Deze bevat normaal een URL zoals '//siteimproveanalytics.com/js/"
+"siteanalyze_XXXXX.js'. De XXXXX is uw ID."
 
 #: openforms/analytics_tools/models.py:210
 msgid "enable siteImprove analytics"
@@ -398,8 +396,8 @@ msgstr "GovMetric secure GUID (inzending voltooid)"
 
 #: openforms/analytics_tools/models.py:247
 msgid ""
-"Your GovMetric secure GUID for when a form is finished - This is an optional"
-" value. It is created by KLANTINFOCUS when a list  of questions is created. "
+"Your GovMetric secure GUID for when a form is finished - This is an optional "
+"value. It is created by KLANTINFOCUS when a list  of questions is created. "
 "It is a string that is unique per set of questions."
 msgstr ""
 "Het GovMetric secure GUID voor voltooide inzendingen. Deze waarde is niet "
@@ -428,8 +426,8 @@ msgid ""
 "The name of your organization as registered in Expoints. This is used to "
 "construct the URL to communicate with Expoints."
 msgstr ""
-"De naam/het label van de organisatie zoals deze bij Expoints bekend is. Deze"
-" waarde wordt gebruikt om de URL op te bouwen om met Expoints te verbinden."
+"De naam/het label van de organisatie zoals deze bij Expoints bekend is. Deze "
+"waarde wordt gebruikt om de URL op te bouwen om met Expoints te verbinden."
 
 #: openforms/analytics_tools/models.py:271
 msgid "Expoints configuration identifier"
@@ -440,8 +438,8 @@ msgid ""
 "The UUID used to retrieve the configuration from Expoints to initialize the "
 "client satisfaction survey."
 msgstr ""
-"Het UUID van de configuratie in Expoints om het tevredenheidsonderzoek op te"
-" halen."
+"Het UUID van de configuratie in Expoints om het tevredenheidsonderzoek op te "
+"halen."
 
 #: openforms/analytics_tools/models.py:279
 msgid "use Expoints test mode"
@@ -449,8 +447,8 @@ msgstr "gebruik Expoints testmode"
 
 #: openforms/analytics_tools/models.py:282
 msgid ""
-"Indicates whether or not the test mode should be enabled. If enabled, filled"
-" out surveys won't actually be sent, to avoid cluttering Expoints while "
+"Indicates whether or not the test mode should be enabled. If enabled, filled "
+"out surveys won't actually be sent, to avoid cluttering Expoints while "
 "testing."
 msgstr ""
 "Indien aangevinkt, dan wordt de testmode van Expoints ingeschakeld. "
@@ -501,8 +499,8 @@ msgstr ""
 
 #: openforms/analytics_tools/models.py:448
 msgid ""
-"If you enable GovMetric, you need to provide the source ID for all languages"
-" (the same one can be reused)."
+"If you enable GovMetric, you need to provide the source ID for all languages "
+"(the same one can be reused)."
 msgstr ""
 "Wanneer je GovMetric inschakelt, dan moet je een source ID ingegeven voor "
 "elke taaloptie. Je kan hetzelfde ID hergebruiken voor meerdere talen."
@@ -537,8 +535,8 @@ msgid ""
 "has passed, the session is expired and the user is 'logged out'. Note that "
 "every subsequent API call resets the expiry."
 msgstr ""
-"Aantal seconden waarna een sessie verloopt. Na het verlopen van de sessie is"
-" de gebruiker uitgelogd en kan zijn huidige inzending niet meer afmaken. "
+"Aantal seconden waarna een sessie verloopt. Na het verlopen van de sessie is "
+"de gebruiker uitgelogd en kan zijn huidige inzending niet meer afmaken. "
 "Opmerking: Bij elke interactie met de API wordt de sessie verlengd."
 
 #: openforms/api/drf_spectacular/hooks.py:29
@@ -550,8 +548,8 @@ msgid ""
 "If true, the user is allowed to navigate between submission steps even if "
 "previous submission steps have not been completed yet."
 msgstr ""
-"Indien waar, dan mag de gebruiker vrij binnen de formulierstappen navigeren,"
-" ook als de vorige stappen nog niet voltooid zijn."
+"Indien waar, dan mag de gebruiker vrij binnen de formulierstappen navigeren, "
+"ook als de vorige stappen nog niet voltooid zijn."
 
 #: openforms/api/drf_spectacular/hooks.py:45
 msgid "Language code of the currently activated language."
@@ -650,12 +648,12 @@ msgstr "Ping de API"
 
 #: openforms/api/views/views.py:64
 msgid ""
-"Pinging the API extends the user session. Note that you must be a staff user"
-" or have active submission(s) in your session."
+"Pinging the API extends the user session. Note that you must be a staff user "
+"or have active submission(s) in your session."
 msgstr ""
-"Door de API te pingen wordt de sessie van de gebruiker verlengd. Merk op dat"
-" je een actieve inzending in je sessie dient te hebben of ingelogd moet zijn"
-" in de beheerinterface."
+"Door de API te pingen wordt de sessie van de gebruiker verlengd. Merk op dat "
+"je een actieve inzending in je sessie dient te hebben of ingelogd moet zijn "
+"in de beheerinterface."
 
 #: openforms/appointments/admin.py:44
 msgid "Please configure the plugin first"
@@ -906,8 +904,7 @@ msgstr "Het geselecteerde tijdstip is niet (langer) beschikbaar."
 msgid "ID of the product, repeat for multiple products."
 msgstr "Product-ID, herhaal deze parameter voor meerdere producten."
 
-#: openforms/appointments/api/views.py:88
-#: openforms/products/api/viewsets.py:12
+#: openforms/appointments/api/views.py:88 openforms/products/api/viewsets.py:12
 msgid "List available products"
 msgstr "Producten weergeven"
 
@@ -985,8 +982,7 @@ msgid "Submission does not contain all the info needed to make an appointment"
 msgstr ""
 "Er ontbreken gegevens in de inzending om een afspraak te kunnen registreren."
 
-#: openforms/appointments/constants.py:10
-#: openforms/submissions/constants.py:13
+#: openforms/appointments/constants.py:10 openforms/submissions/constants.py:13
 msgid "Failed"
 msgstr "Mislukt"
 
@@ -1412,8 +1408,8 @@ msgstr "ondersteunt betrouwbaarheidsniveau-overschrijven"
 
 #: openforms/authentication/api/serializers.py:29
 msgid ""
-"Does the Identity Provider support overriding the minimum Level of Assurance"
-" (LoA) through the authentication request?"
+"Does the Identity Provider support overriding the minimum Level of Assurance "
+"(LoA) through the authentication request?"
 msgstr ""
 "Biedt de identity provider een mechanisme om het minimale "
 "betrouwbaarheidsniveau te specifiëren binnen een individueel "
@@ -1464,8 +1460,7 @@ msgid "..."
 msgstr "..."
 
 #: openforms/authentication/api/serializers.py:67
-#: openforms/dmn/api/serializers.py:17
-#: openforms/payments/api/serializers.py:25
+#: openforms/dmn/api/serializers.py:17 openforms/payments/api/serializers.py:25
 msgid "Identifier"
 msgstr "Unieke identificatie"
 
@@ -1605,8 +1600,8 @@ msgid ""
 "forms, please remove this backend from these forms before disabling this "
 "authentication backend."
 msgstr ""
-"{plugin_identifier} wordt gebruikt in één of meerdere formulieren. Haal deze"
-" plugin eerst uit de inlogopties voor je deze backend uitschakelt."
+"{plugin_identifier} wordt gebruikt in één of meerdere formulieren. Haal deze "
+"plugin eerst uit de inlogopties voor je deze backend uitschakelt."
 
 #: openforms/authentication/contrib/digid_eherkenning_oidc/apps.py:8
 msgid "DigiD/eHerkenning via OpenID Connect"
@@ -1670,8 +1665,8 @@ msgstr "eIDAS"
 
 #: openforms/authentication/contrib/eherkenning/views.py:44
 msgid ""
-"Login failed due to no KvK number/Pseudo ID being returned by "
-"eHerkenning/eIDAS."
+"Login failed due to no KvK number/Pseudo ID being returned by eHerkenning/"
+"eIDAS."
 msgstr ""
 "Inloggen mislukt omdat er geen geldig KvK-nummer/Pseudo-ID terugkwam uit "
 "eHerkenning."
@@ -1786,8 +1781,7 @@ msgstr "Betrouwbaarheidsniveau"
 
 #: openforms/authentication/models.py:149
 msgid ""
-"How certain is the identity provider that this identity belongs to this "
-"user."
+"How certain is the identity provider that this identity belongs to this user."
 msgstr ""
 "Indicatie van de mate van zekerheid over de identiteit van de gebruiker, "
 "afgegeven door de identity provider."
@@ -1874,8 +1868,8 @@ msgstr "Mag inzendingen opvoeren voor klanten"
 msgid "You must be logged in to start this form."
 msgstr "Je moet ingelogd zijn om dit formulier te starten."
 
-#: openforms/authentication/signals.py:87
-#: openforms/authentication/views.py:184 openforms/authentication/views.py:319
+#: openforms/authentication/signals.py:87 openforms/authentication/views.py:184
+#: openforms/authentication/views.py:319
 msgid "Demo plugins require an active admin session."
 msgstr "Om demo-plugins te gebruiken moet je als beheerder ingelogd zijn."
 
@@ -1945,8 +1939,7 @@ msgid "Authentication context data: branch number"
 msgstr "Authenticatiecontext: vestigingsnummer"
 
 #: openforms/authentication/static_variables/static_variables.py:212
-msgid ""
-"Authentication context data: authorizee, acting subject identifier type"
+msgid "Authentication context data: authorizee, acting subject identifier type"
 msgstr ""
 "Authenticatiecontext: gemachtigde, identificatiesoort van de handelende "
 "persoon"
@@ -1970,8 +1963,8 @@ msgid ""
 "When filling out a form for a client or company please enter additional "
 "information."
 msgstr ""
-"Wanneer je een formulier invult voor een klant (burger of bedrijf), geef dan"
-" extra informatie op."
+"Wanneer je een formulier invult voor een klant (burger of bedrijf), geef dan "
+"extra informatie op."
 
 #: openforms/authentication/templates/of_authentication/registrator_subject_info.html:43
 #: openforms/authentication/templates/of_authentication/registrator_subject_info.html:53
@@ -1986,7 +1979,8 @@ msgstr "Start het authenticatie proces"
 msgid ""
 "This endpoint is the internal redirect target to start external login flow.\n"
 "\n"
-"Note that this is NOT a JSON 'endpoint', but rather the browser should be redirected to this URL and will in turn receive another redirect.\n"
+"Note that this is NOT a JSON 'endpoint', but rather the browser should be "
+"redirected to this URL and will in turn receive another redirect.\n"
 "\n"
 "Various validations are performed:\n"
 "* the form must be live\n"
@@ -1995,9 +1989,11 @@ msgid ""
 "* the `next` parameter must be present\n"
 "* the `next` parameter must match the CORS policy"
 msgstr ""
-"Dit endpoint is het doel van de interne redirect om het externe login proces te starten.\n"
+"Dit endpoint is het doel van de interne redirect om het externe login proces "
+"te starten.\n"
 "\n"
-"Merk op dat dit GEEN typische JSON-endpoint betreft maar een endpoint waarnaar toe geredirect wordt en zelf ook een redirect teruggeeft.\n"
+"Merk op dat dit GEEN typische JSON-endpoint betreft maar een endpoint "
+"waarnaar toe geredirect wordt en zelf ook een redirect teruggeeft.\n"
 "\n"
 "Diverse validaties worden uitgevoerd:\n"
 "* het formulier is actief\n"
@@ -2012,8 +2008,8 @@ msgstr "URL-deel dat het formulier identificeert."
 
 #: openforms/authentication/views.py:109
 msgid ""
-"Identifier of the authentication plugin. Note that this is validated against"
-" the configured available plugins for this particular form."
+"Identifier of the authentication plugin. Note that this is validated against "
+"the configured available plugins for this particular form."
 msgstr ""
 "Unieke identificatie van de authenticatieplugin. Merk op dat deze waarde "
 "gevalideerd wordt met de beschikbare plugins voor dit formulier."
@@ -2039,8 +2035,8 @@ msgid ""
 "URL of the external authentication service where the end-user will be "
 "redirected to. The value is specific to the selected authentication plugin."
 msgstr ""
-"URL van de externe authenticatie service waar de gebruiker naar toe verwezen"
-" wordt. Deze waarde is specifiek voor de geselecteerde authenticatieplugin"
+"URL van de externe authenticatie service waar de gebruiker naar toe verwezen "
+"wordt. Deze waarde is specifiek voor de geselecteerde authenticatieplugin"
 
 #: openforms/authentication/views.py:150
 msgid "OK. A login page is rendered."
@@ -2061,8 +2057,8 @@ msgid ""
 "Method not allowed. The authentication plugin requires `POST` or `GET`, and "
 "the wrong method was used."
 msgstr ""
-"Methode niet toegestaan. De authenticatieplugin moet worden benaderd middels"
-" een `POST` of `GET`."
+"Methode niet toegestaan. De authenticatieplugin moet worden benaderd middels "
+"een `POST` of `GET`."
 
 #: openforms/authentication/views.py:235
 msgid "Return from external login flow"
@@ -2070,9 +2066,12 @@ msgstr "Aanroeppunt van het externe login proces"
 
 #: openforms/authentication/views.py:237
 msgid ""
-"Authentication plugins call this endpoint in the return step of the authentication flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.\n"
+"Authentication plugins call this endpoint in the return step of the "
+"authentication flow. Depending on the plugin, either `GET` or `POST` is "
+"allowed as HTTP method.\n"
 "\n"
-"Typically authentication plugins will redirect again to the URL where the SDK is embedded.\n"
+"Typically authentication plugins will redirect again to the URL where the "
+"SDK is embedded.\n"
 "\n"
 "Various validations are performed:\n"
 "* the form must be live\n"
@@ -2080,7 +2079,9 @@ msgid ""
 "* logging in is required on the form\n"
 "* the redirect target must match the CORS policy"
 msgstr ""
-"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces "
+"is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan "
+"als HTTP-methode.\n"
 "\n"
 "Authenticatieplugins zullen typisch een redirect uitvoeren naar de SDK.\n"
 "\n"
@@ -2237,8 +2238,7 @@ msgid ""
 "to accept before submitting a form."
 msgstr ""
 "Eén enkel Form.io selectievakjecomponent voor de verklaring die een "
-"gebruiker mogelijks moet accepteren voor het formulier ingestuurd kan "
-"worden."
+"gebruiker mogelijks moet accepteren voor het formulier ingestuurd kan worden."
 
 #: openforms/config/api/constants.py:19
 msgid "Component type (checkbox)"
@@ -2268,8 +2268,8 @@ msgid ""
 "The formatted label to use next to the checkbox when asking the user to "
 "agree to the privacy policy."
 msgstr ""
-"Het opgemaakte label dat naast het selectievakje moet worden getoond wanneer"
-" de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid."
+"Het opgemaakte label dat naast het selectievakje moet worden getoond wanneer "
+"de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid."
 
 #: openforms/config/api/views.py:16
 msgid "Privacy policy info"
@@ -2393,8 +2393,7 @@ msgstr "kleur"
 msgid "Color in RGB hex format (#RRGGBB)"
 msgstr "Kleur in RGB hex-formaat (#RRGGBB)"
 
-#: openforms/config/models/color.py:15
-#: openforms/contrib/microsoft/models.py:11
+#: openforms/config/models/color.py:15 openforms/contrib/microsoft/models.py:11
 #: openforms/contrib/zgw/api/serializers.py:23
 #: openforms/dmn/api/serializers.py:53 openforms/dmn/api/serializers.py:73
 #: soap/models.py:18
@@ -2458,8 +2457,8 @@ msgid ""
 "The content of the submission confirmation page. It can contain variables "
 "that will be templated from the submitted form data."
 msgstr ""
-"De inhoud van bevestigingspagina kan variabelen bevatten die op basis van de"
-" ingediende formuliergegevens worden weergegeven. "
+"De inhoud van bevestigingspagina kan variabelen bevatten die op basis van de "
+"ingediende formuliergegevens worden weergegeven. "
 
 #: openforms/config/models/config.py:82
 msgid "Thank you for submitting this form."
@@ -2471,8 +2470,7 @@ msgstr "titel downloadlink inzendings-PDF"
 
 #: openforms/config/models/config.py:88
 msgid "The title of the link to download the report of a submission."
-msgstr ""
-"Titel/tekst van de downloadlink om de inzending als PDF te downloaden."
+msgstr "Titel/tekst van de downloadlink om de inzending als PDF te downloaden."
 
 #: openforms/config/models/config.py:89
 msgid "Download PDF"
@@ -2570,8 +2568,8 @@ msgid ""
 "Subject of the confirmation email message when the form requires cosigning. "
 "Can be overridden on the form level."
 msgstr ""
-"nderwerp van de bevestigingsmail voor formulieren met mede-ondertekenen. Bij"
-" het formulier kan een afwijkend onderwerp worden opgegeven."
+"nderwerp van de bevestigingsmail voor formulieren met mede-ondertekenen. Bij "
+"het formulier kan een afwijkend onderwerp worden opgegeven."
 
 #: openforms/config/models/config.py:184 openforms/emails/models.py:60
 msgid "cosign content"
@@ -2603,8 +2601,8 @@ msgid ""
 "without any initiator. Otherwise, a fake initiator is added with BSN "
 "111222333."
 msgstr ""
-"Indien aangevinkt en de inzender is niet geauthenticeerd, dan wordt een zaak"
-" aangemaakt zonder initiator. Indien uitgevinkt, dan zal een nep-initiator "
+"Indien aangevinkt en de inzender is niet geauthenticeerd, dan wordt een zaak "
+"aangemaakt zonder initiator. Indien uitgevinkt, dan zal een nep-initiator "
 "worden toegevoegd met BSN 111222333."
 
 #: openforms/config/models/config.py:230
@@ -2628,8 +2626,7 @@ msgstr "Stap wijzigen-label"
 
 #: openforms/config/models/config.py:243
 msgid ""
-"The text that will be displayed in the overview page to change a certain "
-"step"
+"The text that will be displayed in the overview page to change a certain step"
 msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen"
 
@@ -2672,8 +2669,7 @@ msgid ""
 msgstr ""
 "Het label van de knop om naar de vorige stap binnen het formulier te gaan"
 
-#: openforms/config/models/config.py:275
-#: openforms/forms/models/form_step.py:48
+#: openforms/config/models/config.py:275 openforms/forms/models/form_step.py:48
 msgid "step save text"
 msgstr "Opslaan-label"
 
@@ -2687,8 +2683,7 @@ msgid ""
 "information"
 msgstr "Het label van de knop om het formulier tussentijds op te slaan"
 
-#: openforms/config/models/config.py:283
-#: openforms/forms/models/form_step.py:57
+#: openforms/config/models/config.py:283 openforms/forms/models/form_step.py:57
 msgid "step next text"
 msgstr "Volgende stap-label"
 
@@ -2697,8 +2692,7 @@ msgid "Next"
 msgstr "Volgende"
 
 #: openforms/config/models/config.py:287
-msgid ""
-"The text that will be displayed in the form step to go to the next step"
+msgid "The text that will be displayed in the form step to go to the next step"
 msgstr ""
 "Het label van de knop om naar de volgende stap binnen het formulier te gaan"
 
@@ -2720,11 +2714,11 @@ msgstr "Markeer verplichte velden met een asterisk"
 #: openforms/config/models/config.py:301
 msgid ""
 "If checked, required fields are marked with an asterisk and optional fields "
-"are unmarked. If unchecked, optional fields will be marked with '(optional)'"
-" and required fields are unmarked."
+"are unmarked. If unchecked, optional fields will be marked with '(optional)' "
+"and required fields are unmarked."
 msgstr ""
-"Indien aangevinkt, dan zijn verplichte velden gemarkeerd met een asterisk en"
-" optionele velden niet gemarkeerd. Indien uitgevinkt, dan zijn optionele "
+"Indien aangevinkt, dan zijn verplichte velden gemarkeerd met een asterisk en "
+"optionele velden niet gemarkeerd. Indien uitgevinkt, dan zijn optionele "
 "velden gemarkeerd met '(niet verplicht)' en verplichte velden ongemarkeerd."
 
 #: openforms/config/models/config.py:308
@@ -2750,8 +2744,8 @@ msgid ""
 "displayed but marked as non-applicable.)"
 msgstr ""
 "Indien aangevinkt, dan worden stappen die (via logicaregels) niet van "
-"toepassing zijn verborgen. Standaard zijn deze zichtbaar maar gemarkeerd als"
-" n.v.t."
+"toepassing zijn verborgen. Standaard zijn deze zichtbaar maar gemarkeerd als "
+"n.v.t."
 
 #: openforms/config/models/config.py:325
 msgid "The default zoom level for the leaflet map."
@@ -2766,8 +2760,8 @@ msgstr ""
 #: openforms/config/models/config.py:338
 msgid "The default longitude for the leaflet map."
 msgstr ""
-"Standaard longitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS"
-" 84)."
+"Standaard longitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS "
+"84)."
 
 #: openforms/config/models/config.py:351
 msgid "default theme"
@@ -2800,8 +2794,8 @@ msgstr "hoofdsite link"
 msgid ""
 "URL to the main website. Used for the 'back to municipality website' link."
 msgstr ""
-"URL naar de hoofdsite van de organisatie. Wordt gebruikt voor 'terug naar de"
-" gemeente website' link."
+"URL naar de hoofdsite van de organisatie. Wordt gebruikt voor 'terug naar de "
+"gemeente website' link."
 
 #: openforms/config/models/config.py:374
 msgid "organization name"
@@ -2843,8 +2837,7 @@ msgid ""
 "Due to DigiD requirements this value has to be less than or equal to "
 "%(limit_value)s minutes."
 msgstr ""
-"Om veiligheidsredenen mag de waarde niet groter zijn %(limit_value)s "
-"minuten."
+"Om veiligheidsredenen mag de waarde niet groter zijn %(limit_value)s minuten."
 
 #: openforms/config/models/config.py:414
 msgid ""
@@ -2860,8 +2853,8 @@ msgstr "Betaling: bestellingsnummersjabloon"
 #, python-brace-format
 msgid ""
 "Template to use when generating payment order IDs. It should be alpha-"
-"numerical and can contain the '/._-' characters. You can use the placeholder"
-" tokens: {year}, {public_reference}, {uid}."
+"numerical and can contain the '/._-' characters. You can use the placeholder "
+"tokens: {year}, {public_reference}, {uid}."
 msgstr ""
 "Sjabloon voor de generatie van unieke betalingsreferenties. Het sjabloon "
 "moet alfanumeriek zijn en mag de karakters '/._-' bevatten. De placeholder "
@@ -2905,8 +2898,8 @@ msgid ""
 "Yes, I have read the {% privacy_policy %} and explicitly agree to the "
 "processing of my submitted information."
 msgstr ""
-"Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk"
-" toestemming voor het verwerken van de door mij opgegeven gegevens."
+"Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
+"toestemming voor het verwerken van de door mij opgegeven gegevens."
 
 #: openforms/config/models/config.py:466 openforms/forms/models/form.py:199
 msgid "ask statement of truth"
@@ -3150,11 +3143,10 @@ msgstr "Een herkenbare naam om deze stijl te identificeren."
 #: openforms/forms/models/form.py:60 openforms/forms/models/form.py:675
 #: openforms/forms/models/form_definition.py:39
 #: openforms/forms/models/form_step.py:24
-#: openforms/forms/models/form_version.py:44
-#: openforms/forms/models/logic.py:11
+#: openforms/forms/models/form_version.py:44 openforms/forms/models/logic.py:11
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:95
 #: openforms/products/models/product.py:19
-#: openforms/submissions/models/submission.py:110
+#: openforms/submissions/models/submission.py:111
 #: openforms/submissions/models/submission_files.py:51
 #: openforms/submissions/models/submission_files.py:147
 #: openforms/submissions/models/submission_step.py:94
@@ -3182,8 +3174,8 @@ msgid ""
 "Upload the email logo, visible to users who receive an email. We advise "
 "dimensions around 150px by 75px. SVG's are not permitted."
 msgstr ""
-"Upload het logo van de gemeente dat zichtbaar is in e-mails. We adviseren de"
-" dimensies van 150 x 75 pixels. SVG-bestanden zijn niet toegestaan."
+"Upload het logo van de gemeente dat zichtbaar is in e-mails. We adviseren de "
+"dimensies van 150 x 75 pixels. SVG-bestanden zijn niet toegestaan."
 
 #: openforms/config/models/theme.py:64
 msgid "theme CSS class name"
@@ -3192,8 +3184,7 @@ msgstr "Thema CSS class name"
 #: openforms/config/models/theme.py:66
 msgid "If provided, this class name will be set on the <html> element."
 msgstr ""
-"Indien ingevuld, dan wordt deze class name aan het <html> element "
-"toegevoegd."
+"Indien ingevuld, dan wordt deze class name aan het <html> element toegevoegd."
 
 #: openforms/config/models/theme.py:69
 msgid "theme stylesheet URL"
@@ -3208,14 +3199,14 @@ msgid ""
 "The URL stylesheet with theme-specific rules for your organization. This "
 "will be included as final stylesheet, overriding previously defined styles. "
 "Note that you also have to include the host to the `style-src` CSP "
-"directive. Example value: https://unpkg.com/@utrecht/design-"
-"tokens@1.0.0-alpha.20/dist/index.css."
+"directive. Example value: https://unpkg.com/@utrecht/design-tokens@1.0.0-"
+"alpha.20/dist/index.css."
 msgstr ""
-"URL naar de stylesheet met thema-specifieke regels voor uw organisatie. Deze"
-" stylesheet wordt als laatste ingeladen, waarbij eerdere stijlregels dus "
+"URL naar de stylesheet met thema-specifieke regels voor uw organisatie. Deze "
+"stylesheet wordt als laatste ingeladen, waarbij eerdere stijlregels dus "
 "overschreven worden. Vergeet niet dat u ook de host van deze URL aan de "
-"`style-src` CSP configuratie moet toevoegen. Voorbeeldwaarde: "
-"https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
+"`style-src` CSP configuratie moet toevoegen. Voorbeeldwaarde: https://unpkg."
+"com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
 
 #: openforms/config/models/theme.py:86
 msgid "theme stylesheet"
@@ -3241,15 +3232,15 @@ msgstr "design token waarden"
 msgid ""
 "Values of various style parameters, such as border radii, background "
 "colors... Note that this is advanced usage. Any available but un-specified "
-"values will use fallback default values. See https://open-"
-"forms.readthedocs.io/en/latest/installation/form_hosting.html#run-time-"
-"configuration for documentation."
+"values will use fallback default values. See https://open-forms.readthedocs."
+"io/en/latest/installation/form_hosting.html#run-time-configuration for "
+"documentation."
 msgstr ""
-"Waarden met diverse stijl parameters, zoals randen, achtergrondkleuren, etc."
-" Dit is voor geavanceerde gebruikers. Attributen die niet zijn opgegeven "
-"vallen terug op standaardwaarden. Zie https://open-"
-"forms.readthedocs.io/en/latest/installation/form_hosting.html#run-time-"
-"configuration voor documentatie."
+"Waarden met diverse stijl parameters, zoals randen, achtergrondkleuren, etc. "
+"Dit is voor geavanceerde gebruikers. Attributen die niet zijn opgegeven "
+"vallen terug op standaardwaarden. Zie https://open-forms.readthedocs.io/en/"
+"latest/installation/form_hosting.html#run-time-configuration voor "
+"documentatie."
 
 #: openforms/config/models/theme.py:127
 #: openforms/forms/api/serializers/form.py:176
@@ -3317,11 +3308,10 @@ msgstr "Medeondertekening nodig"
 
 #: openforms/config/templates/config/default_cosign_submission_confirmation.html:8
 msgid ""
-"You can start the cosigning process immediately by clicking the button "
-"below."
+"You can start the cosigning process immediately by clicking the button below."
 msgstr ""
-"Je kan het mede-ondertekenen meteen starten door de onderstaande knop aan te"
-" klikken."
+"Je kan het mede-ondertekenen meteen starten door de onderstaande knop aan te "
+"klikken."
 
 #: openforms/config/templates/config/default_cosign_submission_confirmation.html:9
 #: openforms/submissions/templatetags/cosign.py:17
@@ -3335,14 +3325,14 @@ msgstr "Alternatieve instructies"
 #: openforms/config/templates/config/default_cosign_submission_confirmation.html:12
 #, python-format
 msgid ""
-"We've sent an email with a cosign request to <a "
-"href=\"mailto:%(tt_openvariable)s cosigner_email "
+"We've sent an email with a cosign request to <a href=\"mailto:"
+"%(tt_openvariable)s cosigner_email "
 "%(tt_closevariable)s\">%(tt_openvariable)s cosigner_email "
 "%(tt_closevariable)s</a>. Once the submission has been cosigned we will "
 "start processing your request."
 msgstr ""
-"Wij hebben een e-mail gestuurd voor medeondertekening naar <a "
-"href=\"mailto:%(tt_openvariable)s cosigner_email "
+"Wij hebben een e-mail gestuurd voor medeondertekening naar <a href=\"mailto:"
+"%(tt_openvariable)s cosigner_email "
 "%(tt_closevariable)s\">%(tt_openvariable)s cosigner_email "
 "%(tt_closevariable)s</a>. Als deze ondertekend is, nemen wij je aanvraag in "
 "behandeling."
@@ -3448,8 +3438,8 @@ msgstr "standaardwaarde BRP Personen doelbinding-header"
 #: openforms/contrib/haal_centraal/models.py:50
 msgid ""
 "The default purpose limitation (\"doelbinding\") for queries to the BRP "
-"Persoon API. If a more specific value is configured on a form, that value is"
-" used instead."
+"Persoon API. If a more specific value is configured on a form, that value is "
+"used instead."
 msgstr ""
 "De standaard \"doelbinding\" voor BRP Personen bevragingen. Mogelijke "
 "waarden hiervoor zijn afhankelijk van je gateway-leverancier en/of eigen "
@@ -3463,13 +3453,12 @@ msgstr "standaardwaarde BRP Personen verwerking-header"
 #: openforms/contrib/haal_centraal/models.py:60
 msgid ""
 "The default processing (\"verwerking\") for queries to the BRP Persoon API. "
-"If a more specific value is configured on a form, that value is used "
-"instead."
+"If a more specific value is configured on a form, that value is used instead."
 msgstr ""
-"De standaard \"verwerking\" voor BRP Personen bevragingen. Mogelijke waarden"
-" hiervoor zijn afhankelijk van je gateway-leverancier. Je kan deze ook op "
-"formulierniveau opgeven en dan overschrijft de formulierspecifieke waarde de"
-" standaardwaarde."
+"De standaard \"verwerking\" voor BRP Personen bevragingen. Mogelijke waarden "
+"hiervoor zijn afhankelijk van je gateway-leverancier. Je kan deze ook op "
+"formulierniveau opgeven en dan overschrijft de formulierspecifieke waarde de "
+"standaardwaarde."
 
 #: openforms/contrib/haal_centraal/models.py:80
 msgid "Form"
@@ -3483,8 +3472,8 @@ msgstr "BRP Personen doelbinding-header"
 msgid ""
 "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
 msgstr ""
-"De \"doelbinding\" voor BRP Personen bevragingen. Mogelijke waarden hiervoor"
-" zijn afhankelijk van je gateway-leverancier en/of eigen organisatie-"
+"De \"doelbinding\" voor BRP Personen bevragingen. Mogelijke waarden hiervoor "
+"zijn afhankelijk van je gateway-leverancier en/of eigen organisatie-"
 "instellingen."
 
 #: openforms/contrib/haal_centraal/models.py:93
@@ -3588,13 +3577,11 @@ msgstr "Rijksdriehoekcoördinaten"
 
 #: openforms/contrib/kadaster/api/serializers.py:47
 msgid ""
-"X and Y coordinates in the "
-"[Rijkdsdriehoek](https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten)"
-" coordinate system."
+"X and Y coordinates in the [Rijkdsdriehoek](https://nl.wikipedia.org/wiki/"
+"Rijksdriehoeksco%C3%B6rdinaten) coordinate system."
 msgstr ""
-"X- en Y-coördinaten in de "
-"[Rijkdsdriehoek](https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten)"
-" coordinate system."
+"X- en Y-coördinaten in de [Rijkdsdriehoek](https://nl.wikipedia.org/wiki/"
+"Rijksdriehoeksco%C3%B6rdinaten) coordinate system."
 
 #: openforms/contrib/kadaster/api/serializers.py:58
 msgid "Latitude, in decimal degrees."
@@ -3616,11 +3603,14 @@ msgstr "Haal de straatnaam en stad op"
 msgid ""
 "Get the street name and city for a given postal code and house number.\n"
 "\n"
-"**NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will be removed in v3. Use `/api/v2/geo/address-autocomplete/` instead."
+"**NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will be "
+"removed in v3. Use `/api/v2/geo/address-autocomplete/` instead."
 msgstr ""
 "Haal de straatnaam en stad op voor een opgegeven postcode en huisnummer.\n"
 "\n"
-"**OPMERKING** de `/api/v2/location/get-street-name-and-city` endpoint zal in v3 verwijderd worden. Gebruik in de plaats `/api/v2/geo/address-autocomplete`."
+"**OPMERKING** de `/api/v2/location/get-street-name-and-city` endpoint zal in "
+"v3 verwijderd worden. Gebruik in de plaats `/api/v2/geo/address-"
+"autocomplete`."
 
 #: openforms/contrib/kadaster/api/views.py:62
 msgid "Postal code of the address"
@@ -3635,8 +3625,7 @@ msgid "Get an adress based on coordinates"
 msgstr "Zoek adres op basis van coördinaten"
 
 #: openforms/contrib/kadaster/api/views.py:95
-msgid ""
-"Get the closest address name based on the given longitude and latitude."
+msgid "Get the closest address name based on the given longitude and latitude."
 msgstr ""
 "Haal de omschrijving op van het dichtsbijzijndste adres voor de opgegeven "
 "longitude en latitude."
@@ -3655,13 +3644,18 @@ msgstr "Geef lijst van adressuggesties met coördinaten."
 
 #: openforms/contrib/kadaster/api/views.py:148
 msgid ""
-"Get a list of addresses, ordered by relevance/match score of the input query. Note that only results having latitude/longitude data are returned.\n"
+"Get a list of addresses, ordered by relevance/match score of the input "
+"query. Note that only results having latitude/longitude data are returned.\n"
 "\n"
-"The results are retrieved from the configured geo search service, defaulting to the Kadaster location server."
+"The results are retrieved from the configured geo search service, defaulting "
+"to the Kadaster location server."
 msgstr ""
-"Haal een lijst op van adressen, gesorteerd op relevantie/match score van de zoekopdracht. Merk op dat enkel resultaten voorzien van latitude/longitude teruggegeven worden.\n"
+"Haal een lijst op van adressen, gesorteerd op relevantie/match score van de "
+"zoekopdracht. Merk op dat enkel resultaten voorzien van latitude/longitude "
+"teruggegeven worden.\n"
 "\n"
-"Deze resultaten worden opgehaald uit de ingestelde geo-zoekservice. Standaard is dit de Locatieserver van het Kadaster."
+"Deze resultaten worden opgehaald uit de ingestelde geo-zoekservice. "
+"Standaard is dit de Locatieserver van het Kadaster."
 
 #: openforms/contrib/kadaster/api/views.py:159
 msgid ""
@@ -3879,11 +3873,11 @@ msgstr "De gewenste Objecten API-groep."
 
 #: openforms/contrib/objects_api/api/serializers.py:22
 msgid ""
-"URL reference to this object. This is the unique identification and location"
-" of this object."
+"URL reference to this object. This is the unique identification and location "
+"of this object."
 msgstr ""
-"URL-referentie naar dit object. Dit is de unieke identificatie en vindplaats"
-" van het object."
+"URL-referentie naar dit object. Dit is de unieke identificatie en vindplaats "
+"van het object."
 
 #: openforms/contrib/objects_api/api/serializers.py:25
 msgid "Unique identifier (UUID4)."
@@ -3935,11 +3929,10 @@ msgstr ""
 #: openforms/contrib/objects_api/checks.py:36
 #, python-brace-format
 msgid ""
-"Missing Objecttypes API credentials for Objects API group "
-"{objects_api_group}"
+"Missing Objecttypes API credentials for Objects API group {objects_api_group}"
 msgstr ""
-"Ontbrekende Objecttypen API authenticatiegegevens voor de Objecten API-groep"
-" {objects_api_group}"
+"Ontbrekende Objecttypen API authenticatiegegevens voor de Objecten API-groep "
+"{objects_api_group}"
 
 #: openforms/contrib/objects_api/checks.py:70
 #, python-brace-format
@@ -4022,8 +4015,8 @@ msgid ""
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API (het "
 "INFORMATIEOBJECTTYPE.omschrijving attribuut) voor het PDF-document met "
-"inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op basis"
-" van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
+"inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op basis "
+"van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/contrib/objects_api/models.py:110
 #: openforms/registrations/contrib/objects_api/config.py:147
@@ -4039,8 +4032,8 @@ msgid ""
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API (het "
 "INFORMATIEOBJECTTYPE.omschrijving attribuut) voor het CSV-document met "
-"inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op basis"
-" van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
+"inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op basis "
+"van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/contrib/objects_api/models.py:124
 #: openforms/registrations/contrib/objects_api/config.py:160
@@ -4056,8 +4049,8 @@ msgid ""
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API (het "
 "INFORMATIEOBJECTTYPE.omschrijving attribuut) voor inzendingsbijlagen. De "
-"juiste versie wordt automatisch geselecteerd op basis van de inzendingsdatum"
-" en geldigheidsdatums van de documenttypeversies."
+"juiste versie wordt automatisch geselecteerd op basis van de inzendingsdatum "
+"en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/contrib/objects_api/models.py:140
 msgid "submission report informatieobjecttype"
@@ -4103,8 +4096,7 @@ msgstr "Objecten API-groepen"
 
 #: openforms/contrib/objects_api/models.py:179
 #: openforms/registrations/contrib/zgw_apis/models.py:165
-msgid ""
-"You must specify both domain and RSIN to uniquely identify a catalogue."
+msgid "You must specify both domain and RSIN to uniquely identify a catalogue."
 msgstr ""
 "Je moet het domein én RSIN beide opgeven om een catalogus uniek te "
 "identificeren."
@@ -4135,8 +4127,7 @@ msgstr ""
 
 #: openforms/contrib/objects_api/validators.py:60
 msgid "The document type URL is not in the specified catalogue."
-msgstr ""
-"De opgegeven documenttype-URL bestaat niet in de ingestelde catalogus."
+msgstr "De opgegeven documenttype-URL bestaat niet in de ingestelde catalogus."
 
 #: openforms/contrib/objects_api/validators.py:73
 #, python-brace-format
@@ -4163,8 +4154,8 @@ msgid ""
 "same case type with the same identification exist. The filter returns a "
 "document type if it occurs within any version of the specified case type."
 msgstr ""
-"Filter documenttypen voor een gegeven zaaktype. De zaaktype-identificatie is"
-" uniek binnen een catalogus. Merk op dat meerdere versies van hetzelfde "
+"Filter documenttypen voor een gegeven zaaktype. De zaaktype-identificatie is "
+"uniek binnen een catalogus. Merk op dat meerdere versies van hetzelfde "
 "zaaktype met dezelfde identificatie kunnen bestaan. De filter geeft een "
 "documenttype terug zodra deze binnen één versie van een zaaktype voorkomt."
 
@@ -4341,8 +4332,7 @@ msgstr "Versie-identificatie"
 
 #: openforms/dmn/api/serializers.py:32
 msgid ""
-"The (unique) identifier pointing to a particular decision definition "
-"version."
+"The (unique) identifier pointing to a particular decision definition version."
 msgstr "De (unieke) identifier voor een beslisdefinitieversie."
 
 #: openforms/dmn/api/serializers.py:37
@@ -4507,8 +4497,7 @@ msgstr ""
 "Testbericht is succesvol verzonden naar %(recipients)s. Controleer uw inbox."
 
 #: openforms/emails/connection_check.py:92
-msgid ""
-"If the message doesn't arrive check the Django-yubin queue and cronjob."
+msgid "If the message doesn't arrive check the Django-yubin queue and cronjob."
 msgstr ""
 "Indien het bericht niet aankomt, controleer de Django-yubin wachtrij en "
 "periodieke acties."
@@ -4609,8 +4598,8 @@ msgid ""
 "Use this form to send a test email to the supplied recipient and test the "
 "email backend configuration."
 msgstr ""
-"Gebruik dit formulier om een testbericht te versturen naar een opgegeven "
-"e-mailadres."
+"Gebruik dit formulier om een testbericht te versturen naar een opgegeven e-"
+"mailadres."
 
 #: openforms/emails/templates/admin/emails/connection_check.html:20
 msgid "Send test email"
@@ -4644,8 +4633,8 @@ msgstr "Registraties"
 #: openforms/emails/templates/emails/admin_digest.html:26
 #, python-format
 msgid ""
-"Form '%(form_name)s' failed %(counter)s time(s) between %(first_failure_at)s"
-" and %(last_failure_at)s.<br>"
+"Form '%(form_name)s' failed %(counter)s time(s) between %(first_failure_at)s "
+"and %(last_failure_at)s.<br>"
 msgstr ""
 "Formulier '%(form_name)s' faalde %(counter)s keer tussen "
 "%(first_failure_at)s en %(last_failure_at)s.</br>"
@@ -4754,8 +4743,8 @@ msgid ""
 "We couldn't process logic rule %(index)s for '%(form_name)s' because it "
 "appears to be invalid. <br>"
 msgstr ""
-"Logicaregel %(index)s in formulier '%(form_name)s' lijkt ongeldig te zijn en"
-" kon daarom niet gecontroleerd worden. <br>"
+"Logicaregel %(index)s in formulier '%(form_name)s' lijkt ongeldig te zijn en "
+"kon daarom niet gecontroleerd worden. <br>"
 
 #: openforms/emails/templates/emails/admin_digest.html:147
 #, python-format
@@ -4777,21 +4766,28 @@ msgstr ""
 msgid ""
 "\n"
 "Please visit the form page by navigating to the following link:\n"
-"<a href=\"%(tt_openvariable)s form_url %(tt_closevariable)s\">%(tt_openvariable)s form_url %(tt_closevariable)s</a>.\n"
+"<a href=\"%(tt_openvariable)s form_url "
+"%(tt_closevariable)s\">%(tt_openvariable)s form_url %(tt_closevariable)s</"
+"a>.\n"
 msgstr ""
 "\n"
-"Gelieve naar de formulierpagina te navigeren met de volgende link: <a href=\"%(tt_openvariable)s form_url %(tt_closevariable)s\">%(tt_openvariable)s form_url %(tt_closevariable)s</a>.\n"
+"Gelieve naar de formulierpagina te navigeren met de volgende link: <a "
+"href=\"%(tt_openvariable)s form_url "
+"%(tt_closevariable)s\">%(tt_openvariable)s form_url %(tt_closevariable)s</"
+"a>.\n"
 
 #: openforms/emails/templates/emails/co_sign/request.html:13
 #, python-format
 msgid ""
 "\n"
-"<p>This is a request to co-sign form \"%(tt_openvariable)s form_name %(tt_closevariable)s\".</p>\n"
+"<p>This is a request to co-sign form \"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\".</p>\n"
 "\n"
 "<p>%(instruction)s</p>\n"
 "\n"
 "<p>\n"
-"    You will then be redirected to authenticate yourself. After authentication, fill in\n"
+"    You will then be redirected to authenticate yourself. After "
+"authentication, fill in\n"
 "    the following code to retrieve the form submission:\n"
 "    <br>\n"
 "    <br>\n"
@@ -4799,12 +4795,14 @@ msgid ""
 "</p>\n"
 msgstr ""
 "\n"
-"<p>Dit is een verzoek om het formulier \\\"%(tt_openvariable)s form_name %(tt_closevariable)s\\\" mede te ondertekenen.</p>\n"
+"<p>Dit is een verzoek om het formulier \\\"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\\\" mede te ondertekenen.</p>\n"
 "\n"
 "<p>%(instruction)s</p>\n"
 "\n"
 "<p>\n"
-"  Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat je bent ingelogd, haal je het formulier op met de volgende code:\n"
+"  Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat "
+"je bent ingelogd, haal je het formulier op met de volgende code:\n"
 "  <br>\n"
 "  <br>\n"
 "  <strong>%(tt_openvariable)s code %(tt_closevariable)s</strong>\n"
@@ -4816,9 +4814,12 @@ msgid ""
 "\n"
 "Dear Sir, Madam,<br>\n"
 "<br>\n"
-"You have submitted the form \"%(tt_openvariable)s form_name %(tt_closevariable)s\" on %(tt_openvariable)s submission_date %(tt_closevariable)s.<br>\n"
+"You have submitted the form \"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\" on %(tt_openvariable)s submission_date "
+"%(tt_closevariable)s.<br>\n"
 "<br>\n"
-"Your reference is: %(tt_openvariable)s public_reference %(tt_closevariable)s<br>\n"
+"Your reference is: %(tt_openvariable)s public_reference "
+"%(tt_closevariable)s<br>\n"
 "<br>\n"
 "\n"
 "%(tt_openblock)s confirmation_summary %(tt_closeblock)s<br>\n"
@@ -4833,9 +4834,12 @@ msgstr ""
 "\n"
 "Geachte heer/mevrouw,<br>\n"
 "<br>\n"
-"U heeft via de website het formulier \\\"%(tt_openvariable)s form_name %(tt_closevariable)s\\\" verzonden op %(tt_openvariable)s submission_date %(tt_closevariable)s.<br>\n"
+"U heeft via de website het formulier \\\"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\\\" verzonden op %(tt_openvariable)s submission_date "
+"%(tt_closevariable)s.<br>\n"
 "<br>\n"
-"Uw referentienummer is: %(tt_openvariable)s public_reference %(tt_closevariable)s<br>\n"
+"Uw referentienummer is: %(tt_openvariable)s public_reference "
+"%(tt_closevariable)s<br>\n"
 "<br>\n"
 "\n"
 "%(tt_openblock)s confirmation_summary %(tt_closeblock)s<br>\n"
@@ -4853,8 +4857,10 @@ msgid ""
 "\n"
 "Dear reader,<br>\n"
 "<br>\n"
-"You submitted the form \"%(tt_openvariable)s form_name %(tt_closevariable)s\"\n"
-"via the website on %(tt_openvariable)s submission_date %(tt_closevariable)s.<br>\n"
+"You submitted the form \"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\"\n"
+"via the website on %(tt_openvariable)s submission_date %(tt_closevariable)s."
+"<br>\n"
 "<br>\n"
 "\n"
 "%(tt_openblock)s if registration_completed %(tt_closeblock)s<br>\n"
@@ -4869,7 +4875,8 @@ msgid ""
 "    %(tt_openblock)s endif %(tt_closeblock)s<br>\n"
 "%(tt_openblock)s endif %(tt_closeblock)s<br>\n"
 "\n"
-"Your reference is: %(tt_openvariable)s public_reference %(tt_closevariable)s<br>\n"
+"Your reference is: %(tt_openvariable)s public_reference "
+"%(tt_closevariable)s<br>\n"
 "<br>\n"
 "\n"
 "%(tt_openblock)s confirmation_summary %(tt_closeblock)s<br>\n"
@@ -4927,22 +4934,26 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"<p>This email address requires verification for the \"%(tt_openvariable)s form_name %(tt_closevariable)s\" form.</p>\n"
+"<p>This email address requires verification for the \"%(tt_openvariable)s "
+"form_name %(tt_closevariable)s\" form.</p>\n"
 "\n"
 "<p>Enter the code below to confirm your email address:</p>\n"
 "\n"
 "<p><strong>%(tt_openvariable)s code %(tt_closevariable)s</strong></p>\n"
 "\n"
-"<p>If you did not request this verification, you can safely ignore this email.</p>\n"
+"<p>If you did not request this verification, you can safely ignore this "
+"email.</p>\n"
 msgstr ""
 "\n"
-"<p>Dit e-mailadres moet gecontroleerd worden voor het \"%(tt_openvariable)s form_name %(tt_closevariable)s\"-formulier.</p>\n"
+"<p>Dit e-mailadres moet gecontroleerd worden voor het \"%(tt_openvariable)s "
+"form_name %(tt_closevariable)s\"-formulier.</p>\n"
 "\n"
 "<p>Voer de code die hieronder staat in om je e-mailadres te bevestigen:</p>\n"
 "\n"
 "<p><strong>%(tt_openvariable)s code %(tt_closevariable)s</strong></p>\n"
 "\n"
-"<p>Als je niet zelf deze controle gestart bent, dan kan je deze e-mail negeren.</p>\n"
+"<p>Als je niet zelf deze controle gestart bent, dan kan je deze e-mail "
+"negeren.</p>\n"
 
 #: openforms/emails/templates/emails/email_verification/subject.txt:1
 #, python-format
@@ -4960,11 +4971,15 @@ msgid ""
 "\n"
 "Dear Sir or Madam,<br>\n"
 "<br>\n"
-"You have stored the form \"%(tt_openvariable)s form_name %(tt_closevariable)s\" via the website on %(tt_openvariable)s save_date %(tt_closevariable)s.\n"
+"You have stored the form \"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\" via the website on %(tt_openvariable)s save_date "
+"%(tt_closevariable)s.\n"
 "You can resume this form at a later time by clicking the link below.<br>\n"
-"The link is valid up to and including %(tt_openvariable)s expiration_date %(tt_closevariable)s.<br>\n"
+"The link is valid up to and including %(tt_openvariable)s expiration_date "
+"%(tt_closevariable)s.<br>\n"
 "<br>\n"
-"<a href=\"%(tt_openvariable)s continue_url %(tt_closevariable)s\">Resume form \"%(tt_openvariable)s form_name %(tt_closevariable)s\".</a><br>\n"
+"<a href=\"%(tt_openvariable)s continue_url %(tt_closevariable)s\">Resume "
+"form \"%(tt_openvariable)s form_name %(tt_closevariable)s\".</a><br>\n"
 "<br>\n"
 "Kind regards,<br>\n"
 "<br>\n"
@@ -4972,14 +4987,24 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"Geachte heer/mevrouw,<br><br>U heeft via de website het formulier \"%(tt_openvariable)s form_name %(tt_closevariable)s\" tussentijds opgeslagen op %(tt_openvariable)s save_date %(tt_closevariable)s. U kunt dit formulier op een later moment hervatten door op onderstaande link te klikken.<br>Onderstaande link is geldig tot en met %(tt_openvariable)s expiration_date %(tt_closevariable)s.<br><br><a href=\"%(tt_openvariable)s continue_url %(tt_closevariable)s\">Verder gaan met formulier \"%(tt_openvariable)s form_name %(tt_closevariable)s\".</a><br><br>Met vriendelijke groet,<br><br>Open Formulieren\n"
+"Geachte heer/mevrouw,<br><br>U heeft via de website het formulier "
+"\"%(tt_openvariable)s form_name %(tt_closevariable)s\" tussentijds "
+"opgeslagen op %(tt_openvariable)s save_date %(tt_closevariable)s. U kunt dit "
+"formulier op een later moment hervatten door op onderstaande link te klikken."
+"<br>Onderstaande link is geldig tot en met %(tt_openvariable)s "
+"expiration_date %(tt_closevariable)s.<br><br><a href=\"%(tt_openvariable)s "
+"continue_url %(tt_closevariable)s\">Verder gaan met formulier "
+"\"%(tt_openvariable)s form_name %(tt_closevariable)s\".</a><br><br>Met "
+"vriendelijke groet,<br><br>Open Formulieren\n"
 
 #: openforms/emails/templates/emails/save_form/save_form.txt:1
 #, python-format
 msgid ""
 "Dear Sir or Madam,\n"
 "\n"
-"You have stored the form \"%(form_name)s\" via the website on %(formatted_save_date)s. You can resume this form at a later time by clicking the link below.\n"
+"You have stored the form \"%(form_name)s\" via the website on "
+"%(formatted_save_date)s. You can resume this form at a later time by "
+"clicking the link below.\n"
 "The link is valid up to and including %(formatted_expiration_date)s.\n"
 "\n"
 "Resume form: %(continue_url)s\n"
@@ -4990,7 +5015,10 @@ msgid ""
 msgstr ""
 "Geachte heer/mevrouw,\n"
 "\n"
-"U heeft via de website het formulier \"%(form_name)s\" tussentijds opgeslagen op %(formatted_save_date)s. U kunt dit formulier op een later moment hervatten door op onderstaande link te klikken.Onderstaande link is geldig tot en met %(formatted_expiration_date)s.\n"
+"U heeft via de website het formulier \"%(form_name)s\" tussentijds "
+"opgeslagen op %(formatted_save_date)s. U kunt dit formulier op een later "
+"moment hervatten door op onderstaande link te klikken.Onderstaande link is "
+"geldig tot en met %(formatted_expiration_date)s.\n"
 "\n"
 "Verder gaan met formulier: %(continue_url)s\n"
 "\n"
@@ -5029,16 +5057,12 @@ msgstr ""
 "Indien u uw afspraak wenst te wijzingen, dan kunt u deze annuleren en een "
 "nieuwe aanmaken."
 
-#: openforms/emails/templates/emails/templatetags/cosign_information.html:3
-msgid "Co-sign information"
-msgstr "Mede-ondertekeninginformatie"
-
-#: openforms/emails/templates/emails/templatetags/cosign_information.html:6
+#: openforms/emails/templates/emails/templatetags/cosign_information.html:5
 #, python-format
 msgid "This submission has been co-signed by %(cosigner_email)s."
 msgstr "De inzending is mede-ondertekend door %(cosigner_email)s."
 
-#: openforms/emails/templates/emails/templatetags/cosign_information.html:10
+#: openforms/emails/templates/emails/templatetags/cosign_information.html:9
 #: openforms/emails/templates/emails/templatetags/cosign_information.txt:5
 #, python-format
 msgid ""
@@ -5098,8 +5122,8 @@ msgid ""
 "Payment of &euro; %(payment_price)s is required. You can pay using the link "
 "below."
 msgstr ""
-"Betaling van &euro;%(payment_price)s vereist. U kunt het bedrag betalen door"
-" op onderstaande link te klikken."
+"Betaling van &euro;%(payment_price)s vereist. U kunt het bedrag betalen door "
+"op onderstaande link te klikken."
 
 #: openforms/emails/templates/emails/templatetags/payment_information.html:15
 #: openforms/emails/templates/emails/templatetags/payment_information.txt:8
@@ -5170,15 +5194,13 @@ msgstr "Bestandsgrootte"
 msgid "The provided file is not a valid file type."
 msgstr "Het bestand is geen toegestaan bestandstype."
 
-#: openforms/formio/api/validators.py:97
-#: openforms/formio/api/validators.py:116
+#: openforms/formio/api/validators.py:97 openforms/formio/api/validators.py:116
 #, python-brace-format
 msgid "The provided file is not a {file_type}."
 msgstr "Het bestand is geen {file_type}."
 
 #: openforms/formio/api/validators.py:142
-msgid ""
-"The virus scan could not be performed at this time. Please retry later."
+msgid "The virus scan could not be performed at this time. Please retry later."
 msgstr ""
 "Het is momenteel niet mogelijk om bestanden te scannen op virussen. Probeer "
 "het later opnieuw."
@@ -5206,19 +5228,29 @@ msgstr "Maak tijdelijk bestand aan"
 msgid ""
 "File upload handler for the Form.io file upload \"url\" storage type.\n"
 "\n"
-"The uploads are stored temporarily and have to be claimed by the form submission using the returned JSON data. \n"
+"The uploads are stored temporarily and have to be claimed by the form "
+"submission using the returned JSON data. \n"
 "\n"
-"Access to this view requires an active form submission. Unclaimed temporary files automatically expire after {expire_days} day(s). \n"
+"Access to this view requires an active form submission. Unclaimed temporary "
+"files automatically expire after {expire_days} day(s). \n"
 "\n"
-"The maximum upload size for this instance is `{max_upload_size}`. Note that this includes the multipart metadata and boundaries, so the actual maximum file upload size is slightly smaller."
+"The maximum upload size for this instance is `{max_upload_size}`. Note that "
+"this includes the multipart metadata and boundaries, so the actual maximum "
+"file upload size is slightly smaller."
 msgstr ""
 "Bestandsuploadhandler voor het Form.io bestandsupload opslagtype 'url'.\n"
 "\n"
-"Bestandsuploads worden tijdelijke opgeslagen en moeten gekoppeld worden aan een inzending.\n"
+"Bestandsuploads worden tijdelijke opgeslagen en moeten gekoppeld worden aan "
+"een inzending.\n"
 "\n"
-"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en).\n"
+"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet "
+"gekoppelde bestanden worden automatisch verwijderd na {expire_days} "
+"dag(en).\n"
 "\n"
-"De maximale toegestane upload-bestandsgrootte is `{max_upload_size}` voor deze instantie. Merk op dat dit inclusief multipart-metadata en boundaries is. De daadwerkelijke maximale bestandsgrootte is dus iets lager dan deze waarde."
+"De maximale toegestane upload-bestandsgrootte is `{max_upload_size}` voor "
+"deze instantie. Merk op dat dit inclusief multipart-metadata en boundaries "
+"is. De daadwerkelijke maximale bestandsgrootte is dus iets lager dan deze "
+"waarde."
 
 #: openforms/formio/apps.py:7
 msgid "Formio integration"
@@ -5302,11 +5334,10 @@ msgstr ""
 
 #: openforms/formio/components/vanilla.py:365
 #, python-brace-format
-msgid ""
-"The value of {root_key} must match the value of {nested_key} in 'data'."
+msgid "The value of {root_key} must match the value of {nested_key} in 'data'."
 msgstr ""
-"De waarde van {root_key} moet overeenkomen met de waarde van {nested_key} in"
-" 'data'."
+"De waarde van {root_key} moet overeenkomen met de waarde van {nested_key} in "
+"'data'."
 
 #: openforms/formio/components/vanilla.py:374
 #: openforms/formio/components/vanilla.py:390
@@ -5505,8 +5536,8 @@ msgid ""
 "Please configure your email address in your admin profile before requesting "
 "a bulk export"
 msgstr ""
-"Gelieve eerst uw e-mailadres in te stellen in uw gebruikersaccount voordat u"
-" een bulk-export doet."
+"Gelieve eerst uw e-mailadres in te stellen in uw gebruikersaccount voordat u "
+"een bulk-export doet."
 
 #: openforms/forms/admin/form_definition.py:24
 #, python-brace-format
@@ -5644,8 +5675,8 @@ msgid ""
 "submit a form. Returns a list of formio component definitions, all of type "
 "'checkbox'."
 msgstr ""
-"Een lijst van verklaringen die de gebruiker moet accepteren om het formulier"
-" te kunnen inzenden. Deze worden teruggegeven als lijst van Form.io-"
+"Een lijst van verklaringen die de gebruiker moet accepteren om het formulier "
+"te kunnen inzenden. Deze worden teruggegeven als lijst van Form.io-"
 "componentdefinities, allemaal van het type 'checkbox'."
 
 #: openforms/forms/api/serializers/form.py:375
@@ -5662,8 +5693,8 @@ msgstr ""
 
 #: openforms/forms/api/serializers/form.py:551
 msgid ""
-"The `auto_login_authentication_backend` must be one of the selected backends"
-" from `authentication_backends`"
+"The `auto_login_authentication_backend` must be one of the selected backends "
+"from `authentication_backends`"
 msgstr ""
 "De `auto_login_authentication_backend` moet één van de backends uit "
 "`authentication_backends` zijn."
@@ -5809,8 +5840,8 @@ msgstr "waarde van het attribuut"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:46
 msgid ""
-"Valid JSON determining the new value of the specified property. For example:"
-" `true` or `false`."
+"Valid JSON determining the new value of the specified property. For example: "
+"`true` or `false`."
 msgstr ""
 "De JSON die de nieuwe waarde van het gespecificeerde attribuut bepaald. "
 "Bijvoorbeeld: `true` of `false`."
@@ -5822,8 +5853,8 @@ msgstr "Waarde"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:63
 msgid ""
-"A valid JsonLogic expression describing the value. This may refer to (other)"
-" Form.io components."
+"A valid JsonLogic expression describing the value. This may refer to (other) "
+"Form.io components."
 msgstr ""
 "Een JSON-logic expressie die de waarde beschrijft. Deze mag naar (andere) "
 "Form.io componenten verwijzen."
@@ -5879,8 +5910,8 @@ msgid ""
 "Key of the Form.io component that the action applies to. This field is "
 "required for the action types {action_types} - otherwise it's optional."
 msgstr ""
-"Sleutel van de Form.io-component waarop de actie van toepassing is. Dit veld"
-" is verplicht voor de actietypes {action_types} - anders is het optioneel. "
+"Sleutel van de Form.io-component waarop de actie van toepassing is. Dit veld "
+"is verplicht voor de actietypes {action_types} - anders is het optioneel. "
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:158
 msgid "Key of the target variable"
@@ -5904,8 +5935,8 @@ msgstr "formulierstap"
 #: openforms/forms/api/serializers/logic/action_serializers.py:178
 #, python-format
 msgid ""
-"The form step that will be affected by the action. This field is required if"
-" the action type is `%(action_type)s`, otherwise optional."
+"The form step that will be affected by the action. This field is required if "
+"the action type is `%(action_type)s`, otherwise optional."
 msgstr ""
 "De formulierstap die wordt beïnvloed door de actie. Dit veld is verplicht "
 "als het actietype `%(action_type)s` is, anders optioneel."
@@ -5913,8 +5944,8 @@ msgstr ""
 #: openforms/forms/api/serializers/logic/action_serializers.py:188
 #, python-format
 msgid ""
-"The UUID of the form step that will be affected by the action. This field is"
-" required if the action type is `%(action_type)s`, otherwise optional."
+"The UUID of the form step that will be affected by the action. This field is "
+"required if the action type is `%(action_type)s`, otherwise optional."
 msgstr ""
 "De formulierstap die wordt beïnvloed door de actie. Dit veld is verplicht "
 "als het actietype `%(action_type)s` is, anders optioneel."
@@ -5966,8 +5997,8 @@ msgstr ""
 #: openforms/forms/api/serializers/logic/form_logic.py:86
 msgid "Actions triggered when the trigger expression evaluates to 'truthy'."
 msgstr ""
-"Acties die worden geactiveerd wanneer de trigger-expressie wordt geëvalueerd"
-" als 'truthy'."
+"Acties die worden geactiveerd wanneer de trigger-expressie wordt geëvalueerd "
+"als 'truthy'."
 
 #: openforms/forms/api/serializers/logic/form_logic.py:110
 msgid ""
@@ -5981,7 +6012,8 @@ msgstr ""
 
 #: openforms/forms/api/validators.py:29
 msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
-msgstr "De eerste operand moet een `{\"var\": \"<componentKey>\"}` expressie zijn."
+msgstr ""
+"De eerste operand moet een `{\"var\": \"<componentKey>\"}` expressie zijn."
 
 #: openforms/forms/api/validators.py:120
 msgid "The variable cannot be empty."
@@ -6042,27 +6074,40 @@ msgstr "Formulierstap definities weergeven"
 #: openforms/forms/api/viewsets.py:123
 #, python-brace-format
 msgid ""
-"Get a list of existing form definitions, where a single item may be a re-usable or single-use definition. This includes form definitions not currently used in any form(s) at all.\n"
+"Get a list of existing form definitions, where a single item may be a re-"
+"usable or single-use definition. This includes form definitions not "
+"currently used in any form(s) at all.\n"
 "\n"
-"You can filter this list down to only re-usable definitions or definitions used in a particular form.\n"
+"You can filter this list down to only re-usable definitions or definitions "
+"used in a particular form.\n"
 "\n"
-"**Note**: filtering on both `is_reusable` and `used_in` at the same time is implemented as an OR-filter.\n"
+"**Note**: filtering on both `is_reusable` and `used_in` at the same time is "
+"implemented as an OR-filter.\n"
 "\n"
 "**Warning: the response data depends on user permissions**\n"
 "\n"
-"Non-staff users receive a subset of all the documented fields. The fields reserved for staff users are used for internal form configuration. These are: \n"
+"Non-staff users receive a subset of all the documented fields. The fields "
+"reserved for staff users are used for internal form configuration. These "
+"are: \n"
 "\n"
 "{admin_fields}"
 msgstr ""
-"Geef een lijst van bestaande formulierdefinities waarin één enkele definitie herbruikbaar of voor éénmalig gebruik kan zijn. Dit is inclusief definities die in geen enkel formulier gebruikt zijn.\n"
+"Geef een lijst van bestaande formulierdefinities waarin één enkele definitie "
+"herbruikbaar of voor éénmalig gebruik kan zijn. Dit is inclusief definities "
+"die in geen enkel formulier gebruikt zijn.\n"
 "\n"
-"Je kan deze lijst filteren op enkel herbruikbare definities of definities die in een specifiek formulier gebruikt worden.\n"
+"Je kan deze lijst filteren op enkel herbruikbare definities of definities "
+"die in een specifiek formulier gebruikt worden.\n"
 "\n"
-"**Merk op**: tegelijk filteren op `is_reusable` en `used_in` is geïmplementeerd als een OF-filter - je krijgt dus beide resultaten terug.\n"
+"**Merk op**: tegelijk filteren op `is_reusable` en `used_in` is "
+"geïmplementeerd als een OF-filter - je krijgt dus beide resultaten terug.\n"
 "\n"
-"**Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je gebruikersrechten**\n"
+"**Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je "
+"gebruikersrechten**\n"
 "\n"
-"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
+"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de "
+"gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar "
+"zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
 "\n"
 "{admin_fields}"
 
@@ -6093,19 +6138,27 @@ msgstr "Formulier definitie JSON schema weergeven"
 #: openforms/forms/api/viewsets.py:220
 #, python-brace-format
 msgid ""
-"List the active forms, including the pointers to the form steps. Form steps are included in order as they should appear.\n"
+"List the active forms, including the pointers to the form steps. Form steps "
+"are included in order as they should appear.\n"
 "\n"
 "**Warning: the response data depends on user permissions**\n"
 "\n"
-"Non-staff users receive a subset of all the documented fields. The fields reserved for staff users are used for internal form configuration. These are: \n"
+"Non-staff users receive a subset of all the documented fields. The fields "
+"reserved for staff users are used for internal form configuration. These "
+"are: \n"
 "\n"
 "{admin_fields}"
 msgstr ""
-"Geef een lijst van actieve formulieren, inclusief verwijzingen naar de formulierstappen. De formulierstappen komen voor in de volgorde waarin ze zichtbaar moeten zijn.\n"
+"Geef een lijst van actieve formulieren, inclusief verwijzingen naar de "
+"formulierstappen. De formulierstappen komen voor in de volgorde waarin ze "
+"zichtbaar moeten zijn.\n"
 "\n"
-"**Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je gebruikersrechten**\n"
+"**Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je "
+"gebruikersrechten**\n"
 "\n"
-"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
+"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de "
+"gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar "
+"zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
 "\n"
 "{admin_fields}"
 
@@ -6118,27 +6171,45 @@ msgstr "Formulier details weergeven"
 msgid ""
 "Retrieve the details/configuration of a particular form. \n"
 "\n"
-"A form is a collection of form steps, where each form step points to a formio.js form definition. Multiple definitions are combined in logical steps to build a multi-step/page form for end-users to fill out. Form definitions can be (and are) re-used among different forms.\n"
+"A form is a collection of form steps, where each form step points to a "
+"formio.js form definition. Multiple definitions are combined in logical "
+"steps to build a multi-step/page form for end-users to fill out. Form "
+"definitions can be (and are) re-used among different forms.\n"
 "\n"
 "**Warning: the response data depends on user permissions**\n"
 "\n"
-"Non-staff users receive a subset of all the documented fields. The fields reserved for staff users are used for internal form configuration. These are: \n"
+"Non-staff users receive a subset of all the documented fields. The fields "
+"reserved for staff users are used for internal form configuration. These "
+"are: \n"
 "\n"
 "{admin_fields}\n"
 "\n"
-"If the form doesn't have translations enabled, its default language is forced by setting a language cookie and reflected in the Content-Language response header. Normal HTTP Content Negotiation rules apply."
+"If the form doesn't have translations enabled, its default language is "
+"forced by setting a language cookie and reflected in the Content-Language "
+"response header. Normal HTTP Content Negotiation rules apply."
 msgstr ""
 "Haal de details/configuratie op van een specifiek formulier.\n"
 "\n"
-"Een formulier is een verzameling van één of meerdere formulierstappen waarbij elke stap een verwijzing heeft naar een formio.js formulierdefinitie. Meerdere definities samen vormen een logisch geheel van formulierstappen die de klant doorloopt tijdens het invullen van het formulier. Formulierdefinities kunnen herbruikbaar zijn tussen verschillende formulieren.\n"
+"Een formulier is een verzameling van één of meerdere formulierstappen "
+"waarbij elke stap een verwijzing heeft naar een formio.js "
+"formulierdefinitie. Meerdere definities samen vormen een logisch geheel van "
+"formulierstappen die de klant doorloopt tijdens het invullen van het "
+"formulier. Formulierdefinities kunnen herbruikbaar zijn tussen verschillende "
+"formulieren.\n"
 "\n"
 "**Waarschuwing: de response-data is afhankelijk van de gebruikersrechten**\n"
 "\n"
-"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
+"Gebruikers die geen beheerder zijn, ontvangen maar een deel van de "
+"gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar "
+"zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:\n"
 "\n"
 "{admin_fields}\n"
 "\n"
-"Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language cookie. De actieve taal wordt gecommuniceerd in de Content-Language response header. De gebruikelijke HTTP Content Negotiation principes zijn van toepassing."
+"Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de "
+"standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language "
+"cookie. De actieve taal wordt gecommuniceerd in de Content-Language response "
+"header. De gebruikelijke HTTP Content Negotiation principes zijn van "
+"toepassing."
 
 #: openforms/forms/api/viewsets.py:246
 msgid "Create form"
@@ -6183,8 +6254,8 @@ msgstr "Configureer logicaregels in bulk"
 
 #: openforms/forms/api/viewsets.py:283
 msgid ""
-"By sending a list of LogicRules to this endpoint, all the LogicRules related"
-" to the form will be replaced with the data sent to the endpoint."
+"By sending a list of LogicRules to this endpoint, all the LogicRules related "
+"to the form will be replaced with the data sent to the endpoint."
 msgstr ""
 "Alle logicaregels van het formulier worden vervangen met de toegestuurde "
 "regels."
@@ -6195,8 +6266,8 @@ msgstr "Configureer prijslogicaregels in bulk"
 
 #: openforms/forms/api/viewsets.py:300
 msgid ""
-"By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic"
-" related to the form will be replaced with the data sent to the endpoint."
+"By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic "
+"related to the form will be replaced with the data sent to the endpoint."
 msgstr ""
 "Alle prijslogicaregels van het formulier worden vervangen met de "
 "toegestuurde regels."
@@ -6400,8 +6471,8 @@ msgid ""
 "The {name} \"{obj}\" was changed successfully. You may add another {name} "
 "below."
 msgstr ""
-"De {name} \"{obj}\" is met succes gewijzigd. U kunt hieronder nog een {name}"
-" bewerken."
+"De {name} \"{obj}\" is met succes gewijzigd. U kunt hieronder nog een {name} "
+"bewerken."
 
 #: openforms/forms/messages.py:70
 msgid "You may edit it again below."
@@ -6440,8 +6511,8 @@ msgid ""
 "Apply a specific appearance configuration to the form. If left blank, then "
 "the globally configured default is applied."
 msgstr ""
-"Pas een specifieke stijl toe op het formulier. Indien geen optie gekozen is,"
-" dan wordt de globale instelling toegepast."
+"Pas een specifieke stijl toe op het formulier. Indien geen optie gekozen is, "
+"dan wordt de globale instelling toegepast."
 
 #: openforms/forms/models/form.py:89
 msgid "translation enabled"
@@ -6458,8 +6529,7 @@ msgstr "sleutel prijsvariabele"
 #: openforms/forms/models/form.py:102
 msgid "Key of the variable that contains the calculated submission price."
 msgstr ""
-"Sleutel van de variabele die de (berekende) kostprijs van de inzending "
-"bevat."
+"Sleutel van de variabele die de (berekende) kostprijs van de inzending bevat."
 
 #: openforms/forms/models/form.py:109 openforms/forms/models/form.py:452
 msgid "authentication backend(s)"
@@ -6537,8 +6607,8 @@ msgid ""
 "Whether to display the short progress summary, indicating the current step "
 "number and total amount of steps."
 msgstr ""
-"Vink aan om het korte voortgangsoverzicht weer te geven. Dit overzicht toont"
-" de huidige stap en het totaal aantal stappen, typisch onder de "
+"Vink aan om het korte voortgangsoverzicht weer te geven. Dit overzicht toont "
+"de huidige stap en het totaal aantal stappen, typisch onder de "
 "formuliertitel."
 
 #: openforms/forms/models/form.py:171
@@ -6557,8 +6627,8 @@ msgstr "voeg de \"bevestigingspaginatekst\" toe in de bevestigings-PDF"
 #: openforms/forms/models/form.py:180
 msgid "Display the instruction from the confirmation page in the PDF."
 msgstr ""
-"Vink aan om de inhoud van het \"bevestigingspaginatekst\"-veld toe te voegen"
-" aan de PDF met gegevens ter bevestiging."
+"Vink aan om de inhoud van het \"bevestigingspaginatekst\"-veld toe te voegen "
+"aan de PDF met gegevens ter bevestiging."
 
 #: openforms/forms/models/form.py:183
 msgid "send confirmation email"
@@ -6590,8 +6660,8 @@ msgid ""
 "The text that will be displayed in the overview page to go to the previous "
 "step. Leave blank to get value from global configuration."
 msgstr ""
-"Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
-" Laat leeg om de waarde van de algemene configuratie te gebruiken."
+"Het label van de knop op de overzichtspagina om naar de vorige stap te gaan. "
+"Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
 #: openforms/forms/models/form.py:235
 msgid ""
@@ -6630,8 +6700,8 @@ msgid ""
 "Content that will be shown on the start page of the form, below the title "
 "and above the log in text."
 msgstr ""
-"Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven"
-" de startknop(pen)."
+"Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven "
+"de startknop(pen)."
 
 #: openforms/forms/models/form.py:273
 msgid "maintenance mode"
@@ -6856,8 +6926,8 @@ msgid ""
 "The name of the submitted form. This is saved separately in case of form "
 "deletion."
 msgstr ""
-"De naam van het ingestuurde formulier, apart opgeslagen in het geval dat het"
-" formulier zelf verwijderd wordt."
+"De naam van het ingestuurde formulier, apart opgeslagen in het geval dat het "
+"formulier zelf verwijderd wordt."
 
 #: openforms/forms/models/form_statistics.py:23
 msgid "Submission count"
@@ -6899,8 +6969,8 @@ msgstr "Vorige stap-label"
 
 #: openforms/forms/models/form_step.py:43
 msgid ""
-"The text that will be displayed in the form step to go to the previous step."
-" Leave blank to get value from global configuration."
+"The text that will be displayed in the form step to go to the previous step. "
+"Leave blank to get value from global configuration."
 msgstr ""
 "Het label van de knop om naar de vorige stap binnen het formulier te gaan. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
@@ -6910,16 +6980,16 @@ msgid ""
 "The text that will be displayed in the form step to save the current "
 "information. Leave blank to get value from global configuration."
 msgstr ""
-"Het label van de knop om het formulier tussentijds op te slaan. Laat leeg om"
-" de waarde van de algemene configuratie te gebruiken."
+"Het label van de knop om het formulier tussentijds op te slaan. Laat leeg om "
+"de waarde van de algemene configuratie te gebruiken."
 
 #: openforms/forms/models/form_step.py:61
 msgid ""
 "The text that will be displayed in the form step to go to the next step. "
 "Leave blank to get value from global configuration."
 msgstr ""
-"Het label van de knop om naar de volgende stap binnen het formulier te gaan."
-" Laat leeg om de waarde van de algemene configuratie te gebruiken."
+"Het label van de knop om naar de volgende stap binnen het formulier te gaan. "
+"Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
 #: openforms/forms/models/form_step.py:66
 msgid "is applicable"
@@ -6969,8 +7039,7 @@ msgid ""
 "Where will the data that will be associated with this variable come from"
 msgstr "Oorsprong van de gegevens die in deze variabele opgeslagen worden"
 
-#: openforms/forms/models/form_variable.py:140
-#: openforms/variables/models.py:91
+#: openforms/forms/models/form_variable.py:140 openforms/variables/models.py:91
 msgid "service fetch configuration"
 msgstr "Servicebevragingconfiguratie"
 
@@ -7003,8 +7072,8 @@ msgid ""
 "main identifier be used, or that related to the authorised person?"
 msgstr ""
 "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij "
-"eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten"
-" dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
+"eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten "
+"dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
 
 #: openforms/forms/models/form_variable.py:171
 msgid "prefill options"
@@ -7142,8 +7211,7 @@ msgstr "Is geavanceerd"
 
 #: openforms/forms/models/logic.py:46
 msgid ""
-"Is this an advanced rule (the admin user manually wrote the trigger as "
-"JSON)?"
+"Is this an advanced rule (the admin user manually wrote the trigger as JSON)?"
 msgstr ""
 "Is dit een geavanceerde regel (de beheerder heeft de trigger handmatig als "
 "JSON geschreven)?"
@@ -7168,7 +7236,7 @@ msgstr ""
 
 #: openforms/forms/models/pricing_logic.py:43
 #: openforms/products/models/product.py:26
-#: openforms/submissions/models/submission.py:136
+#: openforms/submissions/models/submission.py:137
 msgid "price"
 msgstr "prijs"
 
@@ -7209,12 +7277,15 @@ msgstr "Formulieren"
 #: openforms/forms/templates/admin/forms/form/export.html:24
 msgid ""
 "\n"
-"            Once your request has been processed, you will be sent an email (at the address configured in your admin\n"
-"            profile) containing a link where you can download a zip file with all the exported forms.\n"
+"            Once your request has been processed, you will be sent an email "
+"(at the address configured in your admin\n"
+"            profile) containing a link where you can download a zip file "
+"with all the exported forms.\n"
 "            "
 msgstr ""
 "\n"
-"Zodra uw verzoek verwerkt is, ontvangt u een e-mail met een link naar het ZIP-bestand dat alle geëxporteerde formulieren bevat."
+"Zodra uw verzoek verwerkt is, ontvangt u een e-mail met een link naar het "
+"ZIP-bestand dat alle geëxporteerde formulieren bevat."
 
 #: openforms/forms/templates/admin/forms/form/export.html:41
 msgid "Export"
@@ -7236,11 +7307,13 @@ msgstr "Hallo,"
 #, python-format
 msgid ""
 "\n"
-"    Your zip file containing the exported forms is ready and can be downloaded at the following URL:\n"
+"    Your zip file containing the exported forms is ready and can be "
+"downloaded at the following URL:\n"
 "    %(download_url)s\n"
 msgstr ""
 "\n"
-"Uw ZIP-bestand met formulier-exports is klaar. U kunt deze downloaden op de volgende URL: %(download_url)s.\n"
+"Uw ZIP-bestand met formulier-exports is klaar. U kunt deze downloaden op de "
+"volgende URL: %(download_url)s.\n"
 
 #: openforms/forms/templates/admin/forms/formsexport/email_content.html:13
 msgid "Best wishes,"
@@ -7492,8 +7565,8 @@ msgstr "%(lead)s: bulk-export bestand gedownload."
 #: openforms/logging/templates/logging/events/email_status_change.txt:2
 #, python-format
 msgid ""
-"%(lead)s: The status of the email being sent for the event \"%(event)s\" has"
-" changed. It is now: \"%(status)s\""
+"%(lead)s: The status of the email being sent for the event \"%(event)s\" has "
+"changed. It is now: \"%(status)s\""
 msgstr ""
 "%(lead)s: De e-mailverzendstatus voor het event \"%(event)s\" is gewijzigd "
 "naar \"%(status)s\"."
@@ -7542,8 +7615,8 @@ msgid ""
 "%(lead)s: User %(user)s viewed outgoing request log %(method)s %(url)s in "
 "the admin"
 msgstr ""
-"%(lead)s: Gebruiker %(user)s bekeek de log voor uitgaande verzoek %(method)s"
-" %(url)s in de admin."
+"%(lead)s: Gebruiker %(user)s bekeek de log voor uitgaande verzoek %(method)s "
+"%(url)s in de admin."
 
 #: openforms/logging/templates/logging/events/payment_flow_failure.txt:2
 #, python-format
@@ -7631,8 +7704,7 @@ msgstr "%(lead)s: Prefillplugin %(plugin)s gaf lege waarden terug."
 #: openforms/logging/templates/logging/events/prefill_retrieve_failure.txt:2
 #, python-format
 msgid ""
-"%(lead)s: Prefill plugin %(plugin)s reported: Failed to retrieve "
-"information."
+"%(lead)s: Prefill plugin %(plugin)s reported: Failed to retrieve information."
 msgstr ""
 "%(lead)s: Prefillplugin %(plugin)s meldt: Informatie kon niet worden "
 "opgehaald."
@@ -7643,8 +7715,8 @@ msgid ""
 "%(lead)s: Prefill plugin %(plugin)s reported: Successfully retrieved "
 "information to prefill fields: %(fields)s"
 msgstr ""
-"%(lead)s: Prefillplugin %(plugin)s meldt: Informatie met succes opgehaald om"
-" velden te prefillen: %(fields)s."
+"%(lead)s: Prefillplugin %(plugin)s meldt: Informatie met succes opgehaald om "
+"velden te prefillen: %(fields)s."
 
 #: openforms/logging/templates/logging/events/price_calculation_variable_error.txt:2
 #, python-format
@@ -7669,8 +7741,7 @@ msgstr "%(lead)s: Registratie debuggegevens: %(data)s"
 
 #: openforms/logging/templates/logging/events/registration_failure.txt:2
 #, python-format
-msgid ""
-"%(lead)s: Registration plugin %(plugin)s reported: Registration failed."
+msgid "%(lead)s: Registration plugin %(plugin)s reported: Registration failed."
 msgstr "%(lead)s: Registratieplugin %(plugin)s meldt: Registratie mislukt."
 
 #: openforms/logging/templates/logging/events/registration_payment_update_failure.txt:2
@@ -7830,14 +7901,12 @@ msgstr "De naam om weer te geven in de domeinwisselaar"
 #: openforms/multidomain/models.py:14
 msgid ""
 "The absolute URL to redirect to. Typically this starts the login process on "
-"the other domain. For example: https://open-"
-"forms.example.com/oidc/authenticate/ or https://open-"
-"forms.example.com/admin/login/"
+"the other domain. For example: https://open-forms.example.com/oidc/"
+"authenticate/ or https://open-forms.example.com/admin/login/"
 msgstr ""
 "De volledige URL om naar om te leiden. Deze URL start typisch het login "
-"proces op het doeldomein. Bijvoorbeeld: https://open-"
-"forms.example.com/oidc/authenticate/ of https://open-"
-"forms.example.com/admin/login/"
+"proces op het doeldomein. Bijvoorbeeld: https://open-forms.example.com/oidc/"
+"authenticate/ of https://open-forms.example.com/admin/login/"
 
 #: openforms/multidomain/models.py:20
 msgid "current"
@@ -7845,11 +7914,11 @@ msgstr "huidige"
 
 #: openforms/multidomain/models.py:22
 msgid ""
-"Select this to show this domain as the current domain. The current domain is"
-" selected by default and will not trigger a redirect."
+"Select this to show this domain as the current domain. The current domain is "
+"selected by default and will not trigger a redirect."
 msgstr ""
-"Selecteer deze optie om dit domein weer te geven als het huidige domein. Het"
-" huidige domein is standaard geselecteerd in de domeinwisselaar."
+"Selecteer deze optie om dit domein weer te geven als het huidige domein. Het "
+"huidige domein is standaard geselecteerd in de domeinwisselaar."
 
 #: openforms/multidomain/models.py:29
 msgid "domains"
@@ -7986,8 +8055,7 @@ msgstr "Ogone legacy"
 #, python-brace-format
 msgid ""
 "[Open Forms] {form_name} - submission payment received {public_reference}"
-msgstr ""
-"[Open Formulieren] {form_name} - betaling ontvangen {public_reference}"
+msgstr "[Open Formulieren] {form_name} - betaling ontvangen {public_reference}"
 
 #: openforms/payments/models.py:101
 msgid "Payment backend"
@@ -8009,15 +8077,14 @@ msgstr "Bestelling ID"
 #: openforms/payments/models.py:114
 msgid ""
 "The order ID to be sent to the payment provider. This ID is built by "
-"concatenating an optional global prefix, the submission public reference and"
-" a unique incrementing ID."
+"concatenating an optional global prefix, the submission public reference and "
+"a unique incrementing ID."
 msgstr ""
 "Het ordernummer wat naar de betaalprovider gestuurd wordt. Dit nummer wordt "
 "opgebouwd met een (optionele) globale prefix, publieke "
 "inzendingsreferentienummer en een uniek nummer."
 
-#: openforms/payments/models.py:120
-#: openforms/submissions/api/serializers.py:99
+#: openforms/payments/models.py:120 openforms/submissions/api/serializers.py:99
 msgid "payment amount"
 msgstr "bedrag"
 
@@ -8080,9 +8147,11 @@ msgstr "Start het betaalproces"
 
 #: openforms/payments/views.py:45
 msgid ""
-"This endpoint provides information to start the payment flow for a submission.\n"
+"This endpoint provides information to start the payment flow for a "
+"submission.\n"
 "\n"
-"Due to support for legacy platforms this view doesn't redirect but provides information for the frontend to be used client side.\n"
+"Due to support for legacy platforms this view doesn't redirect but provides "
+"information for the frontend to be used client side.\n"
 "\n"
 "Various validations are performed:\n"
 "* the form and submission must require payment\n"
@@ -8091,11 +8160,16 @@ msgid ""
 "* the `next` parameter must be present\n"
 "* the `next` parameter must match the CORS policy\n"
 "\n"
-"The HTTP 200 response contains the information to start the flow with the payment provider. Depending on the 'type', send a `GET` or `POST` request with the `data` as 'Form Data' to the given 'url'."
+"The HTTP 200 response contains the information to start the flow with the "
+"payment provider. Depending on the 'type', send a `GET` or `POST` request "
+"with the `data` as 'Form Data' to the given 'url'."
 msgstr ""
-"Dit endpoint geeft informatie om het betaalproces te starten voor een inzending.\n"
+"Dit endpoint geeft informatie om het betaalproces te starten voor een "
+"inzending.\n"
 "\n"
-"Om legacy platformen te ondersteunen kan dit endpoint niet doorverwijzen maar geeft doorverwijs informatie terug aan de frontend die het verder moet afhandelen.\n"
+"Om legacy platformen te ondersteunen kan dit endpoint niet doorverwijzen "
+"maar geeft doorverwijs informatie terug aan de frontend die het verder moet "
+"afhandelen.\n"
 "\n"
 "Diverse validaties worden uitgevoerd:\n"
 "* het formulier vereist betaling\n"
@@ -8103,7 +8177,9 @@ msgstr ""
 "* de `next` parameter moet aanwezig zijn\n"
 "* de `next` parameter moet overeenkomen met het CORS-beleid\n"
 "\n"
-"Het HTTP 200 antwoord bevat informatie om het betaalproces te starten bij de betaalprovider. Afhankelijk van het `type`, een `POST` of `GET` is wordt verstuurd met de `data` als 'Form Data' naar de opgegeven 'url'."
+"Het HTTP 200 antwoord bevat informatie om het betaalproces te starten bij de "
+"betaalprovider. Afhankelijk van het `type`, een `POST` of `GET` is wordt "
+"verstuurd met de `data` als 'Form Data' naar de opgegeven 'url'."
 
 #: openforms/payments/views.py:63
 msgid "UUID identifying the submission."
@@ -8131,9 +8207,11 @@ msgstr "Aanroeppunt van het externe betaalprovider proces"
 
 #: openforms/payments/views.py:140
 msgid ""
-"Payment plugins call this endpoint in the return step of the payment flow. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.\n"
+"Payment plugins call this endpoint in the return step of the payment flow. "
+"Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.\n"
 "\n"
-"Typically payment plugins will redirect again to the URL where the SDK is embedded.\n"
+"Typically payment plugins will redirect again to the URL where the SDK is "
+"embedded.\n"
 "\n"
 "Various validations are performed:\n"
 "* the form and submission must require payment\n"
@@ -8141,7 +8219,9 @@ msgid ""
 "* payment is required and configured on the form\n"
 "* the redirect target must match the CORS policy"
 msgstr ""
-"Betaalproviderplugins roepen dit endpoint aan zodra het externe betaalproces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Betaalproviderplugins roepen dit endpoint aan zodra het externe betaalproces "
+"is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan "
+"als HTTP-methode.\n"
 "\n"
 "Betaalproviderplugins zullen typisch een redirect uitvoeren naar de SDK.\n"
 "\n"
@@ -8176,16 +8256,21 @@ msgstr "Webhook-handler voor externe betalingsproces"
 
 #: openforms/payments/views.py:274
 msgid ""
-"This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` is allowed as HTTP method.\n"
+"This endpoint is used for server-to-server calls. Depending on the plugin, "
+"either `GET` or `POST` is allowed as HTTP method.\n"
 "\n"
 "Various validations are performed:\n"
 "* the `plugin_id` is configured on the form\n"
 "* payment is required and configured on the form"
 msgstr ""
-"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Authenticatieplugins roepen dit endpoint aan zodra het externe login proces "
+"is afgerond. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan "
+"als HTTP-methode.\n"
 "\n"
 "\n"
-"Dit endpoint wordt gebruikt voor server-naar-server communicatie. Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-methode.\n"
+"Dit endpoint wordt gebruikt voor server-naar-server communicatie. "
+"Afhankelijk van de plugin, een `POST` of `GET` is toegestaan als HTTP-"
+"methode.\n"
 "\n"
 "Diverse validaties worden uitgevoerd:\n"
 "* de `plugin_id` moet geconfigureerd zijn op het formulier\n"
@@ -8241,8 +8326,7 @@ msgstr "Form.io componenttype"
 
 #: openforms/prefill/api/serializers.py:35
 msgid "Only return plugins applicable for the specified component type."
-msgstr ""
-"Geef enkel plugins die relevant zijn voor het opgegeven componenttype."
+msgstr "Geef enkel plugins die relevant zijn voor het opgegeven componenttype."
 
 #: openforms/prefill/api/serializers.py:68
 #: openforms/registrations/api/serializers.py:31
@@ -9259,8 +9343,7 @@ msgstr "Lijst van beschikbare registratie attributen"
 
 #: openforms/registrations/contrib/camunda/api.py:20
 msgid "The process definition identifier, used to group different versions."
-msgstr ""
-"De procesdefinitie-ID, gebruikt om verschillende versies te groeperen."
+msgstr "De procesdefinitie-ID, gebruikt om verschillende versies te groeperen."
 
 #: openforms/registrations/contrib/camunda/api.py:24
 msgid "The human-readable name of the process definition."
@@ -9421,8 +9504,8 @@ msgstr "De lijst met geneste variabeledefinities"
 
 #: openforms/registrations/contrib/camunda/serializers.py:168
 msgid ""
-"Name of the variable in the Camunda process instance. For complex variables,"
-" the name must be supplied."
+"Name of the variable in the Camunda process instance. For complex variables, "
+"the name must be supplied."
 msgstr ""
 "Naam van de variabele in het Camunda proces. Voor complexe variabelen moet "
 "een naam opgegeven zin."
@@ -9438,8 +9521,8 @@ msgstr "De procesdefinitie waarvoor een procesinstantie moet worden gestart."
 
 #: openforms/registrations/contrib/camunda/serializers.py:193
 msgid ""
-"Which version of the process definition to start. The latest version is used"
-" if not specified."
+"Which version of the process definition to start. The latest version is used "
+"if not specified."
 msgstr ""
 "Welke versie van de procesdefinitie moet worden gestart. Indien niet "
 "opgegeven, wordt de nieuwste versie gebruikt."
@@ -9455,8 +9538,8 @@ msgstr "Complexe procesvariabelen"
 #: openforms/registrations/contrib/camunda/serializers.py:240
 #, python-brace-format
 msgid ""
-"The variable name(s) '{var_names}' occur(s) multiple times. Hint: check that"
-" they are not specified in both the process variables and complex process "
+"The variable name(s) '{var_names}' occur(s) multiple times. Hint: check that "
+"they are not specified in both the process variables and complex process "
 "variables."
 msgstr ""
 "De variabele naam(en) '{var_names}' komen meerdere keren voor. Tip: "
@@ -9523,8 +9606,8 @@ msgid ""
 msgstr ""
 "Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te "
 "voegen. Als een waarde gezet is, dan heeft deze hogere prioriteit dan de "
-"globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale"
-" maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
+"globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale "
+"maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
 
 #: openforms/registrations/contrib/email/config.py:46
 msgid "email subject"
@@ -9709,13 +9792,13 @@ msgstr "maplocatie"
 
 #: openforms/registrations/contrib/microsoft_graph/config.py:27
 msgid ""
-"The path of the folder where folders containing Open-Forms related documents"
-" will be created. You can use the expressions {{ year }}, {{ month }} and {{"
-" day }}. It should be an absolute path - i.e. it should start with /"
+"The path of the folder where folders containing Open-Forms related documents "
+"will be created. You can use the expressions {{ year }}, {{ month }} and "
+"{{ day }}. It should be an absolute path - i.e. it should start with /"
 msgstr ""
 "Het pad naar de map waar mappen voor documenten van Open Formulieren "
-"aangemaakt worden. Je kan de expressies {{ year }}, {{ month }} en {{ day }}"
-" gebruiken. Dit moet een absoluut pad zijn (dus beginnen met een /)."
+"aangemaakt worden. Je kan de expressies {{ year }}, {{ month }} en {{ day }} "
+"gebruiken. Dit moet een absoluut pad zijn (dus beginnen met een /)."
 
 #: openforms/registrations/contrib/microsoft_graph/config.py:35
 msgid "drive ID"
@@ -9756,7 +9839,8 @@ msgstr "verplicht"
 
 #: openforms/registrations/contrib/objects_api/api/serializers.py:18
 msgid "Wether the path is marked as required in the JSON Schema."
-msgstr "Geeft aan of het pad als \"verplicht\" gemarkeerd is in het JSON-schema."
+msgstr ""
+"Geeft aan of het pad als \"verplicht\" gemarkeerd is in het JSON-schema."
 
 #: openforms/registrations/contrib/objects_api/api/serializers.py:28
 msgid "objecttype uuid"
@@ -9811,8 +9895,8 @@ msgid ""
 "The schema version of the objects API Options. Not to be confused with the "
 "objecttype version."
 msgstr ""
-"De versie van de optiesconfiguratie. Niet te verwarren met de versie van het"
-" objecttype."
+"De versie van de optiesconfiguratie. Niet te verwarren met de versie van het "
+"objecttype."
 
 #: openforms/registrations/contrib/objects_api/config.py:100
 msgid ""
@@ -9820,8 +9904,8 @@ msgid ""
 "objecttype should have the following three attributes: 1) submission_id; 2) "
 "type (the type of productaanvraag); 3) data (the submitted form data)"
 msgstr ""
-"UUID van het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het"
-" objecttype moet de volgende attributen bevatten: 1) submission_id; 2) type "
+"UUID van het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het "
+"objecttype moet de volgende attributen bevatten: 1) submission_id; 2) type "
 "(het type van de 'ProductAanvraag'); 3) data (ingezonden formuliergegevens)"
 
 #: openforms/registrations/contrib/objects_api/config.py:112
@@ -9842,8 +9926,8 @@ msgstr "CSV bestand inzending uploaden"
 
 #: openforms/registrations/contrib/objects_api/config.py:121
 msgid ""
-"Indicates whether or not the submission CSV should be uploaded as a Document"
-" in Documenten API and attached to the ProductAanvraag."
+"Indicates whether or not the submission CSV should be uploaded as a Document "
+"in Documenten API and attached to the ProductAanvraag."
 msgstr ""
 "Geeft aan of de inzendingsgegevens als CSV in de Documenten API moet "
 "geüpload worden en toegevoegd aan de ProductAanvraag."
@@ -9861,8 +9945,7 @@ msgid ""
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API voor het PDF-document "
 "met inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op "
-"basis van de inzendingsdatum en geldigheidsdatums van de "
-"documenttypeversies."
+"basis van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/registrations/contrib/objects_api/config.py:153
 msgid ""
@@ -9873,8 +9956,7 @@ msgid ""
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API voor het CSV-document "
 "met inzendingsgegevens. De juiste versie wordt automatisch geselecteerd op "
-"basis van de inzendingsdatum en geldigheidsdatums van de "
-"documenttypeversies."
+"basis van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/registrations/contrib/objects_api/config.py:166
 msgid ""
@@ -9884,8 +9966,8 @@ msgid ""
 "document type versions."
 msgstr ""
 "Omschrijving van het documenttype in de Catalogi API voor "
-"inzendingsbijlagen. De juiste versie wordt automatisch geselecteerd op basis"
-" van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
+"inzendingsbijlagen. De juiste versie wordt automatisch geselecteerd op basis "
+"van de inzendingsdatum en geldigheidsdatums van de documenttypeversies."
 
 #: openforms/registrations/contrib/objects_api/config.py:175
 msgid "submission report PDF informatieobjecttype"
@@ -9958,8 +10040,8 @@ msgid ""
 "The 'dotted' path to a form variable key that should be mapped to the "
 "`record.geometry` attribute."
 msgstr ""
-"De sleutel van de formuliervariabele die aan het geometrieveld "
-"'record.geometry' gekoppeld wordt."
+"De sleutel van de formuliervariabele die aan het geometrieveld 'record."
+"geometry' gekoppeld wordt."
 
 #: openforms/registrations/contrib/objects_api/config.py:284
 msgid ""
@@ -9971,8 +10053,7 @@ msgstr ""
 
 #: openforms/registrations/contrib/objects_api/config.py:307
 msgid ""
-"No Objects API Group config was found matching the configured objecttype "
-"URL."
+"No Objects API Group config was found matching the configured objecttype URL."
 msgstr ""
 "Er bestaat geen Objecten API-groep die overeenkomt met de ingestelde "
 "Objecttype-URL."
@@ -10033,8 +10114,8 @@ msgstr "Productaanvraag type"
 
 #: openforms/registrations/contrib/objects_api/models.py:31
 msgid ""
-"Description of the 'ProductAanvraag' type. This value is saved in the 'type'"
-" attribute of the 'ProductAanvraag'."
+"Description of the 'ProductAanvraag' type. This value is saved in the 'type' "
+"attribute of the 'ProductAanvraag'."
 msgstr ""
 "Omschrijving van het type van de 'Productaanvraag'. Deze waarde wordt "
 "bewaard in het 'type' attribuut van de 'ProductAanvraag'."
@@ -10059,7 +10140,7 @@ msgstr "Objecten API configuratie"
 #: openforms/registrations/contrib/objects_api/models.py:78
 #: openforms/submissions/models/email_verification.py:47
 #: openforms/submissions/models/post_completion_metadata.py:14
-#: openforms/submissions/models/submission.py:332
+#: openforms/submissions/models/submission.py:333
 #: openforms/submissions/models/submission_files.py:63
 #: openforms/submissions/models/submission_files.py:151
 #: openforms/submissions/models/submission_report.py:30
@@ -10103,8 +10184,7 @@ msgstr "Documenten URL"
 #: openforms/registrations/contrib/objects_api/models.py:107
 msgid "The URL of the submission attachment registered in the Documents API."
 msgstr ""
-"De resource-URL in de Documenten API van de geregistreerde "
-"inzendingsbijlage."
+"De resource-URL in de Documenten API van de geregistreerde inzendingsbijlage."
 
 #: openforms/registrations/contrib/objects_api/plugin.py:40
 msgid "Objects API registration"
@@ -10195,8 +10275,7 @@ msgstr "Zaaktype status code voor nieuw aangemaakte zaken via StUF-ZDS"
 
 #: openforms/registrations/contrib/stuf_zds/options.py:58
 msgid "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
-msgstr ""
-"Zaaktype status omschrijving voor nieuw aangemaakte zaken via StUF-ZDS"
+msgstr "Zaaktype status omschrijving voor nieuw aangemaakte zaken via StUF-ZDS"
 
 #: openforms/registrations/contrib/stuf_zds/options.py:63
 msgid "Documenttype description for newly created zaken in StUF-ZDS"
@@ -10225,8 +10304,8 @@ msgid ""
 "is sent to StUF-ZDS. Those keys and the values belonging to them in the "
 "submission data are included in extraElementen."
 msgstr ""
-"Met deze variabelekoppelingen stel je in welke formuliervariabelen als extra"
-" elementen in StUF-ZDS meegestuurd worden, en met welke naam."
+"Met deze variabelekoppelingen stel je in welke formuliervariabelen als extra "
+"elementen in StUF-ZDS meegestuurd worden, en met welke naam."
 
 #: openforms/registrations/contrib/stuf_zds/plugin.py:165
 msgid "StUF-ZDS"
@@ -10365,8 +10444,8 @@ msgid ""
 "be overridden in the Registration tab of a given form."
 msgstr ""
 "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de "
-"openbaarheid bestemd is. Dit kan per formulier in de registratieconfiguratie"
-" overschreven worden."
+"openbaarheid bestemd is. Dit kan per formulier in de registratieconfiguratie "
+"overschreven worden."
 
 #: openforms/registrations/contrib/zgw_apis/models.py:126
 msgid "vertrouwelijkheidaanduiding document"
@@ -10433,9 +10512,9 @@ msgstr "Zaaktype-identificatie"
 
 #: openforms/registrations/contrib/zgw_apis/options.py:70
 msgid ""
-"The case type will be retrieved in the specified catalogue. The version will"
-" automatically be selected based on the submission completion timestamp. "
-"When you specify this field, you MUST also specify a catalogue."
+"The case type will be retrieved in the specified catalogue. The version will "
+"automatically be selected based on the submission completion timestamp. When "
+"you specify this field, you MUST also specify a catalogue."
 msgstr ""
 "Het zaaktype wordt opgehaald binnen de ingestelde catalogus. De juiste "
 "versie van het zaaktype wordt automatisch bepaald aan de hand van de "
@@ -10449,15 +10528,15 @@ msgstr "Documenttypeomschrijving"
 #: openforms/registrations/contrib/zgw_apis/options.py:80
 msgid ""
 "The document type will be retrived in the specified catalogue. The version "
-"will automatically be selected based on the submission completion timestamp."
-" When you specify this field, you MUST also specify the case type via its "
+"will automatically be selected based on the submission completion timestamp. "
+"When you specify this field, you MUST also specify the case type via its "
 "identification. Only document types related to the case type are valid."
 msgstr ""
 "Het documenttype wordt opgehaald binnen de ingestelde catalogus. De juiste "
 "versie van het documenttype wordt automatisch bepaald aan de hand van de "
 "inzendingsdatum. Als je een waarde voor dit veld opgeeft, dan MOET je ook "
-"het zaaktype via haar identificatie opgeven. Enkel documenttypen die bij het"
-" zaaktype horen zijn geldig."
+"het zaaktype via haar identificatie opgeven. Enkel documenttypen die bij het "
+"zaaktype horen zijn geldig."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:90
 msgid "Product url"
@@ -10518,11 +10597,11 @@ msgstr "objecten API - objecttype"
 #: openforms/registrations/contrib/zgw_apis/options.py:142
 msgid ""
 "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
-"The objecttype should have the following three attributes: 1) submission_id;"
-" 2) type (the type of productaanvraag); 3) data (the submitted form data)"
+"The objecttype should have the following three attributes: 1) submission_id; "
+"2) type (the type of productaanvraag); 3) data (the submitted form data)"
 msgstr ""
-"URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het"
-" objecttype moet de volgende attributen bevatten: 1) submission_id; 2) type "
+"URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het "
+"objecttype moet de volgende attributen bevatten: 1) submission_id; 2) type "
 "(het type van de 'ProductAanvraag'); 3) data (ingezonden formuliergegevens)"
 
 #: openforms/registrations/contrib/zgw_apis/options.py:151
@@ -10564,8 +10643,8 @@ msgstr ""
 
 #: openforms/registrations/contrib/zgw_apis/options.py:351
 msgid ""
-"The specified objecttype is not present in the selected Objecttypes API (the"
-" URL does not start with the API root of the Objecttypes API)."
+"The specified objecttype is not present in the selected Objecttypes API (the "
+"URL does not start with the API root of the Objecttypes API)."
 msgstr ""
 "Het gekozen objecttype bestaat niet binnen de gekozen Objecttypen-API (de "
 "URL begint niet met de basis-URL van de Objecttypen-API-service)."
@@ -10585,8 +10664,8 @@ msgstr ""
 #: openforms/registrations/contrib/zgw_apis/options.py:410
 msgid "You must specify a catalogue when passing a case type identification."
 msgstr ""
-"Je moet een catalogus aanduiden wanneer je het zaaktype via de identificatie"
-" opgeeft."
+"Je moet een catalogus aanduiden wanneer je het zaaktype via de identificatie "
+"opgeeft."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:526
 #, python-brace-format
@@ -10596,8 +10675,7 @@ msgstr ""
 "zaaktype."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:570
-msgid ""
-"Could not find a roltype with this description related to the zaaktype."
+msgid "Could not find a roltype with this description related to the zaaktype."
 msgstr ""
 "Kon geen roltype vinden met deze omschrijving binnen het opgegeven zaaktype."
 
@@ -10615,11 +10693,13 @@ msgstr "Lijst van beschikbare services"
 
 #: openforms/services/api/viewsets.py:16
 msgid ""
-"Return a list of available (JSON) services/registrations configured in the backend.\n"
+"Return a list of available (JSON) services/registrations configured in the "
+"backend.\n"
 "\n"
 "Note that this endpoint is **EXPERIMENTAL**."
 msgstr ""
-"Geef een lijst van beschikbare (JSON) services/registraties die in de backend ingesteld zijn.\n"
+"Geef een lijst van beschikbare (JSON) services/registraties die in de "
+"backend ingesteld zijn.\n"
 "\n"
 "Dit endpoint is **EXPERIMENTEEL**."
 
@@ -10702,8 +10782,7 @@ msgstr "Registratie: e-mailpluginpreview"
 #: openforms/submissions/admin.py:443
 msgid "You can only export the submissions of the same form type."
 msgstr ""
-"Je kan alleen de inzendingen van één enkel formuliertype tegelijk "
-"exporteren."
+"Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
 
 #: openforms/submissions/admin.py:450
 #, python-format
@@ -10734,8 +10813,7 @@ msgstr "Probeer %(verbose_name_plural)s opnieuw te verwerken"
 #, python-brace-format
 msgid "Retrying processing flow for {count} {verbose_name}"
 msgid_plural "Retrying processing flow for {count} {verbose_name_plural}"
-msgstr[0] ""
-"Nieuwe verwerkingspoging voor {count} {verbose_name} wordt gestart."
+msgstr[0] "Nieuwe verwerkingspoging voor {count} {verbose_name} wordt gestart."
 msgstr[1] ""
 "Nieuwe verwerkingspoging voor {count} {verbose_name_plural} wordt gestart."
 
@@ -10833,8 +10911,8 @@ msgstr "Formuliergegevens"
 #: openforms/submissions/api/serializers.py:309
 msgid ""
 "The Form.io submission data object. This will be merged with the full form "
-"submission data, including data from other steps, to evaluate the configured"
-" form logic."
+"submission data, including data from other steps, to evaluate the configured "
+"form logic."
 msgstr ""
 "De Form.io inzendingsgegevens. Dit wordt samengevoegd met de "
 "inzendingsgegevens, inclusief de gegevens van de andere stappen, om de "
@@ -10847,8 +10925,7 @@ msgstr "Contact e-mailadres"
 #: openforms/submissions/api/serializers.py:322
 msgid "The email address where the 'magic' resume link should be sent to"
 msgstr ""
-"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet "
-"worden"
+"Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet worden"
 
 #: openforms/submissions/api/serializers.py:415
 msgid "background processing status"
@@ -10871,8 +10948,8 @@ msgid ""
 "The result from the background processing. This field only has a value if "
 "the processing has completed (both successfully or with errors)."
 msgstr ""
-"Het resultaat van de achtergrondverwerking. Dit veld heeft alleen een waarde"
-" als de verwerking is voltooid (zowel met succes als met fouten)."
+"Het resultaat van de achtergrondverwerking. Dit veld heeft alleen een waarde "
+"als de verwerking is voltooid (zowel met succes als met fouten)."
 
 #: openforms/submissions/api/serializers.py:436
 msgid "Error information"
@@ -10970,7 +11047,7 @@ msgid "Name of the form definition used in the form step."
 msgstr "Naam van de formulierdefinitie horend bij de stap."
 
 #: openforms/submissions/api/serializers.py:544
-#: openforms/submissions/models/submission.py:234
+#: openforms/submissions/models/submission.py:235
 msgid "privacy policy accepted"
 msgstr "Privacybeleid geaccepteerd"
 
@@ -10980,7 +11057,7 @@ msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
 #: openforms/submissions/api/serializers.py:548
-#: openforms/submissions/models/submission.py:244
+#: openforms/submissions/models/submission.py:245
 msgid "statement of truth accepted"
 msgstr "verklaring van waarheid geaccepteerd"
 
@@ -11054,13 +11131,15 @@ msgid ""
 "\n"
 "This is called by the default Form.io file upload widget. \n"
 "\n"
-"Access to this view requires an active form submission. Unclaimed temporary files automatically expire after {expire_days} day(s). "
+"Access to this view requires an active form submission. Unclaimed temporary "
+"files automatically expire after {expire_days} day(s). "
 msgstr ""
 "Haal tijdelijk bestand op.\n"
 "\n"
 "Deze aanroep wordt gedaan door het standaard Form.io bestandsupload widget.\n"
 "\n"
-"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
+"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet "
+"gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
 
 #: openforms/submissions/api/views.py:40
 msgid "Delete temporary file upload"
@@ -11073,13 +11152,15 @@ msgid ""
 "\n"
 "This is called by the default Form.io file upload widget. \n"
 "\n"
-"Access to this view requires an active form submission. Unclaimed temporary files automatically expire after {expire_days} day(s). "
+"Access to this view requires an active form submission. Unclaimed temporary "
+"files automatically expire after {expire_days} day(s). "
 msgstr ""
 "Verwijder tijdelijk bestand.\n"
 "\n"
 "Deze aanroep wordt gedaan door het standaard Form.io bestandsupload widget.\n"
 "\n"
-"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
+"Toegang tot dit endpoint vereist een actieve formulier inzending. Niet "
+"gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
 
 #: openforms/submissions/api/views.py:80
 msgid "Start email verification"
@@ -11087,13 +11168,19 @@ msgstr "Start de e-mailverificatie"
 
 #: openforms/submissions/api/views.py:82
 msgid ""
-"Create an email verification resource to start the verification process. A verification e-mail will be scheduled and sent to the provided email address, containing the verification code to use during verification.\n"
+"Create an email verification resource to start the verification process. A "
+"verification e-mail will be scheduled and sent to the provided email "
+"address, containing the verification code to use during verification.\n"
 "\n"
-"Validations check that the provided component key is present in the form of the submission and that it actually is an `email` component."
+"Validations check that the provided component key is present in the form of "
+"the submission and that it actually is an `email` component."
 msgstr ""
-"Maak een e-mailbevestigingverzoek aan om het verificatieproces te beginnen. Hierna wordt een verificatie-e-mail verstuurd naar het opgegeven e-mailadres die de bevestigingscode bevat die in het proces ingevoerd dient te worden.\n"
+"Maak een e-mailbevestigingverzoek aan om het verificatieproces te beginnen. "
+"Hierna wordt een verificatie-e-mail verstuurd naar het opgegeven e-mailadres "
+"die de bevestigingscode bevat die in het proces ingevoerd dient te worden.\n"
 "\n"
-"De validaties controleren dat de componentsleutel bestaat in het formulier, en dat de component daadwerkelijk een e-mailcomponent is."
+"De validaties controleren dat de componentsleutel bestaat in het formulier, "
+"en dat de component daadwerkelijk een e-mailcomponent is."
 
 #: openforms/submissions/api/views.py:105
 msgid "Verify email address"
@@ -11102,11 +11189,11 @@ msgstr "Verifieer een e-mailadres"
 #: openforms/submissions/api/views.py:107
 msgid ""
 "Using the code obtained from the verification email, mark the email address "
-"as verified. Using an invalid code results in validation errors in the error"
-" response."
+"as verified. Using an invalid code results in validation errors in the error "
+"response."
 msgstr ""
-"Gebruik de bevestigingscode uit de verificatie-e-mail om het e-mailadres als"
-" \"geverifieerd\" te markeren. Als geen geldige code gebruikt wordt, dan "
+"Gebruik de bevestigingscode uit de verificatie-e-mail om het e-mailadres als "
+"\"geverifieerd\" te markeren. Als geen geldige code gebruikt wordt, dan "
 "bevat het antwoord validatiefouten."
 
 #: openforms/submissions/api/viewsets.py:93
@@ -11116,8 +11203,8 @@ msgstr "Actieve inzendingen weergeven"
 #: openforms/submissions/api/viewsets.py:95
 msgid ""
 "Active submissions are submissions whose ID is in the user session. This "
-"endpoint returns user-bound submissions. Note that you get different results"
-" on different results because of the differing sessions."
+"endpoint returns user-bound submissions. Note that you get different results "
+"on different results because of the differing sessions."
 msgstr ""
 "Actieve inzendingen zijn inzendingen waarvan het ID zich in de "
 "gebruikerssessie bevindt. Dit endpoint geeft alle inzendingen terug die "
@@ -11130,8 +11217,7 @@ msgstr "Inzending detail weergeven"
 
 #: openforms/submissions/api/viewsets.py:102
 msgid "Get the state of a single submission in the user session."
-msgstr ""
-"Haal de status op van een enkele inzending op van de gebruikerssessie."
+msgstr "Haal de status op van een enkele inzending op van de gebruikerssessie."
 
 #: openforms/submissions/api/viewsets.py:105
 msgid "Start a submission"
@@ -11381,7 +11467,7 @@ msgstr ""
 "afgevuurd wordt."
 
 #: openforms/submissions/models/post_completion_metadata.py:30
-#: openforms/submissions/models/submission.py:122
+#: openforms/submissions/models/submission.py:123
 #: openforms/submissions/models/submission_files.py:79
 #: openforms/submissions/models/submission_files.py:201
 #: openforms/submissions/models/submission_step.py:102
@@ -11401,31 +11487,31 @@ msgstr "Soort trigger die de achtergrondtaken aangemaakt heeft."
 msgid "post completion metadata"
 msgstr "bij-voltooiingmetagegevens"
 
-#: openforms/submissions/models/submission.py:115
+#: openforms/submissions/models/submission.py:116
 msgid "form URL"
 msgstr "formulier URL"
 
-#: openforms/submissions/models/submission.py:119
+#: openforms/submissions/models/submission.py:120
 msgid "URL where the user initialized the submission."
 msgstr "URL waar de gebruiker de inzending is gestart."
 
-#: openforms/submissions/models/submission.py:123
+#: openforms/submissions/models/submission.py:124
 msgid "completed on"
 msgstr "afgerond op"
 
-#: openforms/submissions/models/submission.py:124
+#: openforms/submissions/models/submission.py:125
 msgid "suspended on"
 msgstr "onderbroken op"
 
-#: openforms/submissions/models/submission.py:127
+#: openforms/submissions/models/submission.py:128
 msgid "co-sign data"
 msgstr "Mede-ondertekenaargegevens"
 
-#: openforms/submissions/models/submission.py:131
+#: openforms/submissions/models/submission.py:132
 msgid "Authentication details of a co-signer."
 msgstr "Authenticatiedetails van een mede-ondertekenaar."
 
-#: openforms/submissions/models/submission.py:143
+#: openforms/submissions/models/submission.py:144
 msgid ""
 "Cost of this submission. Either derived from the related product, or "
 "evaluated from price logic rules. The price is calculated and saved on "
@@ -11435,11 +11521,11 @@ msgstr ""
 "of door logicaregels. De prijs wordt berekend en opgeslagen op de inzending "
 "zodra deze is afgerond."
 
-#: openforms/submissions/models/submission.py:151
+#: openforms/submissions/models/submission.py:152
 msgid "last register attempt date"
 msgstr "laatste poging tot doorzetting"
 
-#: openforms/submissions/models/submission.py:155
+#: openforms/submissions/models/submission.py:156
 msgid ""
 "The last time the submission registration was attempted with the backend.  "
 "Note that this date will be updated even if the registration is not "
@@ -11448,21 +11534,21 @@ msgstr ""
 "De laatste poging waarop de inzending is doorgezet naar de registratie "
 "backend. Deze datum wordt ook bijgewerkt als de doorzetting niet is gelukt."
 
-#: openforms/submissions/models/submission.py:160
+#: openforms/submissions/models/submission.py:161
 msgid "registration backend retry counter"
 msgstr "registratiepogingenteller"
 
-#: openforms/submissions/models/submission.py:163
+#: openforms/submissions/models/submission.py:164
 msgid "Counter to track how often we tried calling the registration backend. "
 msgstr ""
 "Teller die bijhoudt hoe vaak we de registratiebackend probeerden aan te "
 "roepen."
 
-#: openforms/submissions/models/submission.py:167
+#: openforms/submissions/models/submission.py:168
 msgid "registration backend result"
 msgstr "registratie backend resultaat"
 
-#: openforms/submissions/models/submission.py:171
+#: openforms/submissions/models/submission.py:172
 msgid ""
 "Contains data returned by the registration backend while registering the "
 "submission data."
@@ -11470,34 +11556,32 @@ msgstr ""
 "Bevat de gegevens zoals teruggegeven door de registratie backend bij het "
 "versturen van de inzending."
 
-#: openforms/submissions/models/submission.py:175
+#: openforms/submissions/models/submission.py:176
 msgid "registration backend status"
 msgstr "registratie backend status"
 
-#: openforms/submissions/models/submission.py:180
+#: openforms/submissions/models/submission.py:181
 msgid ""
-"Indication whether the registration in the configured backend was "
-"successful."
-msgstr ""
-"Indicatie of de doorzetting naar de registratie backend succesvol was."
+"Indication whether the registration in the configured backend was successful."
+msgstr "Indicatie of de doorzetting naar de registratie backend succesvol was."
 
-#: openforms/submissions/models/submission.py:184
+#: openforms/submissions/models/submission.py:185
 msgid "pre-registration completed"
 msgstr "preregistratie voltooid"
 
-#: openforms/submissions/models/submission.py:187
+#: openforms/submissions/models/submission.py:188
 msgid "Indicates whether the pre-registration task completed successfully."
 msgstr "Indicatie of de preregistratietaak succesvol voltooid is."
 
-#: openforms/submissions/models/submission.py:191
+#: openforms/submissions/models/submission.py:192
 msgid "public registration reference"
 msgstr "publieke referentie"
 
-#: openforms/submissions/models/submission.py:195
+#: openforms/submissions/models/submission.py:196
 msgid ""
-"The registration reference communicated to the end-user completing the form."
-" This reference is intended to be unique and the reference the end-user uses"
-" to communicate with the service desk. It should be extracted from the "
+"The registration reference communicated to the end-user completing the form. "
+"This reference is intended to be unique and the reference the end-user uses "
+"to communicate with the service desk. It should be extracted from the "
 "registration result where possible, and otherwise generated to be unique. "
 "Note that this reference is displayed to the end-user and used as payment "
 "reference!"
@@ -11510,27 +11594,27 @@ msgstr ""
 "deze referentie wordt getoond aan de eindgebruiker en gebruikt als "
 "betalingskenmerk!"
 
-#: openforms/submissions/models/submission.py:204
+#: openforms/submissions/models/submission.py:205
 msgid "cosign complete"
 msgstr "mede-ondertekenen voltooid"
 
-#: openforms/submissions/models/submission.py:206
+#: openforms/submissions/models/submission.py:207
 msgid "Indicates whether the submission has been cosigned."
 msgstr "Geeft aan of de inzending is mede-ondertekend."
 
-#: openforms/submissions/models/submission.py:209
+#: openforms/submissions/models/submission.py:210
 msgid "cosign request email sent"
 msgstr "Mede-ondertekenenverzoek-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:211
+#: openforms/submissions/models/submission.py:212
 msgid "Has the email to request a co-sign been sent?"
 msgstr "Is de e-mail met het mede-ondertekenenverzoek verstuurd?"
 
-#: openforms/submissions/models/submission.py:214
+#: openforms/submissions/models/submission.py:215
 msgid "cosign confirmation email sent"
 msgstr "Mede-ondertekenenbevestigings-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:217
+#: openforms/submissions/models/submission.py:218
 msgid ""
 "Has the confirmation email been sent after the submission has successfully "
 "been cosigned?"
@@ -11538,67 +11622,67 @@ msgstr ""
 "Geeft aan of de bevestigings-e-mail na het succesvol mede-ondertekenen "
 "verstuurd is."
 
-#: openforms/submissions/models/submission.py:222
+#: openforms/submissions/models/submission.py:223
 msgid "confirmation email sent"
 msgstr "Bevestigingse-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:224
+#: openforms/submissions/models/submission.py:225
 msgid "Indicates whether the confirmation email has been sent."
 msgstr "Geeft aan of de bevestigingse-mail al verstuurd is."
 
-#: openforms/submissions/models/submission.py:228
+#: openforms/submissions/models/submission.py:229
 msgid "payment complete confirmation email sent"
 msgstr "Betaling-voltooidbevestigings-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:230
+#: openforms/submissions/models/submission.py:231
 msgid "Has the confirmation emails been sent after successful payment?"
 msgstr ""
 "Geeft aan of de bevestigingse-mails na succesvollte betaling al verstuurd "
 "zijn."
 
-#: openforms/submissions/models/submission.py:236
+#: openforms/submissions/models/submission.py:237
 msgid "Has the user accepted the privacy policy?"
 msgstr "Indicator of de gebruiker het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/models/submission.py:239
+#: openforms/submissions/models/submission.py:240
 msgid "cosign privacy policy accepted"
 msgstr "Mede-ondertekenenprivacybeleid geaccepteerd"
 
-#: openforms/submissions/models/submission.py:241
+#: openforms/submissions/models/submission.py:242
 msgid "Has the co-signer accepted the privacy policy?"
 msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/models/submission.py:246
+#: openforms/submissions/models/submission.py:247
 msgid "Did the user declare the form to be filled out truthfully?"
 msgstr ""
 "Heeft de gebruiker verklaard dat het formulier naar waarheid ingevuld is?"
 
-#: openforms/submissions/models/submission.py:249
+#: openforms/submissions/models/submission.py:250
 msgid "cosign statement of truth accepted"
 msgstr "mede-ondertekenen verklaring van waarheid geaccepteerd"
 
-#: openforms/submissions/models/submission.py:251
+#: openforms/submissions/models/submission.py:252
 msgid "Did the co-signer declare the form to be filled out truthfully?"
 msgstr ""
 "Heeft de mede-ondertekenaar verklaard dat het formulier naar waarheid "
 "ingevuld is?"
 
-#: openforms/submissions/models/submission.py:255
+#: openforms/submissions/models/submission.py:256
 msgid "is cleaned"
 msgstr "is opgeschoond"
 
-#: openforms/submissions/models/submission.py:258
+#: openforms/submissions/models/submission.py:259
 msgid ""
 "Indicates whether sensitive data (if there was any) has been removed from "
 "this submission."
 msgstr "Geeft aan of gevoelige gegevens verwijders zijn van deze inzending."
 
-#: openforms/submissions/models/submission.py:262
+#: openforms/submissions/models/submission.py:263
 msgid "initial data reference"
 msgstr "ongeldige data-referentie"
 
-#: openforms/submissions/models/submission.py:265
+#: openforms/submissions/models/submission.py:266
 msgid ""
 "An identifier that can be passed as a querystring when the form is started. "
 "Initial form field values are pre-populated from the retrieved data. During "
@@ -11607,32 +11691,32 @@ msgid ""
 msgstr ""
 "Een identificatie die als query-parameter opgegeven kan worden bij het "
 "starten van een formulier. Op basis van deze identificatie worden bestaande "
-"gegevens opgehaald en gebruikt om formuliervelden voor in te vullen. Bij het"
-" registreren kunnen de bestaande gegevens ook weer bijgewerkt worden, indien"
-" gewenst, of de gegevens worden als 'nieuw' geregistreerd. Dit kan "
+"gegevens opgehaald en gebruikt om formuliervelden voor in te vullen. Bij het "
+"registreren kunnen de bestaande gegevens ook weer bijgewerkt worden, indien "
+"gewenst, of de gegevens worden als 'nieuw' geregistreerd. Dit kan "
 "bijvoorbeeld een referentie zijn naar een record in de Objecten API."
 
-#: openforms/submissions/models/submission.py:275
+#: openforms/submissions/models/submission.py:276
 msgid "on completion task ID"
 msgstr "bij voltooiing taak-ID"
 
-#: openforms/submissions/models/submission.py:280
+#: openforms/submissions/models/submission.py:281
 msgid "on completion task IDs"
 msgstr "bij voltooiing taak-ID's"
 
-#: openforms/submissions/models/submission.py:283
+#: openforms/submissions/models/submission.py:284
 msgid ""
-"Celery task IDs of the on_completion workflow. Use this to inspect the state"
-" of the async jobs."
+"Celery task IDs of the on_completion workflow. Use this to inspect the state "
+"of the async jobs."
 msgstr ""
-"Celery-taak-ID's van de on_completion-workflow. Gebruik dit om de status van"
-" de asynchrone taken te inspecteren. "
+"Celery-taak-ID's van de on_completion-workflow. Gebruik dit om de status van "
+"de asynchrone taken te inspecteren. "
 
-#: openforms/submissions/models/submission.py:289
+#: openforms/submissions/models/submission.py:290
 msgid "needs on_completion retry"
 msgstr "verwerking opnieuw proberen"
 
-#: openforms/submissions/models/submission.py:292
+#: openforms/submissions/models/submission.py:293
 msgid ""
 "Flag to track if the on_completion_retry chain should be invoked. This is "
 "scheduled via celery-beat."
@@ -11640,56 +11724,56 @@ msgstr ""
 "Vlag die aangeeft of een nieuwe verwerkingspoging nodig is. Dit wordt "
 "automatisch uitgevoerd op de achtergrond."
 
-#: openforms/submissions/models/submission.py:303
+#: openforms/submissions/models/submission.py:304
 msgid "language code"
 msgstr "taalcode"
 
-#: openforms/submissions/models/submission.py:308
+#: openforms/submissions/models/submission.py:309
 msgid "The code (RFC5646 format) of the language used to fill in the Form."
 msgstr ""
 "De code (RFC5646-formaat) van de taal die gebruikt is tijdens het invullen "
 "van het formulier."
 
-#: openforms/submissions/models/submission.py:313
+#: openforms/submissions/models/submission.py:314
 msgid "final registration backend key"
 msgstr "uiteindelijke registratiebackendsleutel"
 
-#: openforms/submissions/models/submission.py:317
+#: openforms/submissions/models/submission.py:318
 msgid "The key of the registration backend to use."
 msgstr "De sleutel van de backend die voor registratie gebruikt moet worden."
 
-#: openforms/submissions/models/submission.py:333
+#: openforms/submissions/models/submission.py:334
 msgid "submissions"
 msgstr "inzendingen"
 
-#: openforms/submissions/models/submission.py:357
+#: openforms/submissions/models/submission.py:358
 msgid ""
 "Only completed submissions may persist a finalised registration backend key."
 msgstr ""
 "Enkel voltooide inzendingen kunnen een registratiebackendsleutel vastleggen."
 
-#: openforms/submissions/models/submission.py:364
+#: openforms/submissions/models/submission.py:365
 #, python-brace-format
 msgid "{pk} - started on {started}"
 msgstr "{pk} - gestart op {started}"
 
-#: openforms/submissions/models/submission.py:365
+#: openforms/submissions/models/submission.py:366
 msgid "(unsaved)"
 msgstr "(niet bewaard)"
 
-#: openforms/submissions/models/submission.py:366
+#: openforms/submissions/models/submission.py:367
 msgid "(no timestamp yet)"
 msgstr "(nog geen datum)"
 
-#: openforms/submissions/models/submission.py:839
+#: openforms/submissions/models/submission.py:840
 msgid "No registration backends defined on form"
 msgstr "Er zijn geen registratiebackends geconfigureerd op het formulier."
 
-#: openforms/submissions/models/submission.py:848
+#: openforms/submissions/models/submission.py:849
 msgid "Multiple backends defined on form"
 msgstr "Meerdere backends geconfigureerd op het formulier"
 
-#: openforms/submissions/models/submission.py:867
+#: openforms/submissions/models/submission.py:868
 msgid "Unknown registration backend set by form logic. Trying default..."
 msgstr ""
 "Onbekende registratiebackend ingesteld via formulierlogica. We proberen de "
@@ -11818,8 +11902,8 @@ msgstr "laatst gedownload"
 
 #: openforms/submissions/models/submission_report.py:39
 msgid ""
-"When the submission report was last accessed. This value is updated when the"
-" report is downloaded."
+"When the submission report was last accessed. This value is updated when the "
+"report is downloaded."
 msgstr ""
 "Datum waarom het document voor het laatst is opgevraagd. Deze waarde wordt "
 "bijgewerkt zodra het document wordt gedownload."
@@ -11903,8 +11987,7 @@ msgstr "gevuld vanuit prefill-gegevens"
 #: openforms/submissions/models/submission_value_variable.py:325
 msgid "Can this variable be prefilled at the beginning of a submission?"
 msgstr ""
-"Is de waarde bij het starten van de inzending door een prefill-plugin "
-"gevuld?"
+"Is de waarde bij het starten van de inzending door een prefill-plugin gevuld?"
 
 #: openforms/submissions/models/submission_value_variable.py:334
 msgid "Submission value variable"
@@ -11940,10 +12023,20 @@ msgstr "Bevestigingsmail"
 msgid "Submission export"
 msgstr "Inzendingen-export"
 
-#: openforms/submissions/report.py:69
+#: openforms/submissions/report.py:72
 #, python-brace-format
 msgid "{representation} ({auth_attribute}: {identifier})"
 msgstr "{representation} ({auth_attribute}: {identifier})"
+
+#: openforms/submissions/report.py:87
+#, python-brace-format
+msgid ""
+"This PDF was generated before submission processing has started because it "
+"needs to be cosigned first. The cosign request email was sent to {email}."
+msgstr ""
+"Deze PDF is gegenereerd vóór de verwerking van de inzending gestart is. De inzending "
+"wordt pas verwerkt als deze mede-ondertekend is. Het verzoek hiervoor is verstuurd "
+"naar {email}."
 
 #: openforms/submissions/tasks/emails.py:122
 #, python-brace-format
@@ -12037,8 +12130,8 @@ msgstr "Sorry, u hebt geen toegang tot deze pagina (403)"
 
 #: openforms/templates/403.html:15
 msgid ""
-"You don't appear to have sufficient permissions to view this content. Please"
-" contact an administrator if you believe this to be an error."
+"You don't appear to have sufficient permissions to view this content. Please "
+"contact an administrator if you believe this to be an error."
 msgstr ""
 "U lijkt onvoldoende rechten te hebben om deze inhoud te bekijken. Gelieve "
 "contact op te nemen met uw beheerder indien dit onterecht is."
@@ -12187,8 +12280,8 @@ msgstr "RFC5646 taalcode, bijvoorbeeld `en` of `en-us`"
 
 #: openforms/translations/api/serializers.py:26
 msgid ""
-"Language name in its local representation. e.g. \"fy\" = \"frysk\", \"nl\" ="
-" \"Nederlands\""
+"Language name in its local representation. e.g. \"fy\" = \"frysk\", \"nl\" = "
+"\"Nederlands\""
 msgstr ""
 "Taalnaam in de lokale weergave. Bijvoorbeeld \"fy\" = \"frysk\", \"nl\" = "
 "\"Nederlands\""
@@ -12570,11 +12663,11 @@ msgstr "Waarde om te valideren."
 
 #: openforms/validations/api/views.py:84
 msgid ""
-"ID of the validation plugin, see the "
-"[`validation_plugin_list`](./#operation/validation_plugin_list) operation"
+"ID of the validation plugin, see the [`validation_plugin_list`](./#operation/"
+"validation_plugin_list) operation"
 msgstr ""
-"ID van de validatie plugin. Zie de "
-"[`validation_plugin_list`](./#operation/validation_plugin_list) operatie"
+"ID van de validatie plugin. Zie de [`validation_plugin_list`](./#operation/"
+"validation_plugin_list) operatie"
 
 #: openforms/validations/registry.py:67
 #, python-brace-format
@@ -12684,7 +12777,8 @@ msgstr "Geef een lijst van beschikbare servicebevragingconfiguraties"
 
 #: openforms/variables/api/viewsets.py:18
 msgid ""
-"Return a list of available services fetch configurations configured in the backend.\n"
+"Return a list of available services fetch configurations configured in the "
+"backend.\n"
 "\n"
 "Note that this endpoint is **EXPERIMENTAL**."
 msgstr ""
@@ -12821,8 +12915,7 @@ msgstr "{header!s}: waarde '{value!s}' moet een string zijn maar is dat niet."
 
 #: openforms/variables/validators.py:83
 msgid ""
-"{header!s}: value '{value!s}' contains {illegal_chars}, which is not "
-"allowed."
+"{header!s}: value '{value!s}' contains {illegal_chars}, which is not allowed."
 msgstr ""
 "{header!s}: waarde '{value!s}' bevat {illegal_chars}, deze karakters zijn "
 "niet toegestaan."
@@ -12835,15 +12928,13 @@ msgstr ""
 "{header!s}: waarde '{value!s}' mag niet starten of eindigen met whitespace."
 
 #: openforms/variables/validators.py:100
-msgid ""
-"{header!s}: value '{value!s}' contains characters that are not allowed."
+msgid "{header!s}: value '{value!s}' contains characters that are not allowed."
 msgstr ""
 "{header!s}: waarde '{value!s}' bevat karakters die niet toegestaan zijn."
 
 #: openforms/variables/validators.py:107
 msgid "{header!s}: header '{header!s}' should be a string, but isn't."
-msgstr ""
-"{header!s}: header '{header!s}' moet een string zijn maar is dat niet."
+msgstr "{header!s}: header '{header!s}' moet een string zijn maar is dat niet."
 
 #: openforms/variables/validators.py:113
 msgid ""
@@ -12873,8 +12964,8 @@ msgstr ""
 msgid ""
 "{parameter!s}: value '{value!s}' should be a list of strings, but isn't."
 msgstr ""
-"{parameter!s}: de waarde '{value!s}' moet een lijst van strings zijn maar is"
-" dat niet."
+"{parameter!s}: de waarde '{value!s}' moet een lijst van strings zijn maar is "
+"dat niet."
 
 #: openforms/variables/validators.py:164
 msgid "query parameter key '{parameter!s}' should be a string, but isn't."
@@ -13073,11 +13164,11 @@ msgstr "endpoint VrijeBerichten"
 
 #: stuf/models.py:85
 msgid ""
-"Endpoint for synchronous free messages, usually "
-"'[...]/VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'."
+"Endpoint for synchronous free messages, usually '[...]/"
+"VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'."
 msgstr ""
-"Endpoint voor synchrone vrije berichten, typisch "
-"'[...]/VerwerkSynchroonVrijBericht' of '[...]/VrijeBerichten'."
+"Endpoint voor synchrone vrije berichten, typisch '[...]/"
+"VerwerkSynchroonVrijBericht' of '[...]/VrijeBerichten'."
 
 #: stuf/models.py:89
 msgid "endpoint OntvangAsynchroon"
@@ -13206,11 +13297,11 @@ msgstr "Binding address Bijstandsregelingen"
 
 #: suwinet/models.py:33
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500}BijstandsregelingenBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/"
+"v0500}BijstandsregelingenBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500}BijstandsregelingenBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/"
+"v0500}BijstandsregelingenBinding"
 
 #: suwinet/models.py:39
 msgid "BRPDossierPersoonGSD Binding Address"
@@ -13218,11 +13309,11 @@ msgstr "Binding address BRPDossierPersoonGSD"
 
 #: suwinet/models.py:41
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200}BRPBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/"
+"v0200}BRPBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200}BRPBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/"
+"v0200}BRPBinding"
 
 #: suwinet/models.py:46
 msgid "DUODossierPersoonGSD Binding Address"
@@ -13230,11 +13321,11 @@ msgstr "Binding address DUODossierPersoonGSD"
 
 #: suwinet/models.py:48
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300}DUOBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/"
+"v0300}DUOBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300}DUOBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/"
+"v0300}DUOBinding"
 
 #: suwinet/models.py:53
 msgid "DUODossierStudiefinancieringGSD Binding Address"
@@ -13242,11 +13333,11 @@ msgstr "Binding address DUODossierStudiefinancieringGSD"
 
 #: suwinet/models.py:55
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/DUODossierStudiefinancieringGSD/v0200}DUOBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"DUODossierStudiefinancieringGSD/v0200}DUOBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/DUODossierStudiefinancieringGSD/v0200}DUOBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"DUODossierStudiefinancieringGSD/v0200}DUOBinding"
 
 #: suwinet/models.py:60
 msgid "GSDDossierReintegratie Binding Address"
@@ -13254,11 +13345,11 @@ msgstr "Binding address GSDDossierReintegratie"
 
 #: suwinet/models.py:62
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/v0200}GSDReintegratieBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/"
+"v0200}GSDReintegratieBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/v0200}GSDReintegratieBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/"
+"v0200}GSDReintegratieBinding"
 
 #: suwinet/models.py:67
 msgid "IBVerwijsindex Binding Address"
@@ -13266,11 +13357,11 @@ msgstr "Binding address IBVerwijsindex"
 
 #: suwinet/models.py:69
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300}IBVerwijsindexBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300}"
+"IBVerwijsindexBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300}IBVerwijsindexBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300}"
+"IBVerwijsindexBinding"
 
 #: suwinet/models.py:74
 msgid "KadasterDossierGSD Binding Address"
@@ -13278,11 +13369,11 @@ msgstr "Binding address KadasterDossierGSD"
 
 #: suwinet/models.py:76
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300}KadasterBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300}"
+"KadasterBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300}KadasterBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/"
+"v0300}KadasterBinding"
 
 #: suwinet/models.py:81
 msgid "RDWDossierDigitaleDiensten Binding Address"
@@ -13290,11 +13381,11 @@ msgstr "Binding address RDWDossierDigitaleDiensten"
 
 #: suwinet/models.py:83
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200}RDWBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"RDWDossierDigitaleDiensten/v0200}RDWBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200}RDWBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"RDWDossierDigitaleDiensten/v0200}RDWBinding"
 
 #: suwinet/models.py:88
 msgid "RDWDossierGSD Binding Address"
@@ -13302,11 +13393,11 @@ msgstr "Binding address RDWDossierGSD"
 
 #: suwinet/models.py:90
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200}RDWBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200}"
+"RDWBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200}RDWBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200}"
+"RDWBinding"
 
 #: suwinet/models.py:95
 msgid "SVBDossierPersoonGSD Binding Address"
@@ -13314,11 +13405,11 @@ msgstr "Binding address SVBDossierPersoonGSD"
 
 #: suwinet/models.py:97
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/SVBDossierPersoonGSD/v0200}SVBBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/SVBDossierPersoonGSD/"
+"v0200}SVBBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/SVBDossierPersoonGSD/v0200}SVBBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/SVBDossierPersoonGSD/"
+"v0200}SVBBinding"
 
 #: suwinet/models.py:102
 msgid "UWVDossierAanvraagUitkeringStatusGSD Binding Address"
@@ -13326,11 +13417,11 @@ msgstr "Binding address UWVDossierAanvraagUitkeringStatusGSD"
 
 #: suwinet/models.py:104
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierAanvraagUitkeringStatusGSD/v0200}UWVAanvraagUitkeringStatusBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierAanvraagUitkeringStatusGSD/v0200}UWVAanvraagUitkeringStatusBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierAanvraagUitkeringStatusGSD/v0200}UWVAanvraagUitkeringStatusBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierAanvraagUitkeringStatusGSD/v0200}UWVAanvraagUitkeringStatusBinding"
 
 #: suwinet/models.py:109
 msgid "UWVDossierInkomstenGSDDigitaleDiensten Binding Address"
@@ -13338,11 +13429,11 @@ msgstr "Binding address UWVDossierInkomstenGSDDigitaleDiensten"
 
 #: suwinet/models.py:111
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSDDigitaleDiensten/v0200}UWVIkvBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierInkomstenGSDDigitaleDiensten/v0200}UWVIkvBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSDDigitaleDiensten/v0200}UWVIkvBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierInkomstenGSDDigitaleDiensten/v0200}UWVIkvBinding"
 
 #: suwinet/models.py:116
 msgid "UWVDossierInkomstenGSD Binding Address"
@@ -13350,11 +13441,11 @@ msgstr "Binding address UWVDossierInkomstenGSD"
 
 #: suwinet/models.py:118
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200}UWVIkvBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/"
+"v0200}UWVIkvBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200}UWVIkvBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/"
+"v0200}UWVIkvBinding"
 
 #: suwinet/models.py:123
 msgid "UWVDossierQuotumArbeidsbeperktenGSD Binding Address"
@@ -13362,11 +13453,11 @@ msgstr "Binding address UWVDossierQuotumArbeidsbeperktenGSD"
 
 #: suwinet/models.py:125
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierQuotumArbeidsbeperktenGSD/v0300}UWVArbeidsbeperktenBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierQuotumArbeidsbeperktenGSD/v0300}UWVArbeidsbeperktenBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierQuotumArbeidsbeperktenGSD/v0300}UWVArbeidsbeperktenBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierQuotumArbeidsbeperktenGSD/v0300}UWVArbeidsbeperktenBinding"
 
 #: suwinet/models.py:130
 msgid "UWVDossierWerknemersverzekeringenGSDDigitaleDiensten Binding Address"
@@ -13374,11 +13465,11 @@ msgstr "Binding address UWVDossierWerknemersverzekeringenGSDDigitaleDiensten"
 
 #: suwinet/models.py:133
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSDDigitaleDiensten/v0200}UWVBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierWerknemersverzekeringenGSDDigitaleDiensten/v0200}UWVBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSDDigitaleDiensten/v0200}UWVBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierWerknemersverzekeringenGSDDigitaleDiensten/v0200}UWVBinding"
 
 #: suwinet/models.py:138
 msgid "UWVDossierWerknemersverzekeringenGSD Binding Address"
@@ -13386,11 +13477,11 @@ msgstr "Binding address UWVDossierWerknemersverzekeringenGSD"
 
 #: suwinet/models.py:140
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSD/v0200}UWVBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierWerknemersverzekeringenGSD/v0200}UWVBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSD/v0200}UWVBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/"
+"UWVDossierWerknemersverzekeringenGSD/v0200}UWVBinding"
 
 #: suwinet/models.py:145
 msgid "UWVWbDossierPersoonGSD Binding Address"
@@ -13398,11 +13489,11 @@ msgstr "Binding address UWVWbDossierPersoonGSD"
 
 #: suwinet/models.py:147
 msgid ""
-"Binding address for "
-"{http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200}UwvWbBinding"
+"Binding address for {http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/"
+"v0200}UwvWbBinding"
 msgstr ""
-"Binding address voor "
-"{http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200}UwvWbBinding"
+"Binding address voor {http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/"
+"v0200}UwvWbBinding"
 
 #: suwinet/models.py:154
 msgid "Suwinet configuration"
@@ -13417,3 +13508,6 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
+
+#~ msgid "Co-sign information"
+#~ msgstr "Mede-ondertekeninginformatie"
