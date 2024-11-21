@@ -9,6 +9,9 @@ import tinymce.models
 import openforms.config.models.config
 import openforms.emails.validators
 import openforms.template.validators
+from openforms.utils.migrations_utils.fix_default_translation import (
+    FixDefaultTranslations,
+)
 
 
 class Migration(migrations.Migration):
@@ -209,5 +212,16 @@ class Migration(migrations.Migration):
                 ],
                 verbose_name="content",
             ),
+        ),
+        migrations.RunPython(
+            FixDefaultTranslations(
+                app_label="config",
+                model="globalconfiguration",
+                fields=(
+                    "cosign_confirmation_email_content",
+                    "cosign_confirmation_email_subject",
+                ),
+            ),
+            migrations.RunPython.noop,
         ),
     ]
