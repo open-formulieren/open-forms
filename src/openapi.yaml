@@ -7276,6 +7276,17 @@ components:
           type: string
           description: The content of the email message can contain variables that
             will be templated from the submitted form data.
+        cosignSubject:
+          type: string
+          description: Subject of the email message when the form requires cosigning.
+          maxLength: 1000
+        cosignContent:
+          type: string
+          description: The content of the email message when cosgining is required.
+            You must include the '{% payment_information %}' and '{% cosign_information
+            %}' instructions. Additionally, you can use the '{% confirmation_summary
+            %}' instruction and some additional variables - see the documentation
+            for details.
         translations:
           $ref: '#/components/schemas/ConfirmationEmailTemplateModelTranslations'
     ConfirmationEmailTemplateENTranslations:
@@ -7293,6 +7304,21 @@ components:
           title: Content [en]
           description: The content of the email message can contain variables that
             will be templated from the submitted form data.
+        cosignSubject:
+          type: string
+          nullable: true
+          title: Cosign subject [en]
+          description: Subject of the email message when the form requires cosigning.
+          maxLength: 1000
+        cosignContent:
+          type: string
+          nullable: true
+          title: Cosign content [en]
+          description: The content of the email message when cosgining is required.
+            You must include the '{% payment_information %}' and '{% cosign_information
+            %}' instructions. Additionally, you can use the '{% confirmation_summary
+            %}' instruction and some additional variables - see the documentation
+            for details.
     ConfirmationEmailTemplateModelTranslations:
       type: object
       description: |-
@@ -7339,6 +7365,21 @@ components:
           title: Content [nl]
           description: The content of the email message can contain variables that
             will be templated from the submitted form data.
+        cosignSubject:
+          type: string
+          nullable: true
+          title: Cosign subject [nl]
+          description: Subject of the email message when the form requires cosigning.
+          maxLength: 1000
+        cosignContent:
+          type: string
+          nullable: true
+          title: Cosign content [nl]
+          description: The content of the email message when cosgining is required.
+            You must include the '{% payment_information %}' and '{% cosign_information
+            %}' instructions. Additionally, you can use the '{% confirmation_summary
+            %}' instruction and some additional variables - see the documentation
+            for details.
     ContextAwareFormStep:
       type: object
       properties:
