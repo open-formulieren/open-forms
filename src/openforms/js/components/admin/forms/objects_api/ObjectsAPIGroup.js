@@ -6,6 +6,7 @@ import {useUpdateEffect} from 'react-use';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
+import {isAsync} from 'utils/functions';
 
 const ObjectsAPIGroup = ({
   apiGroupChoices,
@@ -35,6 +36,28 @@ const ObjectsAPIGroup = ({
     value: option.value === null ? '' : option.value,
   }));
 
+  let handleOnChange;
+  if (isAsync(onChangeCheck)) {
+    // onChange handler should be async for the new confirmation modal
+    handleOnChange = async selectedOption => {
+      const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
+      if (okToProceed) {
+        // normalize empty string back to null
+        const newValue = selectedOption ? selectedOption.value : null;
+        setValue(newValue);
+      }
+    };
+  } else {
+    handleOnChange = selectedOption => {
+      const okToProceed = onChangeCheck === undefined || onChangeCheck();
+      if (okToProceed) {
+        // normalize empty string back to null
+        const newValue = selectedOption ? selectedOption.value : null;
+        setValue(newValue);
+      }
+    };
+  }
+
   return (
     <FormRow>
       <Field
@@ -59,14 +82,7 @@ const ObjectsAPIGroup = ({
           options={normalizedOptions}
           value={normalizedOptions.find(option => option.value === normalizedValue)}
           required={required}
-          onChange={selectedOption => {
-            const okToProceed = onChangeCheck === undefined || onChangeCheck();
-            if (okToProceed) {
-              // normalize empty string back to null
-              const newValue = selectedOption ? selectedOption.value : null;
-              setValue(newValue);
-            }
-          }}
+          onChange={handleOnChange}
           isClearable={isClearable}
         />
       </Field>

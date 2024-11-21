@@ -2,6 +2,7 @@ import {fn} from '@storybook/test';
 import {Form, Formik} from 'formik';
 
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
+import {ReactSelectContext} from 'components/admin/forms/ReactSelect';
 import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
 import {ModalContext} from 'components/admin/modals';
 
@@ -103,4 +104,15 @@ export const withModalDecorator = Story => (
   >
     <Story />
   </ModalContext.Provider>
+);
+
+export const withReactSelectDecorator = Story => (
+  <ReactSelectContext.Provider
+    value={{
+      // only for storybook integration, do not use this in real apps!
+      parentSelector: () => document.getElementById('storybook-root'),
+    }}
+  >
+    <Story />
+  </ReactSelectContext.Provider>
 );

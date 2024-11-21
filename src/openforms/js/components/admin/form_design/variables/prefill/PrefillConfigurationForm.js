@@ -8,14 +8,8 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 
-import DefaultFields from './DefaultFields';
-import ObjectsAPIFields from './ObjectsAPIFields';
 import PluginField from './PluginField';
-
-const PLUGIN_COMPONENT_MAPPING = {
-  objects_api: ObjectsAPIFields,
-  default: DefaultFields,
-};
+import PLUGIN_COMPONENT_MAPPING from './constants';
 
 const PrefillConfigurationForm = ({
   onSubmit,
@@ -26,13 +20,6 @@ const PrefillConfigurationForm = ({
   options = {},
   errors,
 }) => {
-  const defaults = {
-    objectsApiGroup: '',
-    objecttypeUuid: '',
-    objecttypeVersion: null,
-    variablesMapping: [],
-  };
-  options = {...defaults, ...options};
   return (
     <Formik
       initialValues={{

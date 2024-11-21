@@ -43,8 +43,28 @@ const LegacyConfigFields = ({apiGroupChoices}) => (
           />
         }
       >
-        <ObjectTypeSelect />
-        <ObjectTypeVersionSelect />
+        <ObjectTypeSelect
+          label={
+            <FormattedMessage
+              description="Objects API registration options 'Objecttype' label"
+              defaultMessage="Objecttype"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="Objects API registration options 'Objecttype' helpText"
+              defaultMessage="The registration result will be an object from the selected type."
+            />
+          }
+        />
+        <ObjectTypeVersionSelect
+          label={
+            <FormattedMessage
+              description="Objects API registration options 'objecttypeVersion' label"
+              defaultMessage="Version"
+            />
+          }
+        />
       </ErrorBoundary>
     </Fieldset>
 

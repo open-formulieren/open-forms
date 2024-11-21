@@ -3,18 +3,16 @@
  *
  * Most other plugins can be configured with the generic form in `./DefaultFields`.
  */
-import {useField, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
-import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import ReactSelect from 'components/admin/forms/ReactSelect';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
@@ -26,7 +24,8 @@ import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import {ErrorsType} from './types';
+import {ErrorsType} from '../types';
+import CopyConfigurationFromRegistrationBackend from './CopyConfigurationFromRegistrationBackend';
 
 const PLUGIN_ID = 'objects_api';
 
@@ -54,98 +53,33 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
-const CopyConfigurationFromRegistrationBackend = ({backends}) => {
-  const intl = useIntl();
-  const name = 'copyConfigurationFromBackend';
-  const {setFieldValue, setValues} = useFormikContext();
-  const options = backends.map(elem => ({value: elem.key, label: elem.name}));
-  const [fieldProps] = useField(name);
-  const {value} = fieldProps;
-  const selectedBackend = backends.find(elem => elem.key === value);
-  return (
-    <FormRow>
-      <Field
-        name={name}
-        label={
-          <FormattedMessage
-            description="Copy Objects API prefill configuration from registration backend label"
-            defaultMessage="Copy configuration from registration backend"
-          />
-        }
-        helpText={
-          <FormattedMessage
-            description="Copy Objects API prefill configuration from registration backend help text"
-            defaultMessage="Select a registration backend and click the button to copy the configuration."
-          />
-        }
-        noManageChildProps
-      >
-        <>
-          <ReactSelect
-            name={name}
-            options={options}
-            onChange={selectedOption => {
-              setFieldValue(name, selectedOption.value);
-            }}
-            maxMenuHeight="16em"
-            menuPlacement="bottom"
-          />
-
-          <button
-            type="button"
-            className="button"
-            onClick={e => {
-              e.preventDefault();
-              const confirmed = window.confirm(
-                intl.formatMessage({
-                  description: `Objects API prefill configuration: warning message
-                when copying the config from registration backend`,
-                  defaultMessage: `Copying the configuration from the registration
-              backend will clear the existing configuration. Are you sure you want to continue?`,
-                })
-              );
-              if (confirmed) {
-                setValues(prevValues => ({
-                  ...prevValues,
-                  // Trying to set multiple nested values doesn't work, since it sets them
-                  // with dots in the key
-                  options: {
-                    ...prevValues.options,
-                    objectsApiGroup: selectedBackend.options.objectsApiGroup,
-                    objecttypeUuid: selectedBackend.options.objecttype,
-                    objecttypeVersion: selectedBackend.options.objecttypeVersion,
-                    variablesMapping: selectedBackend.options.variablesMapping,
-                  },
-                }));
-              }
-            }}
-            // admin style overrides...
-            style={{
-              marginLeft: '1em',
-              paddingInline: '15px',
-              paddingBlock: '10px',
-            }}
-          >
-            <FormattedMessage
-              description="Copy Objects API prefill configuration from registration backend button"
-              defaultMessage="Copy"
-            />
-          </button>
-        </>
-      </Field>
-    </FormRow>
-  );
-};
-
 const ObjectsAPIFields = ({errors}) => {
+  const intl = useIntl();
+
   const {
+    values,
     values: {
       plugin,
       options: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
     },
     setFieldValue,
   } = useFormikContext();
-  const intl = useIntl();
+
+  const defaults = {
+    objectsApiGroup: '',
+    objecttypeUuid: '',
+    objecttypeVersion: null,
+    variablesMapping: [],
+  };
+
+  // Merge defaults into options if not already set
+  useEffect(() => {
+    if (!values.options) {
+      setFieldValue('options', defaults);
+    } else {
+      setFieldValue('options', {...defaults, ...values.options});
+    }
+  }, []);
 
   const {
     ConfirmationModal: ApiGroupConfirmationModal,
@@ -190,7 +124,7 @@ const ObjectsAPIFields = ({errors}) => {
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
           onChangeCheck={async () => {
-            if (variablesMapping.length === 0) return true;
+            if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
             setFieldValue('options.variablesMapping', []);
@@ -205,7 +139,7 @@ const ObjectsAPIFields = ({errors}) => {
           key={objectsApiGroup || 'apiGroupErrors'}
           errorMessage={
             <FormattedMessage
-              description="Objects API registrations options: object type select error"
+              description="Objects API prefill options: object type select error"
               defaultMessage="Something went wrong while retrieving the available object types."
             />
           }
@@ -214,8 +148,20 @@ const ObjectsAPIFields = ({errors}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
+            label={
+              <FormattedMessage
+                description="Objects API prefill options 'Objecttype' label"
+                defaultMessage="Objecttype"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="Objects API prefill options 'Objecttype' helpText"
+                defaultMessage="The prefill values will be taken from an object of the selected type."
+              />
+            }
             onChangeCheck={async () => {
-              if (variablesMapping.length === 0) return true;
+              if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
               setFieldValue('options.variablesMapping', []);
@@ -236,6 +182,12 @@ const ObjectsAPIFields = ({errors}) => {
         >
           <ObjectTypeVersionSelect
             name="options.objecttypeVersion"
+            label={
+              <FormattedMessage
+                description="Objects API prefill options 'objecttypeVersion' label"
+                defaultMessage="Version"
+              />
+            }
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
           />

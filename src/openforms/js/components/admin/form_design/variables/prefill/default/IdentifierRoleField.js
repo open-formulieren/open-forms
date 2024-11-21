@@ -2,7 +2,7 @@ import {useField} from 'formik';
 
 import Select from 'components/admin/forms/Select';
 
-import {IDENTIFIER_ROLE_CHOICES} from '../constants';
+import {IDENTIFIER_ROLE_CHOICES} from '../../constants';
 
 const IdentifierRoleField = () => {
   const [fieldProps] = useField('identifierRole');
