@@ -90,7 +90,7 @@ services:
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
-      - ./docker/setup_configuration:/app/data
+      - ./docker/setup_configuration:/app/setup_configuration
       - log:/app/log
       - certifi_ca_bundle:/app/certifi_ca_bundle
     ports:

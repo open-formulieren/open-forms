@@ -6,6 +6,17 @@ from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from .models import ObjectsAPIGroupConfigModel
 
 
+def get_service(slug: str) -> Service:
+    """
+    Try to find a Service and re-raise DoesNotExist with the identifier to make debugging
+    easier
+    """
+    try:
+        return Service.objects.get(slug=slug)
+    except Service.DoesNotExist as e:
+        raise Service.DoesNotExist(f"{str(e)} (identifier = {slug})")
+
+
 class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigModel]):
     """
     Configure configuration groups for the Objects API backend
@@ -23,11 +34,9 @@ class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigMod
         for config in model.groups:
             defaults = {
                 "name": config.name,
-                "objects_service": Service.objects.get(
-                    slug=config.objects_service_identifier
-                ),
-                "objecttypes_service": Service.objects.get(
-                    slug=config.objecttypes_service_identifier
+                "objects_service": get_service(config.objects_service_identifier),
+                "objecttypes_service": get_service(
+                    config.objecttypes_service_identifier
                 ),
                 "catalogue_domain": config.catalogue_domain,
                 "catalogue_rsin": config.catalogue_rsin,
@@ -37,12 +46,10 @@ class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigMod
                 "iot_attachment": config.iot_attachment,
             }
             if config.drc_service_identifier:
-                defaults["drc_service"] = Service.objects.get(
-                    slug=config.drc_service_identifier
-                )
+                defaults["drc_service"] = get_service(config.drc_service_identifier)
             if config.catalogi_service_identifier:
-                defaults["catalogi_service"] = Service.objects.get(
-                    slug=config.catalogi_service_identifier
+                defaults["catalogi_service"] = get_service(
+                    config.catalogi_service_identifier
                 )
 
             ObjectsAPIGroupConfig.objects.update_or_create(

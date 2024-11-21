@@ -10,7 +10,5 @@ if [[ "${RUN_SETUP_CONFIG,,}" =~ ^(true|1|yes)$ ]]; then
     ${SCRIPTPATH}/wait_for_db.sh
 
     src/manage.py migrate
-    src/manage.py setup_configuration \
-                    --yaml-file data/services.yaml \
-                    --yaml-file data/objects_api.yaml
+    src/manage.py setup_configuration --yaml-file setup_configuration/data.yaml
 fi

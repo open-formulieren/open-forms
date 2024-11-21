@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.test import TestCase
 
-from django_setup_configuration.test_utils import load_step_config_from_source
+from django_setup_configuration.test_utils import execute_single_step
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -19,10 +19,6 @@ CONFIG_FILE_PATH_REQUIRED_FIELDS = str(
 CONFIG_FILE_PATH_ALL_FIELDS = str(
     TEST_FILES / "setup_config_objects_api_all_fields.yaml"
 )
-
-
-def get_config_model(path):
-    return load_step_config_from_source(ObjectsAPIConfigurationStep, path)
 
 
 class ObjectsAPIConfigurationStepTests(TestCase):
@@ -69,10 +65,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         )
 
     def test_execute_success(self):
-        step_config_model = get_config_model(CONFIG_FILE_PATH)
-        step = ObjectsAPIConfigurationStep()
-
-        step.execute(step_config_model)
+        execute_single_step(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH)
 
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 2)
 
@@ -107,10 +100,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
     def test_execute_update_existing_config(self):
         ObjectsAPIGroupConfigFactory.create(name="old name", identifier="config-1")
 
-        step_config_model = get_config_model(CONFIG_FILE_PATH)
-        step = ObjectsAPIConfigurationStep()
-
-        step.execute(step_config_model)
+        execute_single_step(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH)
 
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 2)
 
@@ -143,10 +133,9 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config2.iot_attachment, "")
 
     def test_execute_with_required_fields(self):
-        step_config_model = get_config_model(CONFIG_FILE_PATH_REQUIRED_FIELDS)
-        step = ObjectsAPIConfigurationStep()
-
-        step.execute(step_config_model)
+        execute_single_step(
+            ObjectsAPIConfigurationStep, CONFIG_FILE_PATH_REQUIRED_FIELDS
+        )
 
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
 
@@ -167,10 +156,7 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config.iot_attachment, "")
 
     def test_execute_with_all_fields(self):
-        step_config_model = get_config_model(CONFIG_FILE_PATH_ALL_FIELDS)
-        step = ObjectsAPIConfigurationStep()
-
-        step.execute(step_config_model)
+        execute_single_step(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH_ALL_FIELDS)
 
         self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
 
@@ -190,8 +176,6 @@ class ObjectsAPIConfigurationStepTests(TestCase):
         self.assertEqual(config.iot_attachment, "Attachment Informatieobjecttype")
 
     def test_execute_is_idempotent(self):
-        step_config_model = get_config_model(CONFIG_FILE_PATH_ALL_FIELDS)
-        step = ObjectsAPIConfigurationStep()
 
         def make_assertions():
             self.assertEqual(ObjectsAPIGroupConfig.objects.count(), 1)
@@ -211,10 +195,10 @@ class ObjectsAPIConfigurationStepTests(TestCase):
             self.assertEqual(config.iot_submission_csv, "CSV Informatieobjecttype")
             self.assertEqual(config.iot_attachment, "Attachment Informatieobjecttype")
 
-        step.execute(step_config_model)
+        execute_single_step(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH_ALL_FIELDS)
 
         make_assertions()
 
-        step.execute(step_config_model)
+        execute_single_step(ObjectsAPIConfigurationStep, CONFIG_FILE_PATH_ALL_FIELDS)
 
         make_assertions()
