@@ -1634,6 +1634,12 @@
       "value": "Verplaats omlaag"
     }
   ],
+  "DHVDF/": [
+    {
+      "type": 0,
+      "value": "Cosign subject"
+    }
+  ],
   "DJ8XX2": [
     {
       "type": 0,
@@ -2134,6 +2140,12 @@
     {
       "type": 0,
       "value": "Alleen-lezen"
+    }
+  ],
+  "HVG1xy": [
+    {
+      "type": 0,
+      "value": "Cosign content"
     }
   ],
   "HXE3Mm": [
@@ -5107,6 +5119,12 @@
     {
       "type": 0,
       "value": "Maplocatie"
+    }
+  ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "optie 2: € 15,99"
     }
   ],
   "jtWzSW": [

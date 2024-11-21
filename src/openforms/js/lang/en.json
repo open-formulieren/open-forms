@@ -699,6 +699,11 @@
     "description": "Move down icon title",
     "originalDefault": "Move down"
   },
+  "DHVDF/": {
+    "defaultMessage": "Cosign subject",
+    "description": "Confirmation Email for cosign Subject label",
+    "originalDefault": "Cosign subject"
+  },
   "DJ8XX2": {
     "defaultMessage": "Select a registration backend and click the button to copy the configuration.",
     "description": "Copy Objects API prefill configuration from registration backend help text",
@@ -973,6 +978,11 @@
     "defaultMessage": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns.",
     "description": "New document types informative message",
     "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+  },
+  "HVG1xy": {
+    "defaultMessage": "Cosign content",
+    "description": "Confirmation Email for cosign Content label",
+    "originalDefault": "Cosign content"
   },
   "HXE3Mm": {
     "defaultMessage": "Slug of the form, used in URLs",

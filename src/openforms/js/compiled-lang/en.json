@@ -1613,6 +1613,12 @@
       "value": "Move down"
     }
   ],
+  "DHVDF/": [
+    {
+      "type": 0,
+      "value": "Cosign subject"
+    }
+  ],
   "DJ8XX2": [
     {
       "type": 0,
@@ -2113,6 +2119,12 @@
     {
       "type": 0,
       "value": "Read only"
+    }
+  ],
+  "HVG1xy": [
+    {
+      "type": 0,
+      "value": "Cosign content"
     }
   ],
   "HXE3Mm": [
