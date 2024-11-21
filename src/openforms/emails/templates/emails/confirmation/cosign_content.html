@@ -5,16 +5,28 @@
 {% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
 
 {% blocktrans %}
-Dear Sir, Madam,<br>
+Dear reader,<br>
 <br>
-You have submitted the form "{{ tt_openvariable }} form_name {{ tt_closevariable }}" on {{ tt_openvariable }} submission_date {{ tt_closevariable }}.<br>
+You submitted the form "{{ tt_openvariable }} form_name {{ tt_closevariable }}"
+via the website on {{ tt_openvariable }} submission_date {{ tt_closevariable }}.<br>
 <br>
+
+{{ tt_openblock }} if registration_completed {{ tt_closeblock }}<br>
+    <h2>Processing completed</h2>
+
+    Your form submission has been processed.<br>
+{{ tt_openblock }} else {{ tt_closeblock }}<br>
+    {{ tt_openblock }} if waiting_on_cosign {{ tt_closeblock }}<br>
+        <h2>Cosigning required</h2>
+
+        {{ tt_openblock }} cosign_information {{ tt_closeblock }}<br>
+    {{ tt_openblock }} endif {{ tt_closeblock }}<br>
+{{ tt_openblock }} endif {{ tt_closeblock }}<br>
+
 Your reference is: {{ tt_openvariable }} public_reference {{ tt_closevariable }}<br>
 <br>
 
-
-{{ tt_openblock }} cosign_information {{ tt_closeblock }}<br>
-{{ tt_openblock }} summary {{ tt_closeblock }}<br>
+{{ tt_openblock }} confirmation_summary {{ tt_closeblock }}<br>
 {{ tt_openblock }} payment_information {{ tt_closeblock }}<br><br>
 
 <br>

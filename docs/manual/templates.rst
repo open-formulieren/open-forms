@@ -253,6 +253,8 @@ Variabele                           Beschrijving
                                     op kan nemen, ongeacht het stadium waarin de inzending zich bevindt.
 ``{{ registration_completed }}``    Een waar/vals-waarde die aangeeft of de inzending verwerkt is of niet.
                                     Nuttig voor :ref:`manual_templates_conditional_display`.
+``{{ waiting_on_cosign }}``         Een waar/vals-waarde die aangeeft of de inzending wel of niet al
+                                    mede-ondertekend is.
 ``{% appointment_information %}``   Kop "Afspraakinformatie" gevolgd door de afspraakgegevens, zoals product,
                                     locatie, datum en tijdstip.
 ``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie"

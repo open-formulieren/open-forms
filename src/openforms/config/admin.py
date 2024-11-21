@@ -59,7 +59,11 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
         (
             _("Co-sign emails"),
             {
-                "fields": ("cosign_request_template",),
+                "fields": (
+                    "cosign_request_template",
+                    "cosign_confirmation_email_subject",
+                    "cosign_confirmation_email_content",
+                ),
             },
         ),
         (
