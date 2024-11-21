@@ -1060,9 +1060,21 @@ class FormsAPITests(APITestCase):
             {
                 "subject": "Initial subject",
                 "content": "Initial content",
+                "cosignContent": "",
+                "cosignSubject": "",
                 "translations": {
-                    "en": {"content": "", "subject": ""},
-                    "nl": {"content": "Initial content", "subject": "Initial subject"},
+                    "en": {
+                        "content": "",
+                        "subject": "",
+                        "cosignContent": "",
+                        "cosignSubject": "",
+                    },
+                    "nl": {
+                        "content": "Initial content",
+                        "subject": "Initial subject",
+                        "cosignContent": "",
+                        "cosignSubject": "",
+                    },
                 },
             },
         )
@@ -1462,8 +1474,18 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(
             response.data["confirmation_email_template"]["translations"],
             {
-                "en": {"subject": "Initial subject", "content": "Initial content"},
-                "nl": {"subject": "", "content": ""},
+                "en": {
+                    "subject": "Initial subject",
+                    "content": "Initial content",
+                    "cosign_content": "",
+                    "cosign_subject": "",
+                },
+                "nl": {
+                    "subject": "",
+                    "content": "",
+                    "cosign_content": "",
+                    "cosign_subject": "",
+                },
             },
         )
 

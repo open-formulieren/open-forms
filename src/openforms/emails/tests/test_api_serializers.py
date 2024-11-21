@@ -71,6 +71,10 @@ class ConfirmationTemplateSerializerTests(TestCase):
                 "subject_en": "English",
                 "content_nl": "NL: {% appointment_information %} {% payment_information %} {% cosign_information %}",
                 "content_en": "EN: {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                "cosign_subject_nl": "",
+                "cosign_subject_en": "",
+                "cosign_content_nl": "",
+                "cosign_content_en": "",
             },
         )
 

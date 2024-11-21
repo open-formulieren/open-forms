@@ -951,8 +951,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -989,8 +989,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -1027,8 +1027,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -1069,7 +1069,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "{% endif %}"
         )
         ConfirmationEmailTemplateFactory.create(
-            form=submission.form, subject="Confirmation", content=template
+            form=submission.form,
+            subject="Confirmation",
+            content=template,
         )
 
         send_confirmation_email(submission)
@@ -1104,7 +1106,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
         )
         ConfirmationEmailTemplateFactory.create(
-            form=submission.form, subject="Confirmation", content=template
+            form=submission.form,
+            cosign_subject="Confirmation",
+            cosign_content=template,
         )
 
         send_confirmation_email(submission)

@@ -69,11 +69,9 @@ def get_confirmation_email_context_data(submission: Submission) -> dict[str, Any
             # starting with underscores are blocked by the Django template engine.
             "_submission": submission,
             "_form": submission.form,  # should be the same as self.form
-            # TODO: this should use the :func:`openforms.formio.service.format_value`
-            # but be keyed by component.key instead of the label, which
-            # submission.get_printable_data did.
             **get_variables_for_context(submission),
             "public_reference": submission.public_registration_reference,
+            "registration_completed": submission.is_registered,
         }
 
     # use the ``|date`` filter so that the timestamp is first localized to the correct

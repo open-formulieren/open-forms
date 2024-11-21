@@ -95,6 +95,8 @@ class ModelTranslationsSerializer(serializers.Serializer):
         model = parent.Meta.model
         # get the translatable models fields, with deterministic ordering
         _translatable_fields = get_translatable_fields_for_model(model) or []
+        # FIXME: this should possibly only consider fields listed in the parent
+        # serializer, but breaks a lot of tests
         translatable_fields = [
             field.name
             for field in model._meta.get_fields()

@@ -468,6 +468,10 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
+    @property
+    def is_registered(self) -> bool:
+        return self.registration_status == RegistrationStatuses.success
+
     @transaction.atomic()
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
