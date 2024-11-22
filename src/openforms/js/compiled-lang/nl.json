@@ -405,6 +405,12 @@
       "value": "API-groep"
     }
   ],
+  "2nxTFx": [
+    {
+      "type": 0,
+      "value": "Postcode Schema target"
+    }
+  ],
   "2sbkGI": [
     {
       "type": 0,
@@ -951,12 +957,6 @@
     {
       "type": 0,
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
-    }
-  ],
-  "8M403q": [
-    {
-      "type": 0,
-      "value": "Aangeraden velden moeten in principe ingevuld worden, maar ontbrekende waarden blokkeren de voortgang niet. Dit is soms nodig voor juridische redenen. Een component kan niet tegelijk verplicht en aangeraden zijn."
     }
   ],
   "8NbOpb": [
@@ -1846,6 +1846,12 @@
       "value": "in"
     }
   ],
+  "F+UwT0": [
+    {
+      "type": 0,
+      "value": "House letter Schema target"
+    }
+  ],
   "F+cPJR": [
     {
       "type": 0,
@@ -2000,6 +2006,12 @@
     {
       "type": 0,
       "value": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "Ggu4I8": [
+    {
+      "type": 0,
+      "value": "Whether to map the specific subfield of addressNl component"
     }
   ],
   "Gi+cvN": [
@@ -2896,12 +2908,6 @@
       "value": "Selecteer een bestaande formulierdefinitie"
     }
   ],
-  "QL4SGQ": [
-    {
-      "type": 0,
-      "value": "Aangeraden (niet-blokkerend verplicht)"
-    }
-  ],
   "QLTh2N": [
     {
       "type": 0,
@@ -3163,7 +3169,7 @@
   "Su4nqf": [
     {
       "type": 0,
-      "value": "Welke authenticatiemethode de mede-ondertekenaar moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+      "value": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
     }
   ],
   "Sw6TLH": [
@@ -3638,6 +3644,12 @@
     {
       "type": 0,
       "value": "Basis"
+    }
+  ],
+  "Xg9O5Y": [
+    {
+      "type": 0,
+      "value": "House number Schema target"
     }
   ],
   "Xj1uvL": [
@@ -4567,6 +4579,12 @@
       "value": "Payment status update variable mapping"
     }
   ],
+  "fUaRWW": [
+    {
+      "type": 0,
+      "value": "City Schema target"
+    }
+  ],
   "fWcg7I": [
     {
       "type": 0,
@@ -4661,6 +4679,12 @@
     {
       "type": 0,
       "value": "Ben je zeker dat je deze koppeling wil verwijderen?"
+    }
+  ],
+  "gdEbdr": [
+    {
+      "type": 0,
+      "value": "Map specific subfields"
     }
   ],
   "gheRkp": [
@@ -5059,12 +5083,6 @@
     {
       "type": 0,
       "value": "Folder path"
-    }
-  ],
-  "jtWzSW": [
-    {
-      "type": 0,
-      "value": "optie 2: € 15,99"
     }
   ],
   "jy1jTd": [
@@ -5503,10 +5521,22 @@
       "value": "Tooltip"
     }
   ],
+  "o4AUIi": [
+    {
+      "type": 0,
+      "value": "Multiple target paths configured"
+    }
+  ],
   "o5Mfn3": [
     {
       "type": 0,
       "value": "Inclusief kinderen"
+    }
+  ],
+  "o5iEgm": [
+    {
+      "type": 0,
+      "value": "JSON Schema object target"
     }
   ],
   "o6Ju6l": [
@@ -5729,6 +5759,12 @@
     {
       "type": 0,
       "value": "Registratiemethode"
+    }
+  ],
+  "pjbN8m": [
+    {
+      "type": 0,
+      "value": "Street name Schema target"
     }
   ],
   "poZZD9": [
@@ -5985,12 +6021,6 @@
       "value": "Reguliere expressie"
     }
   ],
-  "sxdJ/8": [
-    {
-      "type": 0,
-      "value": "optie 1: € 10,99"
-    }
-  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -6081,6 +6111,12 @@
     {
       "type": 0,
       "value": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen."
+    }
+  ],
+  "u/0IPY": [
+    {
+      "type": 0,
+      "value": "House number addition Schema target"
     }
   ],
   "u3P/1E": [

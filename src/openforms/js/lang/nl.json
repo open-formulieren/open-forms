@@ -195,6 +195,11 @@
     "description": "Objects API group field label",
     "originalDefault": "API group"
   },
+  "2nxTFx": {
+    "defaultMessage": "Postcode Schema target",
+    "description": "Objects registration variable mapping, addressNL component: 'options.postcode schema target' label",
+    "originalDefault": "Postcode Schema target"
+  },
   "2uIYst": {
     "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
     "description": "Camunda 'process definition' help text",
@@ -786,6 +791,11 @@
     "isTranslated": true,
     "originalDefault": "in"
   },
+  "F+UwT0": {
+    "defaultMessage": "House letter Schema target",
+    "description": "'Objects registration variable mapping, addressNL component: 'options.houseLetter schema target' label",
+    "originalDefault": "House letter Schema target"
+  },
   "F+cPJR": {
     "defaultMessage": "de lijst",
     "description": "\"array\" operand type",
@@ -895,6 +905,11 @@
     "defaultMessage": "De tekst om de ingevulde gegevens te bevestigen op de overzichtspagina. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.confirmText help text",
     "originalDefault": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+  },
+  "Ggu4I8": {
+    "defaultMessage": "Whether to map the specific subfield of addressNl component",
+    "description": "'Map specific subfields' checkbox help text",
+    "originalDefault": "Whether to map the specific subfield of addressNl component"
   },
   "Gi+cvN": {
     "defaultMessage": "Gebruik gekoppelde productprijs",
@@ -1749,6 +1764,11 @@
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
   },
+  "Xg9O5Y": {
+    "defaultMessage": "House number Schema target",
+    "description": "Objects registration variable mapping, addressNL component: 'options.houseNumber schema target' label",
+    "originalDefault": "House number Schema target"
+  },
   "YDjQH8": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen.",
     "description": "Objects API registrations options: document types selection error",
@@ -2131,6 +2151,11 @@
     "description": "StUF-ZDS registration paymentStatusUpdateMapping label",
     "originalDefault": "Payment status update variable mapping"
   },
+  "fUaRWW": {
+    "defaultMessage": "City Schema target",
+    "description": "Objects registration variable mapping, addressNL component: 'options.city schema target' label",
+    "originalDefault": "City Schema target"
+  },
   "fWcg7I": {
     "defaultMessage": "Sleutel-waarde paar (object)",
     "description": "data type object",
@@ -2180,6 +2205,11 @@
     "defaultMessage": "Ben je zeker dat je deze koppeling wil verwijderen?",
     "description": "Confirmation message to remove a mapping",
     "originalDefault": "Are you sure that you want to remove this mapping?"
+  },
+  "gdEbdr": {
+    "defaultMessage": "Map specific subfields",
+    "description": "'Map specific subfields' checkbox label",
+    "originalDefault": "Map specific subfields"
   },
   "gheRkp": {
     "defaultMessage": "Er zijn problemen in deze actie: {problems}.",
@@ -2567,6 +2597,16 @@
     "description": "Form 'BRP Personen purpose limitation header value' field help text",
     "originalDefault": "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
   },
+  "o4AUIi": {
+    "defaultMessage": "Multiple target paths configured",
+    "description": "'Multiple target paths configured' registration summary message",
+    "originalDefault": "Multiple target paths configured"
+  },
+  "o5iEgm": {
+    "defaultMessage": "JSON Schema object target",
+    "description": "'JSON Schema object target' label",
+    "originalDefault": "JSON Schema object target"
+  },
   "o6Ju6l": {
     "defaultMessage": "The email addresses to which the submission details will be sent",
     "description": "Email registration options 'attachFilesToEmail' label",
@@ -2646,6 +2686,11 @@
     "defaultMessage": "Registratiemethode",
     "description": "Registration backend label",
     "originalDefault": "Select registration backend"
+  },
+  "pjbN8m": {
+    "defaultMessage": "Street name Schema target",
+    "description": "Objects registration variable mapping, addressNL component: 'options.streetName schema target' label",
+    "originalDefault": "Street name Schema target"
   },
   "poZZD9": {
     "defaultMessage": "Naam",
@@ -2836,6 +2881,11 @@
     "defaultMessage": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen.",
     "description": "Objects API registration options 'medewerkerRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+  },
+  "u/0IPY": {
+    "defaultMessage": "House number addition Schema target",
+    "description": "Objects registration variable mapping, addressNL component: 'options.houseNumberAddition schema target' label",
+    "originalDefault": "House number addition Schema target"
   },
   "u3P/1E": {
     "defaultMessage": "RSIN van de organisatie die eigenaar is van en het INFORMATIEOBJECT aanmaakt.",

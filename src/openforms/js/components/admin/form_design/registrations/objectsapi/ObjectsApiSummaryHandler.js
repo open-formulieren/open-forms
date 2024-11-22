@@ -31,11 +31,25 @@ const ObjectsApiSummaryHandler = ({variable, backendOptions}) => {
     mapping => mapping.variableKey === variable.key
   );
 
-  if (!variableMapping) {
+  if (
+    !variableMapping ||
+    (!variableMapping.targetPath &&
+      variableMapping.options &&
+      !Object.keys(variableMapping.options).length > 0)
+  ) {
     return (
       <FormattedMessage
         description="'Not yet configured' registration summary message"
         defaultMessage="Not yet configured"
+      />
+    );
+  }
+
+  if (variableMapping.options && Object.keys(variableMapping.options).length > 0) {
+    return (
+      <FormattedMessage
+        description="'Multiple target paths configured' registration summary message"
+        defaultMessage="Multiple target paths configured"
       />
     );
   }
