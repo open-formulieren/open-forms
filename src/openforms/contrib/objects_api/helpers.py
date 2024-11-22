@@ -1,12 +1,13 @@
-from typing import Any
-
+from openforms.typing import JSONObject
 from openforms.utils.date import get_today
+
+from .typing import Record
 
 
 def prepare_data_for_registration(
-    data: dict[str, Any],
+    data: JSONObject,
     objecttype_version: int,
-) -> dict[str, Any]:
+) -> Record:
     """Prepare the submission data for sending it to the Objects API."""
 
     return {

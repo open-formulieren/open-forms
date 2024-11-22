@@ -13,10 +13,10 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import DataMapping, JSONEncodable, JSONSerializable
+from openforms.typing import DataMapping, JSONEncodable, JSONObject, JSONSerializable
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
-from openforms.variables.service import get_static_variables
+from openforms.variables.service import VariablesRegistry, get_static_variables
 
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
@@ -157,13 +157,26 @@ class SubmissionValueVariablesState:
             if key in self._variables:
                 del self._variables[key]
 
-    def static_data(self) -> dict:
+    def _get_static_data(self, other_registry: VariablesRegistry | None = None):
+        return {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(
+                submission=self.submission,
+                variables_registry=other_registry,
+            )
+        }
+
+    def get_static_data(
+        self, other_registry: VariablesRegistry | None = None
+    ) -> JSONObject:
+        # Ensure we do not accidentally cache the non-default registry
+        if other_registry is not None:
+            return self._get_static_data(other_registry=other_registry)
         if self._static_data is None:
-            self._static_data = {
-                variable.key: variable.initial_value
-                for variable in get_static_variables(submission=self.submission)
-            }
+            self._static_data = self._get_static_data()
         return self._static_data
+
+    static_data = get_static_data  # DeprecationWarning
 
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []

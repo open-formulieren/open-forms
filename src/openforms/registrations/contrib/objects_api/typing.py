@@ -51,11 +51,11 @@ class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):
 
 class AddressNLObjecttypeVariableMapping(TypedDict):
     postcode: NotRequired[list[str]]
-    houseLetter: NotRequired[list[str]]
-    houseNumber: NotRequired[list[str]]
-    houseNumberAddition: NotRequired[list[str]]
+    house_letter: NotRequired[list[str]]
+    house_number: NotRequired[list[str]]
+    house_number_addition: NotRequired[list[str]]
     city: NotRequired[list[str]]
-    streetName: NotRequired[list[str]]
+    street_name: NotRequired[list[str]]
 
 
 class ObjecttypeVariableMapping(TypedDict):

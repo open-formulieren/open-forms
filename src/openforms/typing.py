@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import datetime
 import decimal
 import uuid
-from typing import TYPE_CHECKING, Any, NewType, Protocol, TypeAlias
+from typing import TYPE_CHECKING, Any, NewType, Protocol
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
@@ -14,19 +16,19 @@ if TYPE_CHECKING:
 else:
     _StrOrPromise = str
 
-JSONPrimitive: TypeAlias = str | int | float | bool | None
+type JSONPrimitive = str | int | float | bool | None
 
-JSONValue: TypeAlias = "JSONPrimitive | JSONObject | list[JSONValue]"
+type JSONValue = JSONPrimitive | JSONObject | list[JSONValue]
 
-JSONObject: TypeAlias = dict[str, JSONValue]
+type JSONObject = dict[str, JSONValue]
 
-DataMapping: TypeAlias = dict[str, Any]  # key: value pair
+type DataMapping = dict[str, Any]  # key: value pair
 
-AnyRequest: TypeAlias = HttpRequest | Request
+type AnyRequest = HttpRequest | Request
 
 RegistrationBackendKey = NewType("RegistrationBackendKey", str)
 
-StrOrPromise: TypeAlias = _StrOrPromise
+type StrOrPromise = _StrOrPromise
 """Either ``str`` or a ``Promise`` object returned by the lazy ``gettext`` functions."""
 
 
@@ -35,8 +37,15 @@ class RequestHandler(Protocol):
 
 
 # Types that `django.core.serializers.json.DjangoJSONEncoder` can handle
-DjangoJSONEncodable: TypeAlias = (
-    "JSONValue | datetime.datetime | datetime.date | datetime.time | datetime.timedelta | decimal.Decimal | uuid.UUID | Promise"
+type DjangoJSONEncodable = (
+    JSONValue
+    | datetime.datetime
+    | datetime.date
+    | datetime.time
+    | datetime.timedelta
+    | decimal.Decimal
+    | uuid.UUID
+    | Promise
 )
 
 
@@ -44,4 +53,4 @@ class JSONSerializable(Protocol):
     def __json__(self) -> DjangoJSONEncodable: ...
 
 
-JSONEncodable: TypeAlias = "DjangoJSONEncodable | JSONSerializable"
+type JSONEncodable = DjangoJSONEncodable | JSONSerializable

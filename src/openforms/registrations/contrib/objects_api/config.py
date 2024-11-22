@@ -59,6 +59,10 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
         required=False,
     )
     # specific options according to the variable key/type
+    # TODO: validate the shape of the options based on the component type that
+    # ``variable_key`` points to. However - we currently can't do this because the
+    # registration backend options are saved before the form definitions/steps are
+    # saved through the frontend/API.
     options = JSONFieldWithSchema(default=dict, required=False)
 
 
