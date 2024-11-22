@@ -8,7 +8,6 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
-import {isAsync} from 'utils/functions';
 
 import {useSynchronizeSelect} from './hooks';
 
@@ -67,20 +66,6 @@ const ObjectTypeSelect = ({
     setFieldValue(versionFieldName, undefined); // clears the value
   }, [loading, value]);
 
-  let handleOnChange;
-  if (isAsync(onChangeCheck)) {
-    // onChange handler should be async for the new confirmation modal
-    handleOnChange = async selectedOption => {
-      const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
-      if (okToProceed) setValue(selectedOption.value);
-    };
-  } else {
-    handleOnChange = selectedOption => {
-      const okToProceed = onChangeCheck === undefined || onChangeCheck();
-      if (okToProceed) setValue(selectedOption.value);
-    };
-  }
-
   return (
     <FormRow>
       <Field name={name} required label={label} helpText={helpText} noManageChildProps>
@@ -90,7 +75,10 @@ const ObjectTypeSelect = ({
           isLoading={loading}
           isDisabled={!objectsApiGroup}
           required
-          onChange={handleOnChange}
+          onChange={async selectedOption => {
+            const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
+            if (okToProceed) setValue(selectedOption.value);
+          }}
         />
       </Field>
     </FormRow>
@@ -104,7 +92,7 @@ ObjectTypeSelect.propTypes = {
   name: PropTypes.string,
   /**
    * Optional callback to confirm the change. Return `true` to continue with the change,
-   * return `false` to abort it.
+   * return `false` to abort it. The callback function must be async.
    */
   onChangeCheck: PropTypes.func,
   /**
