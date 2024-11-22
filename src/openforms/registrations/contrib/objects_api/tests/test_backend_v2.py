@@ -1042,3 +1042,185 @@ class V2HandlerTests(TestCase):
 
                 data = record_data["data"]
                 self.assertEqual(data["authn"], expected)
+
+    def test_addressNl_with_specific_target_paths(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "addressNl",
+                    "type": "addressNL",
+                    "label": "AddressNl component",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "addressNl": {
+                    "city": "",
+                    "postcode": "1025 xm",
+                    "streetName": "",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "secretStreetCity": "",
+                    "houseNumberAddition": "2",
+                },
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "addressNl",
+                    "options": {
+                        "postcode": ["addressNL", "postcode"],
+                        "houseLetter": ["addressNL", "houseLetter"],
+                        "houseNumber": ["addressNL", "houseNumber"],
+                        "houseNumberAddition": [
+                            "addressNL",
+                            "houseNumberAddition",
+                        ],
+                    },
+                }
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+        self.assertEqual(
+            data,
+            {
+                "addressNL": {
+                    "postcode": "1025 xm",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "houseNumberAddition": "2",
+                }
+            },
+        )
+
+    def test_addressNl_with_specific_target_paths_mapped_and_missing_submitted_data(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "addressNl",
+                    "type": "addressNL",
+                    "label": "AddressNl component",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "addressNl": {
+                    "city": "",
+                    "postcode": "1025 xm",
+                    "streetName": "",
+                    "houseLetter": "",
+                    "houseNumber": "73",
+                    "secretStreetCity": "",
+                    "houseNumberAddition": "",
+                },
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "addressNl",
+                    "options": {
+                        "postcode": ["addressNL", "postcode"],
+                        "houseLetter": ["addressNL", "houseLetter"],
+                        "houseNumber": ["addressNL", "houseNumber"],
+                        "houseNumberAddition": [
+                            "addressNL",
+                            "houseNumberAddition",
+                        ],
+                    },
+                }
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+        self.assertEqual(
+            data,
+            {
+                "addressNL": {
+                    "postcode": "1025 xm",
+                    "houseNumber": "73",
+                }
+            },
+        )
+
+    def test_addressNl_with_object_target_path(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "addressNl",
+                    "type": "addressNL",
+                    "label": "AddressNl component",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "addressNl": {
+                    "city": "",
+                    "postcode": "1025 xm",
+                    "streetName": "",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "secretStreetCity": "",
+                    "houseNumberAddition": "2",
+                },
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {"variable_key": "addressNl", "target_path": ["addressNL"]}
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(
+            data,
+            {
+                "addressNL": {
+                    "postcode": "1025 xm",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "houseNumberAddition": "2",
+                }
+            },
+        )

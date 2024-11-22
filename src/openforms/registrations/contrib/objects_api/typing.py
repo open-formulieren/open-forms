@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Required, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypeAlias, TypedDict
 from uuid import UUID
 
 ConfigVersion: TypeAlias = Literal[1, 2]
@@ -49,9 +49,19 @@ class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):
     payment_status_update_json: str
 
 
+class AddressNLObjecttypeVariableMapping(TypedDict):
+    postcode: NotRequired[list[str]]
+    houseLetter: NotRequired[list[str]]
+    houseNumber: NotRequired[list[str]]
+    houseNumberAddition: NotRequired[list[str]]
+    city: NotRequired[list[str]]
+    streetName: NotRequired[list[str]]
+
+
 class ObjecttypeVariableMapping(TypedDict):
     variable_key: str
-    target_path: list[str]
+    target_path: NotRequired[list[str]]
+    options: NotRequired[AddressNLObjecttypeVariableMapping]
 
 
 class RegistrationOptionsV2(_BaseRegistrationOptions, total=False):

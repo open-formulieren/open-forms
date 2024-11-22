@@ -48,6 +48,7 @@ class TargetPathsListView(views.APIView):
                 variable_schema=input_serializer.validated_data["variable_json_schema"],
                 target_schema=json_schema,
             )
+            if json_path.segments
         ]
 
         output_serializer = TargetPathsSerializer(many=True, instance=return_data)

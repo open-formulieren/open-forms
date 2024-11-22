@@ -799,3 +799,241 @@ export const WithValidationErrors = {
     await userEvent.click(editIcon);
   },
 };
+
+export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'AddressNL',
+        key: 'addressNl',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {postcode: '', house_letter: '', house_number: '', house_number_addition: ''},
+      },
+    ],
+    availableComponents: {
+      addressNl: {
+        type: 'addressNL',
+        key: 'addressNl',
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [],
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mockTargetPathsPost({
+          object: [
+            {
+              targetPath: ['other', 'path'],
+              isRequired: false,
+              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}},
+            },
+          ],
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+          number: [
+            {
+              targetPath: ['number', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'number'},
+            },
+          ],
+        }),
+      ],
+    },
+  },
+
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    await userEvent.click(editIcons[0]);
+
+    const modalForm = await canvas.findByTestId('modal-form');
+    expect(modalForm).toBeVisible();
+    expect(modalForm).toHaveFormValues({});
+    const modal = within(modalForm);
+
+    await step('Object target paths', async () => {
+      const targetPathDropdown = modal.getByRole('combobox');
+      expect(targetPathDropdown).toBeVisible();
+
+      await modal.findByRole('option', {name: 'other > path'});
+
+      // Now retrieve all options after '[other,path]' option has been loaded
+      const updatedOptions = within(targetPathDropdown).getAllByRole('option');
+
+      expect(updatedOptions).toHaveLength(2);
+      expect(updatedOptions[0]).toHaveTextContent('-----');
+      expect(updatedOptions[1]).toHaveTextContent('other > path');
+
+      await userEvent.selectOptions(targetPathDropdown, '["other","path"]');
+    });
+
+    await step('String target paths', async () => {
+      const targetPathDropdown = modal.getByRole('combobox');
+      await userEvent.selectOptions(targetPathDropdown, '');
+
+      const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
+        name: 'Map specific subfields',
+      });
+      userEvent.click(specificTargetsCheckbox);
+
+      const postcodeSelect = await canvas.findByLabelText('Postcode Schema target');
+      const houseNumberSelect = await canvas.findByLabelText('House number Schema target');
+      const houseLetterSelect = await canvas.findByLabelText('House letter Schema target');
+      const houseNumberAdditionSelect = await canvas.findByLabelText(
+        'House number addition Schema target'
+      );
+      const citySelect = await canvas.findByLabelText('City Schema target');
+      const streetNameSelect = await canvas.findByLabelText('Street name Schema target');
+
+      expect(postcodeSelect).toBeVisible();
+      expect(houseNumberSelect).toBeVisible();
+      expect(houseLetterSelect).toBeVisible();
+      expect(houseNumberAdditionSelect).toBeVisible();
+      expect(citySelect).toBeVisible();
+      expect(streetNameSelect).toBeVisible();
+
+      expect(citySelect).toBeDisabled();
+      expect(streetNameSelect).toBeDisabled();
+    });
+  },
+};
+
+export const AddressNLMappingSpecificTargetsDeriveAddress = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'AddressNL',
+        key: 'addressNl',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: {postcode: '', house_letter: '', house_number: '', house_number_addition: ''},
+        deriveAddress: true,
+      },
+    ],
+    availableComponents: {
+      addressNl: {
+        type: 'addressNL',
+        key: 'addressNl',
+        deriveAddress: true,
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [],
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mockTargetPathsPost({
+          object: [
+            {
+              targetPath: ['other', 'path'],
+              isRequired: false,
+              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}},
+            },
+          ],
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+          number: [
+            {
+              targetPath: ['number', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'number'},
+            },
+          ],
+        }),
+      ],
+    },
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    await userEvent.click(editIcons[0]);
+
+    const modalForm = await canvas.findByTestId('modal-form');
+    const modal = within(modalForm);
+
+    const targetPathDropdown = modal.getByRole('combobox');
+    await userEvent.selectOptions(targetPathDropdown, '');
+
+    const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
+      name: 'Map specific subfields',
+    });
+    await userEvent.click(specificTargetsCheckbox);
+
+    const postcodeSelect = await canvas.findByLabelText('Postcode Schema target');
+    const houseNumberSelect = await canvas.findByLabelText('House number Schema target');
+    const houseLetterSelect = await canvas.findByLabelText('House letter Schema target');
+    const houseNumberAdditionSelect = await canvas.findByLabelText(
+      'House number addition Schema target'
+    );
+    const citySelect = await canvas.findByLabelText('City Schema target');
+    const streetNameSelect = await canvas.findByLabelText('Street name Schema target');
+
+    expect(postcodeSelect).toBeVisible();
+    expect(houseNumberSelect).toBeVisible();
+    expect(houseLetterSelect).toBeVisible();
+    expect(houseNumberAdditionSelect).toBeVisible();
+    expect(citySelect).toBeVisible();
+    expect(streetNameSelect).toBeVisible();
+
+    expect(citySelect).not.toBeDisabled();
+    expect(streetNameSelect).not.toBeDisabled();
+  },
+};

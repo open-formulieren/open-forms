@@ -405,6 +405,12 @@
       "value": "API group"
     }
   ],
+  "2nxTFx": [
+    {
+      "type": 0,
+      "value": "Postcode Schema target"
+    }
+  ],
   "2sbkGI": [
     {
       "type": 0,
@@ -947,12 +953,6 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
-    }
-  ],
-  "8M403q": [
-    {
-      "type": 0,
-      "value": "Soft required fields should be filled out, but empty values don't block the users' progress. Sometimes this is needed for legal reasons. A component cannot be hard and soft required at the same time."
     }
   ],
   "8NbOpb": [
@@ -1825,6 +1825,12 @@
       "value": "in"
     }
   ],
+  "F+UwT0": [
+    {
+      "type": 0,
+      "value": "House letter Schema target"
+    }
+  ],
   "F+cPJR": [
     {
       "type": 0,
@@ -1979,6 +1985,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+    }
+  ],
+  "Ggu4I8": [
+    {
+      "type": 0,
+      "value": "Whether to map the specific subfield of addressNl component"
     }
   ],
   "Gi+cvN": [
@@ -2879,12 +2891,6 @@
       "value": "Select existing form definition"
     }
   ],
-  "QL4SGQ": [
-    {
-      "type": 0,
-      "value": "Soft required"
-    }
-  ],
   "QLTh2N": [
     {
       "type": 0,
@@ -3621,6 +3627,12 @@
     {
       "type": 0,
       "value": "Basic"
+    }
+  ],
+  "Xg9O5Y": [
+    {
+      "type": 0,
+      "value": "House number Schema target"
     }
   ],
   "Xj1uvL": [
@@ -4545,6 +4557,12 @@
       "value": "Payment status update variable mapping"
     }
   ],
+  "fUaRWW": [
+    {
+      "type": 0,
+      "value": "City Schema target"
+    }
+  ],
   "fWcg7I": [
     {
       "type": 0,
@@ -4639,6 +4657,12 @@
     {
       "type": 0,
       "value": "Are you sure that you want to remove this mapping?"
+    }
+  ],
+  "gdEbdr": [
+    {
+      "type": 0,
+      "value": "Map specific subfields"
     }
   ],
   "gheRkp": [
@@ -5037,12 +5061,6 @@
     {
       "type": 0,
       "value": "Folder path"
-    }
-  ],
-  "jtWzSW": [
-    {
-      "type": 0,
-      "value": "option 2: € 15,99"
     }
   ],
   "jy1jTd": [
@@ -5481,10 +5499,22 @@
       "value": "Tooltip"
     }
   ],
+  "o4AUIi": [
+    {
+      "type": 0,
+      "value": "Multiple target paths configured"
+    }
+  ],
   "o5Mfn3": [
     {
       "type": 0,
       "value": "Include children"
+    }
+  ],
+  "o5iEgm": [
+    {
+      "type": 0,
+      "value": "JSON Schema object target"
     }
   ],
   "o6Ju6l": [
@@ -5707,6 +5737,12 @@
     {
       "type": 0,
       "value": "Select registration backend"
+    }
+  ],
+  "pjbN8m": [
+    {
+      "type": 0,
+      "value": "Street name Schema target"
     }
   ],
   "poZZD9": [
@@ -5963,12 +5999,6 @@
       "value": "Regular expression for city"
     }
   ],
-  "sxdJ/8": [
-    {
-      "type": 0,
-      "value": "option 1: € 10,99"
-    }
-  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -6059,6 +6089,12 @@
     {
       "type": 0,
       "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+    }
+  ],
+  "u/0IPY": [
+    {
+      "type": 0,
+      "value": "House number addition Schema target"
     }
   ],
   "u3P/1E": [

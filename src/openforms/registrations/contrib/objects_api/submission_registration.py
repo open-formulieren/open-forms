@@ -10,6 +10,7 @@ from django.db.models import F
 
 import glom
 
+from openforms.api.utils import underscore_to_camel
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import (
     CatalogiClient,
@@ -472,7 +473,9 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
     @staticmethod
     def _get_data(
-        variables_values: FormioData, variables_mapping: list[ObjecttypeVariableMapping]
+        variables_values: FormioData,
+        variables_mapping: list[ObjecttypeVariableMapping],
+        component_key_type_mappings: dict[str, str] | None = None,
     ) -> JSONObject:
         record_data: JSONObject = {}
 
@@ -482,7 +485,6 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 # This should only happen for payment status update,
                 # where only a subset of the variables are updated.
                 continue
-            target_path = mapping["target_path"]
 
             # Type hint is wrong: currently some static variables are of type date/datetime
             value = cast(Any, variables_values[variable_key])
@@ -490,8 +492,43 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             # Comply with JSON Schema "format" specs:
             if isinstance(value, (datetime, date)):
                 value = value.isoformat()
+            target_path = mapping.get("target_path")
+            # TODO
+            # This needs to be a more generic solution (no need for if component_type == '...' code)
+            if (
+                component_key_type_mappings
+                and component_key_type_mappings.get(variable_key) == "addressNL"
+            ):
+                assert isinstance(value, dict)
 
-            glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
+                filtered_value = {k: v for k, v in value.items() if v}
+                if target_path:
+                    filtered_value.pop("secretStreetCity", None)
+                    glom.assign(
+                        record_data,
+                        glom.Path(*target_path),
+                        filtered_value,
+                        missing=dict,
+                    )
+
+                elif subfields_mapping := mapping.get("options"):
+                    for subfield_key, subfield_value in subfields_mapping.items():
+                        # TODO
+                        # We don't want to deal with snake/camel conversions, data model needs to be restructured
+                        # and the frontend will be affected too (see comment in PR #4751)
+                        subfield_key = underscore_to_camel(subfield_key)
+                        if subfield_key not in filtered_value:
+                            continue
+
+                        glom.assign(
+                            record_data,
+                            glom.Path(*subfield_value),
+                            filtered_value[subfield_key],
+                            missing=dict,
+                        )
+
+            else:
+                glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
 
         return record_data
 
@@ -520,6 +557,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         state = submission.load_submission_value_variables_state()
         dynamic_values = FormioData(state.get_data())
+        component_key_type_mappings = {}
 
         # For every file upload component, we alter the value of the variable to be
         # the Document API URL(s).
@@ -556,6 +594,8 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 # update the value after processing to make it objects-API suitable
                 dynamic_values[key] = self._process_value(submission_value, component)
 
+                component_key_type_mappings.update({key: component["type"]})
+
         static_values = state.static_data()
         static_values.update(
             {
@@ -569,7 +609,9 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_values = FormioData({**dynamic_values, **static_values})
         variables_mapping = options["variables_mapping"]
-        data = self._get_data(variables_values, variables_mapping)
+        data = self._get_data(
+            variables_values, variables_mapping, component_key_type_mappings
+        )
 
         record_data = prepare_data_for_registration(
             data=data,

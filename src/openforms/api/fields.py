@@ -9,6 +9,19 @@ class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
     pass
 
 
+class JSONFieldWithSchema(serializers.JSONField):
+    """
+    Custom subclass to register a custom drf-jsonschema-serializer converter.
+    """
+
+    @property
+    def schema(self):
+        return {
+            "type": "object",
+            "properties": {},
+        }
+
+
 class RelatedFieldFromContext(serializers.HyperlinkedRelatedField):
     """
     Look up the object in the serializer context.

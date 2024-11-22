@@ -10,10 +10,11 @@ from drf_jsonschema_serializer.convert import converter
 from drf_jsonschema_serializer.converters import (
     BooleanFieldConverter,
     PrimaryKeyRelatedFieldConverter,
+    SerializerJSONFieldConverter,
 )
 from rest_framework import serializers
 
-from .fields import PrimaryKeyRelatedAsChoicesField
+from .fields import JSONFieldWithSchema, PrimaryKeyRelatedAsChoicesField
 
 
 @converter
@@ -60,3 +61,13 @@ class NullBooleanFieldConverter(BooleanFieldConverter):
             ]
 
         return result
+
+
+@converter
+class JSONFieldConverter(SerializerJSONFieldConverter):
+    field_class = JSONFieldWithSchema
+
+    def convert(self, field):
+        schema = super().convert(field)
+        schema.update(field.schema)
+        return schema
