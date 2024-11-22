@@ -500,7 +500,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "streetName": "",
                     "houseLetter": "d",
                     "houseNumber": "73",
-                    "secretStreetCity": "",
                     "houseNumberAddition": "2",
                 }
             },
@@ -1292,6 +1291,8 @@ class V2HandlerTests(TestCase):
                     "houseLetter": "d",
                     "houseNumber": "73",
                     "houseNumberAddition": "2",
+                    "streetName": "",
+                    "city": "",
                 }
             },
         )
