@@ -1,5 +1,6 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
+import {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
@@ -8,14 +9,8 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 
-import DefaultFields from './DefaultFields';
-import ObjectsAPIFields from './ObjectsAPIFields';
 import PluginField from './PluginField';
-
-const PLUGIN_COMPONENT_MAPPING = {
-  objects_api: ObjectsAPIFields,
-  default: DefaultFields,
-};
+import PLUGIN_COMPONENT_MAPPING from './constants';
 
 const PrefillConfigurationForm = ({
   onSubmit,
@@ -23,12 +18,7 @@ const PrefillConfigurationForm = ({
   attribute = '',
   identifierRole = 'main',
   // TODO: find a better way to specify this based on the selected plugin
-  options = {
-    objectsApiGroup: '',
-    objecttype: '',
-    objecttypeVersion: null,
-    variablesMapping: [],
-  },
+  options = {},
   errors,
 }) => {
   return (
@@ -40,15 +30,25 @@ const PrefillConfigurationForm = ({
         options,
       }}
       onSubmit={(values, actions) => {
-        // TODO should be implemented in https://github.com/open-formulieren/open-forms/issues/4693
-        console.log(values);
         onSubmit(values);
         actions.setSubmitting(false);
       }}
     >
       {({handleSubmit, values}) => {
         const PluginFormComponent =
-          PLUGIN_COMPONENT_MAPPING[values.plugin] ?? PLUGIN_COMPONENT_MAPPING.default;
+          PLUGIN_COMPONENT_MAPPING[values.plugin]?.component ??
+          PLUGIN_COMPONENT_MAPPING.default.component;
+        const ToggleCopyComponent =
+          PLUGIN_COMPONENT_MAPPING[values.plugin]?.toggleCopyComponent ??
+          PLUGIN_COMPONENT_MAPPING.default.toggleCopyComponent;
+
+        const [showCopyButton, setShowCopyButton] = useState(false);
+
+        const handleToggle = event => {
+          event.preventDefault();
+          setShowCopyButton(!showCopyButton);
+        };
+
         return (
           <>
             <Fieldset extraClassName="module--spaceless">
@@ -63,12 +63,25 @@ const PrefillConfigurationForm = ({
                   }
                   errors={errors.plugin}
                 >
-                  <PluginField />
+                  <>
+                    <PluginField />
+                    {ToggleCopyComponent ? (
+                      <div style={{marginLeft: '10px', marginTop: '5px'}}>
+                        <ToggleCopyComponent handleToggle={handleToggle} />
+                      </div>
+                    ) : null}
+                  </>
                 </Field>
               </FormRow>
             </Fieldset>
 
-            <PluginFormComponent errors={errors} />
+            <PluginFormComponent
+              errors={errors}
+              {...(ToggleCopyComponent && {
+                showCopyButton: showCopyButton,
+                setShowCopyButton: setShowCopyButton,
+              })}
+            />
 
             <SubmitRow>
               <SubmitAction

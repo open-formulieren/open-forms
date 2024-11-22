@@ -9,9 +9,9 @@ import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
+import {ErrorsType} from '../types';
 import AttributeField from './AttributeField';
 import IdentifierRoleField from './IdentifierRoleField';
-import {ErrorsType} from './types';
 
 // Load the possible prefill attributes
 // XXX: this would benefit from client-side caching

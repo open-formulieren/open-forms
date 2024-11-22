@@ -69,6 +69,18 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           }
         >
           <ObjectTypeSelect
+            label={
+              <FormattedMessage
+                description="Objects API registration options 'Objecttype' label"
+                defaultMessage="Objecttype"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="Objects API registration options 'Objecttype' helpText"
+                defaultMessage="The registration result will be an object from the selected type."
+              />
+            }
             onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmation();
@@ -87,7 +99,14 @@ const V2ConfigFields = ({apiGroupChoices}) => {
             />
           }
         >
-          <ObjectTypeVersionSelect />
+          <ObjectTypeVersionSelect
+            label={
+              <FormattedMessage
+                description="Objects API registration options 'objecttypeVersion' label"
+                defaultMessage="Version"
+              />
+            }
+          />
         </ErrorBoundary>
       </Fieldset>
 

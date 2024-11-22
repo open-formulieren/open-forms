@@ -1,5 +1,4 @@
 import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
-import selectEvent from 'react-select-event';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -8,7 +7,7 @@ import {
 } from 'components/admin/form_design/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import {serializeValue} from 'components/admin/forms/VariableMapping';
-import {getReactSelectContainer} from 'utils/storybookTestHelpers';
+import {getReactSelectContainer, rsSelect} from 'utils/storybookTestHelpers';
 
 import DMNActionConfig from './DMNActionConfig';
 
@@ -232,7 +231,7 @@ export const Empty = {
 
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
-      await selectEvent.select(formVarsDropdowns, 'Name');
+      await rsSelect(formVarsDropdowns, 'Name');
       // this is super flaky for some reason on both Chromium and Firefox :/
       await waitFor(async () => {
         await userEvent.selectOptions(dmnVarsDropdown, 'Camunda variable');

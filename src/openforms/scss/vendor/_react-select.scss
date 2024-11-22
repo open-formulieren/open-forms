@@ -26,4 +26,8 @@
     var(--of-admin-select-max-inline-size)
   );
   max-inline-size: var(--of-admin-select-max-inline-size);
+
+  &__menu-portal {
+    z-index: 4 !important; // one higher than the react-modal z-index
+  }
 }

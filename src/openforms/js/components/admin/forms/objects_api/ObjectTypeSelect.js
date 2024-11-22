@@ -1,6 +1,5 @@
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
 import {usePrevious, useUpdateEffect} from 'react-use';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -24,6 +23,8 @@ const ObjectTypeSelect = ({
   name = 'objecttype',
   apiGroupFieldName = 'objectsApiGroup',
   onChangeCheck,
+  label,
+  helpText,
   versionFieldName = 'objecttypeVersion',
 }) => {
   const [fieldProps, , fieldHelpers] = useField(name);
@@ -67,31 +68,15 @@ const ObjectTypeSelect = ({
 
   return (
     <FormRow>
-      <Field
-        name={name}
-        required
-        label={
-          <FormattedMessage
-            description="Objects API registration options 'Objecttype' label"
-            defaultMessage="Objecttype"
-          />
-        }
-        helpText={
-          <FormattedMessage
-            description="Objects API registration options 'Objecttype' helpText"
-            defaultMessage="The registration result will be an object from the selected type."
-          />
-        }
-        noManageChildProps
-      >
+      <Field name={name} required label={label} helpText={helpText} noManageChildProps>
         <ReactSelect
           name={name}
           options={options}
           isLoading={loading}
           isDisabled={!objectsApiGroup}
           required
-          onChange={selectedOption => {
-            const okToProceed = onChangeCheck === undefined || onChangeCheck();
+          onChange={async selectedOption => {
+            const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
             if (okToProceed) setValue(selectedOption.value);
           }}
         />
@@ -107,9 +92,17 @@ ObjectTypeSelect.propTypes = {
   name: PropTypes.string,
   /**
    * Optional callback to confirm the change. Return `true` to continue with the change,
-   * return `false` to abort it.
+   * return `false` to abort it. The callback function must be async.
    */
   onChangeCheck: PropTypes.func,
+  /**
+   * The label that will be shown before the field
+   */
+  label: PropTypes.string.isRequired,
+  /**
+   * The help text to explain what the field is for
+   */
+  helpText: PropTypes.string.isRequired,
   /**
    * Name of the field holding the selected API group. The value is used in the API
    * call to get the available object types.

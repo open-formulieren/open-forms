@@ -2,6 +2,7 @@ import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/compone
 import classNames from 'classnames';
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
+import React, {createContext, useContext} from 'react';
 import ReactSelect from 'react-select';
 
 const initialStyles = getReactSelectStyles();
@@ -66,6 +67,9 @@ const getValue = (options, value) => {
   return null;
 };
 
+export const ReactSelectContext = createContext({parentSelector: () => document.body});
+ReactSelectContext.displayName = 'ReactSelectContext';
+
 /**
  * A select dropdown backed by react-select for legacy usage.
  *
@@ -74,22 +78,26 @@ const getValue = (options, value) => {
  * @deprecated - if possible, refactor the form to use Formik and use the Formik-enabled
  * variant.
  */
-const SelectWithoutFormik = ({name, options, value, className, onChange, ...props}) => (
-  <ReactSelect
-    inputId={`id_${name}`}
-    name={name}
-    className={classNames('admin-react-select', className)}
-    classNamePrefix="admin-react-select"
-    styles={styles}
-    menuPlacement="auto"
-    options={options}
-    value={getValue(options, value)}
-    onChange={selectedOption => {
-      onChange(selectedOption === null ? undefined : selectedOption.value);
-    }}
-    {...props}
-  />
-);
+const SelectWithoutFormik = ({name, options, value, className, onChange, ...props}) => {
+  const {parentSelector} = useContext(ReactSelectContext);
+  return (
+    <ReactSelect
+      inputId={`id_${name}`}
+      name={name}
+      className={classNames('admin-react-select', className)}
+      classNamePrefix="admin-react-select"
+      styles={styles}
+      menuPlacement="auto"
+      menuPortalTarget={parentSelector()}
+      options={options}
+      value={getValue(options, value)}
+      onChange={selectedOption => {
+        onChange(selectedOption === null ? undefined : selectedOption.value);
+      }}
+      {...props}
+    />
+  );
+};
 
 /**
  * A select dropdown backed by react-select for Formik forms.
@@ -97,6 +105,7 @@ const SelectWithoutFormik = ({name, options, value, className, onChange, ...prop
  * Any additional props are forwarded to the underlying ReactSelect component.
  */
 const SelectWithFormik = ({name, options, className, ...props}) => {
+  const {parentSelector} = useContext(ReactSelectContext);
   const [fieldProps, , fieldHelpers] = useField(name);
   const {value} = fieldProps;
   const {setValue} = fieldHelpers;
@@ -107,6 +116,7 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
       classNamePrefix="admin-react-select"
       styles={styles}
       menuPlacement="auto"
+      menuPortalTarget={parentSelector()}
       options={options}
       {...fieldProps}
       value={getValue(options, value)}

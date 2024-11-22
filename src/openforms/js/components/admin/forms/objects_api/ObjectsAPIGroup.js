@@ -59,8 +59,8 @@ const ObjectsAPIGroup = ({
           options={normalizedOptions}
           value={normalizedOptions.find(option => option.value === normalizedValue)}
           required={required}
-          onChange={selectedOption => {
-            const okToProceed = onChangeCheck === undefined || onChangeCheck();
+          onChange={async selectedOption => {
+            const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
             if (okToProceed) {
               // normalize empty string back to null
               const newValue = selectedOption ? selectedOption.value : null;

@@ -39,6 +39,7 @@ const VariableMappingRow = ({
   prefix,
   loading,
   directionIcon,
+  variableName,
   propertyName,
   propertyChoices,
   propertySelectLabel,
@@ -50,6 +51,7 @@ const VariableMappingRow = ({
   const intl = useIntl();
   const {getFieldProps, setFieldValue} = useFormikContext();
 
+  const fullVariableName = `${prefix}.${variableName}`;
   const fullPropertyName = `${prefix}.${propertyName}`;
   const {value: propertyValue, ...propertyProps} = getFieldProps(fullPropertyName);
   const serializedPropertyValue = serializeValue(propertyValue);
@@ -66,10 +68,10 @@ const VariableMappingRow = ({
   return (
     <tr>
       <td>
-        <Field name={`${prefix}.formVariable`}>
+        <Field name={fullVariableName}>
           <VariableSelection
             includeStaticVariables={includeStaticVariables}
-            {...getFieldProps(`${prefix}.formVariable`)}
+            {...getFieldProps(fullVariableName)}
             aria-label={intl.formatMessage({
               description: 'Accessible label for (form) variable dropdown',
               defaultMessage: 'Form variable',
@@ -118,7 +120,7 @@ const VariableMappingRow = ({
 
 VariableMappingRow.propTypes = {
   /**
-   * Prefix for the nested fields (formVariable, $propertyName) to its parent. Used to
+   * Prefix for the nested fields ($variableName, $propertyName) to its parent. Used to
    * build the fully qualified names of individual form fields.
    */
   prefix: PropTypes.string.isRequired,
@@ -153,6 +155,14 @@ VariableMappingRow.propTypes = {
    */
   propertySelectLabel: PropTypes.string.isRequired,
   onRemove: PropTypes.func.isRequired,
+
+  /**
+   * Name of the variable nested inside each mapping item.
+   *
+   * This is the form variable to which the property will be mapped.
+   */
+  variableName: PropTypes.string.isRequired,
+
   /**
    * Indicates if static variables can be selected for the mapping or not. Assigning
    * to static variables is not possible, but reading from them and assigning the value
@@ -185,6 +195,7 @@ const VariableMapping = ({
   name,
   loading,
   directionIcon,
+  variableName = 'formVariable',
   propertyName,
   propertyChoices,
   propertyHeading,
@@ -229,6 +240,7 @@ const VariableMapping = ({
                   loading={loading}
                   includeStaticVariables={includeStaticVariables}
                   propertyChoices={propertyChoices}
+                  variableName={variableName}
                   propertyName={propertyName}
                   propertySelectLabel={propertySelectLabel}
                   alreadyMapped={alreadyMapped}
@@ -241,7 +253,7 @@ const VariableMapping = ({
           <ButtonContainer
             onClick={() => {
               // TODO update
-              const initial = {formVariable: '', [propertyName]: ''};
+              const initial = {[variableName]: '', [propertyName]: ''};
               const mapping = get(values, name);
               arrayHelpers.insert(mapping.length, initial);
             }}
@@ -273,6 +285,13 @@ VariableMapping.propTypes = {
    * Recommended, since it can help clarify the direction of the mapping.
    */
   directionIcon: PropTypes.node,
+
+  /**
+   * Name of the variable nested inside each mapping item.
+   *
+   * This is the form variable to which the property will be mapped.
+   */
+  variableName: PropTypes.string.isRequired,
 
   /**
    * Name of the property nested inside each mapping item.

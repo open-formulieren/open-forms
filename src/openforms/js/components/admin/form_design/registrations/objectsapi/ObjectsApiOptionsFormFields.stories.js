@@ -1,11 +1,11 @@
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
-import selectEvent from 'react-select-event';
 
 import {
   FeatureFlagsDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
+import {rsSelect} from 'utils/storybookTestHelpers';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {
@@ -92,7 +92,7 @@ export const SwitchToV2Empty = {
     });
 
     const groupSelect = canvas.getByLabelText('API-groep');
-    await selectEvent.select(groupSelect, 'Objects API group 1');
+    await rsSelect(groupSelect, 'Objects API group 1');
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
@@ -280,7 +280,7 @@ export const APIFetchError = {
 
     await step('Retrieving object types', async () => {
       const groupSelect = canvas.getByLabelText('API-groep');
-      await selectEvent.select(groupSelect, 'Objects API group 1');
+      await rsSelect(groupSelect, 'Objects API group 1');
 
       const errorMessage = await canvas.findByText(
         'Er ging iets fout bij het ophalen van de objecttypes.'
@@ -350,9 +350,9 @@ export const SelectDocumentType = {
     await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
 
     const catalogueSelect = canvas.getByLabelText('Catalogus');
-    await selectEvent.select(catalogueSelect, 'Catalogus 1');
+    await rsSelect(catalogueSelect, 'Catalogus 1');
     const pdfSelect = canvas.getByLabelText('Informatieobjecttype inzendings-PDF');
-    await selectEvent.select(pdfSelect, 'Test PDF');
+    await rsSelect(pdfSelect, 'Test PDF');
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
@@ -363,7 +363,7 @@ export const SelectDocumentType = {
       });
     });
 
-    await selectEvent.select(catalogueSelect, 'Catalogus 2');
+    await rsSelect(catalogueSelect, 'Catalogus 2');
     await waitFor(() => {
       expect(testForm).toHaveFormValues({
         iotSubmissionReport: '',

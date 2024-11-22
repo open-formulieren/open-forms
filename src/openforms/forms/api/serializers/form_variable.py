@@ -205,15 +205,13 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                     }
                 )
 
-        if (prefill_plugin and not prefill_attribute) or (
-            not prefill_plugin and prefill_attribute
+        if (prefill_plugin and not (prefill_attribute or prefill_options)) or (
+            not prefill_plugin and (prefill_attribute or prefill_options)
         ):
             raise ValidationError(
-                {
-                    "prefill_attribute": _(
-                        "Prefill plugin and attribute must both be specified."
-                    ),
-                }
+                _(
+                    "Prefill plugin must be specified with either prefill attribute or prefill options."
+                )
             )
 
         # check the specific validation options of the prefill plugin

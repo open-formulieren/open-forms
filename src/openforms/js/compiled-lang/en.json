@@ -149,6 +149,12 @@
       "value": "Regular expression for city"
     }
   ],
+  "0EYS7D": [
+    {
+      "type": 0,
+      "value": "Objecttype"
+    }
+  ],
   "0FD2pY": [
     {
       "type": 0,
@@ -443,6 +449,12 @@
     {
       "type": 0,
       "value": "Maximum value"
+    }
+  ],
+  "3SCiQR": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration"
     }
   ],
   "3W3Px9": [
@@ -751,6 +763,12 @@
     {
       "type": 0,
       "value": "Key"
+    }
+  ],
+  "6qPITC": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available object types."
     }
   ],
   "7/Bhpw": [
@@ -1583,6 +1601,12 @@
       "value": "Move down"
     }
   ],
+  "DJ8XX2": [
+    {
+      "type": 0,
+      "value": "Select a registration backend and click the button to copy the configuration."
+    }
+  ],
   "DJWATl": [
     {
       "type": 0,
@@ -2077,6 +2101,12 @@
     {
       "type": 0,
       "value": "BRP Personen purpose limitation header value"
+    }
+  ],
+  "HdRpKT": [
+    {
+      "type": 0,
+      "value": "Version"
     }
   ],
   "Hfdfv2": [
@@ -4491,6 +4521,12 @@
       "value": "Pricing logic"
     }
   ],
+  "fQuLvm": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration backend"
+    }
+  ],
   "fRMCJI": [
     {
       "type": 0,
@@ -4943,6 +4979,12 @@
       "value": "Edit complex variable"
     }
   ],
+  "jU6W0l": [
+    {
+      "type": 0,
+      "value": "Copy"
+    }
+  ],
   "jUPlH5": [
     {
       "type": 0,
@@ -5089,12 +5131,6 @@
     {
       "type": 0,
       "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
-    }
-  ],
-  "kWw9qL": [
-    {
-      "type": 0,
-      "value": "This product will be send allong form submits."
     }
   ],
   "kg/eh1": [
@@ -5281,6 +5317,12 @@
     {
       "type": 0,
       "value": "Is sensitive data"
+    }
+  ],
+  "m83ECr": [
+    {
+      "type": 0,
+      "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
     }
   ],
   "mCHS+l": [
@@ -5497,6 +5539,12 @@
     {
       "type": 0,
       "value": "Whether to include the content of the confirmation page in the PDF."
+    }
+  ],
+  "oqv4fM": [
+    {
+      "type": 0,
+      "value": "The prefill values will be taken from an object of the selected type."
     }
   ],
   "osSl3z": [

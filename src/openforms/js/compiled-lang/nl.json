@@ -149,6 +149,12 @@
       "value": "Patroon of waarde voor de stad"
     }
   ],
+  "0EYS7D": [
+    {
+      "type": 0,
+      "value": "Objecttype"
+    }
+  ],
   "0FD2pY": [
     {
       "type": 0,
@@ -443,6 +449,12 @@
     {
       "type": 0,
       "value": "Maximale waarde"
+    }
+  ],
+  "3SCiQR": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration"
     }
   ],
   "3W3Px9": [
@@ -751,6 +763,12 @@
     {
       "type": 0,
       "value": "Sleutel"
+    }
+  ],
+  "6qPITC": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available object types."
     }
   ],
   "7/Bhpw": [
@@ -1604,6 +1622,12 @@
       "value": "Verplaats omlaag"
     }
   ],
+  "DJ8XX2": [
+    {
+      "type": 0,
+      "value": "Select a registration backend and click the button to copy the configuration."
+    }
+  ],
   "DJWATl": [
     {
       "type": 0,
@@ -2098,6 +2122,12 @@
     {
       "type": 0,
       "value": "BRP Personen 'doelbinding' header-waarde"
+    }
+  ],
+  "HdRpKT": [
+    {
+      "type": 0,
+      "value": "Version"
     }
   ],
   "Hfdfv2": [
@@ -4513,6 +4543,12 @@
       "value": "Prijslogica"
     }
   ],
+  "fQuLvm": [
+    {
+      "type": 0,
+      "value": "Copy configuration from registration backend"
+    }
+  ],
   "fRMCJI": [
     {
       "type": 0,
@@ -4965,6 +5001,12 @@
       "value": "Wijzig complexe waarde"
     }
   ],
+  "jU6W0l": [
+    {
+      "type": 0,
+      "value": "Copy"
+    }
+  ],
   "jUPlH5": [
     {
       "type": 0,
@@ -5111,12 +5153,6 @@
     {
       "type": 0,
       "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
-    }
-  ],
-  "kWw9qL": [
-    {
-      "type": 0,
-      "value": "Dit product wordt met inzendingen meegestuurd."
     }
   ],
   "kg/eh1": [
@@ -5303,6 +5339,12 @@
     {
       "type": 0,
       "value": "(Privacy)gevoelige gegevens"
+    }
+  ],
+  "m83ECr": [
+    {
+      "type": 0,
+      "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
     }
   ],
   "mCHS+l": [
@@ -5519,6 +5561,12 @@
     {
       "type": 0,
       "value": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden."
+    }
+  ],
+  "oqv4fM": [
+    {
+      "type": 0,
+      "value": "The prefill values will be taken from an object of the selected type."
     }
   ],
   "osSl3z": [

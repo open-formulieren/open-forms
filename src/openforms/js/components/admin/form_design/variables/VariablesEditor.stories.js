@@ -9,7 +9,7 @@ import {mockTargetPathsPost} from 'components/admin/form_design/registrations/ob
 
 import {serializeValue} from '../../forms/VariableMapping';
 import {mockObjecttypeVersionsGet, mockObjecttypesGet} from '../registrations/objectsapi/mocks';
-import {FormDecorator} from '../story-decorators';
+import {FormDecorator, withReactSelectDecorator} from '../story-decorators';
 import VariablesEditor from './VariablesEditor';
 
 BACKEND_OPTIONS_FORMS.testPlugin = {
@@ -80,9 +80,9 @@ const VARIABLES = [
     initialValue: [],
     prefillOptions: {
       objectsApiGroup: 1,
-      objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
+      objecttypeUuid: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
-      variablesMapping: [{formVariable: 'formioComponent', prefillProperty: ['firstName']}],
+      variablesMapping: [{variableKey: 'formioComponent', targetPath: ['firstName']}],
     },
   },
 ];
@@ -622,6 +622,125 @@ export const ConfigurePrefillObjectsAPI = {
         expect(prefillPropertySelect).toBeVisible();
         expect(prefillPropertySelect).toHaveValue(serializeValue(['firstName']));
       });
+    });
+  },
+};
+
+export const ConfigurePrefillObjectsAPIWithCopyButton = {
+  // decorators: [FormDecorator, withReactSelectDecorator],
+  args: {
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['height'],
+            },
+            {
+              variableKey: 'userDefined',
+              targetPath: ['species'],
+            },
+          ],
+        },
+      },
+      {
+        backend: 'objects_api',
+        key: 'objects_api_2',
+        name: 'Other Objects API registration with a long name',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await screen.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Objects API prefill with copy button', async () => {
+      const modal = within(await screen.findByRole('dialog'));
+      const pluginDropdown = await screen.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Objects API');
+
+      const toggleCopyDropdown = await modal.findByRole('link', {
+        name: 'Copy configuration from registration',
+      });
+      expect(toggleCopyDropdown).toBeVisible();
+      await userEvent.click(toggleCopyDropdown);
+
+      const copyDropdown = await modal.findByLabelText(
+        'Copy configuration from registration backend'
+      );
+      expect(copyDropdown).toBeVisible();
+      await userEvent.click(copyDropdown);
+
+      // Cannot do selectOption with react-select
+      const options = await canvas.findAllByText('Example Objects API reg.');
+      const option = options[1];
+      console.log(option);
+      await userEvent.click(option);
+
+      const copyButton = await canvas.findByRole('button', {
+        name: 'Copy',
+      });
+      expect(copyButton).toBeVisible();
+      await userEvent.click(copyButton);
+
+      // Click the confirmation button
+      const button = canvas.getByRole('button', {
+        name: 'Accepteren',
+      });
+      expect(button).toBeVisible();
+      await userEvent.click(button);
+
+      const modalForm = await screen.findByTestId('modal-form');
+      expect(modalForm).toBeVisible();
+      const propertyDropdowns = await modal.findAllByLabelText(
+        'Selecteer een attribuut uit het objecttype'
+      );
+
+      // Wait until the API call to retrieve the prefillAttributes is done
+      await waitFor(
+        async () => {
+          expect(modalForm).toHaveFormValues({
+            'options.objectsApiGroup': '1',
+            'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
+            'options.objecttypeVersion': '2',
+          });
+
+          expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
+          expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));
+        },
+        {timeout: 2000}
+      );
     });
   },
 };

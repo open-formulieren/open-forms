@@ -1,7 +1,7 @@
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 
-import Select from 'components/admin/forms/Select';
+import Select, {SelectChoicesType} from 'components/admin/forms/Select';
 
 const AttributeField = ({prefillAttributes}) => {
   const [fieldProps] = useField('attribute');
@@ -21,7 +21,7 @@ const AttributeField = ({prefillAttributes}) => {
 };
 
 AttributeField.propTypes = {
-  prefillAttributes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  prefillAttributes: SelectChoicesType.isRequired,
 };
 
 export default AttributeField;

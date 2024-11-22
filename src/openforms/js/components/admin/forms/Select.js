@@ -63,10 +63,15 @@ const Value = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
 // Not excatly the 2-tuple we mean, but hey...
 const Choice = PropTypes.arrayOf(PropTypes.oneOfType([Value, Label]));
 
+export const SelectChoicesType = PropTypes.oneOfType([
+  PropTypes.arrayOf(Choice),
+  PropTypes.objectOf(Label),
+]);
+
 Select.propTypes = {
   name: PropTypes.string, // typically injected by the wrapping <Field> component
   allowBlank: PropTypes.bool,
-  choices: PropTypes.oneOfType([PropTypes.arrayOf(Choice), PropTypes.objectOf(Label)]).isRequired,
+  choices: SelectChoicesType.isRequired,
   translateChoices: PropTypes.bool,
 };
 
