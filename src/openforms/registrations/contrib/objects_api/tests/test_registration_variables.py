@@ -1,9 +1,9 @@
-from django.test import SimpleTestCase
+from django.test import TestCase
 
 from ..registration_variables import register
 
 
-class RegistrationVariableTests(SimpleTestCase):
+class RegistrationVariableTests(TestCase):
 
     def test_variables_handle_None_submission(self):
         for variable in register:
