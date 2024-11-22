@@ -19,6 +19,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
+from ..config import ObjectsAPIOptionsSerializer
 from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..registration_variables import PaymentAmount
@@ -434,6 +435,76 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         result = plugin.register_submission(submission, v2_options)
 
         assert result is not None
+
+    def test_addressNl_legacy_before_of_30(self):
+        """
+        Test the behaviour on the previous iteration of addressNL mapping configuration.
+
+        Before Open Forms 3.0 you could only map the entiry addressNL component to a
+        single target path. Since 3.0, additional mapping options are available. This
+        test ensures that legacy configured registration backends still work without
+        extra modifications, albeit the behaviour may be changed.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "addressNl",
+                    "type": "addressNL",
+                    "label": "AddressNl component",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "addressNl": {
+                    "city": "",
+                    "postcode": "1025 xm",
+                    "streetName": "",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "secretStreetCity": "",
+                    "houseNumberAddition": "2",
+                },
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        # simulates old, non-migrated options structure
+        serializer = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8faed0fa-7864-4409-aa6d-533a37616a9e",
+                "objecttype_version": 1,
+                "update_existing_object": False,
+                "variables_mapping": [
+                    {
+                        "variable_key": "addressNl",
+                        "target_path": ["destinationAddressNL"],
+                    },
+                ],
+            }
+        )
+        assert serializer.is_valid()
+        v2_options: RegistrationOptionsV2 = serializer.validated_data
+
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+        self.assertEqual(
+            data,
+            {
+                "destinationAddressNL": {
+                    "city": "",
+                    "postcode": "1025 xm",
+                    "streetName": "",
+                    "houseLetter": "d",
+                    "houseNumber": "73",
+                    "secretStreetCity": "",
+                    "houseNumberAddition": "2",
+                }
+            },
+        )
 
 
 class V2HandlerTests(TestCase):
