@@ -794,6 +794,12 @@ class Submission(models.Model):
                     )
 
     @property
+    def requires_cosign(self) -> bool:
+        if self.form.cosigning_required or self.cosigner_email:
+            return True
+        return False
+
+    @property
     def waiting_on_cosign(self) -> bool:
         if self.cosign_complete:
             return False

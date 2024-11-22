@@ -2,10 +2,13 @@
 Utility classes for the submission report rendering.
 """
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
@@ -20,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Report:
-    submission: "Submission"
+    submission: Submission
 
     def __post_init__(self):
         from .rendering.renderer import Renderer, RenderModes
@@ -74,6 +77,19 @@ class Report:
 
     @property
     def confirmation_page_content(self) -> SafeString:
+        # a submission that requires cosign is by definition not finished yet, so
+        # displaying 'confirmation page content' doesn't make sense. Instead, we
+        # render a simple notice describing the cosigning requirement.
+        if self.submission.requires_cosign:
+            return format_html(
+                "<p>{content}</p>",
+                content=_(
+                    "This PDF was generated before submission processing has started "
+                    "because it needs to be cosigned first. The cosign request email "
+                    "was sent to {email}."
+                ).format(email=self.submission.cosigner_email),
+            )
+
         # the content is already escaped by Django's rendering engine and mark_safe
         # has been applied by ``Template.render``
         content = self.submission.render_confirmation_page()
