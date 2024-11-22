@@ -376,12 +376,16 @@ Bijvoorbeeld, deze trigger checkt of de datum / tijd van een evenement meer dan 
 
       .. code:: json
 
-          {
-              ">": [
-                  {"datetime": {"var": "datumTijdEvenement"}},
-                  {"datetime": {"+": [{"var": "now"}, {"duration": "PT24H"}]}},
-              ]
-          }
+        {
+          ">": [
+            {"var": "datumTijdEvenement"},
+            {
+              "datetime": {
+                "+": [ {"var": "now"}, {"duration": "PT24H"} ]
+              }
+            }
+          ]
+        }
 
    .. tab:: "rdelta" operator
 
@@ -389,12 +393,17 @@ Bijvoorbeeld, deze trigger checkt of de datum / tijd van een evenement meer dan 
 
       .. code:: json
 
-         {
-            ">": [
-                {"datetime": {"var": "datumTijdEvenement"}},
-                {"+": [{"var": "now"}, {"rdelta": [0, 0, 0, 24]}]},
-            ]
-         }
+        {
+          ">": [
+            {"var": "datumTijdEvenement"},
+            {
+              "+": [
+                {"var": "now"},
+                {"rdelta": [0, 0, 0, 24]}
+              ]
+            }
+          ]
+        }
 
 Met ``duration`` is het mogelijk om berekeningen met datums te doen. De ``duration`` operator moet een `ISO 8601 'Duration'`_
 bevatten. In de trigger hierboven, wordt een periode van 24 uren toegevoegd aan de datum / tijd van nu (``{"var": "now"}``).
@@ -405,10 +414,12 @@ bevatten. In de trigger hierboven, wordt een periode van 24 uren toegevoegd aan 
 .. code:: json
 
     {
-        ">": [
-            {"date": {"var": "datumEvenement"}},
-            {"date": {"+": [{"var": "today"}, {"duration": "P1M"}]}},
-        ]
+      ">": [
+        {"var": "datumEvenement"},
+        {
+          "+": [ {"var": "today"}, {"duration": "P1M"} ]
+        }
+      ]
     }
 
 In de trigger hierboven, wordt een periode van 1 maand toegevoegd aan de datum van vandaag (``{"var": "today"}``).
@@ -427,13 +438,11 @@ Bijvoorbeeld, deze trigger checkt of de periode tussen ``geboorteDatum`` en ``ev
 
 .. code:: json
 
-   {
-       "<": [
-           {
-               "duration": {
-                   "-": [{"date": {"var": "geboorteDatum"}}, {"date": {"var": "evenementDatum"}}]
-               }
-           },
-           {"duration": "P18Y"},
-       ]
-   }
+    {
+      "<": [
+        {
+          "-": [ {"var": "geboorteDatum"}, {"var": "evenementDatum"} ]
+        },
+        "P18Y"
+      ]
+    }
