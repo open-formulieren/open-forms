@@ -1094,6 +1094,7 @@ CSP_OBJECT_SRC = config("CSP_OBJECT_SRC", default=["\"'none'\""], split=True)
 # of CSP_INCLUDE_NONCE_IN
 CSP_STYLE_SRC = CSP_DEFAULT_SRC
 CSP_SCRIPT_SRC = CSP_DEFAULT_SRC
+CSP_FONT_SRC = CSP_DEFAULT_SRC
 
 # firefox does not get the nonce from default-src, see
 # https://stackoverflow.com/a/63376012

@@ -1,34 +1,14 @@
 [
     {
-        "directive" : "connect-src",
-        "value": "https://*.expoints.nl"
-    },
-    {
-        "directive" : "frame-src",
+        "directive" : "default-src",
         "value": "https://*.expoints.nl"
     },
     {
         "directive" : "font-src",
-        "value": "https://*.expoints.nl"
-    },
-    {
-        "directive" : "font-src",
-        "value": "https://cdn.expoints.nl"
-    },
-    {
-        "directive" : "img-src",
-        "value": "https://*.expoints.nl"
+        "value": "https://*.expoints.nl https://cdn.expoints.nl"
     },
     {
         "directive" : "script-src",
-        "value": "https://*.expoints.nl"
-    },
-    {
-        "directive" : "script-src-elem",
-        "value": "https://*.expoints.nl"
-    },
-    {
-        "directive" : "style-src",
         "value": "https://*.expoints.nl"
     }
 ]
