@@ -14,6 +14,7 @@ from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
