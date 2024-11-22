@@ -148,7 +148,7 @@
     "trailingComma": "es5",
     "useTabs": false,
     "importOrder": [
-      "^((api-mocks|components|data|formio|hooks|map|story-utils|types|utils)/(.*)|(api|api-mocks|cache|Context|errors|headers|i18n|sdk|sentry|types))$",
+      "^((api-mocks|components|data|formio|hooks|map|story-utils|types|utils)/(.*)|(api|api-mocks|cache|Context|errors|headers|i18n|sdk|sentry|story-utils|types))$",
       "^[./]"
     ],
     "importOrderSeparation": true,

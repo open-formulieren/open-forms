@@ -1,5 +1,4 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
-import selectEvent from 'react-select-event';
 
 import {mockProcessDefinitionsGet} from 'components/admin/form_design/registrations/camunda/mocks';
 import {
@@ -17,6 +16,7 @@ import {
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
+import {rsSelect} from 'utils/storybookTestHelpers';
 
 import RegistrationFields from './RegistrationFields';
 
@@ -729,7 +729,7 @@ export const ObjectsAPI = {
       await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
 
       const catalogueSelect = modal.getByLabelText('Catalogus');
-      await selectEvent.select(catalogueSelect, 'Catalogus 2');
+      await rsSelect(catalogueSelect, 'Catalogus 2');
     });
 
     await step('Submit the form', async () => {

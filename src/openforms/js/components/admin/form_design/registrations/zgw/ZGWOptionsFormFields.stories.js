@@ -1,12 +1,12 @@
 import {fn, userEvent, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
-import selectEvent from 'react-select-event';
 
 import {
   FeatureFlagsDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
+import {rsSelect} from 'utils/storybookTestHelpers';
 
 import ZGWFormFields from './ZGWOptionsFormFields';
 import {mockCaseTypesGet, mockCataloguesGet, mockProductsGet} from './mocks';
@@ -119,11 +119,11 @@ export const SelectCaseType = {
     const canvas = within(canvasElement);
 
     const catalogueSelect = canvas.getByLabelText('Catalogus');
-    await selectEvent.select(catalogueSelect, 'Catalogus 1');
+    await rsSelect(catalogueSelect, 'Catalogus 1');
 
     const caseTypeSelect = canvas.getByLabelText('Zaaktype', {
       selector: '#id_caseTypeIdentification',
     });
-    await selectEvent.select(caseTypeSelect, 'Request passport');
+    await rsSelect(caseTypeSelect, 'Request passport');
   },
 };

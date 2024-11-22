@@ -1,5 +1,4 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
-import selectEvent from 'react-select-event';
 
 import {
   mockObjectsAPIPrefillPropertiesGet,

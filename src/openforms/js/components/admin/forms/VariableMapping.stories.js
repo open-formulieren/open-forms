@@ -1,9 +1,9 @@
-import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fn, userEvent, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {FormDecorator, FormikDecorator} from 'components/admin/form_design/story-decorators';
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
-import {getReactSelectContainer} from 'utils/storybookTestHelpers';
+import {findReactSelectMenu} from 'utils/storybookTestHelpers';
 
 import VariableMapping, {serializeValue} from './VariableMapping';
 
@@ -149,9 +149,9 @@ export const SelectOptions = {
       const formVariableDropdown = canvas.getByLabelText('Formuliervariabele');
       selectEvent.openMenu(formVariableDropdown);
 
-      const formVarOptions = await within(
-        getReactSelectContainer(formVariableDropdown)
-      ).findAllByRole('option');
+      const formVarOptions = await within(await findReactSelectMenu(canvas)).findAllByRole(
+        'option'
+      );
 
       expect(formVarOptions).toHaveLength(2);
       expect(formVarOptions[0]).toHaveTextContent('key2');

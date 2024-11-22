@@ -3,6 +3,7 @@ import {useArgs} from '@storybook/preview-api';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 
 import {VARIABLE_SOURCES} from '../form_design/variables/constants';
+import {ReactSelectContext} from './ReactSelect';
 import VariableSelection from './VariableSelection';
 
 const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
@@ -117,6 +118,14 @@ export default {
 export const Default = {};
 
 export const menuOpen = {
+  decorators: [
+    // workaround for https://github.com/JedWatson/react-select/issues/3708
+    Story => (
+      <ReactSelectContext.Provider value={{parentSelector: () => undefined}}>
+        <Story />
+      </ReactSelectContext.Provider>
+    ),
+  ],
   args: {
     menuIsOpen: true,
   },

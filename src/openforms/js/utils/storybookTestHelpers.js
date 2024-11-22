@@ -1,3 +1,14 @@
+import selectEvent from 'react-select-event';
+
+const SB_ROOT = document.getElementById('storybook-root');
+
+/**
+ * Wrapper around selectEvent.select to ensure the portal option is used.
+ */
+const rsSelect = async (input, optionOrOptions) => {
+  await selectEvent.select(input, optionOrOptions, {container: SB_ROOT});
+};
+
 /**
  * From the input field (retrieved by accessible queries), find the react-select container.
  *
@@ -16,4 +27,11 @@ const getReactSelectContainer = comboboxInput => {
   return container;
 };
 
-export {getReactSelectContainer};
+/**
+ * Get the (portaled) opened react select menu.
+ */
+const findReactSelectMenu = async canvas => {
+  return await canvas.findByRole('listbox');
+};
+
+export {rsSelect, getReactSelectContainer, findReactSelectMenu};
