@@ -15,14 +15,12 @@ class ExpointsTests(AnalyticsMixin, TestCase):
         cls.json_cookies = []
 
         cls.json_csp = [
-            {"directive": "connect-src", "value": "https://*.expoints.nl"},
-            {"directive": "frame-src", "value": "https://*.expoints.nl"},
-            {"directive": "font-src", "value": "https://*.expoints.nl"},
-            {"directive": "font-src", "value": "https://cdn.expoints.nl"},
-            {"directive": "img-src", "value": "https://*.expoints.nl"},
+            {"directive": "default-src", "value": "https://*.expoints.nl"},
+            {
+                "directive": "font-src",
+                "value": "https://*.expoints.nl https://cdn.expoints.nl",
+            },
             {"directive": "script-src", "value": "https://*.expoints.nl"},
-            {"directive": "script-src-elem", "value": "https://*.expoints.nl"},
-            {"directive": "style-src", "value": "https://*.expoints.nl"},
         ]
 
     def test_expoints_properly_enabled(self):

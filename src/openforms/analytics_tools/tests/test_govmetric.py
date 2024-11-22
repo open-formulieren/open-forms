@@ -20,9 +20,9 @@ class GovMetricTests(AnalyticsMixin, TestCase):
         ]
 
         cls.json_csp = [
+            {"directive": "default-src", "value": "https://*.govmetric.com"},
             {"directive": "script-src", "value": "https://*.govmetric.com"},
             {"directive": "frame-src", "value": "https://*.govmetric.com"},
-            {"directive": "connect-src", "value": "'self' https://*.govmetric.com"},
             {"directive": "img-src", "value": "https://www.klantinfocus.nl"},
         ]
 
