@@ -1,10 +1,14 @@
-import {useFormikContext} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
+import {useContext} from 'react';
+import {useIntl} from 'react-intl';
 import {FormattedMessage} from 'react-intl';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
+  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -12,7 +16,6 @@ import {
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
-  AuthAttributePath,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
@@ -31,6 +34,13 @@ const onApiGroupChange = prevValues => ({
 });
 
 const V2ConfigFields = ({apiGroupChoices}) => {
+  const intl = useIntl();
+  const {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION = false} =
+    useContext(FeatureFlagsContext);
+
+  const [updateExistingObject] = useField('updateExistingObject');
+  const authAttributePathRequired = !!updateExistingObject.value;
+
   const {
     values: {variablesMapping = []},
     setFieldValue,
@@ -70,18 +80,14 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           }
         >
           <ObjectTypeSelect
-            label={
-              <FormattedMessage
-                description="Objects API registration options 'Objecttype' label"
-                defaultMessage="Objecttype"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="Objects API registration options 'Objecttype' helpText"
-                defaultMessage="The registration result will be an object from the selected type."
-              />
-            }
+            label={intl.formatMessage({
+              description: "Objects API registration options 'Objecttype' label",
+              defaultMessage: 'Objecttype',
+            })}
+            helpText={intl.formatMessage({
+              description: "Objects API registration options 'Objecttype' helpText",
+              defaultMessage: 'The registration result will be an object from the selected type.',
+            })}
             onChangeCheck={async () => {
               if (variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmation();
@@ -101,12 +107,10 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           }
         >
           <ObjectTypeVersionSelect
-            label={
-              <FormattedMessage
-                description="Objects API registration options 'objecttypeVersion' label"
-                defaultMessage="Version"
-              />
-            }
+            label={intl.formatMessage({
+              description: "Objects API registration options 'objecttypeVersion' label",
+              defaultMessage: 'Version',
+            })}
           />
         </ErrorBoundary>
       </Fieldset>
@@ -136,7 +140,9 @@ const V2ConfigFields = ({apiGroupChoices}) => {
       >
         <UploadSubmissionCsv />
         <UpdateExistingObject />
-        <AuthAttributePath />
+        {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION ? (
+          <AuthAttributePath name={'authAttributePath'} required={authAttributePathRequired} />
+        ) : null}
         <OrganisationRSIN />
       </Fieldset>
 

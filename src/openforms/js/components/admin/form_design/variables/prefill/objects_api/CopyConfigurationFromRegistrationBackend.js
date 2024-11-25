@@ -58,7 +58,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
             onClick={async e => {
               e.preventDefault();
               const confirmSwitch = await openCopyConfigurationConfirmationModal();
-              if (confirmSwitch) {
+              if (confirmSwitch && selectedBackend) {
                 setValues(prevValues => ({
                   ...prevValues,
                   // Trying to set multiple nested values doesn't work, since it sets them
@@ -68,6 +68,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
                     objectsApiGroup: selectedBackend.options.objectsApiGroup,
                     objecttypeUuid: selectedBackend.options.objecttype,
                     objecttypeVersion: selectedBackend.options.objecttypeVersion,
+                    authAttributePath: selectedBackend.options.authAttributePath,
                     variablesMapping: selectedBackend.options.variablesMapping,
                   },
                 }));

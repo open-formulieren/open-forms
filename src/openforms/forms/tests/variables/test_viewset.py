@@ -1035,7 +1035,7 @@ class FormVariableViewsetTest(APITestCase):
                     "source": FormVariableSources.user_defined,
                     "prefill_plugin": "objects_api",
                     "prefill_attribute": "",
-                    "prefill_options": {"foo": "bar"},
+                    "prefill_options": {"foo": "bar", "auth_attribute_path": ["bsn"]},
                 }
             ]
 

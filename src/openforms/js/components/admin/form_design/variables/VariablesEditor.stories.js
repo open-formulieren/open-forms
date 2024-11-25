@@ -639,6 +639,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
           objectsApiGroup: 1,
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
+          authAttributePath: ['path', 'to', 'bsn'],
           variablesMapping: [
             {
               variableKey: 'formioComponent',
@@ -730,6 +731,9 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
             'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
             'options.objecttypeVersion': '2',
           });
+          expect(canvas.getByTestId('options.authAttributePath-0')).toHaveValue('path');
+          expect(canvas.getByTestId('options.authAttributePath-1')).toHaveValue('to');
+          expect(canvas.getByTestId('options.authAttributePath-2')).toHaveValue('bsn');
 
           expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
           expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));

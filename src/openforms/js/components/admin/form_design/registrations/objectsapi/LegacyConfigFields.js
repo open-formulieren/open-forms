@@ -1,12 +1,15 @@
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
+import {useContext} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextArea, TextInput} from 'components/admin/forms/Inputs';
 import {
+  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -14,7 +17,6 @@ import {
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
-  AuthAttributePath,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
@@ -31,89 +33,94 @@ const onApiGroupChange = prevValues => ({
   objecttypeVersion: undefined,
 });
 
-const LegacyConfigFields = ({apiGroupChoices}) => (
-  <>
-    <Fieldset>
-      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} onApiGroupChange={onApiGroupChange} />
+const LegacyConfigFields = ({apiGroupChoices}) => {
+  const intl = useIntl();
+  const {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION = false} =
+    useContext(FeatureFlagsContext);
+
+  const [updateExistingObject] = useField('updateExistingObject');
+  const authAttributePathRequired = !!updateExistingObject.value;
+
+  return (
+    <>
+      <Fieldset>
+        <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} onApiGroupChange={onApiGroupChange} />
+        <ErrorBoundary
+          errorMessage={
+            <FormattedMessage
+              description="Legacy Objects API registrations options: unknown error"
+              defaultMessage={`Something went wrong retrieving the available object types and/or versions.
+              Please check that the services in the selected API group are configured correctly.`}
+            />
+          }
+        >
+          <ObjectTypeSelect
+            label={intl.formatMessage({
+              description: "Objects API registration options 'Objecttype' label",
+              defaultMessage: 'Objecttype',
+            })}
+            helpText={intl.formatMessage({
+              description: "Objects API registration options 'Objecttype' helpText",
+              defaultMessage: 'The registration result will be an object from the selected type.',
+            })}
+          />
+          <ObjectTypeVersionSelect
+            label={intl.formatMessage({
+              description: "Objects API registration options 'objecttypeVersion' label",
+              defaultMessage: 'Version',
+            })}
+          />
+        </ErrorBoundary>
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Objects registration: object definition"
+            defaultMessage="Object and/or product request definition"
+          />
+        }
+        collapsible
+        initialCollapsed={false}
+      >
+        <ProductAanvraag />
+        <ContentJSON />
+        <PaymentStatusUpdateJSON />
+      </Fieldset>
+
       <ErrorBoundary
         errorMessage={
           <FormattedMessage
-            description="Legacy Objects API registrations options: unknown error"
-            defaultMessage={`Something went wrong retrieving the available object types and/or versions.
-              Please check that the services in the selected API group are configured correctly.`}
+            description="Objects API registrations options: document types selection error"
+            defaultMessage="Something went wrong while retrieving the available catalogues and/or document types."
           />
         }
       >
-        <ObjectTypeSelect
-          label={
-            <FormattedMessage
-              description="Objects API registration options 'Objecttype' label"
-              defaultMessage="Objecttype"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              description="Objects API registration options 'Objecttype' helpText"
-              defaultMessage="The registration result will be an object from the selected type."
-            />
-          }
-        />
-        <ObjectTypeVersionSelect
-          label={
-            <FormattedMessage
-              description="Objects API registration options 'objecttypeVersion' label"
-              defaultMessage="Version"
-            />
-          }
-        />
+        <DocumentTypesFieldet />
       </ErrorBoundary>
-    </Fieldset>
 
-    <Fieldset
-      title={
-        <FormattedMessage
-          description="Objects registration: object definition"
-          defaultMessage="Object and/or product request definition"
-        />
-      }
-      collapsible
-      initialCollapsed={false}
-    >
-      <ProductAanvraag />
-      <ContentJSON />
-      <PaymentStatusUpdateJSON />
-    </Fieldset>
+      <LegacyDocumentTypesFieldet />
 
-    <ErrorBoundary
-      errorMessage={
-        <FormattedMessage
-          description="Objects API registrations options: document types selection error"
-          defaultMessage="Something went wrong while retrieving the available catalogues and/or document types."
-        />
-      }
-    >
-      <DocumentTypesFieldet />
-    </ErrorBoundary>
-
-    <LegacyDocumentTypesFieldet />
-
-    <Fieldset
-      title={
-        <FormattedMessage
-          description="Objects registration: other options"
-          defaultMessage="Other options"
-        />
-      }
-      collapsible
-      fieldNames={['organisatieRsin']}
-    >
-      <UploadSubmissionCsv />
-      <UpdateExistingObject />
-      <AuthAttributePath />
-      <OrganisationRSIN />
-    </Fieldset>
-  </>
-);
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Objects registration: other options"
+            defaultMessage="Other options"
+          />
+        }
+        collapsible
+        fieldNames={['organisatieRsin']}
+      >
+        <UploadSubmissionCsv />
+        <UpdateExistingObject />
+        {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION ? (
+          <AuthAttributePath name={'authAttributePath'} required={authAttributePathRequired} />
+        ) : null}
+        <OrganisationRSIN />
+      </Fieldset>
+    </>
+  );
+};
 
 LegacyConfigFields.propTypes = {
   apiGroupChoices: PropTypes.arrayOf(

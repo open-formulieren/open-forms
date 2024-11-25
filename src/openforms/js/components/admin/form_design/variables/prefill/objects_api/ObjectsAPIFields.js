@@ -5,7 +5,7 @@
  */
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -16,6 +16,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
+  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -38,6 +39,7 @@ const onApiGroupChange = prevValues => ({
     ...prevValues.options,
     objecttypeUuid: '',
     objecttypeVersion: undefined,
+    authAttributePath: [],
     variablesMapping: [],
   },
 });
@@ -60,7 +62,13 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
     values,
     values: {
       plugin,
-      options: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
+      options: {
+        objecttypeUuid,
+        objecttypeVersion,
+        objectsApiGroup,
+        authAttributePath,
+        variablesMapping,
+      },
     },
     setFieldValue,
   } = useFormikContext();
@@ -69,6 +77,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
     objectsApiGroup: '',
     objecttypeUuid: '',
     objecttypeVersion: null,
+    authAttributePath: [],
     variablesMapping: [],
   };
 
@@ -120,7 +129,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
 
   return (
     <>
-      {showCopyButton && backends.length ? (
+      {showCopyButton ? (
         <CopyConfigurationFromRegistrationBackend
           backends={backends}
           setShowCopyButton={setShowCopyButton}
@@ -133,6 +142,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
+            setFieldValue('options.authAttributePath', []);
             setFieldValue('options.variablesMapping', []);
             return true;
           }}
@@ -154,22 +164,20 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
-            label={
-              <FormattedMessage
-                description="Objects API prefill options 'Objecttype' label"
-                defaultMessage="Objecttype"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="Objects API prefill options 'Objecttype' helpText"
-                defaultMessage="The prefill values will be taken from an object of the selected type."
-              />
-            }
+            label={intl.formatMessage({
+              description: "Objects API prefill options 'Objecttype' label",
+              defaultMessage: 'Objecttype',
+            })}
+            helpText={intl.formatMessage({
+              description: "Objects API prefill options 'Objecttype' helpText",
+              defaultMessage:
+                'The prefill values will be taken from an object of the selected type.',
+            })}
             onChangeCheck={async () => {
               if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
+              setFieldValue('options.authAttributePath', []);
               setFieldValue('options.variablesMapping', []);
               return true;
             }}
@@ -188,16 +196,15 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
         >
           <ObjectTypeVersionSelect
             name="options.objecttypeVersion"
-            label={
-              <FormattedMessage
-                description="Objects API prefill options 'objecttypeVersion' label"
-                defaultMessage="Version"
-              />
-            }
+            label={intl.formatMessage({
+              description: "Objects API prefill options 'objecttypeVersion' label",
+              defaultMessage: 'Version',
+            })}
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
           />
         </ErrorBoundary>
+        <AuthAttributePath name={'options.authAttributePath'} style={{maxWidth: '50%'}} />
       </Fieldset>
 
       <Fieldset
