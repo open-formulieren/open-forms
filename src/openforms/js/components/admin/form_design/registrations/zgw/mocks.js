@@ -1,4 +1,4 @@
-import {rest} from 'msw';
+import {HttpResponse, http} from 'msw';
 
 import {API_BASE_URL} from 'utils/fetch';
 
@@ -25,9 +25,9 @@ const CATALOGUES = [
 ];
 
 export const mockCataloguesGet = () =>
-  rest.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/catalogues`, (req, res, ctx) => {
-    return res(ctx.json(CATALOGUES));
-  });
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/catalogues`, () =>
+    HttpResponse.json(CATALOGUES)
+  );
 
 const CASE_TYPES = {
   'https://example.com/catalogi/api/v1/catalogussen/1': [
@@ -74,10 +74,11 @@ const CASE_TYPES = {
 };
 
 export const mockCaseTypesGet = () =>
-  rest.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/case-types`, (req, res, ctx) => {
-    const catalogueUrl = req.url.searchParams.get('catalogue_url');
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/case-types`, ({request}) => {
+    const url = new URL(request.url);
+    const catalogueUrl = url.searchParams.get('catalogue_url');
     const match = CASE_TYPES[catalogueUrl] ?? [];
-    return res(ctx.json(match));
+    return HttpResponse.json(match);
   });
 
 const DOCUMENT_TYPES = {
@@ -133,14 +134,12 @@ const DOCUMENT_TYPES = {
 };
 
 export const mockDocumenTypesGet = () =>
-  rest.get(
-    `${API_BASE_URL}/api/v2/registration/plugins/zgw-api/document-types`,
-    (req, res, ctx) => {
-      const caseTypeIdentification = req.url.searchParams.get('case_type_identification');
-      const match = DOCUMENT_TYPES[caseTypeIdentification] ?? [];
-      return res(ctx.json(match));
-    }
-  );
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/document-types`, ({request}) => {
+    const url = new URL(request.url);
+    const caseTypeIdentification = url.searchParams.get('case_type_identification');
+    const match = DOCUMENT_TYPES[caseTypeIdentification] ?? [];
+    return HttpResponse.json(match);
+  });
 
 const PRODUCTS = [
   {
@@ -157,6 +156,6 @@ const PRODUCTS = [
 ];
 
 export const mockProductsGet = () =>
-  rest.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/products`, (req, res, ctx) => {
-    return res(ctx.json(PRODUCTS));
-  });
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/products`, () =>
+    HttpResponse.json(PRODUCTS)
+  );

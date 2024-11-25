@@ -1,4 +1,4 @@
-import {rest} from 'msw';
+import {HttpResponse, http} from 'msw';
 
 import {API_BASE_URL} from 'utils/fetch';
 
@@ -10,64 +10,61 @@ import {
 } from './constants';
 
 export const mockServicesGet = services =>
-  rest.get(`${API_BASE_URL}${SERVICES_ENDPOINT}`, (req, res, ctx) => {
-    return res(ctx.json(services));
-  });
+  http.get(`${API_BASE_URL}${SERVICES_ENDPOINT}`, () => HttpResponse.json(services));
 
 export const mockServiceFetchConfigurationsGet = serviceFetchConfigurations =>
-  rest.get(`${API_BASE_URL}/api/v2/service-fetch-configurations`, (req, res, ctx) => {
-    return res(ctx.json(serviceFetchConfigurations));
-  });
+  http.get(`${API_BASE_URL}/api/v2/service-fetch-configurations`, () =>
+    HttpResponse.json(serviceFetchConfigurations)
+  );
 
 export const mockDMNDecisionDefinitionsGet = engineDefinitionsMapping =>
-  rest.get(`${API_BASE_URL}${DMN_DECISION_DEFINITIONS_LIST}`, (req, res, ctx) => {
-    const engine = req.url.searchParams.get('engine');
+  http.get(`${API_BASE_URL}${DMN_DECISION_DEFINITIONS_LIST}`, ({request}) => {
+    const url = new URL(request.url);
+    const engine = url.searchParams.get('engine');
 
-    return res(ctx.json(engineDefinitionsMapping[engine]));
+    return HttpResponse.json(engineDefinitionsMapping[engine]);
   });
 
-export const mockDMNDecisionDefinitionVersionsGet = rest.get(
+export const mockDMNDecisionDefinitionVersionsGet = http.get(
   `${API_BASE_URL}${DMN_DECISION_DEFINITIONS_VERSIONS_LIST}`,
-  (req, res, ctx) => {
-    return res(
-      ctx.json([
-        {
-          id: '2',
-          label: 'v2 (version tag: n/a)',
-        },
-        {
-          id: '1',
-          label: 'v1 (version tag: n/a)',
-        },
-      ])
-    );
-  }
+  () =>
+    HttpResponse.json([
+      {
+        id: '2',
+        label: 'v2 (version tag: n/a)',
+      },
+      {
+        id: '1',
+        label: 'v1 (version tag: n/a)',
+      },
+    ])
 );
 
 export const mockDMNParametersGet = definitionsParams =>
-  rest.get(`${API_BASE_URL}${DMN_DECISION_DEFINITIONS_PARAMS_LIST}`, (req, res, ctx) => {
-    const definition = req.url.searchParams.get('definition');
-    const version = req.url.searchParams.get('version');
+  http.get(`${API_BASE_URL}${DMN_DECISION_DEFINITIONS_PARAMS_LIST}`, ({request}) => {
+    const url = new URL(request.url);
+    const definition = url.searchParams.get('definition');
+    const version = url.searchParams.get('version');
 
     const versionedParams = definitionsParams[definition]?._versions?.[version];
     const unVersionedParams = definitionsParams[definition];
     const {inputs, outputs} = versionedParams ?? unVersionedParams;
-    return res(ctx.json({inputs, outputs}));
+    return HttpResponse.json({inputs, outputs});
   });
 
 export const mockPrefillAttributesGet = pluginAttributes =>
-  rest.get(`${API_BASE_URL}/api/v2/prefill/plugins/:plugin/attributes`, (req, res, ctx) => {
-    const {plugin} = req.params;
+  http.get(`${API_BASE_URL}/api/v2/prefill/plugins/:plugin/attributes`, ({params}) => {
+    const {plugin} = params;
     const attributeList = pluginAttributes[plugin] || [];
-    return res(ctx.json(attributeList));
+    return HttpResponse.json(attributeList);
   });
 
 export const mockObjectsAPIPrefillPropertiesGet = pluginProperties =>
-  rest.get(
+  http.get(
     `${API_BASE_URL}/api/v2/prefill/plugins/objects-api/objecttypes/:uuid/versions/:version/properties`,
-    (req, res, ctx) => {
-      const {uuid, version} = req.params;
+    ({params}) => {
+      const {uuid, version} = params;
       const propertyList = pluginProperties[uuid][version] || [];
-      return res(ctx.json(propertyList));
+      return HttpResponse.json(propertyList);
     }
   );
