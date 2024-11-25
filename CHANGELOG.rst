@@ -2,11 +2,35 @@
 Changelog
 =========
 
-Upgrade notes
--------------
+2.7.10 (2024-11-25)
+===================
 
-* [:backend:`4810`] Fixed uppercase component variable values turing lowercase.
-  There are manual actions required.
+Periodic bugfix release
+
+.. warning:: Manual intervention required
+    
+    We fixed a bug that would mess with the default values of selectboxes components.
+    A script is included to fix the forms that are affected - you need to run this
+    after deploying the patch release.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+    
+    Alternatively, you can also manually open and save all the affected forms in the
+    admin interface.
+
+**Bugfixes**
+
+* [:backend:`4732`] Fixed CSP issues for Expoints/other analytics.
+* [:backend:`4745`] Fixed missing registration variable for the Objects API plugin.
+* [:backend:`4810`] Fixed uppercase selectboxes options being lowercased if the component is
+  in a step that's being skipped. See the instructions below on how to patch existing forms.
+* [:backend:`4823`] Fixed uploading files with leading or trailing whitespace in the
+  filename.
+* [:backend:`4727`] Fixed a crash in the form designer UI when a user defined variable was 
+  changed to an array datatype.
 
 2.7.9 (2024-10-29)
 ==================
