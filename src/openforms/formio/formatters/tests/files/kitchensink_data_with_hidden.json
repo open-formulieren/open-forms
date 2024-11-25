@@ -173,16 +173,6 @@
   "numberMultiEmpty": [
     null
   ],
-  "password": "secret",
-  "passwordEmpty": "",
-  "passwordHidden": "secret",
-  "passwordMulti": [
-    "secret",
-    "password"
-  ],
-  "passwordMultiEmpty": [
-    null
-  ],
   "phoneNumber": "0123456789",
   "phoneNumberEmpty": "",
   "phoneNumberHidden": "0123456789",

@@ -103,13 +103,6 @@ class NumberFormatter(FormatterBase):
         return number_format(value, decimal_pos=component.get("decimalLimit"))
 
 
-class PasswordFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        # TODO legacy just printed as-is, but we might want to use unicode-dots or stars
-        # return "\u25CF" * len(value)
-        return str(value)
-
-
 class CheckboxFormatter(FormatterBase):
     def format(self, component: Component, value: bool) -> str:
         return str(yesno(value))

@@ -13,7 +13,6 @@
     "radio": "option2",
     "number": 42.123,
     "select": "option1",
-    "password": "secret",
     "postcode": "1234 AA",
     "textArea": "Textarea test",
     "signature": "data:image/png;base64,iVBO[truncated]",

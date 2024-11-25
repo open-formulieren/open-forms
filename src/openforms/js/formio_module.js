@@ -19,7 +19,6 @@ import LicensePlate from './components/form/licenseplate';
 import Map from './components/form/map';
 import NpFamilyMembers from './components/form/np-family-members';
 import NumberField from './components/form/number';
-import PasswordField from './components/form/password';
 import PhoneNumberField from './components/form/phoneNumber';
 import PostcodeField from './components/form/postcode';
 import RadioField from './components/form/radio';
@@ -53,7 +52,6 @@ const FormIOModule = {
     selectboxes: SelectBoxesField,
     email: EmailField,
     map: Map,
-    password: PasswordField,
     fieldset: FieldSet,
     licenseplate: LicensePlate,
     coSign: CoSignFieldOld,
