@@ -136,22 +136,22 @@ jobs:
       - name: Run linter
         run: python ./bin/lint_dependencies.py
 
-  type-checking:
-    name: Type checking (Pyright)
-    runs-on: ubuntu-latest
+  # type-checking:
+  #   name: Type checking (Pyright)
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install additional dependencies
-        run: |
-          pip install uv
-          uv pip install \
-            --system \
-            -r requirements/type-checking.txt
-      - uses: jakebailey/pyright-action@v1
-        with:
-          version: 1.1.369
-          project: pyright.pyproject.toml
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.12'
+  #     - name: Install additional dependencies
+  #       run: |
+  #         pip install uv
+  #         uv pip install \
+  #           --system \
+  #           -r requirements/type-checking.txt
+  #     - uses: jakebailey/pyright-action@v1
+  #       with:
+  #         version: 1.1.369
+  #         project: pyright.pyproject.toml

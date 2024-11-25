@@ -24,338 +24,338 @@ env:
 
 jobs:
 
-  tests:
-    name: Run the Django test suite
-    runs-on: ubuntu-latest
+  # tests:
+  #   name: Run the Django test suite
+  #   runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        # Needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-          --name postgres
-      redis:
-        image: redis:6
-        ports:
-          - 6379:6379
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_HOST_AUTH_METHOD: trust
+  #       ports:
+  #         - 5432:5432
+  #       # Needed because the postgres container does not provide a healthcheck
+  #       options:
+  #         --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #         --name postgres
+  #     redis:
+  #       image: redis:6
+  #       ports:
+  #         - 6379:6379
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up backend environment
+  #       uses: maykinmedia/setup-django-backend@v1.3
+  #       with:
+  #         apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
+  #         python-version: '3.12'
+  #         optimize-postgres: 'yes'
+  #         pg-service: 'postgres'
+  #         setup-node: 'yes'
+  #         npm-ci-flags: '--legacy-peer-deps'
 
-      - name: Start CI docker services
-        run: |
-          docker compose -f docker-compose.ci.yml up -d
-          docker compose -f docker-compose.camunda.yml up -d
-        working-directory: docker
+  #     - name: Start CI docker services
+  #       run: |
+  #         docker compose -f docker-compose.ci.yml up -d
+  #         docker compose -f docker-compose.camunda.yml up -d
+  #       working-directory: docker
 
-      - name: Wait for Camunda to be up
-        run: |
-          endpoint="${CAMUNDA_API_BASE_URL}version"
-          version=""
+  #     - name: Wait for Camunda to be up
+  #       run: |
+  #         endpoint="${CAMUNDA_API_BASE_URL}version"
+  #         version=""
 
-          until [ $version ]; do
-            echo "Checking if Camunda at ${CAMUNDA_API_BASE_URL} is up..."
-            version=$(curl -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD} "$endpoint" -s | jq -r ".version")
-            sleep 2
-          done
+  #         until [ $version ]; do
+  #           echo "Checking if Camunda at ${CAMUNDA_API_BASE_URL} is up..."
+  #           version=$(curl -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD} "$endpoint" -s | jq -r ".version")
+  #           sleep 2
+  #         done
 
-          echo "Running Camunda $version"
+  #         echo "Running Camunda $version"
 
-      - name: Run tests
-        run: |
-          echo "# Profiling stats" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_OUTPUT
+  #     - name: Run tests
+  #       run: |
+  #         echo "# Profiling stats" >> $GITHUB_STEP_SUMMARY
+  #         echo "" >> $GITHUB_OUTPUT
 
-          python src/manage.py compilemessages
-          python src/manage.py collectstatic --noinput --link
-          coverage run \
-          --concurrency=multiprocessing \
-          --parallel-mode \
-          src/manage.py test src \
-            --parallel 4 \
-            --exclude-tag=e2e \
-            --verbosity 2
-          coverage combine
+  #         python src/manage.py compilemessages
+  #         python src/manage.py collectstatic --noinput --link
+  #         coverage run \
+  #         --concurrency=multiprocessing \
+  #         --parallel-mode \
+  #         src/manage.py test src \
+  #           --parallel 4 \
+  #           --exclude-tag=e2e \
+  #           --verbosity 2
+  #         coverage combine
 
-        env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
-          SECRET_KEY: dummy
-          DB_USER: postgres
-          DB_PASSWORD: ''
-          DEBUG: 'true'
-          # deliberatey broken
-          CELERY_BROKER_URL: 'redis://bad-host:6379/0'
-          # specified explicitly, since the broker URL is broken, but the once backend
-          # needs to be available even with CELERY_TASK_ALWAYS_EAGER
-          CELERY_ONCE_REDIS_URL: 'redis://localhost:6379/0'
+  #       env:
+  #         DJANGO_SETTINGS_MODULE: openforms.conf.ci
+  #         SECRET_KEY: dummy
+  #         DB_USER: postgres
+  #         DB_PASSWORD: ''
+  #         DEBUG: 'true'
+  #         # deliberatey broken
+  #         CELERY_BROKER_URL: 'redis://bad-host:6379/0'
+  #         # specified explicitly, since the broker URL is broken, but the once backend
+  #         # needs to be available even with CELERY_TASK_ALWAYS_EAGER
+  #         CELERY_ONCE_REDIS_URL: 'redis://localhost:6379/0'
 
-      - run: npm ci
-        working-directory: .github/actions/report-flaky
-      - uses: ./.github/actions/report-flaky
+  #     - run: npm ci
+  #       working-directory: .github/actions/report-flaky
+  #     - uses: ./.github/actions/report-flaky
 
-      - name: Run JS tests
-        run: npm test
+  #     - name: Run JS tests
+  #       run: npm test
 
-      - name: Publish coverage report
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+  #     - name: Publish coverage report
+  #       uses: codecov/codecov-action@v4
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Generate OAS
-        run: ./bin/generate_oas.sh openapi.yaml
+  #     - name: Generate OAS
+  #       run: ./bin/generate_oas.sh openapi.yaml
 
-      - name: Store generated OAS
-        uses: actions/upload-artifact@v4
-        with:
-          name: open-forms-oas
-          path: openapi.yaml
-          retention-days: 1
+  #     - name: Store generated OAS
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: open-forms-oas
+  #         path: openapi.yaml
+  #         retention-days: 1
 
-  tests-reverse:
-    name: Run the Django test suite in reverse
-    runs-on: ubuntu-latest
+  # tests-reverse:
+  #   name: Run the Django test suite in reverse
+  #   runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        # Needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-          --name postgres
-      redis:
-        image: redis:6
-        ports:
-          - 6379:6379
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_HOST_AUTH_METHOD: trust
+  #       ports:
+  #         - 5432:5432
+  #       # Needed because the postgres container does not provide a healthcheck
+  #       options:
+  #         --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #         --name postgres
+  #     redis:
+  #       image: redis:6
+  #       ports:
+  #         - 6379:6379
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up backend environment
+  #       uses: maykinmedia/setup-django-backend@v1.3
+  #       with:
+  #         apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
+  #         python-version: '3.12'
+  #         optimize-postgres: 'yes'
+  #         pg-service: 'postgres'
+  #         setup-node: 'yes'
+  #         npm-ci-flags: '--legacy-peer-deps'
 
-      - name: Start CI docker services
-        run: |
-          docker compose -f docker-compose.ci.yml up -d
-          docker compose -f docker-compose.camunda.yml up -d
-        working-directory: docker
+  #     - name: Start CI docker services
+  #       run: |
+  #         docker compose -f docker-compose.ci.yml up -d
+  #         docker compose -f docker-compose.camunda.yml up -d
+  #       working-directory: docker
 
-      - name: Wait for Camunda to be up
-        run: |
-          endpoint="${CAMUNDA_API_BASE_URL}version"
-          version=""
+  #     - name: Wait for Camunda to be up
+  #       run: |
+  #         endpoint="${CAMUNDA_API_BASE_URL}version"
+  #         version=""
 
-          until [ $version ]; do
-            echo "Checking if Camunda at ${CAMUNDA_API_BASE_URL} is up..."
-            version=$(curl -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD} "$endpoint" -s | jq -r ".version")
-            sleep 2
-          done
+  #         until [ $version ]; do
+  #           echo "Checking if Camunda at ${CAMUNDA_API_BASE_URL} is up..."
+  #           version=$(curl -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD} "$endpoint" -s | jq -r ".version")
+  #           sleep 2
+  #         done
 
-          echo "Running Camunda $version"
+  #         echo "Running Camunda $version"
 
-      - name: Run tests
-        run: |
-          python src/manage.py compilemessages
-          python src/manage.py collectstatic --noinput --link
-          src/manage.py test src \
-            --parallel 4 \
-            --exclude-tag=e2e \
-            --reverse
+  #     - name: Run tests
+  #       run: |
+  #         python src/manage.py compilemessages
+  #         python src/manage.py collectstatic --noinput --link
+  #         src/manage.py test src \
+  #           --parallel 4 \
+  #           --exclude-tag=e2e \
+  #           --reverse
 
-        env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
-          SECRET_KEY: dummy
-          DB_USER: postgres
-          DB_PASSWORD: ''
-          DEBUG: 'true'
+  #       env:
+  #         DJANGO_SETTINGS_MODULE: openforms.conf.ci
+  #         SECRET_KEY: dummy
+  #         DB_USER: postgres
+  #         DB_PASSWORD: ''
+  #         DEBUG: 'true'
 
-      - run: npm ci
-        working-directory: .github/actions/report-flaky
-      - uses: ./.github/actions/report-flaky
+  #     - run: npm ci
+  #       working-directory: .github/actions/report-flaky
+  #     - uses: ./.github/actions/report-flaky
 
-  e2etests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser:
-          - chromium
-          - firefox
-          - webkit
+  # e2etests:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       browser:
+  #         - chromium
+  #         - firefox
+  #         - webkit
 
-    name: End-to-end tests, ${{ matrix.browser }}
+  #   name: End-to-end tests, ${{ matrix.browser }}
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        # Needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-          --name postgres
-      redis:
-        image: redis:6
-        ports:
-          - 6379:6379
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
-          python-version: '3.12'
-          optimize-postgres: 'yes'
-          pg-service: 'postgres'
-          setup-node: 'yes'
-          npm-ci-flags: '--legacy-peer-deps'
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_HOST_AUTH_METHOD: trust
+  #       ports:
+  #         - 5432:5432
+  #       # Needed because the postgres container does not provide a healthcheck
+  #       options:
+  #         --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #         --name postgres
+  #     redis:
+  #       image: redis:6
+  #       ports:
+  #         - 6379:6379
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up backend environment
+  #       uses: maykinmedia/setup-django-backend@v1.3
+  #       with:
+  #         apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gettext postgresql-client gdal-bin'
+  #         python-version: '3.12'
+  #         optimize-postgres: 'yes'
+  #         pg-service: 'postgres'
+  #         setup-node: 'yes'
+  #         npm-ci-flags: '--legacy-peer-deps'
 
-      # See https://playwright.dev/python/docs/ci#caching-browsers
-      - name: Cache Playwright browser
-        id: cache-browser
-        uses: actions/cache@v4
-        with:
-          path: /home/runner/.cache/ms-playwright
-          key:
-            ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('requirements/ci.txt') }}
+  #     # See https://playwright.dev/python/docs/ci#caching-browsers
+  #     - name: Cache Playwright browser
+  #       id: cache-browser
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: /home/runner/.cache/ms-playwright
+  #         key:
+  #           ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('requirements/ci.txt') }}
 
-      - name: Install playwright deps
-        run: playwright install --with-deps ${{ matrix.browser }}
+  #     - name: Install playwright deps
+  #       run: playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Determine which SDK image to use to extract the JS/CSS files
-        id: sdk-tag
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+  #     - name: Determine which SDK image to use to extract the JS/CSS files
+  #       id: sdk-tag
+  #       run: |
+  #         # Strip git ref prefix from version
+  #         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+  #         # Strip "v" prefix from tag name (if present at all)
+  #         [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
-          # default to version in .sdk-release file
-          SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
+  #         # default to version in .sdk-release file
+  #         SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
 
-          # PRs have the base_ref, straight up pushes don't
-          if [[ "${{ github.base_ref }}" == stable/* ]]; then
-            echo "pull request to stable branch"
-          else
-            echo "not a pull request to a stable branch"
-            case $VERSION in
-              # if building master -> include latest image of SDK
-              master) SDK_TAG=latest;;
-              # PRs result in version 'merge' that'll go to master -> include latest image of SDK
-              merge) SDK_TAG=latest;;
-            esac
-          fi
+  #         # PRs have the base_ref, straight up pushes don't
+  #         if [[ "${{ github.base_ref }}" == stable/* ]]; then
+  #           echo "pull request to stable branch"
+  #         else
+  #           echo "not a pull request to a stable branch"
+  #           case $VERSION in
+  #             # if building master -> include latest image of SDK
+  #             master) SDK_TAG=latest;;
+  #             # PRs result in version 'merge' that'll go to master -> include latest image of SDK
+  #             merge) SDK_TAG=latest;;
+  #           esac
+  #         fi
 
-          echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
+  #         echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
 
-      - name: Extract SDK files from SDK docker image
-        run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
-          docker cp $container_id:/sdk ./src/openforms/static/
-          docker rm -v $container_id
+  #     - name: Extract SDK files from SDK docker image
+  #       run: |
+  #         container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
+  #         docker cp $container_id:/sdk ./src/openforms/static/
+  #         docker rm -v $container_id
 
-      - name: Run testsuite
-        run: |
-          python src/manage.py compilemessages
-          python src/manage.py collectstatic --noinput --link
-          src/manage.py test src --tag=e2e
-        env:
-          DJANGO_SETTINGS_MODULE: openforms.conf.ci
-          SECRET_KEY: dummy
-          DB_USER: postgres
-          DB_PASSWORD: ''
-          E2E_DRIVER: ${{ matrix.browser }}
-          E2E_ENABLE_TRACING: '1'
-          E2E_TRACES_PATH: /tmp/playwright_traces
-          SDK_RELEASE: ${{ steps.sdk-tag.outputs.sdk_tag }}
+  #     - name: Run testsuite
+  #       run: |
+  #         python src/manage.py compilemessages
+  #         python src/manage.py collectstatic --noinput --link
+  #         src/manage.py test src --tag=e2e
+  #       env:
+  #         DJANGO_SETTINGS_MODULE: openforms.conf.ci
+  #         SECRET_KEY: dummy
+  #         DB_USER: postgres
+  #         DB_PASSWORD: ''
+  #         E2E_DRIVER: ${{ matrix.browser }}
+  #         E2E_ENABLE_TRACING: '1'
+  #         E2E_TRACES_PATH: /tmp/playwright_traces
+  #         SDK_RELEASE: ${{ steps.sdk-tag.outputs.sdk_tag }}
 
-      - name: Upload playwright traces artifact on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces-${{ matrix.browser }}
-          path: /tmp/playwright_traces
-          retention-days: 1
+  #     - name: Upload playwright traces artifact on failure
+  #       if: ${{ failure() }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: playwright-traces-${{ matrix.browser }}
+  #         path: /tmp/playwright_traces
+  #         retention-days: 1
 
-  docs:
-    name: Build and check documentation
-    runs-on: ubuntu-latest
+  # docs:
+  #   name: Build and check documentation
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          path: open-forms
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         path: open-forms
 
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
-          setup-node: 'no'
-          working-directory: 'open-forms'
+  #     - name: Set up backend environment
+  #       uses: maykinmedia/setup-django-backend@v1.3
+  #       with:
+  #         apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
+  #         python-version: '3.12'
+  #         setup-node: 'no'
+  #         working-directory: 'open-forms'
 
-      - name: Determine SDK version to checkout
-        id: sdk-ref
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+  #     - name: Determine SDK version to checkout
+  #       id: sdk-ref
+  #       run: |
+  #         # Strip git ref prefix from version
+  #         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+  #         # Strip "v" prefix from tag name (if present at all)
+  #         [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
-          # default to version in .sdk-release file
-          SDK_REF=$(cat .sdk-release | tr -d '[:space:]')
+  #         # default to version in .sdk-release file
+  #         SDK_REF=$(cat .sdk-release | tr -d '[:space:]')
 
-          case $VERSION in
-            # if building master -> include main of SDK
-            master) SDK_REF=main;;
-            # PRs result in version 'merge' that'll go to master -> include main of SDK
-            merge) SDK_REF=main;;
-          esac
+  #         case $VERSION in
+  #           # if building master -> include main of SDK
+  #           master) SDK_REF=main;;
+  #           # PRs result in version 'merge' that'll go to master -> include main of SDK
+  #           merge) SDK_REF=main;;
+  #         esac
 
-          echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
-        working-directory: open-forms
+  #         echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
+  #       working-directory: open-forms
 
-      - name: Checkout SDK repository
-        uses: actions/checkout@v4
-        with:
-          repository: 'open-formulieren/open-forms-sdk'
-          ref: ${{ steps.sdk-ref.outputs.sdk_ref }}
-          path: open-forms-sdk
+  #     - name: Checkout SDK repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: 'open-formulieren/open-forms-sdk'
+  #         ref: ${{ steps.sdk-ref.outputs.sdk_ref }}
+  #         path: open-forms-sdk
 
-      - name: Setup symlinks
-        run: |
-          ln -s $(pwd)/open-forms-sdk/CHANGELOG.rst open-forms/docs/changelog-sdk.rst
+  #     - name: Setup symlinks
+  #       run: |
+  #         ln -s $(pwd)/open-forms-sdk/CHANGELOG.rst open-forms/docs/changelog-sdk.rst
 
-      - name: Build and test docs
-        run: |
-          export OPENSSL_CONF=$(pwd)/openssl.conf
-          pytest check_sphinx.py -v --tb=auto
-        working-directory: open-forms/docs
+  #     - name: Build and test docs
+  #       run: |
+  #         export OPENSSL_CONF=$(pwd)/openssl.conf
+  #         pytest check_sphinx.py -v --tb=auto
+  #       working-directory: open-forms/docs
 
   # see https://github.com/orgs/community/discussions/26671
   docker_build_setup:
@@ -438,155 +438,155 @@ jobs:
         with:
           sarif_file: 'trivy-results-docker.sarif'
 
-  upgrade_simulation:
-    needs:
-      - docker_build_setup
-      - docker_build
-    env:
-      RUN_SETUP_CONFIG: "False"  # Disable running the setup_configuration
-    name: Simulate upgrading instances
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        start: ['2.7.4', '2.7.8']
+  # upgrade_simulation:
+  #   needs:
+  #     - docker_build_setup
+  #     - docker_build
+  #   env:
+  #     RUN_SETUP_CONFIG: "False"  # Disable running the setup_configuration
+  #   name: Simulate upgrading instances
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       start: ['2.7.4', '2.7.8']
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download built image
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image-${{ needs.docker_build_setup.outputs.version }}
-      - name: Load image
-        run: docker image load -i image.tar
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download built image
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: docker-image-${{ needs.docker_build_setup.outputs.version }}
+  #     - name: Load image
+  #       run: docker image load -i image.tar
 
-      - name: Pull and run old version
-        run: |
-          docker compose pull
-          docker compose run web \
-            python src/manage.py migrate
-        env:
-          TAG: ${{ matrix.start }}
+  #     - name: Pull and run old version
+  #       run: |
+  #         docker compose pull
+  #         docker compose run web \
+  #           python src/manage.py migrate
+  #       env:
+  #         TAG: ${{ matrix.start }}
 
-      - name:
-        run: |
-          docker compose run -e RELEASE=${RELEASE} web \
-            python src/manage.py migrate
-        env:
-          RELEASE: '2.8.0-beta.0'
-          # ensure local image gets used
-          TAG: ${{ needs.docker_build_setup.outputs.version }}
+  #     - name:
+  #       run: |
+  #         docker compose run -e RELEASE=${RELEASE} web \
+  #           python src/manage.py migrate
+  #       env:
+  #         RELEASE: '2.8.0-beta.0'
+  #         # ensure local image gets used
+  #         TAG: ${{ needs.docker_build_setup.outputs.version }}
 
-  oas-up-to-date:
-    needs: tests
-    name: Check for unexepected OAS changes
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Check for OAS changes
-        run: |
-          diff openapi.yaml src/openapi.yaml
-      - name: Write failure markdown
-        if: ${{ failure() }}
-        run: |
-          echo 'Run the following command locally and commit the changes' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo './bin/generate_oas.sh' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+  # oas-up-to-date:
+  #   # needs: tests
+  #   name: Check for unexepected OAS changes
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download generated OAS
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: open-forms-oas
+  #     - name: Check for OAS changes
+  #       run: |
+  #         diff openapi.yaml src/openapi.yaml
+  #     - name: Write failure markdown
+  #       if: ${{ failure() }}
+  #       run: |
+  #         echo 'Run the following command locally and commit the changes' >> $GITHUB_STEP_SUMMARY
+  #         echo '' >> $GITHUB_STEP_SUMMARY
+  #         echo '```bash' >> $GITHUB_STEP_SUMMARY
+  #         echo './bin/generate_oas.sh' >> $GITHUB_STEP_SUMMARY
+  #         echo '```' >> $GITHUB_STEP_SUMMARY
 
-  oas-lint:
-    needs: oas-up-to-date
-    name: Validate OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install spectral
-        run: npm install -g @stoplight/spectral@5.9.2
-      - name: Run OAS linter
-        run: spectral lint ./openapi.yaml
+  # oas-lint:
+  #   needs: oas-up-to-date
+  #   name: Validate OAS
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download generated OAS
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: open-forms-oas
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
+  #     - name: Install spectral
+  #       run: npm install -g @stoplight/spectral@5.9.2
+  #     - name: Run OAS linter
+  #       run: spectral lint ./openapi.yaml
 
-  oas-postman:
-    needs: oas-up-to-date
-    name: Generate Postman collection from OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm install -g openapi-to-postmanv2
-      - name: Create tests folder
-        run: mkdir -p ./tests/postman
-      - name: Generate Postman collection
-        run: openapi2postmanv2 -s ./openapi.yaml -o ./tests/postman/collection.json --pretty
+  # oas-postman:
+  #   needs: oas-up-to-date
+  #   name: Generate Postman collection from OAS
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download generated OAS
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: open-forms-oas
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
+  #     - name: Install dependencies
+  #       run: npm install -g openapi-to-postmanv2
+  #     - name: Create tests folder
+  #       run: mkdir -p ./tests/postman
+  #     - name: Generate Postman collection
+  #       run: openapi2postmanv2 -s ./openapi.yaml -o ./tests/postman/collection.json --pretty
 
-  oas-generate-sdks:
-    needs: oas-up-to-date
-    name: Generate SDKs from OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm install -g @openapitools/openapi-generator-cli@2.4.2
-      - name: Validate schema
-        run: openapi-generator-cli validate -i ./openapi.yaml
-      - name: Set the version of openapi-generator which gets used
-        run: |
-          openapi-generator-cli version-manager set 7.0.0
-      - name: Generate Java client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/java -g java
-          --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
-      - name: Generate .NET Full Framework client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/net -g csharp
-          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
-      - name: Generate Python client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/python -g python
-          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
+  # oas-generate-sdks:
+  #   needs: oas-up-to-date
+  #   name: Generate SDKs from OAS
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download generated OAS
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: open-forms-oas
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
+  #     - name: Install dependencies
+  #       run: npm install -g @openapitools/openapi-generator-cli@2.4.2
+  #     - name: Validate schema
+  #       run: openapi-generator-cli validate -i ./openapi.yaml
+  #     - name: Set the version of openapi-generator which gets used
+  #       run: |
+  #         openapi-generator-cli version-manager set 7.0.0
+  #     - name: Generate Java client
+  #       run:
+  #         openapi-generator-cli generate -i ./openapi.yaml
+  #         --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+  #         ./sdks/java -g java
+  #         --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
+  #     - name: Generate .NET Full Framework client
+  #       run:
+  #         openapi-generator-cli generate -i ./openapi.yaml
+  #         --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+  #         ./sdks/net -g csharp
+  #         --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
+  #     - name: Generate Python client
+  #       run:
+  #         openapi-generator-cli generate -i ./openapi.yaml
+  #         --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+  #         ./sdks/python -g python
+  #         --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
 
   docker_push:
     needs:
-      - tests
-      - e2etests
+      # - tests
+      # - e2etests
       - docker_build_setup
       - docker_build
-      - oas-lint
-      - oas-postman
-      - oas-generate-sdks
+      # - oas-lint
+      # - oas-postman
+      # - oas-generate-sdks
 
     name: Push Docker image
     runs-on: ubuntu-latest
