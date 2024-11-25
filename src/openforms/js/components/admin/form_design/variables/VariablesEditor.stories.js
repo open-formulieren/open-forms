@@ -691,26 +691,21 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
       const toggleCopyDropdown = await modal.findByRole('link', {
-        name: 'Copy configuration from registration',
+        name: 'Neem registratie-instellingen over',
       });
       expect(toggleCopyDropdown).toBeVisible();
       await userEvent.click(toggleCopyDropdown);
 
-      const copyDropdown = await modal.findByLabelText(
-        'Copy configuration from registration backend'
-      );
+      const copyDropdown = await modal.findByLabelText('Registratie-instellingen overnemen');
       expect(copyDropdown).toBeVisible();
       await userEvent.click(copyDropdown);
 
       // Cannot do selectOption with react-select
       const options = await canvas.findAllByText('Example Objects API reg.');
       const option = options[1];
-      console.log(option);
       await userEvent.click(option);
 
-      const copyButton = await canvas.findByRole('button', {
-        name: 'Copy',
-      });
+      const copyButton = await canvas.findByRole('button', {name: 'Overnemen'});
       expect(copyButton).toBeVisible();
       await userEvent.click(copyButton);
 
@@ -902,18 +897,18 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
       await userEvent.selectOptions(targetPathDropdown, '');
 
       const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
-        name: 'Map specific subfields',
+        name: 'Koppel individuele velden',
       });
       userEvent.click(specificTargetsCheckbox);
 
-      const postcodeSelect = await canvas.findByLabelText('Postcode Schema target');
-      const houseNumberSelect = await canvas.findByLabelText('House number Schema target');
-      const houseLetterSelect = await canvas.findByLabelText('House letter Schema target');
+      const postcodeSelect = await canvas.findByLabelText('Bestemmingspad postcode');
+      const houseNumberSelect = await canvas.findByLabelText('Bestemmingspad huisnummer');
+      const houseLetterSelect = await canvas.findByLabelText('Bestemmingspad huisletter');
       const houseNumberAdditionSelect = await canvas.findByLabelText(
-        'House number addition Schema target'
+        'Bestemmingspad huisnummertoevoeging'
       );
-      const citySelect = await canvas.findByLabelText('City Schema target');
-      const streetNameSelect = await canvas.findByLabelText('Street name Schema target');
+      const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
+      const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
 
       expect(postcodeSelect).toBeVisible();
       expect(houseNumberSelect).toBeVisible();
@@ -1013,18 +1008,18 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
     await userEvent.selectOptions(targetPathDropdown, '');
 
     const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
-      name: 'Map specific subfields',
+      name: 'Koppel individuele velden',
     });
     await userEvent.click(specificTargetsCheckbox);
 
-    const postcodeSelect = await canvas.findByLabelText('Postcode Schema target');
-    const houseNumberSelect = await canvas.findByLabelText('House number Schema target');
-    const houseLetterSelect = await canvas.findByLabelText('House letter Schema target');
+    const postcodeSelect = await canvas.findByLabelText('Bestemmingspad postcode');
+    const houseNumberSelect = await canvas.findByLabelText('Bestemmingspad huisnummer');
+    const houseLetterSelect = await canvas.findByLabelText('Bestemmingspad huisletter');
     const houseNumberAdditionSelect = await canvas.findByLabelText(
-      'House number addition Schema target'
+      'Bestemmingspad huisnummertoevoeging'
     );
-    const citySelect = await canvas.findByLabelText('City Schema target');
-    const streetNameSelect = await canvas.findByLabelText('Street name Schema target');
+    const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
+    const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
 
     expect(postcodeSelect).toBeVisible();
     expect(houseNumberSelect).toBeVisible();

@@ -126,7 +126,7 @@ export const SelectCaseTypeAndDocumentType = {
     });
     await rsSelect(caseTypeSelect, 'Request passport');
 
-    const documentTypeSelect = canvas.getByLabelText('Document type', {
+    const documentTypeSelect = canvas.getByLabelText('Documenttype', {
       selector: '#id_documentTypeDescription',
     });
     await rsSelect(documentTypeSelect, 'Attachment');

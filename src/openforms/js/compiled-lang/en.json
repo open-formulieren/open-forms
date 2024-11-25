@@ -955,6 +955,12 @@
       "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
     }
   ],
+  "8M403q": [
+    {
+      "type": 0,
+      "value": "Soft required fields should be filled out, but empty values don't block the users' progress. Sometimes this is needed for legal reasons. A component cannot be hard and soft required at the same time."
+    }
+  ],
   "8NbOpb": [
     {
       "type": 0,
@@ -2901,6 +2907,12 @@
     {
       "type": 0,
       "value": "Select existing form definition"
+    }
+  ],
+  "QL4SGQ": [
+    {
+      "type": 0,
+      "value": "Soft required"
     }
   ],
   "QLTh2N": [
@@ -5075,6 +5087,12 @@
       "value": "Folder path"
     }
   ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "option 2: € 15,99"
+    }
+  ],
   "jy1jTd": [
     {
       "offset": 0,
@@ -5191,6 +5209,12 @@
     {
       "type": 0,
       "value": "Category"
+    }
+  ],
+  "ksJN3E": [
+    {
+      "type": 0,
+      "value": "The email addresses to which the submission details will be sent"
     }
   ],
   "ktjLJK": [
@@ -5527,12 +5551,6 @@
     {
       "type": 0,
       "value": "JSON Schema object target"
-    }
-  ],
-  "o6Ju6l": [
-    {
-      "type": 0,
-      "value": "The email addresses to which the submission details will be sent"
     }
   ],
   "o83CBr": [
@@ -6009,6 +6027,12 @@
     {
       "type": 0,
       "value": "Regular expression for city"
+    }
+  ],
+  "sxdJ/8": [
+    {
+      "type": 0,
+      "value": "option 1: € 10,99"
     }
   ],
   "t5fg/K": [

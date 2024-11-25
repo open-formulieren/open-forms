@@ -15,7 +15,7 @@ const EmailRecipients = () => {
         name="toEmails"
         label={
           <FormattedMessage
-            description="Email registration options 'attachFilesToEmail' label"
+            description="Email registration options 'toEmails' label"
             defaultMessage="The email addresses to which the submission details will be sent"
           />
         }
