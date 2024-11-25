@@ -1338,7 +1338,6 @@ class FormDesignerTooltipTests(E2ETestCase):
                             },
                         },
                         {"type": "number", "key": "number", "label": "Number 1"},
-                        {"type": "password", "key": "password", "label": "Password 1"},
                         {
                             "type": "phoneNumber",
                             "key": "phoneNumber",
@@ -1440,7 +1439,6 @@ class FormDesignerTooltipTests(E2ETestCase):
                 "IBAN 1",
                 "License plate 1",
                 "Number 1",
-                "Password 1",
                 "Phone Number 1",
                 "Postcode 1",
                 "Radio 1",

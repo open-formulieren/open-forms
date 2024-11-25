@@ -254,7 +254,7 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
                 },
                 {
                     "key": "ww",
-                    "type": "password",
+                    "type": "textfield",
                     "label": "Wachtwoord",
                     "description": 'Suggestie: #{{naam|title}}{{geboortedatum|date:"Y"}}',
                     "openForms": {

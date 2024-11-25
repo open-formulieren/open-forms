@@ -542,7 +542,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 ],
                 submitted_data={
                     "email": "abuse@example.com",
-                    "fubar": "Haveibeenpwned.com123!@#",
                     "editgrid1": [
                         {
                             "radio1": "radiov2",
@@ -563,14 +562,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                             "key": "foo",
                             "type": "textfield",
                             "label": "Label with no translation",
-                            "showInEmail": True,
-                        },
-                        {
-                            "key": "fubar",
-                            "type": "password",
-                            "label": "Label with no translation",
-                            # XXX cleartext "password" in email, for when you
-                            # run out of room for Post-it™ on your monitor.
                             "showInEmail": True,
                         },
                         {
@@ -692,7 +683,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("Translated Repeating Group Item label 2", html_message)
         self.assertIn("Translated Radio option 1", html_message)
         self.assertIn("Translated Select option 2", html_message)
-        self.assertIn("Haveibeenpwned.com123!@#", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):

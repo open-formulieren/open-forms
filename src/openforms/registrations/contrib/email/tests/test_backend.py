@@ -631,12 +631,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                     "showInEmail": True,
                 },
                 {
-                    "key": "wachtwoord",
-                    "label": "Wachtwoord",
-                    "showInEmail": True,
-                    "type": "password",
-                },
-                {
                     "key": "favorieteComponenten",
                     "label": "Favoriete componenten?",
                     "multiple": True,
