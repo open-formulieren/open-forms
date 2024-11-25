@@ -33,7 +33,7 @@ import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
 import PaymentFields from './PaymentFields';
-import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
+import PriceLogic from './PriceLogic';
 import ProductFields from './ProductFields';
 import RegistrationFields from './RegistrationFields';
 import Tab from './Tab';
@@ -138,7 +138,6 @@ const initialFormState = {
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
-  priceRules: [],
   formVariables: [],
   staticVariables: [],
   // backend error handling
@@ -179,7 +178,6 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   paymentBackendOptions: 'product-payment',
   submissionsRemovalOptions: 'submission-removal-options',
   logicRules: 'logic-rules',
-  priceRules: 'product-payment',
   variables: 'variables',
   appointmentOptions: 'form',
   brpPersonenRequestOptions: 'advanced-configuration',
@@ -203,7 +201,7 @@ function reducer(draft, action) {
      */
     case 'BACKEND_DATA_LOADED': {
       const {supportingData, formData} = action.payload;
-      const {form, selectedAuthPlugins, steps, variables, logicRules, priceRules} = formData;
+      const {form, selectedAuthPlugins, steps, variables, logicRules} = formData;
 
       for (const [stateVar, data] of Object.entries(supportingData)) {
         draft[stateVar] = data;
@@ -219,7 +217,6 @@ function reducer(draft, action) {
           // if there's a description set already, it may not be mutated
           _mayGenerateDescription: !rule.description,
         }));
-      if (priceRules) draft.priceRules = priceRules;
 
       if (!draft.form.confirmationEmailTemplate) {
         draft.form.confirmationEmailTemplate = {subject: '', content: '', translations: {}};
@@ -838,46 +835,6 @@ function reducer(draft, action) {
     }
 
     /**
-     * Price rules actions
-     */
-    case 'ADD_PRICE_RULE': {
-      const {
-        form: {url},
-      } = draft;
-      draft.priceRules.push({
-        ...EMPTY_PRICE_RULE,
-        form: url,
-        _generatedId: getUniqueRandomString(),
-      });
-      break;
-    }
-    case 'CHANGED_PRICE_RULE': {
-      const {index, name, value} = action.payload;
-      draft.priceRules[index][name] = value;
-
-      const [validationErrors, tabsWithErrors] = updateWarningsValidationError(
-        draft.validationErrors,
-        draft.tabsWithErrors,
-        'priceRules',
-        index,
-        name,
-        FORM_FIELDS_TO_TAB_NAMES['priceRules']
-      );
-      draft.validationErrors = validationErrors;
-      draft.tabsWithErrors = tabsWithErrors;
-      break;
-    }
-    case 'DELETED_PRICE_RULE': {
-      const {index} = action.payload;
-
-      // delete object from state
-      const updatedRules = [...draft.priceRules];
-      updatedRules.splice(index, 1);
-      draft.priceRules = updatedRules;
-      break;
-    }
-
-    /**
      * Submit & validation error handling
      */
     case 'SUBMIT_STARTED': {
@@ -1168,14 +1125,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
     dispatch({
       type: 'ADD_SERVICE_FETCH',
       payload: {variableName, values},
-    });
-  };
-
-  const onPriceRuleChange = (index, event) => {
-    const {name, value} = event.target;
-    dispatch({
-      type: 'CHANGED_PRICE_RULE',
-      payload: {name, value, index},
     });
   };
 
@@ -1495,14 +1444,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 backendOptions={state.form.paymentBackendOptions}
                 onChange={onFieldChange}
               />
-              <PriceLogic
-                variableKey={state.form.priceVariableKey}
-                rules={state.priceRules}
-                onChange={onPriceRuleChange}
-                onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
-                onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
-                onFieldChange={onFieldChange}
-              />
+              <PriceLogic variableKey={state.form.priceVariableKey} onFieldChange={onFieldChange} />
             </TabPanel>
           )}
 
