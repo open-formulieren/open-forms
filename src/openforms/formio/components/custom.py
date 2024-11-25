@@ -14,7 +14,7 @@ from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
 from openforms.authentication.service import AuthAttribute
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, LeafletMapBackground
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
@@ -197,6 +197,16 @@ class Map(BasePlugin[Component]):
             component.setdefault("initialCenter", {})
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
+
+        if component.get("backgroundIdentifier", False):
+            try:
+                leaflet_map_background = LeafletMapBackground.objects.get(
+                    identifier=component["backgroundIdentifier"]
+                )
+                # Write the background url information
+                component["url"] = leaflet_map_background.url
+            except LeafletMapBackground.DoesNotExist:
+                return None
 
     def build_serializer_field(self, component: Component) -> serializers.ListField:
         validate = component.get("validate", {})
