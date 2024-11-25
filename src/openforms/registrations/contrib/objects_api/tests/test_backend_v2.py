@@ -354,7 +354,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "upload_submission_csv": False,
-            "update_existing_object": False,
             "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
@@ -363,9 +362,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "target_path": ["multiple_files"],
                 },
             ],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -400,7 +396,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "upload_submission_csv": False,
-            "update_existing_object": False,
             "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
@@ -411,9 +406,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
                 # fmt: on
             ],
-            "iot_attachment": "",
-            "iot_submission_csv": "",
-            "iot_submission_report": "",
         }
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
