@@ -38,11 +38,23 @@ def convert_price_logic_rules_to_price_variable(apps: StateApps, _):
         rules = form.formpricelogic_set.all()
 
         # create a variable to hold the result.
-        # TODO: handle possible key collissions
+        variable_keys = set(form.formvariable_set.values_list("key", flat=True))
+        variable_key = VARIABLE_KEY
+        variable_name = VARIABLE_NAME
+        counter = 0
+        while variable_key in variable_keys:
+            counter += 1
+            variable_key = f"{variable_key}{counter}"
+            variable_name = f"{variable_name}{counter}"
+            if counter > 100:
+                raise RuntimeError(
+                    "Could not generate a unique key without looping too long"
+                )
+
         price_variable = form.formvariable_set.create(
             form_definition=None,
-            name=VARIABLE_NAME,
-            key=VARIABLE_KEY,
+            name=variable_name,
+            key=variable_key,
             source=FormVariableSources.user_defined,
             data_type=FormVariableDataTypes.float,
         )
