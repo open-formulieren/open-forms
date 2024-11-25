@@ -5,6 +5,8 @@ import {CRS_RD, TILE_LAYER_RD} from '@open-formulieren/leaflet-tools';
 import * as L from 'leaflet';
 import {Formio} from 'react-formio';
 
+import jsonScriptToVar from 'utils/json-script';
+
 import {localiseSchema} from './i18n';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -71,7 +73,28 @@ export default class Map extends TextFieldComponent {
     const map = L.map(`map-${this.id}`, MAP_DEFAULTS);
 
     const {url: tileUrl, ...options} = TILE_LAYER_RD;
-    const tiles = L.tileLayer(tileUrl, options);
+    const backgroundUrl =
+      this.getBackgroundUrl(this.originalComponent?.backgroundIdentifier) ?? tileUrl;
+    const tiles = L.tileLayer(backgroundUrl, options);
     map.addLayer(tiles);
+  }
+
+  // Try to get the background url for the component.
+  // If it cannot be found, return null.
+  getBackgroundUrl(backgroundIdentifier) {
+    const LEAFLET_MAP_BACKGROUNDS = jsonScriptToVar('config-LEAFLET_MAP_BACKGROUNDS', {
+      default: [],
+    });
+    if (
+      !Array.isArray(LEAFLET_MAP_BACKGROUNDS) ||
+      LEAFLET_MAP_BACKGROUNDS.length === 0 ||
+      !backgroundIdentifier
+    ) {
+      return null;
+    }
+
+    return LEAFLET_MAP_BACKGROUNDS.find(
+      background => background?.identifier === backgroundIdentifier
+    )?.url;
   }
 }
