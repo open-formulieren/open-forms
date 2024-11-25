@@ -14,7 +14,7 @@ from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
 from openforms.authentication.service import AuthAttribute
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
@@ -188,6 +188,15 @@ class Datetime(BasePlugin):
 @register("map")
 class Map(BasePlugin[Component]):
     formatter = MapFormatter
+
+    def mutate_config_dynamically(
+        self, component, submission: Submission, data: DataMapping
+    ) -> None:
+        if (identifier := component.get("tileLayerIdentifier")) is not None:
+            tile_layer = MapTileLayer.objects.filter(identifier=identifier).first()
+            if tile_layer is not None:
+                # Add the tile layer url information
+                component["tileLayerUrl"] = tile_layer.url
 
     @staticmethod
     def rewrite_for_request(component, request: Request):
