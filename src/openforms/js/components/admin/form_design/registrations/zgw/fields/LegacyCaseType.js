@@ -6,7 +6,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 /**
- * @todo - convert to omschrijving & use URL-based field as legacy/deprecated option
+ * @deprecated
  */
 const CaseType = () => {
   const [fieldProps] = useField('zaaktype');

@@ -22,7 +22,7 @@ import {get} from 'utils/fetch';
 // Data fetching
 
 const CATALOGUES_ENDPOINT = '/api/v2/objects-api/catalogues';
-const IOT_ENDPOINT = '/api/v2/objects-api/informatieobjecttypen';
+const IOT_ENDPOINT = '/api/v2/objects-api/document-types';
 
 const getCatalogues = async apiGroupID => {
   const response = await get(CATALOGUES_ENDPOINT, {objects_api_group: apiGroupID});
@@ -35,15 +35,15 @@ const getCatalogues = async apiGroupID => {
 const getDocumentTypes = async (apiGroupID, catalogueUrl) => {
   const response = await get(IOT_ENDPOINT, {
     objects_api_group: apiGroupID,
-    catalogus_url: catalogueUrl,
+    catalogue_url: catalogueUrl,
   });
   if (!response.ok) {
     throw new Error('Loading available document types failed');
   }
-  const documentTypes = response.data.sort((a, b) => a.omschrijving.localeCompare(b.omschrijving));
-  return documentTypes.map(({omschrijving, isPublished}) => ({
-    value: omschrijving,
-    label: omschrijving,
+  const documentTypes = response.data.sort((a, b) => a.description.localeCompare(b.description));
+  return documentTypes.map(({description, isPublished}) => ({
+    value: description,
+    label: description,
     isPublished: isPublished,
   }));
 };

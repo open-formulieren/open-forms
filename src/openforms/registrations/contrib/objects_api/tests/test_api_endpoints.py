@@ -279,7 +279,7 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = TEST_FILES
-    endpoint = reverse_lazy("api:objects_api:iotypen-list")
+    endpoint = reverse_lazy("api:objects_api:document-type-list")
 
     @classmethod
     def setUpTestData(cls):
@@ -331,15 +331,15 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertGreaterEqual(num_document_types, 6)
         # assert that multiple versions are de-duplicated
         num_unique = len(
-            {(item["omschrijving"], item["catalogusLabel"]) for item in data}
+            {(item["description"], item["catalogueLabel"]) for item in data}
         )
         self.assertEqual(num_unique, num_document_types)
 
         # check the data types of returned information
         record = data[0]
         expected = {
-            "catalogusLabel": str,
-            "omschrijving": str,
+            "catalogueLabel": str,
+            "description": str,
             "url": str,
         }
         for key, type in expected.items():
@@ -354,7 +354,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             self.endpoint,
             {
                 "objects_api_group": self.objects_api_group.pk,
-                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
             },
         )
 
@@ -364,13 +364,13 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertGreaterEqual(len(data), 3)
         # we expect only one catalogue to be returned
-        catalogi_labels_seen = {item["catalogusLabel"] for item in data}
+        catalogi_labels_seen = {item["catalogueLabel"] for item in data}
         self.assertEqual(len(catalogi_labels_seen), 1)
         # check the data types of returned information
         record = data[0]
         expected = {
-            "catalogusLabel": str,
-            "omschrijving": str,
+            "catalogueLabel": str,
+            "description": str,
             "url": str,
         }
         for key, type in expected.items():
@@ -387,7 +387,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             {
                 "objects_api_group": self.objects_api_group.pk,
                 # catalogue in fixture with draft document types
-                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
             },
         )
 

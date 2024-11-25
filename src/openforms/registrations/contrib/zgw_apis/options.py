@@ -73,6 +73,18 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         default="",
     )
+    document_type_description = serializers.CharField(
+        required=False,  # either htis field or informatieobjecttype (legacy) must be provided
+        label=_("Document type description"),
+        help_text=_(
+            "The document type will be retrived in the specified catalogue. The version "
+            "will automatically be selected based on the submission completion "
+            "timestamp. When you specify this field, you MUST also specify the case "
+            "type via its identification. Only document types related to the case type "
+            "are valid."
+        ),
+        default="",
+    )
     product_url = serializers.URLField(
         required=False,
         label=_("Product url"),
@@ -90,8 +102,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         default="",
     )
     informatieobjecttype = serializers.URLField(
-        required=True,
+        required=False,
         help_text=_("URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
+        default="",
     )
     organisatie_rsin = serializers.CharField(
         required=False,
@@ -207,6 +220,17 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             raise serializers.ValidationError(
                 {
                     "case_type_identification": _("You must specify a case type."),
+                },
+                code="required",
+            )
+
+        # Legacy forms will have informatieobjecttype set, new forms can set
+        # document_type_description. Both may be set - in that case, `document_type_description`
+        # is preferred.
+        if not attrs["document_type_description"] and not attrs["informatieobjecttype"]:
+            raise serializers.ValidationError(
+                {
+                    "document_type_description": _("You must specify a document type"),
                 },
                 code="required",
             )
@@ -347,6 +371,7 @@ def _validate_catalogue_case_and_doc_type(
     catalogue_option = attrs.get("catalogue")
 
     case_type_identification = attrs["case_type_identification"]
+    document_type_description = attrs["document_type_description"]
 
     # legacy
     case_type_url = attrs["zaaktype"]
@@ -370,8 +395,8 @@ def _validate_catalogue_case_and_doc_type(
     )
     err_invalid_document_type = ErrorDetail(
         _(
-            "The provided informatieobjecttype does not exist in the specified "
-            "selected case type or Catalogi API."
+            "The provided informatieobjecttype does not exist in the selected case "
+            "type or Catalogi API."
         ),  # type: ignore
         code="not-found",
     )
@@ -425,8 +450,27 @@ def _validate_catalogue_case_and_doc_type(
         elif case_type_url not in catalogus["zaaktypen"]:
             _errors["zaaktype"] = err_invalid_case_type
 
-        # Validate document type reference
-        if document_type_url not in valid_document_type_urls:
+        # validate the document type reference. Note that the validation does not
+        # consider versions - as soon as the document type was present with any version
+        # of the case type at any point, it is allowed to go through. This *may* lead
+        # to runtime errors if the document type (or its version) is no longer related
+        # to the case type version that applies to the moment of registration.
+        if document_type_description:
+            document_type_versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"],
+                description=document_type_description,
+            )
+            if document_type_versions is None:
+                _errors["document_type_description"] = err_invalid_document_type
+            else:
+                document_type_urls = {item["url"] for item in document_type_versions}
+                # check the intersection with the known good URLs
+                intersection = document_type_urls & set(valid_document_type_urls)
+                if not intersection:
+                    _errors["document_type_description"] = err_invalid_document_type
+
+        # Validate document type URL reference against possible valid URLs.
+        elif document_type_url not in valid_document_type_urls:
             _errors["informatieobjecttype"] = err_invalid_document_type
 
     else:

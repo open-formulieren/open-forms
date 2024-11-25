@@ -624,6 +624,11 @@
     "description": "Service fetch configuration modal data extraction fieldset title",
     "originalDefault": "Data extraction"
   },
+  "C2FSDV": {
+    "defaultMessage": "Documents produced in the form submission are registered with this document type, unless more fine grained configuration is available. Only document types available on the selected case type are shown.",
+    "description": "ZGW APIs registration options 'document type' helpText",
+    "originalDefault": "Documents produced in the form submission are registered with this document type, unless more fine grained configuration is available. Only document types available on the selected case type are shown."
+  },
   "C4Zn+R": {
     "defaultMessage": "Internal name of the form definition used in this form step",
     "description": "Form step internal name field help text",
@@ -1303,6 +1308,11 @@
     "defaultMessage": "Case type API resource URL in the Catalogi API.",
     "description": "ZGW APIs registration options 'CaseType' help text",
     "originalDefault": "Case type API resource URL in the Catalogi API."
+  },
+  "NrF5vy": {
+    "defaultMessage": "Document type",
+    "description": "ZGW APIs registration options 'document type' label",
+    "originalDefault": "Document type"
   },
   "NwTdLM": {
     "defaultMessage": "Component where locations for an appointment will be shown",

@@ -3491,9 +3491,9 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/objects-api/informatieobjecttypen:
+  /api/v2/objects-api/document-types:
     get:
-      operationId: objects_api_informatieobjecttypen_list
+      operationId: objects_api_document_types_list
       description: |-
         List the available InformatieObjectTypen.
 
@@ -3504,13 +3504,23 @@ paths:
         API group
       parameters:
       - in: query
-        name: catalogus_url
+        name: case_type_identification
+        schema:
+          type: string
+          default: ''
+          minLength: 1
+        description: Filter document types for a given case type. The identification
+          is unique within the catalogue for a case type. Note that multiple versions
+          of the same case type with the same identification exist. The filter returns
+          a document type if it occurs within any version of the specified case type.
+      - in: query
+        name: catalogue_url
         schema:
           type: string
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogus URL.
+        description: Filter document types against this catalogue URL.
       - in: query
         name: objects_api_group
         schema:
@@ -3529,7 +3539,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InformatieObjectType'
+                  $ref: '#/components/schemas/DocumentType'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4186,26 +4196,35 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/zgw-api/informatieobjecttypen:
+  /api/v2/registration/plugins/zgw-api/document-types:
     get:
-      operationId: registration_plugins_zgw_api_informatieobjecttypen_list
+      operationId: registration_plugins_zgw_api_document_types_list
       description: |-
         List the available InformatieObjectTypen.
 
         Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
         and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
         only one entry is returned.
-      summary: List the available InformatieObjectTypen from the provided ZGW API
-        group
+      summary: List the available document types from the provided ZGW API group
       parameters:
       - in: query
-        name: catalogus_url
+        name: case_type_identification
+        schema:
+          type: string
+          default: ''
+          minLength: 1
+        description: Filter document types for a given case type. The identification
+          is unique within the catalogue for a case type. Note that multiple versions
+          of the same case type with the same identification exist. The filter returns
+          a document type if it occurs within any version of the specified case type.
+      - in: query
+        name: catalogue_url
         schema:
           type: string
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogus URL.
+        description: Filter document types against this catalogue URL.
       - in: query
         name: zgw_api_group
         schema:
@@ -4224,7 +4243,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InformatieObjectType'
+                  $ref: '#/components/schemas/DocumentType'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -7564,6 +7583,29 @@ components:
       - form
       type: string
       description: '* `form` - form'
+    DocumentType:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description uniquely identifies a document type within
+            a catalogue. Multiple versions of the same document type may exist, these
+            have non-overlapping valid from/valid until dates.
+        isPublished:
+          type: boolean
+          description: Unpublished document types may be returned when the feature
+            flag 'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
+        url:
+          type: string
+          format: uri
+        catalogueLabel:
+          type: string
+          description: A representation of the catalogue containing the document type.
+      required:
+      - catalogueLabel
+      - description
+      - isPublished
+      - url
     EmailVerification:
       type: object
       properties:
@@ -8732,31 +8774,6 @@ components:
       description: |-
         * `delete_permanently` - Submissions will be deleted
         * `make_anonymous` - Sensitive data within the submissions will be deleted
-    InformatieObjectType:
-      type: object
-      properties:
-        url:
-          type: string
-          format: uri
-        omschrijving:
-          type: string
-          title: description
-          description: The description uniquely identifies a document type within
-            a catalogue. Multiple versions of the same document type may exist, these
-            have non-overlapping valid from/valid until dates.
-        catalogusLabel:
-          type: string
-          title: catalogue label
-          description: A representation of the catalogue containing the document type.
-        isPublished:
-          type: boolean
-          description: Unpublished document types may be returned when the feature
-            flag 'ZGW_APIS_INCLUDE_DRAFTS' is enabled.
-      required:
-      - catalogusLabel
-      - isPublished
-      - omschrijving
-      - url
     Language:
       type: object
       properties:

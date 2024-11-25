@@ -1,4 +1,6 @@
 import logging
+import warnings
+from datetime import datetime
 from functools import partial, wraps
 from typing import Any, TypedDict
 
@@ -15,6 +17,7 @@ from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.clients.catalogi import (
+    CatalogiClient,
     EigenschapSpecificatie,
     omschrijving_matcher,
 )
@@ -37,7 +40,7 @@ from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
-from .typing import RegistrationOptions
+from .typing import CatalogueOption, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
 logger = logging.getLogger(__name__)
@@ -103,6 +106,65 @@ def wrap_api_errors(func):
 class _Eigenschap(TypedDict):
     url: str
     specificatie: EigenschapSpecificatie
+
+
+def _resolve_case_type(
+    catalogi_client: CatalogiClient,
+    catalogue: CatalogueOption,
+    identification: str,
+    submission_completed: datetime,
+) -> str:
+    version_valid_on = datetime_in_amsterdam(submission_completed).date()
+
+    catalogus = catalogi_client.find_catalogus(**catalogue)
+    if catalogus is None:
+        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+    versions = catalogi_client.find_case_types(
+        catalogus=catalogus["url"],
+        identification=identification,
+        valid_on=version_valid_on,
+    )
+
+    if versions is None:
+        raise RuntimeError(
+            "Could not find a case type with identification "
+            f"'{identification}' that is valid on "
+            f"{version_valid_on.isoformat()}."
+        )
+
+    version = versions[0]
+    return version["url"]
+
+
+def _resolve_document_type(
+    catalogi_client: CatalogiClient,
+    catalogue: CatalogueOption,
+    zaaktype_url: str,
+    description: str,
+    submission_completed: datetime,
+):
+    version_valid_on = datetime_in_amsterdam(submission_completed).date()
+
+    catalogus = catalogi_client.find_catalogus(**catalogue)
+    if catalogus is None:
+        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+    versions = catalogi_client.find_informatieobjecttypen(
+        catalogus=catalogus["url"],
+        description=description,
+        valid_on=version_valid_on,
+        within_casetype=zaaktype_url,
+    )
+    if versions is None:
+        raise RuntimeError(
+            "Could not find a document type with description "
+            f"'{description}' in the case type that is valid on "
+            f"{version_valid_on.isoformat()}."
+        )
+
+    # the client enforces there's a single version returned when a valid_on date is
+    # passed.
+    version = versions[0]
+    return version["url"]
 
 
 @register("zgw-create-zaak")
@@ -180,28 +242,19 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         if case_type_identification := options["case_type_identification"]:
             catalogue = options.get("catalogue")
             assert catalogue is not None  # enforced by validation
-            version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
-
             with get_catalogi_client(zgw) as catalogi_client:
-                catalogus = catalogi_client.find_catalogus(**catalogue)
-                if catalogus is None:
-                    raise RuntimeError(f"Could not resolve catalogue {catalogue}")
-                versions = catalogi_client.find_case_types(
-                    catalogus=catalogus["url"],
-                    identification=case_type_identification,
-                    valid_on=version_valid_on,
+                zaaktype_url = _resolve_case_type(
+                    catalogi_client,
+                    catalogue,
+                    case_type_identification,
+                    submission.completed_on,
                 )
-
-            if versions is None:
-                raise RuntimeError(
-                    "Could not find a case type with identification "
-                    f"'{case_type_identification}' that is valid on "
-                    f"{version_valid_on.isoformat()}."
-                )
-
-            version = versions[0]
-            zaaktype_url = version["url"]
         else:
+            warnings.warn(
+                "Using the zaaktype URL option is deprecated and will be removed in "
+                "Open Forms 4.0.",
+                DeprecationWarning,
+            )
             zaaktype_url = options["zaaktype"]
 
         with get_zaken_client(zgw) as zaken_client:
@@ -279,9 +332,28 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             get_zaken_client(zgw) as zaken_client,
             get_catalogi_client(zgw) as catalogi_client,
         ):
+            # resolve (default) document type to use
+            if document_type_description := options["document_type_description"]:
+                catalogue = options.get("catalogue")
+                assert catalogue is not None  # enforced by validation
+                informatieobjecttype_url = _resolve_document_type(
+                    catalogi_client,
+                    catalogue=catalogue,
+                    zaaktype_url=zaak["zaaktype"],
+                    description=document_type_description,
+                    submission_completed=submission.completed_on,
+                )
+            else:
+                warnings.warn(
+                    "Using the informatieobjecttype URL option is deprecated and will "
+                    "be removed in Open Forms 4.0.",
+                    DeprecationWarning,
+                )
+                informatieobjecttype_url = options["informatieobjecttype"]
+
             # Upload the summary PDF
             pdf_options: DocumentOptions = {
-                "informatieobjecttype": options["informatieobjecttype"],
+                "informatieobjecttype": informatieobjecttype_url,
                 "organisatie_rsin": options["organisatie_rsin"],
                 "auteur": options["auteur"],
                 "doc_vertrouwelijkheidaanduiding": options[
@@ -371,7 +443,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             for attachment in submission.attachments:
                 # collect attributes of the attachment and add them to the configuration
                 # attribute names conform to the Documenten API specification
-                iot = attachment.informatieobjecttype or options["informatieobjecttype"]
+                iot = attachment.informatieobjecttype or informatieobjecttype_url
                 bronorganisatie = (
                     attachment.bronorganisatie or options["organisatie_rsin"]
                 )

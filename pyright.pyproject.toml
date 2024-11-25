@@ -45,7 +45,8 @@ include = [
 exclude = [
     "**/__pycache__",
     "src/openforms/formio/formatters/tests/",
-    "src/openforms/registrations/contrib/zgw_apis/tests/",
+    "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
+    "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
 ]
 ignore = []
 

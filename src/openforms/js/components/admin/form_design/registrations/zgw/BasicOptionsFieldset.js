@@ -1,14 +1,14 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
-import {useAsync} from 'react-use';
+import {FormattedMessage, useIntl} from 'react-intl';
+import {useAsync, usePrevious, useUpdateEffect} from 'react-use';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {getCatalogueOption} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
-import {CaseTypeSelect, CatalogueSelect, ZGWAPIGroup} from './fields';
+import {CaseTypeSelect, CatalogueSelect, DocumentTypeSelect, ZGWAPIGroup} from './fields';
 import {getCatalogues} from './utils';
 
 // Components
@@ -16,6 +16,8 @@ import {getCatalogues} from './utils';
 const BasicOptionsFieldset = ({apiGroupChoices}) => {
   const {
     values: {
+      caseTypeIdentification,
+      documentTypeDescription,
       zaaktype,
       informatieobjecttype,
       medewerkerRoltype,
@@ -28,6 +30,8 @@ const BasicOptionsFieldset = ({apiGroupChoices}) => {
 
   const hasAnyFieldConfigured =
     [
+      caseTypeIdentification,
+      documentTypeDescription,
       zaaktype,
       informatieobjecttype,
       medewerkerRoltype,
@@ -86,8 +90,18 @@ BasicOptionsFieldset.propTypes = {
 
 const CatalogiApiFields = () => {
   const {
-    values: {zgwApiGroup = null, catalogue = undefined},
+    values: {
+      zgwApiGroup = null,
+      catalogue = undefined,
+      caseTypeIdentification = '',
+      documentTypeDescription = '',
+      productUrl = '',
+    },
+    setFieldValue,
   } = useFormikContext();
+
+  const previousCatalogue = usePrevious(catalogue);
+  const previousCaseTypeIdentification = usePrevious(caseTypeIdentification);
 
   // fetch available catalogues and re-use the result
   const {
@@ -103,12 +117,41 @@ const CatalogiApiFields = () => {
   const catalogueValue = getCatalogueOption(catalogueOptionGroups, catalogue || {});
   const catalogueUrl = catalogueValue?.url;
 
-  // TODO: if the catalogue changes, reset the select case type
+  // Synchronize dependent fields when dependencies change.
+  // 1. Clear case type when catalogue changes.
+  useUpdateEffect(() => {
+    const catalogueChanged = catalogue !== previousCatalogue;
+    if (previousCatalogue && catalogueChanged && caseTypeIdentification) {
+      setFieldValue('caseTypeIdentification', '');
+    }
+  }, [setFieldValue, previousCatalogue, catalogue, caseTypeIdentification]);
+
+  // 2. Clear document type when case type changes
+  useUpdateEffect(() => {
+    const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
+    if (previousCaseTypeIdentification && caseTypeChanged && documentTypeDescription) {
+      setFieldValue('documentTypeDescription', '');
+    }
+  }, [
+    setFieldValue,
+    previousCaseTypeIdentification,
+    caseTypeIdentification,
+    documentTypeDescription,
+  ]);
+
+  // 3. Clear selected product when case type changes
+  useUpdateEffect(() => {
+    const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
+    if (previousCaseTypeIdentification && caseTypeChanged && productUrl) {
+      setFieldValue('productUrl', '');
+    }
+  }, [setFieldValue, previousCaseTypeIdentification, caseTypeIdentification, productUrl]);
 
   return (
     <>
       <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
       <CaseTypeSelect catalogueUrl={catalogueUrl} />
+      <DocumentTypeSelect catalogueUrl={catalogueUrl} />
     </>
   );
 };

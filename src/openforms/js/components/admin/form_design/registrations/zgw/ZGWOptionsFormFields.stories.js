@@ -9,7 +9,7 @@ import {
 import {rsSelect} from 'utils/storybookTestHelpers';
 
 import ZGWFormFields from './ZGWOptionsFormFields';
-import {mockCaseTypesGet, mockCataloguesGet, mockProductsGet} from './mocks';
+import {mockCaseTypesGet, mockCataloguesGet, mockDocumenTypesGet, mockProductsGet} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
@@ -54,7 +54,7 @@ export default {
   },
   parameters: {
     msw: {
-      handlers: [mockCataloguesGet(), mockCaseTypesGet(), mockProductsGet()],
+      handlers: [mockCataloguesGet(), mockCaseTypesGet(), mockDocumenTypesGet(), mockProductsGet()],
     },
   },
 };
@@ -106,7 +106,7 @@ export const ValidationErrorsCasePropertiesTab = {
   },
 };
 
-export const SelectCaseType = {
+export const SelectCaseTypeAndDocumentType = {
   args: {
     formData: {
       zgwApiGroup: 1,
@@ -125,5 +125,10 @@ export const SelectCaseType = {
       selector: '#id_caseTypeIdentification',
     });
     await rsSelect(caseTypeSelect, 'Request passport');
+
+    const documentTypeSelect = canvas.getByLabelText('Document type', {
+      selector: '#id_documentTypeDescription',
+    });
+    await rsSelect(documentTypeSelect, 'Attachment');
   },
 };

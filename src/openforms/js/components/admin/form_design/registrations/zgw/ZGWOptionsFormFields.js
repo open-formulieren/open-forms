@@ -17,7 +17,7 @@ import {ObjectsAPIGroup} from 'components/admin/forms/objects_api';
 import BasicOptionsFieldset from './BasicOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
 import OptionalOptionsFieldset from './OptionalOptionsFieldset';
-import {DocumentType, LegacyCaseType, ObjectType, ObjectTypeVersion} from './fields';
+import {LegacyCaseType, LegacyDocumentType, ObjectType, ObjectTypeVersion} from './fields';
 
 /**
  * Callback to invoke when the API group changes - used to reset the dependent fields.
@@ -68,6 +68,7 @@ const ZGWFormFields = ({
         <TabPanel>
           <BasicOptionsFieldset apiGroupChoices={apiGroupChoices} />
 
+          {/* @deprecated */}
           <Fieldset
             title={
               <FormattedMessage
@@ -75,6 +76,8 @@ const ZGWFormFields = ({
                 defaultMessage="Legacy configuration"
               />
             }
+            fieldNames={['zaaktype', 'informatieobjecttype']}
+            collapsible
           >
             <div className="description">
               <FormattedMessage
@@ -86,7 +89,7 @@ const ZGWFormFields = ({
               />
             </div>
             <LegacyCaseType />
-            <DocumentType />
+            <LegacyDocumentType />
           </Fieldset>
 
           <OptionalOptionsFieldset confidentialityLevelChoices={confidentialityLevelChoices} />

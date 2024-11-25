@@ -39,6 +39,7 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
       initialFormData={{
         // defaults
         caseTypeIdentification: '',
+        documentTypeDescription: '',
         zaaktype: '',
         informatieobjecttype: '',
         organisatieRsin: '',
@@ -92,6 +93,7 @@ ZGWOptionsForm.propTypes = {
     organisatieRsin: PropTypes.string,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
     medewerkerRoltype: PropTypes.string,
+    productUrl: PropTypes.string,
     propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,

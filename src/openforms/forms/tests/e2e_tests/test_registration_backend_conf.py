@@ -101,7 +101,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
                 log_flaky()
                 return
 
-            if match.view_name == "api:zgw_apis:iotypen-list":
+            if match.view_name == "api:zgw_apis:document-type-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:
@@ -233,7 +233,7 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
                 log_flaky()
                 return
 
-            if match.view_name == "api:objects_api:iotypen-list":
+            if match.view_name == "api:objects_api:document-type-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:

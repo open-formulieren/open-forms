@@ -669,7 +669,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
 
 
 @requests_mock.Mocker()
-class eigenschappenPartialRegistrationFailureTests(TestCase):
+class EigenschappenPartialRegistrationFailureTests(TestCase):
     def test_failure_after_eigenschappen_retrieval(self, m):
         zgw_api_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",

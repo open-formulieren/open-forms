@@ -19,7 +19,12 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices}) => {
           defaultMessage="Optional ZGW configuration"
         />
       }
-      fieldNames={['organisatieRsin']}
+      fieldNames={[
+        'organisatieRsin',
+        'zaakVertrouwelijkheidaanduiding',
+        'medewerkerRoltype',
+        'productUrl',
+      ]}
     >
       <div className="description">
         <FormattedMessage

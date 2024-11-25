@@ -56,6 +56,31 @@ class CaseTypeSerializer(serializers.Serializer):
     )
 
 
+class DocumentTypeSerializer(serializers.Serializer):
+    description = serializers.CharField(
+        label=_("description"),
+        help_text=_(
+            "The description uniquely identifies a document type within a catalogue. "
+            "Multiple versions of the same document type may exist, these have "
+            "non-overlapping valid from/valid until dates."
+        ),
+    )
+    is_published = serializers.BooleanField(
+        label=_("Is published"),
+        help_text=_(
+            "Unpublished document types may be returned when the feature flag "
+            "'ZGW_APIS_INCLUDE_DRAFTS' is enabled."
+        ),
+    )
+    # DeprecationWarning - only relevant for Formio registration attributes
+    url = serializers.URLField(label=_("url"))
+    # DeprecationWarning - only relevant for Formio registration attributes
+    catalogue_label = serializers.CharField(
+        label=_("catalogue label"),
+        help_text=_("A representation of the catalogue containing the document type."),
+    )
+
+
 class CaseTypeProductSerializer(serializers.Serializer):
     url = serializers.CharField(
         label=_("url"),
@@ -65,28 +90,4 @@ class CaseTypeProductSerializer(serializers.Serializer):
         label=_("description"),
         help_text=_("The description of a product bound to a case type. "),
         required=False,
-    )
-
-
-# TODO: OF 3.0 -> use English instead of Dutch.
-class InformatieObjectTypeSerializer(serializers.Serializer):
-    url = serializers.URLField(label=_("url"))
-    omschrijving = serializers.CharField(
-        label=_("description"),
-        help_text=_(
-            "The description uniquely identifies a document type within a catalogue. "
-            "Multiple versions of the same document type may exist, these have "
-            "non-overlapping valid from/valid until dates."
-        ),
-    )
-    catalogus_label = serializers.CharField(
-        label=_("catalogue label"),
-        help_text=_("A representation of the catalogue containing the document type."),
-    )
-    is_published = serializers.BooleanField(
-        label=_("Is published"),
-        help_text=_(
-            "Unpublished document types may be returned when the feature flag "
-            "'ZGW_APIS_INCLUDE_DRAFTS' is enabled."
-        ),
     )
