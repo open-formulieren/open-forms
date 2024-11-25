@@ -11650,9 +11650,9 @@ msgid ""
 "This PDF was generated before submission processing has started because it "
 "needs to be cosigned first. The cosign request email was sent to {email}."
 msgstr ""
-"Deze PDF is gegenereerd vóór de verwerking van de inzending gestart is. De inzending "
-"wordt pas verwerkt als deze mede-ondertekend is. Het verzoek hiervoor is verstuurd "
-"naar {email}."
+"Deze samenvatting is gemaakt vóór de inzending in behandeling genomen wordt. De "
+"inzending wordt pas verwerkt als deze mede-ondertekend is. Het verzoek hiervoor is "
+"verstuurd naar {email}."
 
 #: openforms/submissions/tasks/emails.py:104
 #, python-brace-format
