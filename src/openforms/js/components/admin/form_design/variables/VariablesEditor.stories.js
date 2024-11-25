@@ -799,6 +799,66 @@ export const WithValidationErrors = {
   },
 };
 
+export const ConfigurePrefillObjectsAPIWithValidationErrors = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined',
+        key: 'userDefined',
+        source: 'user_defined',
+        prefillPlugin: 'objects_api',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        options: {
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          authAttributePath: ['path', 'to', 'bsn'],
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['height'],
+            },
+            {
+              variableKey: 'userDefined',
+              targetPath: ['species'],
+            },
+          ],
+        },
+        errors: {
+          prefillOptions: {authAttributePath: 'This list may not be empty.'},
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Verify that error is shown', async () => {
+      const error = canvas.getByText('This list may not be empty.');
+      expect(error).toBeVisible();
+    });
+  },
+};
+
 export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
   args: {
     variables: [

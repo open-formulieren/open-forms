@@ -6,7 +6,7 @@ import ArrayInput from 'components/admin/forms/ArrayInput';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 
-const AuthAttributePath = ({name, required = true, ...extraProps}) => {
+const AuthAttributePath = ({name, errors, required = true, ...extraProps}) => {
   const [fieldProps, , fieldHelpers] = useField({name: name, type: 'array'});
   const {setValue} = fieldHelpers;
 
@@ -14,6 +14,7 @@ const AuthAttributePath = ({name, required = true, ...extraProps}) => {
     <FormRow>
       <Field
         name={name}
+        errors={errors}
         label={
           <FormattedMessage
             description="Objects API registration: authAttributePath label"

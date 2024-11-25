@@ -60,6 +60,15 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         help_text=_("Version of the objecttype in the Objecttypes API."),
     )
+    auth_attribute_path = serializers.ListField(
+        child=serializers.CharField(label=_("Segment of a JSON path")),
+        label=_("Path to auth attribute (e.g. BSN/KVK) in objects"),
+        help_text=_(
+            "This is used to perform validation to verify that the authenticated user is the owner of the object."
+        ),
+        allow_empty=False,
+        required=True,
+    )
     variables_mapping = ObjecttypeVariableMappingSerializer(
         label=_("variables mapping"),
         many=True,

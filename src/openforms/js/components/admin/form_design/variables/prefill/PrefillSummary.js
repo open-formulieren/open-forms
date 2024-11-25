@@ -10,6 +10,20 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {IDENTIFIER_ROLE_CHOICES} from '../constants';
 import PrefillConfigurationForm from './PrefillConfigurationForm';
 
+function isTruthy(value) {
+  if (value === undefined || value === null) {
+    return false;
+  }
+
+  // Check if the value is an object
+  if (typeof value === 'object') {
+    // Check if it's an empty object
+    if (Object.keys(value).length === 0) {
+      return false;
+    }
+    return true;
+  }
+}
 const PrefillSummary = ({
   plugin = '',
   attribute = '',
@@ -29,7 +43,11 @@ const PrefillSummary = ({
     intl
   );
 
-  const hasErrors = hasPluginErrors || hasAttributeErrors || hasIdentifierRoleErrors;
+  const hasErrors =
+    hasPluginErrors ||
+    hasAttributeErrors ||
+    hasIdentifierRoleErrors ||
+    isTruthy(errors.prefillOptions);
 
   const icons = (
     <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
@@ -100,6 +118,9 @@ const PrefillSummary = ({
                 plugin: pluginErrors,
                 attribute: attributeErrors,
                 identifierRole: identifierRoleErrors,
+                // Directly pass these without normalizing, because the shape
+                // depends on the plugin that is used
+                options: errors.prefillOptions,
               }}
             />
           </ErrorBoundary>

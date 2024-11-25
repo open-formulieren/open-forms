@@ -11,6 +11,7 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
+import {normalizeErrors} from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
@@ -127,6 +128,8 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   if (error) throw error;
   const prefillProperties = loading ? LOADING_OPTION : value;
 
+  const [, authAttributePathErrors] = normalizeErrors(errors.options?.authAttributePath, intl);
+
   return (
     <>
       {showCopyButton ? (
@@ -204,7 +207,11 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             objectTypeFieldName="options.objecttypeUuid"
           />
         </ErrorBoundary>
-        <AuthAttributePath name={'options.authAttributePath'} style={{maxWidth: '50%'}} />
+        <AuthAttributePath
+          name={'options.authAttributePath'}
+          style={{maxWidth: '10em'}}
+          errors={authAttributePathErrors}
+        />
       </Fieldset>
 
       <Fieldset
