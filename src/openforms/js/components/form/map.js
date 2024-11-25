@@ -5,6 +5,8 @@ import {CRS_RD, TILE_LAYER_RD} from '@open-formulieren/leaflet-tools';
 import * as L from 'leaflet';
 import {Formio} from 'react-formio';
 
+import jsonScriptToVar from 'utils/json-script';
+
 import {localiseSchema} from './i18n';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -16,6 +18,10 @@ const MAP_DEFAULTS = {
   center: [52.1326332, 5.291266],
   zoom: 3,
 };
+
+const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {
+  default: [],
+});
 
 export default class Map extends TextFieldComponent {
   static schema(...extend) {
@@ -70,8 +76,23 @@ export default class Map extends TextFieldComponent {
 
     const map = L.map(`map-${this.id}`, MAP_DEFAULTS);
 
-    const {url: tileUrl, ...options} = TILE_LAYER_RD;
-    const tiles = L.tileLayer(tileUrl, options);
+    const tiles = L.tileLayer(
+      this.getTileLayerUrl(this.originalComponent?.tileLayerIdentifier),
+      TILE_LAYER_RD
+    );
     map.addLayer(tiles);
+  }
+
+  // Try to get the tile layer url for the component.
+  // If it cannot be found, return the default url.
+  getTileLayerUrl(tileLayerIdentifier) {
+    if (!Array.isArray(MAP_TILE_LAYERS) || MAP_TILE_LAYERS.length === 0 || !tileLayerIdentifier) {
+      return TILE_LAYER_RD.url;
+    }
+
+    return (
+      MAP_TILE_LAYERS.find(tileLayer => tileLayer?.identifier === tileLayerIdentifier)?.url ??
+      TILE_LAYER_RD.url
+    );
   }
 }
