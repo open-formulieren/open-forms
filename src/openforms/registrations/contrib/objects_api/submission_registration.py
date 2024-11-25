@@ -503,11 +503,14 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
                 filtered_value = {k: v for k, v in value.items() if v}
                 if target_path:
-                    filtered_value.pop("secretStreetCity", None)
+                    # 'old' behaviour - the component as a whole is mapped to an object
+                    # in the schema. We send it as-is, but drop internal data structures.
+                    _value = value.copy()
+                    _value.pop("secretStreetCity", None)
                     glom.assign(
                         record_data,
                         glom.Path(*target_path),
-                        filtered_value,
+                        _value,
                         missing=dict,
                     )
 
