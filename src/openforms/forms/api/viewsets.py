@@ -48,7 +48,6 @@ from .serializers import (
     FormDefinitionSerializer,
     FormImportSerializer,
     FormLogicSerializer,
-    FormPriceLogicSerializer,
     FormSerializer,
     FormStepSerializer,
     FormVariableListSerializer,
@@ -56,7 +55,6 @@ from .serializers import (
     FormVersionSerializer,
 )
 from .serializers.logic.form_logic import FormLogicListSerializer
-from .serializers.logic.form_logic_price import FormPriceLogicListSerializer
 
 
 @extend_schema(
@@ -294,23 +292,6 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
             status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
         },
     ),
-    price_logic_rules_bulk_update=extend_schema(
-        summary=_("Bulk configure price logic rules"),
-        description=_(
-            "By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic related to the form will be "
-            "replaced with the data sent to the endpoint."
-        ),
-        tags=["logic-rules"],
-        request=FormPriceLogicListSerializer,
-        responses={
-            status.HTTP_200_OK: FormPriceLogicListSerializer,
-            status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
-            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
-            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
-            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
-            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
-        },
-    ),
 )
 class FormViewSet(viewsets.ModelViewSet):
     """
@@ -364,8 +345,6 @@ class FormViewSet(viewsets.ModelViewSet):
             "variables_list",
             "logic_rules_bulk_update",
             "logic_rules_list",
-            "price_logic_rules_bulk_update",
-            "price_logic_rules_list",
         ):
             queryset = queryset.select_related(None).prefetch_related(None)
 
@@ -610,61 +589,6 @@ class FormViewSet(viewsets.ModelViewSet):
 
         serializer = FormLogicSerializer(
             instance=logic_rules,
-            many=True,
-            context={"request": request, "form": form},
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @action(
-        detail=True,
-        methods=["put"],
-        url_path="price-logic-rules",
-        url_name="price-logic-rules",
-    )
-    @transaction.atomic
-    def price_logic_rules_bulk_update(self, request, *args, **kwargs):
-        form = self.get_object()
-        price_logic_rules = form.formpricelogic_set.all()
-        # We expect that all the price logic rules associated with a form come in the request.
-        # So we can delete any existing rule because they will be replaced.
-        price_logic_rules.delete()
-
-        serializer = FormPriceLogicSerializer(
-            data=request.data,
-            many=True,
-            context={
-                "request": request,
-                "form": form,
-                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
-                "forms": {str(form.uuid): form},
-                "form_variables": FormVariableWrapper(form),
-            },
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @extend_schema(
-        summary=_("List price logic rules"),
-        description=_("List all price logic rules defined for a form."),
-        tags=["logic-rules"],
-        request=FormPriceLogicListSerializer,
-        responses={
-            status.HTTP_200_OK: FormPriceLogicListSerializer,
-            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
-            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
-            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
-            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
-        },
-    )
-    @price_logic_rules_bulk_update.mapping.get
-    def price_logic_rules_list(self, request, *args, **kwargs):
-        form = self.get_object()
-        price_logic_rules = form.formpricelogic_set.all()
-
-        serializer = FormPriceLogicSerializer(
-            instance=price_logic_rules,
             many=True,
             context={"request": request, "form": form},
         )
