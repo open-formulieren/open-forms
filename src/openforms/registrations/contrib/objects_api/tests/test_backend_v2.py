@@ -1147,9 +1147,9 @@ class V2HandlerTests(TestCase):
                     "variable_key": "addressNl",
                     "options": {
                         "postcode": ["addressNL", "postcode"],
-                        "houseLetter": ["addressNL", "houseLetter"],
-                        "houseNumber": ["addressNL", "houseNumber"],
-                        "houseNumberAddition": [
+                        "house_letter": ["addressNL", "houseLetter"],
+                        "house_number": ["addressNL", "houseNumber"],
+                        "house_number_addition": [
                             "addressNL",
                             "houseNumberAddition",
                         ],
@@ -1177,7 +1177,7 @@ class V2HandlerTests(TestCase):
             },
         )
 
-    def test_addressNl_with_specific_target_paths_mapped_and_missing_submitted_data(
+    def test_addressNl_with_specific_target_paths_mapped_and_empty_submitted_data(
         self,
     ):
         submission = SubmissionFactory.from_components(
@@ -1213,9 +1213,9 @@ class V2HandlerTests(TestCase):
                     "variable_key": "addressNl",
                     "options": {
                         "postcode": ["addressNL", "postcode"],
-                        "houseLetter": ["addressNL", "houseLetter"],
-                        "houseNumber": ["addressNL", "houseNumber"],
-                        "houseNumberAddition": [
+                        "house_letter": ["addressNL", "houseLetter"],
+                        "house_number": ["addressNL", "houseNumber"],
+                        "house_number_addition": [
                             "addressNL",
                             "houseNumberAddition",
                         ],

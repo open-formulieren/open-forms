@@ -26,13 +26,16 @@ include = [
     "src/openforms/formio/formatters/",
     # Payments
     "src/openforms/payments/models.py",
-    # Registrations
+    # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
+    "src/openforms/contrib/objects_api/",
+    # Registrations
     "src/openforms/registrations/contrib/email/config.py",
     "src/openforms/registrations/contrib/email/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/options.py",
     "src/openforms/registrations/contrib/stuf_zds/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/typing.py",
+    "src/openforms/registrations/contrib/objects_api/handlers/",
     "src/openforms/registrations/contrib/objects_api/plugin.py",
     "src/openforms/registrations/contrib/objects_api/submission_registration.py",
     "src/openforms/registrations/contrib/objects_api/typing.py",
@@ -44,6 +47,8 @@ include = [
 ]
 exclude = [
     "**/__pycache__",
+    "src/openforms/contrib/objects_api/tests/",
+    "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",

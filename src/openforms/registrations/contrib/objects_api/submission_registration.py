@@ -8,9 +8,6 @@ from typing import Any, Generic, Iterator, Literal, TypeVar, cast, override
 
 from django.db.models import F
 
-import glom
-
-from openforms.api.utils import underscore_to_camel
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import (
     CatalogiClient,
@@ -20,6 +17,7 @@ from openforms.contrib.objects_api.clients import (
 )
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
+from openforms.contrib.objects_api.typing import Record
 from openforms.contrib.zgw.service import (
     DocumentOptions,
     create_attachment_document,
@@ -36,13 +34,16 @@ from openforms.submissions.models import (
     SubmissionFileAttachment,
     SubmissionReport,
 )
-from openforms.typing import JSONObject
+from openforms.submissions.models.submission_value_variable import (
+    SubmissionValueVariable,
+)
+from openforms.typing import JSONObject, JSONValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.constants import FormVariableSources
-from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from .handlers.v2 import AssignmentSpec, OutputSpec, process_mapped_variable
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import (
     PAYMENT_VARIABLE_NAMES,
@@ -51,7 +52,6 @@ from .registration_variables import (
 )
 from .typing import (
     ConfigVersion,
-    ObjecttypeVariableMapping,
     RegistrationOptions,
     RegistrationOptionsV1,
     RegistrationOptionsV2,
@@ -337,14 +337,14 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
         self,
         submission: Submission,
         options: OptionsT,
-    ) -> dict[str, Any]:
+    ) -> Record:
         """Get the record data to be sent to the Objects API."""
         pass
 
     @abstractmethod
     def get_update_payment_status_data(
         self, submission: Submission, options: OptionsT
-    ) -> dict[str, Any] | None:
+    ) -> Record | None:
         """Get the object data payload to be sent (either as a PATCH or PUT request) to the Objects API."""
         pass
 
@@ -385,10 +385,8 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
     @override
     def get_record_data(
-        self,
-        submission: Submission,
-        options: RegistrationOptionsV1,
-    ) -> dict[str, Any]:
+        self, submission: Submission, options: RegistrationOptionsV1
+    ) -> Record:
         """Get the record data to be sent to the Objects API."""
 
         # help the type checker a little, our 'apply_defaults_to' does some heavy
@@ -416,9 +414,9 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
                 "public_reference": submission.public_registration_reference,
                 "kenmerk": str(submission.uuid),
                 "language_code": submission.language_code,
-                "uploaded_attachment_urls": [
-                    attachment.document_url for attachment in objects_api_attachments
-                ],
+                "uploaded_attachment_urls": list(
+                    objects_api_attachments.values_list("document_url", flat=True)
+                ),
                 "pdf_url": registration_data.pdf_url,
                 "csv_url": registration_data.csv_url,
             },
@@ -437,14 +435,17 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             objecttype_version=options["objecttype_version"],
         )
         record_data = apply_data_mapping(
-            submission, object_mapping, REGISTRATION_ATTRIBUTE, record_data
+            submission,
+            object_mapping,
+            REGISTRATION_ATTRIBUTE,
+            record_data,  # pyright: ignore[reportArgumentType]
         )
         return record_data
 
     @override
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV1
-    ) -> dict[str, Any] | None:
+    ) -> Record | None:
         assert "payment_status_update_json" in options
 
         if not options["payment_status_update_json"]:
@@ -459,8 +460,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         }
 
         data = cast(
-            dict[str, Any],
-            render_to_json(options["payment_status_update_json"], context),
+            JSONObject, render_to_json(options["payment_status_update_json"], context)
         )
 
         return prepare_data_for_registration(
@@ -469,186 +469,172 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         )
 
 
+def _lookup_component(variable: SubmissionValueVariable) -> Component:
+    config_wrapper = variable.form_variable.form_definition.configuration_wrapper
+    component = config_wrapper.component_map[variable.key]
+    return component
+
+
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
     @staticmethod
-    def _get_data(
-        variables_values: FormioData,
-        variables_mapping: list[ObjecttypeVariableMapping],
-        component_key_type_mappings: dict[str, str] | None = None,
-    ) -> JSONObject:
-        record_data: JSONObject = {}
-
-        for mapping in variables_mapping:
-            variable_key = mapping["variable_key"]
-            if variable_key not in variables_values:
-                # This should only happen for payment status update,
-                # where only a subset of the variables are updated.
-                continue
-
-            # Type hint is wrong: currently some static variables are of type date/datetime
-            value = cast(Any, variables_values[variable_key])
-
-            # Comply with JSON Schema "format" specs:
-            if isinstance(value, (datetime, date)):
-                value = value.isoformat()
-            target_path = mapping.get("target_path")
-            # TODO
-            # This needs to be a more generic solution (no need for if component_type == '...' code)
-            if (
-                component_key_type_mappings
-                and component_key_type_mappings.get(variable_key) == "addressNL"
-            ):
-                assert isinstance(value, dict)
-
-                filtered_value = {k: v for k, v in value.items() if v}
-                if target_path:
-                    # 'old' behaviour - the component as a whole is mapped to an object
-                    # in the schema. We send it as-is, but drop internal data structures.
-                    _value = value.copy()
-                    _value.pop("secretStreetCity", None)
-                    glom.assign(
-                        record_data,
-                        glom.Path(*target_path),
-                        _value,
-                        missing=dict,
-                    )
-
-                elif subfields_mapping := mapping.get("options"):
-                    for subfield_key, subfield_value in subfields_mapping.items():
-                        # TODO
-                        # We don't want to deal with snake/camel conversions, data model needs to be restructured
-                        # and the frontend will be affected too (see comment in PR #4751)
-                        subfield_key = underscore_to_camel(subfield_key)
-                        if subfield_key not in filtered_value:
-                            continue
-
-                        glom.assign(
-                            record_data,
-                            glom.Path(*subfield_value),
-                            filtered_value[subfield_key],
-                            missing=dict,
-                        )
-
-            else:
-                glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
-
-        return record_data
-
-    @staticmethod
-    def _process_value(value: Any, component: Component) -> Any:
-        match component:
-            # multiple files - return an array
-            case {"type": "file", "multiple": True}:
-                assert isinstance(value, list)
-                return value
-            # single file - return only one element
-            case {"type": "file"}:
-                assert isinstance(value, list)
-                return value[0] if value else ""
-
-            case {"type": "map"}:
-                # Currently we only support Point coordinates
-                return _point_coordinate(value)
-            case _:
-                return value
-
-    @override
-    def get_record_data(
-        self, submission: Submission, options: RegistrationOptionsV2
-    ) -> dict[str, Any]:
-
-        state = submission.load_submission_value_variables_state()
-        dynamic_values = FormioData(state.get_data())
-        component_key_type_mappings = {}
-
-        # For every file upload component, we alter the value of the variable to be
-        # the Document API URL(s).
-        objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
+    def get_attachment_urls_by_key(submission: Submission) -> dict[str, list[str]]:
+        urls_map = defaultdict[str, list[str]](list)
+        attachments = ObjectsAPISubmissionAttachment.objects.filter(
             submission_file_attachment__submission_variable__submission=submission
         ).annotate(
             variable_key=F("submission_file_attachment__submission_variable__key")
         )
+        for attachment_meta in attachments:
+            key: str = (
+                attachment_meta.variable_key  # pyright: ignore[reportAttributeAccessIssue]
+            )
+            urls_map[key].append(attachment_meta.document_url)
+        return urls_map
 
-        urls_map: defaultdict[str, list[str]] = defaultdict(list)
-        for o in objects_api_attachments:
-            urls_map[o.variable_key].append(o.document_url)  # type: ignore
+    @override
+    def get_record_data(
+        self, submission: Submission, options: RegistrationOptionsV2
+    ) -> Record:
 
-        for key, variable in state.variables.items():
+        state = submission.load_submission_value_variables_state()
+
+        # dynamic values: values driven by user input
+        dynamic_values = state.get_data()
+        # static values: values not driven by user input
+        static_values = state.get_static_data()
+        # update with the registration static values - a special subtype of static
+        # variables. They're possibly derived from user input.
+        static_values.update(state.get_static_data(other_registry=variables_registry))
+
+        # merge everything in one container where we can easily do dotted key lookups
+        all_values = FormioData({**dynamic_values, **static_values})
+
+        # For every file upload component, we alter the value of the variable to be
+        # the Document API URL(s).
+        urls_map = self.get_attachment_urls_by_key(submission)
+
+        variables_mapping = options["variables_mapping"]
+
+        # collect all the assignments to be done to the object
+        assignment_specs: list[AssignmentSpec] = []
+        for mapping in variables_mapping:
+            key = mapping["variable_key"]
+
             try:
-                submission_value = dynamic_values[key]
+                variable = state.variables[key]
             except KeyError:
-                continue
+                logger.debug(
+                    "No variable definition available for key %s - this is normal "
+                    "for registration variables.",
+                    key,
+                    extra={"key": key},
+                )
+                variable = None
 
+            value: JSONValue | date | datetime
             # special casing documents - we transform the formio file upload data into
             # the api resource URLs for the uploaded documents in the Documens API.
-            #
-            # Normalizing to string/array of strings is done in the _process_value
-            # method.
+            # Normalizing to string/array of strings is done later via
+            # process_mapped_variable which receives the component configuration.
             if key in urls_map:
-                submission_value = urls_map[key]
+                value = urls_map[key]  # pyright: ignore[reportAssignmentType]
+            else:
+                try:
+                    value = all_values[key]
+                except KeyError:
+                    logger.info(
+                        "Expected key %s to be present in the submission (%s) variables, "
+                        "but it wasn't. Ignoring it.",
+                        key,
+                        submission.uuid,
+                        extra={
+                            "submission": submission.uuid,
+                            "key": key,
+                            "mapping_config": mapping,
+                        },
+                    )
+                    continue
 
-            # look up the component used (if relevant) to perform any required
-            # pre-processing.
-            if (variable.form_variable.source) == FormVariableSources.component:
-                component = variable.form_variable.form_definition.configuration_wrapper.component_map[
-                    key
-                ]
-                # update the value after processing to make it objects-API suitable
-                dynamic_values[key] = self._process_value(submission_value, component)
+            # Look up if the key points to a form component that provides additional
+            # context for how to process the value.
+            component: Component | None = None
+            if (
+                variable
+                and variable.form_variable.source == FormVariableSources.component
+            ):
+                component = _lookup_component(variable)
 
-                component_key_type_mappings.update({key: component["type"]})
+            # process the value so that we can assign it to the record data as requested
+            assignment_spec = process_mapped_variable(
+                mapping=mapping, value=value, component=component
+            )
+            if isinstance(assignment_spec, AssignmentSpec):
+                assignment_specs.append(assignment_spec)
+            else:
+                assignment_specs.extend(assignment_spec)
 
-        static_values = state.static_data()
-        static_values.update(
-            {
-                variable.key: variable.initial_value
-                for variable in get_static_variables(
-                    submission=submission,
-                    variables_registry=variables_registry,
-                )
-            }
-        )
+        output_spec = OutputSpec(assignments=assignment_specs)
+        data = output_spec.create_output_data()
 
-        variables_values = FormioData({**dynamic_values, **static_values})
-        variables_mapping = options["variables_mapping"]
-        data = self._get_data(
-            variables_values, variables_mapping, component_key_type_mappings
-        )
-
+        # turn the data into a proper record for the objects API
         record_data = prepare_data_for_registration(
             data=data,
             objecttype_version=options["objecttype_version"],
         )
 
-        if geometry_variable_key := options.get("geometry_variable_key"):
-            record_data["geometry"] = variables_values[geometry_variable_key]
+        # special treatment for the geometry key, as that one sits outside of the data
+        # nested inside the record
+        if key := options.get("geometry_variable_key"):
+            variable = state.variables[key]
+            component = _lookup_component(variable)
+            # piggy-back on the value processing
+            assignment_spec = process_mapped_variable(
+                mapping={"variable_key": key, "target_path": ["geometry"]},
+                value=all_values[key],
+                component=component,
+            )
+            assert isinstance(assignment_spec, AssignmentSpec)
+            geometry = assignment_spec.value
+            assert isinstance(geometry, dict)
+            record_data["geometry"] = geometry
 
         return record_data
 
     @override
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV2
-    ) -> dict[str, Any]:
+    ) -> Record:
+        state = submission.load_submission_value_variables_state()
+        # we only consider the payment variables for payment update status data
+        registration_values = FormioData(
+            state.get_static_data(other_registry=variables_registry)
+        )
 
-        values = {
-            variable.key: variable.initial_value
-            for variable in get_static_variables(
-                submission=submission,
-                variables_registry=variables_registry,
+        # collect all the assignments to be done to the object
+        assignment_specs: list[AssignmentSpec] = []
+        for mapping in options["variables_mapping"]:
+            key = mapping["variable_key"]
+            if key not in PAYMENT_VARIABLE_NAMES:
+                continue
+
+            # process the value so that we can assign it to the record data as requested
+            assignment_spec = process_mapped_variable(
+                mapping=mapping,
+                value=registration_values[key],
             )
-            if variable.key in PAYMENT_VARIABLE_NAMES
-        }
+            if isinstance(assignment_spec, AssignmentSpec):
+                assignment_specs.append(assignment_spec)
+            else:
+                assignment_specs.extend(assignment_spec)
 
-        variables_values = FormioData(values)
-        variables_mapping = options["variables_mapping"]
-        data = self._get_data(variables_values, variables_mapping)
+        output_spec = OutputSpec(assignments=assignment_specs)
+        data = output_spec.create_output_data()
 
         record_data = prepare_data_for_registration(
             data=data,
             objecttype_version=options["objecttype_version"],
         )
-
         return record_data
 
 

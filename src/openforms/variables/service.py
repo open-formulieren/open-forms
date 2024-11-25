@@ -12,10 +12,13 @@ from .registry import register_static_variable as static_variables_registry
 __all__ = ["get_static_variables"]
 
 
+type VariablesRegistry = BaseRegistry[BaseStaticVariable]
+
+
 def get_static_variables(
     *,
     submission: Submission | None = None,
-    variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
+    variables_registry: VariablesRegistry | None = None,
 ) -> list[FormVariable]:
     """
     Return the full collection of static variables registered by all apps.

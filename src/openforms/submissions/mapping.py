@@ -1,5 +1,6 @@
 import dataclasses
-from typing import Any, Callable, Mapping, TypeAlias
+from collections.abc import MutableMapping
+from typing import Any, Callable, Mapping
 
 from glom import Assign, glom
 
@@ -34,15 +35,17 @@ class FieldConf:
         assert self.attribute or self.form_field or self.submission_auth_info_attribute
 
 
-MappingConfig: TypeAlias = Mapping[str, str | FieldConf]
+type MappingConfig = Mapping[str, str | FieldConf]
 
 
-def apply_data_mapping(
+def apply_data_mapping[
+    T: MutableMapping[str, Any]
+](
     submission: Submission,
     mapping_config: MappingConfig,
     component_attribute: str,
-    target_dict: dict | None = None,
-) -> dict:
+    target_dict: T | None = None,
+) -> T:
     """
     apply mapping to data and build new data structure based on mapped attributes on the formio component configuration
 

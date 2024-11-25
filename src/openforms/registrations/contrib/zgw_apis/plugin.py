@@ -647,7 +647,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         )
 
         apply_data_mapping(
-            submission, object_mapping, REGISTRATION_ATTRIBUTE, record_data
+            submission,
+            object_mapping,
+            REGISTRATION_ATTRIBUTE,
+            record_data,  # pyright: ignore[reportArgumentType]
         )
 
         api_group = options["objects_api_group"]
