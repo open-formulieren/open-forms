@@ -2,11 +2,38 @@
 Changelog
 =========
 
-Upgrade notes
--------------
+2.8.2 (2024-11-25)
+==================
 
-* [:backend:`4810`] Fixed uppercase component variable values turing lowercase.
-  There are manual actions required.
+Regular bugfix release
+
+.. warning:: Manual intervention required
+    
+    We fixed a bug that would mess with the default values of selectboxes components.
+    A script is included to fix the forms that are affected - you need to run this
+    after deploying the patch release.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+
+    Alternatively, you can also manually open and save all the affected forms in the
+    admin interface.
+
+**Bugfixes**
+
+* [:backend:`4732`] Fixed CSP issues for Expoints and Govmetric analytics.
+* [:backend:`4745`] Fixed missing registration variable to the Objects API with all
+  the attachment URLs.
+* [:backend:`4810`] Fixed uppercase component variable values turing lowercase. See the
+  remark above for additional instructions.
+* [:backend:`4823`] Fixed uploaded files with leading or trailing whitespaces in the
+  filename.
+* [:backend:`4727`] Fixed crash when a user defined variable was changed to an array
+  datatype.
+* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission 
+  still requires cosigning.
 
 2.8.1 (2024-10-29)
 ==================
