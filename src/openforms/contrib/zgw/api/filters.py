@@ -14,7 +14,7 @@ class ProvidesCatalogiClientQueryParamsSerializer(serializers.Serializer):
 class DocumentTypesFilter(serializers.Serializer):
     catalogue_url = serializers.URLField(
         label=_("catalogue URL"),
-        help_text=_("Filter informatieobjecttypen against this catalogue URL."),
+        help_text=_("Filter document types against this catalogue URL."),
         required=False,
         default="",
     )

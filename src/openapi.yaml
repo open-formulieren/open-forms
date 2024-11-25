@@ -3520,7 +3520,7 @@ paths:
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogue URL.
+        description: Filter document types against this catalogue URL.
       - in: query
         name: objects_api_group
         schema:
@@ -4205,8 +4205,7 @@ paths:
         Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
         and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
         only one entry is returned.
-      summary: List the available InformatieObjectTypen from the provided ZGW API
-        group
+      summary: List the available document types from the provided ZGW API group
       parameters:
       - in: query
         name: case_type_identification
@@ -4225,7 +4224,7 @@ paths:
           format: uri
           default: ''
           minLength: 1
-        description: Filter informatieobjecttypen against this catalogue URL.
+        description: Filter document types against this catalogue URL.
       - in: query
         name: zgw_api_group
         schema:

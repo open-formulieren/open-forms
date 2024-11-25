@@ -82,9 +82,7 @@ class CaseTypesListView(ListMixin[CaseType], APIView):
 
 @extend_schema_view(
     get=extend_schema(
-        summary=_(
-            "List the available InformatieObjectTypen from the provided ZGW API group"
-        ),
+        summary=_("List the available document types from the provided ZGW API group"),
         parameters=[ListDocumentTypesQueryParamsSerializer],
     ),
 )
