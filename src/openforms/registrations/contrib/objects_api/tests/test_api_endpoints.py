@@ -279,7 +279,7 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = TEST_FILES
-    endpoint = reverse_lazy("api:objects_api:iotypen-list")
+    endpoint = reverse_lazy("api:objects_api:document-type-list")
 
     @classmethod
     def setUpTestData(cls):

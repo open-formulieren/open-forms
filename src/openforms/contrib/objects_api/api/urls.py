@@ -28,6 +28,6 @@ urlpatterns = [
     path(
         "document-types",
         DocumentTypesListView.as_view(),
-        name="iotypen-list",
+        name="document-type-list",
     ),
 ]
