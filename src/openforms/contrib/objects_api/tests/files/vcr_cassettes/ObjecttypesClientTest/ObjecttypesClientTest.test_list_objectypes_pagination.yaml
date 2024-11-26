@@ -16,8 +16,8 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/ac1fa3f8-fb2a-4fcb-b715-d480aceeda10","uuid":"ac1fa3f8-fb2a-4fcb-b715-d480aceeda10","name":"Person
-        (published)","namePlural":"Person (published)","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-26","modifiedAt":"2024-07-26","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/ac1fa3f8-fb2a-4fcb-b715-d480aceeda10/versions/1"]}]}'
+      string: '{"count":6,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
+        everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -30,7 +30,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 22 Oct 2024 12:57:55 GMT
+      - Tue, 26 Nov 2024 10:21:02 GMT
       Referrer-Policy:
       - same-origin
       Server:
