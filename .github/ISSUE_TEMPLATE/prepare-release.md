@@ -31,7 +31,10 @@ assignees: sergei-maertens
     - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
   - Payment plugins
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
-  - [ ] Prefill (`openforms.prefill.contrib.objects_api.tests.test_endpoints`)
+  - Prefill
+    - [ ] Endpoints: `openforms.prefill.contrib.objects_api.tests.test_endpoints`
+    - [ ] Config: `openforms.prefill.contrib.objects_api.tests.test_config`
+    - [ ] Prefill: `openforms.prefill.contrib.objects_api.tests.test_prefill`
   - Registration plugins:
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
