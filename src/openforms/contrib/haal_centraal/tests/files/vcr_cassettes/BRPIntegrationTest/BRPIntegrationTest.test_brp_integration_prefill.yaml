@@ -39,16 +39,32 @@ interactions:
         heer Holthuizen","adresregel1":"Nieuwe Parklaan 58","adresregel2":"2597 LD  ''S-GRAVENHAGE"},"partners":[{"naam":{"geslachtsnaam":"Wiegman"},"aangaanHuwelijkPartnerschap":{"datum":{"type":"Datum","datum":"1926-07-15","langFormaat":"15
         juli 1926"}}}]}]}'
     headers:
+      Access-Control-Allow-Headers:
+      - authorization,Access-Control-Allow-Origin,Content-Type,SOAPAction,apikey,Internal-Key,Authorization,ApiKey
+      Access-Control-Allow-Methods:
+      - POST
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ''
       Connection:
       - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 22 Oct 2024 12:37:14 GMT
+      - Tue, 26 Nov 2024 10:18:53 GMT
+      Request-ID:
+      - ''
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:
       - chunked
+      Via:
+      - 1.1 someproxy-service-6c5cfd9db5-b5k8v
+      activityid:
+      - 23e4c82c-6315-461e-88c5-174df0df4c55
     status:
       code: 200
       message: ''
