@@ -20,7 +20,9 @@ interactions:
     body:
       string: '{"kvkNummer":"69599084","indNonMailing":"Ja","naam":"Test EMZ Dagobert","formeleRegistratiedatum":"20170710","materieleRegistratie":{"datumAanvang":"20170108"},"totaalWerkzamePersonen":1,"handelsnamen":[{"naam":"Test
         EMZ Dagobert","volgorde":0},{"naam":"Tweede handelsnaam 1MZ","volgorde":1},{"naam":"Derde
-        handelsnaam 1MZ","volgorde":2},{"naam":"Vierde handelsnaam 1MZ","volgorde":3}],"sbiActiviteiten":[{"sbiCode":"1011","sbiOmschrijving":"Slachterijen
+        handelsnaam 1MZ","volgorde":2},{"naam":"Vierde handelsnaam 1MZ","volgorde":3},{"naam":"Test
+        EMZ Nevenvestiging Govert","volgorde":4},{"naam":"Tweede handelsnaam Vestiging2","volgorde":5},{"naam":"Derde
+        handelsnaam Vestiging2","volgorde":6},{"naam":"Vierde handelsnaam Vestiging2","volgorde":7}],"sbiActiviteiten":[{"sbiCode":"1011","sbiOmschrijving":"Slachterijen
         (geen pluimvee-)","indHoofdactiviteit":"Ja"},{"sbiCode":"1012","sbiOmschrijving":"Pluimveeslachterijen","indHoofdactiviteit":"Nee"},{"sbiCode":"1013","sbiOmschrijving":"Vleesverwerking
         (niet tot maaltijden)","indHoofdactiviteit":"Nee"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingen":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"}},"_embedded":{"hoofdvestiging":{"vestigingsnummer":"000038509504","kvkNummer":"69599084","formeleRegistratiedatum":"20200828","materieleRegistratie":{"datumAanvang":"20150828"},"eersteHandelsnaam":"Test
         EMZ Dagobert","indHoofdvestiging":"Ja","indCommercieleVestiging":"Ja","totaalWerkzamePersonen":1,"adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Abebe
@@ -36,13 +38,13 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '683'
+      - '722'
       Content-Security-Policy:
       - frame-ancestors 'none', default-src 'none'
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 23 Oct 2024 07:17:11 GMT
+      - Tue, 26 Nov 2024 10:19:43 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
