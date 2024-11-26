@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from rest_framework.test import APITestCase
 
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -47,6 +48,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     data={
                         "name": {"last.name": "My last name"},
                         "age": 45,
+                        "bsn": "111222333",
                     },
                     objecttype_version=3,
                 ),
@@ -54,6 +56,8 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             )
 
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference=created_obj["uuid"],
             components_list=[
                 {
@@ -146,6 +150,8 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             )
 
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference=created_obj["uuid"],
             components_list=[
                 {
