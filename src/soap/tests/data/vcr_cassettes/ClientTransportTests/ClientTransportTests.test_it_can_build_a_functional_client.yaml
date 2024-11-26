@@ -44,12 +44,12 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 22 Oct 2024 10:38:16 GMT
+      - Tue, 26 Nov 2024 10:35:36 GMT
       Server:
       - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
       Set-Cookie:
-      - SessionId=SHARE005860002189004048001794021870032084032402;path=/;expires=Tue,
-        22-Oct-2024 10:54:56 GMT;Version=1; secure; HttpOnly
+      - SessionId=SHARE016802023888020011009046004685002292028044;path=/;expires=Tue,
+        26-Nov-2024 10:52:16 GMT;Version=1; secure; HttpOnly
     status:
       code: 200
       message: OK
@@ -91,12 +91,12 @@ interactions:
       Content-Type:
       - text/xml; charset="utf-8"
       Date:
-      - Tue, 22 Oct 2024 10:38:16 GMT
+      - Tue, 26 Nov 2024 10:35:36 GMT
       Server:
       - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
       Set-Cookie:
-      - SessionId=SHARE005864012938021912025857032184003243002747;path=/;expires=Tue,
-        22-Oct-2024 10:54:56 GMT;Version=1; secure; HttpOnly
+      - SessionId=SHARE016808012617022972024405025314010146001501;path=/;expires=Tue,
+        26-Nov-2024 10:52:17 GMT;Version=1; secure; HttpOnly
     status:
       code: 200
       message: OK
