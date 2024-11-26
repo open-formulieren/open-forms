@@ -72,6 +72,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
       },
     },
     setFieldValue,
+    setValues,
   } = useFormikContext();
 
   const defaults = {
@@ -145,8 +146,16 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
-            setFieldValue('options.authAttributePath', []);
-            setFieldValue('options.variablesMapping', []);
+            setValues(prevValues => ({
+              ...prevValues,
+              // Trying to set multiple nested values doesn't work, since it sets them
+              // with dots in the key
+              options: {
+                ...prevValues.options,
+                authAttributePath: [],
+                variablesMapping: [],
+              },
+            }));
             return true;
           }}
           name="options.objectsApiGroup"
@@ -180,8 +189,16 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
               if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
-              setFieldValue('options.authAttributePath', []);
-              setFieldValue('options.variablesMapping', []);
+              setValues(prevValues => ({
+                ...prevValues,
+                // Trying to set multiple nested values doesn't work, since it sets them
+                // with dots in the key
+                options: {
+                  ...prevValues.options,
+                  authAttributePath: [],
+                  variablesMapping: [],
+                },
+              }));
               return true;
             }}
           />
