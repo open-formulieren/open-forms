@@ -140,7 +140,7 @@
   "01mWK2": [
     {
       "type": 0,
-      "value": "The format(s) of the attachment(s) containing the submission details"
+      "value": "De formaten (of het formaat) van de bijlage(n) die de inzendingsgegevens bevatten."
     }
   ],
   "0D+m56": [
@@ -310,7 +310,7 @@
   "1z/bNS": [
     {
       "type": 0,
-      "value": "Zds zaaktype code"
+      "value": "Zaaktypecode"
     }
   ],
   "2/2h2C": [
@@ -352,7 +352,7 @@
   "2P7mDI": [
     {
       "type": 0,
-      "value": "Content of the registration email message (as text)."
+      "value": "Inhoud van de registratiemail (platte tekst)."
     }
   ],
   "2Z/hNo": [
@@ -408,7 +408,7 @@
   "2nxTFx": [
     {
       "type": 0,
-      "value": "Postcode Schema target"
+      "value": "Bestemmingspad postcode"
     }
   ],
   "2sbkGI": [
@@ -460,7 +460,7 @@
   "3SCiQR": [
     {
       "type": 0,
-      "value": "Copy configuration from registration"
+      "value": "Neem registratie-instellingen over"
     }
   ],
   "3W3Px9": [
@@ -490,7 +490,7 @@
   "3zaZWN": [
     {
       "type": 0,
-      "value": "Plugin configuration: demo"
+      "value": "Plugin-instellingen: demo"
     }
   ],
   "4/cCvG": [
@@ -774,7 +774,7 @@
   "6qPITC": [
     {
       "type": 0,
-      "value": "Something went wrong while retrieving the available object types."
+      "value": "Er gings iets fout bij het ophalen van de beschikabre objecttypes."
     }
   ],
   "7/Bhpw": [
@@ -892,7 +892,7 @@
   "7ZdEaP": [
     {
       "type": 0,
-      "value": "Documenttype description for newly created zaken in StUF-ZDS"
+      "value": "De omschrijving van het documenttype voor bijlagen/documenten bij de nieuw aangemaakt zaak."
     }
   ],
   "7b9pD8": [
@@ -922,7 +922,7 @@
   "7hc31v": [
     {
       "type": 0,
-      "value": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
+      "value": "De e-mailadressen waarnaar de update van de betalingsstatus wordt verzonden (standaard wordt het algemene e-mailadres gebruikt)."
     }
   ],
   "7qqbU9": [
@@ -957,6 +957,12 @@
     {
       "type": 0,
       "value": "De tekst op de knop om de gegevens van de huidige stap op te slaan en het formulier te onderbreken. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "8M403q": [
+    {
+      "type": 0,
+      "value": "Aangeraden velden moeten in principe ingevuld worden, maar ontbrekende waarden blokkeren de voortgang niet. Dit is soms nodig voor juridische redenen. Een component kan niet tegelijk verplicht en aangeraden zijn."
     }
   ],
   "8NbOpb": [
@@ -1010,7 +1016,7 @@
   "8nY+h7": [
     {
       "type": 0,
-      "value": "Zaaktype description for newly created Zaken in StUF-ZDS"
+      "value": "Zaaktypeomschrijving"
     }
   ],
   "8pemD3": [
@@ -1094,7 +1100,7 @@
   "9akVrT": [
     {
       "type": 0,
-      "value": "Zds documenttype omschrijving inzending"
+      "value": "Documenttypeomschrijving"
     }
   ],
   "9bGp7h": [
@@ -1256,7 +1262,7 @@
   "B/A1Bk": [
     {
       "type": 0,
-      "value": "Which merchant should be used for payments related to this form."
+      "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
   "B1ONuu": [
@@ -1268,7 +1274,7 @@
   "B5RSyi": [
     {
       "type": 0,
-      "value": "Email payment subject"
+      "value": "Onderwerp betaalstatusmail"
     }
   ],
   "BCjZNo": [
@@ -1402,7 +1408,7 @@
   "C2FSDV": [
     {
       "type": 0,
-      "value": "Documents produced in the form submission are registered with this document type, unless more fine grained configuration is available. Only document types available on the selected case type are shown."
+      "value": "Documenten die voortkomen uit de formulierinzending worden met dit documenttype geregistreerd, tenzij er meer specifieke instellinen zijn. Je ziet enkel documenttypen die bij het geselecteerde zaaktype horen."
     }
   ],
   "C48xJT": [
@@ -1631,7 +1637,7 @@
   "DJ8XX2": [
     {
       "type": 0,
-      "value": "Select a registration backend and click the button to copy the configuration."
+      "value": "Kies een registratiepluginoptie en klik op de knop om de instellingen over te nemen."
     }
   ],
   "DJWATl": [
@@ -1855,7 +1861,7 @@
   "F+UwT0": [
     {
       "type": 0,
-      "value": "House letter Schema target"
+      "value": "Bestemmingspad huisletter"
     }
   ],
   "F+cPJR": [
@@ -1867,7 +1873,7 @@
   "F2GYwp": [
     {
       "type": 0,
-      "value": "Base"
+      "value": "Basis"
     }
   ],
   "F2VuCs": [
@@ -1903,7 +1909,7 @@
   "FQ1JZc": [
     {
       "type": 0,
-      "value": "Zaaktype code for newly created Zaken in StUF-ZDS"
+      "value": "Zaaktypecode waarmee de nieuwe zaak aangemaakt wordt."
     }
   ],
   "FQswyM": [
@@ -2017,7 +2023,7 @@
   "Ggu4I8": [
     {
       "type": 0,
-      "value": "Whether to map the specific subfield of addressNl component"
+      "value": "Vink aan om de adresvelden individueel te koppelen."
     }
   ],
   "Gi+cvN": [
@@ -2085,13 +2091,13 @@
   "H7WmS4": [
     {
       "type": 0,
-      "value": "Plugin configuration: Camunda"
+      "value": "Plugin-instellingen: Camunda"
     }
   ],
   "H7z8+8": [
     {
       "type": 0,
-      "value": "Extra elements"
+      "value": "Extra elementen"
     }
   ],
   "HCfL9x": [
@@ -2145,7 +2151,7 @@
   "HdRpKT": [
     {
       "type": 0,
-      "value": "Version"
+      "value": "Versie"
     }
   ],
   "Hfdfv2": [
@@ -2475,7 +2481,7 @@
   "LBEeSy": [
     {
       "type": 0,
-      "value": "Drive ID"
+      "value": "Drive-ID"
     }
   ],
   "LD3weJ": [
@@ -2529,7 +2535,7 @@
   "LeVpdf": [
     {
       "type": 0,
-      "value": "Plugin configuration: Email"
+      "value": "Plugin-insellingen: e-mail"
     }
   ],
   "LiXrER": [
@@ -2671,7 +2677,7 @@
   "NrF5vy": [
     {
       "type": 0,
-      "value": "Document type"
+      "value": "Documenttype"
     }
   ],
   "Nsifca": [
@@ -2831,7 +2837,7 @@
   "P4JMHA": [
     {
       "type": 0,
-      "value": "Zaaktype status code for newly created zaken in StUF-ZDS"
+      "value": "Zaakstatuscode voor de nieuw aan te maken zaak."
     }
   ],
   "PC7ICN": [
@@ -2861,7 +2867,7 @@
   "PhN977": [
     {
       "type": 0,
-      "value": "Plugin configuration: StUF-ZDS"
+      "value": "Plugin-instellingen: StUF-ZDS"
     }
   ],
   "PhXIai": [
@@ -2920,6 +2926,12 @@
       "value": "Selecteer een bestaande formulierdefinitie"
     }
   ],
+  "QL4SGQ": [
+    {
+      "type": 0,
+      "value": "Aangeraden (niet-blokkerend verplicht)"
+    }
+  ],
   "QLTh2N": [
     {
       "type": 0,
@@ -2947,7 +2959,7 @@
   "Qb1GWo": [
     {
       "type": 0,
-      "value": "StUF-ZDS name"
+      "value": "StUF-ZDS-naam"
     }
   ],
   "Qjl92W": [
@@ -2959,7 +2971,7 @@
   "QljfI7": [
     {
       "type": 0,
-      "value": "Email subject"
+      "value": "E-mailonderwerp"
     }
   ],
   "Qr2wnR": [
@@ -3181,7 +3193,7 @@
   "Su4nqf": [
     {
       "type": 0,
-      "value": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+      "value": "Welke authenticatiemethode de mede-ondertekenaar moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
     }
   ],
   "Sw6TLH": [
@@ -3661,7 +3673,7 @@
   "Xg9O5Y": [
     {
       "type": 0,
-      "value": "House number Schema target"
+      "value": "Bestemmingspad huisnummer"
     }
   ],
   "Xj1uvL": [
@@ -3787,7 +3799,7 @@
   "Z/wFhz": [
     {
       "type": 0,
-      "value": "Content of the registration email message (as html)."
+      "value": "Inhoud van de registratiemail (HTML)."
     }
   ],
   "Z5lydZ": [
@@ -3799,7 +3811,7 @@
   "Z8f4hI": [
     {
       "type": 0,
-      "value": "Document confidentiality level"
+      "value": "Vertrouwelijkheidaanduiding documenten"
     }
   ],
   "ZB6mnn": [
@@ -4434,7 +4446,7 @@
   "eF9O7c": [
     {
       "type": 0,
-      "value": "Attachments"
+      "value": "Bijlagen"
     }
   ],
   "eJEu3L": [
@@ -4452,7 +4464,7 @@
   "eO6MNT": [
     {
       "type": 0,
-      "value": "Zds zaaktype status code"
+      "value": "Zaakstatuscode"
     }
   ],
   "eUowhH": [
@@ -4540,7 +4552,7 @@
   "f8lihY": [
     {
       "type": 0,
-      "value": "Subject of the email sent to the registration backend. You can use the expressions {{ form_name }} and {{ public_reference }} to include the form name and the reference number to the submission in the subject."
+      "value": "Onderwerp van de registratiemail die verstuurd wordt. Je kan de uitdrukkingen {{ form_name }} en {{ public_reference }} gebruiken om formuliernaam en registratienummer op te nemen."
     }
   ],
   "f9Zr9D": [
@@ -4570,7 +4582,7 @@
   "fQuLvm": [
     {
       "type": 0,
-      "value": "Copy configuration from registration backend"
+      "value": "Registratie-instellingen overnemen"
     }
   ],
   "fRMCJI": [
@@ -4588,13 +4600,13 @@
   "fTmdl/": [
     {
       "type": 0,
-      "value": "Payment status update variable mapping"
+      "value": "Variabelekoppelingen voor de betaalstatusupdate"
     }
   ],
   "fUaRWW": [
     {
       "type": 0,
-      "value": "City Schema target"
+      "value": "Bestemmingspad stad/gemeente"
     }
   ],
   "fWcg7I": [
@@ -4678,7 +4690,7 @@
   "gDAZQ1": [
     {
       "type": 0,
-      "value": "Zds zaaktype status omschrijving"
+      "value": "Zaakstatusomschrijving"
     }
   ],
   "gGNIdG": [
@@ -4696,7 +4708,7 @@
   "gdEbdr": [
     {
       "type": 0,
-      "value": "Map specific subfields"
+      "value": "Koppel individuele velden"
     }
   ],
   "gheRkp": [
@@ -4814,13 +4826,13 @@
   "hQ7xjd": [
     {
       "type": 0,
-      "value": "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
+      "value": "Omschrijving van de zaakstatus voor de nieuw aan te maken zaak."
     }
   ],
   "hSvi+z": [
     {
       "type": 0,
-      "value": "Email content template text"
+      "value": "emailinhoudsjabloon (platte tekst)"
     }
   ],
   "hWRRHx": [
@@ -4958,7 +4970,7 @@
   "ighCxq": [
     {
       "type": 0,
-      "value": "Plugin configuration: MS Graph"
+      "value": "Plugin-instellingen: MS Graph/Sharepoint"
     }
   ],
   "inhTXo": [
@@ -5040,7 +5052,7 @@
   "jU6W0l": [
     {
       "type": 0,
-      "value": "Copy"
+      "value": "Overnemen"
     }
   ],
   "jUPlH5": [
@@ -5094,7 +5106,13 @@
   "jpL29S": [
     {
       "type": 0,
-      "value": "Folder path"
+      "value": "Maplocatie"
+    }
+  ],
+  "jtWzSW": [
+    {
+      "type": 0,
+      "value": "optie 2: € 15,99"
     }
   ],
   "jy1jTd": [
@@ -5105,7 +5123,7 @@
           "value": [
             {
               "type": 0,
-              "value": "There is a validation error."
+              "value": "Er is een validatiefout."
             }
           ]
         },
@@ -5113,7 +5131,7 @@
           "value": [
             {
               "type": 0,
-              "value": "There are "
+              "value": "Er zijn "
             },
             {
               "type": 1,
@@ -5121,7 +5139,7 @@
             },
             {
               "type": 0,
-              "value": " validation errors."
+              "value": " validatefouten."
             }
           ]
         }
@@ -5182,7 +5200,7 @@
   "kWAxhF": [
     {
       "type": 0,
-      "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
+      "value": "Onderwerp van de registratiemail om een verandering in betaalstatus te signaleren."
     }
   ],
   "kg/eh1": [
@@ -5213,6 +5231,12 @@
     {
       "type": 0,
       "value": "Categorie"
+    }
+  ],
+  "ksJN3E": [
+    {
+      "type": 0,
+      "value": "E-mailadressen ontvangers"
     }
   ],
   "ktjLJK": [
@@ -5264,7 +5288,7 @@
   "lNBZdl": [
     {
       "type": 0,
-      "value": "The path of the folder where folders containing Open-Forms related documents will be created. You can use the expressions "
+      "value": "Het pad naar de map waar mappen voor documenten van Open Formulieren aangemaakt worden. Je kan de expressies "
     },
     {
       "children": [
@@ -5292,7 +5316,7 @@
     },
     {
       "type": 0,
-      "value": " and "
+      "value": " en "
     },
     {
       "children": [
@@ -5306,7 +5330,7 @@
     },
     {
       "type": 0,
-      "value": ". The path must start with "
+      "value": " gebruiken. Het pad moet beginnen met "
     },
     {
       "children": [
@@ -5374,7 +5398,7 @@
   "m83ECr": [
     {
       "type": 0,
-      "value": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?"
+      "value": "Wanneer je de instellingen van een registratiepluginoptie overneemt, dan worden alle bestaande instellingen overschreven. Ben je zeker dat je door wil gaan?"
     }
   ],
   "mCHS+l": [
@@ -5488,7 +5512,7 @@
   "nNbK3G": [
     {
       "type": 0,
-      "value": "Email content template HTML"
+      "value": "Sjabloon emailinhoud (HTML)"
     }
   ],
   "nSRkSW": [
@@ -5536,7 +5560,7 @@
   "o4AUIi": [
     {
       "type": 0,
-      "value": "Multiple target paths configured"
+      "value": "Individuele bestemmingspaden ingesteld"
     }
   ],
   "o5Mfn3": [
@@ -5548,13 +5572,7 @@
   "o5iEgm": [
     {
       "type": 0,
-      "value": "JSON Schema object target"
-    }
-  ],
-  "o6Ju6l": [
-    {
-      "type": 0,
-      "value": "The email addresses to which the submission details will be sent"
+      "value": "JSON Schema van doelobject"
     }
   ],
   "o83CBr": [
@@ -5584,7 +5602,7 @@
   "oVwrVo": [
     {
       "type": 0,
-      "value": "Attach files to email"
+      "value": "Bijlagen invoegen"
     }
   ],
   "oWJX5K": [
@@ -5608,7 +5626,7 @@
   "oqv4fM": [
     {
       "type": 0,
-      "value": "The prefill values will be taken from an object of the selected type."
+      "value": "Het objecttype van het object waar de voorinvul/productgegevens uit opgehaald worden."
     }
   ],
   "osSl3z": [
@@ -5644,7 +5662,7 @@
   "p3t0c/": [
     {
       "type": 0,
-      "value": "This mapping is used to map the variable keys to keys used in the XML that is sent to StUF-ZDS. Those keys and the values belonging to them in the submission data are included in "
+      "value": "Met deze variabelekoppelingen stel je in welke formuliervariabelen met welke namen overeenkomen in de XML die naar StUF-ZDS gestuurd wordt. De namen en bijhorende waarden worden opgenomen in "
     },
     {
       "children": [
@@ -5776,7 +5794,7 @@
   "pjbN8m": [
     {
       "type": 0,
-      "value": "Street name Schema target"
+      "value": "Bestemmingspad straatnaam"
     }
   ],
   "poZZD9": [
@@ -5872,7 +5890,7 @@
   "r64cfz": [
     {
       "type": 0,
-      "value": "Payment updates"
+      "value": "Betaalstatusupdates"
     }
   ],
   "r9MTrz": [
@@ -5990,7 +6008,7 @@
   "sNGN82": [
     {
       "type": 0,
-      "value": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
+      "value": "Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te voegen. Als een waarde gezet is, dan heeft deze hogere prioriteit dan de globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
     }
   ],
   "sR9GVQ": [
@@ -6031,6 +6049,12 @@
     {
       "type": 0,
       "value": "Reguliere expressie"
+    }
+  ],
+  "sxdJ/8": [
+    {
+      "type": 0,
+      "value": "optie 1: € 10,99"
     }
   ],
   "t5fg/K": [
@@ -6128,7 +6152,7 @@
   "u/0IPY": [
     {
       "type": 0,
-      "value": "House number addition Schema target"
+      "value": "Bestemmingspad huisnummertoevoeging"
     }
   ],
   "u3P/1E": [
@@ -6280,7 +6304,7 @@
   "wAQaa5": [
     {
       "type": 0,
-      "value": "Extra print statement"
+      "value": "Extra print-statement"
     }
   ],
   "wIaGgb": [
@@ -6368,7 +6392,7 @@
   "wnTTZr": [
     {
       "type": 0,
-      "value": "ID of the drive to use. If left empty, the default drive will be used."
+      "value": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt."
     }
   ],
   "wnxKT/": [
@@ -6380,7 +6404,7 @@
   "wqCiwc": [
     {
       "type": 0,
-      "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK."
+      "value": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden."
     }
   ],
   "wrdDVu": [
@@ -6582,7 +6606,7 @@
   "z4zEf7": [
     {
       "type": 0,
-      "value": "Zds zaaktype omschrijving"
+      "value": "Zaaktypeomschrijving"
     }
   ],
   "z7HXSS": [
@@ -6648,7 +6672,7 @@
   "zYu3XI": [
     {
       "type": 0,
-      "value": "Plugin configuration: Ogone legacy"
+      "value": "Plugin-instellingen: Ogone legacy"
     }
   ],
   "zeXZzX": [

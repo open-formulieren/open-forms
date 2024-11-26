@@ -2469,6 +2469,11 @@
     "description": "Form category field label",
     "originalDefault": "Category"
   },
+  "ksJN3E": {
+    "defaultMessage": "The email addresses to which the submission details will be sent",
+    "description": "Email registration options 'toEmails' label",
+    "originalDefault": "The email addresses to which the submission details will be sent"
+  },
   "l1fi1t": {
     "defaultMessage": "(missing information)",
     "description": "JSON editor: unknown FormIO component key",
@@ -2598,11 +2603,6 @@
     "defaultMessage": "JSON Schema object target",
     "description": "'JSON Schema object target' label",
     "originalDefault": "JSON Schema object target"
-  },
-  "o6Ju6l": {
-    "defaultMessage": "The email addresses to which the submission details will be sent",
-    "description": "Email registration options 'attachFilesToEmail' label",
-    "originalDefault": "The email addresses to which the submission details will be sent"
   },
   "o8CfuS": {
     "defaultMessage": "String",
