@@ -19,29 +19,22 @@
     var(--of-utrecht-page-footer-max-inline-size)
   );
 
-  // TODO: Open Forms 3.0 - set the property directly instead of using custom property.
-  --_padding-block-end: var(
+  padding-block-end: var(
     #{$prefix}-padding-block-end,
     var(--utrecht-page-footer-padding-block-end)
   );
-  --_padding-block-start: var(
+  padding-block-start: var(
     #{$prefix}-padding-block-start,
     var(--utrecht-page-footer-padding-block-start)
   );
-  --_padding-inline-end: var(
+  padding-inline-end: var(
     #{$prefix}-padding-inline-end,
     var(--utrecht-page-footer-padding-inline-end)
   );
-  --_padding-inline-start: var(
+  padding-inline-start: var(
     #{$prefix}-padding-inline-start,
     var(--utrecht-page-footer-padding-inline-start)
   );
-
-  // backwards compatibility - remove this in Open Forms 3.0
-  --_padding-shorthand: var(--_padding-block-start) var(--_padding-inline-end)
-    var(--_padding-block-end) var(--_padding-inline-start);
-
-  padding: var(--of-page-footer-#{$viewport}-padding, var(--_padding-shorthand));
 }
 
 // Open Forms extensions - add opt-in support for responsive spacing.
@@ -70,10 +63,6 @@
     margin-inline-end: auto;
     margin-inline-start: auto;
   }
-
-  // backwards compatibility - remove this in Open Forms 3.0
-  background-color: var(--of-page-footer-bg, var(--utrecht-page-footer-background-color));
-  color: var(--of-page-footer-fg, var(--utrecht-page-footer-color));
 }
 
 // Style overrides specific for our own theme
