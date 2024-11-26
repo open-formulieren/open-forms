@@ -38,9 +38,6 @@ export default {
     formData: {},
   },
   parameters: {
-    featureFlags: {
-      REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: true,
-    },
     msw: {
       handlers: [
         mockObjecttypesGet([
@@ -312,6 +309,7 @@ export const V1ValidationErrors = {
       [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.authAttributePath`, 'Field is required'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
     ],
   },
@@ -329,6 +327,7 @@ export const V2ValidationErrors = {
       [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.authAttributePath`, 'Field is required'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
     ],
   },

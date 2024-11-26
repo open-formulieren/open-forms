@@ -72,6 +72,8 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         Hook to check if the authenticated user is the owner of the object
         referenced to by `initial_data_reference`
 
+        If any error occurs in this check, it should raise a `PermissionDenied`
+
         :param submission: an active :class:`Submission` instance
         :param prefill_options: a dictionary containing the configuration options
         """

@@ -1203,15 +1203,6 @@ FLAGS = {
             "value": config("ZGW_APIS_INCLUDE_DRAFTS", default=False),
         },
     ],
-    "REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION": [
-        {
-            "condition": "boolean",
-            "value": config(
-                "REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION",
-                default=False,
-            ),
-        },
-    ],
 }
 
 #

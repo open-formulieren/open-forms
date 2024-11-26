@@ -4,8 +4,6 @@ from unittest.mock import patch
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
-from vcr.config import VCR
-
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -20,7 +18,7 @@ from openforms.forms.tests.factories import (
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionStepFactory
-from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.utils.tests.vcr import OFVCRMixin, with_setup_test_data_vcr
 
 TEST_FILES = (Path(__file__).parent / "files").resolve()
 
@@ -37,15 +35,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
             for_test_docker_compose=True
         )
 
-        # Explicitly define a cassette for Object creation, because running this in
-        # setUpTestData doesn't record cassettes by default
-        cassette_path = Path(
-            cls.VCR_TEST_FILES
-            / "vcr_cassettes"
-            / cls.__qualname__
-            / "setUpTestData.yaml"
-        )
-        with VCR().use_cassette(cassette_path):
+        with with_setup_test_data_vcr(cls.VCR_TEST_FILES, cls.__qualname__):
             with get_objects_client(cls.objects_api_group_used) as client:
                 object = client.create_object(
                     record_data=prepare_data_for_registration(

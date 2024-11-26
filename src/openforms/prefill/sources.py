@@ -101,14 +101,14 @@ def fetch_prefill_values_from_options(
 
         # If an `initial_data_reference` was passed, we must verify that the
         # authenticated user is the owner of the referenced object
-        try:
-            if submission.initial_data_reference:
+        if submission.initial_data_reference:
+            try:
                 plugin.verify_initial_data_ownership(
                     submission, variable.form_variable.prefill_options
                 )
-        except (PermissionDenied, ImproperlyConfigured) as exc:
-            logevent.prefill_retrieve_failure(submission, plugin, exc)
-            continue
+            except (PermissionDenied, ImproperlyConfigured) as exc:
+                logevent.prefill_retrieve_failure(submission, plugin, exc)
+                continue
 
         options_serializer = plugin.options(data=variable.form_variable.prefill_options)
 

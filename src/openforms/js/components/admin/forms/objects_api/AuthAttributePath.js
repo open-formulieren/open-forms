@@ -6,7 +6,7 @@ import ArrayInput from 'components/admin/forms/ArrayInput';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 
-const AuthAttributePath = ({name, errors, required = true, ...extraProps}) => {
+const AuthAttributePath = ({name, errors, disabled = false, ...extraProps}) => {
   const [fieldProps, , fieldHelpers] = useField({name: name, type: 'array'});
   const {setValue} = fieldHelpers;
 
@@ -27,7 +27,7 @@ const AuthAttributePath = ({name, errors, required = true, ...extraProps}) => {
             defaultMessage="This is used to perform validation to verify that the authenticated user is the owner of the object."
           />
         }
-        required={required}
+        disabled={disabled}
       >
         <ArrayInput
           name={name}

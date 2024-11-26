@@ -15,7 +15,6 @@ import {
   mockRoleTypesGet as mockZGWApisRoleTypesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
-  FeatureFlagsDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
@@ -25,7 +24,7 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [FeatureFlagsDecorator, ValidationErrorsDecorator, FormDecorator],
+  decorators: [ValidationErrorsDecorator, FormDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -690,11 +689,6 @@ export const ConfiguredBackends = {
 };
 
 export const ObjectsAPI = {
-  parameters: {
-    featureFlags: {
-      REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: true,
-    },
-  },
   args: {
     configuredBackends: [
       {
@@ -750,7 +744,7 @@ export const ObjectsAPI = {
       'Path to auth attribute is required if updating existing objects is enabled',
       async () => {
         const otherSettingsTitle = modal.getByRole('heading', {
-          name: 'Overige instellingen (Tonen)',
+          name: 'Update existing objects (Tonen)',
         });
         expect(otherSettingsTitle).toBeVisible();
         await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
@@ -759,13 +753,13 @@ export const ObjectsAPI = {
           'Path to auth attribute (e.g. BSN/KVK) in objects'
         );
 
-        expect(authAttributePath).not.toHaveClass('required');
+        expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
 
         const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
         await userEvent.click(updateExistingObject);
 
-        // Checking `updateExistingObject` should make `authAttributePath` required
-        expect(authAttributePath).toHaveClass('required');
+        // Checking `updateExistingObject` should make `authAttributePath` no longer disabled
+        expect(authAttributePath.parentElement.parentElement).not.toHaveClass('field--disabled');
       }
     );
 

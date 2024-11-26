@@ -176,15 +176,18 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
-            label={intl.formatMessage({
-              description: "Objects API prefill options 'Objecttype' label",
-              defaultMessage: 'Objecttype',
-            })}
-            helpText={intl.formatMessage({
-              description: "Objects API prefill options 'Objecttype' helpText",
-              defaultMessage:
-                'The prefill values will be taken from an object of the selected type.',
-            })}
+            label={
+              <FormattedMessage
+                description="Objects API prefill options 'Objecttype' label"
+                defaultMessage="Objecttype"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="Objects API prefill options 'Objecttype' helpText"
+                defaultMessage="The prefill values will be taken from an object of the selected type."
+              />
+            }
             onChangeCheck={async () => {
               if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
@@ -216,10 +219,12 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
         >
           <ObjectTypeVersionSelect
             name="options.objecttypeVersion"
-            label={intl.formatMessage({
-              description: "Objects API prefill options 'objecttypeVersion' label",
-              defaultMessage: 'Version',
-            })}
+            label={
+              <FormattedMessage
+                description="Objects API prefill options 'objecttypeVersion' label"
+                defaultMessage="Version"
+              />
+            }
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
           />

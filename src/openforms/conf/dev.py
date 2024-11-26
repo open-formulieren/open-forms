@@ -30,11 +30,6 @@ os.environ.setdefault("VCR_RECORD_MODE", "once")
 
 os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
 
-# Feature flags for development
-os.environ.setdefault(
-    "REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION",
-    "1",
-)
 
 from .base import *  # noqa isort:skip
 

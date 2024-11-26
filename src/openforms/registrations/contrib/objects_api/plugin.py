@@ -177,6 +177,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
 
     def verify_initial_data_ownership(self, submission: Submission) -> None:
         assert submission.registration_backend
+        assert submission.initial_data_reference
         backend = submission.registration_backend
 
         api_group = ObjectsAPIGroupConfig.objects.filter(

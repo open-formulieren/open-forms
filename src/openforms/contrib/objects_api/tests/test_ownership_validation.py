@@ -5,7 +5,6 @@ from django.core.exceptions import PermissionDenied
 from django.test import TestCase, override_settings, tag
 
 from requests.exceptions import RequestException
-from vcr.config import VCR
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -15,7 +14,7 @@ from openforms.forms.tests.factories import FormRegistrationBackendFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.utils.tests.vcr import OFVCRMixin, with_setup_test_data_vcr
 
 from ..ownership_validation import validate_object_ownership
 
@@ -41,15 +40,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             for_test_docker_compose=True
         )
 
-        # Explicitly define a cassette for Object creation, because running this in
-        # setUpTestData doesn't record cassettes by default
-        cassette_path = Path(
-            cls.VCR_TEST_FILES
-            / "vcr_cassettes"
-            / cls.__qualname__
-            / "setUpTestData.yaml"
-        )
-        with VCR().use_cassette(cassette_path):
+        with with_setup_test_data_vcr(cls.VCR_TEST_FILES, cls.__qualname__):
             with get_objects_client(cls.objects_api_group_used) as client:
                 object = client.create_object(
                     record_data=prepare_data_for_registration(
@@ -193,7 +184,7 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
     def test_request_exception_when_doing_permission_check(self, mock_get_object):
         """
         If the object could not be fetched due to request errors, the ownership check
-        should not fail
+        should fail
         """
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
@@ -213,8 +204,9 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             },
         )
 
-        with get_objects_client(self.objects_api_group_used) as client:
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+        with self.assertRaises(PermissionDenied):
+            with get_objects_client(self.objects_api_group_used) as client:
+                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
 
     @tag("gh-4398")
     def test_no_backends_configured_does_not_raise_error(

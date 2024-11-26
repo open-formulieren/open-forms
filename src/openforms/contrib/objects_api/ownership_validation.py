@@ -3,9 +3,9 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 
-from glom import Path, glom
+from glom import Path, PathAccessError, glom
 from requests.exceptions import RequestException
 
 from openforms.contrib.objects_api.clients import ObjectsClient
@@ -14,10 +14,8 @@ from openforms.logging import logevent
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from openforms.prefill.contrib.objects_api.plugin import ObjectsAPIPrefill
-    from openforms.registrations.contrib.objects_api.plugin import (
-        ObjectsAPIRegistration,
-    )
+    from openforms.prefill.base import BasePlugin as BasePrefillPlugin
+    from openforms.registrations.base import BasePlugin as BaseRegistrationPlugin
     from openforms.submissions.models import Submission
 
 
@@ -25,7 +23,8 @@ def validate_object_ownership(
     submission: Submission,
     client: ObjectsClient,
     object_attribute: list[str],
-    plugin: ObjectsAPIPrefill | ObjectsAPIRegistration,
+    plugin: BasePrefillPlugin | BaseRegistrationPlugin,
+    raise_exception: bool = True,
 ) -> None:
     """
     Function to check whether the user associated with a Submission is the owner
@@ -35,39 +34,52 @@ def validate_object_ownership(
     """
     assert submission.initial_data_reference
 
-    try:
-        auth_info = submission.auth_info
-    except ObjectDoesNotExist:
-        logger.exception(
+    if not submission.is_authenticated:
+        logger.warning(
             "Cannot perform object ownership validation for reference %s with unauthenticated user",
             submission.initial_data_reference,
         )
         logevent.object_ownership_check_anonymous_user(submission, plugin=plugin)
         raise PermissionDenied("Cannot pass data reference as anonymous user")
 
+    auth_info = submission.auth_info
+
     object = None
     try:
         object = client.get_object(submission.initial_data_reference)
-    except RequestException:
+    except RequestException as e:
         logger.exception(
             "Something went wrong while trying to retrieve "
             "object for initial_data_reference"
         )
+        if raise_exception:
+            raise PermissionDenied from e
 
     if not object:
         # If the object cannot be found, we cannot consider the ownership check failed
         # because it is not verified that the user is not the owner
-        logger.info(
+        logger.warning(
             "Could not find object for initial_data_reference: %s",
             submission.initial_data_reference,
         )
-        return
+        if raise_exception:
+            raise PermissionDenied("Could not find object for initial_data_reference")
+        else:
+            return
 
-    if (
-        glom(object["record"]["data"], Path(*object_attribute), default=None)
-        != auth_info.value
-    ):
+    try:
+        auth_value = glom(object["record"]["data"], Path(*object_attribute))
+    except PathAccessError as e:
         logger.exception(
+            "Could not retrieve auth value for path %s, it could be incorrectly configured",
+            object_attribute,
+        )
+        raise PermissionDenied(
+            "Could not verify if user is owner of the referenced object"
+        ) from e
+
+    if auth_value != auth_info.value:
+        logger.warning(
             "Submission with initial_data_reference did not pass ownership check for reference %s",
             submission.initial_data_reference,
         )

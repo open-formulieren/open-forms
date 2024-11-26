@@ -34,6 +34,7 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     def verify_initial_data_ownership(
         self, submission: Submission, prefill_options: dict
     ) -> None:
+        assert submission.initial_data_reference
         api_group = ObjectsAPIGroupConfig.objects.filter(
             pk=prefill_options.get("objects_api_group")
         ).first()

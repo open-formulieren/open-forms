@@ -11,19 +11,10 @@ import {IDENTIFIER_ROLE_CHOICES} from '../constants';
 import PrefillConfigurationForm from './PrefillConfigurationForm';
 
 function isTruthy(value) {
-  if (value === undefined || value === null) {
-    return false;
-  }
-
-  // Check if the value is an object
-  if (typeof value === 'object') {
-    // Check if it's an empty object
-    if (Object.keys(value).length === 0) {
-      return false;
-    }
-    return true;
-  }
+  if (!value) return false;
+  return Object.keys(value).length > 0;
 }
+
 const PrefillSummary = ({
   plugin = '',
   attribute = '',

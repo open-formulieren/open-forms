@@ -1,9 +1,7 @@
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext} from 'react';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
-import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -34,12 +32,8 @@ const onApiGroupChange = prevValues => ({
 });
 
 const LegacyConfigFields = ({apiGroupChoices}) => {
-  const intl = useIntl();
-  const {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION = false} =
-    useContext(FeatureFlagsContext);
-
   const [updateExistingObject] = useField('updateExistingObject');
-  const authAttributePathRequired = !!updateExistingObject.value;
+  const authAttributePathDisabled = !updateExistingObject.value;
 
   return (
     <>
@@ -55,20 +49,26 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
           }
         >
           <ObjectTypeSelect
-            label={intl.formatMessage({
-              description: "Objects API registration options 'Objecttype' label",
-              defaultMessage: 'Objecttype',
-            })}
-            helpText={intl.formatMessage({
-              description: "Objects API registration options 'Objecttype' helpText",
-              defaultMessage: 'The registration result will be an object from the selected type.',
-            })}
+            label={
+              <FormattedMessage
+                description="Objects API registration options 'Objecttype' label"
+                defaultMessage="Objecttype"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="Objects API registration options 'Objecttype' helpText"
+                defaultMessage="The registration result will be an object from the selected type."
+              />
+            }
           />
           <ObjectTypeVersionSelect
-            label={intl.formatMessage({
-              description: "Objects API registration options 'objecttypeVersion' label",
-              defaultMessage: 'Version',
-            })}
+            label={
+              <FormattedMessage
+                description="Objects API registration options 'objecttypeVersion' label"
+                defaultMessage="Version"
+              />
+            }
           />
         </ErrorBoundary>
       </Fieldset>
@@ -104,6 +104,20 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
       <Fieldset
         title={
           <FormattedMessage
+            description="Objects registration: update existing objects settings"
+            defaultMessage="Update existing objects"
+          />
+        }
+        collapsible
+        fieldNames={['updateExistingObject', 'authAttributePath']}
+      >
+        <UpdateExistingObject />
+        <AuthAttributePath name={'authAttributePath'} disabled={authAttributePathDisabled} />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
             description="Objects registration: other options"
             defaultMessage="Other options"
           />
@@ -112,10 +126,6 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
         fieldNames={['organisatieRsin']}
       >
         <UploadSubmissionCsv />
-        <UpdateExistingObject />
-        {REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION ? (
-          <AuthAttributePath name={'authAttributePath'} required={authAttributePathRequired} />
-        ) : null}
         <OrganisationRSIN />
       </Fieldset>
     </>
