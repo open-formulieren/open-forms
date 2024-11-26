@@ -6,12 +6,12 @@ interactions:
       \       \n\n<ZKN:zakLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
       \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Lk01</StUF:berichtcode>\n
       \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-3</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-3</StUF:applicatie>\n<StUF:administratie>zender_administratie-3</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-3</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
-      \   <StUF:organisatie>ontvanger_organisatie-3</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-3</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-3</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-3</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>804b463a-7061-4470-bdab-a458063fc028</StUF:referentienummer>\n<StUF:tijdstipBericht>20241022132538</StUF:tijdstipBericht>\n\n
+      \   <StUF:organisatie>ontvanger_organisatie-3</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-3</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-3</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-3</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>69668f99-a87f-4350-a6ee-51ecbb9fa62a</StUF:referentienummer>\n<StUF:tijdstipBericht>20241126103856</StUF:tijdstipBericht>\n\n
       \       <StUF:entiteittype>ZAK</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
       \   <ZKN:parameters>\n        <StUF:mutatiesoort>W</StUF:mutatiesoort>\n        <StUF:indicatorOvername>V</StUF:indicatorOvername>\n
       \   </ZKN:parameters>\n    <ZKN:object StUF:verwerkingssoort=\"W\" StUF:entiteittype=\"ZAK\">\n
       \       <ZKN:identificatie>1234</ZKN:identificatie>\n        <ZKN:betalingsIndicatie>Geheel</ZKN:betalingsIndicatie>\n
-      \       <ZKN:laatsteBetaaldatum>20241022</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
+      \       <ZKN:laatsteBetaaldatum>20241126</ZKN:laatsteBetaaldatum>\n        <StUF:extraElementen>\n\n<StUF:extraElement
       naam=\"language_code\">en</StUF:extraElement>\n\n<StUF:extraElement naam=\"paymentAmount\">40.0</StUF:extraElement>\n\n</StUF:extraElementen>\n\n\n
       \   </ZKN:object>\n</ZKN:zakLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
     headers:
@@ -55,9 +55,9 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Tue, 22 Oct 2024 13:25:38 GMT
+      - Tue, 26 Nov 2024 10:38:56 GMT
       Server:
-      - Werkzeug/3.0.4 Python/3.12.6
+      - Werkzeug/3.1.3 Python/3.12.7
     status:
       code: 200
       message: OK
