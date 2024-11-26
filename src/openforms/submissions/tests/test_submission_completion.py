@@ -25,7 +25,6 @@ from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowe
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
-    FormPriceLogicFactory,
     FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
@@ -34,6 +33,7 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
+from openforms.submissions.pricing import InvalidPrice
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
@@ -667,16 +667,14 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product=None,
             form__payment_backend="demo",
+            form__price_logic__price_variable="totalPrice",
+            form__price_logic__price_value=9.6,
+            form__price_logic__json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
         )
         SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
-        )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
-            price=Decimal("9.6"),
         )
         with self.subTest(part="check data setup"):
             self.assertFalse(submission.payment_required)
@@ -718,6 +716,9 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            form__price_logic__price_variable="totalPrice",
+            form__price_logic__price_value=51.15,
+            form__price_logic__json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
         )
         FormVariableFactory.create(
             key="test-key",
@@ -729,13 +730,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
-            price=Decimal("51.15"),
-        )
-        with self.subTest(part="check data setup"):
-            self.assertTrue(submission.payment_required)
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
@@ -748,12 +742,18 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_price_rules_specified_but_no_match(self):
         """
-        Assert that the product price is used as fallback.
+        When there is ambiguity, we bail out instead of guessing/falling back to
+        product price.
         """
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            form__price_logic__price_variable="totalPrice",
+            form__price_logic__price_value=51.15,
+            form__price_logic__json_logic_trigger={
+                "==": [{"var": "test-key"}, "nottest"]
+            },
         )
         FormVariableFactory.create(
             key="test-key",
@@ -765,22 +765,11 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "test-key"}, "nottest"]},
-            price=Decimal("51.15"),
-        )
-        with self.subTest(part="check data setup"):
-            self.assertTrue(submission.payment_required)
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        submission.refresh_from_db()
-        self.assertTrue(submission.payment_required)
-        self.assertEqual(submission.price, Decimal("123.45"))
+        with self.assertRaises(InvalidPrice):
+            self.client.post(endpoint, {"privacy_policy_accepted": True})
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

@@ -34,7 +34,7 @@ class SubmissionCompletionMixin:
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
 
-        persist_user_defined_variables(submission, self.request)
+        persist_user_defined_variables(submission)
 
         # all logic has run; we can fix backend
         submission.save()

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from contextlib import contextmanager
 from typing import Any
@@ -239,9 +241,7 @@ def initialise_user_defined_variables(submission: Submission):
     )
 
 
-def persist_user_defined_variables(
-    submission: "Submission", request: "Request"
-) -> None:
+def persist_user_defined_variables(submission: Submission) -> None:
     data = submission.data
 
     last_form_step = submission.submissionstep_set.order_by("form_step__order").last()

@@ -142,7 +142,7 @@ class Submission(models.Model):
         editable=False,
         help_text=_(
             "Cost of this submission. Either derived from the related product, "
-            "or evaluated from price logic rules. The price is calculated and saved "
+            "or set through logic rules. The price is calculated and saved "
             "on submission completion."
         ),
     )
