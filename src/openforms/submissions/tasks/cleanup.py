@@ -8,7 +8,6 @@ from rest_framework.request import Request
 
 from openforms.celery import app
 
-from ..constants import RegistrationStatuses
 from ..models import Submission
 from ..status import SubmissionProcessingStatus
 from ..tokens import submission_status_token_generator
@@ -74,11 +73,7 @@ def maybe_hash_identifying_attributes(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
     assert submission.completed_on is not None, "Submission must be completed first"
 
-    # success is set if it succeeded or there was no registration backend configured
-    if submission.registration_status != RegistrationStatuses.success:
-        return
-
-    if not submission.is_authenticated:
+    if not submission.is_ready_to_hash_identifying_attributes:
         return
 
     if not submission.auth_info.attribute_hashed:

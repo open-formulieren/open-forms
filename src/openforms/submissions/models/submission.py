@@ -451,7 +451,7 @@ class Submission(models.Model):
         return self.form.login_required
 
     @property
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return hasattr(self, "auth_info")
 
     @property
@@ -470,7 +470,33 @@ class Submission(models.Model):
         return bool(self.completed_on)
 
     @property
+    def is_ready_to_hash_identifying_attributes(self) -> bool:
+        """
+        Check if the submission can safely hash the identifying auth attributes.
+        """
+        # no authentication -> there's nothing to hash
+        if not self.is_authenticated:
+            return False
+        # completed, but not cosigned yet -> registration after cosigning requires
+        # unhashed attributes
+        if self.is_completed and self.waiting_on_cosign:
+            return False
+
+        # the submission has not been submitted/completed/finalized, so it will
+        # definitely not be processed yet -> okay to hash
+        if not self.is_completed:
+            return True
+
+        # fully registered, no more processing needed -> safe to hash
+        if self.is_registered:
+            return True
+
+        # otherwise assume it's not safe yet
+        return False
+
+    @property
     def is_registered(self) -> bool:
+        # success is set if it succeeded or there was no registration backend configured
         return self.registration_status == RegistrationStatuses.success
 
     @transaction.atomic()
