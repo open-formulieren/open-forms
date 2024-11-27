@@ -2,12 +2,14 @@ import uuid
 from unittest.mock import Mock, patch
 
 from django.contrib.auth import SESSION_KEY
+from django.test import tag
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -146,3 +148,49 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
 
         self.assertNotIn(FORM_AUTH_SESSION_KEY, session)
         self.assertNotIn(REGISTRATOR_SUBJECT_SESSION_KEY, session)
+
+    @tag("gh-4862", "taiga-wdw-57")
+    def test_logout_as_cosigner(self):
+        """
+        A cosigner logging out may not result in auth attributes being hashed.
+
+        The BSN/KVK is still needed for the full registration phase.
+        """
+        submission = SubmissionFactory.from_components(
+            form__slug="form-to-cosign",
+            form__authentication_backends=["digid"],
+            components_list=[{"type": "cosign", "key": "cosign"}],
+            submitted_data={"cosign": "test@example.com"},
+            auth_info__value="111222333",
+            completed=True,
+            cosign_complete=False,
+            pre_registration_completed=True,
+            public_registration_reference="OF-9999",
+        )
+        # simulate logging in as cosigner and starting the cosign flow
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
+        }
+        session.save()
+        view_url = reverse(
+            "submissions:find-submission-for-cosign",
+            kwargs={"form_slug": "form-to-cosign"},
+        )
+        response = self.client.post(
+            view_url, data={"code": "OF-9999"}, format="multipart"
+        )
+        assert response.status_code == 302
+
+        url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        submission.refresh_from_db()
+        self.assertEqual(submission.auth_info.value, "111222333")
+        uuids = self._get_session_submission_uuids()
+        self.assertNotIn(str(submission.uuid), uuids)
