@@ -2,45 +2,16 @@
 
 import functools
 
-from django.conf import settings
 from django.db import migrations, models
-from django.db.migrations.state import StateApps
-from django.utils import translation
-from django.utils.translation import gettext
 
 import tinymce.models
 
 import openforms.config.models.config
 import openforms.template.validators
 import openforms.utils.translations
-
-
-def update_translated_defaults(apps: StateApps, _):
-    """
-    Set the properly translated default config field values.
-
-    Workaround for https://github.com/open-formulieren/open-forms/issues/4826
-    """
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    config = GlobalConfiguration.objects.first()
-    if config is None:
-        return
-
-    for field in (
-        "cosign_submission_confirmation_template",
-        "cosign_submission_confirmation_title",
-        "submission_confirmation_title",
-    ):
-        for lang, _ in settings.LANGUAGES:
-            with translation.override(lang):
-                default_callback = config._meta.get_field(field).default
-                assert isinstance(default_callback, functools.partial)
-                if default_callback.func is openforms.utils.translations.get_default:
-                    default_callback = functools.partial(
-                        gettext, *default_callback.args
-                    )
-                setattr(config, f"{field}_{lang}", default_callback())
-    config.save()
+from openforms.utils.migrations_utils.fix_default_translation import (
+    FixDefaultTranslations,
+)
 
 
 class Migration(migrations.Migration):
@@ -188,5 +159,16 @@ class Migration(migrations.Migration):
                 verbose_name="submission confirmation title",
             ),
         ),
-        migrations.RunPython(update_translated_defaults, migrations.RunPython.noop),
+        migrations.RunPython(
+            FixDefaultTranslations(
+                app_label="config",
+                model="GlobalConfiguration",
+                fields=(
+                    "cosign_submission_confirmation_template",
+                    "cosign_submission_confirmation_title",
+                    "submission_confirmation_title",
+                ),
+            ),
+            migrations.RunPython.noop,
+        ),
     ]

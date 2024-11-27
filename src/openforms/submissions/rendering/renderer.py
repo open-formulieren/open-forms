@@ -86,18 +86,20 @@ class Renderer:
             if not submission_step_node.is_visible:
                 continue
 
-            # formio_configuration_node = FormioConfigurationNode(
-            #     step=step, **common_kwargs
-            # )
-            # has_any_children = any(
-            #     child.is_visible for child in formio_configuration_node
-            # )
-            # if not has_any_children:
-            #     continue
+            has_visible_children = any(
+                child for child in submission_step_node if child.is_visible
+            )
+            if not has_visible_children:
+                continue
+
             yield submission_step_node
 
         variables_node = VariablesNode(renderer=self, submission=self.submission)
-        yield variables_node
+        has_visible_variable_children = any(
+            child for child in variables_node if child.is_visible
+        )
+        if has_visible_variable_children:
+            yield variables_node
 
     def __iter__(self) -> Iterator[Node]:
         """

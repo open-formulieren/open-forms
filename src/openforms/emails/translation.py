@@ -8,4 +8,6 @@ class ConfirmationEmailTemplateTranslationOptions(TranslationOptions):
     fields = (
         "subject",
         "content",
+        "cosign_subject",
+        "cosign_content",
     )

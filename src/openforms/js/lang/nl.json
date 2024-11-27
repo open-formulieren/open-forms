@@ -705,6 +705,11 @@
     "description": "Move down icon title",
     "originalDefault": "Move down"
   },
+  "DHVDF/": {
+    "defaultMessage": "Cosign subject",
+    "description": "Confirmation Email for cosign Subject label",
+    "originalDefault": "Cosign subject"
+  },
   "DJ8XX2": {
     "defaultMessage": "Kies een registratiepluginoptie en klik op de knop om de instellingen over te nemen.",
     "description": "Copy Objects API prefill configuration from registration backend help text",
@@ -982,6 +987,11 @@
     "defaultMessage": "Zodra je een catalogus selecteert, zullen de verouderde documenttype-instellingen genegeerd worden - zelfs als je geen documenttype in de dropdowns kiest.",
     "description": "New document types informative message",
     "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+  },
+  "HVG1xy": {
+    "defaultMessage": "Cosign content",
+    "description": "Confirmation Email for cosign Content label",
+    "originalDefault": "Cosign content"
   },
   "HXE3Mm": {
     "defaultMessage": "URL-deel van het formulier.",

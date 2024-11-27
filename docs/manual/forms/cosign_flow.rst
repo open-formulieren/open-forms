@@ -18,6 +18,15 @@ We beschrijven twee persona:
 * de klant: de persoon die het formulier initieel start en invult
 * de ondertekenaar: de persoon die de inzending mede moet ondertekenen
 
+.. note:: De condities waarin een mede-ondertekening vereist is, zijn:
+
+    * het formulier bevat een mede-ondertekenencomponent
+    * het mede-ondertekenencomponent is verplicht (tabje validatie) óf het is
+      niet-verplicht, maar de gebruiker vult een e-mailadres in bij het optionele veld
+
+    Als mede-ondertekenen vereist is, dan worden mede-ondertekeningspecifieke sjablonen
+    geselecteerd in plaats van de algemene sjablonen.
+
 Met links in emails
 ===================
 

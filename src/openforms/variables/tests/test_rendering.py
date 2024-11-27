@@ -152,6 +152,5 @@ class VariablesNodeTests(TestCase):
                         "Form rendering",
                         "Form step rendering",
                         "Some field: Some test data",
-                        "",
                     ],
                 )

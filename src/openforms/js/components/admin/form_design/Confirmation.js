@@ -75,6 +75,46 @@ const ConfirmationEmailTemplate = ({
                 />
               </Field>
             </FormRow>
+            <FormRow>
+              <Field
+                name={`form.confirmationEmailTemplate.translations.${langCode}.cosignSubject`}
+                label={
+                  <FormattedMessage
+                    defaultMessage="Cosign subject"
+                    description="Confirmation Email for cosign Subject label"
+                  />
+                }
+              >
+                <TextInput
+                  value={emailTemplate.translations[langCode].cosignSubject}
+                  onChange={onChange}
+                  maxLength="1000"
+                />
+              </Field>
+            </FormRow>
+            <FormRow>
+              <Field
+                name={`form.confirmationEmailTemplate.translations.${langCode}.cosignContent`}
+                label={
+                  <FormattedMessage
+                    defaultMessage="Cosign content"
+                    description="Confirmation Email for cosign Content label"
+                  />
+                }
+              >
+                <TinyMCEEditor
+                  content={emailTemplate.translations[langCode].cosignContent}
+                  onEditorChange={(newValue, editor) =>
+                    onChange({
+                      target: {
+                        name: `form.confirmationEmailTemplate.translations.${langCode}.cosignContent`,
+                        value: newValue,
+                      },
+                    })
+                  }
+                />
+              </Field>
+            </FormRow>
           </>
         )}
       </LanguageTabs>

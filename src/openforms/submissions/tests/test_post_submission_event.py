@@ -128,8 +128,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -290,8 +290,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -378,8 +378,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -454,8 +454,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -539,8 +539,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -690,8 +690,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (
@@ -955,8 +955,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation of your {{ form_name }} submission",
-            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
+            cosign_subject="Confirmation of your {{ form_name }} submission",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
         )
 
         with (

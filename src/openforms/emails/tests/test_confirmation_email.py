@@ -379,6 +379,135 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 self.assertEqual(subject, "Global subject")
                 self.assertIn("Global content", content)
 
+    def test_get_confirmation_email_templates_form_with_cosign(self):
+        (
+            submission1,
+            submission2,
+            submission3,
+            submission4,
+            submission5,  # no overrides
+        ) = [
+            SubmissionFactory.from_components(
+                components_list=[{"type": "cosign", "key": "cosign"}],
+                submitted_data={"cosign": "test@example.com"},
+                form__send_confirmation_email=True,
+                completed=True,
+            )
+            for _ in range(5)
+        ]
+        ConfirmationEmailTemplateFactory.create(
+            form=submission1.form,
+            cosign_subject="Custom subject",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission2.form,
+            cosign_subject="",
+            cosign_content="Custom content {% payment_information %} {% cosign_information %}",
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission3.form,
+            cosign_subject="Custom subject",
+            cosign_content="",
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission4.form,
+            cosign_subject="",
+            cosign_content="",
+        )
+
+        with patch(
+            "openforms.emails.confirmation_emails.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                cosign_confirmation_email_subject="Global subject",
+                cosign_confirmation_email_content="Global content {% payment_information %} {% cosign_information %}",
+            ),
+        ):
+            with self.subTest("Custom subject + custom content"):
+                subject, content = get_confirmation_email_templates(submission1)
+
+                self.assertEqual(subject, "Custom subject")
+                self.assertIn("Custom content", content)
+
+            with self.subTest("Global subject + custom content"):
+                subject, content = get_confirmation_email_templates(submission2)
+
+                self.assertEqual(subject, "Global subject")
+                self.assertIn("Custom content", content)
+
+            with self.subTest("Custom subject + global content"):
+                subject, content = get_confirmation_email_templates(submission3)
+
+                self.assertEqual(subject, "Custom subject")
+                self.assertIn("Global content", content)
+
+            with self.subTest("Global subject + global content"):
+                subject, content = get_confirmation_email_templates(submission4)
+
+                self.assertEqual(subject, "Global subject")
+                self.assertIn("Global content", content)
+
+            with self.subTest("no form specific templates"):
+                subject, content = get_confirmation_email_templates(submission5)
+
+                self.assertEqual(subject, "Global subject")
+                self.assertIn("Global content", content)
+
+    def test_summary_heading_behaviour(self):
+        expected_heading = _("Summary")
+
+        with self.subTest("heading present"):
+            submission = SubmissionFactory.from_components(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "Visible",
+                        "showInEmail": True,
+                    }
+                ],
+                submitted_data={"text": "Snowflake text"},
+                form__send_confirmation_email=True,
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Subject",
+                content="{% summary %}{% appointment_information %}",
+            )
+            template = get_confirmation_email_templates(submission)[1]
+            context = get_confirmation_email_context_data(submission)
+
+            result = render_email_template(template, context)
+
+            self.assertIn("Snowflake text", result)
+            self.assertIn(expected_heading, result)
+
+        with self.subTest("heading absent"):
+            submission = SubmissionFactory.from_components(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text",
+                        "label": "Visible",
+                        "showInEmail": False,
+                    }
+                ],
+                submitted_data={"text": "Snowflake text"},
+                form__send_confirmation_email=True,
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Subject",
+                content="{% summary %}{% appointment_information %}",
+            )
+            template = get_confirmation_email_templates(submission)[1]
+            context = get_confirmation_email_context_data(submission)
+
+            result = render_email_template(template, context)
+
+            self.assertNotIn("Snowflake text", result)
+            self.assertNotIn(expected_heading, result)
+
 
 @override_settings(
     CACHES=NOOP_CACHES,
@@ -822,8 +951,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -860,8 +989,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -898,8 +1027,8 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation",
-            content="{% cosign_information %}",
+            cosign_subject="Confirmation",
+            cosign_content="{% cosign_information %}",
         )
 
         send_confirmation_email(submission)
@@ -940,7 +1069,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "{% endif %}"
         )
         ConfirmationEmailTemplateFactory.create(
-            form=submission.form, subject="Confirmation", content=template
+            form=submission.form,
+            subject="Confirmation",
+            content=template,
         )
 
         send_confirmation_email(submission)
@@ -975,7 +1106,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
         )
         ConfirmationEmailTemplateFactory.create(
-            form=submission.form, subject="Confirmation", content=template
+            form=submission.form,
+            cosign_subject="Confirmation",
+            cosign_content=template,
         )
 
         send_confirmation_email(submission)

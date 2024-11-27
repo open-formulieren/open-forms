@@ -16,6 +16,8 @@ class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
         fields = (
             "subject",
             "content",
+            "cosign_subject",
+            "cosign_content",
             "translations",
         )
 

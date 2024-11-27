@@ -169,6 +169,7 @@ class AdminTests(WebTest):
 class GlobalConfirmationEmailTests(TestCase):
     def setUp(self):
         super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["good.net"]
@@ -197,12 +198,12 @@ class GlobalConfirmationEmailTests(TestCase):
         config.confirmation_email_content = "no tags here"
 
         with self.subTest("valid"):
-            config.confirmation_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
+            config.confirmation_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}"
 
             config.full_clean()
 
         with self.subTest("invalid"):
-            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
+            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
             with self.assertRaisesMessage(
                 ValidationError,
                 _("This domain is not in the global netloc allowlist: {netloc}").format(
@@ -215,6 +216,8 @@ class GlobalConfirmationEmailTests(TestCase):
 class GlobalSaveFormEmailTests(TestCase):
     def setUp(self):
         super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["good.net"]
         config.save()

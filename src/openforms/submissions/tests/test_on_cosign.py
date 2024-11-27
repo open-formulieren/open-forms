@@ -36,7 +36,7 @@ class OnCosignTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation email whoop whoop",
+            cosign_subject="Confirmation email whoop whoop",
         )
 
         with patch(
@@ -80,7 +80,7 @@ class OnCosignTests(TestCase):
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
-            subject="Confirmation email whoop whoop",
+            cosign_subject="Confirmation email whoop whoop",
         )
 
         with patch(

@@ -84,8 +84,8 @@ class SubmissionRendererIntegrationTests(TestCase):
 
         nodelist = list(renderer)
 
-        # form node, submission step node, then formio component nodes, empty variables node
-        self.assertEqual(len(nodelist), 1 + 1 + 4 + 1)
+        # form node, submission step node, then formio component nodes
+        self.assertEqual(len(nodelist), 1 + 1 + 4)
         rendered = [node.render() for node in nodelist]
 
         expected = [
@@ -95,7 +95,6 @@ class SubmissionRendererIntegrationTests(TestCase):
             "Currency: 1.234,56",
             "A container with visible children",
             "Input 4: fourth input",
-            "",
         ]
         self.assertEqual(rendered, expected)
 

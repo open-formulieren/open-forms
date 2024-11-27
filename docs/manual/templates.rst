@@ -10,14 +10,11 @@ teksten die aangepast kunnen worden op basis van het ingevulde formulier.
 .. note::
     Voor de ontwikkelaars documentatie, zie :ref:`developers_backend_core_templating`.
 
-Momenteel worden sjablonen gebruikt voor:
+.. contents:: Beschikbare sjablonen
+    :depth: 2
+    :local:
 
-* Bevestigingsmail
-* Formulier opslaan e-mail
-* Bevestigingspagina
-* Registratie e-mail
-
-De tekst kan in deze elementen aangepast worden met **variabelen** en
+De tekst kan in sjablonen aangepast worden met **variabelen** en
 **voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn
 afhankelijk van het type sjabloon en het formulier.
 
@@ -66,6 +63,7 @@ Voorbeeld
 
          Hallo John Doe!
 
+.. _manual_templates_conditional_display:
 
 Voorwaardelijke weergave
 ------------------------
@@ -121,7 +119,7 @@ Voorbeeld
          Hoi Joe!
 
 
-.. _`manual_templates_formatting_of_variables`:
+.. _manual_templates_formatting_of_variables:
 
 Formattering van variabelen
 ---------------------------
@@ -226,8 +224,12 @@ Bevestigingsmail
 ================
 
 De bevestigingsmail is een optionele e-mail die wordt verzonden wanneer een
-gebruiker een formulier verstuurd. De bevestigingsmail heeft toegang tot alle
+gebruiker een formulier verstuurt. De bevestigingsmail heeft toegang tot alle
 gegevens uit het formulier en de waarden ingevuld door de gebruiker.
+
+Er zijn twee varianten voor de bevestigingsmail - formulieren zonder en formulieren
+met :ref:`mede-ondertekenen <manual_cosign_flow>`. De sjablonen voor deze varianten
+stel je apart in.
 
 Als een formulier een medeondertekenencomponent bevat, dan wordt na het ondertekenen
 een bevestigingsmail gestuurd naar de hoofdpersoon die het formulier heeft ingestuurd.
@@ -242,14 +244,25 @@ sjabloon, dan wordt deze niet getoond.
 ==================================  ===========================================================================
 Variabele                           Beschrijving
 ==================================  ===========================================================================
-``{% confirmation_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden die zijn gemarkeerd om in de e-mail weer te geven.
+``{% confirmation_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle
+                                    formuliervelden die zijn gemarkeerd om in de e-mail weer te geven.
 ``{{ form_name }}``                 De naam van het formulier.
 ``{{ submission_date }}``           De datum waarop het formulier is verzonden.
-``{{ public_reference }}``          De openbare referentie van de inzending, bijvoorbeeld het zaaknummer.
-``{% appointment_information %}``   Kop "Afspraakinformatie" gevolgd door de afspraakgegevens, zoals product, locatie, datum en tijdstip.
-``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
-``{% payment_information %}``       Kop "Betaalinformatie" gevolgd door een betaallink indien nog niet is betaald en anders de betalingsbevestiging.
-``{% cosign_information %}``        Kop "Medeondertekeneninformatie" gevolgd door informatie over de status van medeondertekenen.
+``{{ public_reference }}``          De openbare referentie van de inzending, bijvoorbeeld het zaaknummer. We
+                                    raden aan om dit nummer altijd op te nemen zodat de klant altijd contact
+                                    op kan nemen, ongeacht het stadium waarin de inzending zich bevindt.
+``{{ registration_completed }}``    Een waar/vals-waarde die aangeeft of de inzending verwerkt is of niet.
+                                    Nuttig voor :ref:`manual_templates_conditional_display`.
+``{{ waiting_on_cosign }}``         Een waar/vals-waarde die aangeeft of de inzending wel of niet al
+                                    mede-ondertekend is.
+``{% appointment_information %}``   Kop "Afspraakinformatie" gevolgd door de afspraakgegevens, zoals product,
+                                    locatie, datum en tijdstip.
+``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie"
+                                    van het product dat aan dit formulier is gekoppeld.
+``{% payment_information %}``       Kop "Betaalinformatie" gevolgd door een betaallink indien nog niet is
+                                    betaald en anders de betalingsbevestiging.
+``{% cosign_information %}``        Kop "Medeondertekeneninformatie" gevolgd door informatie over de status
+                                    van medeondertekenen.
 ==================================  ===========================================================================
 
 .. note::
@@ -336,6 +349,45 @@ Voorbeeld
 
          Open Formulieren
 
+**Sjablonen voor mede-ondertekenen**
+
+Als het formulier mede-ondertekening vereist, dan worden altijd de sjablonen voor
+mede-ondertekenen gebruikt. Dezelfde sjablonen worden meermaals gebruikt in verschillende
+fasen van het verwerkingsproces:
+
+* wanneer het formulier ingestuurd is, vóór de verwerking plaatsvindt en mogelijks ook
+  voor de eventuele betaling
+* wanneer de aanvraag betaald is, maar nog niet mede-ondertekend
+* wanneer de aanvraag mede-ondertekend is, maar nog niet betaald
+* wanneer de aanvraag mede-ondertekend (en betaald, wanneer relevant) is
+
+We raden aan om de inhoud met de conditie ``registration_completed`` te sturen,
+bijvoorbeeld:
+
+.. code:: django
+
+   Beste {{ voornaam }} {{ achternaam }},
+
+   {% if not registration_completed %}
+       Uw formulierinzending met referentienummer {{ public_reference }} op
+       {{ submission_date }} is nog niet verwerkt omdat er extra stappen nodig zijn.
+
+       {% cosign_information %}
+   {% else %}
+       Uw formulierinzending met referentienummer {{ public_reference }} van
+       {{ submission_date }} is verwerkt.
+   {% endif %}
+
+   Let u alstublieft op het volgende:
+
+   {% product_information %}
+
+   {% confirmation_summary %}
+   {% payment_information %}
+
+   Met vriendelijke groet,
+
+   Open Formulieren
 
 Formulier opslaan e-mail
 ========================

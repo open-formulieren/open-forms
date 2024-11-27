@@ -115,7 +115,7 @@ class TranslationWarningTests(E2ETestCase):
             await page.goto(str(admin_url))
 
             warning_list = page.locator("css=.messagelist")
-            await warning_list.get_by_role("link", name="4 translations").click()
+            await warning_list.get_by_role("link", name="8 translations").click()
 
             modal = page.locator("css=.react-modal__content")
 
@@ -130,6 +130,18 @@ class TranslationWarningTests(E2ETestCase):
             ).to_be_visible()
             await expect(
                 modal.get_by_role("row", name="Steps and fields English name")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation Dutch cosign subject")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation English cosign content")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation Dutch cosign subject")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation English cosign content")
             ).to_be_visible()
 
     async def test_warning_with_mixed_explanation_translations(self):
@@ -352,6 +364,10 @@ class TranslationWarningTests(E2ETestCase):
                 content_en="",
                 subject_nl="Playwright test nl",
                 subject_en="",
+                cosign_content_nl="Playwright test nl",
+                cosign_content_en="",
+                cosign_subject_nl="Playwright test nl",
+                cosign_subject_en="",
             )
 
             return form
@@ -368,7 +384,7 @@ class TranslationWarningTests(E2ETestCase):
             await page.goto(str(admin_url))
 
             warning_list = page.locator("css=.messagelist")
-            await warning_list.get_by_role("link", name="2 translation").click()
+            await warning_list.get_by_role("link", name="4 translation").click()
 
             modal = page.locator("css=.react-modal__content")
 
@@ -377,4 +393,10 @@ class TranslationWarningTests(E2ETestCase):
             ).to_be_visible()
             await expect(
                 modal.get_by_role("row", name="Confirmation English Subject")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation English cosign content")
+            ).to_be_visible()
+            await expect(
+                modal.get_by_role("row", name="Confirmation English cosign subject")
             ).to_be_visible()

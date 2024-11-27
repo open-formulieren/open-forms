@@ -10,6 +10,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.functional import cached_property
+from django.utils.safestring import SafeString
 from django.utils.timezone import localtime
 from django.utils.translation import get_language, gettext_lazy as _
 
@@ -468,6 +469,10 @@ class Submission(models.Model):
     def is_completed(self):
         return bool(self.completed_on)
 
+    @property
+    def is_registered(self) -> bool:
+        return self.registration_status == RegistrationStatuses.success
+
     @transaction.atomic()
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
@@ -573,7 +578,7 @@ class Submission(models.Model):
 
         del self._execution_state
 
-    def render_confirmation_page_title(self) -> str:
+    def render_confirmation_page_title(self) -> SafeString:
         config = GlobalConfiguration.get_solo()
         template = (
             config.cosign_submission_confirmation_title
@@ -585,7 +590,7 @@ class Submission(models.Model):
             context={"public_reference": self.public_registration_reference},
         )
 
-    def render_confirmation_page(self) -> str:
+    def render_confirmation_page(self) -> SafeString:
         from openforms.variables.utils import get_variables_for_context
 
         config = GlobalConfiguration.get_solo()

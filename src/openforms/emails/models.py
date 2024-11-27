@@ -11,7 +11,12 @@ class ConfirmationEmailTemplateManager(models.Manager):
         # if there's *no* template data, make sure that we do indeed wipe the fields,
         # making the template not usable
         if not data:
-            data = {"subject": "", "content": ""}
+            data = {
+                "subject": "",
+                "content": "",
+                "cosign_subject": "",
+                "cosign_content": "",
+            }
 
         return self.update_or_create(form=form, defaults=data)
 
@@ -37,6 +42,33 @@ class ConfirmationEmailTemplate(models.Model):
             DjangoTemplateValidator(
                 required_template_tags=[
                     "appointment_information",
+                    "payment_information",
+                ],
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
+    )
+    cosign_subject = models.CharField(
+        _("cosign subject"),
+        blank=True,
+        max_length=1000,
+        help_text=_("Subject of the email message when the form requires cosigning."),
+        validators=[DjangoTemplateValidator()],
+    )
+    cosign_content = models.TextField(
+        _("cosign content"),
+        blank=True,
+        help_text=_(
+            "The content of the email message when cosgining is required. You must "
+            "include the '{% payment_information %}' and '{% cosign_information %}' "
+            "instructions. Additionally, you can use the '{% confirmation_summary %}' "
+            "instruction and some additional variables - see the documentation for "
+            "details."
+        ),
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
                     "payment_information",
                     "cosign_information",
                 ],
