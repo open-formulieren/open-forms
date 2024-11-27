@@ -16,29 +16,22 @@
 @mixin add-responsive-styles($viewport) {
   $prefix: --of-utrecht-page-header-#{$viewport};
 
-  // TODO: Open Forms 3.0 - set the property directly instead of using custom property.
-  --_padding-block-end: var(
+  padding-block-end: var(
     #{$prefix}-padding-block-end,
     var(--utrecht-page-header-padding-block-end)
   );
-  --_padding-block-start: var(
+  padding-block-start: var(
     #{$prefix}-padding-block-start,
     var(--utrecht-page-header-padding-block-start)
   );
-  --_padding-inline-end: var(
+  padding-inline-end: var(
     #{$prefix}-padding-inline-end,
     var(--utrecht-page-header-padding-inline-end)
   );
-  --_padding-inline-start: var(
+  padding-inline-start: var(
     #{$prefix}-padding-inline-start,
     var(--utrecht-page-header-padding-inline-start)
   );
-
-  // backwards compatibility - remove this in Open Forms 3.0
-  --_padding-shorthand: var(--_padding-block-start) var(--_padding-inline-end)
-    var(--_padding-block-end) var(--_padding-inline-start);
-
-  padding: var(--of-page-header-#{$viewport}-padding, var(--_padding-shorthand));
 }
 
 // Open Forms extensions - add opt-in support for responsive spacing.
@@ -58,9 +51,6 @@
   @include desktop {
     @include add-responsive-styles('desktop');
   }
-
-  // backwards compatibility - remove this in Open Forms 3.0
-  background-color: var(--of-page-header-bg, var(--utrecht-page-header-background-color));
 
   // Logo extensions on top of utrecht-page-header.
   @include bem.modifier('openforms-with-logo') {

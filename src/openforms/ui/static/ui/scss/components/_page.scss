@@ -5,24 +5,15 @@
  */
 .openforms-theme {
   .utrecht-page {
-    // backwards compatibility
-    // TODO: remove in Open Forms 3.0
-    --utrecht-page-max-inline-size: 100%;
-
     @include desktop {
       --utrecht-page-max-inline-size: 1200px;
     }
 
-    --utrecht-page-background-color: var(
-      --of-view-background,
-      var(--of-layout-background, #e6e6e6)
-    );
+    --utrecht-page-background-color: var(--of-view-background, #e6e6e6);
 
     margin-block-end: var(--of-utrecht-page-margin-block-end, 0);
     margin-block-start: var(--of-utrecht-page-margin-block-start, 0);
-    // Backwards compatible design token
-    // TODO: remove of-layout support in Open Forms 3.0
-    background-color: var(--of-layout-background-color, var(--utrecht-page-background-color));
+    background-color: var(--utrecht-page-background-color);
 
     .utrecht-page-content {
       box-sizing: border-box;
