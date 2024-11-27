@@ -31,3 +31,4 @@ and expertise.
    issues/index
    upgrade-240
    upgrade-250
+   upgrade-300

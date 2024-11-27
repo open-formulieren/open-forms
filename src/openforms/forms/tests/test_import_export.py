@@ -1330,8 +1330,8 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "name": "Test backend",
                             "backend": "objects_api",
                             "options": {
-                                "version": 1,
-                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                             },
                         }
@@ -1350,102 +1350,11 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         error_detail = exc.exception.args[0].detail["registration_backends"][0][
             "options"
         ]["objects_api_group"][0]
-        self.assertEqual(error_detail.code, "invalid")
-
-    def test_import_form_with_objects_registration_backend_no_matching_group(self):
-        resources = {
-            "forms": [
-                {
-                    "active": True,
-                    "name": "Test Form 1",
-                    "internal_name": "Test Form Internal 1",
-                    "slug": "objects-api-group",
-                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
-                    "registration_backends": [
-                        {
-                            "key": "test-backend",
-                            "name": "Test backend",
-                            "backend": "objects_api",
-                            "options": {
-                                "version": 1,
-                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                                "objecttype_version": 1,
-                            },
-                        }
-                    ],
-                }
-            ]
-        }
-
-        # no matching groups:
-        ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="http://example1.com"
-        )
-        ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="http://example2.com"
-        )
-
-        with zipfile.ZipFile(self.filepath, "w") as zip_file:
-            for name, data in resources.items():
-                zip_file.writestr(f"{name}.json", json.dumps(data))
-
-        with self.assertRaises(CommandError) as exc:
-            call_command("import", import_file=self.filepath)
-
-        error_detail = exc.exception.args[0].detail["registration_backends"][0][
-            "options"
-        ]["objects_api_group"][0]
-        self.assertEqual(error_detail.code, "invalid")
-
-    def test_import_form_with_objects_registration_backend_available_group(self):
-        resources = {
-            "forms": [
-                {
-                    "active": True,
-                    "name": "Test Form 1",
-                    "internal_name": "Test Form Internal 1",
-                    "slug": "objects-api-group",
-                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
-                    "registration_backends": [
-                        {
-                            "key": "test-backend",
-                            "name": "Test backend",
-                            "backend": "objects_api",
-                            "options": {
-                                "version": 1,
-                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                                "objecttype_version": 1,
-                            },
-                        }
-                    ],
-                }
-            ]
-        }
-
-        objects_api_group_valid = ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True
-        )
-        # irrelevant:
-        ObjectsAPIGroupConfigFactory.create(
-            for_test_docker_compose=True,
-            objecttypes_service__api_root="http://example.com/",
-        )
-
-        with zipfile.ZipFile(self.filepath, "w") as zip_file:
-            for name, data in resources.items():
-                zip_file.writestr(f"{name}.json", json.dumps(data))
-
-        call_command("import", import_file=self.filepath)
-
-        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
-        self.assertEqual(
-            registration_backend.options["objects_api_group"],
-            objects_api_group_valid.pk,
-        )
+        self.assertEqual(error_detail.code, "required")
 
     def test_import_form_with_objecttype_url_objects_api_registration_backend(self):
         """Test forms with an Objects API registration backend where objecttype is specified as an URL
-        correctly gets converted to a UUID.
+        doesn't gets converted to a UUID and throws an Error.
         """
 
         resources = {
@@ -1479,13 +1388,17 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        call_command("import", import_file=self.filepath)
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
 
-        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
-        self.assertEqual(
-            registration_backend.options["objecttype"],
-            "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-        )
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["objecttype"][0]
+        self.assertEqual(error_detail, "Must be a valid UUID.")
+        self.assertEqual(error_detail.code, "invalid")
+
+        with self.assertRaises(FormRegistrationBackend.DoesNotExist):
+            FormRegistrationBackend.objects.get(key="test-backend")
 
     def test_import_form_with_objecttype_uuid_objects_api_registration_backend(self):
         """Test forms with an Objects API registration backend where objecttype is specified as an UUID
