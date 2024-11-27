@@ -39,7 +39,7 @@ class PluginListView(ListMixin, APIView):
         return list(register.iter_enabled_plugins())
 
 
-class SubmissionLogoutView(GenericAPIView):
+class SubmissionLogoutView(GenericAPIView[Submission]):
     authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = (ActiveSubmissionPermission,)
     serializer_class = (

@@ -451,7 +451,7 @@ class Submission(models.Model):
         return self.form.login_required
 
     @property
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return hasattr(self, "auth_info")
 
     @property
