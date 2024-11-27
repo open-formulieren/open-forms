@@ -1,5 +1,4 @@
 import warnings
-from uuid import UUID
 
 from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
@@ -245,80 +244,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         allow_blank=True,
     )
 
-    def get_fields(self):
-        fields = super().get_fields()
-        if getattr(self, "swagger_fake_view", False) or not self.context.get(
-            "is_import", False
-        ):
-            return fields
-
-        # If in an import context, we don't want to error on missing groups.
-        # Instead, we will try to set one if possible in the `validate` method.
-        # We also change the `objecttype` field to be any string, as it could be an URL.
-        fields["objects_api_group"].required = False
-        fields["objecttype"] = serializers.CharField()
-        return fields
-
-    # XXX: fix typehint of attrs, it's a wider version of RegistrationOptions where
-    # the UUID is still a string...
-    def _handle_import(self, attrs) -> None:
-        if (
-            self.context.get("is_import", False)
-            and attrs.get("objects_api_group") is None
-        ):
-            existing_groups = (
-                ObjectsAPIGroupConfig.objects.order_by("pk")
-                .exclude(
-                    Q(objects_service=None)
-                    | Q(objecttypes_service=None)
-                    | Q(drc_service=None)
-                    | Q(catalogi_service=None)
-                )
-                .all()
-            )
-
-            if not existing_groups.exists():
-                raise serializers.ValidationError(
-                    {
-                        "objects_api_group": _(
-                            "You must create a valid Objects API Group config (with the necessary services) before importing."
-                        )
-                    }
-                )
-
-            # As `objects_api_group` isn't in `attrs`, the objecttype is guaranteed to be an URL
-            # as Objects API groups were added before objecttypes were changed from URL to UUID.
-            # (the conversion is done at the end of this function).
-            matching_group = next(
-                (
-                    group
-                    for group in existing_groups
-                    if attrs["objecttype"].startswith(
-                        group.objecttypes_service.api_root
-                    )
-                ),
-                None,
-            )
-
-            if matching_group is None:
-                raise serializers.ValidationError(
-                    {
-                        "objects_api_group": _(
-                            "No Objects API Group config was found matching the configured objecttype URL."
-                        )
-                    }
-                )
-
-            attrs["objects_api_group"] = matching_group
-
-        try:
-            attrs["objecttype"] = UUID(str(attrs["objecttype"]).rsplit("/", 1)[1])
-        except IndexError:
-            pass
-
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
-        self._handle_import(attrs)
-
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",
