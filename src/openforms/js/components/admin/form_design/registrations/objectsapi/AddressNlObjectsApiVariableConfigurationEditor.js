@@ -12,10 +12,9 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import {TargetPathDisplay} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
-
-import {TargetPathDisplay} from './ObjectsApiVariableConfigurationEditor';
 
 const ADDRESSNL_NESTED_PROPERTIES = {
   postcode: {type: 'string'},

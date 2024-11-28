@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -21,11 +21,6 @@ const ArrayInput = ({
   const intl = useIntl();
 
   const [inputs, setInputs] = useState([...values]);
-
-  // Synchronize the values with formik values
-  useEffect(() => {
-    setInputs([...values]);
-  }, [values]);
 
   const onAdd = event => {
     setInputs(inputs.concat(['']));
@@ -70,7 +65,6 @@ const ArrayInput = ({
             type={inputType}
             value={value}
             onChange={onInputChange.bind(null, index)}
-            data-testid={`${name}-${index}`}
             {...extraProps}
           />
         </div>

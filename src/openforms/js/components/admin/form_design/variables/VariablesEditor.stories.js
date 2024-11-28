@@ -589,6 +589,28 @@ export const ConfigurePrefill = {
 };
 
 export const ConfigurePrefillObjectsAPI = {
+  parameters: {
+    msw: {
+      handlers: {
+        targetPaths: mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+          number: [
+            {
+              targetPath: ['path', 'to', 'bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
+      },
+    },
+  },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
@@ -627,7 +649,28 @@ export const ConfigurePrefillObjectsAPI = {
 };
 
 export const ConfigurePrefillObjectsAPIWithCopyButton = {
-  // decorators: [FormDecorator, withReactSelectDecorator],
+  parameters: {
+    msw: {
+      handlers: {
+        targetPaths: mockTargetPathsPost({
+          number: [
+            {
+              targetPath: ['bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+          string: [
+            {
+              targetPath: ['path', 'to', 'bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
+      },
+    },
+  },
   args: {
     registrationBackends: [
       {
@@ -730,10 +773,8 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
             'options.objectsApiGroup': '1',
             'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
             'options.objecttypeVersion': '2',
+            'options.authAttributePath': JSON.stringify(['path', 'to', 'bsn']),
           });
-          expect(canvas.getByTestId('options.authAttributePath-0')).toHaveValue('path');
-          expect(canvas.getByTestId('options.authAttributePath-1')).toHaveValue('to');
-          expect(canvas.getByTestId('options.authAttributePath-2')).toHaveValue('bsn');
 
           expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
           expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));

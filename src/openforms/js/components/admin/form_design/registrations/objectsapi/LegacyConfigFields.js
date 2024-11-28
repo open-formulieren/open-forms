@@ -1,4 +1,4 @@
-import {useField} from 'formik';
+import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -34,6 +34,10 @@ const onApiGroupChange = prevValues => ({
 const LegacyConfigFields = ({apiGroupChoices}) => {
   const [updateExistingObject] = useField('updateExistingObject');
   const authAttributePathDisabled = !updateExistingObject.value;
+
+  const {
+    values: {objecttype, objecttypeVersion, objectsApiGroup},
+  } = useFormikContext();
 
   return (
     <>
@@ -112,7 +116,13 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
         fieldNames={['updateExistingObject', 'authAttributePath']}
       >
         <UpdateExistingObject />
-        <AuthAttributePath name={'authAttributePath'} disabled={authAttributePathDisabled} />
+        <AuthAttributePath
+          name={'authAttributePath'}
+          objectsApiGroup={objectsApiGroup}
+          objecttypeUuid={objecttype}
+          objecttypeVersion={objecttypeVersion}
+          disabled={authAttributePathDisabled}
+        />
       </Fieldset>
 
       <Fieldset

@@ -35,7 +35,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
   const authAttributePathDisabled = !updateExistingObject.value;
 
   const {
-    values: {variablesMapping = []},
+    values: {objecttype, objecttypeVersion, objectsApiGroup, variablesMapping = []},
     setFieldValue,
   } = useFormikContext();
 
@@ -138,7 +138,13 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         fieldNames={['updateExistingObject', 'authAttributePath']}
       >
         <UpdateExistingObject />
-        <AuthAttributePath name={'authAttributePath'} disabled={authAttributePathDisabled} />
+        <AuthAttributePath
+          name={'authAttributePath'}
+          objectsApiGroup={objectsApiGroup}
+          objecttypeUuid={objecttype}
+          objecttypeVersion={objecttypeVersion}
+          disabled={authAttributePathDisabled}
+        />
       </Fieldset>
 
       <Fieldset

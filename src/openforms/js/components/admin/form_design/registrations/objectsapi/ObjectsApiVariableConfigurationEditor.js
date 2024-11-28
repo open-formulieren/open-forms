@@ -8,6 +8,7 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import {TargetPathDisplay} from 'components/admin/forms/objects_api';
 
 import {AddressNlEditor} from './AddressNlObjectsApiVariableConfigurationEditor';
 import {GenericEditor} from './GenericObjectsApiVariableConfigurationEditor';
@@ -16,24 +17,6 @@ import {GenericEditor} from './GenericObjectsApiVariableConfigurationEditor';
 // adhere to the generic behaviour (GenericEditor)
 const VARIABLE_CONFIGURATION_OPTIONS = {
   addressNL: AddressNlEditor,
-};
-
-const TargetPathDisplay = ({target}) => {
-  const path = target.targetPath.length ? target.targetPath.join(' > ') : '/ (root)';
-  return (
-    <FormattedMessage
-      description="Representation of a JSON Schema target path"
-      defaultMessage="{required, select, true {{path} (required)} other {{path}}}"
-      values={{path, required: target.isRequired}}
-    />
-  );
-};
-
-TargetPathDisplay.propTypes = {
-  target: PropTypes.shape({
-    targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
-    isRequired: PropTypes.bool.isRequired,
-  }).isRequired,
 };
 
 /**
@@ -134,4 +117,4 @@ ObjectsApiVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-export {ObjectsApiVariableConfigurationEditor, TargetPathDisplay};
+export {ObjectsApiVariableConfigurationEditor};

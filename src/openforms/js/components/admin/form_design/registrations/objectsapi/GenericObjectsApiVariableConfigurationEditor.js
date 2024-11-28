@@ -1,6 +1,5 @@
-import {FieldArray, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -11,10 +10,11 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import {TargetPathSelect} from 'components/admin/forms/objects_api';
+import {TargetPathDisplay} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
 
-import {TargetPathDisplay} from './ObjectsApiVariableConfigurationEditor';
 import {asJsonSchema} from './utils';
 
 export const GenericEditor = ({
@@ -136,52 +136,4 @@ export const GenericEditor = ({
       </div>
     </>
   );
-};
-
-const TargetPathSelect = ({name, index, choices, mappedVariable, disabled}) => {
-  // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
-  // It is added only when an actual target path is selected. This way, having the empty
-  // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
-  const {
-    values: {variablesMapping},
-    getFieldProps,
-    setFieldValue,
-  } = useFormikContext();
-  const props = getFieldProps(name);
-  const isNew = variablesMapping.length === index;
-
-  return (
-    <FieldArray
-      name="variablesMapping"
-      render={arrayHelpers => (
-        <Select
-          id="targetPath"
-          name={name}
-          allowBlank
-          choices={choices}
-          {...props}
-          disabled={disabled}
-          value={JSON.stringify(props.value)}
-          onChange={event => {
-            if (event.target.value === '') {
-              arrayHelpers.remove(index);
-            } else {
-              if (isNew) {
-                arrayHelpers.push({...mappedVariable, targetPath: JSON.parse(event.target.value)});
-              } else {
-                setFieldValue(name, JSON.parse(event.target.value));
-              }
-            }
-          }}
-        />
-      )}
-    />
-  );
-};
-
-TargetPathSelect.propTypes = {
-  name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  choices: PropTypes.array.isRequired,
-  mappedVariable: PropTypes.object.isRequired,
 };

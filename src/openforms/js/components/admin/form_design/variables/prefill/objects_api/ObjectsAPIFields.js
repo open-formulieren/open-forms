@@ -76,7 +76,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   } = useFormikContext();
 
   const defaults = {
-    objectsApiGroup: '',
+    objectsApiGroup: null,
     objecttypeUuid: '',
     objecttypeVersion: null,
     authAttributePath: [],
@@ -231,6 +231,9 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
         </ErrorBoundary>
         <AuthAttributePath
           name={'options.authAttributePath'}
+          objectsApiGroup={objectsApiGroup}
+          objecttypeUuid={objecttypeUuid}
+          objecttypeVersion={objecttypeVersion}
           style={{maxWidth: '10em'}}
           errors={authAttributePathErrors}
         />
