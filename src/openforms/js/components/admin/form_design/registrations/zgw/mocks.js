@@ -146,6 +146,23 @@ export const mockDocumenTypesGet = () =>
     return HttpResponse.json(match);
   });
 
+// The backend must filter out the 'initiator' as there can only be one.
+const ROLE_TYPES = [
+  {
+    description: 'Baliemedewerker',
+    descriptionGeneric: 'klantcontacter',
+  },
+  {
+    description: 'Belanghebbende',
+    descriptionGeneric: 'belanghebbende',
+  },
+];
+
+export const mockRoleTypesGet = () =>
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/role-types`, () =>
+    HttpResponse.json(ROLE_TYPES)
+  );
+
 const PRODUCTS = [
   {
     url: 'https://example.com/product/1234',

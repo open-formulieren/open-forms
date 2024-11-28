@@ -15,6 +15,7 @@ import {
   mockCataloguesGetError,
   mockDocumenTypesGet,
   mockProductsGet,
+  mockRoleTypesGet,
 } from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
@@ -83,6 +84,7 @@ export default {
         catalogues: [mockCataloguesGet()],
         caseTypes: [mockCaseTypesGet()],
         documentTypes: [mockDocumenTypesGet()],
+        roleTypes: [mockRoleTypesGet()],
         products: [mockProductsGet()],
       },
     },
