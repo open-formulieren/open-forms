@@ -2,11 +2,11 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from openforms.forms.tests.factories import FormPriceLogicFactory, FormVariableFactory
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..pricing import InvalidPrice, get_submission_price
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import SubmissionFactory
 
 
 class PriceCalculationTests(TestCase):
@@ -25,35 +25,6 @@ class PriceCalculationTests(TestCase):
         price = get_submission_price(submission=submission)
 
         self.assertEqual(price, Decimal("123.45"))
-
-    def test_price_from_logic_rules(self):
-        submission = SubmissionFactory.create(
-            form__generate_minimal_setup=True,
-            form__product__price=Decimal("123.45"),
-            form__payment_backend="demo",
-            form__price_variable_key="",
-        )
-        FormVariableFactory.create(
-            key="test-key",
-            form=submission.form,
-            form_definition=submission.form.formstep_set.get().form_definition,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=submission.form.formstep_set.get(),
-            data={"test-key": "test"},
-        )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
-            price=Decimal("51.15"),
-        )
-        with self.subTest(part="check data setup"):
-            self.assertTrue(submission.payment_required)
-
-        price = get_submission_price(submission)
-
-        self.assertEqual(price, Decimal("51.15"))
 
     def test_price_from_form_variable(self):
         submission = SubmissionFactory.create(

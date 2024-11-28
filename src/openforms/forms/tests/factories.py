@@ -2,11 +2,12 @@ import random
 
 import factory
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..models import FormDefinition, FormStep, FormVariable
+from ..models import Form, FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
 
 
@@ -63,6 +64,45 @@ class FormFactory(factory.django.DjangoModelFactory):
             # Let's anyway; maybe the constructor has side-effects; everything is possible.
             else FormRegistrationBackendFactory.build
         )(form=form, backend=extracted, **kwargs)
+
+    @factory.post_generation
+    def price_logic(
+        form: Form,  # pyright: ignore[reportGeneralTypeIssues]
+        create,
+        extracted,
+        **kwargs,
+    ):
+        """
+        Configure the form to evaluate the price using logic rules and read it from
+        the respective variable.
+
+        .. note:: submissions for the form must call
+           ``openforms.submissions.utils.persist_user_defined_variables``
+
+        .. note:: forms with price logic must have at least one step
+        """
+        if not (extracted or kwargs):
+            return
+
+        if not create:
+            raise ValueError(
+                "Price logic can only be specified with the create strategy"
+            )
+
+        form_logic = extracted or FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=kwargs.get("json_logic_trigger", True),
+            for_submission_price=True,
+            price_variable=kwargs.get("price_variable", "totalPrice"),
+            price_value=kwargs.get("price_value", 5.00),
+            order=kwargs.get(
+                "order", 1000
+            ),  # should typically be one of the last rules evaluated
+        )
+        variable_key = form_logic.actions[0]["variable"]
+        FormVariableFactory.create(form=form, for_price=True, key=variable_key)
+        form.price_variable_key = variable_key
+        form.save()
 
 
 class FormRegistrationBackendFactory(factory.django.DjangoModelFactory):
@@ -175,26 +215,29 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
 
 class FormLogicFactory(factory.django.DjangoModelFactory):
     json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
-    actions = [{"action": {"type": "disable-next"}}]
 
     class Meta:
         model = "forms.FormLogic"
 
+    class Params:
+        # generate a logic rule that sets a submission price
+        for_submission_price = False
+        price_variable = "totalPrice"
+        price_value = 5.00  # literal value or JSON logic expression
 
-class FormPriceLogicFactory(factory.django.DjangoModelFactory):
-    form = factory.SubFactory(FormFactory)
-    json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
-    price = factory.Faker(
-        "pydecimal",
-        left_digits=2,
-        right_digits=2,
-        positive=True,
-        min_value=5.00,
-        max_value=100.00,
-    )
-
-    class Meta:
-        model = "forms.FormPriceLogic"
+    @factory.lazy_attribute
+    def actions(self):
+        if self.for_submission_price:  # type: ignore
+            return [
+                {
+                    "variable": self.price_variable,  # type: ignore
+                    "action": {
+                        "type": LogicActionTypes.variable,
+                        "value": self.price_value,  # type: ignore
+                    },
+                }
+            ]
+        return [{"action": {"type": LogicActionTypes.disable_next}}]
 
 
 class FormVariableFactory(factory.django.DjangoModelFactory):
@@ -212,6 +255,13 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
         user_defined = factory.Trait(
             source=FormVariableSources.user_defined,
             form_definition=None,
+        )
+        for_price = factory.Trait(
+            name="Total price",
+            key="totalPrice",
+            form_definition=None,
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
         )
 
     @factory.post_generation

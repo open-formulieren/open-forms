@@ -122,12 +122,8 @@ class SubmissionViewSet(
     mixins.CreateModelMixin,
     viewsets.ReadOnlyModelViewSet,
 ):
-    queryset = (
-        Submission.objects.select_related("form", "form__product")
-        .prefetch_related(
-            "form__formpricelogic_set",
-        )
-        .order_by("created_on")
+    queryset = Submission.objects.select_related("form", "form__product").order_by(
+        "created_on"
     )
     serializer_class = SubmissionSerializer
     authentication_classes = (AnonCSRFSessionAuthentication,)

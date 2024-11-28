@@ -614,11 +614,6 @@
     "description": "\"+\" operator description",
     "originalDefault": "plus"
   },
-  "BrsG4w": {
-    "defaultMessage": "Then the price is",
-    "description": "Price logic prefix",
-    "originalDefault": "Then the price is"
-  },
   "C+91tl": {
     "defaultMessage": "Data extraction",
     "description": "Service fetch configuration modal data extraction fieldset title",
@@ -1449,11 +1444,6 @@
     "description": "Output mapping title",
     "originalDefault": "Output mapping"
   },
-  "QAbqb6": {
-    "defaultMessage": "Add rule",
-    "description": "Add price logic rule button",
-    "originalDefault": "Add rule"
-  },
   "QDBI2H": {
     "defaultMessage": "Select existing form definition",
     "description": "Select form definition tile",
@@ -2093,11 +2083,6 @@
     "defaultMessage": "Attachments",
     "description": "Email registration: attachments fieldset title",
     "originalDefault": "Attachments"
-  },
-  "eJEu3L": {
-    "defaultMessage": "Are you sure you want to delete this rule?",
-    "description": "Price rule deletion confirm message",
-    "originalDefault": "Are you sure you want to delete this rule?"
   },
   "eLDxD5": {
     "defaultMessage": "Advanced options",
@@ -3128,11 +3113,6 @@
     "defaultMessage": "Plugin configuration: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
-  },
-  "zeXZzX": {
-    "defaultMessage": "Use logic rules to determine the price",
-    "description": "dynamic pricing mode label",
-    "originalDefault": "Use logic rules to determine the price"
   },
   "zwOwrD": {
     "defaultMessage": "Select a property from the object type",

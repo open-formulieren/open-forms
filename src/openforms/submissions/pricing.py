@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import decimal
 import logging
+import warnings
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -76,6 +77,12 @@ def get_submission_price(submission: Submission) -> Decimal:
     data = submission.data
     # test the rules one by one, if relevant
     price_rules = form.formpricelogic_set.all()
+    if price_rules:
+        warnings.warn(
+            "Price logic rules are no longer supported. The left-over implementation "
+            "only exists for migration testing purposes.",
+            RuntimeWarning,
+        )
     for rule in price_rules:
         # logic does not match, no point in bothering
         if not jsonLogic(rule.json_logic_trigger, data):

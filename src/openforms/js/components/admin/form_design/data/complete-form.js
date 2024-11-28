@@ -91,7 +91,6 @@ const handleAppointmentForm = draft => {
   draft.stepsToDelete = draft.formSteps.map(step => step.url).filter(Boolean);
   draft.formSteps = [];
   draft.logicRules = [];
-  draft.priceRules = [];
   draft.formVariables = [];
 };
 
@@ -221,7 +220,7 @@ const saveSteps = async (state, csrftoken) => {
 };
 
 /**
- * Save the logic rules and price rules, report back any validation errors.
+ * Save the logic rules, report back any validation errors.
  */
 const saveLogic = async (state, csrftoken) => {
   const {
@@ -239,23 +238,14 @@ const saveLogic = async (state, csrftoken) => {
       for (const action of rule.actions) {
         action.formStep = getStepReference(stepsByGeneratedId, action.formStep);
       }
-
-      for (const rule of draft.priceRules) {
-        rule.form = formUrl;
-      }
     }
   });
 
   // make the actual API call
   let errors = [];
-  let responseLogicRules, responsePriceRules;
+  let responseLogicRules;
   try {
-    responseLogicRules = await createOrUpdateLogicRules(
-      formUrl,
-      newState.logicRules,
-      csrftoken,
-      false
-    );
+    responseLogicRules = await createOrUpdateLogicRules(formUrl, newState.logicRules, csrftoken);
 
     newState = produce(newState, draft => {
       draft.logicRules = responseLogicRules.data;
@@ -268,28 +258,6 @@ const saveLogic = async (state, csrftoken) => {
       e.context = 'logicRules';
       // TODO: convert in list of errors for further processing?
       errors = [e];
-    } else {
-      // re-throw any other type of error
-      throw e;
-    }
-  }
-
-  try {
-    responsePriceRules = await createOrUpdateLogicRules(
-      formUrl,
-      newState.priceRules,
-      csrftoken,
-      true
-    );
-
-    newState = produce(newState, draft => {
-      draft.priceRules = responsePriceRules.data;
-    });
-  } catch (e) {
-    if (e instanceof ValidationErrors) {
-      e.context = 'priceRules';
-      // TODO: convert in list of errors for further processing?
-      errors = errors.concat([e]);
     } else {
       // re-throw any other type of error
       throw e;
@@ -435,7 +403,7 @@ const saveCompleteForm = async (state, csrftoken) => {
   // since the logic rules validate if the variables in the trigger exist.
   [newState, variableValidationErrors] = await saveVariables(newState, csrftoken);
 
-  // save (normal) logic and price logic rules
+  // save logic rules
   [newState, logicValidationErrors] = await saveLogic(newState, csrftoken);
 
   const validationErrors = [...logicValidationErrors, ...variableValidationErrors];

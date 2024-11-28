@@ -1383,12 +1383,6 @@
       "value": "plus"
     }
   ],
-  "BrsG4w": [
-    {
-      "type": 0,
-      "value": "Then the price is"
-    }
-  ],
   "BvRBef": [
     {
       "type": 0,
@@ -2907,12 +2901,6 @@
     {
       "type": 0,
       "value": "Output mapping"
-    }
-  ],
-  "QAbqb6": [
-    {
-      "type": 0,
-      "value": "Add rule"
     }
   ],
   "QDBI2H": [
@@ -4437,12 +4425,6 @@
     {
       "type": 0,
       "value": "Attachments"
-    }
-  ],
-  "eJEu3L": [
-    {
-      "type": 0,
-      "value": "Are you sure you want to delete this rule?"
     }
   ],
   "eLDxD5": [
@@ -6663,12 +6645,6 @@
     {
       "type": 0,
       "value": "Plugin configuration: Ogone legacy"
-    }
-  ],
-  "zeXZzX": [
-    {
-      "type": 0,
-      "value": "Use logic rules to determine the price"
     }
   ],
   "zwOwrD": [

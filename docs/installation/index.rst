@@ -29,6 +29,6 @@ and expertise.
    form_hosting
    redis
    issues/index
-   upgrade-240
-   upgrade-250
    upgrade-300
+   upgrade-250
+   upgrade-240

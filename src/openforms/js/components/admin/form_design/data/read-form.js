@@ -17,7 +17,6 @@ const loadForm = async formUuid => {
     get(`${FORM_ENDPOINT}/${formUuid}/steps`),
     get(`${FORM_ENDPOINT}/${formUuid}/variables?source=${VARIABLE_SOURCES.userDefined}`),
     get(`${FORM_ENDPOINT}/${formUuid}/logic-rules`),
-    get(`${FORM_ENDPOINT}/${formUuid}/price-logic-rules`),
   ];
 
   const responses = await Promise.all(requests);
@@ -25,13 +24,7 @@ const loadForm = async formUuid => {
     throw new Error('An error occurred while loading the form data.');
   }
 
-  const [
-    formResponse,
-    formStepsResponse,
-    formVariablesResponse,
-    logicRulesResponse,
-    priceRulesResponse,
-  ] = responses;
+  const [formResponse, formStepsResponse, formVariablesResponse, logicRulesResponse] = responses;
 
   const form = formResponse.data;
 
@@ -41,7 +34,6 @@ const loadForm = async formUuid => {
     steps: formStepsResponse.data,
     variables: formVariablesResponse.data,
     logicRules: logicRulesResponse.data,
-    priceRules: priceRulesResponse.data,
   };
 };
 

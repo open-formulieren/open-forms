@@ -620,11 +620,6 @@
     "isTranslated": true,
     "originalDefault": "plus"
   },
-  "BrsG4w": {
-    "defaultMessage": "dan is de prijs",
-    "description": "Price logic prefix",
-    "originalDefault": "Then the price is"
-  },
   "C+91tl": {
     "defaultMessage": "Gegevensverwerking",
     "description": "Service fetch configuration modal data extraction fieldset title",
@@ -1464,11 +1459,6 @@
     "description": "Output mapping title",
     "originalDefault": "Output mapping"
   },
-  "QAbqb6": {
-    "defaultMessage": "Regel toevoegen",
-    "description": "Add price logic rule button",
-    "originalDefault": "Add rule"
-  },
   "QDBI2H": {
     "defaultMessage": "Selecteer een bestaande formulierdefinitie",
     "description": "Select form definition tile",
@@ -2113,11 +2103,6 @@
     "defaultMessage": "Bijlagen",
     "description": "Email registration: attachments fieldset title",
     "originalDefault": "Attachments"
-  },
-  "eJEu3L": {
-    "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",
-    "description": "Price rule deletion confirm message",
-    "originalDefault": "Are you sure you want to delete this rule?"
   },
   "eLDxD5": {
     "defaultMessage": "Geavanceerde opties",
@@ -3150,11 +3135,6 @@
     "defaultMessage": "Plugin-instellingen: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
-  },
-  "zeXZzX": {
-    "defaultMessage": "Gebruik prijsregels om de prijs te bepalen",
-    "description": "dynamic pricing mode label",
-    "originalDefault": "Use logic rules to determine the price"
   },
   "zwOwrD": {
     "defaultMessage": "Selecteer een attribuut uit het objecttype",

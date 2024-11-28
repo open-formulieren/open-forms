@@ -199,7 +199,7 @@ product bevat een prijs die gebruikt kan worden als betaald moet worden voor
 het product. Betaling kan ingesteld worden door de juiste **Betaalprovider** te
 selecteren.
 
-Er zijn drie manieren om de prijs van een inzending te bepalen:
+Er zijn twee manieren om de prijs van een inzending te bepalen:
 
 **Gebruik de prijs van het gekoppeld product**
 
@@ -226,10 +226,9 @@ te activeren.
 
 **Gebruik prijslogica**
 
-Voor eenvoudige condities kan je prijslogic instellen. Onder een bepaalde conditie geldt
-een bepaalde, vaste, prijs. Indien aan geen enkele conditie voldaan is, dan wordt de
-prijs van het gekoppeld product gebruikt. De **Prijslogica** volgt verder dezelfde
-regels als reguliere **Logica**.
+.. versionremoved:: 3.0
+
+   De prijslogica is vervangen door gewone logica + gebruik van een variabele.
 
 Zie ook: :ref:`configuration_payment_index`
 

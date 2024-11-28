@@ -18,13 +18,13 @@ from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
-    FormPriceLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ..utils import persist_user_defined_variables
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -193,6 +193,9 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            form__price_logic__price_variable="totalPrice",
+            form__price_logic__price_value=51.15,
+            form__price_logic__json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
         )
         FormVariableFactory.create(
             key="test-key",
@@ -204,11 +207,7 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
         )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "test-key"}, "test"]},
-            price=Decimal("51.15"),
-        )
+        persist_user_defined_variables(submission)
         submission.calculate_price()
         with self.subTest(part="check data setup"):
             self.assertTrue(submission.payment_required)
@@ -270,6 +269,11 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             submitted_data={"triggerComponent": 1},
             form__product__price=Decimal("10"),
             form__payment_backend="demo",
+            form__price_logic__price_variable="totalPrice",
+            form__price_logic__json_logic_trigger={
+                "==": [{"var": "userDefinedVar"}, 2]
+            },
+            form__price_logic__price_value=20,
         )
         SubmissionValueVariableFactory.create(
             key="userDefinedVar",
@@ -288,15 +292,10 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
                     "action": {"type": "variable", "value": 2},
                 }
             ],
+            order=1,
         )
-        FormPriceLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "userDefinedVar"}, 2]},
-            price=Decimal("20"),
-        )
-
-        self.assertTrue(submission.payment_required)
-
+        persist_user_defined_variables(submission)
+        assert submission.payment_required
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
 

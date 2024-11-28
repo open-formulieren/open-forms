@@ -16,15 +16,7 @@ class FormPriceLogic(models.Model):
 
     The data model is similar to :class:`openforms.forms.models.FormLogic`.
 
-    .. todo::
-
-       Document logic evaluation - rules are evaluated and as soon as one matches,
-       that's the winner. If multiple rules match, the first one wins.
-
-    .. todo::
-
-       Support complex conditions (AND/OR them together). This is a broader logic
-       editing/evaluation issue that applies for regular form logic too.
+    .. warning:: This feature is no longer supported.
     """
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
