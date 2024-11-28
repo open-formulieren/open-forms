@@ -20,7 +20,26 @@ import {
 const NAME = 'form.registrationBackends.0.options';
 
 const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices, formData}) => (
-  <Formik initialValues={formData} onSubmit={fn()}>
+  <Formik
+    initialValues={{
+      // defaults
+      caseTypeIdentification: '',
+      documentTypeDescription: '',
+      zaaktype: '',
+      informatieobjecttype: '',
+      organisatieRsin: '',
+      zaakVertrouwelijkheidaanduiding: '',
+      medewerkerRoltype: '',
+      propertyMappings: [],
+      productUrl: '',
+      // Ensure that this is explicitly set to null instead of undefined,
+      // because the field is required by the serializer
+      objectsApiGroup: null,
+      // saved data, overwrites defaults
+      ...formData,
+    }}
+    onSubmit={fn()}
+  >
     <Form data-testid="test-form">
       <ZGWFormFields
         index={0}
