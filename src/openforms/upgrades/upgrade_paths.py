@@ -81,6 +81,11 @@ UPGRADE_PATHS = {
             VersionRange(minimum="2.7.4"),
         },
     ),
+    "3.0.0": UpgradeConstraint(
+        valid_ranges={
+            VersionRange(minimum="2.8.2"),
+        },
+    ),
 }
 
 
