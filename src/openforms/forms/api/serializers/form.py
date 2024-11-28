@@ -75,22 +75,6 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
         fields["backend"].choices = registration_register.get_choices()
         return fields
 
-    def to_internal_value(self, data):
-
-        if self.context.get("is_import", False):
-            if data.get("backend") == "stuf-zds-create-zaak:ext-utrecht":
-                from openforms.registrations.contrib.stuf_zds.plugin import (
-                    PLUGIN_IDENTIFIER,
-                )
-
-                warnings.warn(
-                    "The automatic conversion from StUF-ZDS payments extension to "
-                    "StUF-ZDS during import will be removed in Open Forms 3.0",
-                    category=DeprecationWarning,
-                )
-                data["backend"] = PLUGIN_IDENTIFIER
-        return super().to_internal_value(data)
-
     def validate(self, attrs):
         # validate config options with selected plugin
         if "backend" not in attrs:

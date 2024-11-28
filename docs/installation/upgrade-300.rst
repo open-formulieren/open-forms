@@ -67,3 +67,10 @@ Removal of legacy translations conversion
 Old (from before Open Forms 2.4) form export files containing form field translations
 in the legacy format are now ignored instead of converted to the new format. We
 recommend re-creating the exports on a newer version of Open Forms.
+
+StUF-ZDS payments extension conversion
+--------------------------------------
+
+The import conversion of StUF-ZDS plugin extensions, back to the default StUF-ZDS plugin,
+has been removed. We recommend re-creating the exports on a newer version of Open Forms,
+or manually changing the plugin to `stuf-zds-create-zaak` in the export files.
