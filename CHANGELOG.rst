@@ -2,6 +2,89 @@
 Changelog
 =========
 
+3.0.0-alpha.1 (2024-11-28)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4606`] Improved the user experience of the ZGW APIs registration plugin:
+
+    - All dropdowns/comboboxes now have a search field.
+    - You can now select which catalogue to use, which enables you to select the case and
+      document types in dropdowns that show only relevant options.
+    - During registration the plugin will now automatically select the right version of a case and
+      document type.
+    - The URL-based configuration can still be used, but it's deprecated and will be removed in the
+      future.
+* [:backend:`4418`] You can now map individual parts of the addressNL component in the Objects API
+  registration plugin.
+* [:backend:`4396`, :backend:`4693`] You can now configure a variable to be prefilled from the Objects API
+  (a.k.a. "product prefill"):
+
+    - It's possible to assign individual properties from the object type to particular form variables.
+    - To avoid duplicating configuration, you can copy the configuration from a configured registration
+      backend.
+* [:backend:`4796`] You can now select a product to be set on the created case from the selected case type
+  in the ZGW APIs registration plugin.
+* [:backend:`4762`] The cosigner identifier (BSN) is now included in the created case in the StUF-ZDS
+  registration plugin.
+* [:backend:`4798`] Made the confirmation box consistent with other modals and improved the UX.
+* [:backend:`4344`] You can now select which Objects API group to use in the ZGW APIs registration plugin
+  rather than "the first one" being used always.
+* [:backend:`4320`] Improved the cosign flow and the texts used in cosign flows, while adding more flexibility:
+
+    - You can now use templates specifically for cosigning for the confirmation screen content,
+      with the ability to include a 'cosign now' button.
+    - You can now use templates specifically for cosigning for the confirmation email subject and content.
+    - When links are used in the cosign request email, the cosigner can now directly click through without
+      having to enter a code to retrieve the submission.
+    - Updated the default templates with better text/instructions.
+* [:backend:`4815`] Changed submission removal limit to 0, allowing submissions to be deleted after 0 days
+  (i.e. on the same day).
+* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents. 
+* [:backend:`4707`] You can now resize the Json-Logic widgets.
+* [:backend:`4686`} All the registration plugin configuration options are now consistently managed in a 
+  modal with better UX.
+* [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
+* [:backend:`4719`] Improved accessibility in postcode fields.
+
+**Bugfixes**
+
+* [:backend:`4732`] Fixed CSP issues for Expoints and Govmetric analytics.
+* Fixed examples in the documentation for logic with date and duration calculations.
+* [:backend:`4745`] Fixed missing registration variable to the Objects API with all
+  the attachment URLs.
+* [:backend:`4810`] Fixed uppercase component variable values turing lowercase.
+* [:backend:`4823`] Fixed uploaded files with leading or trailing whitespaces in the
+  filename.
+* [:backend:`4826`] Added a workaround for translatable defaults in database migrations.
+* [:backend:`4772`] Fixed select components with integer values being treated as numbers
+  instead of strings.
+* [:backend:`4727`] Fixed crash when a user defined variable was changed to an array
+  datatype.
+* [:backend:`4802`] Fixed some dropdowns taking up more horizontal space than intended.
+* Fixed some pre-configured component configurations not being applied entirely when adding them to the form.
+* [:backend:`4763`] Fixed temporary file uploads not being delete-able in the admin interface.
+* [:backend:`4726`] Fixed the styling for form delete buttons.
+* [:backend:`4546`] Fixed the soft-required validation errors being shown in the summary PDF.
+
+**Project maintenance**
+
+* Upgraded to MSW 2.x.
+* Bumped formio-builder version.
+* [:backend:`3283`] Removed password Formio component.
+* Upgraded some dependencies to their latest security releases.
+* Dropped RJSF dependency.
+* Bumped waitress.
+* Replaced duplicated code for payment/registration plugin configuration option forms, by adding a generic
+  component.
+* Fixed recursion issues in component search strategies.
+
 2.8.2 (2024-11-25)
 ==================
 
