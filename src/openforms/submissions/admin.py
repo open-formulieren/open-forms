@@ -361,7 +361,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     @admin.display(description=_("Registration backend"))
     def get_registration_backend(self, obj):
-        return obj.form.registration_backend or "-"
+        return backend if (backend := obj.form.registration_backends.first()) else "-"
 
     @admin.display(description=_("Appointment status"))
     def get_appointment_status(self, obj):

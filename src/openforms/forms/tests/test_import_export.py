@@ -277,15 +277,27 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         forms = Form.objects.all()
         imported_form = forms.last()
+
+        # The backend_registration id and form are expected to be different,
+        # compare only the values that should be the same
+        backend_registrations = list(
+            form.registration_backends.values("key", "name", "backend", "options")
+        )
+        imported_backend_registrations = list(
+            imported_form.registration_backends.values(
+                "key", "name", "backend", "options"
+            )
+        )
+
         self.assertEqual(forms.count(), 2)
         self.assertNotEqual(imported_form.pk, form_pk)
         self.assertNotEqual(imported_form.uuid, str(form.uuid))
         self.assertEqual(imported_form.active, False)
-        self.assertEqual(imported_form.registration_backend, form.registration_backend)
         self.assertEqual(
-            imported_form.registration_backend_options,
-            form.registration_backend_options,
+            imported_form.registration_backends.count(),
+            form.registration_backends.count(),
         )
+        self.assertQuerysetEqual(backend_registrations, imported_backend_registrations)
         self.assertEqual(imported_form.name, form.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, old_form_slug)
@@ -406,11 +418,27 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         forms = Form.objects.all()
         imported_form = forms.last()
+
+        # The backend_registration id and form are expected to be different,
+        # compare only the values that should be the same
+        backend_registrations = list(
+            form.registration_backends.values("key", "name", "backend", "options")
+        )
+        imported_backend_registrations = list(
+            imported_form.registration_backends.values(
+                "key", "name", "backend", "options"
+            )
+        )
+
         self.assertEqual(forms.count(), 2)
         self.assertNotEqual(imported_form.pk, form_pk)
         self.assertNotEqual(imported_form.uuid, form.uuid)
         self.assertEqual(imported_form.active, False)
-        self.assertEqual(imported_form.registration_backend, form.registration_backend)
+        self.assertEqual(
+            imported_form.registration_backends.count(),
+            form.registration_backends.count(),
+        )
+        self.assertQuerysetEqual(backend_registrations, imported_backend_registrations)
         self.assertEqual(imported_form.name, form.name)
         self.assertEqual(imported_form.internal_name, form.internal_name)
         self.assertIsNone(imported_form.product)
@@ -473,11 +501,26 @@ class ImportExportTests(TempdirMixin, TestCase):
 
         forms = Form.objects.all()
         imported_form = forms.last()
+        # The backend_registration id and form are expected to be different,
+        # compare only the values that should be the same
+        backend_registrations = list(
+            form.registration_backends.values("key", "name", "backend", "options")
+        )
+        imported_backend_registrations = list(
+            imported_form.registration_backends.values(
+                "key", "name", "backend", "options"
+            )
+        )
+
         self.assertEqual(forms.count(), 2)
         self.assertNotEqual(imported_form.pk, form_pk)
         self.assertNotEqual(imported_form.uuid, form.uuid)
         self.assertEqual(imported_form.active, False)
-        self.assertEqual(imported_form.registration_backend, form.registration_backend)
+        self.assertEqual(
+            imported_form.registration_backends.count(),
+            form.registration_backends.count(),
+        )
+        self.assertEqual(imported_backend_registrations, backend_registrations)
         self.assertEqual(imported_form.name, form.name)
         self.assertEqual(imported_form.internal_name, form.internal_name)
         self.assertIsNone(imported_form.product)

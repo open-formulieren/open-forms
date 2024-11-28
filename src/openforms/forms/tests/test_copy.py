@@ -33,7 +33,8 @@ class CopyFormTests(TestCase):
         self.assertNotEqual(copied_form.pk, form.pk)
         self.assertNotEqual(copied_form.uuid, str(form.uuid))
         self.assertEqual(copied_form.active, form.active)
-        self.assertEqual(copied_form.registration_backend, form.registration_backend)
+        self.assertEqual(form.registration_backends.count(), 0)
+        self.assertEqual(copied_form.registration_backends.count(), 0)
         self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
         self.assertIsNone(copied_form.product)
         self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=form.slug))
@@ -141,12 +142,19 @@ class CopyFormTests(TestCase):
 
         form_copy = form.copy()
         forms = Form.objects.all()
+        # The backend_registration id and form are expected to be different,
+        # compare only the values that should be the same
+        backend_registrations = list(
+            form.registration_backends.values("key", "name", "backend", "options")
+        )
+        copied_backend_registrations = list(
+            form_copy.registration_backends.values("key", "name", "backend", "options")
+        )
 
         self.assertEqual(2, forms.count())
 
-        registration_backends_copy = form_copy.registration_backends.all()
-
-        self.assertEqual(registration_backends_copy.count(), 2)
+        self.assertEqual(form_copy.registration_backends.count(), 2)
+        self.assertQuerysetEqual(backend_registrations, copied_backend_registrations)
 
     def test_copy_form_with_logic_rules_has_correct_formstep_uuid_in_actions(self):
         form = FormFactory.create()
