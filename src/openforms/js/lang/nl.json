@@ -1223,6 +1223,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LbiXCA": {
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare producten binnen het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
+    "description": "ZGW APIs registrations options: case product error",
+    "originalDefault": "Something went wrong while retrieving the available products defined in the selected case. Please check that the services in the selected API group are configured correctly."
+  },
   "LeVpdf": {
     "defaultMessage": "Plugin-insellingen: e-mail",
     "description": "Email registration options modal title",
@@ -2514,11 +2519,6 @@
     "defaultMessage": "Item toevoegen",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
-  },
-  "ln2iyc": {
-    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi of geselecteerde zaak producten. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
-    "description": "ZGW APIs registrations options: case product error",
-    "originalDefault": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
   "ln72CJ": {
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",

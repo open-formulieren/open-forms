@@ -5,28 +5,18 @@ import {FormattedMessage} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import Tab from 'components/admin/form_design/Tab';
-import {ContentJSON} from 'components/admin/form_design/registrations/objectsapi/LegacyConfigFields';
-import Fieldset from 'components/admin/forms/Fieldset';
 import {
   ValidationErrorContext,
   ValidationErrorsProvider,
   filterErrors,
 } from 'components/admin/forms/ValidationErrors';
-import {ObjectsAPIGroup} from 'components/admin/forms/objects_api';
 
 import BasicOptionsFieldset from './BasicOptionsFieldset';
+import LegacyOptionsFieldset from './LegacyOptionsFieldset';
 import ManageVariableToPropertyMappings from './ManageVariableToPropertyMappings';
+import ObjectsAPIOptionsFieldset from './ObjectsAPIOptionsFieldset';
 import OptionalOptionsFieldset from './OptionalOptionsFieldset';
-import {LegacyCaseType, LegacyDocumentType, ObjectType, ObjectTypeVersion} from './fields';
-
-/**
- * Callback to invoke when the API group changes - used to reset the dependent fields.
- */
-const onApiGroupChange = prevValues => ({
-  ...prevValues,
-  objecttype: '',
-  objecttypeVersion: undefined,
-});
+import useCatalogueOptions from './useCatalogueOptions';
 
 const ZGWFormFields = ({
   name,
@@ -35,10 +25,14 @@ const ZGWFormFields = ({
   confidentialityLevelChoices,
 }) => {
   const {
-    values: {propertyMappings = [], objecttype = ''},
+    values: {propertyMappings = []},
   } = useFormikContext();
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
+
+  // load the available catalogues
+  const {loadingCatalogues, catalogueOptionGroups, cataloguesError, catalogueUrl} =
+    useCatalogueOptions();
 
   const numCasePropertyErrors = filterErrors(`${name}.propertyMappings`, validationErrors).length;
   const numBaseErrors = relevantErrors.length - numCasePropertyErrors;
@@ -66,54 +60,19 @@ const ZGWFormFields = ({
 
         {/* Base configuration */}
         <TabPanel>
-          <BasicOptionsFieldset apiGroupChoices={apiGroupChoices} />
-
-          {/* @deprecated */}
-          <Fieldset
-            title={
-              <FormattedMessage
-                description="ZGw APIs registration: legacy configuration options fieldset title"
-                defaultMessage="Legacy configuration"
-              />
-            }
-            fieldNames={['zaaktype', 'informatieobjecttype']}
-            collapsible
-          >
-            <div className="description">
-              <FormattedMessage
-                description="ZGW APIs legacy config options informative message"
-                defaultMessage={`The configuration options here are legacy options. They
-                will continue working, but you should upgrade to the new configuration
-                options above. If a new configuration option is specified, the matching
-                legacy option will be ignored.`}
-              />
-            </div>
-            <LegacyCaseType />
-            <LegacyDocumentType />
-          </Fieldset>
-
-          <OptionalOptionsFieldset confidentialityLevelChoices={confidentialityLevelChoices} />
-
-          <Fieldset
-            title={
-              <FormattedMessage
-                description="ZGW APIs registration: Objects API fieldset title"
-                defaultMessage="Objects API integration"
-              />
-            }
-            collapsible
-            fieldNames={['objecttype', 'objecttypeVersion', 'contentJson']}
-          >
-            <ObjectsAPIGroup
-              apiGroupChoices={objectsApiGroupChoices}
-              onApiGroupChange={onApiGroupChange}
-              required={!!objecttype}
-              isClearable
-            />
-            <ObjectType />
-            <ObjectTypeVersion />
-            <ContentJSON />
-          </Fieldset>
+          <BasicOptionsFieldset
+            apiGroupChoices={apiGroupChoices}
+            loadingCatalogues={loadingCatalogues}
+            catalogueOptionGroups={catalogueOptionGroups}
+            cataloguesError={cataloguesError}
+            catalogueUrl={catalogueUrl}
+          />
+          <LegacyOptionsFieldset />
+          <OptionalOptionsFieldset
+            confidentialityLevelChoices={confidentialityLevelChoices}
+            catalogueUrl={catalogueUrl}
+          />
+          <ObjectsAPIOptionsFieldset objectsApiGroupChoices={objectsApiGroupChoices} />
         </TabPanel>
 
         {/* zaakeigenschappen / case properties */}

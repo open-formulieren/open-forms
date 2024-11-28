@@ -1,19 +1,23 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
-import {useAsync, usePrevious, useUpdateEffect} from 'react-use';
+import {FormattedMessage} from 'react-intl';
 
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {getCatalogueOption} from 'components/admin/forms/zgw';
+import {CatalogueSelectOptions} from 'components/admin/forms/zgw';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {CaseTypeSelect, CatalogueSelect, DocumentTypeSelect, ZGWAPIGroup} from './fields';
-import {getCatalogues} from './utils';
 
 // Components
 
-const BasicOptionsFieldset = ({apiGroupChoices}) => {
+const BasicOptionsFieldset = ({
+  apiGroupChoices,
+  loadingCatalogues,
+  catalogueOptionGroups = [],
+  cataloguesError = undefined,
+  catalogueUrl = '',
+}) => {
   const {
     values: {
       caseTypeIdentification,
@@ -61,7 +65,10 @@ const BasicOptionsFieldset = ({apiGroupChoices}) => {
           />
         }
       >
-        <CatalogiApiFields />
+        <MaybeThrowError error={cataloguesError} />
+        <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
+        <CaseTypeSelect catalogueUrl={catalogueUrl} />
+        <DocumentTypeSelect catalogueUrl={catalogueUrl} />
       </ErrorBoundary>
       <ConfirmationModal
         {...confirmationModalProps}
@@ -86,74 +93,23 @@ BasicOptionsFieldset.propTypes = {
       ])
     )
   ).isRequired,
+  loadingCatalogues: PropTypes.bool.isRequired,
+  catalogueOptionGroups: CatalogueSelectOptions.isRequired,
+  cataloguesError: PropTypes.any,
+  catalogueUrl: PropTypes.string,
 };
 
-const CatalogiApiFields = () => {
-  const {
-    values: {
-      zgwApiGroup = null,
-      catalogue = undefined,
-      caseTypeIdentification = '',
-      documentTypeDescription = '',
-      productUrl = '',
-    },
-    setFieldValue,
-  } = useFormikContext();
+/**
+ * Component that only throws an error if it's not undefined, intended to trigger a
+ * parent error boundary.
+ */
+const MaybeThrowError = ({error = undefined}) => {
+  if (error) throw error;
+  return null;
+};
 
-  const previousCatalogue = usePrevious(catalogue);
-  const previousCaseTypeIdentification = usePrevious(caseTypeIdentification);
-
-  // fetch available catalogues and re-use the result
-  const {
-    loading: loadingCatalogues,
-    value: catalogueOptionGroups = [],
-    error: cataloguesError,
-  } = useAsync(async () => {
-    if (!zgwApiGroup) return [];
-    return await getCatalogues(zgwApiGroup);
-  }, [zgwApiGroup]);
-  if (cataloguesError) throw cataloguesError;
-
-  const catalogueValue = getCatalogueOption(catalogueOptionGroups, catalogue || {});
-  const catalogueUrl = catalogueValue?.url;
-
-  // Synchronize dependent fields when dependencies change.
-  // 1. Clear case type when catalogue changes.
-  useUpdateEffect(() => {
-    const catalogueChanged = catalogue !== previousCatalogue;
-    if (previousCatalogue && catalogueChanged && caseTypeIdentification) {
-      setFieldValue('caseTypeIdentification', '');
-    }
-  }, [setFieldValue, previousCatalogue, catalogue, caseTypeIdentification]);
-
-  // 2. Clear document type when case type changes
-  useUpdateEffect(() => {
-    const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
-    if (previousCaseTypeIdentification && caseTypeChanged && documentTypeDescription) {
-      setFieldValue('documentTypeDescription', '');
-    }
-  }, [
-    setFieldValue,
-    previousCaseTypeIdentification,
-    caseTypeIdentification,
-    documentTypeDescription,
-  ]);
-
-  // 3. Clear selected product when case type changes
-  useUpdateEffect(() => {
-    const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
-    if (previousCaseTypeIdentification && caseTypeChanged && productUrl) {
-      setFieldValue('productUrl', '');
-    }
-  }, [setFieldValue, previousCaseTypeIdentification, caseTypeIdentification, productUrl]);
-
-  return (
-    <>
-      <CatalogueSelect loading={loadingCatalogues} optionGroups={catalogueOptionGroups} />
-      <CaseTypeSelect catalogueUrl={catalogueUrl} />
-      <DocumentTypeSelect catalogueUrl={catalogueUrl} />
-    </>
-  );
+MaybeThrowError.propTypes = {
+  error: PropTypes.any,
 };
 
 export default BasicOptionsFieldset;
