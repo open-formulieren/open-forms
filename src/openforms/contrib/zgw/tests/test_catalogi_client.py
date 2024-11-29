@@ -293,3 +293,95 @@ class CatalogiClientTests(TestCase):
                 identification="ZT-007",
                 valid_on=date(2024, 8, 8),
             )
+
+    @requests_mock.Mocker()
+    def test_get_role_types_before_v12(self, m: requests_mock.Mocker):
+        client = CatalogiClient(base_url="https://dummy/")
+        client._api_version = (1, 0, 0)
+        # mocks to get available zaaktypen
+        zt_endpoint = furl("https://dummy/zaaktypen").set(
+            {
+                "catalogus": "https://dummy/catalogus",
+                "identificatie": "ZT-007",
+            }
+        )
+        m.get(
+            str(zt_endpoint),
+            headers={"API-Version": "1.0.0"},
+            json={
+                "next": None,
+                "previous": None,
+                "count": 2,
+                "results": [
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/1",
+                        "identificatie": "ZT-007",
+                        "beginGeldigheid": "2023-01-01",
+                        "eindeGeldigheid": "2023-12-31",
+                        "roltypen": [
+                            "https://dummy/api/v1/roltypen/1",
+                        ],
+                    },
+                    {
+                        "url": "https://dummy/api/v1/zaaktypen/2",
+                        "identificatie": "ZT-007",
+                        "beginGeldigheid": "2024-01-01",
+                        "roltypen": [
+                            "https://dummy/api/v1/roltypen/2",
+                            "https://dummy/api/v1/roltypen/3",
+                        ],
+                    },
+                ],
+            },
+        )
+
+        # mocks for two zaaktype versions
+        endpoint = furl("https://dummy/roltypen")
+        m.get(
+            str(endpoint.set({"zaaktype": "https://dummy/api/v1/zaaktypen/1"})),
+            headers={"API-Version": "1.0.0"},
+            json={
+                "next": None,
+                "previous": None,
+                "count": 1,
+                "results": [
+                    {
+                        "url": "https://dummy/api/v1/roltypen/1",
+                        "zaaktype": "https://dummy/api/v1/zaaktypen/1",
+                        "omschrijving": "Baliemedewerker",
+                        "omschrijvingGeneriek": "klantcontacter",
+                    },
+                ],
+            },
+        )
+        m.get(
+            str(endpoint.set({"zaaktype": "https://dummy/api/v1/zaaktypen/2"})),
+            headers={"API-Version": "1.0.0"},
+            json={
+                "next": None,
+                "previous": None,
+                "count": 2,
+                "results": [
+                    {
+                        "url": "https://dummy/api/v1/roltypen/2",
+                        "zaaktype": "https://dummy/api/v1/zaaktypen/2",
+                        "omschrijving": "Baliemedewerker",
+                        "omschrijvingGeneriek": "klantcontacter",
+                    },
+                    {
+                        "url": "https://dummy/api/v1/roltypen/3",
+                        "zaaktype": "https://dummy/api/v1/zaaktypen/2",
+                        "omschrijving": "Behandelaar",
+                        "omschrijvingGeneriek": "behandelaar",
+                    },
+                ],
+            },
+        )
+
+        results = client.get_all_role_types(
+            catalogus="https://dummy/catalogus",
+            within_casetype="ZT-007",
+        )
+
+        all_results = list(results)
+        self.assertEqual(len(all_results), 3)

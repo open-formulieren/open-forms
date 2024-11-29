@@ -81,7 +81,7 @@ type RoleDescriptionGeneric = Literal[
 class RoleType(TypedDict):
     url: str
     zaaktype: str
-    zaaktypeIdentificatie: str  # since 1.2
+    zaaktypeIdentificatie: NotRequired[str]  # since 1.2
     omschrijving: str
     omschrijvingGeneriek: RoleDescriptionGeneric
 
@@ -363,12 +363,6 @@ class CatalogiClient(NLXClient):
         catalogus: str,
         within_casetype: str,
     ) -> Iterator[RoleType]:
-        params: RoleTypeListParams = {
-            "zaaktypeIdentificatie": within_casetype,
-        }
-        if self.allow_drafts:
-            params["status"] = "alles"
-
         # get the case types so that we are filtering within the right catalogue, as
         # the same case type identification may be defined in different catalogues
         case_type_versions = (
@@ -388,14 +382,43 @@ class CatalogiClient(NLXClient):
         if not all_valid_roltype_urls:
             return []
 
-        response = self.get("roltypen", params=params)  # type: ignore
-        response.raise_for_status()
-        data: PaginatedResponseData[RoleType] = response.json()
+        _supports_filtering_case_type_identification = self.api_version >= (1, 2, 0)
+        params: RoleTypeListParams = {}
+        if self.allow_drafts:
+            params["status"] = "alles"
 
-        for role_type in pagination_helper(self, data):
-            if role_type["url"] not in all_valid_roltype_urls:
-                continue
-            yield role_type
+        def _iter_case_type_versions() -> Iterator[PaginatedResponseData[RoleType]]:
+            data: PaginatedResponseData[RoleType]
+
+            if _supports_filtering_case_type_identification:
+                params["zaaktypeIdentificatie"] = within_casetype
+
+                response = self.get("roltypen", params=params)  # type: ignore
+                response.raise_for_status()
+                data = response.json()
+                yield data
+
+            # fallback for old versions of the Catalogi API - get the roltypes for each
+            # retrieved version of the case type
+            else:
+                for case_type_version in case_type_versions:
+                    params["zaaktype"] = case_type_version["url"]
+
+                    response = self.get("roltypen", params=params)  # type: ignore
+                    response.raise_for_status()
+                    data = response.json()
+                    yield data
+
+        # for 1.2.0+, this effectively just gets all the role types in one batch by
+        # looping over all pages.
+        # for older versions, this will loop over all versions of the case type in the
+        # outer loop, and the inner loop will process all result pages for that
+        # particular case type version before moving on to the next version
+        for data in _iter_case_type_versions():
+            for role_type in pagination_helper(self, data):
+                if role_type["url"] not in all_valid_roltype_urls:
+                    continue
+                yield role_type
 
     def list_roltypen(
         self,
