@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, override_settings, tag
 
-from requests.exceptions import RequestException
+from requests.exceptions import HTTPError, RequestException
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
@@ -177,11 +177,93 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         )
 
     @tag("gh-4398")
+    def test_ownership_check_fails_if_auth_attribute_path_is_badly_configured(self):
+        with get_objects_client(self.objects_api_group_used) as client:
+            object = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"nested": {"bsn": "111222333"}, "foo": "bar"},
+                    objecttype_version=1,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            object_ref = object["uuid"]
+
+        submission = SubmissionFactory.create(
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference=object_ref,
+        )
+
+        # The backend that should be used to perform the check
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            backend="objects_api",
+            options={
+                "version": 2,
+                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "objects_api_group": self.objects_api_group_used.pk,
+                "objecttype_version": 1,
+            },
+        )
+
+        with self.subTest("empty path"):
+            with get_objects_client(self.objects_api_group_used) as client:
+                with self.assertRaises(PermissionDenied) as cm:
+                    validate_object_ownership(submission, client, [], PLUGIN)
+            self.assertEqual(
+                str(cm.exception),
+                "Could not verify if user is owner of the referenced object",
+            )
+
+        with self.subTest("non existent path"):
+            with get_objects_client(self.objects_api_group_used) as client:
+                with self.assertRaises(PermissionDenied) as cm:
+                    validate_object_ownership(
+                        submission, client, ["this", "does", "not", "exist"], PLUGIN
+                    )
+            self.assertEqual(
+                str(cm.exception),
+                "Could not verify if user is owner of the referenced object",
+            )
+
+    @tag("gh-4398")
     @patch(
         "openforms.contrib.objects_api.clients.objects.ObjectsClient.get_object",
         side_effect=RequestException,
     )
     def test_request_exception_when_doing_permission_check(self, mock_get_object):
+        """
+        If the object could not be fetched due to request errors, the ownership check
+        should fail
+        """
+        submission = SubmissionFactory.create(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference=self.object_ref,
+        )
+
+        # The backend that should be used to perform the check
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            backend="objects_api",
+            options={
+                "version": 2,
+                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "objects_api_group": self.objects_api_group_used.pk,
+                "objecttype_version": 1,
+            },
+        )
+
+        with self.assertRaises(PermissionDenied):
+            with get_objects_client(self.objects_api_group_used) as client:
+                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+
+    @tag("gh-4398")
+    @patch(
+        "openforms.contrib.objects_api.clients.objects.ObjectsClient.get_object",
+        side_effect=HTTPError("404"),
+    )
+    def test_object_not_found_when_doing_permission_check(self, mock_get_object):
         """
         If the object could not be fetched due to request errors, the ownership check
         should fail

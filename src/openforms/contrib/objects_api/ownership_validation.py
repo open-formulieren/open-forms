@@ -24,7 +24,6 @@ def validate_object_ownership(
     client: ObjectsClient,
     object_attribute: list[str],
     plugin: BasePrefillPlugin | BaseRegistrationPlugin,
-    raise_exception: bool = True,
 ) -> None:
     """
     Function to check whether the user associated with a Submission is the owner
@@ -52,23 +51,19 @@ def validate_object_ownership(
             "Something went wrong while trying to retrieve "
             "object for initial_data_reference"
         )
-        if raise_exception:
-            raise PermissionDenied from e
+        raise PermissionDenied from e
 
-    if not object:
-        # If the object cannot be found, we cannot consider the ownership check failed
-        # because it is not verified that the user is not the owner
-        logger.warning(
-            "Could not find object for initial_data_reference: %s",
-            submission.initial_data_reference,
+    if not object_attribute:
+        logger.exception(
+            "No path for auth value configured: %s, cannot perform ownership check",
+            object_attribute,
         )
-        if raise_exception:
-            raise PermissionDenied("Could not find object for initial_data_reference")
-        else:
-            return
+        raise PermissionDenied(
+            "Could not verify if user is owner of the referenced object"
+        )
 
     try:
-        auth_value = glom(object["record"]["data"], Path(*object_attribute))
+        auth_value = glom(object["record"]["data"], Path(*(object_attribute or [])))
     except PathAccessError as e:
         logger.exception(
             "Could not retrieve auth value for path %s, it could be incorrectly configured",
