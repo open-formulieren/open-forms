@@ -36,6 +36,13 @@
       align-items: center;
     }
   }
+
+  &__item-text {
+    &--allow-wrap {
+      word-break: break-all;
+      overflow-wrap: anywhere;
+    }
+  }
 }
 
 .list__item--active {
