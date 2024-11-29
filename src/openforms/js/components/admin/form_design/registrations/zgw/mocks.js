@@ -29,6 +29,11 @@ export const mockCataloguesGet = () =>
     HttpResponse.json(CATALOGUES)
   );
 
+export const mockCataloguesGetError = () =>
+  http.get(`${API_BASE_URL}/api/v2/registration/plugins/zgw-api/catalogues`, () =>
+    HttpResponse.json({unexpected: 'error'}, {status: 500})
+  );
+
 const CASE_TYPES = {
   'https://example.com/catalogi/api/v1/catalogussen/1': [
     {
@@ -143,14 +148,14 @@ export const mockDocumenTypesGet = () =>
 
 const PRODUCTS = [
   {
-    uri: 'https://example.com/product/1234',
+    url: 'https://example.com/product/1234',
   },
   {
-    uri: 'https://example.com/product/4321',
+    url: 'https://example.com/product/4321',
     description: undefined,
   },
   {
-    uri: 'https://example.com/product/1423',
+    url: 'https://example.com/product/1423',
     description: 'Product 1423',
   },
 ];

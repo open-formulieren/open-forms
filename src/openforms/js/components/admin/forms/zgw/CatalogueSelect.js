@@ -78,22 +78,24 @@ const CatalogueSelect = ({label, isDisabled = false, loading, optionGroups}) => 
   );
 };
 
+export const CatalogueSelectOptions = PropTypes.arrayOf(
+  PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        rsin: PropTypes.string.isRequired,
+        domain: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+  })
+);
+
 CatalogueSelect.propTypes = {
   label: PropTypes.node.isRequired,
   isDisabled: PropTypes.bool,
   loading: PropTypes.bool.isRequired,
-  optionGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      options: PropTypes.arrayOf(
-        PropTypes.shape({
-          rsin: PropTypes.string.isRequired,
-          domain: PropTypes.string.isRequired,
-          label: PropTypes.string.isRequired,
-        })
-      ).isRequired,
-    })
-  ),
+  optionGroups: CatalogueSelectOptions,
 };
 
 export default CatalogueSelect;

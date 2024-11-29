@@ -2517,6 +2517,12 @@
       "value": "Add variable"
     }
   ],
+  "LbiXCA": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the available products defined in the selected case. Please check that the services in the selected API group are configured correctly."
+    }
+  ],
   "LeVpdf": [
     {
       "type": 0,
@@ -5335,12 +5341,6 @@
     {
       "type": 0,
       "value": "Add item"
-    }
-  ],
-  "ln2iyc": [
-    {
-      "type": 0,
-      "value": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly."
     }
   ],
   "ln72CJ": [

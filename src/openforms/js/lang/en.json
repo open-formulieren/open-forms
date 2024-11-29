@@ -1214,6 +1214,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LbiXCA": {
+    "defaultMessage": "Something went wrong while retrieving the available products defined in the selected case. Please check that the services in the selected API group are configured correctly.",
+    "description": "ZGW APIs registrations options: case product error",
+    "originalDefault": "Something went wrong while retrieving the available products defined in the selected case. Please check that the services in the selected API group are configured correctly."
+  },
   "LeVpdf": {
     "defaultMessage": "Plugin configuration: Email",
     "description": "Email registration options modal title",
@@ -2493,11 +2498,6 @@
     "defaultMessage": "Add item",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
-  },
-  "ln2iyc": {
-    "defaultMessage": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly.",
-    "description": "ZGW APIs registrations options: case product error",
-    "originalDefault": "Something went wrong while retrieving the available catalogues or products defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
   "ln72CJ": {
     "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
