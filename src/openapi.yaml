@@ -4087,6 +4087,62 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/zgw-api/role-types:
+    get:
+      operationId: registration_plugins_zgw_api_role_types_list
+      description: |-
+        Fetch and serialize a list of objects.
+
+        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
+        backed collections of objects.
+      summary: List the available role types bound to a case type within a catalogue
+        (ZGW APIs)
+      parameters:
+      - in: query
+        name: case_type_identification
+        schema:
+          type: string
+          minLength: 1
+        description: Filter case types against this identification.
+        required: true
+      - in: query
+        name: catalogue_url
+        schema:
+          type: string
+          format: uri
+          title: catalogus URL
+          minLength: 1
+        description: Filter case types against this catalogue URL.
+        required: true
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+        description: The primary key of the ZGW API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleType'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/service-fetch-configurations:
     get:
       operationId: service_fetch_configurations_list
@@ -9728,6 +9784,21 @@ components:
       required:
       - x
       - y
+    RoleType:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The description/label given to the role type in the Catalogi
+            API. It identifies the role type within a case type.
+        descriptionGeneric:
+          type: string
+          title: generic description
+          description: One of the pre-determined generic descriptions, such as 'behandelaar'
+            or 'belanghebbende'.
+      required:
+      - description
+      - descriptionGeneric
     Service:
       type: object
       properties:
