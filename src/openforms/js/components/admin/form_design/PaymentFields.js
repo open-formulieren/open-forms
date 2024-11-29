@@ -18,7 +18,6 @@ const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}
 
   return (
     <Fieldset
-      extraClassName="admin-fieldset"
       title={
         <FormattedMessage
           description="Payment provider fieldset title"

@@ -85,7 +85,6 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
   return (
     <Fieldset
       style={{'--of-add-another-text': `"${addAnotherMsg}"`}}
-      extraClassName="admin-fieldset"
       title={
         <>
           {backend.name || backend.key}
