@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.core.exceptions import PermissionDenied
+
 from rest_framework.test import APITestCase
 
 from openforms.authentication.service import AuthAttribute
@@ -138,7 +140,8 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             },
         )
 
-        prefill_variables(submission=submission)
+        with self.assertRaises(PermissionDenied):
+            prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
         self.assertEqual(TimelineLogProxy.objects.count(), 1)
