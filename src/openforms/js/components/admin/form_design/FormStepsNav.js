@@ -52,7 +52,11 @@ const FormStepNavItem = ({
           onClick={() => onReorder('down')}
         />
       </div>
-      <button type="button" onClick={onActivate} className="button button--plain">
+      <button
+        type="button"
+        onClick={onActivate}
+        className="button button--plain list__item-text list__item-text--allow-wrap"
+      >
         {hasErrors ? <ErrorIcon text={iconTitle} extraClassname="icon icon--danger" /> : null}
         {name}
       </button>
