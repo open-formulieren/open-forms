@@ -60,7 +60,6 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 description="Service fetch configuration modal basic fieldset title"
               />
             }
-            extraClassName="admin-fieldset"
           >
             <FormRow>
               <Field
@@ -239,7 +238,6 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 description="Service fetch configuration modal data extraction fieldset title"
               />
             }
-            extraClassName="admin-fieldset"
           >
             <FormRow>
               <Field
@@ -348,7 +346,6 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 description="Service fetch configuration try it out tabpanel full request fieldset title"
               />
             }
-            extraClassName="admin-fieldset"
           >
             <FormRow>
               {/* TODO https://github.com/open-formulieren/open-forms/issues/2777 */}
@@ -367,7 +364,6 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 description="Service fetch configuration try it out tabpanel data extraction fieldset title"
               />
             }
-            extraClassName="admin-fieldset"
           >
             <FormRow>
               {/* TODO https://github.com/open-formulieren/open-forms/issues/2777 */}
