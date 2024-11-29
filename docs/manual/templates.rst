@@ -265,9 +265,10 @@ Variabele                           Beschrijving
                                     van medeondertekenen.
 ==================================  ===========================================================================
 
-.. note::
+.. versionremoved:: 3.0.0
 
-   De speciale instructie ``{% summary %}`` is verouderd en zal vanaf versie 3.0.0 niet meer beschikbaar zijn.
+   De speciale instructie ``{% summary %}`` is vervangen door
+   ``{% confirmation_summary %}``.
 
 Voorbeeld
 ---------
