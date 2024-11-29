@@ -8,7 +8,6 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
 @use './themes/dark' as dark-theme;
 @use './themes/light' as light-theme;
-@use './tooltip';
 
 @import 'microscope-sass/lib/bem';
 
