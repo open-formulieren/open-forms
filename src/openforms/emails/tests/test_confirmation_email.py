@@ -182,7 +182,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "email": "test@example.com",
             },
         )
-        email = ConfirmationEmailTemplate(content="{% summary %}")
+        email = ConfirmationEmailTemplate(content="{% confirmation_summary %}")
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_email_template(email.content, context)
 
@@ -229,7 +229,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             },
         )
         context = get_confirmation_email_context_data(submission)
-        rendered_content = render_email_template("{% summary %}", context)
+        rendered_content = render_email_template("{% confirmation_summary %}", context)
 
         self.assertTagWithTextIn("td", "Name", rendered_content)
         self.assertTagWithTextIn("td", "Jane", rendered_content)
@@ -321,7 +321,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
 
         context = get_confirmation_email_context_data(submission)
-        rendered_content = render_email_template("{% summary %}", context)
+        rendered_content = render_email_template("{% confirmation_summary %}", context)
 
         self.assertInHTML("<ul><li>Value 1</li><li>Value 2</li></ul>", rendered_content)
 
@@ -472,7 +472,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             ConfirmationEmailTemplateFactory.create(
                 form=submission.form,
                 subject="Subject",
-                content="{% summary %}{% appointment_information %}",
+                content="{% confirmation_summary %}{% appointment_information %}",
             )
             template = get_confirmation_email_templates(submission)[1]
             context = get_confirmation_email_context_data(submission)
@@ -498,7 +498,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             ConfirmationEmailTemplateFactory.create(
                 form=submission.form,
                 subject="Subject",
-                content="{% summary %}{% appointment_information %}",
+                content="{% confirmation_summary %}{% appointment_information %}",
             )
             template = get_confirmation_email_templates(submission)[1]
             context = get_confirmation_email_context_data(submission)
@@ -640,7 +640,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
     <p>Kijk voor meer informatie op <a href="http://gemeente.nl">de homepage</a></p>
 
-    {% summary %}
+    {% confirmation_summary %}
 
     {% appointment_information %}
 
