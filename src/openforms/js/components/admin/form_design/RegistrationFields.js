@@ -53,7 +53,6 @@ const BackendOptionsFormRow = ({backendType = null, currentOptions = {}, onChang
           />
         }
         schema={backendType.schema}
-        uiSchema={BACKEND_OPTIONS_FORMS[backendType.id]?.uiSchema || {}}
         formData={currentOptions}
         onChange={({formData}) =>
           onChange({target: {name: `form.registrationBackends.${index}.options`, value: formData}})
