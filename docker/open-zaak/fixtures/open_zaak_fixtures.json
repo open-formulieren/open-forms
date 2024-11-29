@@ -28,7 +28,7 @@
     "model": "catalogi.catalogus",
     "pk": 1,
     "fields": {
-        "_etag": "ef26c6f8e32dd9cd50809442b635bb26",
+        "_etag": "6cecca4fea6af5d8acc582e1c52ce24b",
         "naam": "Test catalog",
         "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
         "domein": "TEST",
@@ -44,7 +44,7 @@
     "model": "catalogi.catalogus",
     "pk": 2,
     "fields": {
-        "_etag": "bed1ecff53402298e98e22eaa1756480",
+        "_etag": "c7d9351cfa9d1da17c623527f985d3ab",
         "naam": "Test catalog 2",
         "uuid": "630271f6-568a-485e-b1c4-4ed2d6ab3a58",
         "domein": "OTHER",
@@ -429,6 +429,66 @@
     }
 },
 {
+    "model": "catalogi.resultaattype",
+    "pk": 5,
+    "fields": {
+        "_etag": "8a969419db8fe099962d12872966b597",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "5c8c7613-8ccc-4f17-836b-bd92489c77fd",
+        "zaaktype": 6,
+        "omschrijving": "Done",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/43ac0469-e0c0-4985-a6ce-8ec285d2df47",
+        "omschrijving_generiek": "Vastgesteld",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
+    "model": "catalogi.resultaattype",
+    "pk": 6,
+    "fields": {
+        "_etag": "4571f087efcb36b2bcfb8e1ea6b46d62",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "dddb1de8-a50a-477a-8e2e-ca0f69809033",
+        "zaaktype": 7,
+        "omschrijving": "Geslaagd",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/ce8cf476-0b59-496f-8eee-957a7c6e2506",
+        "omschrijving_generiek": "Afgebroken",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
     "model": "catalogi.roltype",
     "pk": 1,
     "fields": {
@@ -504,6 +564,84 @@
         "omschrijving": "Baliemedewerker",
         "omschrijving_generiek": "klantcontacter",
         "zaaktype": 5
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 9,
+    "fields": {
+        "_etag": "9d04e7c378c56302eb00326e6ab1d3f7",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "5cdeb40f-1e28-415b-b826-1b36dac54232",
+        "omschrijving": "Draft",
+        "omschrijving_generiek": "belanghebbende",
+        "zaaktype": 2
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 10,
+    "fields": {
+        "_etag": "aa54e599dca5d07546697d0b179834b4",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "b79db762-5f02-43ea-b550-6de3519e7057",
+        "omschrijving": "Baliemedewerker",
+        "omschrijving_generiek": "klantcontacter",
+        "zaaktype": 2
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 11,
+    "fields": {
+        "_etag": "4c6a59a0e427496fd8975b70486fcfc7",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "d2a3dcde-e555-4a4a-83f3-7b1505ec6c9b",
+        "omschrijving": "Initiator",
+        "omschrijving_generiek": "initiator",
+        "zaaktype": 6
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 12,
+    "fields": {
+        "_etag": "f0130713b20054fcb8dcdb6f658449b9",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "a2700808-67e1-4db5-847e-2fb223b6c8f0",
+        "omschrijving": "Baliemedewerker",
+        "omschrijving_generiek": "klantcontacter",
+        "zaaktype": 6
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 13,
+    "fields": {
+        "_etag": "cd5809383c4e56c095fd273b5258b475",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "51199bc6-024f-4997-8199-733fd2d478f0",
+        "omschrijving": "Initiator",
+        "omschrijving_generiek": "initiator",
+        "zaaktype": 7
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 14,
+    "fields": {
+        "_etag": "9dfa8ad719882e96bc078be4f351aca3",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "877f0745-5292-4336-a6da-a5596c564aae",
+        "omschrijving": "Baliemedewerker",
+        "omschrijving_generiek": "klantcontacter",
+        "zaaktype": 7
     }
 },
 {
@@ -615,6 +753,78 @@
     }
 },
 {
+    "model": "catalogi.statustype",
+    "pk": 9,
+    "fields": {
+        "_etag": "0e25982cec3c27f4b7936e139318c251",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "ec6587a5-0b91-427b-88a8-7aec1c10ff83",
+        "zaaktype": 6,
+        "statustype_omschrijving": "Opened",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 10,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 10,
+    "fields": {
+        "_etag": "6e489710f26b99e30e07b92fea5a575b",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "16de698f-cc2f-4aa8-bb07-8ccfc71a4da3",
+        "zaaktype": 6,
+        "statustype_omschrijving": "Closed",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 90,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 11,
+    "fields": {
+        "_etag": "3d70d877cb2dcbfaf0d3932dc8145c34",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "b4bfbe27-a332-4e48-adf3-b4005d5c5fb5",
+        "zaaktype": 7,
+        "statustype_omschrijving": "Ontvangen",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 12,
+    "fields": {
+        "_etag": "26f40737919a7f9817d845cc4c42a9a3",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "a36f3a85-7499-4d09-b154-cdf832ebb96d",
+        "zaaktype": 7,
+        "statustype_omschrijving": "Afgerond",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 5,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
     "model": "catalogi.zaaktype",
     "pk": 1,
     "fields": {
@@ -664,7 +874,7 @@
     "model": "catalogi.zaaktype",
     "pk": 2,
     "fields": {
-        "_etag": "0a14ada23852340b534f64d20764ac78",
+        "_etag": "6655847c7dcad71dba48bcfc3c07a0c3",
         "datum_begin_geldigheid": "2023-01-01",
         "datum_einde_geldigheid": null,
         "concept": true,
@@ -795,6 +1005,98 @@
         "bronzaaktype_identificatie": "",
         "bronzaaktype_omschrijving": "",
         "catalogus": 1,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 6,
+    "fields": {
+        "_etag": "40da09c62d48854f504ac9dd5a3a3222",
+        "datum_begin_geldigheid": "2024-11-29",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "fcc3499a-04d4-421c-b115-7e3cba2127ac",
+        "identificatie": "ZT-002",
+        "zaaktype_omschrijving": "Test 2",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+        "doel": "Tests",
+        "aanleiding": "Tests",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Tests",
+        "onderwerp": "Tests",
+        "handeling_behandelaar": "Tests",
+        "doorlooptijd_behandeling": "P1M",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2024-11-29",
+        "verantwoordelijke": "Ontwikkelaar",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Testen",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 1,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 7,
+    "fields": {
+        "_etag": "5ed05ed8660025b30056f24ace9af15e",
+        "datum_begin_geldigheid": "2024-11-29",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "cc1d39d9-05a2-45f9-8cfe-230790d36f71",
+        "identificatie": "ZT-001",
+        "zaaktype_omschrijving": "Duplicate identification, other catalogue",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "zaakvertrouwelijk",
+        "doel": "Tests",
+        "aanleiding": "Tests",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Tests",
+        "onderwerp": "Tests",
+        "handeling_behandelaar": "Tests",
+        "doorlooptijd_behandeling": "P1M",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2024-11-29",
+        "verantwoordelijke": "Ontwikkelaar",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Testen",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 2,
         "deelzaaktypen": []
     }
 }

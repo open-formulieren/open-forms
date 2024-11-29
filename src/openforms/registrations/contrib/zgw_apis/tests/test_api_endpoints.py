@@ -398,7 +398,7 @@ class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
         )
         self.assertIsNotNone(baliemedewerker)
 
-    def test_no_results_invalid_case_type_refernece(self):
+    def test_no_results_invalid_case_type_reference(self):
         user = StaffUserFactory.create()
         self.client.force_login(user)
 
@@ -414,6 +414,30 @@ class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
         self.assertEqual(data, [])
+
+    @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
+    def test_drafts_included_with_feature_flag_on(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                # DRAFTS catalogus
+                "catalogue_url": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749"
+                ),
+                "case_type_identification": "DRAFT-01",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertGreaterEqual(len(data), 1)
+        draft = next((item for item in data if item["description"] == "Draft"), None)
+        self.assertIsNotNone(draft)
 
 
 class GetProductsListViewTests(OFVCRMixin, APITestCase):
