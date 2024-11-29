@@ -108,7 +108,7 @@ def fetch_prefill_values_from_options(
                 )
             except (PermissionDenied, ImproperlyConfigured) as exc:
                 logevent.prefill_retrieve_failure(submission, plugin, exc)
-                continue
+                raise exc
 
         options_serializer = plugin.options(data=variable.form_variable.prefill_options)
 

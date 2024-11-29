@@ -4,7 +4,7 @@ import logging
 from functools import partial
 from typing import TYPE_CHECKING, Any, override
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -195,7 +195,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
             logevent.object_ownership_check_improperly_configured(
                 submission, plugin=self
             )
-            raise ImproperlyConfigured(
+            raise PermissionDenied(
                 f"{backend} has no `auth_attribute_path` configured, cannot perform initial data ownership check"
             )
 

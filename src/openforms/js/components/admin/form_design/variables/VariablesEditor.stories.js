@@ -874,7 +874,13 @@ export const ConfigurePrefillObjectsAPIWithValidationErrors = {
           ],
         },
         errors: {
-          prefillOptions: {authAttributePath: 'This list may not be empty.'},
+          prefillPlugin: 'Computer says no.',
+          prefillOptions: {
+            objectsApiGroup: 'Computer says no.',
+            objecttypeUuid: 'Computer says no.',
+            objecttypeVersion: 'Computer says no.',
+            authAttributePath: 'This list may not be empty.',
+          },
         },
       },
     ],

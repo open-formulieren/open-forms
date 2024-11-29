@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -138,7 +138,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
         with patch(
             "openforms.registrations.contrib.objects_api.plugin.validate_object_ownership",
         ) as mock_validate_object_ownership:
-            with self.assertRaises(ImproperlyConfigured):
+            with self.assertRaises(PermissionDenied):
                 pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
             # Not called, due to missing `auth_attribute_path`

@@ -1,6 +1,6 @@
 import logging
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -56,7 +56,7 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
             logevent.object_ownership_check_improperly_configured(
                 submission, plugin=self
             )
-            raise ImproperlyConfigured(
+            raise PermissionDenied(
                 f"`auth_attribute_path` missing from options {prefill_options}, cannot perform initial data ownership check"
             )
 

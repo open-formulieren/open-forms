@@ -129,6 +129,9 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   if (error) throw error;
   const prefillProperties = loading ? LOADING_OPTION : value;
 
+  const [, objectsApiGroupErrors] = normalizeErrors(errors.options?.objectsApiGroup, intl);
+  const [, objecttypeUuidErrors] = normalizeErrors(errors.options?.objecttypeUuid, intl);
+  const [, objecttypeVersionErrors] = normalizeErrors(errors.options?.objecttypeVersion, intl);
   const [, authAttributePathErrors] = normalizeErrors(errors.options?.authAttributePath, intl);
 
   return (
@@ -142,6 +145,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
       <Fieldset>
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
+          errors={objectsApiGroupErrors}
           onChangeCheck={async () => {
             if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
@@ -176,6 +180,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
+            errors={objecttypeUuidErrors}
             label={
               <FormattedMessage
                 description="Objects API prefill options 'Objecttype' label"
@@ -225,6 +230,7 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
                 defaultMessage="Version"
               />
             }
+            errors={objecttypeVersionErrors}
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
           />

@@ -153,7 +153,8 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
             "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
             side_effect=PermissionDenied,
         ) as mock_validate_object_ownership:
-            prefill_variables(submission=submission_step.submission)
+            with self.assertRaises(PermissionDenied):
+                prefill_variables(submission=submission_step.submission)
 
             self.assertEqual(mock_validate_object_ownership.call_count, 1)
 
@@ -192,7 +193,8 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
         with patch(
             "openforms.prefill.contrib.objects_api.plugin.validate_object_ownership",
         ) as mock_validate_object_ownership:
-            prefill_variables(submission=submission_step.submission)
+            with self.assertRaises(PermissionDenied):
+                prefill_variables(submission=submission_step.submission)
 
             self.assertEqual(mock_validate_object_ownership.call_count, 0)
 

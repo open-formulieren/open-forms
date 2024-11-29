@@ -420,7 +420,8 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
                 "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership",
                 side_effect=PermissionDenied,
             ) as mock_verify_ownership:
-                prefill_variables(submission=submission_step.submission)
+                with self.assertRaises(PermissionDenied):
+                    prefill_variables(submission=submission_step.submission)
 
                 mock_verify_ownership.assert_called_once_with(
                     submission_step.submission, variable.prefill_options
