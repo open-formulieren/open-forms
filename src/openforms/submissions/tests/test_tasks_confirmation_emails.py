@@ -181,7 +181,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
             subject="Confirmation mail",
-            content="Information filled in: {{ foo }} and {{ bar }}. Submission summary: {% summary %}",
+            content="Information filled in: {{ foo }} and {{ bar }}. Submission summary: {% confirmation_summary %}",
         )
 
         # "execute" the celery task
@@ -655,7 +655,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 subject="Translated confirmation mail",
                 content="""Translated content
                 {{form_name}}
-                {% summary %}
+                {% confirmation_summary %}
                 """,
             )
 
