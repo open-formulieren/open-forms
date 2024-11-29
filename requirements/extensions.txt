@@ -853,7 +853,7 @@ tinycss2==1.1.0
     #   -r requirements/base.txt
     #   cssselect2
     #   weasyprint
-tornado==6.4.1
+tornado==6.4.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

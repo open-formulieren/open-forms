@@ -1125,7 +1125,7 @@ tinycss2==1.1.0
     #   weasyprint
 toml==0.10.2
     # via autopep8
-tornado==6.4.1
+tornado==6.4.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
