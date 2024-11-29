@@ -202,3 +202,14 @@ export const CataloguesLoadingFails = {
     },
   },
 };
+
+export const RenderLegacyRoltype = {
+  args: {
+    formData: {
+      zgwApiGroup: 1,
+      zaaktype: 'https://example.com/catalogi/api/v1/zaaktypen/123',
+      propertyMappings: [],
+      medewerkerRoltype: 'Baliemedewerker',
+    },
+  },
+};

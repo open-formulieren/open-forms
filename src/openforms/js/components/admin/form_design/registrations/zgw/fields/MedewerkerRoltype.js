@@ -5,6 +5,7 @@ import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
+import {TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
@@ -31,7 +32,15 @@ const getAvailableRoleTypes = async (apiGroupID, catalogueUrl, caseTypeIdentific
 
 // Components
 
-const MedewerkerRoltype = ({catalogueUrl = ''}) => {
+/**
+ * @deprecated
+ */
+const MedewerkerRoltypeLegacy = () => {
+  const [fieldProps] = useField('medewerkerRoltype');
+  return <TextInput id="id_medewerkerRoltype" {...fieldProps} />;
+};
+
+const MedewerkerRoltypeSelect = ({catalogueUrl = ''}) => {
   const {
     values: {zgwApiGroup = null, caseTypeIdentification = ''},
   } = useFormikContext();
@@ -48,6 +57,31 @@ const MedewerkerRoltype = ({catalogueUrl = ''}) => {
   }, [zgwApiGroup, catalogueUrl, caseTypeIdentification]);
   if (error) throw error;
 
+  return (
+    <ReactSelect
+      name="medewerkerRoltype"
+      options={roleTypes}
+      isLoading={loading}
+      isDisabled={!zgwApiGroup || !caseTypeIdentification}
+      required={false}
+      isClearable
+      onChange={selectedOption => {
+        setValue(selectedOption ? selectedOption.value : '');
+      }}
+    />
+  );
+};
+
+MedewerkerRoltypeSelect.propTypes = {
+  catalogueUrl: PropTypes.string,
+};
+
+const MedewerkerRoltype = ({catalogueUrl = ''}) => {
+  const {
+    values: {caseTypeIdentification = '', zaaktype = ''},
+  } = useFormikContext();
+  // render legacy field if a case type URL is used instead of a identification reference
+  const renderLegacy = !!zaaktype && !caseTypeIdentification;
   return (
     <FormRow>
       <Field
@@ -67,17 +101,11 @@ const MedewerkerRoltype = ({catalogueUrl = ''}) => {
         }
         noManageChildProps
       >
-        <ReactSelect
-          name="medewerkerRoltype"
-          options={roleTypes}
-          isLoading={loading}
-          isDisabled={!zgwApiGroup || !caseTypeIdentification}
-          required={false}
-          isClearable
-          onChange={selectedOption => {
-            setValue(selectedOption ? selectedOption.value : '');
-          }}
-        />
+        {renderLegacy ? (
+          <MedewerkerRoltypeLegacy />
+        ) : (
+          <MedewerkerRoltypeSelect catalogueUrl={catalogueUrl} />
+        )}
       </Field>
     </FormRow>
   );
