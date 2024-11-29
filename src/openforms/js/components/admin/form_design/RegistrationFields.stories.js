@@ -25,7 +25,16 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [ValidationErrorsDecorator, FormDecorator],
+  decorators: [
+    ValidationErrorsDecorator,
+    FormDecorator,
+    // provide necessary django elements to get the right styling
+    Story => (
+      <form>
+        <Story />
+      </form>
+    ),
+  ],
   component: RegistrationFields,
   args: {
     availableBackends: [
