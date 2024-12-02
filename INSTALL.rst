@@ -432,11 +432,18 @@ After configuring the application groups in the admin through point-and-click, y
 call this script to dump the configuration into a fixture which will be loaded on
 all other installations.
 
-``bin/generate_default_groups_fixtures.sh``
--------------------------------------------
+``bin/generate_default_groups_fixture.sh``
+------------------------------------------
 
 After configuring the user groups with the appropriate permissions in the admin,
-you can this script to dump the configuration into a fixture which will be loaded on
+you call this script to dump the configuration into a fixture which will be loaded on
+all other installations.
+
+``bin/generate_default_map_tile_layers_fixture.sh``
+-----------------------------------------------------------
+
+After configuring the map tile layers in the admin,
+you call this script to dump the configuration into a fixture which will be loaded on
 all other installations.
 
 ``bin/generate_oas.sh``
