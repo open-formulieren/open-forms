@@ -54,6 +54,13 @@ class ZGWApiGroupConfig(models.Model):
         max_length=255,
         help_text=_("A recognisable name for this set of ZGW APIs."),
     )
+    identifier = models.SlugField(
+        _("identifier"),
+        blank=False,
+        null=False,
+        unique=True,
+        help_text=_("A unique, human-friendly identifier to identify this group."),
+    )
     zrc_service = models.ForeignKey(
         "zgw_consumers.Service",
         verbose_name=_("Zaken API"),

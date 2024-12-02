@@ -6,14 +6,26 @@ from .models import ZGWApiGroupConfig
 
 @admin.register(ZGWApiGroupConfig)
 class ZGWApiGroupConfigAdmin(admin.ModelAdmin):
-    list_display = ("name", "zrc_service", "drc_service", "ztc_service")
+    list_display = ("name", "identifier", "zrc_service", "drc_service", "ztc_service")
     list_select_related = ("zrc_service", "drc_service", "ztc_service")
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+        "identifier",
+    )
     raw_id_fields = ("zrc_service", "drc_service", "ztc_service")
+    prepopulated_fields = {"identifier": ["name"]}
     ordering = ("name",)
 
     fieldsets = (
-        (None, {"fields": ("name",)}),
+        (
+            None,
+            {
+                "fields": (
+                    "name",
+                    "identifier",
+                )
+            },
+        ),
         (
             _("Services"),
             {
