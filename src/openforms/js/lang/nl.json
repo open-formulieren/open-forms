@@ -705,6 +705,11 @@
     "description": "JSON variable type \"boolean\" representation",
     "originalDefault": "Boolean"
   },
+  "DFQ0Pq": {
+    "defaultMessage": "Update existing objects",
+    "description": "Objects registration: update existing objects settings",
+    "originalDefault": "Update existing objects"
+  },
   "DGpAyT": {
     "defaultMessage": "Verplaats omlaag",
     "description": "Move down icon title",
