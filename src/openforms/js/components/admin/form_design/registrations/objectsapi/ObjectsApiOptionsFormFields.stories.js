@@ -14,6 +14,7 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesError,
   mockObjecttypesGet,
+  mockTargetPathsPost,
 } from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
@@ -62,6 +63,15 @@ export default {
         ]),
         mockCataloguesGet(),
         mockDocumentTypesGet(),
+        mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
       ],
     },
   },

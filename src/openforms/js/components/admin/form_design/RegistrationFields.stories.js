@@ -6,6 +6,7 @@ import {
   mockCataloguesGet as mockObjectsApiCataloguesGet,
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
+  mockTargetPathsPost,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
 import {
   mockCaseTypesGet,
@@ -512,6 +513,15 @@ export default {
           ]),
           mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+          }),
         ],
         zgwMocks: [
           mockZGWApisCataloguesGet(),

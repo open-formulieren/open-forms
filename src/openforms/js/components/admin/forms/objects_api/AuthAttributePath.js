@@ -1,15 +1,13 @@
-import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {APIContext} from 'components/admin/form_design/Context';
 import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {LOADING_OPTION} from 'components/admin/forms/Select';
-import {TargetPathDisplay, TargetPathSelect} from 'components/admin/forms/objects_api';
+import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import {post} from 'utils/fetch';
 
 const AuthAttributePath = ({
@@ -20,11 +18,11 @@ const AuthAttributePath = ({
   objecttypeVersion,
   disabled = false,
 }) => {
-  const [fieldProps] = useField({name: name, type: 'array'});
+  const intl = useIntl();
   const {csrftoken} = useContext(APIContext);
   const {
     loading,
-    value: targetPaths,
+    value: targetPaths = [],
     error,
   } = useAsync(async () => {
     if (!objectsApiGroup || !objecttypeUuid || !objecttypeVersion) return [];
@@ -39,11 +37,16 @@ const AuthAttributePath = ({
     }
     return response.data;
   }, [objectsApiGroup, objecttypeUuid, objecttypeVersion]);
+  if (error) throw error; // bubble up to nearest error boundary
 
-  const choices =
-    loading || error
-      ? LOADING_OPTION
-      : targetPaths.map(t => [JSON.stringify(t.targetPath), <TargetPathDisplay target={t} />]);
+  // An object type (and particular version) must be selected before you can select
+  // a targetpath, since it grabs the available properties from the objecttype json
+  // schema definition.
+  const noObjectTypeSelectedMessage = intl.formatMessage({
+    description:
+      'Object type target path selection for auth attribute message for missing options because no object type has been selected.',
+    defaultMessage: 'Select an object type and version before you can pick a source path.',
+  });
 
   return (
     <FormRow>
@@ -64,7 +67,13 @@ const AuthAttributePath = ({
         }
         disabled={disabled}
       >
-        <TargetPathSelect name={name} index={1} choices={choices} value={fieldProps.value} />
+        <TargetPathSelect
+          name={name}
+          isLoading={loading}
+          targetPaths={targetPaths}
+          isDisabled={disabled}
+          noOptionsMessage={!objecttypeVersion ? () => noObjectTypeSelectedMessage : undefined}
+        />
       </Field>
     </FormRow>
   );

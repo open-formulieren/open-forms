@@ -3050,6 +3050,11 @@
     "description": "Price variable label",
     "originalDefault": "Variable"
   },
+  "xBb5YI": {
+    "defaultMessage": "Select an object type and version before you can pick a source path.",
+    "description": "Object type target path selection for auth attribute message for missing options because no object type has been selected.",
+    "originalDefault": "Select an object type and version before you can pick a source path."
+  },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",
     "description": "Submission confirmation fieldset title",

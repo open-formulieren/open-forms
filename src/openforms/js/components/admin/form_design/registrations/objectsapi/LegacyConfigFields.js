@@ -29,14 +29,17 @@ const onApiGroupChange = prevValues => ({
   ...prevValues,
   objecttype: '',
   objecttypeVersion: undefined,
+  authAttributePath: undefined,
 });
 
 const LegacyConfigFields = ({apiGroupChoices}) => {
-  const [updateExistingObject] = useField('updateExistingObject');
-  const authAttributePathDisabled = !updateExistingObject.value;
-
   const {
-    values: {objecttype, objecttypeVersion, objectsApiGroup},
+    values: {
+      objectsApiGroup = null,
+      objecttype = '',
+      objecttypeVersion = null,
+      updateExistingObject = false,
+    },
   } = useFormikContext();
 
   return (
@@ -117,11 +120,11 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
       >
         <UpdateExistingObject />
         <AuthAttributePath
-          name={'authAttributePath'}
+          name="authAttributePath"
           objectsApiGroup={objectsApiGroup}
           objecttypeUuid={objecttype}
           objecttypeVersion={objecttypeVersion}
-          disabled={authAttributePathDisabled}
+          disabled={!updateExistingObject}
         />
       </Fieldset>
 

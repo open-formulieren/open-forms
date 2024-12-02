@@ -8,7 +8,6 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
-import {TargetPathDisplay} from 'components/admin/forms/objects_api';
 
 import {AddressNlEditor} from './AddressNlObjectsApiVariableConfigurationEditor';
 import {GenericEditor} from './GenericObjectsApiVariableConfigurationEditor';
@@ -37,7 +36,7 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
 const ObjectsApiVariableConfigurationEditor = ({variable}) => {
-  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
+  const {values: backendOptions, getFieldProps} = useFormikContext();
   const {components} = useContext(FormContext);
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */

@@ -1,54 +1,87 @@
-import {FieldArray, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
+import {components} from 'react-select';
 
-import Select from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const TargetPathSelect = ({name, index, choices, mappedVariable, disabled}) => {
+export const TargetPathType = PropTypes.shape({
+  targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isRequired: PropTypes.bool.isRequired,
+});
+
+/**
+ * (String) representation of a property target, used as dropdown option labels.
+ */
+export const TargetPathDisplay = ({target}) => {
+  const path = target.targetPath.length ? target.targetPath.join(' > ') : '/ (root)';
+  return (
+    <FormattedMessage
+      description="Representation of a JSON Schema target path"
+      defaultMessage="{required, select, true {{path} (required)} other {{path}}}"
+      values={{path, required: target.isRequired}}
+    />
+  );
+};
+
+TargetPathDisplay.propTypes = {
+  target: TargetPathType.isRequired,
+};
+
+/**
+ * Dropdown that allows you to select a particular (nested) path to a JsonSchema property.
+ *
+ * The form state must use the key `variablesMapping` for the mapped variables.
+ */
+const TargetPathSelect = ({
+  name,
+  isLoading = false,
+  targetPaths = [],
+  isDisabled = false,
+  ...props
+}) => {
   // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
   // It is added only when an actual target path is selected. This way, having the empty
   // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
-  const {
-    values: {variablesMapping},
-    getFieldProps,
-    setFieldValue,
-  } = useFormikContext();
-  const props = getFieldProps(name);
-  const isNew = !!variablesMapping ? variablesMapping.length === index : false;
+  const {getFieldProps, setFieldValue} = useFormikContext();
+  const {value} = getFieldProps(name);
+
+  const options = targetPaths.map(({targetPath, isRequired}) => ({
+    value: JSON.stringify(targetPath),
+    label: targetPath.length ? targetPath.join(' > ') : '/ (root)',
+    targetPath: targetPath,
+    isRequired: isRequired,
+  }));
+
   return (
-    <FieldArray
-      name="variablesMapping"
-      render={arrayHelpers => (
-        <Select
-          id="targetPath"
-          name={name}
-          allowBlank
-          choices={choices}
-          {...props}
-          disabled={disabled}
-          value={JSON.stringify(props.value)}
-          onChange={event => {
-            if (event.target.value === '') {
-              arrayHelpers.remove(index);
-            } else {
-              if (isNew) {
-                arrayHelpers.push({...mappedVariable, targetPath: JSON.parse(event.target.value)});
-              } else {
-                setFieldValue(name, JSON.parse(event.target.value));
-              }
-            }
-          }}
-        />
-      )}
+    <ReactSelect
+      name={name}
+      options={options}
+      isLoading={isLoading}
+      isDisabled={isDisabled}
+      isClearable
+      value={value ? options.find(o => o.value === JSON.stringify(value)) : null}
+      components={{
+        Option: props => (
+          <components.Option {...props}>
+            <TargetPathDisplay target={props.data} />
+          </components.Option>
+        ),
+      }}
+      onChange={newValue => {
+        setFieldValue(name, newValue ? newValue.targetPath : undefined);
+      }}
+      {...props}
     />
   );
 };
 
 TargetPathSelect.propTypes = {
   name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  choices: PropTypes.array.isRequired,
-  mappedVariable: PropTypes.object,
+  isLoading: PropTypes.bool,
+  targetPaths: PropTypes.arrayOf(TargetPathType),
+  isDisabled: PropTypes.bool,
 };
 
 export default TargetPathSelect;

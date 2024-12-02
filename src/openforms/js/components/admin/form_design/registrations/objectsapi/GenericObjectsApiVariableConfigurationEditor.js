@@ -1,5 +1,6 @@
-import {useFormikContext} from 'formik';
+import {FieldArray, useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
+import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -9,13 +10,73 @@ import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/co
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {TargetPathSelect} from 'components/admin/forms/objects_api';
-import {TargetPathDisplay} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
 
 import {asJsonSchema} from './utils';
+
+/**
+ * Hack-ish way to manage the variablesMapping state for one particular entry.
+ *
+ * We ensure that an item is added to `variablesMapping` by using the `FieldArray`
+ * helper component if it doesn't exist yet, otherwise we update it.
+ */
+export const MappedVariableTargetPathSelect = ({
+  name,
+  index,
+  mappedVariable,
+  isLoading = false,
+  targetPaths = [],
+  isDisabled = false,
+}) => {
+  const {
+    values: {variablesMapping = []},
+    setFieldValue,
+  } = useFormikContext();
+  const isNew = variablesMapping.length === index;
+  return (
+    <FieldArray
+      name="variablesMapping"
+      render={arrayHelpers => (
+        <TargetPathSelect
+          name={name}
+          isLoading={isLoading}
+          targetPaths={targetPaths}
+          isDisabled={isDisabled}
+          onChange={newValue => {
+            // Clearing the select means we need to remove the record from the mapping,
+            // otherwise it's not a valid item for the backend.
+            if (newValue === null) {
+              arrayHelpers.remove(index);
+              return;
+            }
+
+            // otherwise, either add a new item, or update the existing
+            if (isNew) {
+              const newMapping = {...mappedVariable, targetPath: newValue.targetPath};
+              arrayHelpers.push(newMapping);
+            } else {
+              setFieldValue(name, newValue.targetPath);
+            }
+          }}
+        />
+      )}
+    />
+  );
+};
+
+MappedVariableTargetPathSelect.propTypes = {
+  name: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  mappedVariable: PropTypes.shape({
+    variableKey: PropTypes.string.isRequired,
+    targetPath: PropTypes.arrayOf(PropTypes.string),
+    options: PropTypes.object,
+  }).isRequired,
+  isLoading: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+};
 
 export const GenericEditor = ({
   variable,
@@ -55,11 +116,6 @@ export const GenericEditor = ({
   );
 
   const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
-
-  const choices =
-    loading || error
-      ? LOADING_OPTION
-      : targetPaths.map(t => [JSON.stringify(t.targetPath), <TargetPathDisplay target={t} />]);
 
   if (error)
     return (
@@ -108,12 +164,13 @@ export const GenericEditor = ({
           }
           disabled={isGeometry}
         >
-          <TargetPathSelect
+          <MappedVariableTargetPathSelect
             name={`${namePrefix}.targetPath`}
             index={index}
-            choices={choices}
             mappedVariable={mappedVariable}
-            disabled={isGeometry}
+            isDisabled={isGeometry}
+            isLoading={loading}
+            targetPaths={targetPaths}
           />
         </Field>
       </FormRow>

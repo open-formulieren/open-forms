@@ -6427,6 +6427,12 @@
       "value": "Variable"
     }
   ],
+  "xBb5YI": [
+    {
+      "type": 0,
+      "value": "Select an object type and version before you can pick a source path."
+    }
+  ],
   "xI6md8": [
     {
       "type": 0,
