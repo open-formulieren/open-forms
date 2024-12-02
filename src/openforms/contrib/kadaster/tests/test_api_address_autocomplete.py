@@ -40,7 +40,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         response = self.client.get(
-            reverse("api:get-street-name-and-city-list"),
+            reverse("api:geo:address-autocomplete"),
             {"postcode": "1015CJ", "house_number": "117"},
         )
 
@@ -57,7 +57,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     def test_getting_street_name_and_city_without_post_code_returns_error(self, _mock):
 
         response = self.client.get(
-            reverse("api:get-street-name-and-city-list"),
+            reverse("api:geo:address-autocomplete"),
             {"house_number": "117"},
         )
 
@@ -90,7 +90,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     ):
 
         response = self.client.get(
-            reverse("api:get-street-name-and-city-list"),
+            reverse("api:geo:address-autocomplete"),
             {"postcode": "1015CJ"},
         )
 
@@ -123,7 +123,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         response = self.client.get(
-            reverse("api:get-street-name-and-city-list"),
+            reverse("api:geo:address-autocomplete"),
             {"postcode": "1015CJ", "house_number": "117", "random": "param"},
         )
 
@@ -140,7 +140,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         response = self.client.get(
-            reverse("api:get-street-name-and-city-list"),
+            reverse("api:geo:address-autocomplete"),
             {"postcode": "1015CJ", "house_number": "1"},
         )
 
@@ -155,7 +155,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         m_lookup_address.return_value = AddressResult(
             street_name="Keizersgracht", city="Amsterdam", secret_street_city=""
         )
-        endpoint = reverse("api:get-street-name-and-city-list")
+        endpoint = reverse("api:geo:address-autocomplete")
 
         # make the request twice, second one should use cache
         self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
@@ -174,7 +174,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
                 oas="https://bag/api/schema/openapi.yaml",
             )
         )
-        endpoint = reverse("api:get-street-name-and-city-list")
+        endpoint = reverse("api:geo:address-autocomplete")
 
         with requests_mock.Mocker() as m:
             m.get(
