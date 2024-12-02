@@ -11,6 +11,7 @@ from openforms.api.views.mixins import ListMixin
 from openforms.contrib.zgw.api.serializers import (
     CaseTypeProductSerializer,
     CaseTypeSerializer,
+    RoleTypeSerializer,
 )
 from openforms.contrib.zgw.api.views import (
     BaseCatalogueListView,
@@ -21,9 +22,9 @@ from openforms.utils.date import datetime_in_amsterdam
 
 from .filters import (
     APIGroupQueryParamsSerializer,
+    FilterForCaseTypeQueryParamsSerializer,
     ListCaseTypesQueryParamsSerializer,
     ListDocumentTypesQueryParamsSerializer,
-    ListProductsQueryParamsSerializer,
 )
 
 
@@ -91,6 +92,58 @@ class DocumentTypesListView(BaseDocumentTypesListView):
 
 
 @dataclass
+class RoleType:
+    description: str
+    description_generic: str
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary=_(
+            "List the available role types bound to a case type within a catalogue "
+            "(ZGW APIs)"
+        ),
+        parameters=[FilterForCaseTypeQueryParamsSerializer],
+    ),
+)
+class RoleTypeListView(ListMixin[RoleType], APIView):
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = RoleTypeSerializer
+
+    def get_objects(self) -> list[RoleType]:
+        filter_serializer = FilterForCaseTypeQueryParamsSerializer(
+            data=self.request.query_params
+        )
+        filter_serializer.is_valid(raise_exception=True)
+
+        catalogue_url = filter_serializer.validated_data["catalogue_url"]
+        case_type_identification = filter_serializer.validated_data[
+            "case_type_identification"
+        ]
+        role_types: list[RoleType] = []
+        with filter_serializer.get_ztc_client() as client:
+            _role_types = client.get_all_role_types(
+                catalogus=catalogue_url,
+                within_casetype=case_type_identification,
+            )
+        for _role_type in _role_types:
+            # skip over initiator, since that one is set automatically and there can
+            # only be one
+            if (
+                description_generic := _role_type["omschrijvingGeneriek"]
+            ) == "initiator":
+                continue
+            role_type = RoleType(
+                description=_role_type["omschrijving"],
+                description_generic=description_generic,
+            )
+            if role_type not in role_types:
+                role_types.append(role_type)
+        return role_types
+
+
+@dataclass
 class Product:
     url: str
     description: str = ""
@@ -101,7 +154,7 @@ class Product:
         summary=_(
             "List the available products bound to a case type within a catalogue (ZGW APIs)"
         ),
-        parameters=[ListProductsQueryParamsSerializer],
+        parameters=[FilterForCaseTypeQueryParamsSerializer],
     ),
 )
 class ProductsListView(ListMixin[Product], APIView):
@@ -110,7 +163,7 @@ class ProductsListView(ListMixin[Product], APIView):
     serializer_class = CaseTypeProductSerializer
 
     def get_objects(self):
-        filter_serializer = ListProductsQueryParamsSerializer(
+        filter_serializer = FilterForCaseTypeQueryParamsSerializer(
             data=self.request.query_params
         )
         filter_serializer.is_valid(raise_exception=True)

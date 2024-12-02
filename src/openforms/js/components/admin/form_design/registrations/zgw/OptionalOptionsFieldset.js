@@ -31,7 +31,19 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
       </div>
       <OrganisationRSIN />
       <ConfidentialityLevel options={confidentialityLevelChoices} />
-      <MedewerkerRoltype />
+
+      <ErrorBoundary
+        errorMessage={
+          <FormattedMessage
+            description="ZGW APIs registrations options: role type error"
+            defaultMessage={`Something went wrong while retrieving the available
+            role types defined in the selected case. Please check that the services in
+            the selected API group are configured correctly.`}
+          />
+        }
+      >
+        <MedewerkerRoltype catalogueUrl={catalogueUrl} />
+      </ErrorBoundary>
 
       <ErrorBoundary
         errorMessage={

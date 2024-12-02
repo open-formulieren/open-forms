@@ -50,6 +50,7 @@ class CaseType(TypedDict):
     concept: NotRequired[bool]
     productenOfDiensten: list[str]  # URL pointers to products
     informatieobjecttypen: NotRequired[list[str]]  # URL pointers to document types
+    roltypen: NotRequired[list[str]]  # URL pointers to role types
 
 
 class InformatieObjectType(TypedDict):
@@ -61,6 +62,28 @@ class InformatieObjectType(TypedDict):
     beginGeldigheid: str  # ISO 8601 date string
     eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
     concept: NotRequired[bool]
+
+
+type PublicationStatusFilter = Literal["alles", "concept", "definitief"]
+
+type RoleDescriptionGeneric = Literal[
+    "adviseur",
+    "behandelaar",
+    "belanghebbende",
+    "beslisser",
+    "initiator",
+    "klantcontacter",
+    "zaakcoordinator",
+    "mede_initiator",
+]
+
+
+class RoleType(TypedDict):
+    url: str
+    zaaktype: str
+    zaaktypeIdentificatie: NotRequired[str]  # since 1.2
+    omschrijving: str
+    omschrijvingGeneriek: RoleDescriptionGeneric
 
 
 class EigenschapSpecificatie(TypedDict):
@@ -91,15 +114,24 @@ CatalogiAPIVersion: TypeAlias = tuple[
 class CaseTypeListParams(TypedDict, total=False):
     catalogus: str
     identificatie: str
-    status: Literal["alles", "concept", "definitief"]
+    status: PublicationStatusFilter
     datumGeldigheid: str
     page: int
 
 
 class InformatieObjectTypeListParams(TypedDict, total=False):
     catalogus: str
-    status: Literal["alles", "concept", "definitief"]
+    status: PublicationStatusFilter
     omschrijving: str
+    datumGeldigheid: str
+    page: int
+
+
+class RoleTypeListParams(TypedDict, total=False):
+    zaaktype: str
+    zaaktypeIdentificatie: str  # from 1.2 onwards
+    omschrijvingGeneriek: RoleDescriptionGeneric
+    status: PublicationStatusFilter
     datumGeldigheid: str
     page: int
 
@@ -324,6 +356,69 @@ class CatalogiClient(NLXClient):
 
         results = response.json()["results"]
         return results
+
+    def get_all_role_types(
+        self,
+        *,
+        catalogus: str,
+        within_casetype: str,
+    ) -> Iterator[RoleType]:
+        # get the case types so that we are filtering within the right catalogue, as
+        # the same case type identification may be defined in different catalogues
+        case_type_versions = (
+            self.find_case_types(
+                catalogus=catalogus,
+                identification=within_casetype,
+            )
+            or []
+        )
+        all_valid_roltype_urls: list[str] = sum(
+            (
+                case_type_version.get("roltypen", [])
+                for case_type_version in case_type_versions
+            ),
+            [],
+        )
+        if not all_valid_roltype_urls:
+            return []
+
+        _supports_filtering_case_type_identification = self.api_version >= (1, 2, 0)
+        params: RoleTypeListParams = {}
+        if self.allow_drafts:
+            params["status"] = "alles"
+
+        def _iter_case_type_versions() -> Iterator[PaginatedResponseData[RoleType]]:
+            data: PaginatedResponseData[RoleType]
+
+            if _supports_filtering_case_type_identification:
+                params["zaaktypeIdentificatie"] = within_casetype
+
+                response = self.get("roltypen", params=params)  # type: ignore
+                response.raise_for_status()
+                data = response.json()
+                yield data
+
+            # fallback for old versions of the Catalogi API - get the roltypes for each
+            # retrieved version of the case type
+            else:
+                for case_type_version in case_type_versions:
+                    params["zaaktype"] = case_type_version["url"]
+
+                    response = self.get("roltypen", params=params)  # type: ignore
+                    response.raise_for_status()
+                    data = response.json()
+                    yield data
+
+        # for 1.2.0+, this effectively just gets all the role types in one batch by
+        # looping over all pages.
+        # for older versions, this will loop over all versions of the case type in the
+        # outer loop, and the inner loop will process all result pages for that
+        # particular case type version before moving on to the next version
+        for data in _iter_case_type_versions():
+            for role_type in pagination_helper(self, data):
+                if role_type["url"] not in all_valid_roltype_urls:
+                    continue
+                yield role_type
 
     def list_roltypen(
         self,

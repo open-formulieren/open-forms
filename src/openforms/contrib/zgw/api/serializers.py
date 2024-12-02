@@ -81,6 +81,23 @@ class DocumentTypeSerializer(serializers.Serializer):
     )
 
 
+class RoleTypeSerializer(serializers.Serializer):
+    description = serializers.CharField(
+        label=_("description"),
+        help_text=_(
+            "The description/label given to the role type in the Catalogi API. It "
+            "identifies the role type within a case type."
+        ),
+    )
+    description_generic = serializers.CharField(
+        label=_("generic description"),
+        help_text=_(
+            "One of the pre-determined generic descriptions, such as 'behandelaar' "
+            "or 'belanghebbende'."
+        ),
+    )
+
+
 class CaseTypeProductSerializer(serializers.Serializer):
     url = serializers.CharField(
         label=_("url"),

@@ -15,12 +15,32 @@ import {
   mockCataloguesGetError,
   mockDocumenTypesGet,
   mockProductsGet,
+  mockRoleTypesGet,
 } from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
 const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices, formData}) => (
-  <Formik initialValues={formData} onSubmit={fn()}>
+  <Formik
+    initialValues={{
+      // defaults
+      caseTypeIdentification: '',
+      documentTypeDescription: '',
+      zaaktype: '',
+      informatieobjecttype: '',
+      organisatieRsin: '',
+      zaakVertrouwelijkheidaanduiding: '',
+      medewerkerRoltype: '',
+      propertyMappings: [],
+      productUrl: '',
+      // Ensure that this is explicitly set to null instead of undefined,
+      // because the field is required by the serializer
+      objectsApiGroup: null,
+      // saved data, overwrites defaults
+      ...formData,
+    }}
+    onSubmit={fn()}
+  >
     <Form data-testid="test-form">
       <ZGWFormFields
         index={0}
@@ -64,6 +84,7 @@ export default {
         catalogues: [mockCataloguesGet()],
         caseTypes: [mockCaseTypesGet()],
         documentTypes: [mockDocumenTypesGet()],
+        roleTypes: [mockRoleTypesGet()],
         products: [mockProductsGet()],
       },
     },
@@ -131,21 +152,37 @@ export const SelectCaseTypeAndDocumentType = {
     },
   },
 
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const catalogueSelect = canvas.getByLabelText('Catalogus');
-    await rsSelect(catalogueSelect, 'Catalogus 1');
-
-    const caseTypeSelect = canvas.getByLabelText('Zaaktype', {
-      selector: '#id_caseTypeIdentification',
+    await step('Select catalogue', async () => {
+      const catalogueSelect = canvas.getByLabelText('Catalogus');
+      await rsSelect(catalogueSelect, 'Catalogus 1');
     });
-    await rsSelect(caseTypeSelect, 'Request passport');
 
-    const documentTypeSelect = canvas.getByLabelText('Documenttype', {
-      selector: '#id_documentTypeDescription',
+    await step('Select case type', async () => {
+      const caseTypeSelect = canvas.getByLabelText('Zaaktype', {
+        selector: '#id_caseTypeIdentification',
+      });
+      await rsSelect(caseTypeSelect, 'Request passport');
     });
-    await rsSelect(documentTypeSelect, 'Attachment');
+
+    await step('Select document type', async () => {
+      const documentTypeSelect = canvas.getByLabelText('Documenttype', {
+        selector: '#id_documentTypeDescription',
+      });
+      await rsSelect(documentTypeSelect, 'Attachment');
+    });
+
+    await step('Select employee role type', async () => {
+      const roleTypeSelect = canvas.getByLabelText('Medewerkerroltype');
+      await rsSelect(roleTypeSelect, 'Baliemedewerker');
+    });
+
+    await step('Select product', async () => {
+      const productSelect = canvas.getByLabelText('Product');
+      await rsSelect(productSelect, 'Product 1423');
+    });
   },
 };
 
@@ -162,6 +199,17 @@ export const CataloguesLoadingFails = {
       handlers: {
         catalogues: [mockCataloguesGetError()],
       },
+    },
+  },
+};
+
+export const RenderLegacyRoltype = {
+  args: {
+    formData: {
+      zgwApiGroup: 1,
+      zaaktype: 'https://example.com/catalogi/api/v1/zaaktypen/123',
+      propertyMappings: [],
+      medewerkerRoltype: 'Baliemedewerker',
     },
   },
 };

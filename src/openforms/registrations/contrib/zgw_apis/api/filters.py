@@ -54,7 +54,7 @@ class ListCaseTypesQueryParamsSerializer(ZGWAPIGroupMixin, serializers.Serialize
         return fields
 
 
-class ListProductsQueryParamsSerializer(ZGWAPIGroupMixin, serializers.Serializer):
+class FilterForCaseTypeQueryParamsSerializer(ZGWAPIGroupMixin, serializers.Serializer):
     catalogue_url = serializers.URLField(
         label=_("catalogus URL"),
         help_text=_("Filter case types against this catalogue URL."),

@@ -9,8 +9,10 @@ import {
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
 import {
   mockCaseTypesGet,
-  mockProductsGet,
   mockCataloguesGet as mockZGWApisCataloguesGet,
+  mockDocumenTypesGet as mockZGWApisDocumenTypesGet,
+  mockProductsGet as mockZGWApisProductsGet,
+  mockRoleTypesGet as mockZGWApisRoleTypesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
   FormDecorator,
@@ -511,7 +513,13 @@ export default {
           mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
         ],
-        zgwMocks: [mockZGWApisCataloguesGet(), mockCaseTypesGet(), mockProductsGet()],
+        zgwMocks: [
+          mockZGWApisCataloguesGet(),
+          mockCaseTypesGet(),
+          mockZGWApisDocumenTypesGet(),
+          mockZGWApisRoleTypesGet(),
+          mockZGWApisProductsGet(),
+        ],
         camundaMocks: [mockProcessDefinitionsGet()],
       },
     },

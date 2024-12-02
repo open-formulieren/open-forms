@@ -319,6 +319,127 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertEqual(data, [])
 
 
+class GetRoleTypesViewTests(OFVCRMixin, APITestCase):
+    VCR_TEST_FILES = TEST_FILES
+    endpoint = reverse_lazy("api:zgw_apis:role-type-list")
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # create services for the docker-compose Open Zaak instance.
+        catalogi_service = ServiceFactory.create(
+            api_root="http://localhost:8003/catalogi/api/v1/",
+            api_type=APITypes.ztc,
+            auth_type=AuthTypes.zgw,
+            client_id="test_client_id",
+            secret="test_secret_key",
+        )
+        cls.zgw_api_group = ZGWApiGroupConfigFactory.create(
+            ztc_service=catalogi_service,
+        )
+
+    def test_must_be_logged_in_as_admin(self):
+        user = UserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_filter_with_invalid_zgw_api_group(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(self.endpoint, {"zgw_api_group": "INVALID"})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_missing_zgw_api_group(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_missing_catalogue_url_with_case_type_identification(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "case_type_identification": "ZT-001",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_filter_by_catalogus_and_case_type(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "case_type_identification": "ZT-001",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertGreaterEqual(len(data), 1)
+        baliemedewerker = next(
+            (item for item in data if item["description"] == "Baliemedewerker"), None
+        )
+        self.assertIsNotNone(baliemedewerker)
+
+    def test_no_results_invalid_case_type_reference(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "case_type_identification": "i-do-not-exist",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(data, [])
+
+    @enable_feature_flag("ZGW_APIS_INCLUDE_DRAFTS")
+    def test_drafts_included_with_feature_flag_on(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            self.endpoint,
+            {
+                "zgw_api_group": self.zgw_api_group.pk,
+                # DRAFTS catalogus
+                "catalogue_url": (
+                    "http://localhost:8003/catalogi/api/v1/"
+                    "catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749"
+                ),
+                "case_type_identification": "DRAFT-01",
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertGreaterEqual(len(data), 1)
+        draft = next((item for item in data if item["description"] == "Draft"), None)
+        self.assertIsNotNone(draft)
+
+
 class GetProductsListViewTests(OFVCRMixin, APITestCase):
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:product-list")
