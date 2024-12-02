@@ -39,12 +39,14 @@ class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigMod
                 "catalogue_domain": config.catalogue_domain,
                 "catalogue_rsin": config.catalogue_rsin,
                 "organisatie_rsin": config.organisatie_rsin,
-                "iot_submission_report": config.iot_submission_report,
-                "iot_submission_csv": config.iot_submission_csv,
-                "iot_attachment": config.iot_attachment,
+                "iot_submission_report": config.document_type_submission_report,
+                "iot_submission_csv": config.document_type_submission_csv,
+                "iot_attachment": config.document_type_attachment,
             }
-            if config.drc_service_identifier:
-                defaults["drc_service"] = get_service(config.drc_service_identifier)
+            if config.documenten_service_identifier:
+                defaults["drc_service"] = get_service(
+                    config.documenten_service_identifier
+                )
             if config.catalogi_service_identifier:
                 defaults["catalogi_service"] = get_service(
                     config.catalogi_service_identifier

@@ -12,11 +12,25 @@ class SingleObjectsAPIGroupConfigModel(ConfigurationModel):
     objecttypes_service_identifier: str = DjangoModelRef(
         ObjectsAPIGroupConfig, "objecttypes_service"
     )
-    drc_service_identifier: str = DjangoModelRef(
+    documenten_service_identifier: str = DjangoModelRef(
         ObjectsAPIGroupConfig, "drc_service", default=""
     )
     catalogi_service_identifier: str = DjangoModelRef(
         ObjectsAPIGroupConfig, "catalogi_service", default=""
+    )
+
+    # Renamed to be more descriptive
+    document_type_submission_report: str = DjangoModelRef(
+        ObjectsAPIGroupConfig,
+        "iot_submission_report",
+    )
+    document_type_submission_csv: str = DjangoModelRef(
+        ObjectsAPIGroupConfig,
+        "iot_submission_csv",
+    )
+    document_type_attachment: str = DjangoModelRef(
+        ObjectsAPIGroupConfig,
+        "iot_attachment",
     )
 
     class Meta:
@@ -27,9 +41,6 @@ class SingleObjectsAPIGroupConfigModel(ConfigurationModel):
                 "catalogue_domain",
                 "catalogue_rsin",
                 "organisatie_rsin",
-                "iot_submission_report",
-                "iot_submission_csv",
-                "iot_attachment",
             ]
         }
 

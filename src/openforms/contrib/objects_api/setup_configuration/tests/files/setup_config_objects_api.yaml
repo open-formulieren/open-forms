@@ -5,19 +5,19 @@ objects_api:
     identifier: config-1
     objects_service_identifier: objecten-test
     objecttypes_service_identifier: objecttypen-test
-    drc_service_identifier: documenten-test
+    documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
     catalogue_domain: TEST
     catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
-    iot_submission_report: PDF Informatieobjecttype
-    iot_submission_csv: CSV Informatieobjecttype
-    iot_attachment: Attachment Informatieobjecttype
+    document_type_submission_report: PDF Informatieobjecttype
+    document_type_submission_csv: CSV Informatieobjecttype
+    document_type_attachment: Attachment Informatieobjecttype
   - name: Config 2
     identifier: config-2
     objects_service_identifier: objecten-test
     objecttypes_service_identifier: objecttypen-test
-    drc_service_identifier: documenten-test
+    documenten_service_identifier: documenten-test
     catalogi_service_identifier: catalogi-test
     catalogue_domain: OTHER
     catalogue_rsin: "000000000"

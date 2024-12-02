@@ -3,7 +3,7 @@ from django.db.migrations.state import StateApps
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
-class MigrateFeatureFlagsTests(TestMigrations):
+class AddObjectsAPIGroupIdentifierTests(TestMigrations):
     app = "objects_api"
     migrate_from = "0001_initial"
     migrate_to = "0002_objectsapigroupconfig_identifier"
