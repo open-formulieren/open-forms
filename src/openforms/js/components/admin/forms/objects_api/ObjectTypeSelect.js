@@ -26,7 +26,6 @@ const ObjectTypeSelect = ({
   label,
   helpText,
   versionFieldName = 'objecttypeVersion',
-  errors = [],
 }) => {
   const [fieldProps, , fieldHelpers] = useField(name);
   const {
@@ -69,14 +68,7 @@ const ObjectTypeSelect = ({
 
   return (
     <FormRow>
-      <Field
-        name={name}
-        required
-        label={label}
-        helpText={helpText}
-        errors={errors}
-        noManageChildProps
-      >
+      <Field name={name} required label={label} helpText={helpText} noManageChildProps>
         <ReactSelect
           name={name}
           options={options}
@@ -121,10 +113,6 @@ ObjectTypeSelect.propTypes = {
    * changes, the version will be reset/unset.
    */
   versionFieldName: PropTypes.string,
-  /**
-   * List of errors to be displayed on the field
-   */
-  errors: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ObjectTypeSelect;

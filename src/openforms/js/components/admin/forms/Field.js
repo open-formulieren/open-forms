@@ -6,6 +6,28 @@ import {useIntl} from 'react-intl';
 import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
 
+/**
+ * @typedef {Object} IntlErrorMessage
+ * @property {string} defaultMessage
+ * @property {string} description
+ */
+
+/**
+ * @typedef {[string, string]} NamedErrorMessage
+ * @property {string} 0 - The form field name with the error.
+ * @property {string} 1 - The error message itself.
+ */
+
+/**
+ * @typedef {string | IntlErrorMessage | NamedErrorMessage} ErrorMessage
+ */
+
+/**
+ *
+ * @param  {ErrorMessage | ErrorMessage[]} errors A single error instance or array of errors.
+ * @param  {IntlShape} intl   The intl object from react-intl (useIntl() hook return value).
+ * @return {[boolean, string[]]}  A tuple indicating if there are errors and the list of error messages.
+ */
 export const normalizeErrors = (errors = [], intl) => {
   if (!Array.isArray(errors)) {
     errors = [errors];

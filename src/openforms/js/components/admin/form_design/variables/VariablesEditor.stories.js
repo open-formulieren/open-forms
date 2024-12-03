@@ -193,6 +193,8 @@ export default {
               ],
             },
           }),
+        ],
+        objectsAPIPrefill: [
           mockObjecttypesGet([
             {
               url: 'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1',
@@ -213,6 +215,24 @@ export default {
             {version: 1, status: 'published'},
             {version: 2, status: 'draft'},
           ]),
+        ],
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+            object: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+              },
+            ],
+          }),
         ],
       },
     },
@@ -319,28 +339,6 @@ export const WithObjectsAPIRegistrationBackends = {
       },
     ],
   },
-  parameters: {
-    msw: {
-      handlers: [
-        mockTargetPathsPost({
-          string: [
-            {
-              targetPath: ['path', 'to.the', 'target'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-          ],
-          object: [
-            {
-              targetPath: ['other', 'path'],
-              isRequired: false,
-              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
-            },
-          ],
-        }),
-      ],
-    },
-  },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
@@ -390,39 +388,41 @@ export const FilesMappingAndObjectAPIRegistration = {
   },
   parameters: {
     msw: {
-      handlers: [
-        mockTargetPathsPost({
-          string: [
-            {
-              targetPath: ['path', 'to.the', 'target'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-            {
-              targetPath: ['path', 'to', 'uri'],
-              isRequired: true,
-              jsonSchema: {
-                type: 'string',
-                format: 'uri',
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
               },
-            },
-          ],
-          object: [
-            {
-              targetPath: ['other', 'path'],
-              isRequired: false,
-              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
-            },
-          ],
-          array: [
-            {
-              targetPath: ['path', 'to', 'array'],
-              isRequired: true,
-              jsonSchema: {type: 'array'},
-            },
-          ],
-        }),
-      ],
+              {
+                targetPath: ['path', 'to', 'uri'],
+                isRequired: true,
+                jsonSchema: {
+                  type: 'string',
+                  format: 'uri',
+                },
+              },
+            ],
+            object: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+              },
+            ],
+            array: [
+              {
+                targetPath: ['path', 'to', 'array'],
+                isRequired: true,
+                jsonSchema: {type: 'array'},
+              },
+            ],
+          }),
+        ],
+      },
     },
   },
   play: async ({canvasElement, step}) => {
@@ -597,7 +597,7 @@ export const ConfigurePrefillObjectsAPI = {
   parameters: {
     msw: {
       handlers: {
-        targetPaths: mockTargetPathsPost({
+        objectTypeTargetPaths: mockTargetPathsPost({
           string: [
             {
               targetPath: ['bsn'],
@@ -657,22 +657,24 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
   parameters: {
     msw: {
       handlers: {
-        targetPaths: mockTargetPathsPost({
-          number: [
-            {
-              targetPath: ['bsn'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-          ],
-          string: [
-            {
-              targetPath: ['path', 'to', 'bsn'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-          ],
-        }),
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            number: [
+              {
+                targetPath: ['bsn'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+            string: [
+              {
+                targetPath: ['path', 'to', 'bsn'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+          }),
+        ],
       },
     },
   },
@@ -745,25 +747,20 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(toggleCopyDropdown).toBeVisible();
       await userEvent.click(toggleCopyDropdown);
 
+      const copyButton = await canvas.findByRole('button', {name: 'Overnemen'});
+      expect(copyButton).toBeDisabled();
       const copyDropdown = await modal.findByLabelText('Registratie-instellingen overnemen');
       expect(copyDropdown).toBeVisible();
-      await userEvent.click(copyDropdown);
+      await rsSelect(copyDropdown, 'Example Objects API reg.');
 
-      // Cannot do selectOption with react-select
-      const options = await canvas.findAllByText('Example Objects API reg.');
-      const option = options[1];
-      await userEvent.click(option);
-
-      const copyButton = await canvas.findByRole('button', {name: 'Overnemen'});
       expect(copyButton).toBeVisible();
+      expect(copyButton).not.toBeDisabled();
       await userEvent.click(copyButton);
 
       // Click the confirmation button
-      const button = canvas.getByRole('button', {
-        name: 'Accepteren',
-      });
-      expect(button).toBeVisible();
-      await userEvent.click(button);
+      const confirmationButton = await canvas.findByRole('button', {name: 'Accepteren'});
+      expect(confirmationButton).toBeVisible();
+      await userEvent.click(confirmationButton);
 
       const modalForm = await canvas.findByTestId('modal-form');
       expect(modalForm).toBeVisible();
@@ -772,19 +769,20 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       );
 
       // Wait until the API call to retrieve the prefillAttributes is done
+      await modal.findByText('path > to > bsn', undefined, {timeout: 2000});
+
       await waitFor(
-        async () => {
+        () => {
           expect(modalForm).toHaveFormValues({
             'options.objectsApiGroup': '1',
             'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
             'options.objecttypeVersion': '2',
             'options.authAttributePath': JSON.stringify(['path', 'to', 'bsn']),
+            'options.variablesMapping.0.targetPath': serializeValue(['height']),
+            'options.variablesMapping.1.targetPath': serializeValue(['species']),
           });
-
-          expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
-          expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));
         },
-        {timeout: 2000}
+        {timeout: 5000}
       );
     });
   },

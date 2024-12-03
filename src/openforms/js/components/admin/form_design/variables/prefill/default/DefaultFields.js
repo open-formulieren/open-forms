@@ -29,7 +29,7 @@ const getAttributes = async plugin => {
  * Default (legacy) prefill configuration - after selecting the plugin, the user
  * selects which attribute to use to grab the prefill value from.
  */
-const DefaultFields = ({errors}) => {
+const DefaultFields = () => {
   const {
     values: {plugin = ''},
   } = useFormikContext();
@@ -60,7 +60,6 @@ const DefaultFields = ({errors}) => {
               defaultMessage="Attribute"
             />
           }
-          errors={errors.attribute}
         >
           <AttributeField prefillAttributes={prefillAttributes} />
         </Field>
@@ -75,7 +74,6 @@ const DefaultFields = ({errors}) => {
               defaultMessage="Identifier role"
             />
           }
-          errors={errors.identifierRole}
         >
           <IdentifierRoleField />
         </Field>
@@ -84,12 +82,6 @@ const DefaultFields = ({errors}) => {
   );
 };
 
-DefaultFields.propTypes = {
-  errors: PropTypes.shape({
-    plugin: ErrorsType,
-    attribute: ErrorsType,
-    identifierRole: ErrorsType,
-  }).isRequired,
-};
+DefaultFields.propTypes = {};
 
 export default DefaultFields;

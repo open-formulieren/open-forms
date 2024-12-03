@@ -30,7 +30,6 @@ const ObjectTypeVersionSelect = ({
   apiGroupFieldName = 'objectsApiGroup',
   objectTypeFieldName = 'objecttype',
   label,
-  errors = [],
 }) => {
   const {getFieldProps} = useFormikContext();
 
@@ -56,7 +55,7 @@ const ObjectTypeVersionSelect = ({
   const options = choices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
-      <Field name={name} required label={label} errors={errors} noManageChildProps>
+      <Field name={name} required label={label} noManageChildProps>
         <ReactSelect
           name={name}
           required
@@ -88,10 +87,6 @@ ObjectTypeVersionSelect.propTypes = {
    * The label that will be shown before the field
    */
   label: PropTypes.node.isRequired,
-  /**
-   * List of errors to be displayed on the field
-   */
-  errors: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ObjectTypeVersionSelect;

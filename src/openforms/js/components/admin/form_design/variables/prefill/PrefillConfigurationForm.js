@@ -8,20 +8,36 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
 
 import PluginField from './PluginField';
 import PLUGIN_COMPONENT_MAPPING from './constants';
+
+const prepareErrors = errors => {
+  const allErrors = [];
+  Object.entries(errors).forEach(([key, errObj]) => {
+    if (!errObj) return;
+    if (Array.isArray(errObj)) {
+      allErrors.push(...errObj.map(err => [key, err]));
+    } else {
+      // FIXME: this violates the prop type of ValidationErrorsProvider :/
+      allErrors.push([key, errObj]);
+    }
+  });
+  return allErrors;
+};
 
 const PrefillConfigurationForm = ({
   onSubmit,
   plugin = '',
   attribute = '',
   identifierRole = 'main',
-  // TODO: find a better way to specify this based on the selected plugin
+  // Plugins are responsible for setting up the default values, since we don't know the
+  // plugin-specific shape here.
   options = {},
   errors,
-}) => {
-  return (
+}) => (
+  <ValidationErrorsProvider errors={prepareErrors(errors)}>
     <Formik
       initialValues={{
         plugin,
@@ -61,7 +77,6 @@ const PrefillConfigurationForm = ({
                       defaultMessage="Plugin"
                     />
                   }
-                  errors={errors.plugin}
                 >
                   <>
                     <PluginField />
@@ -76,7 +91,6 @@ const PrefillConfigurationForm = ({
             </Fieldset>
 
             <PluginFormComponent
-              errors={errors}
               {...(ToggleCopyComponent && {
                 showCopyButton: showCopyButton,
                 setShowCopyButton: setShowCopyButton,
@@ -95,8 +109,8 @@ const PrefillConfigurationForm = ({
         );
       }}
     </Formik>
-  );
-};
+  </ValidationErrorsProvider>
+);
 
 PrefillConfigurationForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
@@ -107,6 +121,7 @@ PrefillConfigurationForm.propTypes = {
     plugin: PropTypes.arrayOf(PropTypes.string),
     attribute: PropTypes.arrayOf(PropTypes.string),
     identifierRole: PropTypes.arrayOf(PropTypes.string),
+    options: PropTypes.object,
   }).isRequired,
 };
 

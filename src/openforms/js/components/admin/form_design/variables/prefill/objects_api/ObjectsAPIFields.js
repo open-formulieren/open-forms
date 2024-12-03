@@ -11,10 +11,10 @@ import useAsync from 'react-use/esm/useAsync';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import useConfirm from 'components/admin/form_design/useConfirm';
-import {normalizeErrors} from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
   AuthAttributePath,
@@ -26,7 +26,7 @@ import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import {ErrorsType} from '../types';
+import ValidationErrorsProvider from '../../../../forms/ValidationErrors';
 import CopyConfigurationFromRegistrationBackend from './CopyConfigurationFromRegistrationBackend';
 
 const PLUGIN_ID = 'objects_api';
@@ -40,7 +40,7 @@ const onApiGroupChange = prevValues => ({
     ...prevValues.options,
     objecttypeUuid: '',
     objecttypeVersion: undefined,
-    authAttributePath: [],
+    authAttributePath: undefined,
     variablesMapping: [],
   },
 });
@@ -56,40 +56,34 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
-const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
+const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
   const intl = useIntl();
+  // Object with keys the plugin/attribute/options, we process these further to set up
+  // the required context for the fields.
+  const errors = Object.fromEntries(useContext(ValidationErrorContext));
+  const optionsErrors = Object.entries(errors.options ?? {}).map(([key, errs]) => [
+    `options.${key}`,
+    errs,
+  ]);
 
+  const {values, setFieldValue, setValues} = useFormikContext();
   const {
-    values,
-    values: {
-      plugin,
-      options: {
-        objecttypeUuid,
-        objecttypeVersion,
-        objectsApiGroup,
-        authAttributePath,
-        variablesMapping,
-      },
-    },
-    setFieldValue,
-    setValues,
-  } = useFormikContext();
+    plugin,
+    options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
+  } = values;
 
   const defaults = {
     objectsApiGroup: null,
     objecttypeUuid: '',
     objecttypeVersion: null,
-    authAttributePath: [],
+    authAttributePath: undefined,
     variablesMapping: [],
   };
 
   // Merge defaults into options if not already set
   useEffect(() => {
-    if (!values.options) {
-      setFieldValue('options', defaults);
-    } else {
-      setFieldValue('options', {...defaults, ...values.options});
-    }
+    const options = values.options ?? {};
+    setFieldValue('options', {...defaults, ...options});
   }, []);
 
   const {
@@ -129,13 +123,8 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   if (error) throw error;
   const prefillProperties = loading ? LOADING_OPTION : value;
 
-  const [, objectsApiGroupErrors] = normalizeErrors(errors.options?.objectsApiGroup, intl);
-  const [, objecttypeUuidErrors] = normalizeErrors(errors.options?.objecttypeUuid, intl);
-  const [, objecttypeVersionErrors] = normalizeErrors(errors.options?.objecttypeVersion, intl);
-  const [, authAttributePathErrors] = normalizeErrors(errors.options?.authAttributePath, intl);
-
   return (
-    <>
+    <ValidationErrorsProvider errors={optionsErrors}>
       {showCopyButton ? (
         <CopyConfigurationFromRegistrationBackend
           backends={backends}
@@ -145,7 +134,6 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
       <Fieldset>
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
-          errors={objectsApiGroupErrors}
           onChangeCheck={async () => {
             if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
@@ -180,7 +168,6 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
             versionFieldName="options.objecttypeVersion"
-            errors={objecttypeUuidErrors}
             label={
               <FormattedMessage
                 description="Objects API prefill options 'Objecttype' label"
@@ -230,7 +217,6 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
                 defaultMessage="Version"
               />
             }
-            errors={objecttypeVersionErrors}
             apiGroupFieldName="options.objectsApiGroup"
             objectTypeFieldName="options.objecttypeUuid"
           />
@@ -241,7 +227,6 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
           objecttypeUuid={objecttypeUuid}
           objecttypeVersion={objecttypeVersion}
           style={{maxWidth: '10em'}}
-          errors={authAttributePathErrors}
         />
       </Fieldset>
 
@@ -294,14 +279,13 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
           />
         }
       />
-    </>
+    </ValidationErrorsProvider>
   );
 };
 
 ObjectsAPIFields.propTypes = {
-  errors: PropTypes.shape({
-    plugin: ErrorsType,
-  }).isRequired,
+  showCopyButton: PropTypes.bool.isRequired,
+  setShowCopyButton: PropTypes.func.isRequired,
 };
 
 export default ObjectsAPIFields;

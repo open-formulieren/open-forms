@@ -26,6 +26,12 @@ ValidationErrorsProvider.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(errorArray)),
 };
 
+/**
+ * Only return the errors that have the $name prefix.
+ * @param  {string} name   Field name prefix
+ * @param  {Array<[string, T>} errors List of all validation errors.
+ * @return {Array<[string, T>} List of errors that match the name prefix.
+ */
 const filterErrors = (name, errors) => {
   return errors
     .filter(([key]) => key.startsWith(`${name}.`))
