@@ -1,6 +1,5 @@
 import logging
 
-from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -10,7 +9,6 @@ from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
-from openforms.logging import logevent
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -32,33 +30,14 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     options = ObjectsAPIOptionsSerializer
 
     def verify_initial_data_ownership(
-        self, submission: Submission, prefill_options: dict
+        self, submission: Submission, prefill_options: ObjectsAPIOptions
     ) -> None:
         assert submission.initial_data_reference
-        api_group = ObjectsAPIGroupConfig.objects.filter(
-            pk=prefill_options.get("objects_api_group")
-        ).first()
+        api_group = prefill_options["objects_api_group"]
+        assert api_group, "Can't do anything useful without an API group"
 
-        if not api_group:
-            logger.info(
-                "No api group found to perform initial_data_reference ownership check for submission %s with options %s",
-                submission,
-                prefill_options,
-            )
-            return
-
-        auth_attribute_path = prefill_options.get("auth_attribute_path")
-        if not auth_attribute_path:
-            logger.info(
-                "Cannot perform initial data ownership check, because `auth_attribute_path` is missing from %s",
-                prefill_options,
-            )
-            logevent.object_ownership_check_improperly_configured(
-                submission, plugin=self
-            )
-            raise PermissionDenied(
-                f"`auth_attribute_path` missing from options {prefill_options}, cannot perform initial data ownership check"
-            )
+        auth_attribute_path = prefill_options["auth_attribute_path"]
+        assert auth_attribute_path, "Auth attribute path may not be empty"
 
         with get_objects_client(api_group) as client:
             validate_object_ownership(submission, client, auth_attribute_path, self)

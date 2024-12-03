@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
 from django.core.exceptions import PermissionDenied
 
@@ -10,13 +9,11 @@ from requests.exceptions import RequestException
 
 from openforms.contrib.objects_api.clients import ObjectsClient
 from openforms.logging import logevent
+from openforms.prefill.base import BasePlugin as BasePrefillPlugin
+from openforms.registrations.base import BasePlugin as BaseRegistrationPlugin
+from openforms.submissions.models import Submission
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from openforms.prefill.base import BasePlugin as BasePrefillPlugin
-    from openforms.registrations.base import BasePlugin as BaseRegistrationPlugin
-    from openforms.submissions.models import Submission
 
 
 def validate_object_ownership(
@@ -63,7 +60,7 @@ def validate_object_ownership(
         )
 
     try:
-        auth_value = glom(object["record"]["data"], Path(*(object_attribute or [])))
+        auth_value = glom(object["record"]["data"], Path(*object_attribute))
     except PathAccessError as e:
         logger.exception(
             "Could not retrieve auth value for path %s, it could be incorrectly configured",

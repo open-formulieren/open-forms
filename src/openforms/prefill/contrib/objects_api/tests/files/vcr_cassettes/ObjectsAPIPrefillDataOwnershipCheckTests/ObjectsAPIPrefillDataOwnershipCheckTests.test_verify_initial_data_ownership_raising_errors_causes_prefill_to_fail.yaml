@@ -1,8 +1,6 @@
 interactions:
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {"bsn": "111222333", "some": {"path": "foo"}},
-      "startAt": "2024-12-03"}}'
+    body: null
     headers:
       Accept:
       - '*/*'
@@ -14,20 +12,16 @@ interactions:
       - keep-alive
       Content-Crs:
       - EPSG:4326
-      Content-Length:
-      - '205'
-      Content-Type:
-      - application/json
       User-Agent:
       - python-requests/2.32.2
-    method: POST
-    uri: http://localhost:8002/api/v2/objects
+    method: GET
+    uri: http://localhost:8002/api/v2/objects/c7ec7188-c8f5-4c13-bd74-942468077eea
   response:
     body:
       string: '{"url":"http://objects-web:8000/api/v2/objects/c7ec7188-c8f5-4c13-bd74-942468077eea","uuid":"c7ec7188-c8f5-4c13-bd74-942468077eea","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","some":{"path":"foo"}},"geometry":null,"startAt":"2024-12-03","endAt":null,"registrationAt":"2024-12-03","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
-      - GET, POST, HEAD, OPTIONS
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Crs:
@@ -39,9 +33,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 03 Dec 2024 16:13:43 GMT
-      Location:
-      - http://localhost:8002/api/v2/objects/c7ec7188-c8f5-4c13-bd74-942468077eea
+      - Tue, 03 Dec 2024 16:33:22 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -53,6 +45,6 @@ interactions:
       X-Frame-Options:
       - DENY
     status:
-      code: 201
-      message: Created
+      code: 200
+      message: OK
 version: 1
