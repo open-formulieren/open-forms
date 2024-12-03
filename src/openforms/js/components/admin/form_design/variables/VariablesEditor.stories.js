@@ -1,4 +1,4 @@
-import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
 import {
@@ -587,7 +587,7 @@ export const ConfigurePrefill = {
     const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
 
-    const pluginDropdown = await screen.findByLabelText('Plugin');
+    const pluginDropdown = await canvas.findByLabelText('Plugin');
     expect(pluginDropdown).toBeVisible();
     expect(await within(pluginDropdown).findByRole('option', {name: 'StUF-BG'})).toBeVisible();
   },
@@ -632,18 +632,18 @@ export const ConfigurePrefillObjectsAPI = {
 
     await step('Configure Objects API prefill', async () => {
       const modal = within(await canvas.findByRole('dialog'));
-      const pluginDropdown = await screen.findByLabelText('Plugin');
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
       // check mappings
-      const variableSelect = await screen.findByLabelText('Formuliervariabele');
+      const variableSelect = await canvas.findByLabelText('Formuliervariabele');
       expect(variableSelect).toBeVisible();
       expect(modal.getByText('Form.io component')).toBeVisible();
 
       // Wait until the API call to retrieve the prefillAttributes is done
       await waitFor(async () => {
-        const prefillPropertySelect = await screen.findByLabelText(
+        const prefillPropertySelect = await canvas.findByLabelText(
           'Selecteer een attribuut uit het objecttype'
         );
         expect(prefillPropertySelect).toBeVisible();
@@ -730,12 +730,12 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       // open modal for configuration
       const editIcon = canvas.getByTitle('Prefill instellen');
       await userEvent.click(editIcon);
-      expect(await screen.findByRole('dialog')).toBeVisible();
+      expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
     await step('Configure Objects API prefill with copy button', async () => {
-      const modal = within(await screen.findByRole('dialog'));
-      const pluginDropdown = await screen.findByLabelText('Plugin');
+      const modal = within(await canvas.findByRole('dialog'));
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
@@ -765,7 +765,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(button).toBeVisible();
       await userEvent.click(button);
 
-      const modalForm = await screen.findByTestId('modal-form');
+      const modalForm = await canvas.findByTestId('modal-form');
       expect(modalForm).toBeVisible();
       const propertyDropdowns = await modal.findAllByLabelText(
         'Selecteer een attribuut uit het objecttype'
