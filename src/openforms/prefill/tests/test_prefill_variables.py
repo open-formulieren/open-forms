@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, TestCase, TransactionTestCase, tag
 
 import requests_mock
+from rest_framework import serializers
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
@@ -20,12 +21,15 @@ from openforms.forms.tests.factories import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import SubmissionValueVariableSources
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
 
+from ..contrib.demo.plugin import DemoPrefill
 from ..service import prefill_variables
+from .utils import get_test_register
 
 CONFIGURATION = {
     "display": "form",
@@ -117,67 +121,6 @@ class PrefillVariablesTests(TestCase):
         self.assertEqual(
             SubmissionValueVariableSources.prefill, submission_variable.source
         )
-
-    @patch(
-        "openforms.prefill.service.fetch_prefill_values_from_options",
-        return_value={"voornamen": "Not so random string"},
-    )
-    def test_applying_prefill_plugin_from_user_defined_with_options(self, m_prefill):
-        submission = SubmissionFactory.create()
-        FormVariableFactory.create(
-            key="voornamen",
-            form=submission.form,
-            prefill_plugin="objects_api",
-            prefill_options={
-                "objects_api_group": 1,
-                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 3,
-                "variables_mapping": [
-                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
-                ],
-            },
-        )
-
-        prefill_variables(submission=submission)
-
-        submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
-        )
-
-        self.assertEqual(1, len(submission_value_variables_state.variables))
-
-        submission_variable = submission_value_variables_state.get_variable(
-            key="voornamen"
-        )
-
-        self.assertEqual("Not so random string", submission_variable.value)
-        self.assertEqual(
-            SubmissionValueVariableSources.prefill, submission_variable.source
-        )
-
-    def test_applying_prefill_plugin_from_user_defined_with_invalid_options(self):
-        submission = SubmissionFactory.create()
-        FormVariableFactory.create(
-            key="voornamen",
-            form=submission.form,
-            prefill_plugin="objects_api",
-            prefill_options={
-                "objects_api_group": "Wrong value",
-                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 3,
-                "variables_mapping": [
-                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
-                ],
-            },
-        )
-
-        prefill_variables(submission=submission)
-
-        self.assertEqual(TimelineLogProxy.objects.count(), 1)
-        logs = TimelineLogProxy.objects.get()
-
-        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_failure")
-        self.assertIn("objects_api_group", logs.extra_data["error"])
 
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_attribute",
@@ -280,6 +223,258 @@ class PrefillVariablesTests(TestCase):
         self.assertEqual(2, len(prefill_variables))
 
 
+prefill_from_options_register = get_test_register()
+
+
+class OptionsSerializer(serializers.Serializer):
+    var_key = serializers.CharField(required=True)
+    var_value = serializers.CharField(required=True)
+    crash_ownership_check = serializers.BooleanField(default=False, required=False)
+
+
+@prefill_from_options_register("ownership-check-passes")
+class OwnershipCheckPassesPlugin(DemoPrefill):
+    options = OptionsSerializer
+
+    def verify_initial_data_ownership(
+        self, submission: Submission, prefill_options
+    ) -> None:
+        assert prefill_options
+        if prefill_options["crash_ownership_check"]:
+            raise Exception("crash and burn")
+
+    @classmethod
+    def get_prefill_values_from_options(cls, submission: Submission, options):
+        return {options["var_key"]: options["var_value"]}
+
+
+@prefill_from_options_register("ownership-check-fails")
+class OwnershipCheckFailsPlugin(DemoPrefill):
+    options = OptionsSerializer
+
+    def verify_initial_data_ownership(
+        self, submission: Submission, prefill_options
+    ) -> None:
+        raise PermissionDenied("you shall not pass")
+
+    @classmethod
+    def get_prefill_values_from_options(cls, submission: Submission, options):
+        return {options["var_key"]: options["var_value"]}
+
+
+class PrefillVariablesFromOptionsTests(TestCase):
+    @patch(
+        "openforms.prefill.service.fetch_prefill_values_from_options",
+        return_value={"voornamen": "Not so random string"},
+    )
+    def test_applying_prefill_plugin_from_user_defined_with_options(self, m_prefill):
+        submission = SubmissionFactory.create()
+        FormVariableFactory.create(
+            key="voornamen",
+            form=submission.form,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": 1,
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
+                ],
+            },
+        )
+
+        prefill_variables(submission=submission)
+
+        submission_value_variables_state = (
+            submission.load_submission_value_variables_state()
+        )
+
+        self.assertEqual(1, len(submission_value_variables_state.variables))
+
+        submission_variable = submission_value_variables_state.get_variable(
+            key="voornamen"
+        )
+
+        self.assertEqual("Not so random string", submission_variable.value)
+        self.assertEqual(
+            SubmissionValueVariableSources.prefill, submission_variable.source
+        )
+
+    def test_applying_prefill_plugin_from_user_defined_with_invalid_options(self):
+        submission = SubmissionFactory.create()
+        FormVariableFactory.create(
+            key="voornamen",
+            form=submission.form,
+            prefill_plugin="objects_api",
+            prefill_options={
+                "objects_api_group": "Wrong value",
+                "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 3,
+                "variables_mapping": [
+                    {"variable_key": "voornamen", "target_path": ["some", "path"]},
+                ],
+            },
+        )
+
+        prefill_variables(submission=submission)
+
+        self.assertEqual(TimelineLogProxy.objects.count(), 1)
+        logs = TimelineLogProxy.objects.get()
+
+        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_failure")
+        self.assertIn("objects_api_group", logs.extra_data["error"])
+
+    @tag("gh-4398")
+    def test_verify_initial_data_ownership_only_called_with_initial_data_reference(
+        self,
+    ):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, key="voornamen", user_defined=True)
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="ownership-check-fails",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+            },
+        )
+
+        with self.subTest("called with initial data reference"):
+            submission1 = SubmissionFactory.create(
+                form=form,
+                auth_info__value="111222333",
+                auth_info__attribute=AuthAttribute.bsn,
+                initial_data_reference="some reference",
+            )
+
+            with self.assertRaises(PermissionDenied):
+                prefill_variables(
+                    submission=submission1, register=prefill_from_options_register
+                )
+
+            logs = TimelineLogProxy.objects.for_object(submission1)
+            self.assertEqual(logs.filter_event("prefill_retrieve_failure").count(), 1)
+            self.assertFalse(
+                logs.filter_event("object_ownership_check_success").exists()
+            )
+            self.assertFalse(logs.filter_event("prefill_retrieve_success").exists())
+
+        with self.subTest("called without initial data reference"):
+            submission2 = SubmissionFactory.create(
+                form=form,
+                auth_info__value="111222333",
+                auth_info__attribute=AuthAttribute.bsn,
+                initial_data_reference="",
+            )
+            try:
+                prefill_variables(
+                    submission=submission2, register=prefill_from_options_register
+                )
+            except PermissionDenied as exc:
+                raise self.failureException("Ownerhip check not expected") from exc
+
+            logs = TimelineLogProxy.objects.for_object(submission2)
+            self.assertEqual(logs.filter_event("prefill_retrieve_success").count(), 1)
+            self.assertFalse(logs.filter_event("prefill_retrieve_failure").exists())
+            self.assertFalse(
+                logs.filter_event("object_ownership_check_success").exists()
+            )
+
+    @tag("gh-4398")
+    def test_verify_initial_data_ownership_error_fails_prefill_entirely(self):
+        # These situations need to be visible in Sentry/error monitoring as they're
+        # unexpected crashes (and likely programming mistakes)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="ownership-check-passes",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+                "crash_ownership_check": True,
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference="some reference",
+        )
+
+        with self.assertRaisesMessage(Exception, "crash and burn"):
+            prefill_variables(
+                submission=submission, register=prefill_from_options_register
+            )
+
+        logs = TimelineLogProxy.objects.for_object(submission)
+        self.assertFalse(logs.filter_event("prefill_retrieve_failure").exists())
+        self.assertFalse(logs.filter_event("prefill_retrieve_success").exists())
+
+    def test_successfull_verification_runs_prefill(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(form=form, key="voornamen", user_defined=True)
+        FormVariableFactory.create(
+            form=form,
+            key="prefillData",
+            user_defined=True,
+            prefill_plugin="ownership-check-passes",
+            prefill_options={
+                "var_key": "voornamen",
+                "var_value": "foo, bar",
+                "crash_ownership_check": False,
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference="some reference",
+        )
+
+        prefill_variables(submission=submission, register=prefill_from_options_register)
+
+        variables_state = submission.load_submission_value_variables_state()
+        self.assertEqual(variables_state.get_data()["voornamen"], "foo, bar")
+
+
 class PrefillVariablesTransactionTests(TransactionTestCase):
     @requests_mock.Mocker()
     @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
@@ -319,120 +514,3 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")
-
-    @tag("gh-4398")
-    def test_verify_initial_data_ownership(self):
-        form_step = FormStepFactory.create(
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "postcode",
-                        "key": "postcode",
-                        "inputMask": "9999 AA",
-                    }
-                ]
-            }
-        )
-        variable = FormVariableFactory.create(
-            key="voornamen",
-            form=form_step.form,
-            prefill_plugin="demo",
-            prefill_attribute="",
-            prefill_options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": 1,
-                "objecttype_version": 1,
-            },
-        )
-
-        with self.subTest(
-            "verify_initial_data_ownership is not called if initial_data_reference is not specified"
-        ):
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-            )
-
-            with patch(
-                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
-            ) as mock_verify_ownership:
-                with patch(
-                    "openforms.prefill.contrib.demo.plugin.DemoPrefill.get_prefill_values_from_options",
-                    return_value={"postcode": "1234AB"},
-                ):
-                    prefill_variables(submission=submission_step.submission)
-
-                    mock_verify_ownership.assert_not_called()
-
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
-            )
-
-        with self.subTest(
-            "verify_initial_data_ownership is called if initial_data_reference is specified"
-        ):
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-                submission__initial_data_reference="1234",
-            )
-
-            with patch(
-                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership"
-            ) as mock_verify_ownership:
-                with patch(
-                    "openforms.prefill.contrib.demo.plugin.DemoPrefill.get_prefill_values_from_options",
-                    return_value={"postcode": "1234AB"},
-                ):
-                    prefill_variables(submission=submission_step.submission)
-
-                    mock_verify_ownership.assert_called_once_with(
-                        submission_step.submission, variable.prefill_options
-                    )
-
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 1
-            )
-
-        with self.subTest(
-            "verify_initial_data_ownership raising error causes prefill to fail"
-        ):
-            submission_step = SubmissionStepFactory.create(
-                submission__form=form_step.form,
-                form_step=form_step,
-                submission__auth_info__value="999990676",
-                submission__auth_info__attribute=AuthAttribute.bsn,
-                submission__initial_data_reference="1234",
-            )
-
-            with patch(
-                "openforms.prefill.contrib.demo.plugin.DemoPrefill.verify_initial_data_ownership",
-                side_effect=PermissionDenied,
-            ) as mock_verify_ownership:
-                with self.assertRaises(PermissionDenied):
-                    prefill_variables(submission=submission_step.submission)
-
-                mock_verify_ownership.assert_called_once_with(
-                    submission_step.submission, variable.prefill_options
-                )
-
-            logs = TimelineLogProxy.objects.filter(
-                object_id=submission_step.submission.id
-            )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_success").count(), 0
-            )
-            self.assertEqual(
-                logs.filter(extra_data__log_event="prefill_retrieve_failure").count(), 1
-            )
