@@ -49,7 +49,6 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
               setFieldValue(name, selectedOption.value);
             }}
             maxMenuHeight="16em"
-            menuPlacement="bottom"
           />
 
           <button
@@ -58,7 +57,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
             onClick={async e => {
               e.preventDefault();
               const confirmSwitch = await openCopyConfigurationConfirmationModal();
-              if (confirmSwitch && selectedBackend) {
+              if (confirmSwitch) {
                 setValues(prevValues => ({
                   ...prevValues,
                   // Trying to set multiple nested values doesn't work, since it sets them
@@ -77,11 +76,13 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
                 setShowCopyButton(false);
               }
             }}
+            disabled={!selectedBackend}
             // admin style overrides...
             style={{
               marginLeft: '1em',
               paddingInline: '15px',
-              paddingBlock: '10px',
+              paddingBlock: '7.5px',
+              marginBlock: '0',
             }}
           >
             <FormattedMessage
