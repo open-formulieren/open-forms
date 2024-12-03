@@ -14,3 +14,12 @@ class ThemeFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "config.Theme"
+
+
+class MapTileLayerFactory(factory.django.DjangoModelFactory):
+    identifier = factory.Faker("word")
+    url = factory.Sequence(lambda n: f"http://example-{n}.com")
+    label = factory.Faker("word")
+
+    class Meta:
+        model = "config.MapTileLayer"
