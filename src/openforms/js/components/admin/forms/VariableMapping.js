@@ -254,8 +254,8 @@ const VariableMapping = ({
             onClick={() => {
               // TODO update
               const initial = {[variableName]: '', [propertyName]: ''};
-              const mapping = get(values, name);
-              arrayHelpers.insert(mapping ? mapping.length : 0, initial);
+              const mapping = get(values, name) || [];
+              arrayHelpers.insert(mapping.length, initial);
             }}
           >
             <FormattedMessage description="Add variable button" defaultMessage="Add variable" />
