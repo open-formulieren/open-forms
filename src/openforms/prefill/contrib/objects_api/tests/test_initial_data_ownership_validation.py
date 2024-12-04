@@ -7,11 +7,7 @@ from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.forms.tests.factories import (
-    FormFactory,
-    FormRegistrationBackendFactory,
-    FormVariableFactory,
-)
+from openforms.forms.tests.factories import FormFactory, FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -67,31 +63,6 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                 ],
             },
         )
-        # An objects API backend with a different API group
-        FormRegistrationBackendFactory.create(
-            form=cls.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": cls.objects_api_group_unused.pk,
-                "objecttype_version": 1,
-            },
-        )
-        # Another backend that should be ignored
-        FormRegistrationBackendFactory.create(form=cls.form, backend="email")
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=cls.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": cls.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
         FormVariableFactory.create(form=cls.form, key="voornamen", user_defined=True)
         cls.variable = FormVariableFactory.create(
             form=cls.form,

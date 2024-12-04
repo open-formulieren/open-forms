@@ -10,7 +10,6 @@ from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.forms.tests.factories import FormRegistrationBackendFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -59,51 +58,30 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             initial_data_reference=self.object_ref,
         )
 
-        # An objects API backend with a different API group
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": 5,
-                "objecttype_version": 1,
-            },
-        )
-        # Another backend that should be ignored
-        FormRegistrationBackendFactory.create(form=submission.form, backend="email")
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
         with get_objects_client(self.objects_api_group_used) as client:
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+            try:
+                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
+            except PermissionDenied as exc:
+                raise self.failureException(
+                    "BSN in submission is owner of data"
+                ) from exc
 
     @tag("gh-4398")
     def test_permission_denied_if_user_is_not_logged_in(self):
         submission = SubmissionFactory.create(initial_data_reference=self.object_ref)
+        assert not submission.is_authenticated
 
-        with get_objects_client(self.objects_api_group_used) as client:
-            with self.assertRaises(PermissionDenied) as cm:
-                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
-        self.assertEqual(
-            str(cm.exception), "Cannot pass data reference as anonymous user"
-        )
+        with (
+            get_objects_client(self.objects_api_group_used) as client,
+            self.assertRaisesMessage(
+                PermissionDenied, "Cannot pass data reference as anonymous user"
+            ),
+        ):
+            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
 
-        logs = TimelineLogProxy.objects.filter(object_id=submission.id)
+        logs = TimelineLogProxy.objects.for_object(submission)
         self.assertEqual(
-            logs.filter(
-                extra_data__log_event="object_ownership_check_anonymous_user"
-            ).count(),
-            1,
+            logs.filter_event("object_ownership_check_anonymous_user").count(), 1
         )
 
     @tag("gh-4398")
@@ -114,30 +92,16 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             initial_data_reference=self.object_ref,
         )
 
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
+        with (
+            get_objects_client(self.objects_api_group_used) as client,
+            self.assertRaisesMessage(
+                PermissionDenied, "User is not the owner of the referenced object"
+            ),
+        ):
+            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
 
-        with get_objects_client(self.objects_api_group_used) as client:
-            with self.assertRaises(PermissionDenied) as cm:
-                validate_object_ownership(submission, client, ["bsn"], PLUGIN)
-        self.assertEqual(
-            str(cm.exception), "User is not the owner of the referenced object"
-        )
-
-        logs = TimelineLogProxy.objects.filter(object_id=submission.id)
-        self.assertEqual(
-            logs.filter(extra_data__log_event="object_ownership_check_failure").count(),
-            1,
-        )
+        logs = TimelineLogProxy.objects.for_object(submission)
+        self.assertEqual(logs.filter_event("object_ownership_check_failure").count(), 1)
 
     @tag("gh-4398")
     def test_user_is_not_owner_of_object_nested_auth_attribute(self):
@@ -157,24 +121,13 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             initial_data_reference=object_ref,
         )
 
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
-        with get_objects_client(self.objects_api_group_used) as client:
-            with self.assertRaises(PermissionDenied) as cm:
-                validate_object_ownership(submission, client, ["nested", "bsn"], PLUGIN)
-        self.assertEqual(
-            str(cm.exception), "User is not the owner of the referenced object"
-        )
+        with (
+            get_objects_client(self.objects_api_group_used) as client,
+            self.assertRaisesMessage(
+                PermissionDenied, "User is not the owner of the referenced object"
+            ),
+        ):
+            validate_object_ownership(submission, client, ["nested", "bsn"], PLUGIN)
 
     @tag("gh-4398")
     def test_ownership_check_fails_if_auth_attribute_path_is_badly_configured(self):
@@ -194,37 +147,26 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
             initial_data_reference=object_ref,
         )
 
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
+        with get_objects_client(self.objects_api_group_used) as client:
+            with (
+                self.subTest("empty path"),
+                self.assertRaisesMessage(
+                    PermissionDenied,
+                    "Could not verify if user is owner of the referenced object",
+                ),
+            ):
+                validate_object_ownership(submission, client, [], PLUGIN)
 
-        with self.subTest("empty path"):
-            with get_objects_client(self.objects_api_group_used) as client:
-                with self.assertRaises(PermissionDenied) as cm:
-                    validate_object_ownership(submission, client, [], PLUGIN)
-            self.assertEqual(
-                str(cm.exception),
-                "Could not verify if user is owner of the referenced object",
-            )
-
-        with self.subTest("non existent path"):
-            with get_objects_client(self.objects_api_group_used) as client:
-                with self.assertRaises(PermissionDenied) as cm:
-                    validate_object_ownership(
-                        submission, client, ["this", "does", "not", "exist"], PLUGIN
-                    )
-            self.assertEqual(
-                str(cm.exception),
-                "Could not verify if user is owner of the referenced object",
-            )
+            with (
+                self.subTest("non existent path"),
+                self.assertRaisesMessage(
+                    PermissionDenied,
+                    "Could not verify if user is owner of the referenced object",
+                ),
+            ):
+                validate_object_ownership(
+                    submission, client, ["this", "does", "not", "exist"], PLUGIN
+                )
 
     @tag("gh-4398")
     @patch(
@@ -239,23 +181,10 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            initial_data_reference=self.object_ref,
+            initial_data_reference="irrelevant",
         )
-
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
-        with self.assertRaises(PermissionDenied):
-            with get_objects_client(self.objects_api_group_used) as client:
+        with get_objects_client(self.objects_api_group_used) as client:
+            with self.assertRaises(PermissionDenied):
                 validate_object_ownership(submission, client, ["bsn"], PLUGIN)
 
     @tag("gh-4398")
@@ -271,60 +200,9 @@ class ObjectsAPIInitialDataOwnershipValidatorTests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.create(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            initial_data_reference=self.object_ref,
+            initial_data_reference="irrelevant",
         )
 
-        # The backend that should be used to perform the check
-        FormRegistrationBackendFactory.create(
-            form=submission.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
-            },
-        )
-
-        with self.assertRaises(PermissionDenied):
-            with get_objects_client(self.objects_api_group_used) as client:
+        with get_objects_client(self.objects_api_group_used) as client:
+            with self.assertRaises(PermissionDenied):
                 validate_object_ownership(submission, client, ["bsn"], PLUGIN)
-
-    @tag("gh-4398")
-    def test_no_backends_configured_does_not_raise_error(
-        self,
-    ):
-        """
-        If the object could not be fetched due to misconfiguration, the ownership check
-        should not fail
-        """
-        submission = SubmissionFactory.create(
-            auth_info__value="111222333",
-            auth_info__attribute=AuthAttribute.bsn,
-            initial_data_reference=self.object_ref,
-        )
-        FormRegistrationBackendFactory.create(form=submission.form, backend="email")
-
-        with get_objects_client(self.objects_api_group_used) as client:
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
-
-    @tag("gh-4398")
-    def test_backend_without_options_does_not_raise_error(
-        self,
-    ):
-        """
-        If the object could not be fetched due to missing API group configuration,
-        the ownership check should not fail
-        """
-        submission = SubmissionFactory.create(
-            auth_info__value="111222333",
-            auth_info__attribute=AuthAttribute.bsn,
-            initial_data_reference=self.object_ref,
-        )
-        ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
-        FormRegistrationBackendFactory.create(
-            form=submission.form, backend="objects_api", options={}
-        )
-
-        with get_objects_client(self.objects_api_group_used) as client:
-            validate_object_ownership(submission, client, ["bsn"], PLUGIN)
