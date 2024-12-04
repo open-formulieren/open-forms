@@ -200,7 +200,9 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             },
         )
 
-        self.assertFalse(options.is_valid())
+        result = options.is_valid()
+
+        self.assertFalse(result)
         self.assertIn("auth_attribute_path", options.errors)
         error = options.errors["auth_attribute_path"][0]
         self.assertEqual(error.code, "required")

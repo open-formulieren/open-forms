@@ -147,6 +147,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "objecttype_version": 1,
             "productaanvraag_type": "testproduct",
             "update_existing_object": False,
+            "auth_attribute_path": [],
             # `omschrijving` "PDF Informatieobjecttype other catalog":
             "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
             "upload_submission_csv": True,
@@ -240,6 +241,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
             "upload_submission_csv": True,
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "organisatie_rsin": "123456782",
             "zaak_vertrouwelijkheidaanduiding": "geheim",
             "doc_vertrouwelijkheidaanduiding": "geheim",
@@ -297,6 +299,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": False,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -329,6 +332,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": True,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
                 "informatieobjecttype_submission_csv": "",
             },
         )
@@ -374,6 +378,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             "objects_api_group": self.objects_api_group,
             "upload_submission_csv": False,
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "content_json": textwrap.dedent(
                 """
                 {
@@ -438,6 +443,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -513,6 +519,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -623,6 +630,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -719,6 +727,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -802,6 +811,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -861,6 +871,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "content_json": content_template,
                 "upload_submission_csv": False,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -906,6 +917,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
             },
         )
 
@@ -943,6 +955,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
                 "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
             },
         )
@@ -1003,6 +1016,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
                 "update_existing_object": False,
+                "auth_attribute_path": [],
                 "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
             },
         )
@@ -1057,6 +1071,7 @@ class V1HandlerTests(TestCase):
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "content_json": textwrap.dedent(
                 """
                 {
@@ -1103,6 +1118,7 @@ class V1HandlerTests(TestCase):
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "content_json": textwrap.dedent(
                 """
                 {
@@ -1152,6 +1168,7 @@ class V1HandlerTests(TestCase):
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "content_json": textwrap.dedent(
                 """
                 {
@@ -1184,6 +1201,7 @@ class V1HandlerTests(TestCase):
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "content_json": """{"amount": {{ payment.amount }}}""",
         }
         handler = ObjectsAPIV1Handler()
