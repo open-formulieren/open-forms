@@ -7,18 +7,35 @@ from rest_framework.exceptions import ValidationError
 from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models import FormRegistrationBackend
 from openforms.registrations.base import PreRegistrationResult
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
-from openforms.registrations.tasks import register_submission
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.logging import ensure_logger_level
 
+from ..contrib.demo.plugin import DemoRegistration
+from ..fields import RegistrationBackendChoiceField
+from ..registry import Registry
+from ..tasks import register_submission
+from .utils import patch_registry as _patch_registry
+
+
+# TODO: make this implementation the default, project-wide
+def patch_registry(register: Registry):
+    model_field = FormRegistrationBackend._meta.get_field("backend")
+    assert isinstance(model_field, RegistrationBackendChoiceField)
+    return _patch_registry(model_field, register)
+
 
 class PreRegistrationTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_pre_registration_with_submission_not_completed(self):
         submission = SubmissionFactory.create()
 
@@ -378,51 +395,69 @@ class PreRegistrationTests(TestCase):
 
     @tag("gh-4398")
     def test_verify_initial_data_ownership(self):
-        with self.subTest(
-            "verify_initial_data_ownership is not called if no initial_data_reference is specified"
-        ):
-            submission = SubmissionFactory.create(
-                form__registration_backend="demo",
+        # set up a separate registry with plugins we control, to test the generic
+        # mechanism
+        register = Registry()
+
+        class TestPlugin(DemoRegistration):
+            def verify_initial_data_ownership(self, submission, options):
+                if submission.initial_data_reference == "trigger-crash":
+                    raise Exception("arbitrary crash!")
+                raise PermissionDenied("you shall not pass")
+
+        register("ownership-check-fails")(TestPlugin)
+
+        patcher = patch_registry(register)
+        patcher.__enter__()
+        self.addCleanup(lambda: patcher.__exit__(None, None, None))
+
+        with self.subTest("no ownership check without initial data reference"):
+            submission1 = SubmissionFactory.create(
+                form__registration_backend="ownership-check-fails",
                 completed_not_preregistered=True,
+                initial_data_reference="",
+            )
+            assert not submission1.pre_registration_completed
+
+            pre_registration(submission1.id, PostSubmissionEvents.on_completion)
+
+            submission1.refresh_from_db()
+            self.assertTrue(submission1.pre_registration_completed)
+
+        with self.subTest("ownership check runs when initial data reference given"):
+            submission2 = SubmissionFactory.create(
+                form__registration_backend="ownership-check-fails",
+                completed_not_preregistered=True,
+                initial_data_reference="some reference",
+            )
+            assert not submission2.pre_registration_completed
+
+            pre_registration(submission2.id, PostSubmissionEvents.on_completion)
+
+            submission2.refresh_from_db()
+            # False because the ownership check prevented it from completing
+            self.assertFalse(submission2.pre_registration_completed)
+            self.assertIn(
+                "PermissionDenied", submission2.registration_result["traceback"]
+            )
+            self.assertIn(
+                "you shall not pass", submission2.registration_result["traceback"]
             )
 
-            with patch(
-                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership"
-            ) as mock_verify_ownership:
-                pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-                mock_verify_ownership.assert_not_called()
-
-        with self.subTest(
-            "verify_initial_data_ownership is called if initial_data_reference exists is specified"
-        ):
-            submission = SubmissionFactory.create(
-                form__registration_backend="demo",
+        with self.subTest("arbitrary errors in ownership check abort registration"):
+            submission3 = SubmissionFactory.create(
+                form__registration_backend="ownership-check-fails",
                 completed_not_preregistered=True,
-                initial_data_reference="1234",
+                initial_data_reference="trigger-crash",
             )
+            assert not submission3.pre_registration_completed
 
-            with patch(
-                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership"
-            ) as mock_verify_ownership:
-                pre_registration(submission.id, PostSubmissionEvents.on_completion)
+            pre_registration(submission3.id, PostSubmissionEvents.on_completion)
 
-                mock_verify_ownership.assert_called_once_with(submission)
-
-        with self.subTest(
-            "verify_initial_data_ownership raising error causes pre registration to fail"
-        ):
-            submission = SubmissionFactory.create(
-                form__registration_backend="demo",
-                completed_not_preregistered=True,
-                initial_data_reference="1234",
+            submission3.refresh_from_db()
+            # False because the ownership check prevented it from completing
+            self.assertFalse(submission3.pre_registration_completed)
+            self.assertIn("Exception", submission3.registration_result["traceback"])
+            self.assertIn(
+                "arbitrary crash!", submission3.registration_result["traceback"]
             )
-
-            with patch(
-                "openforms.registrations.contrib.demo.plugin.DemoRegistration.verify_initial_data_ownership",
-                side_effect=PermissionDenied,
-            ) as mock_verify_ownership:
-                with self.assertRaises(PermissionDenied):
-                    pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-                mock_verify_ownership.assert_called_once_with(submission)
