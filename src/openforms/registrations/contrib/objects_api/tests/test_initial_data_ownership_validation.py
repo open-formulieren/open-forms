@@ -1,153 +1,130 @@
-from unittest.mock import patch
+from pathlib import Path
+from uuid import UUID
 
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
+from freezegun import freeze_time
+
+from openforms.authentication.service import AuthAttribute
+from openforms.contrib.objects_api.clients import get_objects_client
+from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
-from openforms.forms.tests.factories import FormFactory, FormRegistrationBackendFactory
-from openforms.logging.models import TimelineLogProxy
-from openforms.submissions.constants import PostSubmissionEvents
-from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.vcr import OFVCRMixin
+
+from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..typing import RegistrationOptionsV2
 
 
 @tag("gh-4398")
-class ObjectsAPIPrefillDataOwnershipCheckTests(TestCase):
-    def setUp(self):
-        super().setUp()
+class DataOwnershipCheckTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = Path(__file__).parent / "files"
 
-        self.objects_api_group_used = ObjectsAPIGroupConfigFactory.create(
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
-        self.objects_api_group_unused = ObjectsAPIGroupConfigFactory.create()
 
-        self.form = FormFactory.create()
+    def test_ownership_check_passes(self):
+        # We manually create the objects instance as if it was created upfront by some
+        # external party
+        with (
+            freeze_time("2024-12-04T18:11:00+01:00"),
+            get_objects_client(self.api_group) as client,
+        ):
+            object_data = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"bsn": "111222333", "some": {"path": "foo"}},
+                    objecttype_version=1,
+                ),
+                objecttype_url=(
+                    "http://objecttypes-web:8000/api/v2/objecttypes/"
+                    "8faed0fa-7864-4409-aa6d-533a37616a9e"
+                ),
+            )
 
-        # An objects API backend with a different API group
-        FormRegistrationBackendFactory.create(
-            form=self.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_unused.pk,
-                "objecttype_version": 1,
-                "auth_attribute_path": ["bsn"],
-            },
+        submission = SubmissionFactory.create(
+            completed_not_preregistered=True,
+            initial_data_reference=object_data["uuid"],
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
         )
-        # Another backend that should be ignored
-        FormRegistrationBackendFactory.create(form=self.form, backend="email")
-        # The backend that should be used to perform the check
-        self.backend = FormRegistrationBackendFactory.create(
-            form=self.form,
-            backend="objects_api",
-            options={
-                "version": 2,
-                "objecttype": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                "objects_api_group": self.objects_api_group_used.pk,
-                "objecttype_version": 1,
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        options: RegistrationOptionsV2 = {
+            "objects_api_group": self.api_group,
+            "version": 2,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": True,
+            "auth_attribute_path": ["bsn"],
+            "variables_mapping": [],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+        }
+
+        result = plugin.verify_initial_data_ownership(submission, options)
+
+        # if it doesn't pass, it raises PermissionDenied error instead
+        self.assertIsNone(result)
+
+    def test_ownership_check_does_not_pass(self):
+        # We manually create the objects instance as if it was created upfront by some
+        # external party
+        with (
+            freeze_time("2024-12-04T18:11:00+01:00"),
+            get_objects_client(self.api_group) as client,
+        ):
+            object_data = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={"bsn": "111222333", "some": {"path": "foo"}},
+                    objecttype_version=1,
+                ),
+                objecttype_url=(
+                    "http://objecttypes-web:8000/api/v2/objecttypes/"
+                    "8faed0fa-7864-4409-aa6d-533a37616a9e"
+                ),
+            )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        options: RegistrationOptionsV2 = {
+            "objects_api_group": self.api_group,
+            "version": 2,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": True,
+            "auth_attribute_path": ["bsn"],
+            "variables_mapping": [],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "",
+        }
+
+        with self.subTest("other BSN used"):
+            submission2 = SubmissionFactory.create(
+                completed_not_preregistered=True,
+                initial_data_reference=object_data["uuid"],
+                auth_info__value="999999999",
+                auth_info__attribute=AuthAttribute.bsn,
+            )
+
+            with self.assertRaises(PermissionDenied):
+                plugin.verify_initial_data_ownership(submission2, options)
+
+        with self.subTest("wrong auth attribute path used"):
+            submission2 = SubmissionFactory.create(
+                completed_not_preregistered=True,
+                initial_data_reference=object_data["uuid"],
+                auth_info__value="111222333",
+                auth_info__attribute=AuthAttribute.bsn,
+            )
+            broken_options: RegistrationOptionsV2 = {
+                **options,
                 "auth_attribute_path": ["nested", "bsn"],
-            },
-        )
+            }
 
-    def test_verify_initial_data_ownership_not_called_if_initial_data_reference_missing(
-        self,
-    ):
-        submission = SubmissionFactory.create(
-            form=self.form,
-            completed_not_preregistered=True,
-        )
-
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.validate_object_ownership",
-            side_effect=PermissionDenied,
-        ) as mock_validate_object_ownership:
-            pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-        mock_validate_object_ownership.assert_not_called()
-
-    def test_verify_initial_data_ownership_called_if_initial_data_reference_specified(
-        self,
-    ):
-        submission = SubmissionFactory.create(
-            form=self.form,
-            completed_not_preregistered=True,
-            initial_data_reference="1234",
-            finalised_registration_backend_key=self.backend.key,
-        )
-
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.validate_object_ownership"
-        ) as mock_validate_object_ownership:
-            pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-            self.assertEqual(mock_validate_object_ownership.call_count, 1)
-
-            # Cannot compare with `.assert_has_calls`, because the client objects
-            # won't match
-            call = mock_validate_object_ownership.mock_calls[0]
-
-            self.assertEqual(call.args[0], submission)
-            self.assertEqual(
-                call.args[1].base_url,
-                self.objects_api_group_used.objects_service.api_root,
-            )
-            self.assertEqual(call.args[2], ["nested", "bsn"])
-
-    def test_verify_initial_data_ownership_raising_error_causes_failing_pre_registration(
-        self,
-    ):
-        submission = SubmissionFactory.create(
-            form=self.form,
-            completed_not_preregistered=True,
-            initial_data_reference="1234",
-        )
-
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.validate_object_ownership",
-            side_effect=PermissionDenied,
-        ) as mock_validate_object_ownership:
             with self.assertRaises(PermissionDenied):
-                pre_registration(submission.id, PostSubmissionEvents.on_completion)
-            self.assertEqual(mock_validate_object_ownership.call_count, 1)
-
-            # Cannot compare with `.assert_has_calls`, because the client objects
-            # won't match
-            call = mock_validate_object_ownership.mock_calls[0]
-
-            self.assertEqual(call.args[0], submission)
-            self.assertEqual(
-                call.args[1].base_url,
-                self.objects_api_group_unused.objects_service.api_root,
-            )
-            self.assertEqual(call.args[2], ["bsn"])
-
-    def test_verify_initial_data_ownership_missing_auth_attribute_path_causes_failing_pre_registration(
-        self,
-    ):
-        del self.backend.options["auth_attribute_path"]
-        self.backend.save()
-
-        submission = SubmissionFactory.create(
-            form=self.form,
-            completed_not_preregistered=True,
-            initial_data_reference="1234",
-            finalised_registration_backend_key=self.backend.key,
-        )
-
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.validate_object_ownership",
-        ) as mock_validate_object_ownership:
-            with self.assertRaises(PermissionDenied):
-                pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-            # Not called, due to missing `auth_attribute_path`
-            self.assertEqual(mock_validate_object_ownership.call_count, 0)
-
-        logs = TimelineLogProxy.objects.filter(object_id=submission.id)
-        self.assertEqual(
-            logs.filter(
-                extra_data__log_event="object_ownership_check_improperly_configured"
-            ).count(),
-            1,
-        )
+                plugin.verify_initial_data_ownership(submission2, broken_options)
