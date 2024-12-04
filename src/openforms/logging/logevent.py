@@ -271,14 +271,6 @@ def object_ownership_check_anonymous_user(submission: Submission, plugin=None):
     )
 
 
-def object_ownership_check_improperly_configured(submission: Submission, plugin=None):
-    _create_log(
-        submission,
-        "object_ownership_check_improperly_configured",
-        plugin=plugin,
-    )
-
-
 # - - -
 
 

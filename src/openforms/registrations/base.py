@@ -63,6 +63,25 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
     ) -> dict | None:
         raise NotImplementedError()
 
+    def verify_initial_data_ownership(
+        self, submission: Submission, options: OptionsT
+    ) -> None:
+        """
+        Check that the submission user is the owner of the registration target.
+
+        Registration backends can possibly update existing objects, which are
+        referenced through :attr:`submission.initial_data_reference`. These plugins
+        must check that the submission user is actually the 'owner' of this object. For
+        example, a permit request may have a BSN stored, or a case can have an
+        initiator/authorizee identified by a BSN/Chamber of Commerce number.
+
+        :param submission: an active :class:`Submission` instance.
+        :param options: the deserialized plugin configuration options.
+        """
+        raise NotImplementedError(
+            "You must implement the 'verify_initial_data_ownership' method."
+        )
+
     def pre_register_submission(
         self, submission: Submission, options: OptionsT
     ) -> PreRegistrationResult:
@@ -84,14 +103,3 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
         Return the static variables for this registration plugin.
         """
         return []
-
-    def verify_initial_data_ownership(self, submission: Submission) -> None:
-        """
-        Hook to check if the authenticated user is the owner of the object
-        referenced to by `initial_data_reference`
-
-        :param submission: an active :class:`Submission` instance
-        """
-        raise NotImplementedError(
-            "You must implement the 'verify_initial_data_ownership' method."
-        )

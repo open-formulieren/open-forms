@@ -75,11 +75,6 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
 
     registration_plugin = get_registration_plugin(submission)
 
-    # If an `initial_data_reference` was passed, we must verify that the
-    # authenticated user is the owner of the referenced object
-    if registration_plugin and submission.initial_data_reference:
-        registration_plugin.verify_initial_data_ownership(submission)
-
     with transaction.atomic():
         if not registration_plugin:
             set_submission_reference(submission)
@@ -87,6 +82,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             submission.save()
             return
 
+        assert submission.registration_backend is not None
         options_serializer = registration_plugin.configuration_options(
             data=submission.registration_backend.options,
             context={"validate_business_logic": False},
@@ -111,10 +107,20 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             )
             submission.save()
 
+    plugin_options = options_serializer.validated_data
     with track_error(submission, event) as should_abort:
-        result = registration_plugin.pre_register_submission(
-            submission, options_serializer.validated_data
-        )
+        # If an `initial_data_reference` was passed, we must verify that the
+        # authenticated user is the owner of the referenced object
+        if submission.initial_data_reference:
+            # may raise PermissionDenied
+            # XXX: audit logging inside this check is likely lost when the outer
+            # transaction block rolls back. See
+            # https://github.com/open-formulieren/open-forms/pull/4696/files#r1863209778
+            registration_plugin.verify_initial_data_ownership(
+                submission, plugin_options
+            )
+
+        result = registration_plugin.pre_register_submission(submission, plugin_options)
 
     if should_abort:
         return
@@ -236,7 +242,9 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         logevent.registration_skip(submission)
         return
 
-    registry = backend_config._meta.get_field("backend").registry
+    registry = backend_config._meta.get_field(
+        "backend"
+    ).registry  # pyright: ignore[reportAttributeAccessIssue]
     backend = backend_config.backend
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)

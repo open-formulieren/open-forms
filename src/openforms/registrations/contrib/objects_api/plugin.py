@@ -4,7 +4,6 @@ import logging
 from functools import partial
 from typing import TYPE_CHECKING, Any, override
 
-from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -14,9 +13,7 @@ from openforms.contrib.objects_api.clients import (
     get_objects_client,
     get_objecttypes_client,
 )
-from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
-from openforms.logging import logevent
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -60,6 +57,20 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
             options.setdefault(
                 "productaanvraag_type", global_config.productaanvraag_type
             )
+
+    @override
+    def verify_initial_data_ownership(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> None:
+        assert submission.initial_data_reference
+        api_group = options["objects_api_group"]
+        assert api_group, "Can't do anything useful without an API group"
+
+        auth_attribute_path = options["auth_attribute_path"]
+        assert auth_attribute_path, "Auth attribute path may not be empty"
+
+        with get_objects_client(api_group) as client:
+            validate_object_ownership(submission, client, auth_attribute_path, self)
 
     @override
     def register_submission(
@@ -174,30 +185,3 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     @override
     def get_variables(self) -> list[FormVariable]:
         return get_static_variables(variables_registry=variables_registry)
-
-    def verify_initial_data_ownership(self, submission: Submission) -> None:
-        assert submission.registration_backend
-        assert submission.initial_data_reference
-        backend = submission.registration_backend
-
-        api_group = ObjectsAPIGroupConfig.objects.filter(
-            pk=backend.options.get("objects_api_group")
-        ).first()
-        if not api_group:
-            return
-
-        auth_attribute_path = backend.options.get("auth_attribute_path")
-        if not auth_attribute_path:
-            logger.error(
-                "Cannot perform initial data ownership check, because backend %s has no `auth_attribute_path` configured",
-                backend,
-            )
-            logevent.object_ownership_check_improperly_configured(
-                submission, plugin=self
-            )
-            raise PermissionDenied(
-                f"{backend} has no `auth_attribute_path` configured, cannot perform initial data ownership check"
-            )
-
-        with get_objects_client(api_group) as client:
-            validate_object_ownership(submission, client, auth_attribute_path, self)

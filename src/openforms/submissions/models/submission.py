@@ -375,7 +375,10 @@ class Submission(models.Model):
             del self._variables_state
 
     def save_registration_status(
-        self, status: RegistrationStatuses, result: dict, record_attempt: bool = False
+        self,
+        status: RegistrationStatuses,
+        result: dict | None,
+        record_attempt: bool = False,
     ) -> None:
         # combine the new result with existing data, where the new result overwrites
         # on key collisions. This allows storing intermediate results in the plugin
@@ -383,6 +386,7 @@ class Submission(models.Model):
         if not self.registration_result and result is None:
             full_result = None
         else:
+            assert result is not None
             full_result = {
                 **(self.registration_result or {}),
                 **result,
