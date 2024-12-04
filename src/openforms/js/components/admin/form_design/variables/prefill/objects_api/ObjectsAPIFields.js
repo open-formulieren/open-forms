@@ -5,7 +5,7 @@
  */
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -14,8 +14,10 @@ import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
+  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -24,7 +26,7 @@ import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import {ErrorsType} from '../types';
+import ValidationErrorsProvider from '../../../../forms/ValidationErrors';
 import CopyConfigurationFromRegistrationBackend from './CopyConfigurationFromRegistrationBackend';
 
 const PLUGIN_ID = 'objects_api';
@@ -38,6 +40,7 @@ const onApiGroupChange = prevValues => ({
     ...prevValues.options,
     objecttypeUuid: '',
     objecttypeVersion: undefined,
+    authAttributePath: undefined,
     variablesMapping: [],
   },
 });
@@ -53,32 +56,34 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
-const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
+const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
   const intl = useIntl();
+  // Object with keys the plugin/attribute/options, we process these further to set up
+  // the required context for the fields.
+  const errors = Object.fromEntries(useContext(ValidationErrorContext));
+  const optionsErrors = Object.entries(errors.options ?? {}).map(([key, errs]) => [
+    `options.${key}`,
+    errs,
+  ]);
 
+  const {values, setFieldValue, setValues} = useFormikContext();
   const {
-    values,
-    values: {
-      plugin,
-      options: {objecttypeUuid, objecttypeVersion, objectsApiGroup, variablesMapping},
-    },
-    setFieldValue,
-  } = useFormikContext();
+    plugin,
+    options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
+  } = values;
 
   const defaults = {
-    objectsApiGroup: '',
+    objectsApiGroup: null,
     objecttypeUuid: '',
     objecttypeVersion: null,
+    authAttributePath: undefined,
     variablesMapping: [],
   };
 
   // Merge defaults into options if not already set
   useEffect(() => {
-    if (!values.options) {
-      setFieldValue('options', defaults);
-    } else {
-      setFieldValue('options', {...defaults, ...values.options});
-    }
+    const options = values.options ?? {};
+    setFieldValue('options', {...defaults, ...options});
   }, []);
 
   const {
@@ -119,8 +124,8 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
   const prefillProperties = loading ? LOADING_OPTION : value;
 
   return (
-    <>
-      {showCopyButton && backends.length ? (
+    <ValidationErrorsProvider errors={optionsErrors}>
+      {showCopyButton ? (
         <CopyConfigurationFromRegistrationBackend
           backends={backends}
           setShowCopyButton={setShowCopyButton}
@@ -133,7 +138,16 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             if (!objecttypeUuid) return true;
             const confirmSwitch = await openApiGroupConfirmationModal();
             if (!confirmSwitch) return false;
-            setFieldValue('options.variablesMapping', []);
+            setValues(prevValues => ({
+              ...prevValues,
+              // Trying to set multiple nested values doesn't work, since it sets them
+              // with dots in the key
+              options: {
+                ...prevValues.options,
+                authAttributePath: [],
+                variablesMapping: [],
+              },
+            }));
             return true;
           }}
           name="options.objectsApiGroup"
@@ -170,7 +184,16 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
               if (values.options.variablesMapping.length === 0) return true;
               const confirmSwitch = await openObjectTypeConfirmationModal();
               if (!confirmSwitch) return false;
-              setFieldValue('options.variablesMapping', []);
+              setValues(prevValues => ({
+                ...prevValues,
+                // Trying to set multiple nested values doesn't work, since it sets them
+                // with dots in the key
+                options: {
+                  ...prevValues.options,
+                  authAttributePath: [],
+                  variablesMapping: [],
+                },
+              }));
               return true;
             }}
           />
@@ -198,6 +221,13 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
             objectTypeFieldName="options.objecttypeUuid"
           />
         </ErrorBoundary>
+        <AuthAttributePath
+          name={'options.authAttributePath'}
+          objectsApiGroup={objectsApiGroup}
+          objecttypeUuid={objecttypeUuid}
+          objecttypeVersion={objecttypeVersion}
+          style={{maxWidth: '10em'}}
+        />
       </Fieldset>
 
       <Fieldset
@@ -249,14 +279,13 @@ const ObjectsAPIFields = ({errors, showCopyButton, setShowCopyButton}) => {
           />
         }
       />
-    </>
+    </ValidationErrorsProvider>
   );
 };
 
 ObjectsAPIFields.propTypes = {
-  errors: PropTypes.shape({
-    plugin: ErrorsType,
-  }).isRequired,
+  showCopyButton: PropTypes.bool.isRequired,
+  setShowCopyButton: PropTypes.func.isRequired,
 };
 
 export default ObjectsAPIFields;

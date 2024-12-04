@@ -1,8 +1,11 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.core.exceptions import PermissionDenied
+
 from rest_framework.test import APITestCase
 
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -47,6 +50,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     data={
                         "name": {"last.name": "My last name"},
                         "age": 45,
+                        "bsn": "111222333",
                     },
                     objecttype_version=3,
                 ),
@@ -54,6 +58,8 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             )
 
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference=created_obj["uuid"],
             components_list=[
                 {
@@ -79,22 +85,32 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(TimelineLogProxy.objects.count(), 1)
-        logs = TimelineLogProxy.objects.get()
+        self.assertEqual(TimelineLogProxy.objects.count(), 2)
+        ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
 
-        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_success")
-        self.assertEqual(logs.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            ownership_check_log.extra_data["log_event"],
+            "object_ownership_check_success",
+        )
+        self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            prefill_log.extra_data["log_event"], "prefill_retrieve_success"
+        )
+        self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
         self.assertEqual(state.variables["lastName"].value, "My last name")
         self.assertEqual(state.variables["age"].value, "45")
 
     def test_prefill_values_when_reference_not_found(self):
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference="048a37ca-a602-4158-9e60-9f06f3e47e2a",
             components_list=[
                 {
@@ -120,10 +136,12 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 
-        prefill_variables(submission=submission)
+        with self.assertRaises(PermissionDenied):
+            prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
         self.assertEqual(TimelineLogProxy.objects.count(), 1)
@@ -139,13 +157,15 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
         with get_objects_client(self.objects_api_group) as client:
             created_obj = client.create_object(
                 record_data=prepare_data_for_registration(
-                    data={},
+                    data={"bsn": "111222333"},
                     objecttype_version=3,
                 ),
                 objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
 
         submission = SubmissionFactory.from_components(
+            auth_info__value="111222333",
+            auth_info__attribute=AuthAttribute.bsn,
             initial_data_reference=created_obj["uuid"],
             components_list=[
                 {
@@ -171,16 +191,22 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
                     {"variable_key": "lastName", "target_path": ["name", "last.name"]},
                     {"variable_key": "age", "target_path": ["age"]},
                 ],
+                "auth_attribute_path": ["bsn"],
             },
         )
 
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(TimelineLogProxy.objects.count(), 1)
-        logs = TimelineLogProxy.objects.get()
+        self.assertEqual(TimelineLogProxy.objects.count(), 2)
+        ownership_check_log, prefill_log = TimelineLogProxy.objects.all()
 
-        self.assertEqual(logs.extra_data["log_event"], "prefill_retrieve_empty")
-        self.assertEqual(logs.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(
+            ownership_check_log.extra_data["log_event"],
+            "object_ownership_check_success",
+        )
+        self.assertEqual(ownership_check_log.extra_data["plugin_id"], "objects_api")
+        self.assertEqual(prefill_log.extra_data["log_event"], "prefill_retrieve_empty")
+        self.assertEqual(prefill_log.extra_data["plugin_id"], "objects_api")
         self.assertIsNone(state.variables["lastName"].value)
         self.assertIsNone(state.variables["age"].value)

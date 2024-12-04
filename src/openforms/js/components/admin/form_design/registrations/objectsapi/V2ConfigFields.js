@@ -5,6 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
+  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -26,12 +27,19 @@ const onApiGroupChange = prevValues => ({
   ...prevValues,
   objecttype: '',
   objecttypeVersion: undefined,
+  authAttributePath: undefined,
   variablesMapping: [],
 });
 
 const V2ConfigFields = ({apiGroupChoices}) => {
   const {
-    values: {variablesMapping = []},
+    values: {
+      objectsApiGroup = null,
+      objecttype = '',
+      objecttypeVersion = null,
+      variablesMapping = [],
+      updateExistingObject = false,
+    },
     setFieldValue,
   } = useFormikContext();
 
@@ -126,6 +134,26 @@ const V2ConfigFields = ({apiGroupChoices}) => {
       <Fieldset
         title={
           <FormattedMessage
+            description="Objects registration: update existing objects settings"
+            defaultMessage="Update existing objects"
+          />
+        }
+        collapsible
+        fieldNames={['updateExistingObject', 'authAttributePath']}
+      >
+        <UpdateExistingObject />
+        <AuthAttributePath
+          name={'authAttributePath'}
+          objectsApiGroup={objectsApiGroup}
+          objecttypeUuid={objecttype}
+          objecttypeVersion={objecttypeVersion}
+          disabled={!updateExistingObject}
+        />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
             description="Objects registration: other options"
             defaultMessage="Other options"
           />
@@ -134,7 +162,6 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         fieldNames={['organisatieRsin']}
       >
         <UploadSubmissionCsv />
-        <UpdateExistingObject />
         <OrganisationRSIN />
       </Fieldset>
 

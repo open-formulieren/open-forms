@@ -298,6 +298,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "objecttype_version": 3,
                     "objects_api_group": objects_api_group,
                     "update_existing_object": False,
+                    "auth_attribute_path": [],
                 },
             )
 
@@ -328,6 +329,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "objecttype_version": 3,
                     "objects_api_group": objects_api_group,
                     "update_existing_object": True,
+                    "auth_attribute_path": ["bsn"],
                 },
             )
 
@@ -364,6 +366,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "objecttype_version": 3,
                     "objects_api_group": objects_api_group,
                     "update_existing_object": False,
+                    "auth_attribute_path": [],
                 },
             )
 
@@ -393,6 +396,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "objecttype_version": 3,
                     "objects_api_group": objects_api_group,
                     "update_existing_object": True,
+                    "auth_attribute_path": ["bsn"],
                 },
             )
 
@@ -447,6 +451,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "variables_mapping": [
                 {
                     "variable_key": "attachment",
@@ -517,6 +522,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "variables_mapping": [
                 {
                     "variable_key": "attachment",
@@ -580,6 +586,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "update_existing_object": False,
+            "auth_attribute_path": [],
             "variables_mapping": [
                 {
                     "variable_key": "attachment",

@@ -18,24 +18,6 @@ const VARIABLE_CONFIGURATION_OPTIONS = {
   addressNL: AddressNlEditor,
 };
 
-const TargetPathDisplay = ({target}) => {
-  const path = target.targetPath.length ? target.targetPath.join(' > ') : '/ (root)';
-  return (
-    <FormattedMessage
-      description="Representation of a JSON Schema target path"
-      defaultMessage="{required, select, true {{path} (required)} other {{path}}}"
-      values={{path, required: target.isRequired}}
-    />
-  );
-};
-
-TargetPathDisplay.propTypes = {
-  target: PropTypes.shape({
-    targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
-    isRequired: PropTypes.bool.isRequired,
-  }).isRequired,
-};
-
 /**
  * Returns the Objects API Configuration editor modal for a specific variable and a specific
  * component type. This only applies to V2 Options
@@ -54,7 +36,7 @@ TargetPathDisplay.propTypes = {
  * @returns {JSX.Element} - The configuration form for the Objects API
  */
 const ObjectsApiVariableConfigurationEditor = ({variable}) => {
-  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
+  const {values: backendOptions, getFieldProps} = useFormikContext();
   const {components} = useContext(FormContext);
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
@@ -134,4 +116,4 @@ ObjectsApiVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-export {ObjectsApiVariableConfigurationEditor, TargetPathDisplay};
+export {ObjectsApiVariableConfigurationEditor};

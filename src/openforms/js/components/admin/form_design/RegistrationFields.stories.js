@@ -6,6 +6,7 @@ import {
   mockCataloguesGet as mockObjectsApiCataloguesGet,
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
+  mockTargetPathsPost,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
 import {
   mockCaseTypesGet,
@@ -512,6 +513,15 @@ export default {
           ]),
           mockObjectsApiCataloguesGet(),
           mockDocumentTypesGet(),
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+          }),
         ],
         zgwMocks: [
           mockZGWApisCataloguesGet(),
@@ -739,6 +749,29 @@ export const ObjectsAPI = {
       const catalogueSelect = modal.getByLabelText('Catalogus');
       await rsSelect(catalogueSelect, 'Catalogus 2');
     });
+
+    await step(
+      'Path to auth attribute is required if updating existing objects is enabled',
+      async () => {
+        const otherSettingsTitle = modal.getByRole('heading', {
+          name: 'Update existing objects (Tonen)',
+        });
+        expect(otherSettingsTitle).toBeVisible();
+        await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
+
+        const authAttributePath = modal.getByText(
+          'Path to auth attribute (e.g. BSN/KVK) in objects'
+        );
+
+        expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
+
+        const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
+        await userEvent.click(updateExistingObject);
+
+        // Checking `updateExistingObject` should make `authAttributePath` no longer disabled
+        expect(authAttributePath.parentElement.parentElement).not.toHaveClass('field--disabled');
+      }
+    );
 
     await step('Submit the form', async () => {
       await userEvent.click(modal.getByRole('button', {name: 'Opslaan'}));

@@ -18,7 +18,7 @@
         "documentation_url": "",
         "labels": {},
         "created_at": "2023-10-24",
-        "modified_at": "2024-02-08",
+        "modified_at": "2024-11-25",
         "allow_geometry": true
     }
 },
@@ -210,8 +210,8 @@
         "object_type": 1,
         "version": 3,
         "created_at": "2024-02-08",
-        "modified_at": "2024-02-08",
-        "published_at": "2024-02-08",
+        "modified_at": "2024-11-25",
+        "published_at": "2024-11-25",
         "json_schema": {
             "$id": "https://example.com/person.schema.json",
             "type": "object",
@@ -262,7 +262,7 @@
                 }
             }
         },
-        "status": "draft"
+        "status": "published"
     }
 },
 {
@@ -385,6 +385,71 @@
         "published_at": null,
         "json_schema": {
             "type": "object"
+        },
+        "status": "draft"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 9,
+    "fields": {
+        "object_type": 1,
+        "version": 4,
+        "created_at": "2024-11-25",
+        "modified_at": "2024-11-25",
+        "published_at": "2024-11-25",
+        "json_schema": {
+            "$id": "https://example.com/person.schema.json",
+            "type": "object",
+            "title": "Person",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 18
+                },
+                "bsn": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "object",
+                    "properties": {
+                        "last.name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "nested": {
+                    "type": "object",
+                    "properties": {
+                        "unrelated": {
+                            "type": "string"
+                        },
+                        "submission_payment_amount": {
+                            "type": "number",
+                            "multipleOf": 0.01
+                        }
+                    }
+                },
+                "submission_date": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "submission_csv_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "submission_pdf_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "submission_payment_completed": {
+                    "type": "boolean"
+                },
+                "submission_payment_public_ids": {
+                    "type": "array"
+                }
+            }
         },
         "status": "draft"
     }

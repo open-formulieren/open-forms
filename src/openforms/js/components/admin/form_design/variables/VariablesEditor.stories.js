@@ -1,4 +1,5 @@
-import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {
   mockObjectsAPIPrefillPropertiesGet,
@@ -6,10 +7,14 @@ import {
 } from 'components/admin/form_design/mocks';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {
+  mockObjecttypeVersionsGet,
+  mockObjecttypesGet,
+} from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {FormDecorator} from 'components/admin/form_design/story-decorators';
+import {serializeValue} from 'components/admin/forms/VariableMapping';
+import {findReactSelectMenu, rsSelect} from 'utils/storybookTestHelpers';
 
-import {serializeValue} from '../../forms/VariableMapping';
-import {mockObjecttypeVersionsGet, mockObjecttypesGet} from '../registrations/objectsapi/mocks';
-import {FormDecorator, withReactSelectDecorator} from '../story-decorators';
 import VariablesEditor from './VariablesEditor';
 
 BACKEND_OPTIONS_FORMS.testPlugin = {
@@ -188,6 +193,8 @@ export default {
               ],
             },
           }),
+        ],
+        objectsAPIPrefill: [
           mockObjecttypesGet([
             {
               url: 'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1',
@@ -208,6 +215,24 @@ export default {
             {version: 1, status: 'published'},
             {version: 2, status: 'draft'},
           ]),
+        ],
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+            object: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+              },
+            ],
+          }),
         ],
       },
     },
@@ -313,31 +338,6 @@ export const WithObjectsAPIRegistrationBackends = {
         ],
       },
     ],
-    onFieldChange: data => {
-      console.log(data);
-    },
-  },
-  parameters: {
-    msw: {
-      handlers: [
-        mockTargetPathsPost({
-          string: [
-            {
-              targetPath: ['path', 'to.the', 'target'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-          ],
-          object: [
-            {
-              targetPath: ['other', 'path'],
-              isRequired: false,
-              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
-            },
-          ],
-        }),
-      ],
-    },
   },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -385,79 +385,87 @@ export const FilesMappingAndObjectAPIRegistration = {
         pluginVerboseName: 'Objects API registration',
       },
     ],
-    onFieldChange: data => {
-      console.log(data);
-    },
   },
   parameters: {
     msw: {
-      handlers: [
-        mockTargetPathsPost({
-          string: [
-            {
-              targetPath: ['path', 'to.the', 'target'],
-              isRequired: true,
-              jsonSchema: {type: 'string'},
-            },
-            {
-              targetPath: ['path', 'to', 'uri'],
-              isRequired: true,
-              jsonSchema: {
-                type: 'string',
-                format: 'uri',
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            string: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
               },
-            },
-          ],
-          object: [
-            {
-              targetPath: ['other', 'path'],
-              isRequired: false,
-              jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
-            },
-          ],
-          array: [
-            {
-              targetPath: ['path', 'to', 'array'],
-              isRequired: true,
-              jsonSchema: {type: 'array'},
-            },
-          ],
-        }),
-      ],
+              {
+                targetPath: ['path', 'to', 'uri'],
+                isRequired: true,
+                jsonSchema: {
+                  type: 'string',
+                  format: 'uri',
+                },
+              },
+            ],
+            object: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+              },
+            ],
+            array: [
+              {
+                targetPath: ['path', 'to', 'array'],
+                isRequired: true,
+                jsonSchema: {type: 'array'},
+              },
+            ],
+          }),
+        ],
+      },
     },
   },
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
     const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    expect(editIcons).toHaveLength(3);
 
-    // The second icon is for the single file upload component variable
-    userEvent.click(editIcons[1]);
+    await step('Single file component', async () => {
+      // The second icon is for the single file upload component variable
+      await userEvent.click(editIcons[1]);
 
-    const targetSchemaDropdown = await screen.findByRole('combobox');
+      const targetSchemaDropdown = await canvas.findByRole('combobox', {name: 'Bestemmingspad'});
+      await expect(targetSchemaDropdown).toBeVisible();
+      selectEvent.openMenu(targetSchemaDropdown);
 
-    await expect(targetSchemaDropdown).toBeInTheDocument();
+      // Only the targets of type string should appear
+      const targetSelectMenu = within(await findReactSelectMenu(canvas));
+      expect(
+        await targetSelectMenu.findByRole('option', {name: 'path > to.the > target (verplicht)'})
+      ).toBeVisible();
+      await expect(
+        await targetSelectMenu.findByRole('option', {name: 'path > to > uri (verplicht)'})
+      ).toBeVisible();
 
-    // Only the targets of type string should appear
-    await expect(
-      await screen.findByRole('option', {name: 'path > to.the > target (verplicht)'})
-    ).toBeVisible();
-    await expect(
-      await screen.findByRole('option', {name: 'path > to > uri (verplicht)'})
-    ).toBeVisible();
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      userEvent.click(saveButton);
+    });
 
-    const saveButton = screen.getByRole('button', {name: 'Opslaan'});
-    userEvent.click(saveButton);
+    await step('Multi file component', async () => {
+      // The third icon is for the multiple file upload component variable
+      await userEvent.click(editIcons[2]);
 
-    // The third icon is for the multiple file upload component variable
-    userEvent.click(editIcons[2]);
+      const targetSchemaDropdown = await canvas.findByRole('combobox', {name: 'Bestemmingspad'});
+      await expect(targetSchemaDropdown).toBeVisible();
+      selectEvent.openMenu(targetSchemaDropdown);
 
-    const dropdown = await screen.findByRole('combobox');
-
-    await expect(dropdown).toBeInTheDocument();
-    await expect(
-      await screen.findByRole('option', {name: 'path > to > array (verplicht)'})
-    ).toBeVisible();
+      // Only the targets of type array should appear
+      const targetSelectMenu = within(await findReactSelectMenu(canvas));
+      expect(
+        await targetSelectMenu.findByRole('option', {name: 'path > to > array (verplicht)'})
+      ).toBeVisible();
+    });
   },
 };
 
@@ -542,9 +550,6 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         ],
       },
     ],
-    onFieldChange: data => {
-      console.log(data);
-    },
   },
   parameters: {
     msw: {
@@ -582,13 +587,35 @@ export const ConfigurePrefill = {
     const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
 
-    const pluginDropdown = await screen.findByLabelText('Plugin');
+    const pluginDropdown = await canvas.findByLabelText('Plugin');
     expect(pluginDropdown).toBeVisible();
     expect(await within(pluginDropdown).findByRole('option', {name: 'StUF-BG'})).toBeVisible();
   },
 };
 
 export const ConfigurePrefillObjectsAPI = {
+  parameters: {
+    msw: {
+      handlers: {
+        objectTypeTargetPaths: mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+          number: [
+            {
+              targetPath: ['path', 'to', 'bsn'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
+      },
+    },
+  },
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
@@ -605,18 +632,18 @@ export const ConfigurePrefillObjectsAPI = {
 
     await step('Configure Objects API prefill', async () => {
       const modal = within(await canvas.findByRole('dialog'));
-      const pluginDropdown = await screen.findByLabelText('Plugin');
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
       // check mappings
-      const variableSelect = await screen.findByLabelText('Formuliervariabele');
+      const variableSelect = await canvas.findByLabelText('Formuliervariabele');
       expect(variableSelect).toBeVisible();
       expect(modal.getByText('Form.io component')).toBeVisible();
 
       // Wait until the API call to retrieve the prefillAttributes is done
       await waitFor(async () => {
-        const prefillPropertySelect = await screen.findByLabelText(
+        const prefillPropertySelect = await canvas.findByLabelText(
           'Selecteer een attribuut uit het objecttype'
         );
         expect(prefillPropertySelect).toBeVisible();
@@ -627,7 +654,30 @@ export const ConfigurePrefillObjectsAPI = {
 };
 
 export const ConfigurePrefillObjectsAPIWithCopyButton = {
-  // decorators: [FormDecorator, withReactSelectDecorator],
+  parameters: {
+    msw: {
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            number: [
+              {
+                targetPath: ['bsn'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+            string: [
+              {
+                targetPath: ['path', 'to', 'bsn'],
+                isRequired: true,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+          }),
+        ],
+      },
+    },
+  },
   args: {
     registrationBackends: [
       {
@@ -639,6 +689,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
           objectsApiGroup: 1,
           objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
+          authAttributePath: ['path', 'to', 'bsn'],
           variablesMapping: [
             {
               variableKey: 'formioComponent',
@@ -681,12 +732,12 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       // open modal for configuration
       const editIcon = canvas.getByTitle('Prefill instellen');
       await userEvent.click(editIcon);
-      expect(await screen.findByRole('dialog')).toBeVisible();
+      expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
     await step('Configure Objects API prefill with copy button', async () => {
-      const modal = within(await screen.findByRole('dialog'));
-      const pluginDropdown = await screen.findByLabelText('Plugin');
+      const modal = within(await canvas.findByRole('dialog'));
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
       expect(pluginDropdown).toBeVisible();
       await userEvent.selectOptions(pluginDropdown, 'Objects API');
 
@@ -696,45 +747,42 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(toggleCopyDropdown).toBeVisible();
       await userEvent.click(toggleCopyDropdown);
 
+      const copyButton = await canvas.findByRole('button', {name: 'Overnemen'});
+      expect(copyButton).toBeDisabled();
       const copyDropdown = await modal.findByLabelText('Registratie-instellingen overnemen');
       expect(copyDropdown).toBeVisible();
-      await userEvent.click(copyDropdown);
+      await rsSelect(copyDropdown, 'Example Objects API reg.');
 
-      // Cannot do selectOption with react-select
-      const options = await canvas.findAllByText('Example Objects API reg.');
-      const option = options[1];
-      await userEvent.click(option);
-
-      const copyButton = await canvas.findByRole('button', {name: 'Overnemen'});
       expect(copyButton).toBeVisible();
+      expect(copyButton).not.toBeDisabled();
       await userEvent.click(copyButton);
 
       // Click the confirmation button
-      const button = canvas.getByRole('button', {
-        name: 'Accepteren',
-      });
-      expect(button).toBeVisible();
-      await userEvent.click(button);
+      const confirmationButton = await canvas.findByRole('button', {name: 'Accepteren'});
+      expect(confirmationButton).toBeVisible();
+      await userEvent.click(confirmationButton);
 
-      const modalForm = await screen.findByTestId('modal-form');
+      const modalForm = await canvas.findByTestId('modal-form');
       expect(modalForm).toBeVisible();
       const propertyDropdowns = await modal.findAllByLabelText(
         'Selecteer een attribuut uit het objecttype'
       );
 
       // Wait until the API call to retrieve the prefillAttributes is done
+      await modal.findByText('path > to > bsn', undefined, {timeout: 2000});
+
       await waitFor(
-        async () => {
+        () => {
           expect(modalForm).toHaveFormValues({
             'options.objectsApiGroup': '1',
             'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
             'options.objecttypeVersion': '2',
+            'options.authAttributePath': JSON.stringify(['path', 'to', 'bsn']),
+            'options.variablesMapping.0.targetPath': serializeValue(['height']),
+            'options.variablesMapping.1.targetPath': serializeValue(['species']),
           });
-
-          expect(propertyDropdowns[0]).toHaveValue(serializeValue(['height']));
-          expect(propertyDropdowns[1]).toHaveValue(serializeValue(['species']));
         },
-        {timeout: 2000}
+        {timeout: 5000}
       );
     });
   },
@@ -792,6 +840,72 @@ export const WithValidationErrors = {
     // open modal for configuration
     const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
+  },
+};
+
+export const ConfigurePrefillObjectsAPIWithValidationErrors = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined',
+        key: 'userDefined',
+        source: 'user_defined',
+        prefillPlugin: 'objects_api',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        options: {
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          authAttributePath: ['path', 'to', 'bsn'],
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['height'],
+            },
+            {
+              variableKey: 'userDefined',
+              targetPath: ['species'],
+            },
+          ],
+        },
+        errors: {
+          prefillPlugin: 'Computer says no.',
+          prefillOptions: {
+            objectsApiGroup: 'Computer says no.',
+            objecttypeUuid: 'Computer says no.',
+            objecttypeVersion: 'Computer says no.',
+            authAttributePath: 'This list may not be empty.',
+          },
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+
+      // open modal for configuration
+      const editIcon = canvas.getByTitle('Prefill instellen');
+      await userEvent.click(editIcon);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Verify that error is shown', async () => {
+      const error = canvas.getByText('This list may not be empty.');
+      expect(error).toBeVisible();
+    });
   },
 };
 
@@ -876,49 +990,49 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
     expect(modalForm).toHaveFormValues({});
     const modal = within(modalForm);
 
-    await step('Object target paths', async () => {
-      const targetPathDropdown = modal.getByRole('combobox');
-      expect(targetPathDropdown).toBeVisible();
+    const targetPathDropdown = modal.getByRole('combobox', {name: 'JSON Schema van doelobject'});
+    expect(targetPathDropdown).toBeVisible();
 
-      await modal.findByRole('option', {name: 'other > path'});
+    await step('Map entire object', async () => {
+      selectEvent.openMenu(targetPathDropdown);
 
-      // Now retrieve all options after '[other,path]' option has been loaded
-      const updatedOptions = within(targetPathDropdown).getAllByRole('option');
+      const targetSelectMenu = within(await findReactSelectMenu(canvas));
+      await targetSelectMenu.findByRole('option', {name: 'other > path'});
+      expect(targetSelectMenu.getAllByRole('option')).toHaveLength(1);
 
-      expect(updatedOptions).toHaveLength(2);
-      expect(updatedOptions[0]).toHaveTextContent('-----');
-      expect(updatedOptions[1]).toHaveTextContent('other > path');
-
-      await userEvent.selectOptions(targetPathDropdown, '["other","path"]');
+      await rsSelect(targetPathDropdown, 'other > path');
     });
 
-    await step('String target paths', async () => {
-      const targetPathDropdown = modal.getByRole('combobox');
-      await userEvent.selectOptions(targetPathDropdown, '');
+    await step('Map specific subfields', async () => {
+      await selectEvent.clearAll(targetPathDropdown);
 
-      const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
+      const specificTargetsCheckbox = canvas.getByRole('checkbox', {
         name: 'Koppel individuele velden',
       });
-      userEvent.click(specificTargetsCheckbox);
+      await userEvent.click(specificTargetsCheckbox);
 
       const postcodeSelect = await canvas.findByLabelText('Bestemmingspad postcode');
+      expect(postcodeSelect).toBeVisible();
+
       const houseNumberSelect = await canvas.findByLabelText('Bestemmingspad huisnummer');
+      expect(houseNumberSelect).toBeVisible();
+
       const houseLetterSelect = await canvas.findByLabelText('Bestemmingspad huisletter');
+      expect(houseLetterSelect).toBeVisible();
+
       const houseNumberAdditionSelect = await canvas.findByLabelText(
         'Bestemmingspad huisnummertoevoeging'
       );
-      const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
-      const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
-
-      expect(postcodeSelect).toBeVisible();
-      expect(houseNumberSelect).toBeVisible();
-      expect(houseLetterSelect).toBeVisible();
       expect(houseNumberAdditionSelect).toBeVisible();
-      expect(citySelect).toBeVisible();
-      expect(streetNameSelect).toBeVisible();
 
+      const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
       expect(citySelect).toBeDisabled();
+
+      const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
       expect(streetNameSelect).toBeDisabled();
+
+      await rsSelect(postcodeSelect, 'path > to.the > target (verplicht)');
+      await rsSelect(houseNumberSelect, 'number > target (verplicht)');
     });
   },
 };
@@ -1004,31 +1118,34 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
     const modalForm = await canvas.findByTestId('modal-form');
     const modal = within(modalForm);
 
-    const targetPathDropdown = modal.getByRole('combobox');
-    await userEvent.selectOptions(targetPathDropdown, '');
+    const targetPathDropdown = modal.getByRole('combobox', {name: 'JSON Schema van doelobject'});
+    expect(targetPathDropdown).toBeVisible();
 
-    const specificTargetsCheckbox = await canvas.findByRole('checkbox', {
+    const specificTargetsCheckbox = canvas.getByRole('checkbox', {
       name: 'Koppel individuele velden',
     });
     await userEvent.click(specificTargetsCheckbox);
 
     const postcodeSelect = await canvas.findByLabelText('Bestemmingspad postcode');
+    expect(postcodeSelect).toBeVisible();
+
     const houseNumberSelect = await canvas.findByLabelText('Bestemmingspad huisnummer');
+    expect(houseNumberSelect).toBeVisible();
+
     const houseLetterSelect = await canvas.findByLabelText('Bestemmingspad huisletter');
+    expect(houseLetterSelect).toBeVisible();
+
     const houseNumberAdditionSelect = await canvas.findByLabelText(
       'Bestemmingspad huisnummertoevoeging'
     );
-    const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
-    const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
-
-    expect(postcodeSelect).toBeVisible();
-    expect(houseNumberSelect).toBeVisible();
-    expect(houseLetterSelect).toBeVisible();
     expect(houseNumberAdditionSelect).toBeVisible();
-    expect(citySelect).toBeVisible();
-    expect(streetNameSelect).toBeVisible();
 
+    const citySelect = await canvas.findByLabelText('Bestemmingspad stad/gemeente');
+    expect(citySelect).toBeVisible();
     expect(citySelect).not.toBeDisabled();
+
+    const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
+    expect(streetNameSelect).toBeVisible();
     expect(streetNameSelect).not.toBeDisabled();
   },
 };

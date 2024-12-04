@@ -254,7 +254,7 @@ const VariableMapping = ({
             onClick={() => {
               // TODO update
               const initial = {[variableName]: '', [propertyName]: ''};
-              const mapping = get(values, name);
+              const mapping = get(values, name) || [];
               arrayHelpers.insert(mapping.length, initial);
             }}
           >

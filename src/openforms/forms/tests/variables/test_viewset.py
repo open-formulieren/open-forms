@@ -6,7 +6,7 @@ from django.test import override_settings
 from django.utils.translation import gettext_lazy as _
 
 from factory.django import FileField
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -23,6 +23,8 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.prefill.contrib.demo.plugin import DemoPrefill
+from openforms.prefill.tests.utils import get_test_register, patch_prefill_registry
 from openforms.variables.constants import (
     DataMappingTypes,
     FormVariableDataTypes,
@@ -903,6 +905,23 @@ class FormVariableViewsetTest(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_bulk_create_and_update_with_prefill_constraints(self):
+        # Isolate the prefill registry/plugins for this test - we care about the pattern,
+        # not about particular plugin implementation details
+        new_register = get_test_register()
+
+        class OptionsSerializer(serializers.Serializer):
+            foo = serializers.CharField(required=True, allow_blank=False)
+
+        class OptionsPrefill(DemoPrefill):
+            options = OptionsSerializer
+
+        new_register("demo-options")(OptionsPrefill)
+
+        # set up registry patching for the test
+        cm = patch_prefill_registry(new_register)
+        cm.__enter__()
+        self.addCleanup(lambda: cm.__exit__(None, None, None))
+
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user)
 
@@ -1033,7 +1052,7 @@ class FormVariableViewsetTest(APITestCase):
                     "service_fetch_configuration": None,
                     "data_type": FormVariableDataTypes.string,
                     "source": FormVariableSources.user_defined,
-                    "prefill_plugin": "objects_api",
+                    "prefill_plugin": "demo-options",
                     "prefill_attribute": "",
                     "prefill_options": {"foo": "bar"},
                 }

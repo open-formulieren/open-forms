@@ -114,6 +114,14 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         default=False,
     )
+    auth_attribute_path = serializers.ListField(
+        child=serializers.CharField(label=_("Segment of a JSON path")),
+        label=_("Path to auth attribute (e.g. BSN/KVK) in objects"),
+        help_text=_(
+            "This is used to perform validation to verify that the authenticated user is the owner of the object."
+        ),
+        default=list,
+    )
     upload_submission_csv = serializers.BooleanField(
         label=_("Upload submission CSV"),
         help_text=_(
@@ -281,6 +289,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 raise serializers.ValidationError(
                     {"version": _("Unknown version: {version}").format(version=version)}
                 )
+
+        if attrs.get("update_existing_object") and not attrs.get("auth_attribute_path"):
+            raise serializers.ValidationError(
+                {
+                    "auth_attribute_path": _(
+                        'This field is required if "Update existing object" is checked'
+                    )
+                },
+                code="required",
+            )
 
         if not self.context.get("validate_business_logic", True):
             return attrs

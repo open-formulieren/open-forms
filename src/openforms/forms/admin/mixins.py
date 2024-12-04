@@ -34,10 +34,6 @@ class FormioConfigMixin:
                     "ZGW_APIS_INCLUDE_DRAFTS": flag_enabled(
                         "ZGW_APIS_INCLUDE_DRAFTS", request=request
                     ),
-                    "REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION": flag_enabled(
-                        "REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION",
-                        request=request,
-                    ),
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

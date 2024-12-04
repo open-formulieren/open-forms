@@ -65,6 +65,23 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         """
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
 
+    def verify_initial_data_ownership(
+        self, submission: Submission, prefill_options: OptionsT
+    ) -> None:
+        """
+        Hook to check if the authenticated user is the owner of the object
+        referenced to by `initial_data_reference`
+
+        If any error occurs in this check, it should raise a `PermissionDenied`
+
+        :param submission: an active :class:`Submission` instance
+        :param prefill_options: the configuration options, after validation and
+          deserialization through the :attr:`options` serializer class.
+        """
+        raise NotImplementedError(
+            "You must implement the 'verify_initial_data_ownership' method."
+        )
+
     @classmethod
     def get_prefill_values_from_options(
         cls,

@@ -56,6 +56,7 @@ ObjectsApiOptionsForm.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.number,
     updateExistingObject: PropTypes.bool,
+    authAttributePath: PropTypes.arrayOf(PropTypes.string),
     productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
     uploadSubmissionCsv: PropTypes.bool,

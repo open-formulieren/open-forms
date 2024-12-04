@@ -86,7 +86,7 @@ ObjectTypeVersionSelect.propTypes = {
   /**
    * The label that will be shown before the field
    */
-  label: PropTypes.string.isRequired,
+  label: PropTypes.node.isRequired,
 };
 
 export default ObjectTypeVersionSelect;

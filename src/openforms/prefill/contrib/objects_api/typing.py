@@ -11,6 +11,7 @@ class VariableMapping(TypedDict):
 
 class ObjectsAPIOptions(TypedDict):
     objects_api_group: ObjectsAPIGroupConfig
-    object_type_uuid: UUID
+    objecttype_uuid: UUID
     objecttype_version: int
+    auth_attribute_path: list[str]
     variables_mapping: list[VariableMapping]

@@ -56,8 +56,11 @@ You can set the environment variable ``VCR_RECORD_MODE`` to any of the supported
 
 # once in dev, none in CI
 import os
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Iterator
 
+from vcr.config import VCR
 from vcr.unittest import VCRMixin
 
 RECORD_MODE = os.environ.get("VCR_RECORD_MODE", "none")
@@ -85,3 +88,18 @@ class OFVCRMixin(VCRMixin):
         kwargs = super()._get_vcr_kwargs()
         kwargs.setdefault("record_mode", RECORD_MODE)
         return kwargs
+
+
+@contextmanager
+def with_setup_test_data_vcr(base_path: Path | str, class_name: str) -> Iterator[None]:
+    """
+    Context manager to explicitly use VCR (inside setUpTestData for instance)
+
+    :param base_path: The base directory for VCR test files.
+    :param class_name: The qualified name of the test class.
+    """
+    cassette_path = (
+        Path(base_path) / "vcr_cassettes" / class_name / "setUpTestData.yaml"
+    )
+    with VCR().use_cassette(cassette_path):
+        yield

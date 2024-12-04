@@ -13,6 +13,7 @@ from openforms.contrib.objects_api.clients import (
     get_objects_client,
     get_objecttypes_client,
 )
+from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -56,6 +57,20 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
             options.setdefault(
                 "productaanvraag_type", global_config.productaanvraag_type
             )
+
+    @override
+    def verify_initial_data_ownership(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> None:
+        assert submission.initial_data_reference
+        api_group = options["objects_api_group"]
+        assert api_group, "Can't do anything useful without an API group"
+
+        auth_attribute_path = options["auth_attribute_path"]
+        assert auth_attribute_path, "Auth attribute path may not be empty"
+
+        with get_objects_client(api_group) as client:
+            validate_object_ownership(submission, client, auth_attribute_path, self)
 
     @override
     def register_submission(

@@ -233,6 +233,12 @@
       "value": "Confirm"
     }
   ],
+  "1Hb/pK": [
+    {
+      "type": 0,
+      "value": "This is used to perform validation to verify that the authenticated user is the owner of the object."
+    }
+  ],
   "1HfdUc": [
     {
       "type": 0,
@@ -1605,6 +1611,12 @@
     {
       "type": 0,
       "value": "Street name"
+    }
+  ],
+  "DFQ0Pq": [
+    {
+      "type": 0,
+      "value": "Update existing objects"
     }
   ],
   "DGpAyT": [
@@ -5361,6 +5373,12 @@
       "value": "Partner 1"
     }
   ],
+  "lu7yMK": [
+    {
+      "type": 0,
+      "value": "Path to auth attribute (e.g. BSN/KVK) in objects"
+    }
+  ],
   "m20av3": [
     {
       "type": 0,
@@ -6407,6 +6425,12 @@
     {
       "type": 0,
       "value": "Variable"
+    }
+  ],
+  "xBb5YI": [
+    {
+      "type": 0,
+      "value": "Select an object type and version before you can pick a source path."
     }
   ],
   "xI6md8": [

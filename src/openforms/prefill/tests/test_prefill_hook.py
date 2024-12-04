@@ -21,10 +21,9 @@ from ..constants import IdentifierRoles
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry, register as prefill_register
 from ..service import inject_prefill, prefill_variables
+from .utils import get_test_register
 
-register = Registry()
-
-register("demo")(DemoPrefill)
+register = get_test_register()
 
 CONFIGURATION = {
     "display": "form",

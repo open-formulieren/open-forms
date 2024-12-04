@@ -49,7 +49,6 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
               setFieldValue(name, selectedOption.value);
             }}
             maxMenuHeight="16em"
-            menuPlacement="bottom"
           />
 
           <button
@@ -68,6 +67,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
                     objectsApiGroup: selectedBackend.options.objectsApiGroup,
                     objecttypeUuid: selectedBackend.options.objecttype,
                     objecttypeVersion: selectedBackend.options.objecttypeVersion,
+                    authAttributePath: selectedBackend.options.authAttributePath,
                     variablesMapping: selectedBackend.options.variablesMapping,
                   },
                 }));
@@ -76,11 +76,13 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
                 setShowCopyButton(false);
               }
             }}
+            disabled={!selectedBackend}
             // admin style overrides...
             style={{
               marginLeft: '1em',
               paddingInline: '15px',
-              paddingBlock: '10px',
+              paddingBlock: '7.5px',
+              marginBlock: '0',
             }}
           >
             <FormattedMessage

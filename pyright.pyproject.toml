@@ -30,6 +30,7 @@ include = [
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",
     # Registrations
+    "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/config.py",
     "src/openforms/registrations/contrib/email/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/options.py",

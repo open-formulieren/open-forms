@@ -188,6 +188,25 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         error = options.errors["objects_api_group"][0]
         self.assertEqual(error.code, "does_not_exist")
 
+    def test_auth_attribute_path_required_if_update_existing_object_is_true(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "update_existing_object": True,
+                "auth_attribute_path": [],
+            },
+        )
+
+        result = options.is_valid()
+
+        self.assertFalse(result)
+        self.assertIn("auth_attribute_path", options.errors)
+        error = options.errors["auth_attribute_path"][0]
+        self.assertEqual(error.code, "required")
+
     def test_valid_serializer(self):
         options = ObjectsAPIOptionsSerializer(
             data={

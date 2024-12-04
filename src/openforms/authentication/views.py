@@ -338,7 +338,6 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
         if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
             authentication_success.send(sender=self.__class__, request=request)
-
         return response
 
     def _handle_co_sign(self, form: Form, plugin: BasePlugin) -> None:

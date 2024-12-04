@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import capfirst
 from django.urls import reverse
@@ -13,6 +14,11 @@ from openforms.submissions.models import Submission
 
 
 class TimelineLogProxyQueryset(models.QuerySet):
+    # vendored from https://github.com/maykinmedia/django-timeline-logger/pull/32/files
+    def for_object(self, obj: models.Model):
+        content_type = ContentType.objects.get_for_model(obj)
+        return self.filter(content_type=content_type, object_id=obj.pk)
+
     def filter_event(self, event: str):
         return self.filter(extra_data__log_event=event)
 

@@ -1,6 +1,5 @@
-import {FieldArray, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -11,11 +10,11 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
 
-import {TargetPathDisplay} from './ObjectsApiVariableConfigurationEditor';
+import {MappedVariableTargetPathSelect} from './GenericObjectsApiVariableConfigurationEditor';
 
 const ADDRESSNL_NESTED_PROPERTIES = {
   postcode: {type: 'string'},
@@ -59,16 +58,17 @@ export const AddressNlEditor = ({
   objecttypeVersion,
 }) => {
   const {csrftoken} = useContext(APIContext);
-  const {values, setFieldValue} = useFormikContext();
+  const {setValues} = useFormikContext();
+
+  const hasSpecificOptions = Object.values(mappedVariable?.options ?? {}).some(
+    targetPath => targetPath && targetPath.length
+  );
+  const [specificTargetPaths, toggleSpecificTargetPaths] = useToggle(hasSpecificOptions);
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
-  const {specificTargetPaths} = values;
-  const isSpecificTargetPaths =
-    specificTargetPaths ||
-    (mappedVariable.options && Object.keys(mappedVariable.options).length > 0);
 
   const deriveAddress = components[variable?.key]['deriveAddress'];
 
-  // // Load all the possible target paths (obect,string and number types) in parallel and only once
+  // Load all the possible target paths (obect,string and number types) in parallel and only once
   const {
     loading,
     value: targetPaths,
@@ -91,20 +91,6 @@ export const AddressNlEditor = ({
   const [objectTypeTargetPaths = [], stringTypeTargetPaths = [], numberTypeTargetPaths = []] =
     targetPaths || [];
 
-  const choicesTypes = {
-    object: objectTypeTargetPaths,
-    string: stringTypeTargetPaths,
-    number: numberTypeTargetPaths,
-  };
-
-  const getChoices = type =>
-    loading || error
-      ? LOADING_OPTION
-      : choicesTypes[type].map(t => [
-          JSON.stringify(t.targetPath),
-          <TargetPathDisplay target={t} />,
-        ]);
-
   const getTargetPath = pathSegment =>
     objectTypeTargetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
@@ -119,18 +105,31 @@ export const AddressNlEditor = ({
     );
 
   const onSpecificTargetPathsChange = event => {
-    setFieldValue('specificTargetPaths', event.target.checked);
+    const makeSpecific = event.target.checked;
+    toggleSpecificTargetPaths(makeSpecific);
 
-    if (event.target.checked) {
-      setFieldValue(`${namePrefix}.targetPath`, undefined);
-    } else {
-      setFieldValue(`${namePrefix}.options.postcode`, undefined);
-      setFieldValue(`${namePrefix}.options.houseLetter`, undefined);
-      setFieldValue(`${namePrefix}.options.houseNumber`, undefined);
-      setFieldValue(`${namePrefix}.options.houseNumberAddition`, undefined);
-      setFieldValue(`${namePrefix}.options.city`, undefined);
-      setFieldValue(`${namePrefix}.options.streetName`, undefined);
-    }
+    setValues(prevValues => {
+      const newVariablesMapping = [...prevValues.variablesMapping];
+      const newMappedVariable = {
+        ...(newVariablesMapping[index] ?? mappedVariable),
+        // clear targetPath if we're switching to specific subfields
+        targetPath: makeSpecific ? undefined : mappedVariable.targetPath,
+        // prepare the options structure if we're switching to specific subfields,
+        // otherwise remove it entirely
+        options: makeSpecific
+          ? {
+              postcode: undefined,
+              houseLetter: undefined,
+              houseNumber: undefined,
+              houseNumberAddition: undefined,
+              city: undefined,
+              streetName: undefined,
+            }
+          : undefined,
+      };
+      newVariablesMapping[index] = newMappedVariable;
+      return {...prevValues, variablesMapping: newVariablesMapping};
+    });
   };
 
   return (
@@ -151,7 +150,7 @@ export const AddressNlEditor = ({
                 defaultMessage="Whether to map the specific subfield of addressNl component"
               />
             }
-            checked={isSpecificTargetPaths}
+            checked={specificTargetPaths}
             onChange={onSpecificTargetPathsChange}
           />
         </Field>
@@ -165,18 +164,19 @@ export const AddressNlEditor = ({
               description="'JSON Schema object target' label"
             />
           }
-          disabled={isSpecificTargetPaths}
+          disabled={specificTargetPaths}
         >
-          <TargetPathSelect
+          <MappedVariableTargetPathSelect
             name={`${namePrefix}.targetPath`}
             index={index}
-            choices={getChoices('object')}
             mappedVariable={mappedVariable}
-            disabled={isGeometry || isSpecificTargetPaths}
+            isDisabled={isGeometry || specificTargetPaths}
+            isLoading={loading}
+            targetPaths={objectTypeTargetPaths}
           />
         </Field>
       </FormRow>
-      {isSpecificTargetPaths && (
+      {specificTargetPaths && (
         <Fieldset>
           <FormRow>
             <Field
@@ -188,13 +188,12 @@ export const AddressNlEditor = ({
                 />
               }
               required
+              noManageChildProps
             >
               <TargetPathSelect
-                id="postcode"
                 name={`${namePrefix}.options.postcode`}
-                index={index}
-                choices={getChoices('string')}
-                mappedVariable={mappedVariable}
+                isLoading={loading}
+                targetPaths={stringTypeTargetPaths}
               />
             </Field>
           </FormRow>
@@ -208,13 +207,12 @@ export const AddressNlEditor = ({
                 />
               }
               required
+              noManageChildProps
             >
               <TargetPathSelect
-                id="houseNumber"
                 name={`${namePrefix}.options.houseNumber`}
-                index={index}
-                choices={getChoices('number')}
-                mappedVariable={mappedVariable}
+                isLoading={loading}
+                targetPaths={numberTypeTargetPaths}
               />
             </Field>
           </FormRow>
@@ -227,13 +225,12 @@ export const AddressNlEditor = ({
                   description="'Objects registration variable mapping, addressNL component: 'options.houseLetter schema target' label"
                 />
               }
+              noManageChildProps
             >
               <TargetPathSelect
-                id="houseLetter"
                 name={`${namePrefix}.options.houseLetter`}
-                index={index}
-                choices={getChoices('string')}
-                mappedVariable={mappedVariable}
+                isLoading={loading}
+                targetPaths={stringTypeTargetPaths}
               />
             </Field>
           </FormRow>
@@ -246,13 +243,12 @@ export const AddressNlEditor = ({
                   description="Objects registration variable mapping, addressNL component: 'options.houseNumberAddition schema target' label"
                 />
               }
+              noManageChildProps
             >
               <TargetPathSelect
-                id="houseNumberAddition"
                 name={`${namePrefix}.options.houseNumberAddition`}
-                index={index}
-                choices={getChoices('string')}
-                mappedVariable={mappedVariable}
+                isLoading={loading}
+                targetPaths={stringTypeTargetPaths}
               />
             </Field>
           </FormRow>
@@ -266,14 +262,13 @@ export const AddressNlEditor = ({
                 />
               }
               disabled={!deriveAddress}
+              noManageChildProps
             >
               <TargetPathSelect
-                id="city"
                 name={`${namePrefix}.options.city`}
-                index={index}
-                choices={getChoices('string')}
-                mappedVariable={mappedVariable}
-                disabled={!deriveAddress}
+                isLoading={loading}
+                targetPaths={stringTypeTargetPaths}
+                isDisabled={!deriveAddress}
               />
             </Field>
           </FormRow>
@@ -287,20 +282,19 @@ export const AddressNlEditor = ({
                 />
               }
               disabled={!deriveAddress}
+              noManageChildProps
             >
               <TargetPathSelect
-                id="streetName"
                 name={`${namePrefix}.options.streetName`}
-                index={index}
-                choices={getChoices('string')}
-                mappedVariable={mappedVariable}
-                disabled={!deriveAddress}
+                isLoading={loading}
+                targetPaths={stringTypeTargetPaths}
+                isDisabled={!deriveAddress}
               />
             </Field>
           </FormRow>
         </Fieldset>
       )}
-      {!isSpecificTargetPaths && (
+      {!specificTargetPaths && (
         <div style={{marginTop: '1em'}}>
           <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
             <FormattedMessage
@@ -321,58 +315,4 @@ export const AddressNlEditor = ({
       )}
     </>
   );
-};
-
-const TargetPathSelect = ({id, name, index, choices, mappedVariable, disabled}) => {
-  // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
-  // It is added only when an actual target path is selected. This way, having the empty
-  // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
-  const {
-    values: {variablesMapping},
-    getFieldProps,
-    setFieldValue,
-  } = useFormikContext();
-  const props = getFieldProps(name);
-  const isNew = variablesMapping.length === index;
-
-  return (
-    <FieldArray
-      name="variablesMapping"
-      render={arrayHelpers => (
-        <Select
-          id={id}
-          name={name}
-          allowBlank
-          choices={choices}
-          {...props}
-          disabled={disabled}
-          value={JSON.stringify(props.value)}
-          onChange={event => {
-            if (event.target.value === '') {
-              arrayHelpers.remove(name);
-            } else {
-              if (isNew) {
-                if (name.split('.').pop() in ADDRESSNL_NESTED_PROPERTIES) {
-                  arrayHelpers.push({
-                    ...mappedVariable,
-                    options: {[name.split('.').pop()]: event.target.value},
-                  });
-                } else {
-                  arrayHelpers.push({...mappedVariable});
-                }
-              }
-              setFieldValue(name, JSON.parse(event.target.value));
-            }
-          }}
-        />
-      )}
-    />
-  );
-};
-
-TargetPathSelect.propTypes = {
-  name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  choices: PropTypes.array.isRequired,
-  mappedVariable: PropTypes.object.isRequired,
 };

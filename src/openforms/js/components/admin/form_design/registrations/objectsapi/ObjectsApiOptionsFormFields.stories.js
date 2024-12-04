@@ -14,6 +14,7 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesError,
   mockObjecttypesGet,
+  mockTargetPathsPost,
 } from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
@@ -38,9 +39,6 @@ export default {
     formData: {},
   },
   parameters: {
-    featureFlags: {
-      REGISTRATION_OBJECTS_API_ENABLE_EXISTING_OBJECT_INTEGRATION: true,
-    },
     msw: {
       handlers: [
         mockObjecttypesGet([
@@ -65,6 +63,15 @@ export default {
         ]),
         mockCataloguesGet(),
         mockDocumentTypesGet(),
+        mockTargetPathsPost({
+          string: [
+            {
+              targetPath: ['path', 'to.the', 'target'],
+              isRequired: true,
+              jsonSchema: {type: 'string'},
+            },
+          ],
+        }),
       ],
     },
   },
@@ -312,6 +319,7 @@ export const V1ValidationErrors = {
       [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.authAttributePath`, 'Field is required'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
     ],
   },
@@ -329,6 +337,7 @@ export const V2ValidationErrors = {
       [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
       [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.authAttributePath`, 'Field is required'],
       [`${NAME}.organisatieRsin`, 'Computer says no'],
     ],
   },

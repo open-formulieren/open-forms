@@ -110,6 +110,11 @@
     "description": "Camunda complex process variables confirm button",
     "originalDefault": "Confirm"
   },
+  "1Hb/pK": {
+    "defaultMessage": "This is used to perform validation to verify that the authenticated user is the owner of the object.",
+    "description": "Objects API registration: authAttributePath helpText",
+    "originalDefault": "This is used to perform validation to verify that the authenticated user is the owner of the object."
+  },
   "1HfdUc": {
     "defaultMessage": "De API-groep bepaalt welke services voor de objecten- en objecttypen-API's gebruikt wordt.",
     "description": "Objects API group field help text",
@@ -699,6 +704,11 @@
     "defaultMessage": "Waar/Niet waar (boolean)",
     "description": "JSON variable type \"boolean\" representation",
     "originalDefault": "Boolean"
+  },
+  "DFQ0Pq": {
+    "defaultMessage": "Update existing objects",
+    "description": "Objects registration: update existing objects settings",
+    "originalDefault": "Update existing objects"
   },
   "DGpAyT": {
     "defaultMessage": "Verplaats omlaag",
@@ -2530,6 +2540,11 @@
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
+  "lu7yMK": {
+    "defaultMessage": "Path to auth attribute (e.g. BSN/KVK) in objects",
+    "description": "Objects API registration: authAttributePath label",
+    "originalDefault": "Path to auth attribute (e.g. BSN/KVK) in objects"
+  },
   "m83ECr": {
     "defaultMessage": "Wanneer je de instellingen van een registratiepluginoptie overneemt, dan worden alle bestaande instellingen overschreven. Ben je zeker dat je door wil gaan?",
     "description": "Objects API prefill configuration: warning message when copying the config from registration backend",
@@ -3034,6 +3049,11 @@
     "defaultMessage": "Variabele",
     "description": "Price variable label",
     "originalDefault": "Variable"
+  },
+  "xBb5YI": {
+    "defaultMessage": "Select an object type and version before you can pick a source path.",
+    "description": "Object type target path selection for auth attribute message for missing options because no object type has been selected.",
+    "originalDefault": "Select an object type and version before you can pick a source path."
   },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",

@@ -38,6 +38,7 @@ docker compose -f docker-compose.objects-apis.yml run objecttypes-web \
         --indent=4 \
         --output /app/fixtures/objecttypes_api_fixtures.json \
         core.objecttype \
+        core.objectversion \
         token
 ```
 

@@ -98,11 +98,11 @@ ObjectTypeSelect.propTypes = {
   /**
    * The label that will be shown before the field
    */
-  label: PropTypes.string.isRequired,
+  label: PropTypes.node.isRequired,
   /**
    * The help text to explain what the field is for
    */
-  helpText: PropTypes.string.isRequired,
+  helpText: PropTypes.node.isRequired,
   /**
    * Name of the field holding the selected API group. The value is used in the API
    * call to get the available object types.

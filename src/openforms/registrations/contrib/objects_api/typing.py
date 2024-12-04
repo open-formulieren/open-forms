@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
 from uuid import UUID
-
-ConfigVersion: TypeAlias = Literal[1, 2]
 
 if TYPE_CHECKING:
     from .models import ObjectsAPIGroupConfig
+
+
+type ConfigVersion = Literal[1, 2]
 
 
 class CatalogueOption(TypedDict):
@@ -26,6 +27,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     objecttype: Required[UUID]
     objecttype_version: Required[int]
     update_existing_object: Required[bool]
+    auth_attribute_path: Required[list[str]]
 
     # metadata of documents created in the documents API
     upload_submission_csv: bool
@@ -70,5 +72,5 @@ class RegistrationOptionsV2(_BaseRegistrationOptions, total=False):
     geometry_variable_key: str
 
 
-RegistrationOptions: TypeAlias = RegistrationOptionsV1 | RegistrationOptionsV2
+type RegistrationOptions = RegistrationOptionsV1 | RegistrationOptionsV2
 """The Objects API registration options (either V1 or V2)."""

@@ -8,6 +8,7 @@ from glom import Path, PathAccessError, glom
 from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
@@ -19,6 +20,7 @@ from .typing import ObjectsAPIOptions
 
 logger = logging.getLogger(__name__)
 
+
 PLUGIN_IDENTIFIER = "objects_api"
 
 
@@ -26,6 +28,19 @@ PLUGIN_IDENTIFIER = "objects_api"
 class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     verbose_name = _("Objects API")
     options = ObjectsAPIOptionsSerializer
+
+    def verify_initial_data_ownership(
+        self, submission: Submission, prefill_options: ObjectsAPIOptions
+    ) -> None:
+        assert submission.initial_data_reference
+        api_group = prefill_options["objects_api_group"]
+        assert api_group, "Can't do anything useful without an API group"
+
+        auth_attribute_path = prefill_options["auth_attribute_path"]
+        assert auth_attribute_path, "Auth attribute path may not be empty"
+
+        with get_objects_client(api_group) as client:
+            validate_object_ownership(submission, client, auth_attribute_path, self)
 
     @classmethod
     def get_prefill_values_from_options(

@@ -39,7 +39,10 @@ from collections import defaultdict
 
 import elasticapm
 
-from openforms.formio.service import FormioConfigurationWrapper
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    normalize_value_for_component,
+)
 from openforms.submissions.models import Submission
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
@@ -47,7 +50,7 @@ from openforms.submissions.models.submission_value_variable import (
 from openforms.typing import JSONEncodable
 from openforms.variables.constants import FormVariableSources
 
-from .registry import Registry
+from .registry import Registry, register as default_register
 from .sources import (
     fetch_prefill_values_from_attribute,
     fetch_prefill_values_from_options,
@@ -71,9 +74,6 @@ def inject_prefill(
     The prefill values are looped over by key: value, and for each value the matching
     component is looked up to normalize it in the context of the component.
     """
-
-    from openforms.formio.service import normalize_value_for_component
-
     prefilled_data = submission.get_prefilled_data()
     for key, prefill_value in prefilled_data.items():
         try:
@@ -111,10 +111,6 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     be used to fetch the value. If ``register`` is not specified, the default registry instance
     will be used.
     """
-    from openforms.formio.service import normalize_value_for_component
-
-    from .registry import register as default_register
-
     register = register or default_register
 
     state = submission.load_submission_value_variables_state()
