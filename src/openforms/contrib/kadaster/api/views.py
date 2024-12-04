@@ -49,10 +49,8 @@ class AddressAutocompleteView(APIView):
     @extend_schema(
         summary=_("Get a street name and city"),  # type: ignore
         description=_(
-            "Get the street name and city for a given postal code and house number.\n\n"
-            "**NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will "
-            "be removed in v3. Use `/api/v2/geo/address-autocomplete/` instead."
-        ),  # type: ignore
+            "Get the street name and city for a given postal code and house number."
+        ),
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
             OpenApiParameter(

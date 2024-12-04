@@ -2746,10 +2746,8 @@ paths:
   /api/v2/geo/address-autocomplete:
     get:
       operationId: geo_address_autocomplete_retrieve
-      description: |-
-        Get the street name and city for a given postal code and house number.
-
-        **NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will be removed in v3. Use `/api/v2/geo/address-autocomplete/` instead.
+      description: Get the street name and city for a given postal code and house
+        number.
       summary: Get a street name and city
       parameters:
       - in: query
@@ -3077,46 +3075,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exception'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-  /api/v2/location/get-street-name-and-city:
-    get:
-      operationId: location_get_street_name_and_city_retrieve
-      description: |-
-        Get the street name and city for a given postal code and house number.
-
-        **NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will be removed in v3. Use `/api/v2/geo/address-autocomplete/` instead.
-      summary: Get a street name and city
-      parameters:
-      - in: query
-        name: house_number
-        schema:
-          type: number
-        description: House number of the address
-        required: true
-      - in: query
-        name: postcode
-        schema:
-          type: string
-        description: Postal code of the address
-        required: true
-      tags:
-      - location
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GetStreetNameAndCityViewResult'
           description: ''
           headers:
             X-Session-Expires-In:

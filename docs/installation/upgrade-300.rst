@@ -74,3 +74,9 @@ StUF-ZDS payments extension conversion
 The import conversion of StUF-ZDS plugin extensions, back to the default StUF-ZDS plugin,
 has been removed. We recommend re-creating the exports on a newer version of Open Forms,
 or manually changing the plugin to `stuf-zds-create-zaak` in the export files.
+
+Removal of /api/v2/location/get-street-name-and-city endpoint
+=============================================================
+
+The /api/v2/location/get-street-name-and-city was deprecated for some time,
+and is now removed in favor of the /api/v2/geo/address-autocomplete endpoint.
