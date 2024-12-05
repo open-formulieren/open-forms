@@ -559,3 +559,19 @@ class SubmissionReportCoSignTests(TestCase):
             ),
         )
         self.assertIn(identifier, rendered)
+
+    def test_cosign_v2_data(self):
+        report = SubmissionReportFactory.create(
+            content="",
+            submission__completed=True,
+            submission__co_sign_data={
+                "plugin": "digid",
+                "attribute": "bsn",
+                "value": "123456782",
+                "cosign_date": "2024-01-01T17:00:00Z",
+            },
+        )
+
+        html: str = report.generate_submission_report_pdf()
+
+        self.assertNotEqual(html, "")
