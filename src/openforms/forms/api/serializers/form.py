@@ -300,6 +300,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "required_fields_with_asterisk",
             "submission_allowed",
             "suspension_allowed",
+            "send_confirmation_email",
             "appointment_options",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
