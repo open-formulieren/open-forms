@@ -12,16 +12,24 @@ from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.tests.factories import FormVariableFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormRegistrationBackendFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models.submission import Submission
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...config.models import GlobalConfiguration
+from ...forms.constants import LogicActionTypes
 from ..admin import SubmissionAdmin, SubmissionTimeListFilter
 from ..constants import PostSubmissionEvents, RegistrationStatuses
-from .factories import SubmissionFactory
+from ..form_logic import evaluate_form_logic
+from .factories import SubmissionFactory, SubmissionStepFactory
 
 
 @disable_admin_mfa()
@@ -191,20 +199,27 @@ class TestSubmissionAdmin(WebTest):
         # add regular submission log
         submission_start(self.submission_1)
 
-        # viewing this generates an AVG log
+        # viewing this generates an AVG log,
+        # and a log for trying and failing to fetch a registration backend
         response = self.app.get(
             reverse(
                 "admin:submissions_submission_change", args=(self.submission_1.pk,)
             ),
             user=self.user,
         )
-        start_log, avg_log = TimelineLogProxy.objects.order_by("pk")
+
+        start_log, avg_log, registration_backend_log = (
+            TimelineLogProxy.objects.order_by("pk")
+        )
 
         # regular log visible
         self.assertContains(response, start_log.get_message())
 
         # avg log not visible
         self.assertNotContains(response, avg_log.get_message())
+
+        # registration backend log not visible
+        self.assertNotContains(response, registration_backend_log.get_message())
 
     def test_search(self):
         list_url = furl(reverse("admin:submissions_submission_changelist"))
@@ -247,6 +262,116 @@ class TestSubmissionAdmin(WebTest):
         change_page = self.app.get(change_url, user=self.user)
 
         self.assertEqual(change_page.status_code, 200)
+
+    def test_changing_registration_backend_with_form_logic_is_correctly_displayed_in_admin(
+        self,
+    ):
+        form = FormFactory.create()
+        email = FormRegistrationBackendFactory.create(
+            form=form,
+            backend="email",
+            key="email",
+            name="Email",
+        )
+        objects_api = FormRegistrationBackendFactory.create(
+            form=form,
+            backend="objects_api",
+            key="objects_api",
+            name="Objects api",
+        )
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.set_registration_backend,
+                        "value": f"{objects_api.key}",
+                    },
+                },
+            ],
+        )
+
+        with self.subTest(
+            "Submission doesn't trigger logic and uses the default registration backend"
+        ):
+            # Without triggering the form logic, the submission should use
+            # the first backend registration of the form
+            submission = SubmissionFactory.create(form=form, completed=True)
+            submission_step = SubmissionStepFactory.create(
+                submission=submission, form_step=form_step, data={"text1": "test"}
+            )
+
+            # Evaluate the logic, and save the changes
+            evaluate_form_logic(submission, submission_step, submission.data)
+            submission.save()
+
+            change_url = reverse(
+                "admin:submissions_submission_change",
+                kwargs={"object_id": submission.pk},
+            )
+
+            change_page = self.app.get(change_url, user=self.user)
+            self.assertEqual(change_page.status_code, 200)
+
+            # The email registration should be used
+            self.assertEqual(submission.registration_backend, email)
+
+            # The admin page should show the email registration as the one being used
+            registration_backend_field = change_page.pyquery.find(
+                ".form-row.field-get_registration_backend > div > div"
+            )
+            self.assertEqual(
+                registration_backend_field.text(),
+                f"Registratie backend:\nEmail van {form.name}",
+            )
+
+        with self.subTest(
+            "Submission that does trigger the logic and gets the logic defined backend registration"
+        ):
+            # When triggering the form logic, the submission should use
+            # the objects_api backend registration of the form
+            submission = SubmissionFactory.create(form=form, completed=True)
+            submission_step = SubmissionStepFactory.create(
+                submission=submission,
+                form_step=form_step,
+                data={"text1": "trigger-rule"},
+            )
+
+            # Evaluate the logic, and save the changes
+            evaluate_form_logic(submission, submission_step, submission.data)
+            submission.save()
+
+            change_url = reverse(
+                "admin:submissions_submission_change",
+                kwargs={"object_id": submission.pk},
+            )
+
+            change_page = self.app.get(change_url, user=self.user)
+            self.assertEqual(change_page.status_code, 200)
+
+            # The objects api registration should be used
+            self.assertEqual(submission.registration_backend, objects_api)
+
+            # The admin page should show the objects api registration as the one being used
+            registration_backend_field = change_page.pyquery.find(
+                ".form-row.field-get_registration_backend > div > div"
+            )
+            self.assertEqual(
+                registration_backend_field.text(),
+                f"Registratie backend:\nObjects api van {form.name}",
+            )
 
 
 class TestSubmissionTimeListFilterAdmin(TestCase):
