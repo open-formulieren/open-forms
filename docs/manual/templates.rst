@@ -579,6 +579,7 @@ formulier ingevuld heeft de relevante informatie handmatig zal doorgeven.
 Variabele                           Beschrijving
 ==================================  ===========================================================================
 ``{{ form_name }}``                 De naam van het formulier.
+``{{ submission_date }}``           De datum waarop het formulier is verzonden.
 ``{{ form_url }}``                  De directe link naar het formulier.
 ``{{ code }}``                      De code om de inzending mee op te halen.
 ==================================  ===========================================================================
@@ -592,40 +593,53 @@ Voorbeeld
 
       .. code:: django
 
-         <p>Dit is een verzoek om het formulier "{{ form_name }}" mede te ondertekenen.</p>
+         <p>Beste lezer,</p>
 
          <p>
-           Gelieve het formulier te openen met de volgende link:
-           <a href="{{ form_url }}">{{ form_url }}</a>.
+           Via de website heeft iemand het formulier "{{ form_name }}"
+           op {{ submission_date }} ingediend. Deze is nog
+           niet compleet zonder je handtekening.
+         </p>
+
+         <h2>Medeondertekening nodig</h2>
+
+         <p>
+           Via deze link kun je inloggen om het formulier te ondertekenen. Daarna nemen wij de
+           aanvraag in behandeling.
          </p>
 
          <p>
-           Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat je
-           bent ingelogd, haal je het formulier op met de volgende code:
-           <br>
-           <br>
-           <strong>{{ code }}</strong>
+           <a href="{{ form_url }}">{{ form_url }}</a>
          </p>
+
+         <p>Je referentienummer is {{ code }}.</p>
+
 
 
    .. tab:: Weergave (impressie)
 
       .. code:: html
 
-         <p>Dit is een verzoek om het formulier "Voorbeeld" mede te ondertekenen.</p>
+         <p>Beste lezer,</p>
 
          <p>
-           Gelieve het formulier te openen met de volgende link:
-           <a href="https://example.com/voorbeeld-formulier">https://example.com/voorbeeld-formulier</a>.
+           Via de website heeft iemand het formulier "Voorbeeld" op 5 december 2024 ingediend.
+           Deze is nog niet compleet zonder je handtekening.
+         </p>
+
+         <h2>Medeondertekening nodig</h2>
+
+         <p>
+           Via deze link kun je inloggen om het formulier te ondertekenen. Daarna nemen wij de
+           aanvraag in behandeling.
          </p>
 
          <p>
-           Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat je
-           bent ingelogd, haal je het formulier op met de volgende code:
-           <br>
-           <br>
-           <strong>OF-123456</strong>
+           <a href="https://example.com/voorbeeld-formulier">https://example.com/voorbeeld-formulier</a>
          </p>
+
+         <p>Je referentienummer is OF-12345.</p>
+
 
 .. _objecten_api_registratie:
 
