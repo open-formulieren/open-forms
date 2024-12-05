@@ -7,8 +7,7 @@
         "name": "\u2615\ufe0f",
         "slug": "koffie",
         "active": true,
-        "product": null,
-        "registration_backend": "openforms.core.backends.console_backend"
+        "product": null
     }
 },
 {
@@ -19,8 +18,18 @@
         "name": "Demo multiple steps",
         "slug": "demo-multiple-steps",
         "active": true,
-        "product": null,
-        "registration_backend": ""
+        "product": null
+    }
+},
+{
+    "model": "forms.form_formregistrationbackend",
+    "pk": 1,
+    "fields": {
+        "key": "backend",
+        "name": "backend",
+        "backend": "openforms.core.backends.console_backend",
+        "options": {},
+        "form": 1
     }
 },
 {

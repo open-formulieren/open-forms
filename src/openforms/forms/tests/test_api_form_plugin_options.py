@@ -173,10 +173,16 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_backend_options": {
-                    "to_emails": ["test@test.nl"],
-                    "email_subject": "Custom subject",
-                }
+                "registration_backends": [
+                    {
+                        "key": "fst",
+                        "backend": "email",
+                        "options": {
+                            "to_emails": ["test@test.nl"],
+                            "email_subject": "Custom subject",
+                        },
+                    }
+                ]
             },
         )
 
@@ -205,26 +211,33 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_backend_options": {
-                    "to_emails": ["test@test.nl"],
-                    "email_content_template_html": "Custom HTML template",
-                    "email_content_template_text": "Custom text template",
-                }
+                "registration_backends": [
+                    {
+                        "backend": "email",
+                        "options": {
+                            "to_emails": ["test@test.nl"],
+                            "email_content_template_html": "Custom HTML template",
+                            "email_content_template_text": "Custom text template",
+                        },
+                    }
+                ]
             },
         )
 
         self.assertEqual(response.status_code, 200)
 
         data = response.json()
+        self.assertEqual(len(data["registrationBackends"]), 1)
+        backend = data["registrationBackends"][0]
 
-        self.assertNotIn("emailSubject", data["registrationBackendOptions"])
-        self.assertNotIn("paymentSubject", data["registrationBackendOptions"])
+        self.assertNotIn("emailSubject", backend["options"])
+        self.assertNotIn("paymentSubject", backend["options"])
         self.assertEqual(
-            data["registrationBackendOptions"]["emailContentTemplateHtml"],
+            backend["options"]["emailContentTemplateHtml"],
             "Custom HTML template",
         )
         self.assertEqual(
-            data["registrationBackendOptions"]["emailContentTemplateText"],
+            backend["options"]["emailContentTemplateText"],
             "Custom text template",
         )
 
@@ -242,10 +255,15 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_backend_options": {
-                    "to_emails": ["test@test.nl"],
-                    "email_content_template_html": "Custom HTML template",
-                },
+                "registration_backends": [
+                    {
+                        "backend": "email",
+                        "options": {
+                            "to_emails": ["test@test.nl"],
+                            "email_content_template_html": "Custom HTML template",
+                        },
+                    }
+                ],
             },
         )
 

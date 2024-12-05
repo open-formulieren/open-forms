@@ -394,20 +394,6 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
-    @property
-    def registration_backend(self) -> str | None:
-        "For backwards compatibility"
-        return (
-            backend.backend if (backend := self.registration_backends.first()) else None
-        )
-
-    @property
-    def registration_backend_options(self) -> str | None:
-        "For backwards compatibility"
-        return (
-            backend.options if (backend := self.registration_backends.first()) else None
-        )
-
     def get_registration_backend_display(self) -> str:
         return (
             ", ".join(

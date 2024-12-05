@@ -75,6 +75,13 @@ The import conversion of StUF-ZDS plugin extensions, back to the default StUF-ZD
 has been removed. We recommend re-creating the exports on a newer version of Open Forms,
 or manually changing the plugin to `stuf-zds-create-zaak` in the export files.
 
+Removal of single registration conversion
+-----------------------------------------
+
+The legacy format (from before Open Forms 2.3) for registration backend will no longer be
+converted to the current standard. When importing a form with this configuration,
+the form will be created without registration backends.
+
 Removal of /api/v2/location/get-street-name-and-city endpoint
 =============================================================
 
