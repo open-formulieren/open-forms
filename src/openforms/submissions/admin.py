@@ -325,14 +325,13 @@ class SubmissionAdmin(admin.ModelAdmin):
                     "privacy_policy_accepted",
                     "statement_of_truth_accepted",
                     "_is_cleaned",
-                    "previous_submission",
                     "initial_data_reference",
                 ),
                 "classes": ("collapse",),
             },
         ),
     )
-    raw_id_fields = ("form", "previous_submission")
+    raw_id_fields = ("form",)
     actions = [
         "export_csv",
         "export_json",

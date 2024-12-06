@@ -15,7 +15,6 @@ from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
-from openforms.appointments.utils import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
@@ -189,9 +188,6 @@ def send_confirmation_email(submission: Submission) -> None:
         subject = render_email_template(
             subject_template, context, rendering_text=True, disable_autoescape=True
         ).strip()
-
-        if subject_suffix := get_confirmation_mail_suffix(submission):
-            subject = f"{subject} {subject_suffix}"
 
         html_content = render_email_template(content_template, context)
         text_content = strip_tags_plus(

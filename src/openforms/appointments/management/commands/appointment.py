@@ -7,7 +7,7 @@ from django.db.models import Q
 
 from openforms.submissions.models import Submission
 
-from ...base import Customer
+from ...base import CustomerDetails
 from ...core import book_for_submission
 from ...registry import register
 from ...utils import get_plugin
@@ -122,7 +122,9 @@ class Command(BaseCommand):
 
         # Customer
 
-        customer = Customer(last_name="Doe", birthdate=date(1970, 1, 1))
+        customer = CustomerDetails(
+            details={"lastName": "Doe", "birthdate": date(1970, 1, 1)}
+        )
 
         # Book
 

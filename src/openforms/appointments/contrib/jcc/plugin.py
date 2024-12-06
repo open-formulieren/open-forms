@@ -1,5 +1,4 @@
 import logging
-import warnings
 from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
@@ -20,14 +19,7 @@ from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 
-from ...base import (
-    AppointmentDetails,
-    BasePlugin,
-    Customer,
-    CustomerDetails,
-    Location,
-    Product,
-)
+from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -251,28 +243,10 @@ class JccAppointment(BasePlugin[CustomerFields]):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: CustomerDetails[CustomerFields] | Customer,
+        client: CustomerDetails[CustomerFields],
         remarks: str = "",
     ) -> str:
         product_ids = squash_ids(products)
-
-        # Phasing out Customer in favour of CustomerDetails, so convert to the new type
-        if isinstance(client, Customer):
-            warnings.warn(
-                "Fixed customer fields via the Customer class are deprecated, use "
-                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
-                DeprecationWarning,
-            )
-            client = CustomerDetails(
-                details={
-                    CustomerFields.last_name: client.last_name,
-                    CustomerFields.birthday: client.birthdate.isoformat(),
-                    # Phone number is often required for appointment,
-                    # use fake phone number if no client phone number
-                    CustomerFields.main_tel: client.phonenumber or "0123456789",
-                }
-            )
-
         customer_details = {
             FIELD_TO_XML_NAME[key]: value for key, value in client.details.items()
         }
