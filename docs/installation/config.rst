@@ -358,10 +358,10 @@ Other settings
 * ``SENDFILE_BACKEND``: which backend to use to serve the content of non-public files. The value depends on the
   reverse proxy solution used with Open Forms. For available backends, see the `django-sendfile documentation`_.
   Defaults to ``sendfile.backends.nginx``.
-  
+
   .. note:: Open Forms only considers nginx to be in scope. You can deviate from using nginx, but we cannot offer any
     support on other backends.
-  
+
 .. _django-sendfile documentation: https://django-sendfile2.readthedocs.io/en/stable/backends.html
 
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/4.2/ref/settings/#engine
@@ -391,7 +391,6 @@ variables, linking to the description of their behaviour in their respective mod
   .. versionadded:: 2.7.0
      A formal and more complete authentication context data model is used - existing
      installations likely do not provide all this information yet.
-
 
 Specifying the environment variables
 =====================================

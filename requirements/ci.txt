@@ -7,6 +7,11 @@ amqp==5.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   kombu
+annotated-types==0.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   pydantic
 ape-pie==0.1.0
     # via
     #   -c requirements/base.txt
@@ -188,6 +193,7 @@ django==4.2.16
     #   django-relativedelta
     #   django-sendfile2
     #   django-sessionprofile
+    #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
@@ -334,6 +340,10 @@ django-sessionprofile==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
+django-setup-configuration==0.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-simple-certmanager==2.4.1
     # via
     #   -c requirements/base.txt
@@ -712,6 +722,22 @@ pycparser==2.20
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cffi
+pydantic==2.9.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-setup-configuration
+    #   pydantic-settings
+pydantic-core==2.23.4
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   pydantic
+pydantic-settings==2.6.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-setup-configuration
 pydyf==0.8.0
     # via
     #   -c requirements/base.txt
@@ -764,10 +790,11 @@ python-decouple==3.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-python-dotenv==0.14.0
+python-dotenv==1.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   pydantic-settings
 python-magic==0.4.27
     # via
     #   -c requirements/base.txt
@@ -791,6 +818,7 @@ pyyaml==6.0.1
     #   -r requirements/base.txt
     #   drf-spectacular
     #   jsonschema-spec
+    #   pydantic-settings
     #   tablib
     #   vcrpy
     #   zgw-consumers
@@ -990,6 +1018,8 @@ typing-extensions==4.11.0
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
     #   psycopg
+    #   pydantic
+    #   pydantic-core
     #   pyee
     #   qrcode
     #   zgw-consumers
@@ -1090,7 +1120,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.32.0
+zgw-consumers==0.36.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

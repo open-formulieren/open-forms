@@ -16,6 +16,8 @@ and expertise.
    If you don't want to install Open Forms yourself, you can ask an Open Forms
    supplier to host and manage it for you.
 
+After installation, follow the :ref:`configuration_index` instructions to enable all available features.
+
 .. toctree::
    :maxdepth: 1
    :caption: Further reading
@@ -24,6 +26,7 @@ and expertise.
    ansible
    security
    config
+   setup_configuration
    file_uploads
    self_signed
    form_hosting

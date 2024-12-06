@@ -188,6 +188,7 @@ INSTALLED_APPS = [
     "log_outgoing_requests",
     "import_export",
     "flags",
+    "django_setup_configuration",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1204,6 +1205,14 @@ FLAGS = {
         },
     ],
 }
+
+#
+# DJANGO-SETUP-CONFIGURATION
+#
+SETUP_CONFIGURATION_STEPS = [
+    "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
+    "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
+]
 
 #
 # Open Forms extensions

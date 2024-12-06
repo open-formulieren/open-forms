@@ -85,9 +85,12 @@ services:
       - ENVIRONMENT_LABEL=docker-compose
       - ENVIRONMENT_BACKGROUND_COLOR=#1d63ed
       - ENVIRONMENT_FOREGROUND_COLOR=white
+      # Django-setup-configuration
+      - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
+      - ./docker/setup_configuration:/app/setup_configuration
       - log:/app/log
       - certifi_ca_bundle:/app/certifi_ca_bundle
     ports:
@@ -97,6 +100,21 @@ services:
       - redis
       - smtp
       - clamav
+      # The following pattern can be used to let the web container start after
+      # setup-configuration is done running
+      # web-init:
+      #   condition: service_completed_successfully
+    networks:
+      - open-forms-dev
+
+  web-init:
+    build: .
+    environment: *web_env
+    command: /setup_configuration.sh
+    volumes: *web_volumes
+    depends_on:
+      - db
+      - redis
     networks:
       - open-forms-dev
 

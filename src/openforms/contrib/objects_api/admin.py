@@ -8,6 +8,7 @@ from .models import ObjectsAPIGroupConfig
 class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "identifier",
         "objects_service",
         "objecttypes_service",
         "drc_service",
@@ -21,19 +22,23 @@ class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
         "drc_service",
         "catalogi_service",
     )
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+        "identifier",
+    )
     raw_id_fields = (
         "objects_service",
         "objecttypes_service",
         "drc_service",
         "catalogi_service",
     )
+    prepopulated_fields = {"identifier": ["name"]}
     ordering = (
         "id",
         "name",
     )
     fieldsets = [
-        (None, {"fields": ["name"]}),
+        (None, {"fields": ["name", "identifier"]}),
         (
             _("Services"),
             {

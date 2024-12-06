@@ -7,6 +7,7 @@ from ..models import ObjectsAPIGroupConfig
 
 class ObjectsAPIGroupConfigFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"Objects API group {n:03}")
+    identifier = factory.Sequence(lambda n: f"objects-api-group-{n}")
     objects_service = factory.SubFactory(
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.orc
     )
