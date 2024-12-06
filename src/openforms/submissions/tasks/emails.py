@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.db import DatabaseError, transaction
+from django.template.defaultfilters import date as date_filter
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
@@ -114,6 +115,10 @@ def send_email_cosigner(submission_id: int) -> None:
                 "code": submission.public_registration_reference,
                 "form_name": submission.form.name,
                 "form_url": form_url,
+                # use the ``|date`` filter so that the timestamp is first localized to the correct
+                # timezone, and then the date is formatted according to the django global setting.
+                # This makes date representations consistent across the system.
+                "submission_date": date_filter(submission.completed_on),
             },
         )
 

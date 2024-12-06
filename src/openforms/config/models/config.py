@@ -162,7 +162,7 @@ class GlobalConfiguration(SingletonModel):
         _("co-sign request template"),
         help_text=_(
             "Content of the co-sign request email. The available template "
-            "variables are: 'form_name', 'form_url' and 'code'."
+            "variables are: 'form_name', 'submission_date', 'form_url' and 'code'."
         ),
         default=partial(_render, "emails/co_sign/request.html"),
         validators=[

@@ -59,6 +59,12 @@ class Report:
         if not (co_sign_data := self.submission.co_sign_data):
             return ""
 
+        # XXX this is something present in cosign v2 but not v1, which happens after the
+        # PDF is generated. Generating the PDF again after it's cosigned otherwise
+        # crashes.
+        if "cosign_date" in co_sign_data:
+            return ""
+
         representation = co_sign_data.get("representation") or ""
         identifier = co_sign_data["identifier"]
         co_sign_auth_attribute = co_sign_data["co_sign_auth_attribute"]
