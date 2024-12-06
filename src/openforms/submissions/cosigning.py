@@ -18,16 +18,20 @@ Currently there are two versions of cosigning, with a third in the making:
 
 from __future__ import annotations
 
+import logging
 from functools import cached_property
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.typing import FormAuth
 from openforms.formio.typing import Component
+from openforms.submissions.models import submission
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:
     from .models import Submission
+
+logger = logging.getLogger(__name__)
 
 type CosignData = CosignV1Data | CosignV2Data
 
@@ -155,7 +159,15 @@ class CosignState:
 
         variables_state = self.submission.load_submission_value_variables_state()
         values = variables_state.get_data(as_formio_data=True)
-        cosigner_email = values[cosign_component["key"]]
+        if (key := cosign_component["key"]) not in values:
+            logger.info(
+                "Inconsistent state - there is a cosign component, but no value is"
+                "associated with it (submission %s).",
+                self.submission.uuid,
+                extra={"submission": submission.uuid},
+            )
+            return ""
+        cosigner_email = values[key]
         assert isinstance(cosigner_email, str)
         return cosigner_email
 
