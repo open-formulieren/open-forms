@@ -1,6 +1,6 @@
 import {produce} from 'immer';
 import cloneDeep from 'lodash/cloneDeep';
-import getObjectValue from 'lodash/get';
+// import getObjectValue from 'lodash/get';
 import groupBy from 'lodash/groupBy';
 import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
@@ -20,7 +20,6 @@ import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
 
-import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
@@ -559,77 +558,7 @@ function reducer(draft, action) {
       draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index + 1)];
       break;
     }
-    case 'APPOINTMENT_CONFIGURATION_CHANGED': {
-      // deconstruct the 'event' which holds the information on which config param
-      // was changed and to which component it is (now) set.
-      const {
-        target: {name, value: selectedComponentKey},
-      } = action.payload;
 
-      // name is in the form "appointments.<key>"
-      const [prefix, configKey] = name.split('.');
-
-      // utility to find the component for a given appointment config option
-      const findComponentForConfigKey = configKey => {
-        const name = `${prefix}.${configKey}`;
-        return findComponent(draft.formSteps, component => getObjectValue(component, name, false));
-      };
-
-      // first, ensure that if the value was changed, the old component is cleared
-      const currentComponentForConfigKey = findComponentForConfigKey(configKey);
-      if (currentComponentForConfigKey) {
-        // wipe the entire appointments configuration
-        set(currentComponentForConfigKey, prefix, {});
-      }
-
-      // next, handle setting the config to the new component
-      const selectedComponent = findComponent(
-        draft.formSteps,
-        component => component.key === selectedComponentKey
-      );
-      set(selectedComponent, name, true);
-
-      // finally, handle the dependencies of all appointment configuration - we need
-      // to check and update all keys, even the one that wasn't change, because options
-      // can be set in non-logical order in the UI.
-      for (const otherConfigKey of APPOINTMENT_CONFIG_KEYS) {
-        const relevantComponent = findComponentForConfigKey(otherConfigKey);
-        if (!relevantComponent) continue;
-
-        switch (otherConfigKey) {
-          // no dependencies, do nothing
-          case 'showProducts':
-          case 'lastName':
-          case 'birthDate':
-          case 'phoneNumber':
-            break;
-          // reverse order without breaks, since every component builds on top of
-          // the others
-          case 'showTimes': {
-            // add the date selection component information
-            const dateComponent = findComponentForConfigKey('showDates');
-            if (dateComponent) set(relevantComponent, `${prefix}.dateComponent`, dateComponent.key);
-          }
-          case 'showDates': {
-            // add the location selection component information
-            const locationComponent = findComponentForConfigKey('showLocations');
-            if (locationComponent)
-              set(relevantComponent, `${prefix}.locationComponent`, locationComponent.key);
-          }
-          case 'showLocations': {
-            // add the product selection component information
-            const productComponent = findComponentForConfigKey('showProducts');
-            if (productComponent)
-              set(relevantComponent, `${prefix}.productComponent`, productComponent.key);
-            break;
-          }
-          default: {
-            throw new Error(`Unknown config key: ${configKey}`);
-          }
-        }
-      }
-      break;
-    }
     /**
      * Form Logic rules actions
      */
@@ -1346,14 +1275,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               </Tab>
             )}
             {!isAppointment && (
-              <Tab>
-                <FormattedMessage
-                  defaultMessage="Appointments"
-                  description="Appointments tab title"
-                />
-              </Tab>
-            )}
-            {!isAppointment && (
               <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
@@ -1463,19 +1384,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 onServiceFetchAdd={onServiceFetchAdd}
                 onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
                 onAdd={() => dispatch({type: 'ADD_RULE'})}
-              />
-            </TabPanel>
-          )}
-
-          {!isAppointment && (
-            <TabPanel>
-              <Appointments
-                onChange={event => {
-                  dispatch({
-                    type: 'APPOINTMENT_CONFIGURATION_CHANGED',
-                    payload: event,
-                  });
-                }}
               />
             </TabPanel>
           )}

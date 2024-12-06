@@ -513,7 +513,7 @@ const FormConfigurationFields = ({
           }
           helpText={
             <FormattedMessage
-              defaultMessage="Experimental mode. Indicates whether appointments are enabled for this form."
+              defaultMessage="Indicates whether appointments are enabled for this form."
               description="Form appointment enabled field help text"
             />
           }
