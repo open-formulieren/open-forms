@@ -24,7 +24,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
 )
 from openforms.utils.tests.logging import ensure_logger_level
 
-from ..constants import PostSubmissionEvents
+from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import SubmissionReport
 from ..tasks import on_post_submission_event
 from .factories import SubmissionFactory
@@ -995,6 +995,37 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         self.assertTrue(submission.cosign_request_email_sent)
         self.assertTrue(submission.confirmation_email_sent)
         self.assertEqual(submission.auth_info.value, "111222333")
+
+    @tag("gh-3901", "hlmr-86")
+    def test_cosign_required_but_hidden_proceeds_with_registration(self):
+        """
+        A conditionally hidden cosign component may not block registration.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                    "hidden": True,
+                },
+            ],
+            submitted_data={"cosign": ""},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+        )
+        assert submission.registration_status == RegistrationStatuses.pending
+
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
 
     @tag("gh-3924")
     def test_payment_complete_does_not_set_retry_flag(self):
