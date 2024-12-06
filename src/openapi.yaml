@@ -7825,7 +7825,7 @@ components:
           format: uuid
         name:
           type: string
-          maxLength: 50
+          readOnly: true
         internalName:
           type: string
           description: internal name for management purposes
@@ -7876,7 +7876,7 @@ components:
           format: uuid
         name:
           type: string
-          maxLength: 50
+          readOnly: true
         internalName:
           type: string
           description: internal name for management purposes
@@ -9383,7 +9383,7 @@ components:
           format: uuid
         name:
           type: string
-          maxLength: 50
+          readOnly: true
         internalName:
           type: string
           description: internal name for management purposes

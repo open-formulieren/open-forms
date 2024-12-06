@@ -82,6 +82,15 @@ The legacy format (from before Open Forms 2.3) for registration backend will no 
 converted to the current standard. When importing a form with this configuration,
 the form will be created without registration backends.
 
+``FormDefinition.name`` field is now read only
+----------------------------------------------
+
+The ``name`` field of a ``FormDefinition`` export is no longer written to the matching
+active locale field (``name_nl`` or ``name_en``) during imports. Instead, the
+``translations`` key is used. This affects forms that were exported before the
+``translations`` key existed.  We recommend re-creating the exports on a newer version
+of Open Forms.
+
 Removal of /api/v2/location/get-street-name-and-city endpoint
 =============================================================
 

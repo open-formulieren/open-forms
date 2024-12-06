@@ -1,6 +1,7 @@
 import datetime
 
 from django.urls import reverse
+from django.utils import translation
 
 from freezegun import freeze_time
 from rest_framework import status
@@ -191,7 +192,9 @@ class FormVersionRestoreAPITests(APITestCase):
         form_step = form_steps.get()
         restored_form_definition = form_step.form_definition
 
-        self.assertEqual("Test Definition 1", restored_form_definition.name)
+        with translation.override("en"):
+            self.assertEqual("Test Definition 1", restored_form_definition.name)
+            self.assertEqual("Test Definitie 1", restored_form_definition.name_nl)
         self.assertEqual(
             "Test Definition Internal 1", restored_form_definition.internal_name
         )
