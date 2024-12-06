@@ -212,6 +212,12 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "of type 'checkbox'."
         ),
     )
+    submission_maximum_allowed = serializers.IntegerField(
+        allow_null=True, required=False
+    )
+    submission_counter = serializers.IntegerField(
+        allow_null=True, required=False, read_only=True
+    )
     brp_personen_request_options = BRPPersonenRequestOptionsSerializer(
         required=False, allow_null=True
     )
@@ -257,6 +263,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "introduction_page_content",
             "explanation_template",
             "submission_allowed",
+            "submission_maximum_allowed",
+            "submission_counter",
             "suspension_allowed",
             "ask_privacy_consent",
             "ask_statement_of_truth",
@@ -299,6 +307,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "active",
             "required_fields_with_asterisk",
             "submission_allowed",
+            "submission_maximum_allowed",
+            "submission_counter",
             "suspension_allowed",
             "send_confirmation_email",
             "appointment_options",
@@ -447,6 +457,17 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                     )
                 }
             )
+
+    def validate_submission_maximum_allowed(self, value):
+        if form := self.instance:
+            if value and value <= form.submission_counter:
+                raise serializers.ValidationError(
+                    _(
+                        "The maximum amount of allowed submissions must be bigger than the existing amount of submissions."
+                        "Consider resetting the submissions counter."
+                    )
+                )
+        return value
 
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()

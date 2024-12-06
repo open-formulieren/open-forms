@@ -49,6 +49,11 @@
     "description": "Locations Component field label",
     "originalDefault": "Locations Component"
   },
+  "/cUjWg": {
+    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
+    "description": "Successful Submissions Removal Limit help text",
+    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
+  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -908,6 +913,11 @@
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
   },
+  "GJ8Ok2": {
+    "defaultMessage": "Reset submissions counter",
+    "description": "Reset submissions counter",
+    "originalDefault": "Reset submissions counter"
+  },
   "GO9yud": {
     "defaultMessage": "Datum en tijdstip waarop het formulier geactiveerd moet worden.",
     "description": "Form activation field help text",
@@ -1032,6 +1042,11 @@
     "defaultMessage": "Is afspraakformulier?",
     "description": "Form appointment enabled field label",
     "originalDefault": "Appointment enabled"
+  },
+  "HrSXGN": {
+    "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
+    "description": "Reset the submissions counter confirmation message",
+    "originalDefault": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
   },
   "HuAm1K": {
     "defaultMessage": "en de stap \"{step}\" is bereikt",
@@ -2655,6 +2670,11 @@
     "description": "Email registration options 'attachFilesToEmail' label",
     "originalDefault": "Attach files to email"
   },
+  "oWOr9u": {
+    "defaultMessage": "Submission",
+    "description": "Form submission options tab title",
+    "originalDefault": "Submission"
+  },
   "oYmpN5": {
     "defaultMessage": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden.",
     "description": "Include confirmation page content in PDF",
@@ -2849,6 +2869,11 @@
     "defaultMessage": "Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te voegen. Als een waarde gezet is, dan heeft deze hogere prioriteit dan de globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
+  },
+  "sQekFr": {
+    "defaultMessage": "Maximum allowed number of submissions",
+    "description": "Form submissionMaximumAllowed field label",
+    "originalDefault": "Maximum allowed number of submissions"
   },
   "sptpzv": {
     "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
