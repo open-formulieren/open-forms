@@ -15,7 +15,8 @@ from openforms.appointments.tests.utils import setup_jcc
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.forms.tests.factories import FormDefinitionFactory
+from openforms.forms.constants import LogicActionTypes, PropertyTypes
+from openforms.forms.tests.factories import FormDefinitionFactory, FormLogicFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.base import PreRegistrationResult
@@ -1026,6 +1027,56 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+
+    @tag("gh-3901", "hlmr-86")
+    def test_cosign_required_and_visible_via_logic_does_not_proceed_with_registration(
+        self,
+    ):
+        """
+        A conditionally displayed cosign component must block registration.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                    "hidden": True,
+                },
+            ],
+            submitted_data={"cosign": ""},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="111222333",
+            language_code="en",
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.property,
+                        "property": {
+                            "type": PropertyTypes.bool,
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                    "component": "cosign",
+                }
+            ],
+        )
+        assert submission.registration_status == RegistrationStatuses.pending
+
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.registration_status, RegistrationStatuses.pending)
 
     @tag("gh-3924")
     def test_payment_complete_does_not_set_retry_flag(self):
