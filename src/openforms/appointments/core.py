@@ -23,7 +23,6 @@ from .exceptions import (
 )
 from .models import Appointment, AppointmentInfo
 from .registry import register
-from .utils import cancel_previous_submission_appointment
 
 __all__ = ["book_for_submission"]
 
@@ -116,5 +115,4 @@ def book_for_submission(submission: Submission) -> str:
         logevent.appointment_register_failure(appointment_info, plugin, e)
         raise AppointmentRegistrationFailed("Unable to create appointment") from e
 
-    cancel_previous_submission_appointment(submission)
     return appointment_id
