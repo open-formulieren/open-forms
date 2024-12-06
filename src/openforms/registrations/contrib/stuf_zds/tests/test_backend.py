@@ -199,6 +199,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 {
                     "key": "language_code",
                 },
+                {"key": "cosignerEmail", "type": "cosign"},
             ],
             form__name="my-form",
             bsn="111222333",
@@ -214,7 +215,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "language_code": "Dothraki",  # some form widget defined by form designer
             },
             language_code="en",
-            co_sign_data={"value": "123456782"},
+            cosigned=True,
+            co_sign_data__value="123456782",
         )
 
         attachment = SubmissionFileAttachmentFactory.create(

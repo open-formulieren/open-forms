@@ -33,6 +33,7 @@ from ..constants import (
     RegistrationStatuses,
     SubmissionValueVariableSources,
 )
+from ..cosigning import CosignState
 from ..pricing import get_submission_price
 from ..query import SubmissionManager
 from ..serializers import CoSignDataSerializer
@@ -483,7 +484,7 @@ class Submission(models.Model):
             return False
         # completed, but not cosigned yet -> registration after cosigning requires
         # unhashed attributes
-        if self.is_completed and self.waiting_on_cosign:
+        if self.is_completed and self.cosign_state.is_waiting:
             return False
 
         # the submission has not been submitted/completed/finalized, so it will
@@ -525,6 +526,7 @@ class Submission(models.Model):
         self._is_cleaned = True
 
         if self.co_sign_data:
+            # FIXME: this only deals with cosign v1 and not v2
             # We do keep the representation, as that is used in PDF and confirmation e-mail
             # generation and is usually a label derived from the source fields.
             self.co_sign_data.update(
@@ -612,7 +614,7 @@ class Submission(models.Model):
         config = GlobalConfiguration.get_solo()
         template = (
             config.cosign_submission_confirmation_title
-            if self.requires_cosign
+            if self.cosign_state.is_required
             else config.submission_confirmation_title
         )
         return render_from_string(
@@ -624,7 +626,8 @@ class Submission(models.Model):
         from openforms.variables.utils import get_variables_for_context
 
         config = GlobalConfiguration.get_solo()
-        if self.requires_cosign:
+        cosign = self.cosign_state
+        if cosign_required := cosign.is_required:
             template = config.cosign_submission_confirmation_template
         elif not (template := self.form.submission_confirmation_template):
             template = config.submission_confirmation_template
@@ -636,7 +639,7 @@ class Submission(models.Model):
             "_submission": self,
             "_form": self.form,  # should be the same as self.form
             "public_reference": self.public_registration_reference,
-            "cosigner_email": self.cosigner_email or "",
+            "cosigner_email": cosign.email if cosign_required else "",
             **get_variables_for_context(submission=self),
         }
         return render_from_string(template, context_data, backend=openforms_backend)
@@ -739,6 +742,7 @@ class Submission(models.Model):
         return values_state.get_data()
 
     def get_co_signer(self) -> str:
+        # XXX only deals with cosign v1
         if not self.co_sign_data:
             return ""
         if not (co_signer := self.co_sign_data.get("representation", "")):
@@ -828,34 +832,8 @@ class Submission(models.Model):
         return self._prefilled_data
 
     @cached_property
-    def cosigner_email(self) -> str | None:
-        from openforms.formio.service import iterate_data_with_components
-
-        for form_step in self.form.formstep_set.select_related("form_definition"):
-            for component_with_data_item in iterate_data_with_components(
-                form_step.form_definition.configuration, self.data
-            ):
-                if component_with_data_item.component["type"] == "cosign":
-                    return glom(
-                        self.data, component_with_data_item.data_path, default=None
-                    )
-
-    @property
-    def requires_cosign(self) -> bool:
-        if self.form.cosigning_required or self.cosigner_email:
-            return True
-        return False
-
-    @property
-    def waiting_on_cosign(self) -> bool:
-        if self.cosign_complete:
-            return False
-
-        # Cosign not complete, but required or the component was filled in the form
-        if self.requires_cosign:
-            return True
-
-        return False
+    def cosign_state(self) -> CosignState:
+        return CosignState(submission=self)
 
     @property
     def default_registration_backend_key(self) -> RegistrationBackendKey | None:

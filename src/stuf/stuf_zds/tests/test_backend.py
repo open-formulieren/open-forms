@@ -208,7 +208,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_create_zaak(self, m):
         client = StufZDSClient(self.service, self.options)
-        self.options.update({"co_sign_data": {"value": "123456782"}})
+        self.options.update({"cosigner": "123456782"})
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),

@@ -36,9 +36,12 @@ class Registry(BaseRegistry["BasePlugin"]):
         form: Form | None = None,
         is_for_cosign: bool = False,
     ) -> list[LoginInfo]:
-        options = list()
-        if is_for_cosign and (not form or not form.cosign_component):
-            return options
+        options: list[LoginInfo] = []
+
+        # return empty list for forms without cosign
+        if is_for_cosign:
+            if not form or not form.has_cosign_enabled:
+                return []
 
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:

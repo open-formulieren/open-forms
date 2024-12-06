@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import cast
 
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -15,8 +15,8 @@ from django.utils.translation import gettext_lazy as _
 from openforms.authentication.service import AuthAttribute
 from openforms.forms.models import Form
 
-if TYPE_CHECKING:
-    from .models import Submission
+from .cosigning import CosignV1Data
+from .models import Submission
 
 logger = logging.getLogger(__name__)
 
@@ -38,36 +38,34 @@ class Report:
 
     @property
     def needs_privacy_consent(self) -> bool:
-        return self.submission.form.get_statement_checkbox_required(
-            "ask_privacy_consent"
-        )
+        return self.form.get_statement_checkbox_required("ask_privacy_consent")
 
     @property
     def needs_statement_of_truth(self) -> bool:
-        return self.submission.form.get_statement_checkbox_required(
-            "ask_statement_of_truth"
-        )
+        return self.form.get_statement_checkbox_required("ask_statement_of_truth")
 
     @property
     def show_payment_info(self) -> bool:
-        return self.submission.payment_required and self.submission.price
+        return bool(self.submission.payment_required and self.submission.price)
 
     @property
     def co_signer(self) -> str:
         """Retrieve and normalize data about the co-signer of a form"""
-
-        if not (co_sign_data := self.submission.co_sign_data):
+        details = self.submission.cosign_state.legacy_signing_details
+        if not details:
             return ""
 
         # XXX this is something present in cosign v2 but not v1, which happens after the
         # PDF is generated. Generating the PDF again after it's cosigned otherwise
         # crashes.
-        if "cosign_date" in co_sign_data:
+        if "cosign_date" in details:
             return ""
 
-        representation = co_sign_data.get("representation") or ""
-        identifier = co_sign_data["identifier"]
-        co_sign_auth_attribute = co_sign_data["co_sign_auth_attribute"]
+        details = cast(CosignV1Data, details)
+
+        representation = details.get("representation") or ""
+        identifier = details["identifier"]
+        co_sign_auth_attribute = details["co_sign_auth_attribute"]
         auth_attribute_label = AuthAttribute[co_sign_auth_attribute].label
 
         if not representation:
@@ -86,14 +84,14 @@ class Report:
         # a submission that requires cosign is by definition not finished yet, so
         # displaying 'confirmation page content' doesn't make sense. Instead, we
         # render a simple notice describing the cosigning requirement.
-        if self.submission.requires_cosign:
+        if (cosign := self.submission.cosign_state).is_required:
             return format_html(
                 "<p>{content}</p>",
                 content=_(
                     "This PDF was generated before submission processing has started "
                     "because it needs to be cosigned first. The cosign request email "
                     "was sent to {email}."
-                ).format(email=self.submission.cosigner_email),
+                ).format(email=cosign.email),
             )
 
         # the content is already escaped by Django's rendering engine and mark_safe

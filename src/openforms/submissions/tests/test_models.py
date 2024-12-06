@@ -568,13 +568,13 @@ class SubmissionTests(TestCase):
         )
 
         with self.subTest("simple"):
-            self.assertEqual(submission1.cosigner_email, "test@test.nl")
+            self.assertEqual(submission1.cosign_state.email, "test@test.nl")
 
         with self.subTest("in fieldset"):
-            self.assertEqual(submission2.cosigner_email, "test@test.nl")
+            self.assertEqual(submission2.cosign_state.email, "test@test.nl")
 
         with self.subTest("nested"):
-            self.assertEqual(submission3.cosigner_email, "test@test.nl")
+            self.assertEqual(submission3.cosign_state.email, "test@test.nl")
 
     def test_clear_execution_state_without_execution_state(self):
         submission = SubmissionFactory.create()

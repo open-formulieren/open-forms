@@ -93,7 +93,7 @@ class LoginOptionSerializer(serializers.Serializer):
 
 class CosignLoginInfoSerializer(LoginOptionSerializer):
     def get_attribute(self, form):
-        if not form.cosign_component:
+        if not form.has_cosign_enabled:
             return None
 
         # cosign component but no auth backends is an invalid config that should
