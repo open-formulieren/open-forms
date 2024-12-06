@@ -126,6 +126,23 @@ class Form(models.Model):
     )
 
     # submission
+    submission_maximum_allowed = models.PositiveIntegerField(
+        _("maximum allowed submissions"),
+        null=True,
+        blank=True,
+        help_text=_(
+            "Maximum number of allowed submissions per form. Leave this empty if no limit is needed."
+        ),
+    )
+    submission_counter = models.PositiveIntegerField(
+        _("submissions counter"),
+        default=0,
+        help_text=_(
+            "Counter to track how many submissions have been completed for the specific form. "
+            "This works in combination with the maximum allowed submissions per form and can be "
+            "reset via the frontend."
+        ),
+    )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
         help_text=_(
@@ -382,11 +399,26 @@ class Form(models.Model):
     @property
     def is_available(self) -> bool:
         """
-        Soft deleted, deactivated or forms in maintenance mode are not available.
+        Soft deleted, deactivated, forms in maintenance mode or forms which have reached the
+        submission limit are not available.
         """
-        if any((self._is_deleted, not self.active, self.maintenance_mode)):
+        if any(
+            (
+                self._is_deleted,
+                not self.active,
+                self.maintenance_mode,
+                self.has_reached_submissions_limit(),
+            )
+        ):
             return False
         return True
+
+    def has_reached_submissions_limit(self) -> bool:
+        if (
+            limit := self.submission_maximum_allowed
+        ) and limit == self.submission_counter:
+            return True
+        return False
 
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
@@ -491,6 +523,7 @@ class Form(models.Model):
         )
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = self.product
+        copy.submission_counter = 0
 
         # name translations
 

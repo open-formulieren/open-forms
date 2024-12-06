@@ -49,6 +49,11 @@
     "description": "Locations Component field label",
     "originalDefault": "Locations Component"
   },
+  "/cUjWg": {
+    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
+    "description": "Successful Submissions Removal Limit help text",
+    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
+  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -899,6 +904,11 @@
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
   },
+  "GJ8Ok2": {
+    "defaultMessage": "Reset submissions counter",
+    "description": "Reset submissions counter",
+    "originalDefault": "Reset submissions counter"
+  },
   "GO9yud": {
     "defaultMessage": "When the form should be activated.",
     "description": "Form activation field help text",
@@ -1023,6 +1033,11 @@
     "defaultMessage": "Appointment enabled",
     "description": "Form appointment enabled field label",
     "originalDefault": "Appointment enabled"
+  },
+  "HrSXGN": {
+    "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
+    "description": "Reset the submissions counter confirmation message",
+    "originalDefault": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
   },
   "HuAm1K": {
     "defaultMessage": "and the step \"{step}\" has been reached",
@@ -2634,6 +2649,11 @@
     "description": "Email registration options 'attachFilesToEmail' label",
     "originalDefault": "Attach files to email"
   },
+  "oWOr9u": {
+    "defaultMessage": "Submission",
+    "description": "Form submission options tab title",
+    "originalDefault": "Submission"
+  },
   "oYmpN5": {
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
@@ -2828,6 +2848,11 @@
     "defaultMessage": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
+  },
+  "sQekFr": {
+    "defaultMessage": "Maximum allowed number of submissions",
+    "description": "Form submissionMaximumAllowed field label",
+    "originalDefault": "Maximum allowed number of submissions"
   },
   "sptpzv": {
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",

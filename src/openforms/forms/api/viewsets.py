@@ -421,6 +421,18 @@ class FormViewSet(viewsets.ModelViewSet):
         instance._is_deleted = True
         instance.save()
 
+    @action(detail=True, methods=["patch"])
+    def reset_submission_counter(self, request, **kwargs):
+        instance = self.get_object()
+        instance.submission_counter = 0
+        instance.save()
+
+        updated_data = {
+            "uuid": instance.uuid,
+            "submission_counter": instance.submission_counter,
+        }
+        return Response(updated_data, status=status.HTTP_200_OK)
+
     @extend_schema(
         summary=_("Prepare form edit admin message"),
         tags=["admin"],

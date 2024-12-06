@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.contrib.admin.templatetags.admin_list import result_headers
-from django.db.models import Count
+from django.db.models import Count, F, Q
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -46,6 +46,21 @@ class FormStepInline(OrderedTabularInline):
     )
     ordering = ("order",)
     extra = 1
+
+
+class FormReachedSubmissionLimitListFilter(admin.SimpleListFilter):
+    title = _("has reached submission limit")
+    parameter_name = "submission_limit"
+
+    def lookups(self, request, model_admin):
+        return [("unavailable", "Unavailable for submission")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "unavailable":
+            return queryset.filter(
+                ~Q(submission_maximum_allowed=None)
+                & Q(submission_maximum_allowed=F("submission_counter"))
+            )
 
 
 class FormDeletedListFilter(admin.ListFilter):
@@ -112,6 +127,7 @@ class FormAdmin(
         "active",
         "maintenance_mode",
         "translation_enabled",
+        "submission_maximum_allowed",
         "get_authentication_backends_display",
         "get_payment_backend_display",
         "get_registration_backend_display",
@@ -129,6 +145,7 @@ class FormAdmin(
         "maintenance_mode",
         "translation_enabled",
         FormDeletedListFilter,
+        FormReachedSubmissionLimitListFilter,
     )
     search_fields = ("uuid", "name", "internal_name", "slug")
 
