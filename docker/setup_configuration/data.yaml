@@ -15,6 +15,13 @@ zgw_consumers:
     auth_type: api_key
     header_key: Authorization
     header_value: Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
+  - identifier: zaken-test
+    label: Zaken API test
+    api_root: http://openzaak-web.local:8000/zaken/api/v1/
+    api_type: zrc
+    auth_type: zgw
+    client_id: test_client_id
+    secret: test_secret_key
   - identifier: documenten-test
     label: Documenten API test
     api_root: http://openzaak-web.local:8000/documenten/api/v1/
@@ -54,3 +61,27 @@ objects_api:
     catalogue_domain: OTHER
     catalogue_rsin: "000000000"
     organisatie_rsin: "000000000"
+
+zgw_api_config_enable: True
+zgw_api:
+  groups:
+  - name: Config 1
+    identifier: config-1
+    zaken_service_identifier: zaken-test
+    documenten_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
+    catalogue_domain: TEST
+    catalogue_rsin: "000000000"
+    organisatie_rsin: "000000000"
+    zaak_vertrouwelijkheidaanduiding: zaakvertrouwelijk
+    doc_vertrouwelijkheidaanduiding: openbaar
+    auteur: John Doe
+    objects_api_json_content_template: |
+      {
+        "data": {% json_summary %},
+        "type": "{{ productaanvraag_type }}",
+        "bsn": "{{ variables.auth_bsn }}",
+        "submission_id": "{{ submission.kenmerk }}",
+        "language_code": "{{ submission.language_code }}",
+        "custom_field": "foo"
+      }

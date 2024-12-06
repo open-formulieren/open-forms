@@ -1,0 +1,9 @@
+zgw_api_config_enable: True
+zgw_api:
+  groups:
+  - name: Config 1
+    identifier: config-1
+    zaken_service_identifier: zaken-test
+    documenten_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
+    auteur: Jane Doe
