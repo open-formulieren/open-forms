@@ -15,7 +15,7 @@ from openforms.utils.tests.http import (
 )
 from openforms.utils.tests.logging import disable_logging
 
-from ....base import AppointmentDetails, Customer, Location, Product
+from ....base import AppointmentDetails, CustomerDetails, Location, Product
 from ....core import book
 from ....exceptions import (
     AppointmentCreateFailed,
@@ -247,7 +247,12 @@ class PluginTests(MockConfigMixin, TestCase):
         location = Location(
             identifier="f364d92b7fa07a48c4ecc862de30c47", name="Branch 1"
         )
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         day = datetime(2016, 12, 6, 9, 0, 0)
 
         m.get(
@@ -529,7 +534,12 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     def test_create_appointment_failure(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
         m.get(
             f"{self.api_root}v1/branches/1",
@@ -576,7 +586,12 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     def test_create_appointment_unexpected_exception(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
         m.get(
             f"{self.api_root}v1/branches/1",

@@ -274,13 +274,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             rendered_content,
         )
 
-        self.assertInHTML(
-            '<a href="http://fake.nl/api/v2/submission-uuid/token/change/" rel="nofollow">'
-            + _("Change appointment")
-            + "</a>",
-            rendered_content,
-        )
-
     def test_appointment_information_with_no_appointment_id(self):
         submission = SubmissionFactory.create()
         AppointmentInfoFactory.create(

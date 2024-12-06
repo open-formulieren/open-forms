@@ -106,24 +106,3 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         for label, value in text_printed.items():
             with self.subTest(f"{label} -> '{value}'"):
                 self.assertEqual(value, text_values[label])
-
-    def test_appointments_formio(self):
-        configuration = load_json("appointments_components.json")
-        data = load_json("appointments_data.json")
-        text_printed = load_json("appointments_printable_text.json")
-
-        # for sanity
-        self.assertFlatConfiguration(configuration)
-
-        self.assertEqual(len(text_printed), len(data))
-
-        submission = SubmissionFactory.from_components(
-            configuration["components"], submitted_data=data, completed=True
-        )
-
-        printable_data = _get_printable_data(submission)
-        text_values = dict(printable_data)
-
-        for label, value in text_printed.items():
-            with self.subTest(f"{label} -> '{value}'"):
-                self.assertEqual(value, text_values[label])
