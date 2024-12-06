@@ -6,7 +6,7 @@ Open Forms configuration (CLI)
 
 After deploying Open Forms, it needs to be configured to be fully functional. The
 command line tool ``setup_configuration`` assist with this configuration by loading a
-YAML file in which the configuration information is specified
+YAML file in which the configuration information is specified.
 
 You can get the full command documentation with:
 
@@ -43,13 +43,10 @@ Execution
 Open Forms configuration
 ------------------------
 
-With the full command invocation, everything is configured at once. Each configuration step
-is idempotent, so any manual changes made via the admin interface will be updated if the command
-is run afterwards.
+With the full command invocation, all defined configuration steps are applied. Each step is idempotent,
+so it's safe to run the command multiple times. The steps will overwrite any manual changes made in
+the admin if you run the command after making these changes.
 
 .. code-block:: bash
 
     src/manage.py setup_configuration
-
-.. note:: Due to a cache-bug in the underlying framework, you need to restart all
-   replicas for part of this change to take effect everywhere.

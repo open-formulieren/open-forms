@@ -10,6 +10,10 @@ uwsgi_threads=${UWSGI_THREADS:-1}
 
 mountpoint=${SUBPATH:-/}
 
+# Figure out abspath of this script
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
 # wait for required services
 ${SCRIPTPATH}/wait_for_db.sh
 

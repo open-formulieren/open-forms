@@ -1207,6 +1207,14 @@ FLAGS = {
 }
 
 #
+# DJANGO-SETUP-CONFIGURATION
+#
+SETUP_CONFIGURATION_STEPS = [
+    "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
+    "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
+]
+
+#
 # Open Forms extensions
 #
 
@@ -1214,9 +1222,3 @@ OPEN_FORMS_EXTENSIONS = config("OPEN_FORMS_EXTENSIONS", split=True, default=[])
 
 if OPEN_FORMS_EXTENSIONS:
     INSTALLED_APPS += OPEN_FORMS_EXTENSIONS
-
-
-SETUP_CONFIGURATION_STEPS = [
-    "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
-    "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
-]

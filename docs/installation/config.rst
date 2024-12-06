@@ -392,13 +392,6 @@ variables, linking to the description of their behaviour in their respective mod
      A formal and more complete authentication context data model is used - existing
      installations likely do not provide all this information yet.
 
-
-Initial configuration
----------------------
-
-Open Forms supports the ``setup_configuration`` management command, which allows loading configuration via
-YAML files. The shape of these files is described at :ref:`installation_configuration_cli`.
-
 Specifying the environment variables
 =====================================
 

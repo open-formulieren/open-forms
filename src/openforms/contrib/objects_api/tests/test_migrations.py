@@ -18,7 +18,7 @@ class AddObjectsAPIGroupIdentifierTests(TestMigrations):
         ObjectsAPIGroupConfig = self.apps.get_model(
             "objects_api", "ObjectsAPIGroupConfig"
         )
-        groups = ObjectsAPIGroupConfig.objects.all()
+        groups = ObjectsAPIGroupConfig.objects.order_by("pk")
 
         self.assertEqual(groups.count(), 3)
 

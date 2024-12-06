@@ -53,8 +53,6 @@ exclude = [
     "src/openforms/formio/formatters/tests/",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
-    # setup_configuration typing doesn't work for `django_model_refs` yet (https://github.com/maykinmedia/django-setup-configuration/issues/25)
-    "src/openforms/contrib/objects_api/setup_configuration/steps.py",
 ]
 ignore = []
 
