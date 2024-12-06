@@ -1,20 +1,9 @@
 from django_setup_configuration.configuration import BaseConfigurationStep
-from zgw_consumers.models import Service
 
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.utils.services import get_service
 
 from .models import ObjectsAPIGroupConfigModel, SingleObjectsAPIGroupConfigModel
-
-
-def get_service(slug: str) -> Service:
-    """
-    Try to find a Service and re-raise DoesNotExist with the identifier to make debugging
-    easier
-    """
-    try:
-        return Service.objects.get(slug=slug)
-    except Service.DoesNotExist as e:
-        raise Service.DoesNotExist(f"{str(e)} (identifier = {slug})")
 
 
 class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigModel]):
