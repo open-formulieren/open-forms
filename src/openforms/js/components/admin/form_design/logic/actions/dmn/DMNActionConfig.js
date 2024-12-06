@@ -194,7 +194,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
       >
         {formik => (
           <Form>
-            <fieldset className="admin-fieldset aligned">
+            <fieldset className="aligned">
               <div className="form-row form-row--no-bottom-line">
                 <Field
                   name="pluginId"
@@ -232,7 +232,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
                 />
               }
             >
-              <fieldset className="admin-fieldset aligned">
+              <fieldset className="aligned">
                 <div className="form-row form-row--no-bottom-line">
                   <DecisionDefinitionIdField />
                 </div>
