@@ -24,15 +24,3 @@ Voorbeelden
    suwinet
    form_with_geometry
    camunda7
-
-======================
-Verouderde voorbeelden
-======================
-
-Deze voorbeelden beschrijven functionaliteit die uitgefaseerd wordt. We raden af om nog
-nieuwe formulieren hiermee te bouwen.
-
-.. toctree::
-   :maxdepth: 1
-
-   appointment_creation

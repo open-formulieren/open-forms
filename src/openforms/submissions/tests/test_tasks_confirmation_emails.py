@@ -477,47 +477,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
 
-    @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
-    def test_send_confirmation_email_when_appointment_is_changed(self):
-        submission = SubmissionFactory.from_components(
-            completed=True,
-            components_list=[
-                {
-                    "key": "email",
-                    "type": "email",
-                    "label": "Email",
-                    "confirmationRecipient": True,
-                },
-            ],
-            submitted_data={"email": "test@test.nl"},
-            has_previous_submission=True,
-        )
-        AppointmentInfoFactory.create(
-            submission=submission.previous_submission,
-            status=AppointmentDetailsStatus.cancelled,
-        )
-        # add a second step
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step__form=submission.form,
-            data={"foo": "bar"},
-        )
-        ConfirmationEmailTemplateFactory.create(
-            form=submission.form,
-            subject="Confirmation mail",
-            content="Information filled in: {{foo}}",
-        )
-
-        # "execute" the celery task
-        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            schedule_emails(submission.id)
-
-        # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
-
-        message = mail.outbox[0]
-        self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
-
     def test_template_is_rendered_in_submission_language(self):
         """
         Assert a subset of the components with particularly weird APIs is translated correctly.
