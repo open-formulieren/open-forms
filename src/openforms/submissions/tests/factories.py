@@ -12,6 +12,7 @@ import faker
 import magic
 from glom import PathAccessError, glom
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -151,6 +152,25 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         with_public_registration_reference = factory.Trait(
             completed=True,
             public_registration_reference=factory.LazyFunction(get_random_reference),
+        )
+        cosigned = factory.Trait(
+            completed=True,
+            cosign_request_email_sent=True,
+            cosign_privacy_policy_accepted=True,
+            cosign_statement_of_truth_accepted=True,
+            cosign_complete=True,
+            co_sign_data=factory.Dict(
+                {
+                    "plugin": "demo",
+                    "attribute": AuthAttribute.bsn,
+                    "value": "123456782",
+                    "cosign_date": factory.LazyAttribute(
+                        lambda o: (
+                            o.factory_parent.completed_on + timedelta(days=1)
+                        ).isoformat()
+                    ),
+                }
+            ),
         )
 
     @factory.post_generation

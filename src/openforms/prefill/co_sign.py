@@ -10,6 +10,7 @@ received, see the :mod:`signals` module.
 import logging
 
 from openforms.authentication.service import AuthAttribute
+from openforms.submissions.cosigning import CosignV1Data
 from openforms.submissions.models import Submission
 
 from .models import PrefillConfig
@@ -57,10 +58,16 @@ def add_co_sign_representation(
         plugin,
     )
 
+    _cosign_data: CosignV1Data = submission.co_sign_data.copy()
+
     values, representation = plugin.get_co_sign_values(
-        submission,
-        submission.co_sign_data["identifier"],
+        submission, _cosign_data["identifier"]
     )
-    submission.co_sign_data["fields"] = values
-    submission.co_sign_data["representation"] = representation
+    _cosign_data.update(
+        {
+            "fields": values,
+            "representation": representation,
+        }
+    )
+    submission.co_sign_data.update(_cosign_data)
     submission.save(update_fields=["co_sign_data"])

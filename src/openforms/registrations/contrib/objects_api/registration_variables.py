@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext_lazy as _
 
-from openforms.authentication.service import AuthAttribute, BaseAuth
+from openforms.authentication.service import AuthAttribute
 from openforms.plugins.registry import BaseRegistry
+from openforms.submissions.cosigning import CosignV2Data
+from openforms.submissions.models import Submission
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 
-from .models import ObjectsAPISubmissionAttachment
-
-if TYPE_CHECKING:
-    from openforms.submissions.models import Submission
+from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 
 
 class Registry(BaseRegistry[BaseStaticVariable]):
@@ -47,7 +45,10 @@ class PdfUrl(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None:
             return None
-        return submission.objects_api_registration_data.pdf_url
+        _data: ObjectsAPIRegistrationData = (
+            submission.objects_api_registration_data  # pyright: ignore[reportAttributeAccessIssue]
+        )
+        return _data.pdf_url
 
 
 @register("csv_url")
@@ -58,7 +59,10 @@ class CsvUrl(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None:
             return None
-        return submission.objects_api_registration_data.csv_url
+        _data: ObjectsAPIRegistrationData = (
+            submission.objects_api_registration_data  # pyright: ignore[reportAttributeAccessIssue]
+        )
+        return _data.csv_url
 
 
 @register("attachment_urls")
@@ -127,19 +131,20 @@ class Cosign(BaseStaticVariable):
 
     def get_initial_value(
         self, submission: Submission | None = None
-    ) -> BaseAuth | None:
-        if not submission or not submission.cosign_complete:
+    ) -> CosignV2Data | None:
+        if not submission or not (cosign := submission.cosign_state).is_signed:
             return None
 
-        return submission.co_sign_data
+        return cosign.signing_details
 
 
 def get_cosign_value(submission: Submission | None, attribute: AuthAttribute) -> str:
-    if not submission or not submission.cosign_complete:
+    if not submission or not (cosign := submission.cosign_state).is_signed:
         return ""
 
-    if submission.co_sign_data["attribute"] == attribute:
-        return submission.co_sign_data["value"]
+    details = cosign.signing_details
+    if details["attribute"] == attribute:
+        return details["value"]
 
     return ""
 
@@ -152,15 +157,10 @@ class CosignDate(BaseStaticVariable):
     def get_initial_value(
         self, submission: Submission | None = None
     ) -> datetime | None:
-        if not submission or not submission.cosign_complete:
+        if not submission or not (cosign := submission.cosign_state).is_signed:
             return None
-
-        if (cosign_date := submission.co_sign_data.get("cosign_date")) is None:
-            # Can be the case on existing submissions, at some point we can switch back to
-            # `__getitem__` ([...]).
-            return None
-
-        return datetime.fromisoformat(cosign_date)
+        cosign_date = cosign.signing_details.get("cosign_date")
+        return datetime.fromisoformat(cosign_date) if cosign_date else None
 
 
 @register("cosign_bsn")

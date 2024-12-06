@@ -68,7 +68,8 @@ def send_confirmation_email(submission_id: int) -> None:
     if (
         not submission.confirmation_email_sent
         or (
-            not submission.cosign_confirmation_email_sent and submission.cosign_complete
+            not submission.cosign_confirmation_email_sent
+            and submission.cosign_state.is_signed
         )
         or (
             not submission.payment_complete_confirmation_email_sent
@@ -84,11 +85,12 @@ def send_email_cosigner(submission_id: int) -> None:
 
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
+        cosign = submission.cosign_state
 
-        if not (recipient := submission.cosigner_email):
+        if not cosign.is_required or not (recipient := cosign.email):
             logger.warning(
                 "No co-signer email found in the form. Skipping co-sign email for submission %d.",
-                submission.id,
+                submission.pk,
             )
             return
 
@@ -162,7 +164,7 @@ def schedule_emails(submission_id: int) -> None:
     # Figure out which email(s) should be sent
     #
 
-    if submission.waiting_on_cosign and not submission.cosign_request_email_sent:
+    if submission.cosign_state.is_waiting and not submission.cosign_request_email_sent:
         send_email_cosigner.delay(submission_id)
 
     if not submission.form.send_confirmation_email:
@@ -170,7 +172,7 @@ def schedule_emails(submission_id: int) -> None:
             "Form %d is configured to not send a confirmation email for submission %d, "
             "skipping the confirmation e-mail.",
             submission.form.id,
-            submission.id,
+            submission.pk,
         )
         logevent.confirmation_email_skip(submission)
         return
@@ -185,7 +187,7 @@ def schedule_emails(submission_id: int) -> None:
             execution_options["countdown"] = settings.PAYMENT_CONFIRMATION_EMAIL_TIMEOUT
 
     send_confirmation_email.apply_async(
-        args=(submission.id,),
+        args=(submission.pk,),
         **execution_options,
     )
     logevent.confirmation_email_scheduled(
