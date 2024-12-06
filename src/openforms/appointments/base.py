@@ -49,21 +49,6 @@ class Location:
         return self.identifier
 
 
-@dataclass()
-class Customer:
-    """
-    Deprecated in favour of the :class:`CustomerDetails`.
-    """
-
-    last_name: str
-    birthdate: date
-    initials: str | None = None
-    phonenumber: str | None = None
-
-    def __str__(self):
-        return self.last_name
-
-
 F = TypeVar("F", bound=TextChoices)
 # generic type for the plugin-specific enum of field names
 
@@ -210,7 +195,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: CustomerDetails[F] | Customer,
+        client: CustomerDetails[F],
         remarks: str = "",
     ) -> str:
         """
@@ -219,7 +204,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         :param products: List of :class:`Product`, as obtained from :meth:`get_available_products`.
         :param location: An :class:`Location`, as obtained from :meth:`get_locations`.
         :param start_at: A `datetime` to start the appointment, as obtained from :meth:`get_dates`.
-        :param client: A :class:`Customer` that holds client details.
+        :param client: A :class:`CustomerDetails` that holds client details.
         :param remarks: A ``str`` for additional remarks, added to the appointment.
         :returns: An appointment identifier as ``str``.
         :raises AppointmentCreateFailed: If the appointment could not be created.
@@ -249,11 +234,11 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
     # cosmetics
 
     @staticmethod
-    def get_link(submission: Submission, verb: str) -> str:
+    def get_cancel_link(submission: Submission) -> str:
         token = submission_appointment_token_generator.make_token(submission)
 
         path = reverse(
-            f"appointments:appointments-verify-{verb.lower()}-appointment-link",
+            "appointments:appointments-verify-cancel-appointment-link",
             kwargs={
                 "token": token,
                 "submission_uuid": submission.uuid,
@@ -261,11 +246,3 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         )
 
         return build_absolute_uri(path)
-
-    @classmethod
-    def get_cancel_link(cls, submission: Submission) -> str:
-        return cls.get_link(submission, "cancel")
-
-    @classmethod
-    def get_change_link(cls, submission: Submission) -> str:
-        return cls.get_link(submission, "change")

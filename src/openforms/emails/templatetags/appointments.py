@@ -22,10 +22,12 @@ def appointment_information(context):
     else:
         template_name = "emails/templatetags/appointment_information.html"
 
-    # check for new style appointments
+    # check for appointments
     submission = context["_submission"]
     appointment = get_appointment(submission)
-    plugin_id = appointment.plugin if appointment else ""
+
+    assert appointment
+    plugin_id = appointment.plugin
 
     plugin = get_plugin(plugin=plugin_id)
 
@@ -37,8 +39,5 @@ def appointment_information(context):
             as_html=not as_text,
         ),
         "appointment_cancel_link": plugin.get_cancel_link(context["_submission"]),
-        "appointment_change_link": (
-            plugin.get_change_link(context["_submission"]) if not appointment else ""
-        ),
     }
     return render_to_string(template_name, tag_context)
