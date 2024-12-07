@@ -5,7 +5,11 @@ from flags.state import flag_enabled
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.config.constants import UploadFileType
-from openforms.config.models import GlobalConfiguration, RichTextColor
+from openforms.config.models import (
+    GlobalConfiguration,
+    LeafletMapBackground,
+    RichTextColor,
+)
 
 
 def get_rich_text_colors():
@@ -17,6 +21,10 @@ def get_rich_text_colors():
     return colors
 
 
+def get_leaflet_map_backgrounds():
+    return list(LeafletMapBackground.objects.values("identifier", "url", "label"))
+
+
 class FormioConfigMixin:
     def render_change_form(
         self, request, context, add=False, change=False, form_url="", obj=None
@@ -26,6 +34,7 @@ class FormioConfigMixin:
             {
                 "required_default": config.form_fields_required_default,
                 "rich_text_colors": get_rich_text_colors(),
+                "leaflet_map_backgrounds": get_leaflet_map_backgrounds(),
                 "upload_filetypes": [
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
