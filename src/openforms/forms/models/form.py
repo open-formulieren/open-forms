@@ -2,6 +2,7 @@ import logging
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
+from functools import cached_property
 from typing import Literal
 
 from django.conf import settings
@@ -24,7 +25,6 @@ from openforms.authentication.fields import AuthenticationBackendMultiSelectFiel
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
-from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
@@ -39,8 +39,6 @@ from .utils import literal_getter
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
-
-_sentinel = object()
 
 
 class FormQuerySet(models.QuerySet):
@@ -438,23 +436,19 @@ class Form(models.Model):
         "authentication backend(s)"
     )
 
-    _cosign_component = _sentinel
+    @cached_property
+    def has_cosign_enabled(self) -> bool:
+        """
+        Check if cosign is enabled by checking the presence of a cosign (v2) component.
 
-    def get_cosign_component(self) -> Component | None:
+        We don't return the component itself, as you should use
+        :class:`openforms.submissions.cosigning.CosignState` to check the state, which
+        can take dynamic logic rules into account.
+        """
         for component in self.iter_components():
             if component["type"] == "cosign":
-                return component
-
-    @property
-    def cosign_component(self) -> Component | None:
-        if self._cosign_component is _sentinel:
-            self._cosign_component = self.get_cosign_component()
-        return self._cosign_component
-
-    @property
-    def cosigning_required(self) -> bool:
-        cosign_component = self.get_cosign_component()
-        return cosign_component and cosign_component.get("validate", {}).get("required")
+                return True
+        return False
 
     @property
     def login_required(self) -> bool:

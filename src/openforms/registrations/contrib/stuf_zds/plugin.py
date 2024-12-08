@@ -243,7 +243,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         zaak_options: ZaakOptions = {
             **options,
             "omschrijving": submission.form.admin_name,
-            "co_sign_data": submission.co_sign_data if submission.co_sign_data else {},
+            "cosigner": (
+                cosign.signing_details["value"]
+                if (cosign := submission.cosign_state).is_signed
+                else ""
+            ),
         }
 
         with get_client(options=zaak_options) as client:

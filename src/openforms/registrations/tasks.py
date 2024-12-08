@@ -189,7 +189,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         )
         return
 
-    if submission.waiting_on_cosign:
+    if submission.cosign_state.is_waiting:
         logger.debug(
             "Skipping registration for submission '%s' as it hasn't been co-signed yet.",
             submission,
