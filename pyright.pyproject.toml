@@ -24,6 +24,8 @@ include = [
     # Formio tooling
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
+    # Core forms app
+    "src/openforms/forms/api/serializers/logic/action_serializers.py",
     # Payments
     "src/openforms/payments/models.py",
     # Interaction with the outside world

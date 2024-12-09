@@ -77,7 +77,6 @@ class LogicTabTests(E2ETestCase):
                     rule.actions[0],
                     {
                         "component": "field1",
-                        "form_step": "",
                         "action": {
                             "type": "property",
                             "property": {"value": "validate.required", "type": "bool"},

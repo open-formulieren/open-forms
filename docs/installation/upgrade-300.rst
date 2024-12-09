@@ -91,6 +91,13 @@ active locale field (``name_nl`` or ``name_en``) during imports. Instead, the
 ``translations`` key existed.  We recommend re-creating the exports on a newer version
 of Open Forms.
 
+Removal of ``formStep`` reference in form logic
+-----------------------------------------------
+
+The ``formStep`` key was deprecated in favour of ``formStepUuid`` and the conversion
+code has been removed. This may affect form exports from before Open Forms 2.1.0. We
+recommend re-creating the exports on a newer version of Open Forms.
+
 Removal of /api/v2/location/get-street-name-and-city endpoint
 =============================================================
 

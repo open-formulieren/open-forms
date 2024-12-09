@@ -8754,13 +8754,6 @@ components:
           title: Key of the target variable
           description: Sleutel van de variabele die aangepast wordt door de actie.
             Dit veld is verplicht voor de actietypes `variable` - anders is het optioneel.
-        formStep:
-          type: string
-          format: uri
-          nullable: true
-          description: De formulierstap die wordt beïnvloed door de actie. Dit veld
-            is verplicht als het actietype `step-not-applicable` is, anders optioneel.
-          deprecated: true
         formStepUuid:
           type: string
           format: uuid
