@@ -1210,6 +1210,7 @@ FLAGS = {
 # DJANGO-SETUP-CONFIGURATION
 #
 SETUP_CONFIGURATION_STEPS = [
+    "mozilla_django_oidc_db.setup_configuration.steps.AdminOIDCConfigurationStep",
     "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
     "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
     "openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep",
