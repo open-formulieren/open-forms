@@ -176,7 +176,7 @@ diff-match-patch==20230430
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==4.2.16
+django==4.2.17
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -613,7 +613,7 @@ lxml==5.2.2
     #   pyquery
     #   xmlsec
     #   zeep
-lxml-html-clean==0.1.1
+lxml-html-clean==0.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1125,7 +1125,7 @@ tinycss2==1.1.0
     #   weasyprint
 toml==0.10.2
     # via autopep8
-tornado==6.4.1
+tornado==6.4.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
