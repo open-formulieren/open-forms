@@ -1,0 +1,32 @@
+zgw_api_config_enable: True
+zgw_api:
+  groups:
+  - name: Config 1
+    identifier: config-1
+    zaken_service_identifier: zaken-test
+    documenten_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
+    catalogue_domain: TEST
+    catalogue_rsin: "000000000"
+    organisatie_rsin: "000000000"
+    zaak_vertrouwelijkheidaanduiding: zaakvertrouwelijk
+    doc_vertrouwelijkheidaanduiding: openbaar
+    auteur: John Doe
+    objects_api_json_content_template: |
+      {
+        "data": {% json_summary %},
+        "type": "{{ productaanvraag_type }}",
+        "bsn": "{{ variables.auth_bsn }}",
+        "submission_id": "{{ submission.kenmerk }}",
+        "language_code": "{{ submission.language_code }}",
+        "custom_field": "foo"
+      }
+  - name: Config 2
+    identifier: config-2
+    zaken_service_identifier: zaken-test
+    documenten_service_identifier: documenten-test
+    catalogi_service_identifier: catalogi-test
+    catalogue_domain: OTHER
+    catalogue_rsin: "000000000"
+    organisatie_rsin: "000000000"
+    auteur: Jane Doe

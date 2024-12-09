@@ -1,5 +1,3 @@
-from django.utils.text import slugify
-
 import factory
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -9,7 +7,7 @@ from ..models import ZGWApiGroupConfig
 
 class ZGWApiGroupConfigFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "ZGW API set %03d" % n)
-    identifier = factory.LazyAttribute(lambda o: slugify(o.name))
+    identifier = factory.Sequence(lambda n: f"zgw-api-group-{n}")
     zrc_service = factory.SubFactory(
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.zrc
     )

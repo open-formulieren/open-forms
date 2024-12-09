@@ -58,7 +58,7 @@ class AddZGWApiGroupConfigIdentifierTests(TestMigrations):
 
     def test_identifiers_generated(self):
         ZGWApiGroupConfig = self.apps.get_model("zgw_apis", "ZGWApiGroupConfig")
-        groups = ZGWApiGroupConfig.objects.all()
+        groups = ZGWApiGroupConfig.objects.order_by("pk")
 
         self.assertEqual(groups.count(), 3)
 
