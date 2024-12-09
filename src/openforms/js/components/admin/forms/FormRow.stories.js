@@ -1,20 +1,18 @@
+import {AdminChangeFormDecorator} from 'components/admin/form_design/story-decorators';
+
 import Field from './Field';
-import Fieldset from './Fieldset';
 import FormRow from './FormRow';
 import {TextInput} from './Inputs';
-
-const FormDecorator = Story => (
-  <form>
-    <Fieldset>
-      <Story />
-    </Fieldset>
-  </form>
-);
 
 export default {
   title: 'Admin/Django/FormRow',
   component: FormRow,
-  decorators: [FormDecorator],
+  decorators: [AdminChangeFormDecorator],
+  parameters: {
+    adminChangeForm: {
+      wrapFieldset: true,
+    },
+  },
 };
 
 export const SingleField = {

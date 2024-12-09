@@ -16,6 +16,7 @@ import {
   mockRoleTypesGet as mockZGWApisRoleTypesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
+  AdminChangeFormDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
@@ -25,7 +26,7 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [ValidationErrorsDecorator, FormDecorator],
+  decorators: [ValidationErrorsDecorator, FormDecorator, AdminChangeFormDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -389,25 +390,6 @@ export default {
           type: 'object',
         },
       },
-      {
-        id: 'microsoft-graph',
-        label: 'Microsoft Graph (OneDrive/SharePoint)',
-        schema: {
-          type: 'object',
-          properties: {
-            folderPath: {
-              type: 'string',
-              minLength: 1,
-              title: 'maplocatie',
-            },
-            driveId: {
-              type: 'string',
-              minLength: 1,
-              title: 'drive-ID',
-            },
-          },
-        },
-      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -651,15 +633,6 @@ export const ConfiguredBackends = {
         options: {extraLine: 'Filled out option'},
       },
       {
-        key: 'backend9',
-        name: 'MS Graph',
-        backend: 'microsoft-graph',
-        options: {
-          folderPath: '/formSubmissions',
-          driveId: 'myDrive',
-        },
-      },
-      {
         key: 'backend10',
         name: 'Camunda',
         backend: 'camunda',
@@ -763,13 +736,13 @@ export const ObjectsAPI = {
           'Path to auth attribute (e.g. BSN/KVK) in objects'
         );
 
-        expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
+        expect(authAttributePath.parentElement).toHaveClass('field--disabled');
 
         const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
         await userEvent.click(updateExistingObject);
 
         // Checking `updateExistingObject` should make `authAttributePath` no longer disabled
-        expect(authAttributePath.parentElement.parentElement).not.toHaveClass('field--disabled');
+        expect(authAttributePath.parentElement).not.toHaveClass('field--disabled');
       }
     );
 

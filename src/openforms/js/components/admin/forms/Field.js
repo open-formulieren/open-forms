@@ -77,40 +77,48 @@ const Field = ({
     modifiedChildren = React.cloneElement(children, childProps);
   }
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
-  const className = classNames({
-    fieldBox: fieldBox,
-    errors: hasErrors,
-    'field--disabled': disabled,
-  });
 
-  return (
+  const fieldInputMarkup = (
+    <div
+      className={classNames('flex-container', {
+        fieldBox: fieldBox,
+        errors: fieldBox && hasErrors,
+        'field--disabled': disabled,
+      })}
+    >
+      {label && (
+        <label className={required ? 'required' : ''} htmlFor={htmlFor}>
+          {label}
+        </label>
+      )}
+      {modifiedChildren}
+    </div>
+  );
+
+  const errorsMarkup = hasErrors && (
+    <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
+      {formattedErrors}
+    </ErrorList>
+  );
+
+  const helpMarkup = helpText && (
+    <div className="help" id={`id_${name}_helptext`}>
+      <div>{helpText}</div>
+    </div>
+  );
+
+  return fieldBox ? (
+    <div>
+      {errorsMarkup}
+      {fieldInputMarkup}
+      {helpMarkup}
+    </div>
+  ) : (
     <>
-      {!fieldBox && hasErrors ? (
-        <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
-          {formattedErrors}
-        </ErrorList>
-      ) : null}
-      <div className={className}>
-        {fieldBox && hasErrors ? (
-          <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
-            {formattedErrors}
-          </ErrorList>
-        ) : null}
-
-        <div className="flex-container">
-          {label && (
-            <label className={required ? 'required' : ''} htmlFor={htmlFor}>
-              {label}
-            </label>
-          )}
-          {modifiedChildren}
-        </div>
-
-        {helpText ? (
-          <div className="help" id={`id_${name}_helptext`}>
-            <div>{helpText}</div>
-          </div>
-        ) : null}
+      {errorsMarkup}
+      <div>
+        {fieldInputMarkup}
+        {helpMarkup}
       </div>
     </>
   );
