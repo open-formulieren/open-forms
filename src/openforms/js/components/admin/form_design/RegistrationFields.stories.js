@@ -16,6 +16,7 @@ import {
   mockRoleTypesGet as mockZGWApisRoleTypesGet,
 } from 'components/admin/form_design/registrations/zgw/mocks';
 import {
+  AdminChangeFormDecorator,
   FormDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
@@ -25,16 +26,7 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [
-    ValidationErrorsDecorator,
-    FormDecorator,
-    // provide necessary django elements to get the right styling
-    Story => (
-      <form>
-        <Story />
-      </form>
-    ),
-  ],
+  decorators: [ValidationErrorsDecorator, FormDecorator, AdminChangeFormDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [

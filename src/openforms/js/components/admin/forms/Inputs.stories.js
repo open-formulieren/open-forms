@@ -1,5 +1,7 @@
 import flatpickr from 'flatpickr';
 
+import {AdminChangeFormDecorator} from 'components/admin/form_design/story-decorators';
+
 import {
   Checkbox,
   DateInput,
@@ -19,6 +21,13 @@ export default {
 export const CheckboxStory = {
   name: 'Checkbox',
   render: args => <Checkbox {...args} />,
+
+  decorators: [AdminChangeFormDecorator],
+  parameters: {
+    adminChangeForm: {
+      wrapFieldset: true,
+    },
+  },
 
   args: {
     name: 'Checkbox',

@@ -1,10 +1,18 @@
 import {expect, within} from '@storybook/test';
 
+import {AdminChangeFormDecorator} from 'components/admin/form_design/story-decorators';
+
 import LoAOverrideOption from './LoAOverrideOption';
 
 export default {
   title: 'Form design/ Authentication / LoA override option',
   component: LoAOverrideOption,
+  decorators: [AdminChangeFormDecorator],
+  parameters: {
+    adminChangeForm: {
+      wrapFieldset: true,
+    },
+  },
 };
 
 export const Default = {
