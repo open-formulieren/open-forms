@@ -21,6 +21,7 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.forms.tasks import create_form_variables_for_components
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 from openforms.utils.urls import is_admin_request
@@ -101,6 +102,34 @@ class FormStepViewSet(
                 Form, uuid=self.kwargs["form_uuid_or_slug"]
             )
         return context
+
+    @transaction.atomic()
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+        transaction.on_commit(
+            lambda: create_form_variables_for_components.apply_async(
+                args=(form.id,),
+                countdown=60,
+            )
+        )
+
+        return response
+
+    @transaction.atomic()
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+
+        form = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+        transaction.on_commit(
+            lambda: create_form_variables_for_components.apply_async(
+                args=(form.id,),
+                countdown=60,
+            )
+        )
+
+        return response
 
 
 _FORMSTEP_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormStepSerializer)
