@@ -91,7 +91,7 @@ defusedxml==0.7.1
     #   odfpy
 diff-match-patch==20230430
     # via django-import-export
-django==4.2.15
+django==4.2.17
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -318,7 +318,7 @@ lxml==5.2.2
     #   maykin-python3-saml
     #   xmlsec
     #   zeep
-lxml-html-clean==0.1.1
+lxml-html-clean==0.4.1
     # via -r requirements/base.in
 mail-cleaner==1.2.0
     # via -r requirements/base.in
@@ -504,7 +504,7 @@ tinycss2==1.1.0
     #   bleach
     #   cssselect2
     #   weasyprint
-tornado==6.4.1
+tornado==6.4.2
     # via flower
 typing-extensions==4.11.0
     # via
