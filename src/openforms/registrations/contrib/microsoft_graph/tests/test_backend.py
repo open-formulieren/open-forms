@@ -101,8 +101,9 @@ class MSGraphRegistrationBackendTests(TestCase):
 
         set_submission_reference(submission)
 
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with (
+            patch.object(Account, "is_authenticated", True),
+            patch.object(Drive, "get_root_folder", return_value=MockFolder()),
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
             graph_submission.register_submission(submission, self.options)
