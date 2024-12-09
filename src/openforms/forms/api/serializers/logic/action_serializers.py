@@ -1,12 +1,9 @@
-import warnings
 from datetime import date
 
-from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
 from drf_spectacular.utils import extend_schema_serializer
-from furl import furl
 from json_logic.typing import Primitive
 from rest_framework import serializers
 
@@ -168,18 +165,6 @@ class LogicComponentActionSerializer(serializers.Serializer):
             )
         ),
     )
-    # Deprecated field! form_step_uuid should be used instead
-    form_step = serializers.URLField(
-        allow_null=True,
-        required=False,  # validated against the action.type
-        allow_blank=True,
-        label=_("form step"),
-        help_text=_(
-            "The form step that will be affected by the action. This field is "
-            "required if the action type is `%(action_type)s`, otherwise optional."
-        )
-        % {"action_type": LogicActionTypes.step_not_applicable},
-    )
     form_step_uuid = ActionFormStepUUIDField(
         allow_null=True,
         required=False,  # validated against the action.type
@@ -192,27 +177,17 @@ class LogicComponentActionSerializer(serializers.Serializer):
     )
     action = LogicActionPolymorphicSerializer()
 
-    def validate(self, data: dict) -> dict:
+    def validate(self, attrs: dict) -> dict:
         """
         1. Check that the component is supplied depending on the action type.
         2. Check that the value for date variables has the right format
         """
-        action_type = data.get("action", {}).get("type")
-        action_value = data.get("action", {}).get("value")
-        component = data.get("component")
-        form_step = data.get("form_step")
+        action_type = attrs.get("action", {}).get("type")
+        action_value = attrs.get("action", {}).get("value")
+        component = attrs.get("component")
 
-        if form_step and not data.get("form_step_uuid"):
-            warnings.warn(
-                "Logic action 'formStep' is deprecated, use 'formStepUuid' instead",
-                DeprecationWarning,
-            )
-            # normalize to UUID following deprecation of URL reference
-            match = resolve(furl(form_step).path)
-            data["form_step_uuid"] = match.kwargs["uuid"]
-
-        form_step_uuid = data.get("form_step_uuid")
-        variable = data.get("variable")
+        form_step_uuid = attrs.get("form_step_uuid")
+        variable = attrs.get("variable")
 
         if (
             action_type
@@ -254,7 +229,10 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
             if form_var.data_type == FormVariableDataTypes.date:
                 try:
-                    date.fromisoformat(action_value)
+                    # type check muted since we handle it at runtime
+                    date.fromisoformat(
+                        action_value  # pyright: ignore[reportArgumentType]
+                    )
                 except (ValueError, TypeError) as ex:
                     raise serializers.ValidationError(
                         {
@@ -270,7 +248,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
         if (
             action_type
             and action_type == LogicActionTypes.step_not_applicable
-            and (not form_step and not form_step_uuid)
+            and not form_step_uuid
         ):
             raise serializers.ValidationError(
                 {
@@ -281,4 +259,4 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 code="blank",
             )
 
-        return data
+        return attrs

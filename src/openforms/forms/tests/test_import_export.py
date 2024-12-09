@@ -873,8 +873,7 @@ class ImportExportTests(TempdirMixin, TestCase):
                     "actions": [
                         {
                             "action": {"type": "step-not-applicable"},
-                            # In versions <= 2.0, we used the url of the form step, but this was replaced with the UUID
-                            "form_step": "http://127.0.0.1:8999/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/a54864c6-c460-48bd-a520-eced60ffb209",
+                            "form_step_uuid": "a54864c6-c460-48bd-a520-eced60ffb209",
                         }
                     ],
                     "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
