@@ -169,16 +169,17 @@ def send_confirmation_email(submission: Submission) -> None:
         logger.warning(
             "Could not determine the recipient e-mail address for submission %d, "
             "skipping the confirmation e-mail.",
-            submission.id,
+            submission.pk,
         )
         logevent.confirmation_email_skip(submission)
         return
 
     cc_emails = []
+    cosign = submission.cosign_state
     should_cosigner_be_in_cc = (
-        submission.cosign_complete and not submission.cosign_confirmation_email_sent
+        cosign.is_signed and not submission.cosign_confirmation_email_sent
     )
-    if should_cosigner_be_in_cc and (cosigner_email := submission.cosigner_email):
+    if should_cosigner_be_in_cc and (cosigner_email := cosign.email):
         cc_emails.append(cosigner_email)
 
     context = get_confirmation_email_context_data(submission)
@@ -237,7 +238,7 @@ def initialise_user_defined_variables(submission: Submission):
         if variable.form_variable.source == FormVariableSources.user_defined
     }
     SubmissionValueVariable.objects.bulk_create(
-        [variable for key, variable in variables.items() if not variable.pk]
+        [variable for variable in variables.values() if not variable.pk]
     )
 
 

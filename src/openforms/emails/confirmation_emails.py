@@ -26,8 +26,9 @@ def get_confirmation_email_templates(submission: Submission) -> tuple[str, str]:
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
         custom_templates = getattr(submission.form, "confirmation_email_template", None)
+        cosign = submission.cosign_state
 
-        match (submission.requires_cosign, custom_templates):
+        match (cosign.is_required, custom_templates):
             # no cosign, definitely no custom templates exist
             case (False, None):
                 return (
@@ -72,7 +73,7 @@ def get_confirmation_email_context_data(submission: Submission) -> dict[str, Any
             **get_variables_for_context(submission),
             "public_reference": submission.public_registration_reference,
             "registration_completed": submission.is_registered,
-            "waiting_on_cosign": submission.waiting_on_cosign,
+            "waiting_on_cosign": submission.cosign_state.is_waiting,
         }
 
     # use the ``|date`` filter so that the timestamp is first localized to the correct

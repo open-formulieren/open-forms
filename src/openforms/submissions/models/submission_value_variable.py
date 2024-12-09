@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -33,7 +33,7 @@ class ValueEncoder(DjangoJSONEncoder):
 
 @dataclass
 class SubmissionValueVariablesState:
-    submission: "Submission"
+    submission: Submission
     _variables: dict[str, SubmissionValueVariable] | None = field(
         init=False, default=None
     )
@@ -56,11 +56,37 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
+    @overload
     def get_data(
         self,
+        *,
+        as_formio_data: Literal[True],
         submission_step: SubmissionStep | None = None,
         return_unchanged_data: bool = True,
-    ) -> DataMapping:
+    ) -> FormioData: ...
+
+    @overload
+    def get_data(
+        self,
+        *,
+        as_formio_data: Literal[False] = False,
+        submission_step: SubmissionStep | None = None,
+        return_unchanged_data: bool = True,
+    ) -> DataMapping: ...
+
+    def get_data(
+        self,
+        *,
+        as_formio_data: bool = False,
+        submission_step: SubmissionStep | None = None,
+        return_unchanged_data: bool = True,
+    ) -> DataMapping | FormioData:
+        """
+        Return the values of the dynamic variables in the submission.
+
+        :arg as_formio_data: set to ``True`` to get the :class:`FormioData`
+          datastructure instead of the underlying nested dictionaries.
+        """
         submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
@@ -79,7 +105,7 @@ class SubmissionValueVariablesState:
 
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 formio_data[variable_key] = variable.value
-        return formio_data.data
+        return formio_data if as_formio_data else formio_data.data
 
     def get_variables_in_submission_step(
         self,

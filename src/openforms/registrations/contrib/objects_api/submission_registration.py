@@ -4,7 +4,16 @@ from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Generic, Iterator, Literal, TypeVar, cast, override
+from typing import (
+    Any,
+    Generic,
+    Iterator,
+    Literal,
+    TypeVar,
+    assert_never,
+    cast,
+    override,
+)
 
 from django.db.models import F
 
@@ -91,7 +100,7 @@ def _resolve_documenttype(
             description = options["iot_attachment"]
             url_ref = options.get("informatieobjecttype_attachment", "")
         case _:  # pragma: no cover
-            raise RuntimeError(f"Unhandled field '{field}'.")
+            assert_never(field)
 
     # descriptions only work if a catalogue is provided to look up the document type
     # inside it
@@ -367,21 +376,16 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     def get_cosign_context_data(
         submission: Submission,
     ) -> dict[str, str | datetime] | None:
-        if not submission.cosign_complete:
+        if not (cosign := submission.cosign_state).is_signed:
             return None
-        else:
-            # date can be missing on existing submissions, so fallback to an empty string
-            date = (
-                datetime.fromisoformat(submission.co_sign_data["cosign_date"])
-                if "cosign_date" in submission.co_sign_data
-                else ""
-            )
-            return {
-                "bsn": get_cosign_value(submission, AuthAttribute.bsn),
-                "kvk": get_cosign_value(submission, AuthAttribute.kvk),
-                "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
-                "date": date,
-            }
+
+        cosign_date = cosign.signing_details.get("cosign_date")
+        return {
+            "bsn": get_cosign_value(submission, AuthAttribute.bsn),
+            "kvk": get_cosign_value(submission, AuthAttribute.kvk),
+            "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
+            "date": datetime.fromisoformat(cosign_date) if cosign_date else "",
+        }
 
     @override
     def get_record_data(

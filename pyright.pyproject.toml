@@ -14,6 +14,7 @@ include = [
     "src/openforms/pre_requests/base.py",
     "src/openforms/pre_requests/registry.py",
     "src/openforms/prefill/base.py",
+    "src/openforms/prefill/co_sign.py",
     "src/openforms/prefill/registry.py",
     "src/openforms/registrations/base.py",
     "src/openforms/registrations/registry.py",
@@ -31,6 +32,8 @@ include = [
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",
+    # Emails
+    "src/openforms/emails/templatetags/cosign_information.py",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/config.py",
@@ -40,9 +43,13 @@ include = [
     "src/openforms/registrations/contrib/stuf_zds/typing.py",
     "src/openforms/registrations/contrib/objects_api/handlers/",
     "src/openforms/registrations/contrib/objects_api/plugin.py",
+    "src/openforms/registrations/contrib/objects_api/registration_variables.py",
     "src/openforms/registrations/contrib/objects_api/submission_registration.py",
     "src/openforms/registrations/contrib/objects_api/typing.py",
     "src/openforms/registrations/contrib/zgw_apis/",
+    # core submissions app
+    "src/openforms/submissions/cosigning.py",
+    "src/openforms/submissions/report.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
