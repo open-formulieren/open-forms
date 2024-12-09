@@ -37,6 +37,7 @@ const CONFIDENTIALITY_LEVELS = jsonScriptToVar('CONFIDENTIALITY_LEVELS', {defaul
 const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
 const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
+const MAP_TILE_LAYERS = jsonScriptToVar('config-MAP_TILE_LAYERS', {default: []});
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -162,6 +163,7 @@ class WebformBuilder extends WebformBuilderFormio {
             supportedLanguageCodes={LANGUAGES}
             theme={currentTheme.getValue()}
             richTextColors={RICH_TEXT_COLORS}
+            getMapTileLayers={async () => MAP_TILE_LAYERS}
             getFormComponents={() => this.webform.form.components}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}

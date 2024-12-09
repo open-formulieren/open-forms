@@ -9,7 +9,7 @@ from solo.admin import SingletonModelAdmin
 
 from .admin_views import ThemePreviewView
 from .forms import GlobalConfigurationAdminForm, ThemeAdminForm
-from .models import CSPSetting, GlobalConfiguration, RichTextColor, Theme
+from .models import CSPSetting, GlobalConfiguration, MapTileLayer, RichTextColor, Theme
 
 
 @admin.register(GlobalConfiguration)
@@ -218,6 +218,20 @@ class RichTextColorAdmin(admin.ModelAdmin):
         "label",
         "example",
         "color",
+    ]
+
+
+@admin.register(MapTileLayer)
+class MapTileLayerAdmin(admin.ModelAdmin):
+    fields = [
+        "label",
+        "identifier",
+        "url",
+    ]
+    list_display = [
+        "label",
+        "identifier",
+        "url",
     ]
 
 
