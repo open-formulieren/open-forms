@@ -102,12 +102,8 @@ const Checkbox = ({name, label, helpText, noVCheckbox = false, ...extraProps}) =
   name = prefix ? `${prefix}-${name}` : name;
   const idFor = disabled ? undefined : `id_${name}`;
   return (
-    <>
-      <div
-        className={classNames('flex-container', 'checkbox-row', {
-          'checkbox-row--disabled': disabled,
-        })}
-      >
+    <div className={classNames({'field--disabled': disabled})}>
+      <div className="flex-container checkbox-row">
         <input type="checkbox" name={name} id={idFor} {...extraProps} />{' '}
         <label className={classNames('inline', {vCheckboxLabel: !noVCheckbox})} htmlFor={idFor}>
           {label}
@@ -118,7 +114,7 @@ const Checkbox = ({name, label, helpText, noVCheckbox = false, ...extraProps}) =
           <div>{helpText}</div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
