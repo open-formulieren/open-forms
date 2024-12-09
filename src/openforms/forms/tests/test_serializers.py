@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase
+from django.utils.translation import gettext as _
 
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
@@ -333,3 +334,47 @@ class FormSerializerTest(TestCase):
         self.assertEqual(backend2.name, "#2")
         self.assertEqual(backend2.backend, "email")
         self.assertEqual(backend2.options["to_emails"], ["me@example.com"])
+
+    def test_form_with_submission_max_and_submission_counter(self):
+        context = {"request": None}
+
+        with self.subTest("submission_max_allowed equal to submission_counter"):
+            form = FormFactory.create(
+                submission_maximum_allowed=2, submission_counter=2
+            )
+            data = FormSerializer(context=context).to_representation(form)
+            serializer = FormSerializer(instance=form, data=data)
+
+            expected_error = _(
+                "The maximum amount of allowed submissions must be bigger than the existing amount of submissions.Consider resetting the submissions counter."
+            )
+
+            self.assertFalse(serializer.is_valid())
+            self.assertIn("submission_maximum_allowed", serializer.errors)
+            self.assertEqual(
+                serializer.errors["submission_maximum_allowed"][0], expected_error
+            )
+        with self.subTest("submission_max_allowed bigger than submission_counter"):
+            form = FormFactory.create(
+                submission_maximum_allowed=2, submission_counter=1
+            )
+            data = FormSerializer(context=context).to_representation(form)
+            serializer = FormSerializer(instance=form, data=data)
+
+            self.assertTrue(serializer.is_valid())
+        with self.subTest("submission_max_allowed smaller than submission_counter"):
+            form = FormFactory.create(
+                submission_maximum_allowed=1, submission_counter=2
+            )
+            data = FormSerializer(context=context).to_representation(form)
+            serializer = FormSerializer(instance=form, data=data)
+
+            expected_error = _(
+                "The maximum amount of allowed submissions must be bigger than the existing amount of submissions.Consider resetting the submissions counter."
+            )
+
+            self.assertFalse(serializer.is_valid())
+            self.assertIn("submission_maximum_allowed", serializer.errors)
+            self.assertEqual(
+                serializer.errors["submission_maximum_allowed"][0], expected_error
+            )
