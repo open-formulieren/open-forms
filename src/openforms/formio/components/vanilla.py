@@ -383,10 +383,7 @@ class FileSerializer(serializers.Serializer):
                 {"originalName": _("Name does not match the uploaded file.")}
             )
 
-        if (
-            not temporary_upload.legacy
-            and temporary_upload.submission != self.context["submission"]
-        ):
+        if temporary_upload.submission != self.context["submission"]:
             raise serializers.ValidationError({"url": _("Invalid URL.")})
 
         with temporary_upload.content.open("rb") as infile:
