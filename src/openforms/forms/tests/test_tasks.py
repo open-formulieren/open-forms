@@ -2,14 +2,19 @@ import logging
 from unittest.mock import patch
 
 from django.db import DatabaseError
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
 
+from openforms.forms.models import FormVariable
 from openforms.logging.models import TimelineLogProxy
 
-from ..tasks import activate_forms, deactivate_forms
-from .factories import FormFactory
+from ..tasks import (
+    activate_forms,
+    create_form_variables_for_components,
+    deactivate_forms,
+)
+from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 logger = logging.getLogger(__name__)
 
@@ -216,3 +221,45 @@ class DeactivateFormsTests(TestCase):
 
         mocked_deactivation.assert_called()
         self.assertEqual(message, f"Form deactivation of form {form.admin_name} failed")
+
+
+@tag("gh-4824")
+class CreateFormVariablesForComponentsTests(TestCase):
+    def test_create_form_variables_for_components(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        # Form is in a broken state, because no FormVariable exists for `lastName`
+        FormVariable.objects.filter(form=form).delete()
+
+        with self.subTest("create variables for components"):
+            create_form_variables_for_components(form.id)
+
+            variables = FormVariable.objects.filter(form=form)
+
+            self.assertEqual(variables.count(), 1)
+
+            [variable] = variables
+
+            self.assertEqual(variable.form_definition, form_definition)
+            self.assertEqual(variable.source, "component")
+            self.assertEqual(variable.key, "lastName")
+
+        with self.subTest("task is idempotent"):
+            create_form_variables_for_components(form.id)
+
+            variables = FormVariable.objects.filter(form=form)
+
+            self.assertEqual(variables.count(), 1)

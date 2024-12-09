@@ -15,6 +15,7 @@ from openforms.accounts.tests.factories import (
     TokenFactory,
     UserFactory,
 )
+from openforms.forms.tasks import create_form_variables_for_components
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import FormStep
@@ -855,6 +856,99 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(len(form_steps), 2)
         slugs = {form_step.slug for form_step in form_steps}
         self.assertEqual(len(slugs), 2)  # we expect two unique slugs
+
+    @tag("gh-4824")
+    def test_create_form_step_schedules_recouple_task(self):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/4824
+        """
+        assign_change_form_permissions(self.user)
+        form = FormFactory.create()
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid})
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            }
+        )
+        formdefinition_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{formdefinition_detail_url}",
+            "index": 0,
+        }
+        self.client.force_login(user=self.user)
+
+        with patch.object(
+            create_form_variables_for_components, "apply_async"
+        ) as mock_apply_async:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.client.post(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(
+                FormStep.objects.filter(form_definition=form_definition).count(),
+                1,
+            )
+
+            mock_apply_async.assert_called_once_with(args=(form.id,), countdown=60)
+
+    @tag("gh-4824")
+    def test_update_form_step_schedules_recouple_task(self):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/4824
+        """
+        assign_change_form_permissions(self.user)
+        form_step = FormStepFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            }
+        )
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form_step.form.uuid, "uuid": form_step.uuid},
+        )
+        formdefinition_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{formdefinition_detail_url}",
+            "index": 0,
+        }
+        self.client.force_login(user=self.user)
+
+        with patch.object(
+            create_form_variables_for_components, "apply_async"
+        ) as mock_apply_async:
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.client.put(url, data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                FormStep.objects.filter(form_definition=form_definition).count(),
+                1,
+            )
+
+            mock_apply_async.assert_called_once_with(
+                args=(form_step.form.id,), countdown=60
+            )
 
 
 class FormStepsAPITranslationTests(APITestCase):
