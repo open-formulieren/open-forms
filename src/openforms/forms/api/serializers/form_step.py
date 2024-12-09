@@ -1,3 +1,6 @@
+from functools import partial
+
+from django.db import transaction
 from django.db.models import Q
 
 from rest_framework import serializers
@@ -10,6 +13,7 @@ from openforms.translations.api.serializers import (
 )
 
 from ...models import FormDefinition, FormStep
+from ...tasks import on_formstep_save_event
 from ...validators import validate_no_duplicate_keys_across_steps
 from ..validators import FormStepIsApplicableIfFirstValidator
 from .button_text import ButtonTextSerializer
@@ -170,3 +174,19 @@ class FormStepSerializer(
         )
 
         return current_form_definition
+
+    @transaction.atomic()
+    def save(self, **kwargs):
+        """
+        Bandaid fix for #4824
+
+        Ensure that the FormVariables are in line with the state of the FormDefinitions
+        after saving
+        """
+        instance = super().save(**kwargs)
+
+        transaction.on_commit(
+            partial(on_formstep_save_event, instance.form.id, countdown=60)
+        )
+
+        return instance
