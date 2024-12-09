@@ -102,7 +102,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
         super().setUpTestData()
 
         cls.config = GlobalConfiguration(
-            confirmation_email_content="{% summary %}\n{% appointment_information %}",
+            confirmation_email_content="{% confirmation_summary %}\n{% appointment_information %}",
             confirmation_email_subject="CONFIRMATION",
         )
 
