@@ -58,7 +58,7 @@ django-solo
 django-tinymce
 django-treebeard
 django-yubin
-mozilla-django-oidc-db
+mozilla-django-oidc-db[setup-configuration]
 maykin-2fa
 django-timeline-logger
 django-csp
