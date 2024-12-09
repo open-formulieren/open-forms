@@ -556,9 +556,6 @@ jobs:
         run: npm install -g @openapitools/openapi-generator-cli@2.4.2
       - name: Validate schema
         run: openapi-generator-cli validate -i ./openapi.yaml
-      - name: Set the version of openapi-generator which gets used
-        run: |
-          openapi-generator-cli version-manager set 7.0.0
       - name: Generate Java client
         run:
           openapi-generator-cli generate -i ./openapi.yaml
