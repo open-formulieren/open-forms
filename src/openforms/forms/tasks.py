@@ -96,6 +96,29 @@ def repopulate_reusable_definition_variables_to_form_variables(form_id: int) -> 
         FormVariable.objects.create_for_form(form)
 
 
+@app.task(ignore_result=True)
+@transaction.atomic()
+def create_form_variables_for_components(form_id: int) -> None:
+    """Create FormVariables for each component in the Form
+
+    This task is scheduled after creating/updating a FormStep, to ensure that the saved
+    Form has the appropriate FormVariables, even if errors occur in the variables update
+    endpoint. This is done to avoid leaving the Form in a broken state.
+
+    See also: https://github.com/open-formulieren/open-forms/issues/4824#issuecomment-2514913073
+    """
+    from .models import Form, FormVariable  # due to circular import
+
+    form = Form.objects.get(id=form_id)
+
+    # delete the existing form variables, we will re-create them
+    FormVariable.objects.filter(
+        form=form_id, source=FormVariableSources.component
+    ).delete()
+
+    FormVariable.objects.create_for_form(form)
+
+
 @app.task()
 def activate_forms():
     """Activate all the forms that should be activated by the specific date and time."""
