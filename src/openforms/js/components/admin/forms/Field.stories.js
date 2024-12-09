@@ -1,9 +1,18 @@
+import {AdminChangeFormDecorator} from 'components/admin/form_design/story-decorators';
+
 import Field from './Field';
 import {TextInput} from './Inputs';
 
 export default {
   title: 'Admin/Django/Field',
   component: Field,
+
+  decorators: [AdminChangeFormDecorator],
+  parameters: {
+    adminChangeForm: {
+      wrapFieldset: true,
+    },
+  },
 
   args: {
     children: <TextInput />,

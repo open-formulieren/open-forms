@@ -1,3 +1,5 @@
+import {AdminChangeFormDecorator} from 'components/admin/form_design/story-decorators';
+
 import Field from './Field';
 import Fieldset from './Fieldset';
 import FormRow from './FormRow';
@@ -23,6 +25,7 @@ export default {
   title: 'Admin/Django/Fieldset',
   component: Fieldset,
   render,
+  decorators: [AdminChangeFormDecorator],
 
   argTypes: {
     children: {
