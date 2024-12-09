@@ -103,3 +103,15 @@ Removal of /api/v2/location/get-street-name-and-city endpoint
 
 The /api/v2/location/get-street-name-and-city was deprecated for some time,
 and is now removed in favor of the /api/v2/geo/address-autocomplete endpoint.
+
+Legacy temporary file uploads no longer supported
+=================================================
+
+Before Open Forms 2.7.0, temporary file uploads (as created by the file upload form
+component) would not be related to the submission they were uploaded in. We call these
+legacy temporary file uploads, and support for them has been removed in Open Forms 3.0.
+
+The setting ``TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS`` controls how long file uploads are
+kept. Ensure that this many days have passed since the last legacy upload before
+upgrading to Open Forms 3.0, otherwise you will run into database errors during the
+upgrade.

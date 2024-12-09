@@ -3,7 +3,6 @@ import os
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
@@ -23,7 +22,6 @@ from .factories import (
     SubmissionFileAttachmentFactory,
     SubmissionReportFactory,
     SubmissionStepFactory,
-    TemporaryFileUploadFactory,
 )
 
 
@@ -589,19 +587,3 @@ class SubmissionTests(TestCase):
         report.generate_submission_report_pdf()
 
         self.assertTrue(report.content.storage.exists(report.content.name))
-
-
-class TemporaryFileUploadTests(TestCase):
-    def test_legacy_check_constraint(self):
-        with self.assertRaises(IntegrityError):
-            TemporaryFileUploadFactory.create(
-                submission=None,
-                legacy=False,
-            )
-
-    def test_non_legacy_check_constraint(self):
-        with self.assertRaises(IntegrityError):
-            TemporaryFileUploadFactory.create(
-                submission=SubmissionFactory.create(),
-                legacy=True,
-            )
