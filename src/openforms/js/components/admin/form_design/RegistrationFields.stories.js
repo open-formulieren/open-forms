@@ -736,13 +736,13 @@ export const ObjectsAPI = {
           'Path to auth attribute (e.g. BSN/KVK) in objects'
         );
 
-        expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
+        expect(authAttributePath.parentElement).toHaveClass('field--disabled');
 
         const updateExistingObject = modal.getByLabelText('Bestaand object bijwerken');
         await userEvent.click(updateExistingObject);
 
         // Checking `updateExistingObject` should make `authAttributePath` no longer disabled
-        expect(authAttributePath.parentElement.parentElement).not.toHaveClass('field--disabled');
+        expect(authAttributePath.parentElement).not.toHaveClass('field--disabled');
       }
     );
 
