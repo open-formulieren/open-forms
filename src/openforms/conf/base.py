@@ -1212,6 +1212,7 @@ FLAGS = {
 SETUP_CONFIGURATION_STEPS = [
     "zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep",
     "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
+    "openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep",
 ]
 
 #
