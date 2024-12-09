@@ -89,12 +89,6 @@
       "value": "Default Value"
     }
   ],
-  "/c2LWu": [
-    {
-      "type": 0,
-      "value": "Locations Component"
-    }
-  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -105,12 +99,6 @@
     {
       "type": 0,
       "value": "Make this component read only."
-    }
-  ],
-  "/hIJ8m": [
-    {
-      "type": 0,
-      "value": "Dates Component"
     }
   ],
   "/iusiS": [
@@ -559,12 +547,6 @@
       "value": " files to upload."
     }
   ],
-  "4iGsG1": [
-    {
-      "type": 0,
-      "value": "Birth Date Component"
-    }
-  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -621,12 +603,6 @@
     {
       "type": 0,
       "value": "Configure"
-    }
-  ],
-  "5OXIff": [
-    {
-      "type": 0,
-      "value": "Component where the birth date should be entered"
     }
   ],
   "5P+YgL": [
@@ -1283,12 +1259,6 @@
     {
       "type": 0,
       "value": "Email payment subject"
-    }
-  ],
-  "BCjZNo": [
-    {
-      "type": 0,
-      "value": "Component where the phone number should be entered"
     }
   ],
   "BGZD6J": [
@@ -2353,12 +2323,6 @@
       "value": "Hidden"
     }
   ],
-  "JtOgcq": [
-    {
-      "type": 0,
-      "value": "Last Name Component"
-    }
-  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -2701,12 +2665,6 @@
       "value": "A short instruction shown below the signature pad."
     }
   ],
-  "NwTdLM": [
-    {
-      "type": 0,
-      "value": "Component where locations for an appointment will be shown"
-    }
-  ],
   "NyyJMK": [
     {
       "type": 0,
@@ -2883,12 +2841,6 @@
     {
       "type": 0,
       "value": "Number of years. Empty values are ignored."
-    }
-  ],
-  "PiB6Y1": [
-    {
-      "type": 0,
-      "value": "Times Component"
     }
   ],
   "PtZ96W": [
@@ -3955,12 +3907,6 @@
       "value": " attribute"
     }
   ],
-  "aUChz/": [
-    {
-      "type": 0,
-      "value": "Products Component"
-    }
-  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -4979,12 +4925,6 @@
     {
       "type": 0,
       "value": "Expression"
-    }
-  ],
-  "iq0ppL": [
-    {
-      "type": 0,
-      "value": "Experimental mode. Indicates whether appointments are enabled for this form."
     }
   ],
   "iqAbXt": [
@@ -6065,12 +6005,6 @@
       "value": "Are you sure you want to remove this mapping?"
     }
   ],
-  "t99ynC": [
-    {
-      "type": 0,
-      "value": "Component where the last name should be entered"
-    }
-  ],
   "tJQoMq": [
     {
       "type": 0,
@@ -6379,22 +6313,10 @@
       "value": "The regular expression pattern test that the field value must pass before the form can be submitted."
     }
   ],
-  "wjwFwT": [
-    {
-      "type": 0,
-      "value": "Component where times for an appointment will be shown"
-    }
-  ],
   "wnTTZr": [
     {
       "type": 0,
       "value": "ID of the drive to use. If left empty, the default drive will be used."
-    }
-  ],
-  "wnxKT/": [
-    {
-      "type": 0,
-      "value": "Component where products for an appointment will be shown"
     }
   ],
   "wqCiwc": [
@@ -6445,12 +6367,6 @@
       "value": "Submission confirmation template"
     }
   ],
-  "xRQrla": [
-    {
-      "type": 0,
-      "value": "Appointments"
-    }
-  ],
   "xTfMk5": [
     {
       "type": 0,
@@ -6467,6 +6383,12 @@
     {
       "type": 0,
       "value": "Zoom level"
+    }
+  ],
+  "xxyIg/": [
+    {
+      "type": 0,
+      "value": "Indicates whether appointments are enabled for this form."
     }
   ],
   "xyVtKp": [
@@ -6569,12 +6491,6 @@
       "value": "(unset)"
     }
   ],
-  "yYw2Rb": [
-    {
-      "type": 0,
-      "value": "Phone Number Component"
-    }
-  ],
   "yrz/oC": [
     {
       "type": 0,
@@ -6615,12 +6531,6 @@
     {
       "type": 0,
       "value": "Use globally configured map component settings"
-    }
-  ],
-  "zLTTBw": [
-    {
-      "type": 0,
-      "value": "Component where dates for an appointment will be shown"
     }
   ],
   "zQE4f2": [

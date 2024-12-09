@@ -89,12 +89,6 @@
       "value": "Standaardwaarde"
     }
   ],
-  "/c2LWu": [
-    {
-      "type": 0,
-      "value": "Locatie veld"
-    }
-  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -105,12 +99,6 @@
     {
       "type": 0,
       "value": "Maak dit component alleen-lezen"
-    }
-  ],
-  "/hIJ8m": [
-    {
-      "type": 0,
-      "value": "Datum veld"
     }
   ],
   "/iusiS": [
@@ -559,12 +547,6 @@
       "value": " bestanden om te uploaden."
     }
   ],
-  "4iGsG1": [
-    {
-      "type": 0,
-      "value": "Geboortedatum veld"
-    }
-  ],
   "4sFGgA": [
     {
       "type": 0,
@@ -621,12 +603,6 @@
     {
       "type": 0,
       "value": "Instellen"
-    }
-  ],
-  "5OXIff": [
-    {
-      "type": 0,
-      "value": "Veld waar de geboortedatum voor een afspraak komt te staan"
     }
   ],
   "5P+YgL": [
@@ -1287,12 +1263,6 @@
     {
       "type": 0,
       "value": "Onderwerp betaalstatusmail"
-    }
-  ],
-  "BCjZNo": [
-    {
-      "type": 0,
-      "value": "Veld waar het telefoonnummer voor een afspraak komt te staan"
     }
   ],
   "BGZD6J": [
@@ -2374,12 +2344,6 @@
       "value": "Verborgen"
     }
   ],
-  "JtOgcq": [
-    {
-      "type": 0,
-      "value": "Achternaam veld"
-    }
-  ],
   "K/Oijt": [
     {
       "type": 0,
@@ -2722,12 +2686,6 @@
       "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
-  "NwTdLM": [
-    {
-      "type": 0,
-      "value": "Veld waar beschikbare locaties voor een afspraak komen te staan"
-    }
-  ],
   "NyyJMK": [
     {
       "type": 0,
@@ -2904,12 +2862,6 @@
     {
       "type": 0,
       "value": "Aantal jaren. Lege waarden worden genegeerd."
-    }
-  ],
-  "PiB6Y1": [
-    {
-      "type": 0,
-      "value": "Tijd veld"
     }
   ],
   "PtZ96W": [
@@ -3973,12 +3925,6 @@
       "value": "-attribuut"
     }
   ],
-  "aUChz/": [
-    {
-      "type": 0,
-      "value": "Product veld"
-    }
-  ],
   "aWwaAq": [
     {
       "type": 0,
@@ -5001,12 +4947,6 @@
     {
       "type": 0,
       "value": "Expressie"
-    }
-  ],
-  "iq0ppL": [
-    {
-      "type": 0,
-      "value": "Bij het inschakelen van de afsprakenmodus doorloopt de gebruiker een vaste flow."
     }
   ],
   "iqAbXt": [
@@ -6087,12 +6027,6 @@
       "value": "Ben je zeker dat je deze koppeling wil verwijderen?"
     }
   ],
-  "t99ynC": [
-    {
-      "type": 0,
-      "value": "Veld waar de achternaam voor een afspraak komt te staan"
-    }
-  ],
   "tJQoMq": [
     {
       "type": 0,
@@ -6401,22 +6335,10 @@
       "value": "Het patroon van reguliere expressie waar de waarde aan moet voldoen voor het formulier kan verstuurd worden."
     }
   ],
-  "wjwFwT": [
-    {
-      "type": 0,
-      "value": "Veld waar beschikbare tijden voor een afspraak komen te staan"
-    }
-  ],
   "wnTTZr": [
     {
       "type": 0,
       "value": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt."
-    }
-  ],
-  "wnxKT/": [
-    {
-      "type": 0,
-      "value": "Veld waar beschikbare producten voor een afspraak komen te staan"
     }
   ],
   "wqCiwc": [
@@ -6467,12 +6389,6 @@
       "value": "Sjabloon bevestigingspagina"
     }
   ],
-  "xRQrla": [
-    {
-      "type": 0,
-      "value": "Afspraken"
-    }
-  ],
   "xTfMk5": [
     {
       "type": 0,
@@ -6489,6 +6405,12 @@
     {
       "type": 0,
       "value": "Zoomniveau"
+    }
+  ],
+  "xxyIg/": [
+    {
+      "type": 0,
+      "value": "Indicates whether appointments are enabled for this form."
     }
   ],
   "xyVtKp": [
@@ -6591,12 +6513,6 @@
       "value": "(niet ingesteld)"
     }
   ],
-  "yYw2Rb": [
-    {
-      "type": 0,
-      "value": "Telefoonnummer veld"
-    }
-  ],
   "yrz/oC": [
     {
       "type": 0,
@@ -6637,12 +6553,6 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
-    }
-  ],
-  "zLTTBw": [
-    {
-      "type": 0,
-      "value": "Veld waar beschikbare datums voor een afspraak komen te staan"
     }
   ],
   "zQE4f2": [

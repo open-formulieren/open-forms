@@ -113,12 +113,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             registration_status=RegistrationStatuses.in_progress,
             pre_registration_completed=True,
         )
-        has_previous_submission = factory.Trait(
-            previous_submission=factory.SubFactory(
-                "openforms.submissions.tests.factories.SubmissionFactory",
-                form=factory.SelfAttribute("..form"),
-            )
-        )
         with_report = factory.Trait(
             report=factory.RelatedFactory(
                 "openforms.submissions.tests.factories.SubmissionReportFactory",

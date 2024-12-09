@@ -17,7 +17,7 @@ Globally, the various actions and plugin categories are processed in order:
 
 #. If applicable, an :ref:`appointment <developers_appointment_plugins>` is
    created. If this fails, the submission is blocked and the user sees an error
-   message and can try again (note: this step is deprecated and not needed for the new appointment flow).
+   message and can try again.
 #. Pre-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
    pre-registration task, like for example generating and setting a submission reference ID. If no registration backend
    is configured, then an internal ID is generated and set on the submission.
@@ -39,9 +39,8 @@ Globally, the various actions and plugin categories are processed in order:
    the previous actions, the confirmation email shows different contents.
 
 The confirmation email can show submission details, appointment details
-(including links to cancel or change the appointment), payment details
-(including a link to pay if not done so already), cosign details and custom information as part
-of the form.
+(including links to cancel the appointment), payment details(including a link to pay if not done so already),
+cosign details and custom information as part of the form.
 
 Under the hood
 --------------

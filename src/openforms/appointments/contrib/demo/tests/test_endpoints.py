@@ -71,7 +71,7 @@ class DemoPluginTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         times = response.json()
-        self.assertEqual(len(times), 3)
+        self.assertEqual(len(times), 4)
 
     def test_required_customer_fields_list(self):
         endpoint = reverse("api:appointments-customer-fields")
