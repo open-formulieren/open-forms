@@ -135,25 +135,24 @@ export const AddressNlEditor = ({
   return (
     <>
       <FormRow>
-        <Field name="specificTargetPaths" disabled={!!mappedVariable.targetPath}>
-          <Checkbox
-            name="specificTargetPathsCheckbox"
-            label={
-              <FormattedMessage
-                defaultMessage="Map specific subfields"
-                description="'Map specific subfields' checkbox label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                description="'Map specific subfields' checkbox help text"
-                defaultMessage="Whether to map the specific subfield of addressNl component"
-              />
-            }
-            checked={specificTargetPaths}
-            onChange={onSpecificTargetPathsChange}
-          />
-        </Field>
+        <Checkbox
+          name="specificTargetPathsCheckbox"
+          label={
+            <FormattedMessage
+              defaultMessage="Map specific subfields"
+              description="'Map specific subfields' checkbox label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="'Map specific subfields' checkbox help text"
+              defaultMessage="Whether to map the specific subfield of addressNl component"
+            />
+          }
+          checked={specificTargetPaths}
+          onChange={onSpecificTargetPathsChange}
+          disabled={!!mappedVariable.targetPath}
+        />
       </FormRow>
       <FormRow>
         <Field

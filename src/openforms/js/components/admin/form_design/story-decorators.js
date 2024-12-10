@@ -1,7 +1,9 @@
 import {fn} from '@storybook/test';
 import {Form, Formik} from 'formik';
+import {Fragment} from 'react';
 
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
+import Fieldset from 'components/admin/forms/Fieldset';
 import {ReactSelectContext} from 'components/admin/forms/ReactSelect';
 import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
 import {ModalContext} from 'components/admin/modals';
@@ -28,6 +30,18 @@ export const FormLogicDecorator = (Story, {args}) => (
     <Story />
   </FormLogicContext.Provider>
 );
+
+// provide necessary django elements to get the right styling
+export const AdminChangeFormDecorator = (Story, {parameters}) => {
+  const Wrapper = parameters?.adminChangeForm?.wrapFieldset ? Fieldset : Fragment;
+  return (
+    <form>
+      <Wrapper>
+        <Story />
+      </Wrapper>
+    </form>
+  );
+};
 
 export const FormDecorator = (Story, {args}) => (
   <FormContext.Provider

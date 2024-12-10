@@ -194,6 +194,7 @@ const DMNParametersForm = () => {
             loading={loading}
             name="inputMapping"
             directionIcon={<FAIcon icon="arrow-right-long" aria-hidden="true" />}
+            variableName="formVariable"
             propertyChoices={dmnParams.inputs}
             propertyName="dmnVariable"
             propertyHeading={dmnVariableColumnLabel}
@@ -211,6 +212,7 @@ const DMNParametersForm = () => {
             loading={loading}
             name="outputMapping"
             directionIcon={<FAIcon icon="arrow-left-long" aria-hidden="true" />}
+            variableName="formVariable"
             propertyChoices={dmnParams.outputs}
             propertyName="dmnVariable"
             propertyHeading={dmnVariableColumnLabel}

@@ -62,7 +62,6 @@ export const PriceLogic = ({variableKey, onFieldChange}) => {
 
   return (
     <Fieldset
-      extraClassName="admin-fieldset"
       title={
         <FormattedMessage
           description="Dynamic pricing fieldset title"
