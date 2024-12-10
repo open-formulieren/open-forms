@@ -31,7 +31,7 @@ from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY
-from .exceptions import FormDeactivated, FormMaintenance
+from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
 from .form_logic import check_submission_logic
 from .models import Submission, SubmissionReport, SubmissionValueVariable
 from .tokens import submission_report_token_generator
@@ -285,6 +285,8 @@ def check_form_status(
     :raises: :class:`FormDeactivated` if the form is deactivated
     :raises: :class`FormMaintenance` if the form is in maintenance mode and the user
       is not a staff user.
+    :raises: :class:`FormMaximumSubmissions` if the form has reached the maximum amount
+      of submissions.
     """
     # live forms -> shortcut, this is okay, proceed as usual
     if form.is_available:
@@ -301,6 +303,10 @@ def check_form_status(
     # to pass after a while
     if form.maintenance_mode and not request.user.is_staff:
         raise FormMaintenance()
+
+    # do not proceed if the form has reached the maximum amount of submissions
+    if form.has_reached_submissions_limit():
+        raise FormMaximumSubmissions()
 
 
 def get_report_download_url(request: Request, report: SubmissionReport) -> str:
