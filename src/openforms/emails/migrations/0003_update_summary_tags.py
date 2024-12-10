@@ -9,7 +9,9 @@ from django.db.models import Q
 SUMMARY_REGEX = r"{%\s*summary\s*%}"
 
 
-def replace_tag(tpl: str) -> str:
+def replace_tag(tpl: str | None) -> str | None:
+    if tpl is None:
+        return None
     return re.sub(
         SUMMARY_REGEX,
         "{% confirmation_summary %}",
