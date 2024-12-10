@@ -1,5 +1,6 @@
 [
     "config.RichTextColor",
+    "config.MapTileLayer",
     "forms.FormLogic",
     "forms.FormDefinition",
     "forms.FormsExport",
