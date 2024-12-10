@@ -131,7 +131,17 @@ Field.propTypes = {
   helpText: PropTypes.node,
   required: PropTypes.bool,
   errors: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.array])),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array,
+        // react-intl message
+        PropTypes.shape({
+          defaultMessage: PropTypes.any,
+          id: PropTypes.string,
+        }),
+      ])
+    ),
     PropTypes.string,
   ]),
   fieldBox: PropTypes.bool,
