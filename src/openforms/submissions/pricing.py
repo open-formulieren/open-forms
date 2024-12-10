@@ -2,11 +2,8 @@ from __future__ import annotations
 
 import decimal
 import logging
-import warnings
 from decimal import Decimal
 from typing import TYPE_CHECKING
-
-from json_logic import jsonLogic
 
 from openforms.logging import logevent
 from openforms.typing import JSONValue
@@ -72,40 +69,12 @@ def get_submission_price(submission: Submission) -> Decimal:
             return price
 
     #
-    # 2. Check if there are any logic rules defined that match.
+    # 2. No price stored in a variable, fall back to the linked product price.
     #
-    data = submission.data
-    # test the rules one by one, if relevant
-    price_rules = form.formpricelogic_set.all()
-    if price_rules:
-        warnings.warn(
-            "Price logic rules are no longer supported. The left-over implementation "
-            "only exists for migration testing purposes.",
-            RuntimeWarning,
-        )
-    for rule in price_rules:
-        # logic does not match, no point in bothering
-        if not jsonLogic(rule.json_logic_trigger, data):
-            continue
-        logger.debug(
-            "Price for submission %s calculated using logic trigger %d: %r",
-            submission.uuid,
-            rule.id,
-            rule.json_logic_trigger,
-        )
-        # first logic match wins
-        # TODO: validate on API/backend/frontend that logic triggers must be unique for
-        # a form
-        return rule.price
-
-    #
-    # 3. More specific modes didn't produce anything, fall back to the linked product
-    #    price.
-    #
+    assert price is None
     logger.debug(
-        "Falling back to product price for submission %s after trying %d price rules.",
+        "Falling back to product price for submission %s, there is no price variable.",
         submission.uuid,
-        len(price_rules),
     )
     return form.product.price
 
