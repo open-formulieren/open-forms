@@ -33,8 +33,7 @@ def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) ->
     # this can run any time because they have been claimed earlier
     cleanup_temporary_files_for.delay(submission_id)
 
-    # If the form involves appointments and no appointment has been scheduled yet, schedule it.
-    # Todo: deprecated => Not needed with the new appointment flow
+    # Register an appointment if the submission is for a form which is configured to create appointments.
     register_appointment_task = maybe_register_appointment.si(submission_id)
 
     # Perform any pre-registration task specified by the registration plugin. If no registration plugin is configured,

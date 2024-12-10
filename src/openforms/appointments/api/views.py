@@ -1,5 +1,4 @@
 import logging
-import warnings
 from copy import copy
 
 from django.db import transaction
@@ -52,14 +51,6 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
-def warn_serializer_validation_deprecation():
-    warnings.warn(
-        "Starting with Open Forms 3.0, input validation will raise HTTP 400 instead "
-        "of returning an empty result list.",
-        DeprecationWarning,
-    )
-
-
 # TODO: see openforms.validations.api.serializers.ValidatorsFilterSerializer.as_openapi_params
 # and https://github.com/open-formulieren/open-forms/issues/611
 
@@ -99,14 +90,7 @@ class ProductsListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = ProductInputSerializer(data=self.request.query_params)
-        is_valid = serializer.is_valid()
-        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
-        # that Formio work is that we can't prevent the invalid request from firing.
-        # Instead, we just return an empty result list which populates dropdowns with
-        # empty options.
-        if not is_valid:
-            warn_serializer_validation_deprecation()
-            return []
+        serializer.is_valid(raise_exception=True)
 
         plugin = get_plugin()
         config = AppointmentsConfig().get_solo()
@@ -141,14 +125,8 @@ class LocationsListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = LocationInputSerializer(data=self.request.query_params)
-        is_valid = serializer.is_valid()
-        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
-        # that Formio work is that we can't prevent the invalid request from firing.
-        # Instead, we just return an empty result list which populates dropdowns with
-        # empty options.
-        if not is_valid:
-            warn_serializer_validation_deprecation()
-            return []
+        serializer.is_valid(raise_exception=True)
+
         products = serializer.validated_data["product_id"]
         plugin = get_plugin()
         with elasticapm.capture_span(
@@ -178,14 +156,7 @@ class DatesListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = DateInputSerializer(data=self.request.query_params)
-        is_valid = serializer.is_valid()
-        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
-        # that Formio work is that we can't prevent the invalid request from firing.
-        # Instead, we just return an empty result list which populates dropdowns with
-        # empty options.
-        if not is_valid:
-            warn_serializer_validation_deprecation()
-            return []
+        serializer.is_valid(raise_exception=True)
 
         products = serializer.validated_data["product_id"]
         location = serializer.validated_data["location_id"]
@@ -226,14 +197,7 @@ class TimesListView(ListMixin, APIView):
 
     def get_objects(self):
         serializer = TimeInputSerializer(data=self.request.query_params)
-        is_valid = serializer.is_valid()
-        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
-        # that Formio work is that we can't prevent the invalid request from firing.
-        # Instead, we just return an empty result list which populates dropdowns with
-        # empty options.
-        if not is_valid:
-            warn_serializer_validation_deprecation()
-            return []
+        serializer.is_valid(raise_exception=True)
 
         products = serializer.validated_data["product_id"]
         location = serializer.validated_data["location_id"]

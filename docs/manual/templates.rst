@@ -337,9 +337,8 @@ Voorbeeld
          *Opmerkingen*
          Geen opmerkingen
 
-         Als u uw afspraak wilt annuleren of wijzigen kunt u dat hieronder doen.
+         Als u uw afspraak wilt annuleren kunt u dat hieronder doen.
          Afspraak annuleren: https://example.com/...
-         Afspraak wijzigen: https://example.com/...
 
          **Betaalinformatie**
 

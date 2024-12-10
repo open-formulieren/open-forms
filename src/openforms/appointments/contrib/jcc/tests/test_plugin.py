@@ -15,7 +15,7 @@ from openforms.utils.tests.logging import disable_logging
 from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
 
-from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
+from ....base import AppointmentDetails, CustomerDetails, Location, Product
 from ....core import book
 from ....exceptions import (
     AppointmentCreateFailed,
@@ -251,7 +251,12 @@ class PluginTests(MockConfigMixin, TestCase):
     def test_create_appointment(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
 
         m.post(
             "http://example.com/soap11",
@@ -665,7 +670,12 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     def test_create_appointment_failure(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
         m.post(
             "http://example.com/soap11",
@@ -681,7 +691,12 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     def test_create_appointment_unexpected_exception(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
         m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
 

@@ -52,7 +52,7 @@ class TestPlugin(DemoAppointment):
 @disable_admin_mfa()
 class AppointmentInfoAdminTests(WebTest):
     @freeze_time("2021-11-26T17:00:00+01:00")
-    def test_cancel_and_change_links_only_for_superuser(self):
+    def test_cancel_link_only_for_superuser(self):
         normal, staff = [
             UserFactory.create(user_permissions=["view_appointmentinfo"]),
             StaffUserFactory.create(user_permissions=["view_appointmentinfo"]),
@@ -84,34 +84,7 @@ class AppointmentInfoAdminTests(WebTest):
             self.assertFalse(object_actions_col)
 
     @freeze_time("2021-11-26T17:00:00+01:00")
-    def test_cancel_and_change_links_legacy(self):
-        user = SuperUserFactory.create()
-        # appointment in the past
-        AppointmentInfoFactory.create(
-            registration_ok=True, start_time="2021-11-01T17:00:00+01:00"
-        )
-        # appointment in the future
-        AppointmentInfoFactory.create(
-            registration_ok=True, start_time="2021-11-30T17:00:00+01:00"
-        )
-
-        changelist = self.app.get(
-            reverse("admin:appointments_appointmentinfo_changelist"), user=user
-        )
-
-        self.assertEqual(changelist.status_code, 200)
-        object_actions_col = changelist.pyquery(".field-get_object_actions")
-
-        # future appointment
-        app1_links = object_actions_col.eq(0).find("a")
-        self.assertEqual(len(app1_links), 2)
-
-        # past appointment
-        app2_links = object_actions_col.eq(1).find("a")
-        self.assertEqual(len(app2_links), 0)
-
-    @freeze_time("2021-11-26T17:00:00+01:00")
-    def test_cancel_and_change_links(self):
+    def test_cancel_link(self):
 
         user = SuperUserFactory.create()
         # appointment in the past
