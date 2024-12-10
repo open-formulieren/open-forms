@@ -856,6 +856,103 @@ class FormsStepsAPITests(APITestCase):
         slugs = {form_step.slug for form_step in form_steps}
         self.assertEqual(len(slugs), 2)  # we expect two unique slugs
 
+    @patch(
+        "openforms.forms.api.serializers.form_step.on_formstep_save_event",
+        autospec=True,
+    )
+    @tag("gh-4824")
+    def test_create_form_step_schedules_task_chain_to_fix_form_variables(
+        self, mock_on_formstep_save_event
+    ):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/4824
+        """
+        assign_change_form_permissions(self.user)
+        form = FormFactory.create()
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid})
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            }
+        )
+        formdefinition_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{formdefinition_detail_url}",
+            "index": 0,
+        }
+        self.client.force_login(user=self.user)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(url, data=data)
+
+        mock_on_formstep_save_event.assert_called_once_with(form.id, 60)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=form_definition).count(),
+            1,
+        )
+
+    @patch(
+        "openforms.forms.api.serializers.form_step.on_formstep_save_event",
+        autospec=True,
+    )
+    @tag("gh-4824")
+    def test_update_form_step_schedules_task_chain_to_fix_form_variables(
+        self, mock_on_formstep_save_event
+    ):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/4824
+        """
+        assign_change_form_permissions(self.user)
+        form_step = FormStepFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            }
+        )
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form_step.form.uuid, "uuid": form_step.uuid},
+        )
+        formdefinition_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{formdefinition_detail_url}",
+            "index": 0,
+        }
+        self.client.force_login(user=self.user)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.put(url, data=data)
+
+        mock_on_formstep_save_event.assert_called_once_with(form_step.form.id, 60)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=form_definition).count(),
+            1,
+        )
+
 
 class FormStepsAPITranslationTests(APITestCase):
     maxDiff = None

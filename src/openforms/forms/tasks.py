@@ -34,6 +34,28 @@ def on_variables_bulk_update_event(form_id: int) -> None:
     actions_chain.delay()
 
 
+def on_formstep_save_event(form_id: int, countdown: int) -> None:
+    """
+    Celery chain of tasks to execute after saving a FormStep.
+    """
+    create_form_variables_for_components_task = create_form_variables_for_components.si(
+        form_id
+    )
+    repopulate_reusable_definition_variables_task = (
+        repopulate_reusable_definition_variables_to_form_variables.si(form_id)
+    )
+    recouple_submission_variables_task = (
+        recouple_submission_variables_to_form_variables.si(form_id)
+    )
+
+    actions_chain = chain(
+        create_form_variables_for_components_task,
+        repopulate_reusable_definition_variables_task,
+        recouple_submission_variables_task,
+    )
+    actions_chain.apply_async(countdown=countdown)
+
+
 @app.task(ignore_result=True)
 def recouple_submission_variables_to_form_variables(form_id: int) -> None:
     """Recouple SubmissionValueVariable to FormVariable
@@ -94,6 +116,29 @@ def repopulate_reusable_definition_variables_to_form_variables(form_id: int) -> 
 
     for form in other_forms:
         FormVariable.objects.create_for_form(form)
+
+
+@app.task(ignore_result=True)
+@transaction.atomic()
+def create_form_variables_for_components(form_id: int) -> None:
+    """Create FormVariables for each component in the Form
+
+    This task is scheduled after creating/updating a FormStep, to ensure that the saved
+    Form has the appropriate FormVariables, even if errors occur in the variables update
+    endpoint. This is done to avoid leaving the Form in a broken state.
+
+    See also: https://github.com/open-formulieren/open-forms/issues/4824#issuecomment-2514913073
+    """
+    from .models import Form, FormVariable  # due to circular import
+
+    form = Form.objects.get(id=form_id)
+
+    # delete the existing form variables, we will re-create them
+    FormVariable.objects.filter(
+        form=form_id, source=FormVariableSources.component
+    ).delete()
+
+    FormVariable.objects.create_for_form(form)
 
 
 @app.task()
