@@ -1,14 +1,11 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
-
-import {useSynchronizeSelect} from './hooks';
 
 const getObjecttypeVersionsEndpoint = uuid => {
   const bits = ['/api/v2/objects-api/object-types', encodeURIComponent(uuid), 'versions'];
@@ -49,8 +46,6 @@ const ObjectTypeVersionSelect = ({
   const choices = loading
     ? []
     : versions.map(version => [version.version, `${version.version} (${version.status})`]);
-
-  useSynchronizeSelect(name, loading, choices);
 
   const options = choices.map(([value, label]) => ({value, label}));
   return (

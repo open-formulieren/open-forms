@@ -18,11 +18,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
   const [fieldProps] = useField(name);
   const {value} = fieldProps;
   const selectedBackend = backends.find(elem => elem.key === value);
-  const {
-    ConfirmationModal: CopyConfigurationConfirmationModal,
-    confirmationModalProps: copyConfigurationConfirmationModalProps,
-    openConfirmationModal: openCopyConfigurationConfirmationModal,
-  } = useConfirm();
+  const {ConfirmationModal, confirmationModalProps, openConfirmationModal} = useConfirm();
   return (
     <FormRow>
       <Field
@@ -56,7 +52,7 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
             className="button"
             onClick={async e => {
               e.preventDefault();
-              const confirmSwitch = await openCopyConfigurationConfirmationModal();
+              const confirmSwitch = await openConfirmationModal();
               if (confirmSwitch) {
                 setValues(prevValues => ({
                   ...prevValues,
@@ -93,8 +89,8 @@ const CopyConfigurationFromRegistrationBackend = ({backends, setShowCopyButton})
         </>
       </Field>
 
-      <CopyConfigurationConfirmationModal
-        {...copyConfigurationConfirmationModalProps}
+      <ConfirmationModal
+        {...confirmationModalProps}
         message={
           <FormattedMessage
             description="Objects API prefill configuration: warning message when copying the config from registration backend"

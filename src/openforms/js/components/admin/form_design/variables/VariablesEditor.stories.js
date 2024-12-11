@@ -711,6 +711,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
           objectsApiGroup: 1,
           objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
+          authAttributePath: ['path', 'to', 'bsn'],
           variablesMapping: [
             {
               variableKey: 'formioComponent',
@@ -751,7 +752,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
       expect(copyButton).toBeDisabled();
       const copyDropdown = await modal.findByLabelText('Registratie-instellingen overnemen');
       expect(copyDropdown).toBeVisible();
-      await rsSelect(copyDropdown, 'Example Objects API reg.');
+      await rsSelect(copyDropdown, 'Other Objects API registration with a long name');
 
       expect(copyButton).toBeVisible();
       expect(copyButton).not.toBeDisabled();
@@ -764,9 +765,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
 
       const modalForm = await canvas.findByTestId('modal-form');
       expect(modalForm).toBeVisible();
-      const propertyDropdowns = await modal.findAllByLabelText(
-        'Selecteer een attribuut uit het objecttype'
-      );
+      await modal.findAllByLabelText('Selecteer een attribuut uit het objecttype');
 
       // Wait until the API call to retrieve the prefillAttributes is done
       await modal.findByText('path > to > bsn', undefined, {timeout: 2000});
@@ -775,11 +774,10 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
         () => {
           expect(modalForm).toHaveFormValues({
             'options.objectsApiGroup': '1',
-            'options.objecttypeUuid': '2c77babf-a967-4057-9969-0200320d23f1',
+            'options.objecttypeUuid': '209e0341-834d-4060-bd19-a3419d19ed74',
             'options.objecttypeVersion': '2',
             'options.authAttributePath': JSON.stringify(['path', 'to', 'bsn']),
-            'options.variablesMapping.0.targetPath': serializeValue(['height']),
-            'options.variablesMapping.1.targetPath': serializeValue(['species']),
+            'options.variablesMapping.0.targetPath': serializeValue(['path', 'to.the', 'target']),
           });
         },
         {timeout: 5000}
