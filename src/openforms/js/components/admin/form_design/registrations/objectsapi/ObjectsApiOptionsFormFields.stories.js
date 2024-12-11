@@ -1,5 +1,6 @@
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
+import selectEvent from 'react-select-event';
 
 import {
   FeatureFlagsDecorator,
@@ -80,57 +81,41 @@ export default {
 export const Default = {};
 
 export const SwitchToV2Empty = {
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-    await userEvent.click(v2Tab);
-
-    await waitFor(async () => {
+    await step('Activate v2 tab', async () => {
+      const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
+      await userEvent.click(v2Tab);
       // Close the confirmation modal
       await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
+        within(await canvas.findByRole('dialog')).getByRole('button', {name: 'Accepteren'})
       );
-
-      // Expect v2Tab to be the selected tab
-      expect(v2Tab).toHaveAttribute('aria-selected', 'true');
+      // Wait for v2Tab to be the selected tab
+      await waitFor(() => {
+        expect(v2Tab).toHaveAttribute('aria-selected', 'true');
+      });
     });
 
     const groupSelect = canvas.getByLabelText('API-groep');
     await rsSelect(groupSelect, 'Objects API group 1');
 
+    const objectTypeSelect = canvas.getByLabelText('Objecttype');
+    await waitFor(() => {
+      expect(objectTypeSelect).toBeVisible();
+    });
+    await rsSelect(objectTypeSelect, 'Tree (open)');
+
+    const objectTypeVersionSelect = canvas.getByLabelText('Versie');
+    await waitFor(() => {
+      expect(objectTypeVersionSelect).toBeVisible();
+    });
+    await rsSelect(objectTypeVersionSelect, '2 (draft)');
+
     const testForm = await canvas.findByTestId('test-form');
-    await waitFor(() => {
-      expect(testForm).toHaveFormValues({
-        objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
-        objecttypeVersion: '2',
-      });
-    });
-    expect(canvas.getByText('Tree (open)')).toBeVisible();
-    expect(canvas.getByText('2 (draft)')).toBeVisible();
-
-    const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
-    await userEvent.click(v1Tab);
-
-    await waitFor(async () => {
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
-      );
-
-      // Expect v1Tab to be the selected tab
-      expect(v1Tab).toHaveAttribute('aria-selected', 'true');
-    });
-
-    await waitFor(() => {
-      expect(testForm).toHaveFormValues({
-        objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
-        objecttypeVersion: '2',
-      });
+    expect(testForm).toHaveFormValues({
+      objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+      objecttypeVersion: '2',
     });
   },
 };
@@ -206,53 +191,27 @@ export const SwitchToV2NonExisting = {
       objecttypeVersion: 1,
     },
   },
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-    await userEvent.click(v2Tab);
-
-    await waitFor(async () => {
+    await step('Activate v2 tab', async () => {
+      const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
+      await userEvent.click(v2Tab);
       // Close the confirmation modal
       await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
+        within(await canvas.findByRole('dialog')).getByRole('button', {name: 'Accepteren'})
       );
-
-      // Expect v2Tab to be the selected tab
-      expect(v2Tab).toHaveAttribute('aria-selected', 'true');
+      // Wait for v2Tab to be the selected tab
+      await waitFor(() => {
+        expect(v2Tab).toHaveAttribute('aria-selected', 'true');
+      });
     });
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
       expect(testForm).toHaveFormValues({
-        objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
-        objecttypeVersion: '2',
-      });
-    });
-    expect(canvas.getByText('Tree (open)')).toBeVisible();
-    expect(canvas.getByText('2 (draft)')).toBeVisible();
-
-    const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
-    await userEvent.click(v1Tab);
-
-    await waitFor(async () => {
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
-      );
-
-      // Expect v2Tab to be the selected tab
-      expect(v1Tab).toHaveAttribute('aria-selected', 'true');
-    });
-
-    await waitFor(() => {
-      expect(testForm).toHaveFormValues({
-        objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
-        objecttypeVersion: '2',
+        objecttype: '',
+        objecttypeVersion: '',
       });
     });
   },

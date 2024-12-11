@@ -6,9 +6,12 @@ export const mockObjecttypesGet = objecttypes =>
   http.get(`${API_BASE_URL}/api/v2/objects-api/object-types`, () => HttpResponse.json(objecttypes));
 
 export const mockObjecttypeVersionsGet = versions =>
-  http.get(`${API_BASE_URL}/api/v2/objects-api/object-types/:uuid/versions`, () =>
-    HttpResponse.json(versions)
-  );
+  http.get(`${API_BASE_URL}/api/v2/objects-api/object-types/:uuid/versions`, ({params}) => {
+    if (params.uuid === 'a-non-existing-uuid') {
+      return HttpResponse.json([]);
+    }
+    return HttpResponse.json(versions);
+  });
 
 export const mockObjecttypesError = () =>
   http.all(`${API_BASE_URL}/api/v2/*`, () =>

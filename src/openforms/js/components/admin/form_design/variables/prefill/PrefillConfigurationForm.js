@@ -1,6 +1,5 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
-import {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
@@ -51,19 +50,10 @@ const PrefillConfigurationForm = ({
       }}
     >
       {({handleSubmit, values}) => {
-        const PluginFormComponent =
-          PLUGIN_COMPONENT_MAPPING[values.plugin]?.component ??
-          PLUGIN_COMPONENT_MAPPING.default.component;
-        const ToggleCopyComponent =
-          PLUGIN_COMPONENT_MAPPING[values.plugin]?.toggleCopyComponent ??
-          PLUGIN_COMPONENT_MAPPING.default.toggleCopyComponent;
-
-        const [showCopyButton, setShowCopyButton] = useState(false);
-
-        const handleToggle = event => {
-          event.preventDefault();
-          setShowCopyButton(!showCopyButton);
-        };
+        const pluginConfiguration =
+          PLUGIN_COMPONENT_MAPPING[values.plugin] ?? PLUGIN_COMPONENT_MAPPING.default;
+        const {component: PluginFormComponent, pluginFieldExtra: PluginFieldExtra = null} =
+          pluginConfiguration;
 
         return (
           <>
@@ -80,22 +70,17 @@ const PrefillConfigurationForm = ({
                 >
                   <>
                     <PluginField />
-                    {ToggleCopyComponent ? (
+                    {PluginFieldExtra && (
                       <div style={{marginLeft: '10px', marginTop: '5px'}}>
-                        <ToggleCopyComponent handleToggle={handleToggle} />
+                        <PluginFieldExtra />
                       </div>
-                    ) : null}
+                    )}
                   </>
                 </Field>
               </FormRow>
             </Fieldset>
 
-            <PluginFormComponent
-              {...(ToggleCopyComponent && {
-                showCopyButton: showCopyButton,
-                setShowCopyButton: setShowCopyButton,
-              })}
-            />
+            <PluginFormComponent />
 
             <SubmitRow>
               <SubmitAction

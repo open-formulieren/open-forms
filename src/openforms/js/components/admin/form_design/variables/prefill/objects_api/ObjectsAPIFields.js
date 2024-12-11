@@ -4,7 +4,6 @@
  * Most other plugins can be configured with the generic form in `./DefaultFields`.
  */
 import {useFormikContext} from 'formik';
-import PropTypes from 'prop-types';
 import {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
@@ -15,6 +14,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {LOADING_OPTION} from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import VariableMapping from 'components/admin/forms/VariableMapping';
 import {
   AuthAttributePath,
@@ -26,8 +26,8 @@ import {FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
-import ValidationErrorsProvider from '../../../../forms/ValidationErrors';
 import CopyConfigurationFromRegistrationBackend from './CopyConfigurationFromRegistrationBackend';
+import useStatus from './useStatus';
 
 const PLUGIN_ID = 'objects_api';
 
@@ -45,6 +45,19 @@ const onApiGroupChange = prevValues => ({
   },
 });
 
+/**
+ * Callback to invoke when the Object Type changes - used to reset the dependent fields.
+ */
+const onObjectTypeChange = prevValues => ({
+  ...prevValues,
+  options: {
+    ...prevValues.options,
+    objecttypeVersion: undefined,
+    authAttributePath: undefined,
+    variablesMapping: [],
+  },
+});
+
 // Load the possible prefill properties
 // XXX: this would benefit from client-side caching
 const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion) => {
@@ -56,7 +69,7 @@ const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion)
   return response.data.map(property => [property.targetPath, property.targetPath.join(' > ')]);
 };
 
-const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
+const ObjectsAPIFields = () => {
   const intl = useIntl();
   // Object with keys the plugin/attribute/options, we process these further to set up
   // the required context for the fields.
@@ -71,6 +84,7 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
     plugin,
     options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
   } = values;
+  const {showCopyButton, toggleShowCopyButton} = useStatus();
 
   const defaults = {
     objectsApiGroup: null,
@@ -125,12 +139,12 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
 
   return (
     <ValidationErrorsProvider errors={optionsErrors}>
-      {showCopyButton ? (
+      {showCopyButton && (
         <CopyConfigurationFromRegistrationBackend
           backends={backends}
-          setShowCopyButton={setShowCopyButton}
+          onCopyDone={toggleShowCopyButton}
         />
-      ) : null}
+      )}
       <Fieldset>
         <ObjectsAPIGroup
           apiGroupChoices={apiGroups}
@@ -167,7 +181,6 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
           <ObjectTypeSelect
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
-            versionFieldName="options.objecttypeVersion"
             label={
               <FormattedMessage
                 description="Objects API prefill options 'Objecttype' label"
@@ -196,6 +209,7 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
               }));
               return true;
             }}
+            onObjectTypeChange={onObjectTypeChange}
           />
         </ErrorBoundary>
 
@@ -283,9 +297,6 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
   );
 };
 
-ObjectsAPIFields.propTypes = {
-  showCopyButton: PropTypes.bool.isRequired,
-  setShowCopyButton: PropTypes.func.isRequired,
-};
+ObjectsAPIFields.propTypes = {};
 
 export default ObjectsAPIFields;
