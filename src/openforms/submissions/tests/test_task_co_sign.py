@@ -4,6 +4,7 @@ from django.core import mail
 from django.test import TestCase
 
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.constants import EmailContentTypeChoices, EmailEventChoices
 from openforms.logging.models import TimelineLogProxy
 
 from ..tasks import send_email_cosigner
@@ -175,3 +176,34 @@ class OnCompletionTests(TestCase):
 
         self.assertNotIn(form_link, email.body)
         self.assertIn(submission.public_registration_reference, email.body)
+
+    def test_headers_in_cosign_email(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            form_url="http://testserver/myform/",
+        )
+        send_email_cosigner(submission.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+
+        # UUID is not a constant, so just test if it exists
+        submission_uuid = message.extra_headers.pop("X-OF-Content-UUID", None)
+        self.assertIsNotNone(submission_uuid)
+
+        # Test remaining headers
+        self.assertEqual(
+            message.extra_headers,
+            {
+                "Content-Language": "nl",
+                "X-OF-Content-Type": EmailContentTypeChoices.submission,
+                "X-OF-Event": EmailEventChoices.cosign_confirmation,
+            },
+        )

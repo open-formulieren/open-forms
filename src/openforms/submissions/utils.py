@@ -19,6 +19,13 @@ from openforms.emails.confirmation_emails import (
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
 )
+from openforms.emails.constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmailContentTypeChoices,
+    EmailEventChoices,
+)
 from openforms.emails.utils import (
     render_email_template,
     send_mail_html,
@@ -204,6 +211,12 @@ def send_confirmation_email(submission: Submission) -> None:
             cc=cc_emails,
             text_message=text_content,
             theme=submission.form.theme,
+            extra_headers={
+                "Content-Language": submission.language_code,
+                X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
+                X_OF_EVENT_HEADER: EmailEventChoices.confirmation,
+            },
         )
     except Exception as e:
         logevent.confirmation_email_failure(submission, e)

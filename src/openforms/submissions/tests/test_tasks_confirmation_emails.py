@@ -11,6 +11,7 @@ from django.utils.translation import override as override_language
 from privates.test import temp_private_root
 
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.constants import EmailContentTypeChoices, EmailEventChoices
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormStepFactory
@@ -640,6 +641,37 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("Translated Repeating Group Item label 2", html_message)
         self.assertIn("Translated Radio option 1", html_message)
         self.assertIn("Translated Select option 2", html_message)
+
+    def test_headers_present_in_confirmation_email(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {
+                    "key": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+        )
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            send_confirmation_email(submission.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+
+        # UUID is not a constant, so just test if it exists
+        submission_uuid = message.extra_headers.pop("X-OF-Content-UUID", None)
+        self.assertIsNotNone(submission_uuid)
+
+        # Test remaining headers
+        self.assertEqual(
+            message.extra_headers,
+            {
+                "Content-Language": "nl",
+                "X-OF-Content-Type": EmailContentTypeChoices.submission,
+                "X-OF-Event": EmailEventChoices.confirmation,
+            },
+        )
 
 
 class RaceConditionTests(TransactionTestCase):
