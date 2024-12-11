@@ -99,5 +99,5 @@ Licensed under the `EUPL`_.
     :alt: Docker image
     :target: https://hub.docker.com/r/openformulieren/open-forms
 
-.. |python-versions| image:: https://img.shields.io/badge/python-3.10-blue.svg
+.. |python-versions| image:: https://img.shields.io/badge/python-3.12-blue.svg
     :alt: Supported Python versions
