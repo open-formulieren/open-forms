@@ -13,4 +13,4 @@ class EmailEventChoices(models.TextChoices):
 
 
 class EmailContentTypeChoices(models.TextChoices):
-    submission = "submission.submission", _("Submission")
+    submission = "submissions.Submission", _("Submission")
