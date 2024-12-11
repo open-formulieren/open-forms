@@ -1,7 +1,7 @@
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
+import {flushSync} from 'react-dom';
 import {FormattedMessage} from 'react-intl';
-import {useUpdateEffect} from 'react-use';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
@@ -18,12 +18,6 @@ const ObjectsAPIGroup = ({
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField(name);
   const {setValues} = useFormikContext();
   const {value} = fieldProps;
-
-  // Call `onApiGroupChange` to get the 'reset' values whenever the API group changes.
-  useUpdateEffect(() => {
-    if (!onApiGroupChange) return;
-    setValues(onApiGroupChange);
-  }, [setValues, onApiGroupChange, value]);
 
   const options = apiGroupChoices.map(([value, label]) => ({value, label}));
 
@@ -60,11 +54,22 @@ const ObjectsAPIGroup = ({
           value={normalizedOptions.find(option => option.value === normalizedValue)}
           required={required}
           onChange={async selectedOption => {
+            // Normalize empty string values back to null
+            const newValue = selectedOption ? selectedOption.value : null;
+            const hasChanged = newValue !== value;
+            // don't trigger Formik state changes and dependent effects if the user
+            // selects the same value that's already selected.
+            if (!hasChanged) return;
+
             const okToProceed = onChangeCheck === undefined || (await onChangeCheck());
             if (okToProceed) {
-              // normalize empty string back to null
-              const newValue = selectedOption ? selectedOption.value : null;
-              setValue(newValue);
+              // flush sync needed to ensure that onApiGroupChange gets the updated
+              // state
+              flushSync(() => {
+                setValue(newValue);
+              });
+              // Call `onApiGroupChange` to get the 'reset' values whenever the API group changes.
+              if (onApiGroupChange) setValues(onApiGroupChange);
             }
           }}
           isClearable={isClearable}

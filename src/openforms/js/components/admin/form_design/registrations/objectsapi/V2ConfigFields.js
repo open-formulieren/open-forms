@@ -31,6 +31,15 @@ const onApiGroupChange = prevValues => ({
   variablesMapping: [],
 });
 
+/**
+ * Callback to invoke when the Object Type changes - used to reset the dependent fields.
+ */
+const onObjectTypeChange = prevValues => ({
+  ...prevValues,
+  objecttypeVersion: undefined,
+  authAttributePath: undefined,
+});
+
 const V2ConfigFields = ({apiGroupChoices}) => {
   const {
     values: {
@@ -96,6 +105,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
               setFieldValue('variablesMapping', []);
               return true;
             }}
+            onObjectTypeChange={onObjectTypeChange}
           />
         </ErrorBoundary>
 

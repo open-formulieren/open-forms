@@ -32,6 +32,15 @@ const onApiGroupChange = prevValues => ({
   authAttributePath: undefined,
 });
 
+/**
+ * Callback to invoke when the Object Type changes - used to reset the dependent fields.
+ */
+const onObjectTypeChange = prevValues => ({
+  ...prevValues,
+  objecttypeVersion: undefined,
+  authAttributePath: undefined,
+});
+
 const LegacyConfigFields = ({apiGroupChoices}) => {
   const {
     values: {
@@ -68,6 +77,7 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
                 defaultMessage="The registration result will be an object from the selected type."
               />
             }
+            onObjectTypeChange={onObjectTypeChange}
           />
           <ObjectTypeVersionSelect
             label={

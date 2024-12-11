@@ -45,6 +45,19 @@ const onApiGroupChange = prevValues => ({
   },
 });
 
+/**
+ * Callback to invoke when the Object Type changes - used to reset the dependent fields.
+ */
+const onObjectTypeChange = prevValues => ({
+  ...prevValues,
+  options: {
+    ...prevValues.options,
+    objecttypeVersion: undefined,
+    authAttributePath: undefined,
+    variablesMapping: [],
+  },
+});
+
 // Load the possible prefill properties
 // XXX: this would benefit from client-side caching
 const getProperties = async (objectsApiGroup, objecttypeUuid, objecttypeVersion) => {
@@ -67,7 +80,6 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
   ]);
 
   const {values, setFieldValue, setValues} = useFormikContext();
-  console.log(values);
   const {
     plugin,
     options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
@@ -168,7 +180,6 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
           <ObjectTypeSelect
             name="options.objecttypeUuid"
             apiGroupFieldName="options.objectsApiGroup"
-            versionFieldName="options.objecttypeVersion"
             label={
               <FormattedMessage
                 description="Objects API prefill options 'Objecttype' label"
@@ -197,6 +208,7 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
               }));
               return true;
             }}
+            onObjectTypeChange={onObjectTypeChange}
           />
         </ErrorBoundary>
 
