@@ -17,7 +17,6 @@ from django.utils.translation import get_language, gettext_lazy as _
 import elasticapm
 from django_jsonform.models.fields import ArrayField
 from furl import furl
-from glom import glom
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper

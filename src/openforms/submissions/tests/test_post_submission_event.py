@@ -10,13 +10,11 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
-from openforms.appointments.exceptions import AppointmentRegistrationFailed
-from openforms.appointments.tests.utils import setup_jcc
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import LogicActionTypes, PropertyTypes
-from openforms.forms.tests.factories import FormDefinitionFactory, FormLogicFactory
+from openforms.forms.tests.factories import FormLogicFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.base import PreRegistrationResult

@@ -19,7 +19,7 @@ from django.utils import timezone
 from openforms.config.models import GlobalConfiguration
 
 if TYPE_CHECKING:
-    from .models import Submission
+    from .models import Submission  # noqa
 
 
 class SubmissionQuerySet(models.QuerySet["Submission"]):

@@ -6,12 +6,10 @@ from unittest.mock import patch
 from django.core import mail
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase, override_settings
-from django.utils.translation import gettext as _, override as override_language
+from django.utils.translation import override as override_language
 
 from privates.test import temp_private_root
 
-from openforms.appointments.constants import AppointmentDetailsStatus
-from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory

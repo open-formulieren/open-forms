@@ -16,7 +16,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def confirmation_summary(context):
     submission = context["_submission"]
-    # if it's a new-style appointment submission, there are no steps or summary to render
+    # There are no steps or summary to render in new-style appointment submission
     if get_appointment(submission) is not None:
         return ""
 
