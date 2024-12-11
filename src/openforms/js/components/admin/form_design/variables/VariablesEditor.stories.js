@@ -192,6 +192,20 @@ export default {
                 {targetPath: ['species'], jsonSchema: {type: 'string', description: 'Species'}},
               ],
             },
+            '209e0341-834d-4060-bd19-a3419d19ed74': {
+              1: [
+                {
+                  targetPath: ['path', 'to.the', 'target'],
+                  jsonSchema: {type: 'string', description: 'Path to the target'},
+                },
+              ],
+              2: [
+                {
+                  targetPath: ['path', 'to.the', 'target'],
+                  jsonSchema: {type: 'string', description: 'Path to the target'},
+                },
+              ],
+            },
           }),
         ],
         objectsAPIPrefill: [
@@ -208,6 +222,13 @@ export default {
               uuid: '2c77babf-a967-4057-9969-0200320d23f2',
               name: 'Person',
               namePlural: 'Persons',
+              dataClassification: 'open',
+            },
+            {
+              url: 'https://objecttypen.nl/api/v1/objecttypes/209e0341-834d-4060-bd19-a3419d19ed74',
+              uuid: '209e0341-834d-4060-bd19-a3419d19ed74',
+              name: 'Other objecttype',
+              namePlural: 'Other objecttypes',
               dataClassification: 'open',
             },
           ]),

@@ -67,6 +67,7 @@ const ObjectsAPIFields = ({showCopyButton, setShowCopyButton}) => {
   ]);
 
   const {values, setFieldValue, setValues} = useFormikContext();
+  console.log(values);
   const {
     plugin,
     options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
