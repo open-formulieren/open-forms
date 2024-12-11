@@ -77,40 +77,48 @@ const Field = ({
     modifiedChildren = React.cloneElement(children, childProps);
   }
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
-  const className = classNames({
+
+  const fieldClassName = classNames('flex-container', {
     fieldBox: fieldBox,
     errors: hasErrors,
-    'field--disabled': disabled,
   });
+  const wrapperClassName = classNames({'field--disabled': disabled});
 
-  return (
+  const fieldInputMarkup = (
+    <div className={fieldClassName}>
+      {label && (
+        <label className={required ? 'required' : ''} htmlFor={htmlFor}>
+          {label}
+        </label>
+      )}
+      {modifiedChildren}
+    </div>
+  );
+
+  const errorsMarkup = hasErrors && (
+    <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
+      {formattedErrors}
+    </ErrorList>
+  );
+
+  const helpMarkup = helpText && (
+    <div className="help" id={`id_${name}_helptext`}>
+      <div>{helpText}</div>
+    </div>
+  );
+
+  return fieldBox ? (
+    <div className={wrapperClassName}>
+      {errorsMarkup}
+      {fieldInputMarkup}
+      {helpMarkup}
+    </div>
+  ) : (
     <>
-      {!fieldBox && hasErrors ? (
-        <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
-          {formattedErrors}
-        </ErrorList>
-      ) : null}
-      <div className={className}>
-        {fieldBox && hasErrors ? (
-          <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
-            {formattedErrors}
-          </ErrorList>
-        ) : null}
-
-        <div className="flex-container">
-          {label && (
-            <label className={required ? 'required' : ''} htmlFor={htmlFor}>
-              {label}
-            </label>
-          )}
-          {modifiedChildren}
-        </div>
-
-        {helpText ? (
-          <div className="help" id={`id_${name}_helptext`}>
-            <div>{helpText}</div>
-          </div>
-        ) : null}
+      {errorsMarkup}
+      <div className={wrapperClassName}>
+        {fieldInputMarkup}
+        {helpMarkup}
       </div>
     </>
   );
@@ -123,7 +131,17 @@ Field.propTypes = {
   helpText: PropTypes.node,
   required: PropTypes.bool,
   errors: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.array])),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array,
+        // react-intl message
+        PropTypes.shape({
+          defaultMessage: PropTypes.any,
+          id: PropTypes.string,
+        }),
+      ])
+    ),
     PropTypes.string,
   ]),
   fieldBox: PropTypes.bool,

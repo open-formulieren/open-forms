@@ -53,7 +53,6 @@ const BackendOptionsFormRow = ({backendType = null, currentOptions = {}, onChang
           />
         }
         schema={backendType.schema}
-        uiSchema={BACKEND_OPTIONS_FORMS[backendType.id]?.uiSchema || {}}
         formData={currentOptions}
         onChange={({formData}) =>
           onChange({target: {name: `form.registrationBackends.${index}.options`, value: formData}})
@@ -85,7 +84,6 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
   return (
     <Fieldset
       style={{'--of-add-another-text': `"${addAnotherMsg}"`}}
-      extraClassName="admin-fieldset"
       title={
         <>
           {backend.name || backend.key}

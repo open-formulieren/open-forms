@@ -157,28 +157,6 @@ div.flatpickr-calendar.open {
   }
 }
 
-// rjsf styling competing with bootstrap, competing with django admin.....
-.admin-fieldset {
-  margin-bottom: 0;
-
-  .form-row {
-    &,
-    * {
-      box-sizing: border-box !important;
-    }
-  }
-
-  .form-row {
-    display: block;
-    margin-left: 0;
-    margin-right: 0;
-
-    ul.errorlist {
-      padding-left: 0px;
-    }
-  }
-}
-
 .gu-transit {
   // #748 client requested increased contrast for this element
   // here we clobber formio's compiled 0.2 opacity of the drag-and-drop target indicator

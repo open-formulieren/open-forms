@@ -13,7 +13,6 @@ import ZGWOptionsForm from './zgw';
 /**
  * @typedef {{
  *   form: React.FC,
- *   uiSchema?: Object,
  *   onStepEdit?: (...args: any) => Object | null,
  *   onUserDefinedVariableEdit?: (...args: any) => Object | null,
  *   configurableFromVariables?: boolean | (options: Object) => boolean,

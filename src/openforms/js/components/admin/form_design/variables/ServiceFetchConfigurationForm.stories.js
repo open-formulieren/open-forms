@@ -1,6 +1,10 @@
 import {useFormik} from 'formik';
 
-import {FormLogicDecorator} from '../story-decorators';
+import {
+  AdminChangeFormDecorator,
+  FormLogicDecorator,
+} from 'components/admin/form_design/story-decorators';
+
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
 const Template = ({initialValues = {}, selectExisting}) => {
@@ -25,7 +29,7 @@ const Template = ({initialValues = {}, selectExisting}) => {
 
 export default {
   title: 'Form design/Service Fetch/ServiceFetchConfigurationForm',
-  decorators: [FormLogicDecorator],
+  decorators: [FormLogicDecorator, AdminChangeFormDecorator],
   component: ServiceFetchConfigurationForm,
   render: Template.bind({}),
 

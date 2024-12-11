@@ -88,7 +88,7 @@ const DocumentType = ({name, label, loading, options, isDisabled, helpText}) => 
 
   return (
     <FormRow>
-      <Field name={name} label={label} helpText={helpText} noManageChildProps>
+      <Field name={name} label={label} helpText={helpText} disabled={isDisabled} noManageChildProps>
         <>
           <ReactSelect
             name={name}

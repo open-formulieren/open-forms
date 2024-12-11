@@ -10,10 +10,13 @@ const FormRow = ({fields = [], children}) => {
   let hasErrors = false;
   const validationErrors = useContext(ValidationErrorContext);
 
+  let hasAnyFieldBox = false;
   // process (validation) errors here
   const processedChildren = React.Children.map(children, child => {
     // check if it *looks* like a field
-    let {name, errors} = child.props;
+    let {name, errors, fieldBox = false} = child.props;
+    if (fieldBox) hasAnyFieldBox = true;
+
     if (!name) return child;
 
     const childErrors = validationErrors
@@ -45,7 +48,12 @@ const FormRow = ({fields = [], children}) => {
     {errors: processedChildren.length === 1 && hasErrors},
     ...fieldClasses
   );
-  return <div className={className}>{processedChildren}</div>;
+  const inner = hasAnyFieldBox ? (
+    <div className="flex-container form-multiline">{processedChildren}</div>
+  ) : (
+    processedChildren
+  );
+  return <div className={className}>{inner}</div>;
 };
 
 FormRow.propTypes = {
