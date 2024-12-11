@@ -1,6 +1,5 @@
 import json
 import logging
-import warnings
 from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
@@ -19,14 +18,7 @@ from requests.exceptions import RequestException
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import (
-    AppointmentDetails,
-    BasePlugin,
-    Customer,
-    CustomerDetails,
-    Location,
-    Product,
-)
+from ...base import AppointmentDetails, BasePlugin, CustomerDetails, Location, Product
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -71,25 +63,6 @@ def with_graceful_default(default: T):
         return wrapper
 
     return decorator
-
-
-def normalize_customer_details(client: _CustomerDetails | Customer) -> _CustomerDetails:
-    # Phasing out Customer in favour of CustomerDetails, so convert to the new type
-    if isinstance(client, Customer):
-        warnings.warn(
-            "Fixed customer fields via the Customer class are deprecated, use "
-            "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
-            DeprecationWarning,
-        )
-        client = _CustomerDetails(
-            details={
-                CustomerFields.last_name: client.last_name,
-                CustomerFields.birthday: client.birthdate.isoformat(),
-                CustomerFields.first_name: client.initials or "",
-                CustomerFields.phone_number: client.phonenumber or "",
-            }
-        )
-    return client
 
 
 @register("qmatic")
@@ -314,11 +287,10 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: _CustomerDetails | Customer,
+        client: _CustomerDetails,
         remarks: str = "",
     ) -> str:
         assert products, "Can't book for empty products"
-        customer = normalize_customer_details(client)
 
         product_names = ", ".join(sorted({product.name for product in products}))
         unique_product_ids, num_customers = self._count_products(products)
@@ -328,7 +300,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             # we repeat the same customer information for every customer, as we currently
             # don't support getting the contact details for each individual customer
             "customers": [
-                {choice: value for choice, value in customer.details.items() if value}
+                {choice: value for choice, value in client.details.items() if value}
             ]
             * num_customers,
             "services": [{"publicId": product_id} for product_id in unique_product_ids],

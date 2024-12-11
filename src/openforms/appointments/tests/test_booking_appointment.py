@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -21,11 +21,7 @@ from ..exceptions import (
 )
 from ..models import AppointmentInfo
 from ..registry import Registry
-from .factories import (
-    AppointmentFactory,
-    AppointmentInfoFactory,
-    AppointmentProductFactory,
-)
+from .factories import AppointmentFactory, AppointmentProductFactory
 
 register = Registry()
 register("demo")(DemoAppointment)
@@ -155,48 +151,3 @@ class BookAppointmentTests(TestCase):
             ),
             remarks="",
         )
-
-    def test_cancels_previous_appointment(self):
-        new_completed_on = timezone.now() - timedelta(hours=1)
-        # new submission, to replace the previous one
-        submission = SubmissionFactory.create(
-            form__is_appointment_form=True,
-            has_previous_submission=True,
-            previous_submission__completed=True,
-            previous_submission__completed_on=new_completed_on - timedelta(hours=12),
-        )
-        AppointmentFactory.create(submission=submission, plugin="demo")
-        # set the data of the previous submission
-        AppointmentFactory.create(
-            submission=submission.previous_submission, plugin="demo"
-        )
-        AppointmentInfoFactory.create(
-            submission=submission.previous_submission,
-            registration_ok=True,
-            appointment_id="98765",
-        )
-
-        with patch("openforms.appointments.core.register", new=register):
-            with supress_output(sys.stdout, os.devnull):
-                book_for_submission(submission)
-
-        info_by_id = {
-            info.appointment_id: info for info in AppointmentInfo.objects.all()
-        }
-        with self.subTest("New submissions/appointment"):
-            self.assertIn("test 1", info_by_id)
-            self.assertEqual(
-                info_by_id["test 1"].status, AppointmentDetailsStatus.success
-            )
-
-        with self.subTest("Cancelled submission/appointment"):
-            self.assertIn("98765", info_by_id)
-            self.assertEqual(
-                info_by_id["98765"].status, AppointmentDetailsStatus.cancelled
-            )
-
-        with self.subTest("Audit logging"):
-            log_records = TimelineLogProxy.objects.all()
-            events = {lr.event for lr in log_records}
-            self.assertIn("appointment_cancel_start", events)
-            self.assertIn("appointment_cancel_success", events)

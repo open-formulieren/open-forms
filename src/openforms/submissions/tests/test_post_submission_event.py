@@ -10,13 +10,11 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
-from openforms.appointments.exceptions import AppointmentRegistrationFailed
-from openforms.appointments.tests.utils import setup_jcc
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import LogicActionTypes, PropertyTypes
-from openforms.forms.tests.factories import FormDefinitionFactory, FormLogicFactory
+from openforms.forms.tests.factories import FormLogicFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.base import PreRegistrationResult
@@ -848,21 +846,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
 
         self.assertEqual(len(mails), 0)
         self.assertNotEqual(submission.auth_info.value, "111222333")
-
-    def test_submission_completed_incomplete_appointment(self):
-        setup_jcc()
-        components = FormDefinitionFactory.build(is_appointment=True).configuration[
-            "components"
-        ]
-        submission = SubmissionFactory.from_components(
-            completed=True,
-            form__registration_backend="",
-            components_list=components,
-            submitted_data={"product": {"identifier": "79", "name": "Paspoort"}},
-        )
-
-        with self.assertRaises(AppointmentRegistrationFailed):
-            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
     def test_cosign_not_required_and_not_filled_in_proceeds_with_registration(self):
         submission = SubmissionFactory.from_components(

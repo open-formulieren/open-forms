@@ -44,20 +44,10 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/c2LWu": {
-    "defaultMessage": "Locations Component",
-    "description": "Locations Component field label",
-    "originalDefault": "Locations Component"
-  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
     "originalDefault": "Submission report CSV informatieobjecttype"
-  },
-  "/hIJ8m": {
-    "defaultMessage": "Dates Component",
-    "description": "Dates Component field label",
-    "originalDefault": "Dates Component"
   },
   "/rF8P0": {
     "defaultMessage": "Configuration",
@@ -244,11 +234,6 @@
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
-  "4iGsG1": {
-    "defaultMessage": "Birth Date Component",
-    "description": "Birth Date Component field label",
-    "originalDefault": "Birth Date Component"
-  },
   "4sFGgA": {
     "defaultMessage": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -278,11 +263,6 @@
     "defaultMessage": "Configure",
     "description": "Button to open DMN configuration modal",
     "originalDefault": "Configure"
-  },
-  "5OXIff": {
-    "defaultMessage": "Component where the birth date should be entered",
-    "description": "Birth Date Component field help text",
-    "originalDefault": "Component where the birth date should be entered"
   },
   "5P+YgL": {
     "defaultMessage": "Add step",
@@ -578,11 +558,6 @@
     "defaultMessage": "Email payment subject",
     "description": "Email registration options 'emailPaymentSubject' label",
     "originalDefault": "Email payment subject"
-  },
-  "BCjZNo": {
-    "defaultMessage": "Component where the phone number should be entered",
-    "description": "Phone Number Component field help text",
-    "originalDefault": "Component where the phone number should be entered"
   },
   "BKTOtD": {
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }",
@@ -1119,11 +1094,6 @@
     "description": "Cosign components in repeating group warning message",
     "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
-  "JtOgcq": {
-    "defaultMessage": "Last Name Component",
-    "description": "Last Name Component field label",
-    "originalDefault": "Last Name Component"
-  },
   "K/Oijt": {
     "defaultMessage": "Organisation RSIN",
     "description": "Objects API registration options 'organisationRSIN' label",
@@ -1339,11 +1309,6 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
-  "NwTdLM": {
-    "defaultMessage": "Component where locations for an appointment will be shown",
-    "description": "Locations Component field help text",
-    "originalDefault": "Component where locations for an appointment will be shown"
-  },
   "NyyJMK": {
     "defaultMessage": "The API group specifies which ZGW services to use.",
     "description": "ZGW APIs group field help text",
@@ -1443,11 +1408,6 @@
     "defaultMessage": "Plugin configuration: StUF-ZDS",
     "description": "StUF-ZDS registration options modal title",
     "originalDefault": "Plugin configuration: StUF-ZDS"
-  },
-  "PiB6Y1": {
-    "defaultMessage": "Times Component",
-    "description": "Times Component field label",
-    "originalDefault": "Times Component"
   },
   "PtZ96W": {
     "defaultMessage": "Alias",
@@ -1893,11 +1853,6 @@
     "defaultMessage": "Mapped to the {geometryPath} attribute",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
-  },
-  "aUChz/": {
-    "defaultMessage": "Products Component",
-    "description": "Products Component field label",
-    "originalDefault": "Products Component"
   },
   "aXJpiI": {
     "defaultMessage": "This field is required.",
@@ -2363,11 +2318,6 @@
     "defaultMessage": "Expression",
     "description": "DMN Input clause expression header",
     "originalDefault": "Expression"
-  },
-  "iq0ppL": {
-    "defaultMessage": "Experimental mode. Indicates whether appointments are enabled for this form.",
-    "description": "Form appointment enabled field help text",
-    "originalDefault": "Experimental mode. Indicates whether appointments are enabled for this form."
   },
   "ixiVhj": {
     "defaultMessage": "{name} [new]",
@@ -2844,11 +2794,6 @@
     "description": "Delete confirmation message for variable mapped to case property",
     "originalDefault": "Are you sure you want to remove this mapping?"
   },
-  "t99ynC": {
-    "defaultMessage": "Component where the last name should be entered",
-    "description": "Last Name Component field help text",
-    "originalDefault": "Component where the last name should be entered"
-  },
   "tJQoMq": {
     "defaultMessage": "There are errors in the prefill configuration.",
     "description": "Prefill configuration errors icon text",
@@ -2989,20 +2934,10 @@
     "description": "Toggle array input raw JSON input mode",
     "originalDefault": "Use raw JSON input"
   },
-  "wjwFwT": {
-    "defaultMessage": "Component where times for an appointment will be shown",
-    "description": "Times Component field help text",
-    "originalDefault": "Component where times for an appointment will be shown"
-  },
   "wnTTZr": {
     "defaultMessage": "ID of the drive to use. If left empty, the default drive will be used.",
     "description": "MS Graph registration options 'driveId' help text",
     "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
-  },
-  "wnxKT/": {
-    "defaultMessage": "Component where products for an appointment will be shown",
-    "description": "Products Component field help text",
-    "originalDefault": "Component where products for an appointment will be shown"
   },
   "wqCiwc": {
     "defaultMessage": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.",
@@ -3039,11 +2974,6 @@
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
   },
-  "xRQrla": {
-    "defaultMessage": "Appointments",
-    "description": "Appointments tab title",
-    "originalDefault": "Appointments"
-  },
   "xTfMk5": {
     "defaultMessage": "Translation enabled",
     "description": "Form translation enabled field label",
@@ -3053,6 +2983,11 @@
     "defaultMessage": "Create definition",
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
+  },
+  "xxyIg/": {
+    "defaultMessage": "Indicates whether appointments are enabled for this form.",
+    "description": "Form appointment enabled field help text",
+    "originalDefault": "Indicates whether appointments are enabled for this form."
   },
   "xyVtKp": {
     "defaultMessage": "Plugin configuration: Objects API",
@@ -3089,11 +3024,6 @@
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
   },
-  "yYw2Rb": {
-    "defaultMessage": "Phone Number Component",
-    "description": "Phone Number Component field label",
-    "originalDefault": "Phone Number Component"
-  },
   "z0FW+t": {
     "defaultMessage": "Field name",
     "description": "Name of the translatable field",
@@ -3108,11 +3038,6 @@
     "defaultMessage": "Zds zaaktype omschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
-  },
-  "zLTTBw": {
-    "defaultMessage": "Component where dates for an appointment will be shown",
-    "description": "Dates Component field help text",
-    "originalDefault": "Component where dates for an appointment will be shown"
   },
   "zQE4f2": {
     "defaultMessage": "N/A",

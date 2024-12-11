@@ -65,6 +65,5 @@ class ProductListTests(SubmissionsMixin, APITestCase):
 
         response = self.client.get(self.endpoint, {"product_id": [""]})
 
-        # XXX in 3.0, this will become HTTP 400
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [])
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["invalidParams"][0]["code"], "blank")

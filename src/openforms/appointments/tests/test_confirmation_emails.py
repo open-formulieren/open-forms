@@ -270,7 +270,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
             self.assertTagWithTextIn("td", "Email", message_html)
             self.assertTagWithTextIn("td", "austin@powers.net", message_html)
 
-    def test_cancel_and_change_instructions(self):
+    def test_cancel_instructions(self):
         appointment = AppointmentFactory.create(
             plugin="with-email",
             submission__language_code="nl",
@@ -293,12 +293,9 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
 
         plugin = register["with-email"]
         cancel_link = plugin.get_cancel_link(appointment.submission)
-        change_link = plugin.get_change_link(appointment.submission)
 
         with self.subTest(type="HTML"):
             self.assertIn(cancel_link, message_html)
-            self.assertNotIn(change_link, message_html)
 
         with self.subTest(type="plain text"):
             self.assertIn(cancel_link, message_text)
-            self.assertNotIn(change_link, message_text)

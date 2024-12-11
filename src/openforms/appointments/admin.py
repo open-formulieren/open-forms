@@ -1,11 +1,10 @@
 from copy import copy
-from typing import Literal
 
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminTextInputWidget
 from django.utils import timezone
-from django.utils.html import format_html_join
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 
@@ -86,20 +85,8 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         if obj.start_time and obj.start_time <= timezone.now():
             return "-"
 
-        actions: list[tuple[Literal["cancel", "change"], str]] = [
-            ("cancel", gettext("Cancel")),
-        ]
-
-        # legacy appointments have the change option
-        is_legacy = not obj.submission.form.is_appointment
-        if is_legacy:
-            actions.append(("change", gettext("Change")))
-
-        links = (
-            (BasePlugin.get_link(obj.submission, verb=action), label)
-            for action, label in actions
-        )
-        return format_html_join(" | ", '<a href="{}">{}</a>', links)
+        link = BasePlugin.get_cancel_link(obj.submission)
+        return format_html('<a href="{}">{}</a>', link, _("Cancel"))
 
     get_object_actions.short_description = _("Appointment actions")
 

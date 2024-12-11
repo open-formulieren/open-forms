@@ -44,20 +44,10 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/c2LWu": {
-    "defaultMessage": "Locatie veld",
-    "description": "Locations Component field label",
-    "originalDefault": "Locations Component"
-  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
     "originalDefault": "Submission report CSV informatieobjecttype"
-  },
-  "/hIJ8m": {
-    "defaultMessage": "Datum veld",
-    "description": "Dates Component field label",
-    "originalDefault": "Dates Component"
   },
   "/rF8P0": {
     "defaultMessage": "Instellingen",
@@ -246,11 +236,6 @@
     "description": "JSON editor: 'configure' header label",
     "originalDefault": "Configure"
   },
-  "4iGsG1": {
-    "defaultMessage": "Geboortedatum veld",
-    "description": "Birth Date Component field label",
-    "originalDefault": "Birth Date Component"
-  },
   "4sFGgA": {
     "defaultMessage": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie.",
     "description": "DMN input expressions warning about extraction accuracy",
@@ -280,11 +265,6 @@
     "defaultMessage": "Instellen",
     "description": "Button to open DMN configuration modal",
     "originalDefault": "Configure"
-  },
-  "5OXIff": {
-    "defaultMessage": "Veld waar de geboortedatum voor een afspraak komt te staan",
-    "description": "Birth Date Component field help text",
-    "originalDefault": "Component where the birth date should be entered"
   },
   "5P+YgL": {
     "defaultMessage": "Stap toevoegen",
@@ -583,11 +563,6 @@
     "defaultMessage": "Onderwerp betaalstatusmail",
     "description": "Email registration options 'emailPaymentSubject' label",
     "originalDefault": "Email payment subject"
-  },
-  "BCjZNo": {
-    "defaultMessage": "Veld waar het telefoonnummer voor een afspraak komt te staan",
-    "description": "Phone Number Component field help text",
-    "originalDefault": "Component where the phone number should be entered"
   },
   "BKTOtD": {
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele gekoppeld)} other {({varCount} variabelen gekoppeld)} }",
@@ -1128,11 +1103,6 @@
     "description": "Cosign components in repeating group warning message",
     "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
-  "JtOgcq": {
-    "defaultMessage": "Achternaam veld",
-    "description": "Last Name Component field label",
-    "originalDefault": "Last Name Component"
-  },
   "K/Oijt": {
     "defaultMessage": "RSIN organisatie",
     "description": "Objects API registration options 'organisationRSIN' label",
@@ -1349,11 +1319,6 @@
     "description": "ZGW APIs registration options 'document type' label",
     "originalDefault": "Document type"
   },
-  "NwTdLM": {
-    "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
-    "description": "Locations Component field help text",
-    "originalDefault": "Component where locations for an appointment will be shown"
-  },
   "NyyJMK": {
     "defaultMessage": "De API-groep die bepaalt welke ZGW services gebruikt moeten worden.",
     "description": "ZGW APIs group field help text",
@@ -1457,11 +1422,6 @@
     "defaultMessage": "Plugin-instellingen: StUF-ZDS",
     "description": "StUF-ZDS registration options modal title",
     "originalDefault": "Plugin configuration: StUF-ZDS"
-  },
-  "PiB6Y1": {
-    "defaultMessage": "Tijd veld",
-    "description": "Times Component field label",
-    "originalDefault": "Times Component"
   },
   "PtZ96W": {
     "defaultMessage": "Alias",
@@ -1911,11 +1871,6 @@
     "defaultMessage": "Gekoppeld aan het {geometryPath}-attribuut",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
-  },
-  "aUChz/": {
-    "defaultMessage": "Product veld",
-    "description": "Products Component field label",
-    "originalDefault": "Products Component"
   },
   "aXJpiI": {
     "defaultMessage": "Dit veld is verplicht.",
@@ -2384,11 +2339,6 @@
     "defaultMessage": "Expressie",
     "description": "DMN Input clause expression header",
     "originalDefault": "Expression"
-  },
-  "iq0ppL": {
-    "defaultMessage": "Bij het inschakelen van de afsprakenmodus doorloopt de gebruiker een vaste flow.",
-    "description": "Form appointment enabled field help text",
-    "originalDefault": "Experimental mode. Indicates whether appointments are enabled for this form."
   },
   "ixiVhj": {
     "defaultMessage": "{name} [nieuw]",
@@ -2865,11 +2815,6 @@
     "description": "Delete confirmation message for variable mapped to case property",
     "originalDefault": "Are you sure you want to remove this mapping?"
   },
-  "t99ynC": {
-    "defaultMessage": "Veld waar de achternaam voor een afspraak komt te staan",
-    "description": "Last Name Component field help text",
-    "originalDefault": "Component where the last name should be entered"
-  },
   "tJQoMq": {
     "defaultMessage": "De prefill-instellingen zijn niet geldig.",
     "description": "Prefill configuration errors icon text",
@@ -3010,20 +2955,10 @@
     "description": "Toggle array input raw JSON input mode",
     "originalDefault": "Use raw JSON input"
   },
-  "wjwFwT": {
-    "defaultMessage": "Veld waar beschikbare tijden voor een afspraak komen te staan",
-    "description": "Times Component field help text",
-    "originalDefault": "Component where times for an appointment will be shown"
-  },
   "wnTTZr": {
     "defaultMessage": "ID van de schijf/drive waar bestanden terecht moeten komen. Indien leeg, dan wordt de standaard-drive gebruikt.",
     "description": "MS Graph registration options 'driveId' help text",
     "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
-  },
-  "wnxKT/": {
-    "defaultMessage": "Veld waar beschikbare producten voor een afspraak komen te staan",
-    "description": "Products Component field help text",
-    "originalDefault": "Component where products for an appointment will be shown"
   },
   "wqCiwc": {
     "defaultMessage": "Aanduiding van de mate waarin het zaakdossier van de ZAAK voor de openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden.",
@@ -3060,11 +2995,6 @@
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
   },
-  "xRQrla": {
-    "defaultMessage": "Afspraken",
-    "description": "Appointments tab title",
-    "originalDefault": "Appointments"
-  },
   "xTfMk5": {
     "defaultMessage": "Vertalingen ingeschakeld",
     "description": "Form translation enabled field label",
@@ -3074,6 +3004,11 @@
     "defaultMessage": "Formulierdefinitie aanmaken",
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
+  },
+  "xxyIg/": {
+    "defaultMessage": "Indicates whether appointments are enabled for this form.",
+    "description": "Form appointment enabled field help text",
+    "originalDefault": "Indicates whether appointments are enabled for this form."
   },
   "xyVtKp": {
     "defaultMessage": "Plugin-instellingen: Objecten-API",
@@ -3111,11 +3046,6 @@
     "description": "JSON variable type unset representation",
     "originalDefault": "(unset)"
   },
-  "yYw2Rb": {
-    "defaultMessage": "Telefoonnummer veld",
-    "description": "Phone Number Component field label",
-    "originalDefault": "Phone Number Component"
-  },
   "z0FW+t": {
     "defaultMessage": "Veldnaam",
     "description": "Name of the translatable field",
@@ -3130,11 +3060,6 @@
     "defaultMessage": "Zaaktypeomschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
-  },
-  "zLTTBw": {
-    "defaultMessage": "Veld waar beschikbare datums voor een afspraak komen te staan",
-    "description": "Dates Component field help text",
-    "originalDefault": "Component where dates for an appointment will be shown"
   },
   "zQE4f2": {
     "defaultMessage": "n.v.t.",
