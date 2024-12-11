@@ -86,24 +86,27 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         default="",
     )
     product_url = serializers.URLField(
-        required=False,
         label=_("Product url"),
         help_text=_(
             "The product url will be retrieved from the specified case type "
             "and the version that is active at that moment. "
         ),
+        required=False,
+        allow_blank=True,
         default="",
     )
 
     # DeprecationWarning - deprecated, will be removed in OF 3.0 or 4.0
     zaaktype = serializers.URLField(
-        required=False,
         help_text=_("URL of the ZAAKTYPE in the Catalogi API"),
+        required=False,
+        allow_blank=True,
         default="",
     )
     informatieobjecttype = serializers.URLField(
-        required=False,
         help_text=_("URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
+        required=False,
+        allow_blank=True,
         default="",
     )
     organisatie_rsin = serializers.CharField(
