@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from importlib import import_module
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
@@ -12,6 +13,9 @@ from django.utils.functional import cached_property
 from furl import furl
 
 from openforms.typing import AnyRequest
+
+if TYPE_CHECKING:
+    from django.conf.urls import _IncludedURLConf
 
 
 def build_absolute_uri(location: str, request: AnyRequest | None = None):
@@ -204,7 +208,7 @@ def decorator_include(
     decorators: Callable[..., Any] | list[Callable[..., Any]],
     arg: Any,
     namespace: str | None = None,
-) -> tuple[_DecoratedPatterns, str | None, str | None]:
+) -> _IncludedURLConf:
     """
     Works like ``django.conf.urls.include`` but takes a view decorator
     or a list of view decorators as the first argument and applies them,
@@ -218,4 +222,11 @@ def decorator_include(
         urlconf_module, app_name, namespace = arg
     else:
         urlconf_module, app_name, namespace = include(arg, namespace=namespace)
-    return _DecoratedPatterns(urlconf_module, decorators), app_name, namespace
+    return (
+        cast(
+            Sequence[URLPattern | URLResolver],
+            _DecoratedPatterns(urlconf_module, decorators),
+        ),
+        app_name,
+        namespace,
+    )
