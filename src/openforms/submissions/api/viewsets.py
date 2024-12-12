@@ -609,7 +609,7 @@ class SubmissionStepViewSet(
     @action(
         detail=True,
         methods=["post"],
-        url_path="_check_logic",
+        url_path="_check-logic",
         throttle_classes=[PollingRateThrottle],
     )
     def logic_check(self, request, *args, **kwargs):

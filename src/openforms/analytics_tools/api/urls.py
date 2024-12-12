@@ -6,7 +6,7 @@ app_name = "analytics_tools"
 
 urlpatterns = [
     path(
-        "analytics_tools_config_info",
+        "analytics-tools-config-info",
         AnalyticsToolsConfigurationView.as_view(),
         name="analytics-tools-config-info",
     ),
