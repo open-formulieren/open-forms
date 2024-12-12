@@ -37,7 +37,7 @@ from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
-from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
+from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -67,13 +67,6 @@ from .typing import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def _point_coordinate(value: Any) -> dict[str, Any] | object:
-    if not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    # Providing the coordinates as [lng, lat] #4955
-    return {"type": "Point", "coordinates": [value[1], value[0]]}
 
 
 def _resolve_documenttype(
@@ -428,10 +421,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         }
 
         object_mapping = {
-            "geometry": FieldConf(
-                RegistrationAttribute.locatie_coordinaat,
-                transform=_point_coordinate,
-            ),
+            "geometry": FieldConf(RegistrationAttribute.locatie_coordinaat),
         }
 
         data = cast(dict[str, Any], render_to_json(options["content_json"], context))

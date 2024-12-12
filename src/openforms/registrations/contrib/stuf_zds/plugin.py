@@ -111,12 +111,6 @@ class PartialDate:
             )
 
 
-def _point_coordinate(value):
-    if not value or not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    return {"lat": value[0], "lng": value[1]}
-
-
 def _gender_choices(value):
     """
     Convert value to uppercase, take only the first character and see if it's
@@ -196,9 +190,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         "initiator.bsn": FieldConf(submission_auth_info_attribute="bsn"),
         "initiator.kvk": FieldConf(submission_auth_info_attribute="kvk"),
         # Location
-        "locatie": FieldConf(
-            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
-        ),
+        "locatie": FieldConf(RegistrationAttribute.locatie_coordinaat),
     }
 
     def pre_register_submission(

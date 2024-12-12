@@ -6,6 +6,8 @@ from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
+
 from ..typing import AddressNLComponent, Component, MapComponent
 from .base import FormatterBase
 
@@ -21,10 +23,16 @@ class DateTimeFormatter(FormatterBase):
         return f"{fmt_date(parsed_value)} {fmt_time(parsed_value, 'H:i')}"
 
 
+type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
+
+
 class MapFormatter(FormatterBase):
-    def format(self, component: MapComponent, value: list[float]) -> str:
+    def format(self, component: MapComponent, value: MapValue) -> str:
         # use a comma here since its a single data element
-        return ", ".join((str(x) for x in value))
+        if coordinates := value.get("coordinates"):
+            return ", ".join((str(x) for x in coordinates))
+        else:
+            return ""
 
 
 class AddressValue(TypedDict):

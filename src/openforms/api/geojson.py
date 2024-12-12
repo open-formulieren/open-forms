@@ -1,3 +1,5 @@
+from typing import Literal, TypedDict
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -43,3 +45,21 @@ class GeoJsonGeometryPolymorphicSerializer(PolymorphicSerializer):
         GeoJsonGeometryTypes.line_string: GeoJSONLineStringGeometrySerializer,
         GeoJsonGeometryTypes.polygon: GeoJSONPolygonGeometrySerializer,
     }
+
+
+type Coordinates = tuple[float, float]
+
+
+class PointGeometry(TypedDict):
+    type: Literal["Point"]
+    coordinates: Coordinates
+
+
+class LineStringGeometry(TypedDict):
+    type: Literal["LineString"]
+    coordinates: list[Coordinates]
+
+
+class PolygonGeometry(TypedDict):
+    type: Literal["Polygon"]
+    coordinates: list[list[Coordinates]]
