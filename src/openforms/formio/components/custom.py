@@ -9,6 +9,7 @@ from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+from drf_polymorphic.serializers import PolymorphicSerializer
 from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
@@ -191,6 +192,53 @@ class Datetime(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
 
+class GeoJsonPointGeometrySerializer(serializers.Serializer):
+    coordinates = serializers.ListField(
+        child=serializers.FloatField(required=True, allow_null=False),
+        min_length=2,
+        max_length=2,
+    )
+
+
+class GeoJsonLineStringGeometrySerializer(serializers.Serializer):
+    coordinates = serializers.ListField(
+        child=serializers.ListField(
+            child=serializers.FloatField(required=True, allow_null=False),
+            min_length=2,
+            max_length=2,
+        ),
+    )
+
+
+class GeoJsonPolygonGeometrySerializer(serializers.Serializer):
+    coordinates = serializers.ListField(
+        child=serializers.ListField(
+            child=serializers.ListField(
+                child=serializers.FloatField(required=True, allow_null=False),
+                min_length=2,
+                max_length=2,
+            ),
+        ),
+    )
+
+
+class GeoJsonGeometryPolymorphicSerializer(PolymorphicSerializer):
+    type = serializers.RegexField("^Point|LineString|Polygon$", required=True)
+
+    discriminator_field = "type"
+    serializer_mapping = {
+        str("Point"): GeoJsonPointGeometrySerializer,
+        str("LineString"): GeoJsonLineStringGeometrySerializer,
+        str("Polygon"): GeoJsonPolygonGeometrySerializer,
+    }
+
+
+class GeoJsonSerializer(serializers.Serializer):
+    type = serializers.RegexField("^Feature$", required=True)
+    properties = serializers.DictField()
+    geometry = GeoJsonGeometryPolymorphicSerializer()
+
+
 @register("map")
 class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
@@ -213,14 +261,11 @@ class Map(BasePlugin[MapComponent]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
+    def build_serializer_field(self, component: MapComponent) -> GeoJsonSerializer:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        base = serializers.FloatField(
-            required=required,
-            allow_null=not required,
-        )
-        return serializers.ListField(child=base, min_length=2, max_length=2)
+
+        return GeoJsonSerializer(required=required, allow_null=not required)
 
 
 @register("postcode")
