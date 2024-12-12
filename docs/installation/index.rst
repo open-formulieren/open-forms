@@ -28,6 +28,7 @@ and expertise.
    self_signed
    form_hosting
    redis
+   additional_scipts
    issues/index
    upgrade-240
    upgrade-250
