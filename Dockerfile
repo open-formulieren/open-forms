@@ -90,6 +90,7 @@ RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle
 COPY \
     ./bin/check_celery_worker_liveness.py \
     ./bin/report_component_problems.py \
+    ./bin/fix_selectboxes_component_default_values.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
