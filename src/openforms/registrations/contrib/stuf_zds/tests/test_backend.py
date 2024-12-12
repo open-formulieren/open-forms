@@ -210,7 +210,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "extra": "BuzzBazz",
                 "language_code": "Dothraki",  # some form widget defined by form designer
             },
@@ -465,7 +472,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 aa",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -714,7 +728,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -950,7 +971,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "vestigingsNummer": "87654321",
             },
             kvk="12345678",
@@ -1144,7 +1172,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
             },
             kvk="12345678",
             form__name="my-form",
@@ -1343,7 +1378,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "vestigingsNummer": "87654321",
             },
             kvk="12345678",
@@ -1574,7 +1616,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -2032,7 +2081,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2225,7 +2281,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2420,7 +2483,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2568,7 +2638,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
             },
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
@@ -2617,7 +2694,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [4.893164274470299, 52.36673378967122],
+                    },
+                },
             },
             kvk="12345678",
             form__registration_backend="stuf-zds-create-zaak",

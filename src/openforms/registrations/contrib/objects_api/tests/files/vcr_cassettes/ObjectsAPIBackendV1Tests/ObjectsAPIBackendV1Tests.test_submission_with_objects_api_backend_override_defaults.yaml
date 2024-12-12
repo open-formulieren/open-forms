@@ -1,9 +1,9 @@
 interactions:
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-      "bronorganisatie": "123456782", "creatiedatum": "2024-11-26", "titel": "Form
-      018", "auteur": "Aanvrager", "taal": "eng", "formaat": "application/pdf", "inhoud":
-      "", "status": "definitief", "bestandsnaam": "open-forms-Form 018.pdf", "ontvangstdatum":
+      "bronorganisatie": "123456782", "creatiedatum": "2024-12-12", "titel": "Form
+      000", "auteur": "Aanvrager", "taal": "eng", "formaat": "application/pdf", "inhoud":
+      "", "status": "definitief", "bestandsnaam": "open-forms-Form 000.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
       "bestandsomvang": 0}'
     headers:
@@ -12,7 +12,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjYxNjkyNywiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.UcUHWF3BT2_-ZD60vJMzRB7qxVYy7F85gYXPKpCcnxE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDAxOTEzOSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.hTAC2iR-Xnm8yBZEceMQKWDxNay_4LmiradlljF_KNs
       Connection:
       - keep-alive
       Content-Length:
@@ -25,9 +25,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8","identificatie":"DOCUMENT-2024-0000000033","bronorganisatie":"123456782","creatiedatum":"2024-11-26","titel":"Form
-        018","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2024-11-26T10:28:47.709459Z","bestandsnaam":"open-forms-Form
-        018.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7","identificatie":"DOCUMENT-2024-0000000008","bronorganisatie":"123456782","creatiedatum":"2024-12-12","titel":"Form
+        000","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2024-12-12T15:58:59.156802Z","bestandsnaam":"open-forms-Form
+        000.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -41,7 +41,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7
       Referrer-Policy:
       - same-origin
       Vary:
@@ -55,23 +55,23 @@ interactions:
       message: Created
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
-      "bronorganisatie": "123456782", "creatiedatum": "2024-11-26", "titel": "Form
-      018 (csv)", "auteur": "Aanvrager", "taal": "eng", "formaat": "text/csv", "inhoud":
-      "Rm9ybXVsaWVybmFhbSxJbnplbmRpbmdkYXR1bSxUYWFsY29kZSx2b29ybmFhbSxhY2h0ZXJuYWFtLHR1c3NlbnZvZWdzZWwsZ2Vib29ydGVkYXR1bSxjb29yZGluYWF0DQpGb3JtIDAxOCwsZW4sRm9vLEJhcixkZSwyMDAwLTEyLTMxLCJbNTIuMzY2NzMzNzg5NjcxMjIsIDQuODkzMTY0Mjc0NDcwMjk5XSINCg==",
-      "status": "definitief", "bestandsnaam": "open-forms-Form 018 (csv).csv", "ontvangstdatum":
+      "bronorganisatie": "123456782", "creatiedatum": "2024-12-12", "titel": "Form
+      000 (csv)", "auteur": "Aanvrager", "taal": "eng", "formaat": "text/csv", "inhoud":
+      "Rm9ybXVsaWVybmFhbSxJbnplbmRpbmdkYXR1bSxUYWFsY29kZSx2b29ybmFhbSxhY2h0ZXJuYWFtLHR1c3NlbnZvZWdzZWwsZ2Vib29ydGVkYXR1bSxjb29yZGluYWF0DQpGb3JtIDAwMCwsZW4sRm9vLEJhcixkZSwyMDAwLTEyLTMxLCJ7J3R5cGUnOiAnRmVhdHVyZScsICdnZW9tZXRyeSc6IHsndHlwZSc6ICdQb2ludCcsICdjb29yZGluYXRlcyc6IFs0Ljg5MzE2NDI3NDQ3MDI5OSwgNTIuMzY2NzMzNzg5NjcxMjJdfSwgJ3Byb3BlcnRpZXMnOiB7fX0iDQo=",
+      "status": "definitief", "bestandsnaam": "open-forms-Form 000 (csv).csv", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulierdata", "indicatieGebruiksrecht":
-      false, "bestandsomvang": 175}'
+      false, "bestandsomvang": 260}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjYxNjkyNywiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.UcUHWF3BT2_-ZD60vJMzRB7qxVYy7F85gYXPKpCcnxE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDAxOTEzOSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.hTAC2iR-Xnm8yBZEceMQKWDxNay_4LmiradlljF_KNs
       Connection:
       - keep-alive
       Content-Length:
-      - '721'
+      - '833'
       Content-Type:
       - application/json
       User-Agent:
@@ -80,9 +80,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c","identificatie":"DOCUMENT-2024-0000000034","bronorganisatie":"123456782","creatiedatum":"2024-11-26","titel":"Form
-        018 (csv)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"text/csv","taal":"eng","versie":1,"beginRegistratie":"2024-11-26T10:28:47.834166Z","bestandsnaam":"open-forms-Form
-        018 (csv).csv","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c/download?versie=1","bestandsomvang":175,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4","identificatie":"DOCUMENT-2024-0000000009","bronorganisatie":"123456782","creatiedatum":"2024-12-12","titel":"Form
+        000 (csv)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"text/csv","taal":"eng","versie":1,"beginRegistratie":"2024-12-12T15:58:59.280462Z","bestandsnaam":"open-forms-Form
+        000 (csv).csv","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4/download?versie=1","bestandsomvang":260,"link":"","beschrijving":"Ingezonden
         formulierdata","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -96,7 +96,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4
       Referrer-Policy:
       - same-origin
       Vary:
@@ -139,11 +139,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 26 Nov 2024 10:28:47 GMT
+      - Thu, 12 Dec 2024 15:58:59 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
@@ -158,13 +158,14 @@ interactions:
       "record": {"typeVersion": 1, "data": {"bron": {"naam": "Open Formulieren", "kenmerk":
       "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"}, "type": "testproduct", "aanvraaggegevens":
       {"test-slug": {"voornaam": "Foo", "achternaam": "Bar", "tussenvoegsel": "de",
-      "geboortedatum": "2000-12-31", "coordinaat": [52.36673378967122, 4.893164274470299]}},
-      "taal": "en", "betrokkenen": [{"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}],
-      "pdf": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8",
-      "csv": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c",
+      "geboortedatum": "2000-12-31", "coordinaat": {"type": "Feature", "geometry":
+      {"type": "Point", "coordinates": [4.893164274470299, 52.36673378967122]}, "properties":
+      {}}}}, "taal": "en", "betrokkenen": [{"inpBsn": "", "rolOmschrijvingGeneriek":
+      "initiator"}], "pdf": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7",
+      "csv": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4",
       "bijlagen": [], "payment": {"completed": false, "amount": 0, "public_order_ids":
-      [], "payment_ids": []}}, "startAt": "2024-11-26", "geometry": {"type": "Point",
-      "coordinates": [52.36673378967122, 4.893164274470299]}}}'
+      [], "payment_ids": []}}, "startAt": "2024-12-12", "geometry": {"type": "Point",
+      "coordinates": [4.893164274470299, 52.36673378967122]}}}'
     headers:
       Accept:
       - '*/*'
@@ -177,7 +178,7 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '969'
+      - '1054'
       Content-Type:
       - application/json
       User-Agent:
@@ -186,8 +187,8 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/f722858a-f86d-41a4-b635-2b796992eb11","uuid":"f722858a-f86d-41a4-b635-2b796992eb11","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
-        Formulieren","kenmerk":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"},"type":"testproduct","aanvraaggegevens":{"test-slug":{"voornaam":"Foo","achternaam":"Bar","tussenvoegsel":"de","geboortedatum":"2000-12-31","coordinaat":[52.36673378967122,4.893164274470299]}},"taal":"en","betrokkenen":[{"inpBsn":"","rolOmschrijvingGeneriek":"initiator"}],"pdf":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8","csv":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c","bijlagen":[],"payment":{"completed":false,"amount":0,"public_order_ids":[],"payment_ids":[]}},"geometry":{"type":"Point","coordinates":[52.36673378967122,4.893164274470299]},"startAt":"2024-11-26","endAt":null,"registrationAt":"2024-11-26","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/260333c8-b0c0-457c-8e2b-10ed1cbe60b8","uuid":"260333c8-b0c0-457c-8e2b-10ed1cbe60b8","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
+        Formulieren","kenmerk":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"},"type":"testproduct","aanvraaggegevens":{"test-slug":{"voornaam":"Foo","achternaam":"Bar","tussenvoegsel":"de","geboortedatum":"2000-12-31","coordinaat":{"type":"Feature","geometry":{"type":"Point","coordinates":[4.893164274470299,52.36673378967122]},"properties":{}}}},"taal":"en","betrokkenen":[{"inpBsn":"","rolOmschrijvingGeneriek":"initiator"}],"pdf":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7","csv":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4","bijlagen":[],"payment":{"completed":false,"amount":0,"public_order_ids":[],"payment_ids":[]}},"geometry":{"type":"Point","coordinates":[4.893164274470299,52.36673378967122]},"startAt":"2024-12-12","endAt":null,"registrationAt":"2024-12-12","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -196,19 +197,19 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '1137'
+      - '1214'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 26 Nov 2024 10:28:48 GMT
+      - Thu, 12 Dec 2024 15:58:59 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/f722858a-f86d-41a4-b635-2b796992eb11
+      - http://localhost:8002/api/v2/objects/260333c8-b0c0-457c-8e2b-10ed1cbe60b8
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
@@ -226,18 +227,18 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjYxNjkyOCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.cRLbABi3E29tb0dZlVpxaKWqZwW5So_jcG5rjdF-32I
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDAxOTEzOSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.hTAC2iR-Xnm8yBZEceMQKWDxNay_4LmiradlljF_KNs
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c
+    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c","identificatie":"DOCUMENT-2024-0000000034","bronorganisatie":"123456782","creatiedatum":"2024-11-26","titel":"Form
-        018 (csv)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"text/csv","taal":"eng","versie":1,"beginRegistratie":"2024-11-26T10:28:47.834166Z","bestandsnaam":"open-forms-Form
-        018 (csv).csv","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/782ea672-554f-4ecf-b59c-e77b96752f0c/download?versie=1","bestandsomvang":175,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4","identificatie":"DOCUMENT-2024-0000000009","bronorganisatie":"123456782","creatiedatum":"2024-12-12","titel":"Form
+        000 (csv)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"text/csv","taal":"eng","versie":1,"beginRegistratie":"2024-12-12T15:58:59.280462Z","bestandsnaam":"open-forms-Form
+        000 (csv).csv","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a0d70e27-5fbb-4869-a500-f96c410742b4/download?versie=1","bestandsomvang":260,"link":"","beschrijving":"Ingezonden
         formulierdata","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f","locked":false,"bestandsdelen":[],"trefwoorden":[]}'
     headers:
       API-version:
@@ -251,7 +252,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"97c1974d844753517b09d82805be7ea6"'
+      - '"635d50f9fcffe663889e6c84005b5451"'
       Referrer-Policy:
       - same-origin
       Vary:
@@ -271,18 +272,18 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjYxNjkyOCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.cRLbABi3E29tb0dZlVpxaKWqZwW5So_jcG5rjdF-32I
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDAxOTEzOSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.hTAC2iR-Xnm8yBZEceMQKWDxNay_4LmiradlljF_KNs
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8
+    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8","identificatie":"DOCUMENT-2024-0000000033","bronorganisatie":"123456782","creatiedatum":"2024-11-26","titel":"Form
-        018","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2024-11-26T10:28:47.709459Z","bestandsnaam":"open-forms-Form
-        018.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/716a0a06-2b63-4d57-89ad-045ceb50c3d8/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7","identificatie":"DOCUMENT-2024-0000000008","bronorganisatie":"123456782","creatiedatum":"2024-12-12","titel":"Form
+        000","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2024-12-12T15:58:59.156802Z","bestandsnaam":"open-forms-Form
+        000.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/69904fce-db52-47d3-a34a-09a32bfa1ad7/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25","locked":false,"bestandsdelen":[],"trefwoorden":[]}'
     headers:
       API-version:
@@ -296,7 +297,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       ETag:
-      - '"fce5eb69d4ed04ab65c82db2c09fbb50"'
+      - '"61f45ff746595d0fd9bc310634d321a6"'
       Referrer-Policy:
       - same-origin
       Vary:
