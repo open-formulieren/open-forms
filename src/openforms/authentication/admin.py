@@ -20,11 +20,9 @@ class AuthInfoAdminForm(forms.ModelForm):
             "legal_subject_identifier_value",
             "legal_subject_service_restriction",
             "mandate_context",
-            "machtigen",
             "attribute_hashed",
         )
         widgets = {
-            "machtigen": forms.Textarea(attrs={"cols": 20, "rows": 1}),
             "plugin": forms.TextInput(attrs={"size": 20}),
             "value": forms.TextInput(attrs={"size": 20}),
         }
@@ -81,7 +79,7 @@ class AuthInfoInline(admin.StackedInline):
         (
             _("Mandate"),
             {
-                "fields": ("mandate_context", "machtigen"),
+                "fields": ("mandate_context",),
                 "classes": ("collapse",),
             },
         ),
@@ -137,7 +135,7 @@ class AuthInfoAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        (_("Mandate"), {"fields": ("mandate_context", "machtigen")}),
+        (_("Mandate"), {"fields": ("mandate_context",)}),
         (
             _("Misc"),
             {"fields": ("attribute_hashed",), "classes": ("collapse in",)},

@@ -178,10 +178,6 @@ class DigiDMachtigenAuthContextTests(
             auth_context["authorizee"]["legalSubject"],
             {"identifierType": "bsn", "identifier": "999999999"},
         )
-        # TODO: remove in Open Forms 3.0
-        with self.subTest("legacy structure"):
-            machtigen = submission.auth_info.machtigen
-            self.assertEqual(machtigen, {"identifier_value": "999999999"})
 
     @mock_digid_machtigen_config(mandate_service_id_claim=["required-but-absent-claim"])
     def test_new_required_claims_are_backwards_compatible(self):
@@ -195,7 +191,7 @@ class DigiDMachtigenAuthContextTests(
         runtime implications.
         """
         warnings.warn(
-            "Legacy behaviour will be removed in Open Forms 3.0", DeprecationWarning
+            "Legacy behaviour will be removed in Open Forms 4.0", DeprecationWarning
         )
         self._login_and_start_form(
             "digid_machtigen_oidc",
@@ -218,10 +214,6 @@ class DigiDMachtigenAuthContextTests(
             auth_context["authorizee"]["legalSubject"],
             {"identifierType": "bsn", "identifier": "999999999"},
         )
-        # TODO: remove in Open Forms 3.0
-        with self.subTest("legacy structure"):
-            machtigen = submission.auth_info.machtigen
-            self.assertEqual(machtigen, {"identifier_value": "999999999"})
 
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -274,11 +266,6 @@ class EHerkenningBewindvoeringAuthContextTests(
             },
         )
 
-        # TODO: remove in Open Forms 3.0
-        with self.subTest("legacy structure"):
-            machtigen = submission.auth_info.machtigen
-            self.assertEqual(machtigen, {"identifier_value": "12345678"})
-
     @mock_eherkenning_bewindvoering_config(
         mandate_service_id_claim=["required-but-absent-claim1"],
         mandate_service_uuid_claim=["required-but-absent-claim2"],
@@ -294,7 +281,7 @@ class EHerkenningBewindvoeringAuthContextTests(
         runtime implications.
         """
         warnings.warn(
-            "Legacy behaviour will be removed in Open Forms 3.0", DeprecationWarning
+            "Legacy behaviour will be removed in Open Forms 4.0", DeprecationWarning
         )
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
@@ -326,11 +313,6 @@ class EHerkenningBewindvoeringAuthContextTests(
             auth_context["mandate"],
             {"role": "bewindvoerder", "services": []},
         )
-
-        # TODO: remove in Open Forms 3.0
-        with self.subTest("legacy structure"):
-            machtigen = submission.auth_info.machtigen
-            self.assertEqual(machtigen, {"identifier_value": "12345678"})
 
     @mock_eherkenning_bewindvoering_config(branch_number_claim=["vestiging"])
     def test_record_vestiging_restriction(self):

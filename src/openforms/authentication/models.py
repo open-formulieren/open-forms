@@ -208,16 +208,6 @@ class AuthInfo(BaseAuthInfo):
         null=True,
     )
 
-    # deprecated!
-    machtigen = models.JSONField(
-        verbose_name=_("machtigen"),
-        help_text=_(
-            "Data related to any 'machtiging' (authorising someone else to perform actions on your behalf)."
-        ),
-        blank=True,
-        null=True,
-    )
-
     identifying_attributes = BaseAuthInfo.identifying_attributes + (
         "acting_subject_identifier_value",
         "legal_subject_identifier_value",

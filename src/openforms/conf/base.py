@@ -1193,7 +1193,7 @@ FLAGS = {
         {
             "condition": "boolean",
             # DeprecationWarning
-            # TODO: set default to `True` in Open Forms 3.0
+            # TODO: set default to `True` in Open Forms 4.0
             "value": config("DIGID_EHERKENNING_OIDC_STRICT", default=False),
         }
     ],

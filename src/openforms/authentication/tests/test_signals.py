@@ -279,31 +279,6 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertEqual(submission.auth_info.value, "123456789")
         self.assertFalse(submission.auth_info.attribute_hashed)
 
-    def test_auth_with_legacy_digid_machtigen(self):
-        submission = SubmissionFactory.create(
-            form__authentication_backends=["digid_machtigen_oidc"]
-        )
-        user = UserFactory()
-        request = factory.get("/foo")
-        request.user = user
-        request.session = {
-            FORM_AUTH_SESSION_KEY: {
-                "plugin": "digid_machtigen_oidc",
-                "attribute": "bsn",
-                "value": "123123123",
-                "machtigen": {"identifier_value": "123456782"},
-            }
-        }
-
-        set_auth_attribute_on_session(sender=None, instance=submission, request=request)
-
-        submission.refresh_from_db()
-
-        self.assertTrue(submission.is_authenticated)
-        self.assertEqual(
-            submission.auth_info.machtigen["identifier_value"], "123456782"
-        )
-
 
 @freeze_time("2021-11-26T17:00:00+00:00")
 class SetCosignDataTests(APITestCase):

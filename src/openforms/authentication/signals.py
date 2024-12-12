@@ -126,7 +126,6 @@ def set_auth_attribute_on_session(
                 "attribute": form_auth["attribute"],
                 "plugin": form_auth["plugin"],
             }
-            # TODO the "machtigingen" key disappeared
             store_auth_details(instance, auth_save)
             store_registrator_details(instance, registrator_save)
     else:

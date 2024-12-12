@@ -219,29 +219,6 @@ class StufBgPrefillTests(TestCase):
 
         self.assertEqual(values, {})
 
-    def test_get_available_attributes_for_gemachtigde_legacy_format(self):
-        client_patcher = mock_stufbg_client("StufBgResponse.xml")
-        self.addCleanup(client_patcher.stop)
-        attributes = [c.value for c in FieldChoices]
-        submission = SubmissionFactory.create(
-            auth_info__value="111111111",
-            auth_info__machtigen={"identifier_value": "999992314"},
-        )
-
-        values = self.plugin.get_prefill_values(
-            submission, attributes, IdentifierRoles.authorizee
-        )
-
-        self.assertEqual(values["bsn"], "999992314")
-        self.assertEqual(values["voornamen"], "Media")
-        self.assertEqual(values["geslachtsnaam"], "Maykin")
-        self.assertEqual(values["straatnaam"], "Keizersgracht")
-        self.assertEqual(values["huisnummer"], "117")
-        self.assertEqual(values["huisletter"], "A")
-        self.assertEqual(values["huisnummertoevoeging"], "B")
-        self.assertEqual(values["postcode"], "1015 CJ")
-        self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
-
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         client_patcher = mock_stufbg_client("StufBgResponse.xml")
         self.addCleanup(client_patcher.stop)
@@ -250,7 +227,6 @@ class StufBgPrefillTests(TestCase):
             auth_info__value="111111111",
             auth_info__is_digid_machtigen=True,
             auth_info__legal_subject_identifier_value="999990676",
-            auth_info__machtigen={},  # make sure legacy format is empty
         )
 
         values = self.plugin.get_prefill_values(
@@ -284,17 +260,6 @@ class StufBgPrefillTests(TestCase):
                     auth_info__legal_subject_identifier_value="12345678",
                 ),
                 None,
-            ),
-            # legacy fallback
-            (
-                SubmissionFactory.create(
-                    auth_info__is_digid_machtigen=True,
-                    auth_info__legal_subject_identifier_type="",
-                    auth_info__legal_subject_identifier_value="",
-                    auth_info__machtigen={"identifier_value": "999333666"},
-                    auth_info__mandate_context=None,
-                ),
-                "999333666",
             ),
         )
         for submission, expected in cases:
