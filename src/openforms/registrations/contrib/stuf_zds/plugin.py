@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from json_logic.typing import Primitive
 
+from openforms.formio.formatters.custom import GeoJsonGeometry
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin, PreRegistrationResult
 from openforms.registrations.constants import (
@@ -111,10 +112,8 @@ class PartialDate:
             )
 
 
-def _point_coordinate(value):
-    if not value or not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    return {"lat": value[0], "lng": value[1]}
+def _point_coordinate(value: GeoJsonGeometry) -> GeoJsonGeometry:
+    return value
 
 
 def _gender_choices(value):

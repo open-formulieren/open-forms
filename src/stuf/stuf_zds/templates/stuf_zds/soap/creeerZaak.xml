@@ -27,14 +27,32 @@
         </ZKN:kenmerk>
         {% endfor %}
         {% if locatie %}
-        <ZKN:anderZaakObject>
-               <ZKN:omschrijving>{{ locatie.key }}</ZKN:omschrijving>
-               <ZKN:lokatie>
-                    <GML:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-                        <GML:pos>{{ locatie.lat }} {{ locatie.lng }}</GML:pos>
-                    </GML:Point>
+            <ZKN:anderZaakObject>
+                <ZKN:omschrijving>{{ locatie.key }}</ZKN:omschrijving>
+                <ZKN:lokatie>
+                    {% if locatie.type == 'Point' %}
+                        <GML:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+                            <GML:pos>{{ locatie.coordinates.0 }} {{ locatie.coordinates.1 }}</GML:pos>
+                        </GML:Point>
+                    {% elif locatie.type == 'Polygon' %}
+                        <GML:Polygon srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+                            <GML:exterior>
+                                <GML:LinearRing>
+                                    {% for coordinates in locatie.coordinates.0 %}
+                                        <GML:pos>{{ coordinates.0 }} {{ coordinates.1 }}</GML:pos>
+                                    {% endfor %}
+                                </GML:LinearRing>
+                            </GML:exterior>
+                        </GML:Polygon>
+                    {% elif locatie.type == 'LineString' %}
+                        <GML:LineString srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
+                            <GML:posList srsDimension="2">
+                                {% for coordinates in locatie.coordinates %}{{ coordinates.0 }} {{ coordinates.1 }} {% endfor %}
+                            </GML:posList>
+                        </GML:LineString>
+                    {% endif %}
                </ZKN:lokatie>
-        </ZKN:anderZaakObject>
+            </ZKN:anderZaakObject>
         {% endif %}
         <ZKN:startdatum>{{ datum_vandaag }}</ZKN:startdatum>
         <ZKN:registratiedatum>{{ datum_vandaag }}</ZKN:registratiedatum>

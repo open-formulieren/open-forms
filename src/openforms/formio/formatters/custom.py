@@ -1,5 +1,5 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
-from typing import NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.utils.dateparse import parse_date, parse_datetime
@@ -21,10 +21,34 @@ class DateTimeFormatter(FormatterBase):
         return f"{fmt_date(parsed_value)} {fmt_time(parsed_value, 'H:i')}"
 
 
+type Coordinates = tuple[float, float]
+
+
+class PointGeometry(TypedDict):
+    type: Literal["Point"]
+    coordinates: Coordinates
+
+
+class LineStringGeometry(TypedDict):
+    type: Literal["LineString"]
+    coordinates: list[Coordinates]
+
+
+class PolygonGeometry(TypedDict):
+    type: Literal["Polygon"]
+    coordinates: list[list[Coordinates]]
+
+
+type GeoJsonGeometry = PointGeometry | LineStringGeometry | PolygonGeometry
+
+
 class MapFormatter(FormatterBase):
-    def format(self, component: MapComponent, value: list[float]) -> str:
+    def format(self, component: MapComponent, value: GeoJsonGeometry) -> str:
         # use a comma here since its a single data element
-        return ", ".join((str(x) for x in value))
+        if coordinates := value.get("coordinates"):
+            return ", ".join((str(x) for x in coordinates))
+        else:
+            return ""
 
 
 class AddressValue(TypedDict):
