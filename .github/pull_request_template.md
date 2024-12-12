@@ -24,6 +24,10 @@ Check off the items that are completed or not relevant.
   - [ ] Ran `./bin/makemessages_js.sh`
   - [ ] Ran `./bin/compilemessages_js.sh`
 
+- Dockerfile/scripts
+
+  - [ ] Updated the Dockerfile with the necessary scripts from the `./bin` folder
+
 - Commit hygiene
 
   - [ ] Commit messages refer to the relevant Github issue

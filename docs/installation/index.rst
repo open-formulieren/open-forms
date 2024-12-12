@@ -31,6 +31,7 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    self_signed
    form_hosting
    redis
+   additional_scipts
    issues/index
    upgrade-300
    upgrade-250
