@@ -177,7 +177,7 @@ class OnCompletionTests(TestCase):
         self.assertNotIn(form_link, email.body)
         self.assertIn(submission.public_registration_reference, email.body)
 
-    def test_headers_in_cosign_email(self):
+    def test_headers_in_cosign_request_email(self):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -204,6 +204,6 @@ class OnCompletionTests(TestCase):
             {
                 "Content-Language": "nl",
                 "X-OF-Content-Type": EmailContentTypeChoices.submission,
-                "X-OF-Event": EmailEventChoices.cosign_confirmation,
+                "X-OF-Event": EmailEventChoices.cosign_request,
             },
         )

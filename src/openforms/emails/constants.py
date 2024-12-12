@@ -9,7 +9,7 @@ X_OF_EVENT_HEADER = "X-OF-Event"
 class EmailEventChoices(models.TextChoices):
     registration = "registration", _("Registration")
     confirmation = "confirmation", _("Confirmation")
-    cosign_confirmation = "cosign_confirmation", _("Co-sign confirmation")
+    cosign_request = "cosign_request", _("Co-sign request")
 
 
 class EmailContentTypeChoices(models.TextChoices):

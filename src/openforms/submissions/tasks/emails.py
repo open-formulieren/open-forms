@@ -144,7 +144,7 @@ def send_email_cosigner(submission_id: int) -> None:
                     "Content-Language": submission.language_code,
                     X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
                     X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
-                    X_OF_EVENT_HEADER: EmailEventChoices.cosign_confirmation,
+                    X_OF_EVENT_HEADER: EmailEventChoices.cosign_request,
                 },
             )
         except Exception:
