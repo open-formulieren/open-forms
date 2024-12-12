@@ -116,6 +116,13 @@ development machine.
 ``.env`` file or ``src/openforms/conf/local.py``. You can base this file on the
 example file included in the same directory.
 
+For functional testing, if you run into trouble submitting forms or saving forms in the admin,
+ensure the following is valid:
+
+* `Redis server is running <https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/>`_
+* `Celery worker is running <https://open-forms.readthedocs.io/en/latest/developers/installation.html#running-background-and-periodic-tasks>`_
+* Uncomment the ``CORS_ALLOWED_ORIGINS`` variable in your local ``.env`` file and add the address from step 8 to this list.
+
 
 Building and running the frontend code
 --------------------------------------
