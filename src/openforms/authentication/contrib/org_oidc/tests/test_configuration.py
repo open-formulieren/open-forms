@@ -16,7 +16,8 @@ class CallbackURLConfigurationTests(TestCase):
 
         self.addCleanup(OrgOpenIDConnectConfig.clear_cache)
 
-    def test_default_settings_backwards_compatible(self):
+    @override_settings(USE_LEGACY_ORG_OIDC_ENDPOINTS=True)
+    def test_legacy_settings(self):
         # use an init view to decouple the implementation details from the
         # desired behaviour.
         view = OIDCInit(config_class=OrgOpenIDConnectConfig)
@@ -25,8 +26,7 @@ class CallbackURLConfigurationTests(TestCase):
 
         self.assertEqual(url, "/org-oidc/callback/")
 
-    @override_settings(USE_LEGACY_ORG_OIDC_ENDPOINTS=False)
-    def test_new_behaviour(self):
+    def test_default_settings_behaviour(self):
         # use an init view to decouple the implementation details from the
         # desired behaviour.
         view = OIDCInit(config_class=OrgOpenIDConnectConfig)

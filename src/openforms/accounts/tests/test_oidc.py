@@ -63,7 +63,7 @@ class OIDCLoginButtonTestCase(WebTest):
         )
 
 
-class OIDCFLowTests(OFVCRMixin, WebTest):
+class OIDCFlowTests(OFVCRMixin, WebTest):
     VCR_TEST_FILES = TEST_FILES
 
     @mock_admin_oidc_config()

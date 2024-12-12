@@ -14,6 +14,29 @@ be aware of, as they may require additional manual actions.
    :depth: 1
    :local:
 
+Legacy OpenID Connect callback endpoints are now disabled by default
+====================================================================
+
+Before Open Forms 3.0, the legacy endpoints were used by default.
+
+The following environment variables now default to ``False`` instead of ``True``:
+
+* ``USE_LEGACY_OIDC_ENDPOINTS``
+* ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS``
+* ``USE_LEGACY_ORG_OIDC_ENDPOINTS``
+
+To keep the old behaviour, make sure you deploy with:
+
+.. code-block:: bash
+
+    USE_LEGACY_OIDC_ENDPOINTS=True
+    USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True
+    USE_LEGACY_ORG_OIDC_ENDPOINTS=True
+
+To use the new behaviour, you must ensure that
+``https://open-formulieren.gemeente.nl/auth/oidc/callback/`` is listed in the allowed
+**Redirect URI** values of your identity provider.
+
 Removal of price logic
 ======================
 

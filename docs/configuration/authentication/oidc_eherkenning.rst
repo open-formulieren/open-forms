@@ -60,12 +60,9 @@ maken in de omgeving van de OpenID Connect provider.
 
 **Redirect URI (vanaf Open Formulieren 2.7.0)**
 
-.. warning::
+.. versionchanged:: 3.0
 
-    Zorg dat Open Formulieren :ref:`geïnstalleerd <installation_index>` is met de
-    ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=false``
-    :ref:`omgevingsvariabele<installation_environment_config>`, anders worden de legacy
-    (zie hieronder) endpoints gebruikt.
+    Open Forms no longer uses the legacy endpoints by default.
 
 Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/auth/oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.

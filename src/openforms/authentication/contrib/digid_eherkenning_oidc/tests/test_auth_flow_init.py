@@ -33,7 +33,7 @@ class DigiDInitTests(IntegrationTestsBase):
     Test the outbound part of OIDC-based DigiD authentication.
     """
 
-    CALLBACK_URL = f"http://testserver{reverse_lazy('digid_oidc:callback')}"
+    CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
     @mock_digid_config()
     def test_start_flow_redirects_to_oidc_provider(self):
@@ -90,7 +90,7 @@ class EHerkenningInitTests(IntegrationTestsBase):
     Test the outbound part of OIDC-based eHerkenning authentication.
     """
 
-    CALLBACK_URL = f"http://testserver{reverse_lazy('eherkenning_oidc:callback')}"
+    CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
     @mock_eherkenning_config()
     def test_start_flow_redirects_to_oidc_provider(self):
@@ -149,7 +149,7 @@ class DigiDMachtigenInitTests(IntegrationTestsBase):
     Test the outbound part of OIDC-based DigiD machtigen authentication.
     """
 
-    CALLBACK_URL = f"http://testserver{reverse_lazy('digid_machtigen_oidc:callback')}"
+    CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
     @mock_digid_machtigen_config()
     def test_start_flow_redirects_to_oidc_provider(self):
@@ -210,9 +210,7 @@ class EHerkenningBewindvoeringInitTests(IntegrationTestsBase):
     Test the outbound part of OIDC-based eHerkenning_bewindvoering authentication.
     """
 
-    CALLBACK_URL = (
-        f"http://testserver{reverse_lazy('eherkenning_bewindvoering_oidc:callback')}"
-    )
+    CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
     @mock_eherkenning_bewindvoering_config()
     def test_start_flow_redirects_to_oidc_provider(self):
