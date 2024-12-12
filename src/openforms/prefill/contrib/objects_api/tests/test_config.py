@@ -1,9 +1,6 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from django.test import override_settings
-from django.utils.translation import gettext as _
-
 from rest_framework.test import APITestCase
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -40,19 +37,6 @@ class ObjectsAPIPrefillPluginConfigTests(OFVCRMixin, APITestCase):
         self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             for_test_docker_compose=True
         )
-
-    @override_settings(LANGUAGE_CODE="en")
-    def test_undefined_service_raises_exception(self):
-        self.objects_api_group.objects_service = None
-        self.objects_api_group.save()
-
-        with self.assertRaisesMessage(
-            InvalidPluginConfiguration,
-            _(
-                "Objects API endpoint is not configured for Objects API group {objects_api_group}."
-            ).format(objects_api_group=self.objects_api_group),
-        ):
-            plugin.check_config()
 
     def test_invalid_service_raises_exception(self):
         objects_service = ServiceFactory.create(

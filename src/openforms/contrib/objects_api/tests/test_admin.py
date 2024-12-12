@@ -9,7 +9,6 @@ from maykin_2fa.test import disable_admin_mfa
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIGroupConfig
 from .factories import ObjectsAPIGroupConfigFactory
 
 TEST_FILES = Path(__file__).parent / "files"
@@ -20,7 +19,7 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
     VCR_TEST_FILES = TEST_FILES
 
     def test_name(self):
-        ObjectsAPIGroupConfig.objects.create(name="test group")
+        ObjectsAPIGroupConfigFactory.create(name="test group")
         user = SuperUserFactory.create()
 
         response = self.app.get(

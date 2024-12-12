@@ -93,6 +93,7 @@ COPY \
     ./bin/check_celery_worker_liveness.py \
     ./bin/report_component_problems.py \
     ./bin/check_temporary_uploads.py \
+    ./bin/check_api_groups_null.py \
     ./bin/fix_selectboxes_component_default_values.py \
     ./bin/
 
