@@ -210,7 +210,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "extra": "BuzzBazz",
                 "language_code": "Dothraki",  # some form widget defined by form designer
             },
@@ -291,7 +294,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -465,7 +468,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 aa",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -548,7 +554,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -714,7 +720,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -782,7 +791,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
             },
         )
 
@@ -950,7 +959,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "vestigingsNummer": "87654321",
             },
             kvk="12345678",
@@ -1025,7 +1037,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -1144,7 +1156,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             kvk="12345678",
             form__name="my-form",
@@ -1218,7 +1233,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -1343,7 +1358,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "vestigingsNummer": "87654321",
             },
             kvk="12345678",
@@ -1418,7 +1436,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -1574,7 +1592,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -1653,7 +1674,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
                 "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "123456782",  # Identificatie of the employee
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
@@ -2032,7 +2053,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2099,7 +2123,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
             },
         )
         self.assertXPathNotExists(
@@ -2175,6 +2199,250 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
     @patch("celery.app.task.Task.request")
+    def test_plugin_map_with_pointer(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+            },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqual(
+            xml_doc,
+            "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos",
+            "4.893164274470299 52.36673378967122",
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_map_with_polygon(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "coordinaat": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [5.275725, 52.134743],
+                            [5.256707, 52.123972],
+                            [5.286552, 52.123035],
+                            [5.275725, 52.134743],
+                        ]
+                    ],
+                },
+            },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Polygon/gml:exterior/gml:LinearRing/gml:pos[1]": "5.275725 52.134743",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Polygon/gml:exterior/gml:LinearRing/gml:pos[2]": "5.256707 52.123972",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Polygon/gml:exterior/gml:LinearRing/gml:pos[3]": "5.286552 52.123035",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Polygon/gml:exterior/gml:LinearRing/gml:pos[4]": "5.275725 52.134743",
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_map_with_line_string(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "coordinaat",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "coordinaat": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [5.313637, 52.128128],
+                        [5.28987, 52.132218],
+                        [5.273187, 52.1287],
+                    ],
+                },
+            },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:LineString/gml:posList": "5.313637 52.128128 5.28987 52.132218 5.273187 52.1287",
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
     def test_plugin_optional_fields_missing_status_description(self, m, mock_task):
         submission = SubmissionFactory.from_components(
             [
@@ -2225,7 +2493,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2294,7 +2565,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "zt-code",
             },
         )
@@ -2420,7 +2691,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "extra": "BuzzBazz",
             },
         )
@@ -2489,7 +2763,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum/@stuf:indOnvolledigeDatum": "V",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
-                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "zt-status-omschrijving",
             },
         )
@@ -2568,7 +2842,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
@@ -2617,7 +2894,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             kvk="12345678",
             form__registration_backend="stuf-zds-create-zaak",

@@ -226,7 +226,10 @@ class ZGWBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -455,7 +458,10 @@ class ZGWBackendTests(TestCase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "vestigingsNummer": "87654321",
             },
             kvk="12345678",
@@ -665,7 +671,10 @@ class ZGWBackendTests(TestCase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             kvk="12345678",
             form__product__price=Decimal("0"),
@@ -750,7 +759,10 @@ class ZGWBackendTests(TestCase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             kvk="12345678",
             form__product__price=Decimal("0"),
@@ -960,7 +972,10 @@ class ZGWBackendTests(TestCase):
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             kvk="12345678",
             form__product__price=Decimal("0"),
@@ -1811,7 +1826,10 @@ class ZGWBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "postcode": "1000 AA",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "mannelijk",
             },
@@ -1874,7 +1892,13 @@ class ZGWBackendTests(TestCase):
                                 "geboortedatum": "2000-12-31",
                                 "geslachtsaanduiding": "mannelijk",
                                 "postcode": "1000 AA",
-                                "coordinaat": [52.36673378967122, 4.893164274470299],
+                                "coordinaat": {
+                                    "type": "Point",
+                                    "coordinates": [
+                                        4.893164274470299,
+                                        52.36673378967122,
+                                    ],
+                                },
                             }
                         },
                         "type": "ProductAanvraag",

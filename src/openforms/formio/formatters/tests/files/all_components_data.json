@@ -1,34 +1,34 @@
 {
-    "bsn": "123456782",
-    "map": [
-        52.3782943985417,
-        4.899629917973432
-    ],
-    "date": "2021-12-24",
-    "dateTime": "2023-01-18T16:00:00+01:00",
-    "file": [],
-    "iban": "RO09 BCYP 0000 0012 3456 7890",
-    "time": "16:26:00",
-    "email": "test@example.com",
-    "radio": "option2",
-    "number": 42.123,
-    "select": "option1",
-    "postcode": "1234 AA",
-    "textArea": "Textarea test",
-    "signature": "data:image/png;base64,iVBO[truncated]",
-    "textField": "Simple text input",
-    "phoneNumber": "+31633924456",
-    "selectBoxes": {
-        "option1": true,
-        "option2": true
-    },
-    "licenseplate": "1-AAA-BB",
-    "select2": "2021-12-29",
-    "select3": "2021-12-29T08:15:00+01:00",
-    "addressNL": {
-        "postcode": "1234AA",
-        "houseNumber": "1",
-        "houseLetter": "",
-        "houseNumberAddition": ""
-    }
+  "bsn": "123456782",
+  "map": {
+    "type": "Point",
+    "coordinates": [52.3782943985417, 4.899629917973432]
+  },
+  "date": "2021-12-24",
+  "dateTime": "2023-01-18T16:00:00+01:00",
+  "file": [],
+  "iban": "RO09 BCYP 0000 0012 3456 7890",
+  "time": "16:26:00",
+  "email": "test@example.com",
+  "radio": "option2",
+  "number": 42.123,
+  "select": "option1",
+  "postcode": "1234 AA",
+  "textArea": "Textarea test",
+  "signature": "data:image/png;base64,iVBO[truncated]",
+  "textField": "Simple text input",
+  "phoneNumber": "+31633924456",
+  "selectBoxes": {
+    "option1": true,
+    "option2": true
+  },
+  "licenseplate": "1-AAA-BB",
+  "select2": "2021-12-29",
+  "select3": "2021-12-29T08:15:00+01:00",
+  "addressNL": {
+    "postcode": "1234AA",
+    "houseNumber": "1",
+    "houseLetter": "",
+    "houseNumberAddition": ""
+  }
 }
