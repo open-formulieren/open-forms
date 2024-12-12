@@ -60,7 +60,7 @@ class FormVariableManager(models.Manager):
         ):
             if (
                 is_layout_component(component)
-                or component["type"] == "content"
+                or component["type"] in ("content", "softRequiredErrors")
                 or component["key"] in existing_form_variables_keys
                 or component_in_editgrid(form_definition_configuration, component)
             ):
