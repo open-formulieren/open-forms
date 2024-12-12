@@ -16,23 +16,19 @@ from openforms.contrib.zgw.clients import CatalogiClient, DocumentenClient, Zake
 from .models import ZGWApiGroupConfig
 
 
-class NoServiceConfigured(RuntimeError):
-    pass
-
-
 def get_zaken_client(config: ZGWApiGroupConfig) -> ZakenClient:
-    if not (service := config.zrc_service):
-        raise NoServiceConfigured("No Zaken API service configured!")
+    service = config.zrc_service
+    assert service is not None
     return build_client(service, client_factory=ZakenClient)
 
 
 def get_documents_client(config: ZGWApiGroupConfig) -> DocumentenClient:
-    if not (service := config.drc_service):
-        raise NoServiceConfigured("No Documents API service configured!")
+    service = config.drc_service
+    assert service is not None
     return build_client(service, client_factory=DocumentenClient)
 
 
 def get_catalogi_client(config: ZGWApiGroupConfig) -> CatalogiClient:
-    if not (service := config.ztc_service):
-        raise NoServiceConfigured("No Catalogi API service configured!")
+    service = config.ztc_service
+    assert service is not None
     return build_client(service, client_factory=CatalogiClient)

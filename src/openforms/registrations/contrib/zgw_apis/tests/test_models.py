@@ -69,16 +69,6 @@ class ZGWAPIGroupValidationTests(OFVCRMixin, TestCase):
         except ValidationError as exc:
             raise self.failureException("Not specifying a catalogue is valid.") from exc
 
-    def test_catalogue_specified_but_ztc_service_is_missing(self):
-        config = ZGWApiGroupConfigFactory.create(
-            ztc_service=None, catalogue_domain="TEST", catalogue_rsin="000000000"
-        )
-
-        with self.assertRaises(ValidationError) as exc_context:
-            config.full_clean()
-
-        self.assertIn("ztc_service", exc_context.exception.error_dict)
-
     def test_validate_catalogue_exists(self):
         # validates against the fixtures in docker/open-zaak
         config = ZGWApiGroupConfigFactory.create(
