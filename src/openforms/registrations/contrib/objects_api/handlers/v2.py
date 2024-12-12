@@ -9,6 +9,7 @@ from datetime import date, datetime
 from glom import Assign, Path, glom
 
 from openforms.api.utils import underscore_to_camel
+from openforms.formio.constants import GeoJsonGeometryTypes
 from openforms.formio.typing import Component
 from openforms.typing import JSONObject, JSONValue
 
@@ -105,12 +106,13 @@ def process_mapped_variable(
             value = value[0] if value else ""
 
         case {"type": "map"}:
-            # Currently we only support Point coordinates
-            assert isinstance(value, list) and len(value) == 2
-            value = {
-                "type": "Point",
-                "coordinates": [value[0], value[1]],
-            }
+            assert isinstance(value, dict)
+            if (
+                (geometry := value.get("geometry"))
+                and geometry.get("type", None) in GeoJsonGeometryTypes
+                and len(geometry.get("coordinates", [])) == 2
+            ):
+                value = geometry
 
         # not a component or standard behaviour where no transformation is necessary
         case None | _:

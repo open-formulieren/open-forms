@@ -23,3 +23,8 @@ class RegistrationOptions(TypedDict):
         "OPENBAAR",
     ]
     payment_status_update_mapping: NotRequired[list[MappingItem]]
+
+
+class PointCoordinate(TypedDict):
+    lat: float
+    lng: float
