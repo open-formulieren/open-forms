@@ -10,6 +10,13 @@ from celery_once import QueueOnce
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmailContentTypeChoices,
+    EmailEventChoices,
+)
 from openforms.emails.utils import send_mail_html
 from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import logevent
@@ -133,6 +140,12 @@ def send_email_cosigner(submission_id: int) -> None:
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[recipient],
                 text_message=content,
+                extra_headers={
+                    "Content-Language": submission.language_code,
+                    X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                    X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
+                    X_OF_EVENT_HEADER: EmailEventChoices.cosign_request,
+                },
             )
         except Exception:
             logevent.cosigner_email_queuing_failure(submission)
