@@ -1336,6 +1336,8 @@ paths:
         - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `submissionLimit`
+        - `submissionCounter`
         - `askPrivacyConsent`
         - `askStatementOfTruth`
         - `submissionsRemovalOptions`
@@ -1407,6 +1409,8 @@ paths:
         - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `submissionLimit`
+        - `submissionCounter`
         - `askPrivacyConsent`
         - `askStatementOfTruth`
         - `submissionsRemovalOptions`
@@ -1922,6 +1926,8 @@ paths:
         - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `submissionLimit`
+        - `submissionCounter`
         - `askPrivacyConsent`
         - `askStatementOfTruth`
         - `submissionsRemovalOptions`
@@ -1999,6 +2005,8 @@ paths:
         - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `submissionLimit`
+        - `submissionCounter`
         - `askPrivacyConsent`
         - `askStatementOfTruth`
         - `submissionsRemovalOptions`
@@ -2080,6 +2088,8 @@ paths:
         - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `submissionLimit`
+        - `submissionCounter`
         - `askPrivacyConsent`
         - `askStatementOfTruth`
         - `submissionsRemovalOptions`
@@ -7507,7 +7517,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7653,6 +7663,25 @@ components:
             * `yes` - Yes
             * `no_with_overview` - No (with overview page)
             * `no_without_overview` - No (without overview page)
+        submissionLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Maximum allowed submissions
+          description: Maximum number of allowed submissions per form. Leave this
+            empty if no limit is needed.
+        submissionCounter:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Submissions counter
+          description: Counter to track how many submissions have been completed for
+            the specific form. This works in combination with the maximum allowed
+            submissions per form and can be reset via the frontend.
+        submissionLimitReached:
+          type: boolean
+          readOnly: true
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
@@ -7768,6 +7797,7 @@ components:
       - resumeLinkLifetime
       - slug
       - steps
+      - submissionLimitReached
       - submissionReportDownloadLinkTitle
       - submissionStatementsConfiguration
       - url
@@ -8014,7 +8044,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8185,7 +8215,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -9112,7 +9142,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -9258,6 +9288,25 @@ components:
             * `yes` - Yes
             * `no_with_overview` - No (with overview page)
             * `no_without_overview` - No (without overview page)
+        submissionLimit:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Maximum allowed submissions
+          description: Maximum number of allowed submissions per form. Leave this
+            empty if no limit is needed.
+        submissionCounter:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          title: Submissions counter
+          description: Counter to track how many submissions have been completed for
+            the specific form. This works in combination with the maximum allowed
+            submissions per form and can be reset via the frontend.
+        submissionLimitReached:
+          type: boolean
+          readOnly: true
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.

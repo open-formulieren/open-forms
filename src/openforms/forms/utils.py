@@ -73,6 +73,9 @@ def form_to_json(form_id: int) -> dict:
     # Ignore products in the export
     form.product = None
 
+    # Reset the submission counter
+    form.submission_counter = 0
+
     form_steps = FormStep.objects.filter(form__pk=form_id).select_related(
         "form_definition"
     )

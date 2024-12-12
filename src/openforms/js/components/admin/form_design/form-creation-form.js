@@ -34,6 +34,7 @@ import PaymentFields from './PaymentFields';
 import PriceLogic from './PriceLogic';
 import ProductFields from './ProductFields';
 import RegistrationFields from './RegistrationFields';
+import {SubmissionLimitFields} from './SubmissionFields';
 import Tab from './Tab';
 import TextLiterals from './TextLiterals';
 import {FormWarnings} from './Warnings';
@@ -100,6 +101,8 @@ const initialFormState = {
     maintenanceMode: false,
     translationEnabled: false,
     submissionAllowed: 'yes',
+    submissionLimit: null,
+    submission_counter: 0,
     suspensionAllowed: true,
     askPrivacyConsent: 'global_setting',
     askStatementOfTruth: 'global_setting',
@@ -171,6 +174,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   confirmationEmailTemplate: 'submission-confirmation',
   submissionAllowed: 'form',
   registrationBackends: 'registration',
+  submissionLimit: 'submission',
   product: 'product-payment',
   paymentBackend: 'product-payment',
   paymentBackendOptions: 'product-payment',
@@ -1154,6 +1158,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
   const activeTab = new URLSearchParams(window.location.search).get('tab');
 
   const {isAppointment = false} = state.form.appointmentOptions;
+  const {submissionLimit = null} = state.form;
 
   const numRulesWithProblems = state.logicRules.filter(
     rule => detectLogicProblems(rule, intl).length > 0
@@ -1248,6 +1253,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
                 />
               </Tab>
             )}
+            <Tab hasErrors={state.tabsWithErrors.includes('submission')}>
+              <FormattedMessage
+                defaultMessage="Submission"
+                description="Form submission options tab title"
+              />
+            </Tab>
             <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
               <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
             </Tab>
@@ -1350,6 +1361,14 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
               />
             </TabPanel>
           )}
+
+          <TabPanel>
+            <SubmissionLimitFields
+              submissionLimit={submissionLimit}
+              formUuid={state.form.uuid}
+              onChange={onFieldChange}
+            />
+          </TabPanel>
 
           <TabPanel>
             <TextLiterals onChange={onFieldChange} translations={state.form.translations} />

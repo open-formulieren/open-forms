@@ -89,6 +89,12 @@
       "value": "Standaardwaarde"
     }
   ],
+  "/cUjWg": [
+    {
+      "type": 0,
+      "value": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
+    }
+  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -1984,6 +1990,12 @@
       "value": "Gebruik bestaande formulierdefinitie"
     }
   ],
+  "GJ8Ok2": [
+    {
+      "type": 0,
+      "value": "Reset submissions counter"
+    }
+  ],
   "GO9yud": [
     {
       "type": 0,
@@ -2164,6 +2176,12 @@
     {
       "type": 0,
       "value": "Is afspraakformulier?"
+    }
+  ],
+  "HrSXGN": [
+    {
+      "type": 0,
+      "value": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
     }
   ],
   "HuAm1K": [
@@ -5569,6 +5587,12 @@
       "value": "Suffix (bijv. m²)"
     }
   ],
+  "oWOr9u": [
+    {
+      "type": 0,
+      "value": "Submission"
+    }
+  ],
   "oXOxWz": [
     {
       "type": 0,
@@ -6099,6 +6123,12 @@
     {
       "type": 0,
       "value": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen."
+    }
+  ],
+  "u+IP17": [
+    {
+      "type": 0,
+      "value": "Maximum allowed number of submissions"
     }
   ],
   "u/0IPY": [

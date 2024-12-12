@@ -44,6 +44,11 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
+  "/cUjWg": {
+    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
+    "description": "Successful Submissions Removal Limit help text",
+    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
+  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -883,6 +888,11 @@
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
   },
+  "GJ8Ok2": {
+    "defaultMessage": "Reset submissions counter",
+    "description": "Reset submissions counter",
+    "originalDefault": "Reset submissions counter"
+  },
   "GO9yud": {
     "defaultMessage": "Datum en tijdstip waarop het formulier geactiveerd moet worden.",
     "description": "Form activation field help text",
@@ -1007,6 +1017,11 @@
     "defaultMessage": "Is afspraakformulier?",
     "description": "Form appointment enabled field label",
     "originalDefault": "Appointment enabled"
+  },
+  "HrSXGN": {
+    "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
+    "description": "Reset the submissions counter confirmation message",
+    "originalDefault": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
   },
   "HuAm1K": {
     "defaultMessage": "en de stap \"{step}\" is bereikt",
@@ -2605,6 +2620,11 @@
     "description": "Email registration options 'attachFilesToEmail' label",
     "originalDefault": "Attach files to email"
   },
+  "oWOr9u": {
+    "defaultMessage": "Submission",
+    "description": "Form submission options tab title",
+    "originalDefault": "Submission"
+  },
   "oYmpN5": {
     "defaultMessage": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden.",
     "description": "Include confirmation page content in PDF",
@@ -2854,6 +2874,11 @@
     "defaultMessage": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen.",
     "description": "Objects API registration options 'medewerkerRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+  },
+  "u+IP17": {
+    "defaultMessage": "Maximum allowed number of submissions",
+    "description": "Form submissionLimit field label",
+    "originalDefault": "Maximum allowed number of submissions"
   },
   "u/0IPY": {
     "defaultMessage": "Bestemmingspad huisnummertoevoeging",

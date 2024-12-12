@@ -333,3 +333,22 @@ class FormSerializerTest(TestCase):
         self.assertEqual(backend2.name, "#2")
         self.assertEqual(backend2.backend, "email")
         self.assertEqual(backend2.options["to_emails"], ["me@example.com"])
+
+    def test_submission_limit_method_field(self):
+        context = {"request": None}
+
+        with self.subTest("submission_limit equal to submission_counter"):
+            form = FormFactory.create(submission_limit=2, submission_counter=2)
+            data = FormSerializer(instance=form, context=context).data
+
+            self.assertTrue(data["submission_limit_reached"])
+        with self.subTest("submission_max_allowed bigger than submission_counter"):
+            form = FormFactory.create(submission_limit=2, submission_counter=1)
+            data = FormSerializer(instance=form, context=context).data
+
+            self.assertFalse(data["submission_limit_reached"])
+        with self.subTest("submission_max_allowed smaller than submission_counter"):
+            form = FormFactory.create(submission_limit=1, submission_counter=2)
+            data = FormSerializer(instance=form, context=context).data
+
+            self.assertTrue(data["submission_limit_reached"])

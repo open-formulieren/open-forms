@@ -103,3 +103,12 @@ def increment_form_counter(sender, instance: Submission, **kwargs):
         form_statistics.submission_count = F("submission_count") + 1
         form_statistics.last_submission = timezone.now()
         form_statistics.save()
+
+
+@receiver(
+    submission_complete, dispatch_uid="submission.increment_submissions_form_counter"
+)
+def increment_submissions_form_counter(sender, instance: Submission, **kwargs):
+    if instance.form.submission_limit:
+        instance.form.submission_counter = F("submission_counter") + 1
+        instance.form.save()

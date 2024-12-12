@@ -53,6 +53,18 @@ class FormTestCase(TestCase):
             form.get_registration_backend_display(), "Backend #1, Backend #2"
         )
 
+    def test_form_is_unavailable_when_limit_reached(self):
+        form: Form = FormFactory.create(submission_limit=2, submission_counter=2)
+        self.assertFalse(form.is_available)
+
+    def test_form_is_unavailable_when_limit_exceeded(self):
+        form: Form = FormFactory.create(submission_limit=2, submission_counter=3)
+        self.assertFalse(form.is_available)
+
+    def test_form_is_available_when_limit_not_reached(self):
+        form: Form = FormFactory.create(submission_limit=2, submission_counter=1)
+        self.assertTrue(form.is_available)
+
     @override_settings(LANGUAGE_CODE="en")
     def test_registration_backend_display_marks_misconfigs(self):
         form: Form = FormFactory.create()

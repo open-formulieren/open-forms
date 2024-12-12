@@ -247,3 +247,30 @@ class SubmissionStartTests(APITestCase):
         self.assertEqual(
             submission.initial_data_reference, body["initialDataReference"]
         )
+
+    def test_start_submission_with_form_max_submissions_limit_not_reached(self):
+        form = FormFactory.create(submission_limit=1)
+        FormStepFactory.create(form=form)
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        body = {
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_start_submission_with_form_max_submissions_limit_reached(self):
+        form = FormFactory.create(submission_limit=1, submission_counter=1)
+        FormStepFactory.create(form=form)
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        body = {
+            "form": f"http://testserver.com{form_url}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        response = self.client.post(self.endpoint, body)
+        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
