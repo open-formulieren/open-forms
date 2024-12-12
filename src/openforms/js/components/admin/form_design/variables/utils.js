@@ -60,6 +60,9 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
 const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, stepConfiguration) => {
   // Issue #1695: content components are not considered layout components
   if (newComponent.type === 'content') return true;
+  // Issue #4884 - soft required errors are pretty much the same as content components,
+  // with additional special client-side behaviour
+  if (newComponent.type === 'softRequiredErrors') return true;
 
   const isLayout = FormioUtils.isLayoutComponent(newComponent);
 
@@ -84,9 +87,10 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
 const getFormVariables = (formDefinition, configuration) => {
   const newFormVariables = [];
 
-  FormioUtils.eachComponent(configuration.components, component =>
-    newFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
-  );
+  FormioUtils.eachComponent(configuration.components, component => {
+    if (component.type === 'softRequiredErrors') return;
+    newFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
+  });
   return newFormVariables;
 };
 
