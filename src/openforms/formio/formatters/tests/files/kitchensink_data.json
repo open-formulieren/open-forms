@@ -132,18 +132,18 @@
     null
   ],
   "licenseplate": "aa-bb-12",
-  "map": [
-    52.373087283242505,
-    4.8923054658521945
-  ],
-  "mapEmpty": [
-    52.379648,
-    4.9020928
-  ],
-  "mapHidden": [
-    52.379648,
-    4.9020928
-  ],
+  "map": {
+    "type": "Point",
+    "coordinates": [52.373087283242505, 4.8923054658521945]
+  },
+  "mapEmpty": {
+    "type": "Point",
+    "coordinates": [52.379648, 4.9020928]
+  },
+  "mapHidden": {
+    "type": "Point",
+    "coordinates": [52.379648, 4.9020928]
+  },
   "number": 1234,
   "numberDecimal": 1234.56,
   "numberDecimalMulti": [
