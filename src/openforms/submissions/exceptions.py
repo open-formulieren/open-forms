@@ -11,3 +11,8 @@ class FormDeactivated(UnprocessableEntity):
 class FormMaintenance(ServiceUnavailable):
     default_detail = _("The form is currently disabled for maintenance.")
     default_code = "form-maintenance"
+
+
+class FormMaximumSubmissions(ServiceUnavailable):
+    default_detail = _("The form has reached the maximum number of submissions.")
+    default_code = "form-submission-limit-reached"

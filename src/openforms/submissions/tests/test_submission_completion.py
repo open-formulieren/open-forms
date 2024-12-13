@@ -629,6 +629,30 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
+    def test_form_submission_counter_is_incremented(self):
+        form = FormFactory.create(submission_limit=1, submission_counter=0)
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        self.client.post(endpoint, {"privacy_policy_accepted": True})
+
+        form.refresh_from_db()
+
+        self.assertEqual(form.submission_counter, 1)
+
+    def test_form_submission_counter_is_not_incremented(self):
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        self.client.post(endpoint, {"privacy_policy_accepted": True})
+
+        form.refresh_from_db()
+
+        self.assertEqual(form.submission_counter, 0)
+
 
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):

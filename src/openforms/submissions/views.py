@@ -28,7 +28,7 @@ from openforms.frontend import get_frontend_redirect_url
 from openforms.tokens import BaseTokenGenerator
 
 from .constants import RegistrationStatuses
-from .exceptions import FormDeactivated, FormMaintenance
+from .exceptions import FormDeactivated, FormMaintenance, FormMaximumSubmissions
 from .forms import SearchSubmissionForCosignForm
 from .models import Submission, SubmissionFileAttachment, SubmissionReport
 from .signals import submission_resumed
@@ -46,10 +46,10 @@ class ResumeFormMixin(TemplateResponseMixin):
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         try:
             return super().dispatch(request, *args, **kwargs)
-        except (FormDeactivated, FormMaintenance) as exc:
+        except (FormDeactivated, FormMaintenance, FormMaximumSubmissions) as exc:
             return self.render_to_response(
                 context={"error": exc},
-                status=exc.status_code if isinstance(exc, FormMaintenance) else 200,
+                status=(exc.status_code if isinstance(exc, FormMaintenance) else 200),
             )
 
     def validate_url_and_get_submission(

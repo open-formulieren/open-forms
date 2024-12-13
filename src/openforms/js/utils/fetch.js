@@ -113,6 +113,11 @@ const put = async (url, csrftoken, data = {}, throwOn400 = false) => {
   return resp;
 };
 
+const patch = async (url, csrftoken, data = {}, throwOn400 = true) => {
+  const resp = await _unsafe('PATCH', url, csrftoken, data, throwOn400);
+  return resp;
+};
+
 const apiDelete = async (url, csrftoken) => {
   const opts = {
     method: 'DELETE',
@@ -127,4 +132,4 @@ const apiDelete = async (url, csrftoken) => {
 };
 
 export {ValidationErrors};
-export {get, post, put, apiDelete, apiCall};
+export {get, post, put, patch, apiDelete, apiCall};

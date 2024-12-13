@@ -13,6 +13,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.frontend.tests import FrontendRedirectMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY
+from ..exceptions import FormMaximumSubmissions
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
 
@@ -456,3 +457,46 @@ class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
             response, expected_redirect_url.url, fetch_redirect_response=False
         )
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_resume_with_form_max_submissions_limit_reached(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[],
+            form_url="http://maykinmedia.nl/some-form/startpagina",
+            form__submission_limit=1,
+            form__submission_counter=1,
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context_data["error"], FormMaximumSubmissions)
+
+    def test_resume_with_form_max_submissions_limit_not_reached(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[],
+            form_url="http://maykinmedia.nl/some-form/startpagina",
+            form__submission_limit=2,
+            form__submission_counter=1,
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, 302)

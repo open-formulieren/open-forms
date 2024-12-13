@@ -212,6 +212,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "of type 'checkbox'."
         ),
     )
+    submission_limit_reached = serializers.SerializerMethodField()
     brp_personen_request_options = BRPPersonenRequestOptionsSerializer(
         required=False, allow_null=True
     )
@@ -257,6 +258,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "introduction_page_content",
             "explanation_template",
             "submission_allowed",
+            "submission_limit",
+            "submission_counter",
+            "submission_limit_reached",
             "suspension_allowed",
             "ask_privacy_consent",
             "ask_statement_of_truth",
@@ -299,6 +303,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "active",
             "required_fields_with_asterisk",
             "submission_allowed",
+            "submission_limit_reached",
             "suspension_allowed",
             "send_confirmation_email",
             "appointment_options",
@@ -512,6 +517,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     def get_cosign_has_link_in_email(self, obj: Form) -> bool:
         config = GlobalConfiguration.get_solo()
         return config.cosign_request_template_has_link
+
+    def get_submission_limit_reached(self, obj: Form) -> bool:
+        return obj.submissions_limit_reached
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

@@ -23,6 +23,10 @@
             {% blocktrans trimmed %}
                 This form is currently undergoing maintenance. Please try again later.
             {% endblocktrans %}
+        {% elif error.detail.code == 'form-maximum-submissions' %}
+            {% blocktrans trimmed %}
+                Unfortunately, this form is no longer available for submissions.
+            {% endblocktrans %}
         {% endif %}
     </div>
 </div>

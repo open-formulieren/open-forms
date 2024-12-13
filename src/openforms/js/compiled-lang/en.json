@@ -89,6 +89,12 @@
       "value": "Default Value"
     }
   ],
+  "/cUjWg": [
+    {
+      "type": 0,
+      "value": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
+    }
+  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -1963,6 +1969,12 @@
       "value": "Use existing form definition"
     }
   ],
+  "GJ8Ok2": [
+    {
+      "type": 0,
+      "value": "Reset submissions counter"
+    }
+  ],
   "GO9yud": [
     {
       "type": 0,
@@ -2143,6 +2155,12 @@
     {
       "type": 0,
       "value": "Appointment enabled"
+    }
+  ],
+  "HrSXGN": [
+    {
+      "type": 0,
+      "value": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
     }
   ],
   "HuAm1K": [
@@ -5547,6 +5565,12 @@
       "value": "Suffix (e.g. m²)"
     }
   ],
+  "oWOr9u": [
+    {
+      "type": 0,
+      "value": "Submission"
+    }
+  ],
   "oXOxWz": [
     {
       "type": 0,
@@ -6077,6 +6101,12 @@
     {
       "type": 0,
       "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+    }
+  ],
+  "u+IP17": [
+    {
+      "type": 0,
+      "value": "Maximum allowed number of submissions"
     }
   ],
   "u/0IPY": [

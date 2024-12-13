@@ -10,7 +10,7 @@ from openforms.registrations.registry import Registry
 
 from ...registrations.base import BasePlugin
 from ..models import Form
-from .admin.test_form import FormListAjaxMixin
+from .admin.mixins import FormListAjaxMixin
 from .factories import FormFactory
 
 register = Registry()
