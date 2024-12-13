@@ -78,6 +78,10 @@ intersphinx_mapping = {
         "https://zgw-consumers.readthedocs.io/en/latest/",
         None,
     ),
+    "objecttypes": (
+        "https://objects-and-objecttypes-api.readthedocs.io/en/stable/",
+        None,
+    ),
 }
 
 # -- Options for HTML output -------------------------------------------------

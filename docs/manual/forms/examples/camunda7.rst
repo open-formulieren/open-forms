@@ -50,7 +50,7 @@ raketicoon linksonder.
 Formulier maken
 ===============
 
-#. Maak een formulier aan met de volgende componenten in een formulier stap:
+#. Maak een formulier aan met de volgende componenten in een formulierstap:
 
    * Getal-component met label **Leeftijd** en eigenschapsnaam **leeftijd**
    * Getal-component met label **Inkomen** en eigenschapsnaam **inkomen**
