@@ -11663,7 +11663,7 @@ msgstr "Geeft aan of gevoelige gegevens verwijders zijn van deze inzending."
 
 #: openforms/submissions/models/submission.py:263
 msgid "initial data reference"
-msgstr "ongeldige data-referentie"
+msgstr "startdata-referentie"
 
 #: openforms/submissions/models/submission.py:266
 msgid ""

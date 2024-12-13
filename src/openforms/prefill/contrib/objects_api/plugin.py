@@ -9,7 +9,6 @@ from openforms.contrib.objects_api.checks import check_config
 from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable, JSONObject
 
@@ -73,16 +72,7 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
         return [
             (
                 _("Manage API groups"),
-                reverse(
-                    "admin:registrations_objects_api_objectsapigroupconfig_changelist"
-                ),
-            ),
-            (
-                _("Defaults configuration"),
-                reverse(
-                    "admin:registrations_objects_api_objectsapiconfig_change",
-                    args=(ObjectsAPIConfig.singleton_instance_id,),
-                ),
+                reverse("admin:objects_api_objectsapigroupconfig_changelist"),
             ),
         ]
 
