@@ -185,6 +185,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "to be used for the submission report PDF."
         ),
         required=False,
+        allow_blank=True,
     )
     informatieobjecttype_submission_csv = serializers.URLField(
         label=_("submission report CSV informatieobjecttype"),
@@ -193,6 +194,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "to be used for the submission report CSV."
         ),
         required=False,
+        allow_blank=True,
     )
     informatieobjecttype_attachment = serializers.URLField(
         label=_("attachment informatieobjecttype"),
@@ -201,6 +203,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "to be used for the submission attachments."
         ),
         required=False,
+        allow_blank=True,
     )
 
     # V1 only fields:
@@ -208,6 +211,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("productaanvraag type"),
         help_text=_("The type of ProductAanvraag."),
         required=False,
+        allow_blank=True,
     )
     content_json = serializers.CharField(
         label=_("JSON content field"),
@@ -220,6 +224,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             ),
         ],
         required=False,
+        allow_blank=True,
     )
     payment_status_update_json = serializers.CharField(
         label=_("payment status update JSON template"),
@@ -233,6 +238,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             ),
         ],
         required=False,
+        allow_blank=True,
     )
 
     # V2 only fields:
