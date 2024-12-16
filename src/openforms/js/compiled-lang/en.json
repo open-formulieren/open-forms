@@ -405,6 +405,12 @@
       "value": "API group"
     }
   ],
+  "2mgmOj": [
+    {
+      "type": 0,
+      "value": "The title for the document that is related to the case."
+    }
+  ],
   "2nxTFx": [
     {
       "type": 0,
@@ -2939,6 +2945,12 @@
       "value": "StUF-ZDS name"
     }
   ],
+  "Qd9qN8": [
+    {
+      "type": 0,
+      "value": "Tile layer"
+    }
+  ],
   "Qjl92W": [
     {
       "type": 0,
@@ -4211,12 +4223,6 @@
       "value": "Product request type"
     }
   ],
-  "ctoEdl": [
-    {
-      "type": 0,
-      "value": "The name under which the INFORMATIEOBJECT is formally known."
-    }
-  ],
   "cuivC6": [
     {
       "type": 0,
@@ -4389,6 +4395,12 @@
     {
       "type": 0,
       "value": "Map configuration"
+    }
+  ],
+  "eAmrdi": [
+    {
+      "type": 0,
+      "value": "Loading..."
     }
   ],
   "eBk+W0": [
@@ -6401,6 +6413,12 @@
     {
       "type": 0,
       "value": "Translation enabled"
+    }
+  ],
+  "xbUkMg": [
+    {
+      "type": 0,
+      "value": "The tile layer is responsible for showing the map background. This effects the map style at particular coordinates and zoom levels."
     }
   ],
   "xcp+LU": [

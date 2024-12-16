@@ -405,6 +405,12 @@
       "value": "API-groep"
     }
   ],
+  "2mgmOj": [
+    {
+      "type": 0,
+      "value": "De titel voor het zaakdocument."
+    }
+  ],
   "2nxTFx": [
     {
       "type": 0,
@@ -2956,6 +2962,12 @@
       "value": "StUF-ZDS-naam"
     }
   ],
+  "Qd9qN8": [
+    {
+      "type": 0,
+      "value": "Kaartlaag"
+    }
+  ],
   "Qjl92W": [
     {
       "type": 0,
@@ -4233,12 +4245,6 @@
       "value": "Productaanvraagtype"
     }
   ],
-  "ctoEdl": [
-    {
-      "type": 0,
-      "value": "Titel voor het document in de Documenten API."
-    }
-  ],
   "cuivC6": [
     {
       "type": 0,
@@ -4411,6 +4417,12 @@
     {
       "type": 0,
       "value": "Kaartinstellingen"
+    }
+  ],
+  "eAmrdi": [
+    {
+      "type": 0,
+      "value": "Aan het laden..."
     }
   ],
   "eBk+W0": [
@@ -6423,6 +6435,12 @@
     {
       "type": 0,
       "value": "Vertalingen ingeschakeld"
+    }
+  ],
+  "xbUkMg": [
+    {
+      "type": 0,
+      "value": "De kaartlaag bepaalt de achtergrond van het kaartmateriaal voor verschillende coördinaten en zoomniveaus."
     }
   ],
   "xcp+LU": [
