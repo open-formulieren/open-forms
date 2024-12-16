@@ -304,7 +304,12 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(imported_form.authentication_backends, ["digid"])
         self.assertEqual(imported_form.payment_backend, "ogone-legacy")
         self.assertEqual(
-            imported_form.payment_backend_options, {"merchant_id": merchant.id}
+            imported_form.payment_backend_options,
+            {
+                "merchant_id": merchant.id,
+                "com_template": "",
+                "title_template": "",
+            },
         )
 
         form_definitions = FormDefinition.objects.order_by("pk")

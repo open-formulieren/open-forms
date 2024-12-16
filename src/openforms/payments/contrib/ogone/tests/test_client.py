@@ -53,6 +53,23 @@ class OgoneClientTest(OFVCRMixin, TestCase):
 
         self.assertIn("Er is een fout opgetreden", payment_request.text)
 
+    def test_com_title_unicode_chars(self):
+        client = OgoneClient(self.merchant)
+
+        info = client.get_payment_info(
+            "xyz2024/OF-123456/987654321",
+            1000,
+            "http://foo.bar/return?bazz=buzz",
+            RETURN_ACTION_PARAM,
+            title="läääääääääääääämp! " * 10,  # 190 chars
+            com="brøther i desire lööps",
+        )
+
+        payment_request = requests.post(info.url, data=info.data)
+
+        # Response is always a 200, so we assert on the content instead
+        self.assertNotIn("Er is een fout opgetreden", payment_request.text)
+
 
 class OgoneGetPaymentInfoTest(TestCase):
     maxDiff = None
