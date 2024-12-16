@@ -163,6 +163,7 @@ class WebformBuilder extends WebformBuilderFormio {
             theme={currentTheme.getValue()}
             richTextColors={RICH_TEXT_COLORS}
             getFormComponents={() => this.webform.form.components}
+            getMapTileLayers={() => []}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
             getPrefillPlugins={getPrefillPlugins}
