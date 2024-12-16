@@ -374,7 +374,8 @@ class Client(BaseClient):
             doc_id=doc_id,
             document=submission_attachment,
             doc_data={
-                "titel": "bijlage",
+                "titel": submission_attachment.titel
+                or submission_attachment.get_display_name(),
                 "bestandsnaam": submission_attachment.get_display_name(),
                 "formaat": submission_attachment.content_type,
                 "beschrijving": "Bijgevoegd document",

@@ -8,7 +8,9 @@ from requests import RequestException
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.exceptions import RegistrationFailed
+from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
+    SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionReportFactory,
 )
@@ -451,6 +453,62 @@ class StufZDSClientTests(StUFZDSTestBase):
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
             1,
+        )
+
+    def test_create_zaak_attachment_with_custom_title(self, m):
+        client = StufZDSClient(self.service, self.options)
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        SubmissionFactory.from_components(
+            [
+                {
+                    "key": "field1",
+                    "type": "file",
+                    "registration": {
+                        "titel": "a custom title",
+                    },
+                },
+            ]
+        )
+
+        submission_attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+            _component_configuration_path="components.0",
+        )
+
+        client.create_zaak_attachment(
+            zaak_id="foo", doc_id="bar", submission_attachment=submission_attachment
+        )
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01",
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zkn:edcLk01")
+        self.assertStuurgegevens(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                "//zkn:object/zkn:identificatie": "bar",
+                "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:inhoud/@xmime:contentType": "application/msword",
+                "//zkn:object/zkn:formaat": "application/msword",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
+                "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
+                "//zkn:titel": "a custom title",
+            },
         )
 
     def test_client_wraps_network_error(self, m):

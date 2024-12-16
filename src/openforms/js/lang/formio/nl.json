@@ -345,7 +345,7 @@
   "Vertrouwelijkheidaanduiding": "Vertrouwelijkheidaanduiding",
   "Indication of the level to which extent the INFORMATIEOBJECT is meant to be public.": "Vertrouwelijkheidaanduiding van het document in de Documenten API. Indien leeg, dan worden algemene instellingen gebruikt.",
   "Title": "Titel",
-  "The name under which the INFORMATIEOBJECT is formally known.": "Titel voor het document in de Documenten API.",
+  "The title for the document that is related to the case.": "De titel voor het zaak document.",
   "The maximum number of decimal places.": "Het maximaal aantal decimalen.",
   "Column Properties": "Kolomeigenschappen",
   "Add Column": "Kolom toevoegen",
