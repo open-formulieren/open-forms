@@ -11,7 +11,7 @@ import {
 import {getChoicesFromSchema} from 'utils/json-schema';
 
 import OptionsConfiguration from '../OptionsConfiguration';
-import {MerchantID} from './fields';
+import {ComTemplate, MerchantID, TitleTemplate} from './fields';
 
 const OgoneLegacyOptionsForm = ({schema, formData, onSubmit}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -41,6 +41,8 @@ const OgoneLegacyOptionsForm = ({schema, formData, onSubmit}) => {
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
           <MerchantID options={merchantChoices} />
+          <TitleTemplate />
+          <ComTemplate />
         </Fieldset>
       </ValidationErrorsProvider>
     </OptionsConfiguration>

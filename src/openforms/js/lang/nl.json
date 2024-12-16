@@ -1088,6 +1088,11 @@
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
   },
+  "JHQfjZ": {
+    "defaultMessage": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
+    "description": "Ogone legacy payment options 'comTemplate' help text",
+    "originalDefault": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
+  },
   "JKq3TC": {
     "defaultMessage": "Medewerkerroltype",
     "description": "Objects API registration options 'medewerkerRoltype' label",
@@ -1857,6 +1862,11 @@
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
+  "ZSvQcR": {
+    "defaultMessage": "TITLE parameter",
+    "description": "Ogone legacy payment options 'titleTemplate' label",
+    "originalDefault": "TITLE parameter"
+  },
   "ZdZ2Mb": {
     "defaultMessage": "Zet registratieplugin voor de inzending",
     "description": "action type \"set-registration-backend\" label",
@@ -2103,6 +2113,11 @@
     "defaultMessage": "Zaakstatuscode",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
     "originalDefault": "Zds zaaktype status code"
+  },
+  "eZJFP7": {
+    "defaultMessage": "COM parameter",
+    "description": "Ogone legacy payment options 'comTemplate' label",
+    "originalDefault": "COM parameter"
   },
   "efsF8+": {
     "defaultMessage": "{label} {isPublished, select, false {<draft>(concept)</draft>} other {}}",
@@ -2939,6 +2954,11 @@
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+  },
+  "vikURf": {
+    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.",
+    "description": "Ogone legacy payment options 'titleTemplate' help text",
+    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used."
   },
   "vng/5K": {
     "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
