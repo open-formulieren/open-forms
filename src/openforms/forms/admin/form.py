@@ -12,7 +12,6 @@ from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInli
 
 from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
-from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
@@ -127,7 +126,6 @@ class FormDeletedListFilter(admin.ListFilter):
 class FormAdmin(
     FormioConfigMixin,
     RegistrationBackendFieldMixin,
-    PaymentBackendChoiceFieldMixin,
     OrderedInlineModelAdminMixin,
     admin.ModelAdmin,
 ):

@@ -129,7 +129,9 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             submission.price,
         )
 
-        info = plugin.start_payment(request, payment)
+        options = plugin.configuration_options(data=payment.plugin_options)
+        options.is_valid(raise_exception=True)
+        info = plugin.start_payment(request, payment, options.validated_data)
         logevent.payment_flow_start(payment, plugin)
         return Response(self.get_serializer(instance=info).data)
 
@@ -222,8 +224,10 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         if plugin.return_method.upper() != request.method.upper():
             raise MethodNotAllowed(request.method)
 
+        options = plugin.configuration_options(data=payment.plugin_options)
         try:
-            response = plugin.handle_return(request, payment)
+            options.is_valid(raise_exception=True)
+            response = plugin.handle_return(request, payment, options.validated_data)
         except Exception as e:
             logevent.payment_flow_failure(payment, plugin, e)
             raise
@@ -383,7 +387,9 @@ class PaymentLinkView(DetailView):
                 submission.price,
             )
 
-            info = plugin.start_payment(self.request, payment)
+            options = plugin.configuration_options(data=payment.plugin_options)
+            options.is_valid(raise_exception=True)
+            info = plugin.start_payment(self.request, payment, options.validated_data)
             logevent.payment_flow_start(payment, plugin, from_email=True)
 
             context["url"] = info.url

@@ -10,9 +10,14 @@ __all__ = ["update_submission_payment_registration"]
 
 
 def update_submission_payment_registration(submission: Submission):
+    if (registration_backend := submission.registration_backend) is None:
+        error = AttributeError("Submission has no registration backend")
+        logevent.registration_payment_update_failure(submission, error=error)
+        return
+
     try:
-        plugin = register[submission.registration_backend.backend]
-    except (AttributeError, KeyError) as e:
+        plugin = register[registration_backend.backend]
+    except KeyError as e:
         logevent.registration_payment_update_failure(submission, error=e)
         return
 
@@ -37,7 +42,8 @@ def update_submission_payment_registration(submission: Submission):
 
         try:
             plugin.update_payment_status(submission, options_serializer.validated_data)
-            payments.mark_registered()
+            # FIXME: pyright + custom querysets...
+            payments.mark_registered()  # pyright: ignore[reportAttributeAccessIssue]
         except Exception as e:
             logevent.registration_payment_update_failure(
                 submission, error=e, plugin=plugin

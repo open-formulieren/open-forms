@@ -1,6 +1,6 @@
 import logging
 
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 import requests
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
+from rest_framework.request import Request
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Entry
@@ -18,12 +19,13 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
 from ...constants import PAYMENT_STATUS_FINAL, UserAction
-from ...contrib.ogone.client import OgoneClient
-from ...contrib.ogone.constants import OgoneStatus
-from ...contrib.ogone.exceptions import InvalidSignature
-from ...contrib.ogone.models import OgoneMerchant
 from ...models import SubmissionPayment
 from ...registry import register
+from .client import OgoneClient
+from .constants import OgoneStatus
+from .exceptions import InvalidSignature
+from .models import OgoneMerchant
+from .typing import PaymentOptions
 
 logger = logging.getLogger(__name__)
 
@@ -41,18 +43,17 @@ PAYMENT_ID_PARAM = "PAYID"
 
 
 @register("ogone-legacy")
-class OgoneLegacyPaymentPlugin(BasePlugin):
+class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
     verbose_name = _("Ogone legacy")
     configuration_options = OgoneOptionsSerializer
 
-    def start_payment(self, request, payment: SubmissionPayment):
+    def start_payment(
+        self, request: HttpRequest, payment: SubmissionPayment, options: PaymentOptions
+    ):
         # decimal to cents
         amount_cents = int((payment.amount * 100).to_integral_exact())
 
-        merchant = get_object_or_404(
-            OgoneMerchant, id=payment.plugin_options["merchant_id"]
-        )
-        client = OgoneClient(merchant)
+        client = OgoneClient(options["merchant_id"])
 
         return_url = self.get_return_url(request, payment)
 
@@ -69,14 +70,13 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         )
         return info
 
-    def handle_return(self, request, payment: SubmissionPayment):
+    def handle_return(
+        self, request: Request, payment: SubmissionPayment, options: PaymentOptions
+    ):
         action = request.query_params.get(RETURN_ACTION_PARAM)
         payment_id = request.query_params[PAYMENT_ID_PARAM]
 
-        merchant = get_object_or_404(
-            OgoneMerchant, id=payment.plugin_options["merchant_id"]
-        )
-        client = OgoneClient(merchant)
+        client = OgoneClient(options["merchant_id"])
 
         try:
             params = client.get_validated_params(request.query_params)
@@ -107,7 +107,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         )
         return HttpResponseRedirect(redirect_url)
 
-    def handle_webhook(self, request):
+    def handle_webhook(self, request: Request):
         # unvalidated data
         order_id = case_insensitive_get(request.data, "orderID")
         if not order_id:
@@ -120,10 +120,10 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             raise ParseError("missing PAYID")
 
         payment = get_object_or_404(SubmissionPayment, public_order_id=order_id)
-        merchant = get_object_or_404(
-            OgoneMerchant, id=payment.plugin_options["merchant_id"]
-        )
-        client = OgoneClient(merchant)
+        options_serializer = self.configuration_options(data=payment.plugin_options)
+        options_serializer.is_valid(raise_exception=True)
+        options: PaymentOptions = options_serializer.validated_data
+        client = OgoneClient(options["merchant_id"])
 
         try:
             params = client.get_validated_params(request.data)

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from openforms.forms.models import Form
+
 from ..registry import register as payment_register
 from .serializers import PaymentOptionSerializer
 
@@ -20,7 +22,8 @@ class PaymentOptionsReadOnlyField(serializers.ListField):
     def to_internal_value(self, data):
         raise NotImplementedError("read only")
 
-    def to_representation(self, form):
+    def to_representation(self, value):
+        assert isinstance(value, Form)
         request = self.context["request"]
-        temp = payment_register.get_options(request, form)
+        temp = payment_register.get_options(request, value)
         return super().to_representation(temp)
