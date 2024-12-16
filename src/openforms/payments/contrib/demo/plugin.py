@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
@@ -11,16 +13,20 @@ from ...constants import PaymentStatus, UserAction
 from ...registry import register
 
 
+class NoOptions(TypedDict):
+    pass
+
+
 @register("demo")
-class DemoPayment(BasePlugin):
+class DemoPayment(BasePlugin[NoOptions]):
     verbose_name = _("Demo")
     is_demo_plugin = True
 
-    def start_payment(self, request, payment):
+    def start_payment(self, request, payment, options):
         url = self.get_return_url(request, payment)
         return PaymentInfo(url=url, data={})
 
-    def handle_return(self, request, payment):
+    def handle_return(self, request, payment, options):
         payment.status = PaymentStatus.completed
         payment.save()
 

@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING, Mapping, TypedDict
 
 from django.http import HttpRequest, HttpResponse
 
 from rest_framework import serializers
+from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -32,38 +35,46 @@ class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
 
 
-class BasePlugin(AbstractBasePlugin):
+class Options(TypedDict):
+    pass
+
+
+class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     return_method = "GET"
     webhook_method = "POST"
-    configuration_options = EmptyOptions
+    configuration_options: type[serializers.Serializer] = EmptyOptions
 
     # override
 
     def start_payment(
         self,
         request: HttpRequest,
-        payment: "SubmissionPayment",
+        payment: SubmissionPayment,
+        options: OptionsT,
     ) -> PaymentInfo:
         raise NotImplementedError()
 
     def handle_return(
-        self, request: HttpRequest, payment: "SubmissionPayment"
+        self,
+        request: Request,
+        payment: SubmissionPayment,
+        options: OptionsT,
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: HttpRequest) -> "SubmissionPayment":
+    def handle_webhook(self, request: Request) -> SubmissionPayment:
         raise NotImplementedError()
 
     # helpers
 
-    def get_start_url(self, request: HttpRequest, submission: "Submission") -> str:
+    def get_start_url(self, request: HttpRequest, submission: Submission) -> str:
         return reverse_plus(
             "payments:start",
             kwargs={"uuid": submission.uuid, "plugin_id": self.identifier},
             request=request,
         )
 
-    def get_return_url(self, request: HttpRequest, payment: "SubmissionPayment") -> str:
+    def get_return_url(self, request: HttpRequest, payment: SubmissionPayment) -> str:
         return reverse_plus(
             "payments:return",
             kwargs={"uuid": payment.uuid},

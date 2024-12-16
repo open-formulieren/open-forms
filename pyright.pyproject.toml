@@ -10,6 +10,7 @@ include = [
     "src/openforms/dmn/registry.py",
     "src/openforms/formio/registry.py",
     "src/openforms/formio/rendering/registry.py",
+    "src/openforms/payments/base.py",
     "src/openforms/payments/registry.py",
     "src/openforms/pre_requests/base.py",
     "src/openforms/pre_requests/registry.py",
@@ -29,6 +30,9 @@ include = [
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
     # Payments
     "src/openforms/payments/models.py",
+    "src/openforms/payments/contrib/ogone/client.py",
+    "src/openforms/payments/contrib/ogone/plugin.py",
+    "src/openforms/payments/views.py",
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",

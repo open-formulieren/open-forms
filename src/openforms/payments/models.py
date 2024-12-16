@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
@@ -92,6 +92,7 @@ class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQue
 
 
 class SubmissionPayment(models.Model):
+    id: int | None
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -139,7 +140,9 @@ class SubmissionPayment(models.Model):
         help_text=_("The ID assigned to the payment by the payment provider."),
     )
 
-    objects = SubmissionPaymentManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        SubmissionPaymentManager
+    ] = SubmissionPaymentManager()
 
     class Meta:
         verbose_name = _("submission payment details")
