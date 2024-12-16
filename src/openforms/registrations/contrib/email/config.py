@@ -50,6 +50,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "number to the submission in the subject."
         ),
         required=False,
+        allow_blank=True,
         validators=[
             DjangoTemplateValidator(backend="openforms.template.openforms_backend")
         ],
@@ -60,6 +61,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Subject of the email sent to the registration backend to notify a change in the payment status."
         ),
         required=False,
+        allow_blank=True,
         validators=[
             DjangoTemplateValidator(backend="openforms.template.openforms_backend")
         ],
@@ -68,6 +70,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("email content template HTML"),
         help_text=_("Content of the registration email message (as text)."),
         required=False,
+        allow_blank=True,
         validators=[
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
@@ -79,6 +82,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("email content template text"),
         help_text=_("Content of the registration email message (as text)."),
         required=False,
+        allow_blank=True,
         validators=[
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
