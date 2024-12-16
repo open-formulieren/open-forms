@@ -37,4 +37,5 @@ class MicrosoftGraphOptionsSerializer(
             "ID of the drive to use. If left empty, the default drive will be used."
         ),
         required=False,
+        allow_blank=True,
     )
