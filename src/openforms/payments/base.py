@@ -81,7 +81,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             request=request,
         )
 
-    def get_webhook_url(self, request: HttpRequest) -> str:
+    def get_webhook_url(self, request: HttpRequest | None) -> str:
         return reverse_plus(
             "payments:webhook",
             kwargs={"plugin_id": self.identifier},

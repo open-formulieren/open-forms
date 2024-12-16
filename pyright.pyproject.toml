@@ -10,8 +10,6 @@ include = [
     "src/openforms/dmn/registry.py",
     "src/openforms/formio/registry.py",
     "src/openforms/formio/rendering/registry.py",
-    "src/openforms/payments/base.py",
-    "src/openforms/payments/registry.py",
     "src/openforms/pre_requests/base.py",
     "src/openforms/pre_requests/registry.py",
     "src/openforms/prefill/base.py",
@@ -29,10 +27,7 @@ include = [
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
     # Payments
-    "src/openforms/payments/models.py",
-    "src/openforms/payments/contrib/ogone/client.py",
-    "src/openforms/payments/contrib/ogone/plugin.py",
-    "src/openforms/payments/views.py",
+    "src/openforms/payments/",
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",
@@ -64,6 +59,10 @@ exclude = [
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",
+    "src/openforms/payments/management/commands/checkpaymentemaildupes.py",
+    "src/openforms/payments/tests/",
+    "src/openforms/payments/contrib/demo/tests/",
+    "src/openforms/payments/contrib/ogone/tests/",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
 ]

@@ -23,7 +23,7 @@ class PaymentPluginSerializer(PluginBaseSerializer):
 class PaymentOptionSerializer(serializers.Serializer):
     # serializer for form
     identifier = serializers.CharField(label=_("Identifier"), read_only=True)
-    label = serializers.CharField(
+    label = serializers.CharField(  # pyright: ignore[reportAssignmentType]
         label=_("Button label"), help_text=_("Button label"), read_only=True
     )
 
@@ -34,7 +34,7 @@ class PaymentInfoSerializer(serializers.Serializer):
         label=_("Request type"), choices=PaymentRequestType.choices, read_only=True
     )
     url = serializers.URLField(label=_("URL"), read_only=True)
-    data = serializers.DictField(
+    data = serializers.DictField(  # pyright: ignore[reportAssignmentType,reportIncompatibleMethodOverride]
         label=_("Data"),
         child=serializers.CharField(label=_("Value"), read_only=True),
         read_only=True,
