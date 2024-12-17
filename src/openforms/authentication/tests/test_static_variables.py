@@ -14,7 +14,6 @@ class TestStaticVariables(TestCase):
             plugin="test-plugin",
             attribute=AuthAttribute.bsn,
             value="111222333",
-            machtigen={AuthAttribute.bsn: "123456789"},
         )
 
         static_data = {
@@ -27,7 +26,6 @@ class TestStaticVariables(TestCase):
                 "plugin": "test-plugin",
                 "attribute": AuthAttribute.bsn,
                 "value": "111222333",
-                "machtigen": {AuthAttribute.bsn: "123456789"},
             },
             "auth_bsn": "111222333",
             "auth_kvk": "",

@@ -143,7 +143,6 @@ class StufBgPrefill(BasePlugin):
             return submission.auth_info.value
 
         if identifier_role == IdentifierRoles.authorizee:
-            legacy_fallback = submission.auth_info.machtigen.get("identifier_value")
             auth_context = submission.auth_info.to_auth_context_data()
             # check if we have new-style authentication context capturing, and favour
             # that over the legacy format
@@ -153,8 +152,8 @@ class StufBgPrefill(BasePlugin):
                 "representee" not in auth_context
                 or legal_subject["identifierType"] != "bsn"
             ):
-                return legacy_fallback
-            return legal_subject["identifier"] or legacy_fallback
+                return None
+            return legal_subject["identifier"]
 
     @classmethod
     def get_prefill_values(

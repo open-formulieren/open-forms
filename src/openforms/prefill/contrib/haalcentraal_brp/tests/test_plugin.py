@@ -134,36 +134,12 @@ class HaalCentraalPluginTests:
 
         self.assertEqual(values, {})  # type: ignore
 
-    def test_prefill_values_for_gemachtigde_legacy_format(self):
-        Attributes = get_attributes_cls()
-        submission = SubmissionFactory.create(
-            auth_info__value="111111111",
-            auth_info__machtigen={"identifier_value": "999990676"},
-        )
-        assert submission.is_authenticated
-        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
-
-        values = plugin.get_prefill_values(
-            submission,
-            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
-            identifier_role=IdentifierRoles.authorizee,
-        )
-
-        self.assertEqual(
-            values,
-            {
-                "naam.voornamen": "Cornelia Francisca",
-                "naam.geslachtsnaam": "Wiegman",
-            },
-        )  # type: ignore
-
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         Attributes = get_attributes_cls()
         submission = SubmissionFactory.create(
             auth_info__value="111111111",
             auth_info__is_digid_machtigen=True,
             auth_info__legal_subject_identifier_value="999990676",
-            auth_info__machtigen={},  # make sure legacy format is empty
         )
         assert submission.is_authenticated
         plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
@@ -236,17 +212,6 @@ class HaalCentraalPluginTests:
                 ),
                 None,
             ),
-            # legacy fallback
-            (
-                SubmissionFactory.create(
-                    auth_info__is_digid_machtigen=True,
-                    auth_info__legal_subject_identifier_type="",
-                    auth_info__legal_subject_identifier_value="",
-                    auth_info__machtigen={"identifier_value": "999333666"},
-                    auth_info__mandate_context=None,
-                ),
-                "999333666",
-            ),
         )
         plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
@@ -276,14 +241,6 @@ class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
             status_code=404,
         )
         super().test_person_not_found_returns_empty()
-
-    def test_prefill_values_for_gemachtigde_legacy_format(self):
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=200,
-            json=load_json_mock("ingeschrevenpersonen.v1-full.json"),
-        )
-        super().test_prefill_values_for_gemachtigde_legacy_format()
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         self.requests_mock.get(
@@ -320,14 +277,6 @@ class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
             json={"personen": []},
         )
         super().test_person_not_found_returns_empty()
-
-    def test_prefill_values_for_gemachtigde_legacy_format(self):
-        self.requests_mock.post(
-            "https://personen/api/personen",
-            status_code=200,
-            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
-        )
-        super().test_prefill_values_for_gemachtigde_legacy_format()
 
     def test_prefill_values_for_gemachtigde_by_bsn(self):
         self.requests_mock.post(

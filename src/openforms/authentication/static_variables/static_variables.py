@@ -48,8 +48,6 @@ class Auth(BaseStaticVariable):
             plugin=submission.auth_info.plugin,
             attribute=submission.auth_info.attribute,
             value=submission.auth_info.value,
-            # DeprecationWarning -> delete machtigen in Open Forms 3.0
-            machtigen=submission.auth_info.machtigen,
         )
 
         return auth_data

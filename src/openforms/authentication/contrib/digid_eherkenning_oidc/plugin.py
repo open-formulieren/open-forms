@@ -281,10 +281,6 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims])
             "legal_subject_identifier_type": "bsn",
             "legal_subject_identifier_value": authorizee,
             "mandate_context": mandate_context,
-            # DeprecationWarning - legacy, remove in 3.0
-            "machtigen": {
-                "identifier_value": authorizee,
-            },
         }
 
     def get_label(self) -> str:
@@ -374,10 +370,6 @@ class EHerkenningBewindvoeringOIDCAuthentication(
             "mandate_context": {
                 "role": "bewindvoerder",
                 "services": services,
-            },
-            # DeprecationWarning - legacy, remove in 3.0
-            "machtigen": {
-                "identifier_value": authorizee,
             },
         }
 

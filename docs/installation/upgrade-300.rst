@@ -32,6 +32,21 @@ in the error monitoring if that's set up correctly.
 .. note:: Existing, automatically converted forms are crash-free because we create an
    explicit fallback logic rule that mimicks the old behaviour.
 
+Removed legacy "machtigen" context
+==================================
+
+Open Forms 2.7.0 revamped how mandates ("machtigingen") are captured when DigiD
+Machtigen or eHerkenning Bewindvoering are used. We kept the old structure in place to
+give some time to transition and are now removing this in favour of the new setup. For
+the time being, the new setup still defaults to "Lax" mode, meaning it will continue to
+work when some information is missing that is considered required. We recommend to opt
+in to strict mode though, through the ``DIGID_EHERKENNING_OIDC_STRICT`` feature
+flag/environment variable.
+
+You are affected by this if you use the static variable ``auth.machtigen`` in your
+registration backends. Instead, you should use the ``auth_context`` static variable.
+Since Open Forms 2.7.0, the same data has been saved to both datastructures.
+
 Form components/fields changes
 ==============================
 

@@ -62,12 +62,11 @@ auth_context       object    ``{"source": "...", ...}``  De volledige authentica
 **Verouderde variabelen**
 
 Deze variabelen zijn nog wel beschikbaar, maar we raden aan om deze niet meer te
-gebruiken. In versie 3.0 van Open Formulieren kunnen deze verwijderd worden.
+gebruiken. In versie 4.0 van Open Formulieren kunnen deze verwijderd worden.
 
 =============== ========= =========================== =========================================================================
 Variabele       Type      Voorbeeldwaarde             Toelichting
 =============== ========= =========================== =========================================================================
-auth.machtigen  object                                Verouderd, wordt in 3.0 verwijderd.
 auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben (verouderd,
                                                       gebruik bij voorkeur ``auth_type``).
 =============== ========= =========================== =========================================================================
@@ -87,13 +86,16 @@ Wanneer er niet ingelogd is op het formulier, dan is de waarde van deze variabel
 .. note::
 
     De ``auth_context`` variabele gaat op termijn de ``auth`` variabele vervangen,
-    maar voorlopig wordt deze laatste niet verwijderd. We verwachten in Open Formulieren
-    3.0 enkel de ``auth.machtigen`` variabele te verwijderen omdat de structuur
-    hiervan altijd vaag en onbetrouwbaar was.
+    maar voorlopig wordt deze laatste niet verwijderd.
 
     Tip: in plaats van ``auth.plugin`` kan je beter ``auth_context_source`` of
     ``auth_type`` gebruiken - de eerste is minder flexibel/uitwisselbaar, terwijl de
     tweede wel goed de semantische betekenis bevat of het om een burger of bedrijf gaat.
+
+.. versionremoved:: 3.0
+
+    De ``auth.machtigen`` variabele is verwijderd omdat de structuur hiervan vaag en
+    onbetrouwbaar was. Gebruik ``auth_context`` in de plaats.
 
 De variabele bevat een bak aan informatie, gestructureerd volgens het
 authenticatiecontextdatamodel_. De structuur is als volgt:
