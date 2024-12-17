@@ -8,7 +8,7 @@ from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
-class NewPluginOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     # TODO-4098: is service enough, or do we need an API group like the ObjectsAPI?
     service = PrimaryKeyRelatedAsChoicesField(
         queryset=Service.objects.all(),
