@@ -8,7 +8,7 @@ from .config import JSONOptionsSerializer
 
 @register("json")
 class JSONPlugin(BasePlugin):
-    verbose_name = _("New fancy plugin")
+    verbose_name = _("JSON registration")
     configuration_options = JSONOptionsSerializer
 
     def register_submission(self, submission: Submission, options: OptionsT) -> None:

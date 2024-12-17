@@ -15,20 +15,21 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 
 
-const ExtraLine = () => {
-  const [fieldProps] = useField('extraLine');
+const RelativeAPIEndpoint = () => {
+  // TODO-4098: is this the serializer name?
+  const [fieldProps] = useField('relativeApiEndpoint');
   return (
     <FormRow>
       <Field
-        name="extraLine"
+        name="relativeApiEndpoint"
         label={
           <FormattedMessage
-            description="Demo registration options 'extraLine' label"
-            defaultMessage="Extra print statement"
+            description="JSON registration options 'relativeApiEndpoint' label"
+            defaultMessage="Relative API Endpoint"
           />
         }
       >
-        <TextInput id="id_extraLine" {...fieldProps} />
+        <TextInput id="id_relativeApiEndpoint" {...fieldProps} />
       </Field>
     </FormRow>
   );
@@ -49,13 +50,13 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
           defaultMessage="Plugin configuration: JSON"
         />
       }
-      initialFormData={{extraLine: '', ...formData}}
+      initialFormData={{relativeApiEndpoint: '', ...formData}}
       onSubmit={values => onChange({formData: values})}
       modalSize="small"
     >
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
-          <ExtraLine />
+          <RelativeAPIEndpoint />
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
@@ -66,7 +67,7 @@ JSONOptionsForm.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
   formData: PropTypes.shape({
-    extraLine: PropTypes.string,
+    apiEndpoint: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
 };
