@@ -141,7 +141,7 @@ class ObjectsAPIGroupConfig(models.Model):
     )
 
     # XXX: the URLFields are to be replaced with charfields storing the omschrijving.
-    # DeprecationWarning: remove in OF 3.0
+    # DeprecationWarning: remove in OF 4.0
     informatieobjecttype_submission_report = models.URLField(
         _("submission report informatieobjecttype"),
         max_length=1000,

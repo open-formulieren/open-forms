@@ -38,7 +38,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     iot_submission_csv: Required[str]
     iot_attachment: Required[str]
 
-    # DeprecationWarning: URL properties will be removed in OF 3.0
+    # DeprecationWarning: URL properties will be removed in OF 4.0
     informatieobjecttype_submission_report: str
     informatieobjecttype_submission_csv: str
     informatieobjecttype_attachment: str

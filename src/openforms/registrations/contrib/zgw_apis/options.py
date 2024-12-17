@@ -96,7 +96,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         default="",
     )
 
-    # DeprecationWarning - deprecated, will be removed in OF 3.0 or 4.0
+    # DeprecationWarning - deprecated, will be removed in OF 4.0
     zaaktype = serializers.URLField(
         help_text=_("URL of the ZAAKTYPE in the Catalogi API"),
         required=False,

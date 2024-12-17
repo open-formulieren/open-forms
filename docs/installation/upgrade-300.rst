@@ -130,3 +130,18 @@ The setting ``TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS`` controls how long file uplo
 kept. Ensure that this many days have passed since the last legacy upload before
 upgrading to Open Forms 3.0, otherwise you will run into database errors during the
 upgrade.
+
+Deprecations in registration backends
+=====================================
+
+We've done extensive UX rework in the Objects API and ZGW API's registration backends -
+you can now select the case and/or document types to use in dropdowns rather than having
+to copy-paste the API resource URLs. The API resource URLs will continue to work and
+are scheduled for removal in Open Forms 4.0 (no planned date for this yet), but we
+recommend you to already migrate your forms to the new format:
+
+* it has a better UX for the people configuring forms :)
+* it automatically picks the correct version from the Catalogi API
+
+Migrating is as simple as opening the registration options, selecting the catalogue to
+use and then selecting the case type/document type to use and emptying the URL-field.
