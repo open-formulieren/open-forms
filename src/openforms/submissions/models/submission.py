@@ -714,7 +714,7 @@ class Submission(models.Model):
     def get_attachments(self) -> SubmissionFileAttachmentQuerySet:
         from .submission_files import SubmissionFileAttachment
 
-        return SubmissionFileAttachment.objects.for_submission(self)
+        return SubmissionFileAttachment.objects.for_submission(self).order_by("pk")
 
     @property
     def attachments(self) -> SubmissionFileAttachmentQuerySet:
