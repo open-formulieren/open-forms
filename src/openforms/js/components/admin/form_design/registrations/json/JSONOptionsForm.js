@@ -13,12 +13,21 @@ import {
 // TODO-4098: maybe create separate file (JSONOptionsFormFields) for all the fields?
 //  Though, no need to use multiple FieldSets, so adding the fields to the form is pretty
 //  straightforward.
+import FormVariablesSelect from './fields/FormVariablesSelect';
 import RelativeAPIEndpoint from './fields/RelativeAPIEndpoint';
+// import Service from './fields/Service';
 
 
 const JSONOptionsForm = ({name, label, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
+
+  const formVariableOptions = [
+    {value: "1", label: "One"},
+    {value: "2", label: "Two"},
+    {value: "3", label: "Three"},
+  ]
+
   return (
     <ModalOptionsConfiguration
       name={name}
@@ -36,7 +45,9 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
     >
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
+          {/*<Service />*/}
           <RelativeAPIEndpoint />
+          <FormVariablesSelect options={formVariableOptions}/>
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
@@ -48,6 +59,7 @@ JSONOptionsForm.propTypes = {
   label: PropTypes.node.isRequired,
   formData: PropTypes.shape({
     relativeApiEndpoint: PropTypes.string,
+    formVariables: PropTypes.arrayOf(PropTypes.string),
   }),
   onChange: PropTypes.func.isRequired,
 };
