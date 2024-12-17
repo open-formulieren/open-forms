@@ -14,7 +14,7 @@ from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
 from openforms.authentication.service import AuthAttribute
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
@@ -31,7 +31,13 @@ from ..formatters.custom import (
 )
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import AddressNLComponent, Component, DateComponent, DatetimeComponent
+from ..typing import (
+    AddressNLComponent,
+    Component,
+    DateComponent,
+    DatetimeComponent,
+    MapComponent,
+)
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
@@ -186,11 +192,20 @@ class Datetime(BasePlugin):
 
 
 @register("map")
-class Map(BasePlugin[Component]):
+class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
 
+    def mutate_config_dynamically(
+        self, component: MapComponent, submission: Submission, data: DataMapping
+    ) -> None:
+        if (identifier := component.get("tileLayerIdentifier")) is not None:
+            tile_layer = MapTileLayer.objects.filter(identifier=identifier).first()
+            if tile_layer is not None:
+                # Add the tile layer url information
+                component["tileLayerUrl"] = tile_layer.url
+
     @staticmethod
-    def rewrite_for_request(component, request: Request):
+    def rewrite_for_request(component: MapComponent, request: Request):
         if component.get("useConfigDefaultMapSettings", False):
             config = GlobalConfiguration.get_solo()
             component["defaultZoom"] = config.form_map_default_zoom_level
@@ -198,7 +213,7 @@ class Map(BasePlugin[Component]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: Component) -> serializers.ListField:
+    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
         base = serializers.FloatField(
