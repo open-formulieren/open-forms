@@ -396,6 +396,21 @@ export default {
           type: 'object',
         },
       },
+      {
+        id: 'json',
+        label: 'JSON',
+        schema: {
+          properties: {
+            // TODO-4098: add actual relevant properties
+            extraLine: {
+              minLength: 1,
+              title: 'Extra print statement',
+              type: 'string',
+            },
+          },
+          type: 'object',
+        },
+      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -736,6 +751,12 @@ export const ConfiguredBackends = {
           ],
         },
       },
+      {
+        key: 'backend11',
+        name: 'JSON',
+        backend: 'json',
+        options: {extraLine: 'We are checking.'},
+      },
     ],
     validationErrors: [
       ['form.registrationBackends.1.options.zgwApiGroup', 'You sure about this?'],
@@ -970,6 +991,28 @@ export const STUFZDS = {
           zdsZaaktypeOmschrijving: '',
           zdsZaaktypeStatusCode: '',
           zdsZaaktypeStatusOmschrijving: '',
+        },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
+
+
+export const JSON = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend11',
+        name: 'JSON',
+        backend: 'json',
+        options: {
+          extraLine: 'We are checking.',
         },
       },
     ],
