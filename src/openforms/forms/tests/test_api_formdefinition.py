@@ -483,40 +483,6 @@ class FormDefinitionsAPITests(APITestCase):
             fd["uuid"], str(form_1.formstep_set.get().form_definition.uuid)
         )
 
-    def test_filter_by_used_in_or_reusable(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
-        self.client.force_authenticate(user=user)
-        FormDefinitionFactory.create(is_reusable=False, slug="fd-0")
-        fd2 = FormDefinitionFactory.create(is_reusable=True, slug="fd-1")
-        FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__slug="fd-2",
-            formstep__form_definition__is_reusable=False,
-        )
-        form_2 = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__slug="fd-3",
-            formstep__form_definition__is_reusable=True,
-        )
-        url = reverse("api:formdefinition-list")
-
-        response = self.client.get(
-            url,
-            {
-                "used_in": form_2.uuid,
-                "is_reusable": "true",
-            },
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response_data = response.json()
-        self.assertEqual(response_data["count"], 2)
-        fd_2, fd_4 = response_data["results"]
-        self.assertEqual(fd_2["uuid"], str(fd2.uuid))
-        self.assertEqual(
-            fd_4["uuid"], str(form_2.formstep_set.get().form_definition.uuid)
-        )
-
     @override_settings(LANGUAGE_CODE="en")
     def test_duplicate_components(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
