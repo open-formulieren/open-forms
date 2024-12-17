@@ -434,7 +434,7 @@ class MatchesJsonShemaTests(SimpleTestCase):
             variable_schema = {"type": "string"}
             target_schema = {"type": "string", "format": "email"}
 
-            self.assertFalse(
+            self.assertTrue(
                 json_schema_matches(
                     variable_schema=variable_schema, target_schema=target_schema
                 )
