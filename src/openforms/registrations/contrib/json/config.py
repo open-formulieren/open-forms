@@ -16,7 +16,7 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Which service to use."),
     )
     # TODO-4098: show the complete API endpoint as a (tooltip) hint after user entry?
-    api_endpoint = serializers.CharField(
+    relative_api_endpoint = serializers.CharField(
         max_length=255,
         label=_("Relative API endpoint"),
         help_text=_("The API endpoint to send the data to (relative to the service API root)."),
