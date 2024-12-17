@@ -396,6 +396,33 @@ export default {
           type: 'object',
         },
       },
+      {
+        id: 'json',
+        label: 'JSON registration',
+        schema: {
+          type: 'object',
+          properties: {
+            service: {
+              enum: [1, 2],
+            enumNames: ['Service 1', 'Service 2'],
+            },
+            relativeApiEndpoint: {
+              minLength: 1,
+              title: 'Relative API endpoint',
+              type: 'string',
+            },
+            formVariables: {
+              type: 'array',
+              title: 'List of form variables',
+              items: {
+                type: 'string',
+                title: 'form variable',
+                minLength: 1,
+              },
+            },
+          },
+        },
+      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -736,6 +763,16 @@ export const ConfiguredBackends = {
           ],
         },
       },
+      {
+        key: 'backend11',
+        name: 'JSON',
+        backend: 'json',
+        options: {
+          service: 1,
+          relativeApiEndpoint: 'Example endpoint',
+          formVariables: [],
+        },
+      },
     ],
     validationErrors: [
       ['form.registrationBackends.1.options.zgwApiGroup', 'You sure about this?'],
@@ -971,6 +1008,64 @@ export const STUFZDS = {
           zdsZaaktypeStatusCode: '',
           zdsZaaktypeStatusOmschrijving: '',
         },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
+
+
+export const JSON = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend11',
+        name: 'JSON',
+        backend: 'json',
+        options: {
+          service: 1,
+          relativeApiEndpoint: 'We are checking.',
+          formVariables: [],
+        },
+      },
+    ],
+    availableFormVariables: [
+      {
+        dataType: 'string',
+        form: null,
+        formDefinition: null,
+        key: 'firstName',
+        name: 'First name',
+        source: 'user_defined',
+      },
+      {
+        dataType: 'string',
+        form: null,
+        formDefinition: null,
+        key: 'lastName',
+        name: 'Last name',
+        source: 'user_defined',
+      },
+      {
+        dataType: 'file',
+        form: null,
+        formDefinition: null,
+        key: 'attachment',
+        name: 'Attachment',
+        source: 'user_defined',
+      },
+    ],
+    availableStaticVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'BSN',
+        key: 'auth_bsn',
       },
     ],
   },
