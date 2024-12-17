@@ -1,59 +1,127 @@
-.. todo:: This feature is still in development and not ready for production yet.
-
 .. _configuration_prefill_objects_api:
 
 ===========
 Objects API
 ===========
 
-The `Objects API`_ stores data records of which the structure and shape are defined by a particular object type
-definition in the `Objecttypes API`_. These records can be used to pre-fill form fields if an object reference is
-passed when the form is started.
+*This plugin is also known as the "product prefill" feature.*
+
+The `Objects API`_ stores data records of which the structure and shape are defined by a
+particular object type definition in the `Objecttypes API`_. These records can be used
+to pre-fill form fields if an object reference is passed when the form is started.
 
 .. note::
 
-   The service may contain sensitive data. It is advised to require DigiD/eHerkenning authentication on the form. You
-   should be careful with how you pass the object references to the customers and set up the object type in a way that
-   makes authentication checks possible (e.g. by storing the expected BSN or KVK number).
+   The service likely contains sensitive data. It is required to use authentication on
+   the form, as this information is used to test ownership of the referenced object.
 
-.. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/
-.. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/
+What does the Open Forms administrator need?
+============================================
 
+* An instance of the `Objecttypes API`_ with:
+
+    - an API token to access the API from Open Forms
+    - one or more objecttypes
+
+* An instance of the `Objects API`_ (v2.2+) with:
+
+    - (API) access to the above Objecttypes API
+    - an API token to access the Objects API from Open Forms
+    - read permissions for the relevant Objecttypes - Open Forms reads records.
 
 Configuration
 =============
 
-1. In Open Forms, navigate to: **Forms**
-2. Click **Add form**
-3. Define the necessary form details and add the desired components
-4. Navigate to: **Variables** tab
-5. Navigate to: **User defined** subtab
-6. Click **Add variable** and fill in the data from the available options:
+Configuration is similar to :ref:`its registration counterpart <configuration_registration_objects>`,
+but only the objecttypes and objects services are required.
 
-   * **Plugin**: Choose the *Objects API* plugin
-   * **API Group**: Select the appropriate API group. These API groups should be set up
-     by an administrator, via **Admin** > **Configuration** > **Prefill plugins** >
-     **Objects API** > **Manage API groups**
-   * **Objecttype**: Select the expected object type from the dropdown.
-   * **Mappings**: Configure which property from the Objects API record needs to be
-     assigned to which form variable.
+.. tip:: You can re-use the same API groups that are used for the registration plugin.
 
-     For each form variable you want to pre-fill, add a new mapping. Then, on the left
-     select the desired form variable, and on the right you can specify which property
-     from the object type contains the value.
+To configure the Objects API follow these steps:
 
-7. Click **Save**
-8. Save the form
+#. In Open Forms, navigate to: **Configuration** > **Services**
+#. Create a service for the Objects API (ORC) where the form data will be registered.
 
-The Objects API configuration is now complete.
+   a. Click **Service toevoegen**.
+   b. Fill out the form:
 
-.. note::
+      * **Label**: *Fill in a human readable label*, for example: ``My Objects API``
+      * **Type**: Select the type: ``ORC``
+      * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v2/``
 
-   The Objects API prefill can be used not only for prefilling and showing the data to the user,
-   but it can also work together with the Objects API registration plugin
-   (see :ref:`Objects API configuration (English) <configuration_registration_objects>`) in order to make 
-   modifications to an existing object in the Objects API. This requires the form user to be the "owner"
-   of the object and the necessary configuration in the Objects API registration at the form level
-   (by choosing to update the existing object).
+      * **Authorization type**: Select the option: ``API Key``
+      * **Header key**: Fill in ``Authorization``
+      * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
+        *for example:* ``https://example.com/objecten/api/v1/schema/openapi.yaml``
 
-   .. image:: _assets/update_existing_object.png
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+
+   c. Click **Opslaan** and repeat to create configuration for the other component.
+
+#. Create a service for the Objecttypes API (ORC).
+
+   a. Click **Service toevoegen**.
+   b. Fill out the form:
+
+      * **Label**: *Fill in a human readable label*, for example: ``My Objecttypes API``
+      * **Type**: Select the type: ``ORC``
+      * **API root url**: The root of this API, *for example* ``https://example.com/objecttypen/api/v2/``
+
+      * **Authorization type**: Select the option: ``API Key``
+      * **Header key**: Fill in ``Authorization``
+      * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
+        *for example:* ``https://example.com/objecttypen/api/v1/schema/openapi.yaml``
+
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+
+   c. Click **Opslaan** and repeat to create configuration for the other component.
+
+#. Navigate to **Configuration** > **Configuration overview**. In the
+   **Prefill plugins** group, click on **Manage API groups** for the **Objects API** line.
+
+#. Enter the following details:
+
+    * **Name**: Enter a recognizable name, it will be displayed in various dropdowns.
+    * **Objects API**: Select the Objects API (ORC) service created above
+    * **Objecttypes API**: Select the Objecttypes API (ORC) service created above
+
+   The remainder of the fields can be left empty.
+
+#. Click **Save**
+
+The Objects API configuration is now complete and can be selected as prefill backend in
+the form builder. When doing so, you will be able to select the desired object type and
+its version.
+
+Recommendations for the Objecttype JSON Schemas
+===============================================
+
+The same recommendations apply as for the
+:ref:`registration plugin <configuration_registration_objects_objecttype_tips>`. We
+rely heavily on the JSON Schema specified in the object type.
+
+Technical
+=========
+
+Open Forms requires Objects API v2.2 or newer and the Objecttypes API v2.0 or newer.
+
+================  ===============================================
+Objects API       Test status
+================  ===============================================
+2.2.x             Manually verified
+2.3.x             Manually verified
+2.4.x             Manually verified, automated end-to-end testing
+================  ===============================================
+
+================  ===============================================
+Objecttypes API   Test status
+================  ===============================================
+2.0.x             Unknown
+2.1.x             Manually verified
+2.2.x             Manually verified, automated end-to-end testing
+================  ===============================================
+
+.. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/
+.. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/

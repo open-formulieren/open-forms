@@ -127,15 +127,23 @@ To configure the Objects API follow these steps:
       * **User ID**: Audit trail user ID, usually same as the Client ID
       * **User representation**: *For example:* ``Open Forms``
 
-#. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group,
-   click on **Configuration** for the **Objects API registratie** line.
+#. Navigate to **Configuration** > **Configuration overview**. In the
+   **Registration plugins** group, click on **Manage API groups** for the
+   **Objects API registratie** line.
 
 #. Enter the following details:
 
+   * **Name**: Enter a recognizable name, it will be displayed in various dropdowns.
    * **Objects API**: Select the Objects API (ORC) service created above
    * **Objecttypes API**: Select the Objecttypes API (ORC) service created above
    * **Documenten API**: Select the Documenten API (DRC) service created above
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
+   * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
+     *For example:* ``123456789``. You an override this on a per-form basis.
+
+   The following fields are deprecated - it's better to specify a catalogue and the
+   description of the document types instead.
+
    * **Submission report informatieobjecttype**: Fill in the default URL of the
      INFORMATIEOBJECTTYPE for the submission report in the Catalogi API *For example*
      ``https://example.com/api/v1/informatieobjecttypen/1/``. You an override this on a
@@ -150,8 +158,6 @@ To configure the Objects API follow these steps:
      INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example*
      ``https://example.com/api/v1/informatieobjecttypen/3/``. You an override this on a
      per-form and per-file component basis.
-   * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
-     *For example:* ``123456789``. You an override this on a per-form basis.
 
    For the legacy configuration format, additional fields are available:
 
@@ -176,7 +182,7 @@ When doing so, the corresponding objecttype and objecttype version will have to 
 .. _configuration_registration_objects_objecttype_tips:
 
 Recommendations for the Objecttype JSON Schemas
-================================================
+===============================================
 
 The objecttype definition uses `JSON Schema <https://json-schema.org/>`_, and this schema
 is processed by Open Forms.
