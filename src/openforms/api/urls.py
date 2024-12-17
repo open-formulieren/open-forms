@@ -101,10 +101,6 @@ urlpatterns = [
                 path("prefill/", include("openforms.prefill.api.urls")),
                 path("validation/", include("openforms.validations.api.urls")),
                 path(
-                    "location/get-street-name-and-city",
-                    RedirectView.as_view(pattern_name="api:geo:address-autocomplete"),
-                ),
-                path(
                     "logic/description",
                     GenerateLogicDescriptionView.as_view(),
                     name="generate-logic-description",

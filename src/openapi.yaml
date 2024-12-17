@@ -23,7 +23,7 @@ info:
   license:
     name: UNLICENSED
 paths:
-  /api/v2/analytics/analytics_tools_config_info:
+  /api/v2/analytics/analytics-tools-config-info:
     get:
       operationId: analytics_analytics_tools_config_info_retrieve
       description: Haal informatie op over de analytics-tools voor de frontend.
@@ -597,7 +597,7 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/config/privacy_policy_info:
+  /api/v2/config/privacy-policy-info:
     get:
       operationId: config_privacy_policy_info_retrieve
       summary: Privacybeleid informatie
@@ -4547,7 +4547,7 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
+  /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/_check-logic:
     post:
       operationId: submissions_steps__check_logic_create
       description: Apply/check the logic rules specified on the form step.
