@@ -12,12 +12,25 @@ class MigrateToExplicitObjectsAPIGroupsTests(TestMigrations):
         ObjectsAPIGroupConfig = apps.get_model("objects_api", "ObjectsAPIGroupConfig")
         Form = apps.get_model("forms", "Form")
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        Service = apps.get_model("zgw_consumers", "Service")
+
+        svc = Service.objects.create(
+            slug="dummy", api_type="orc", api_root="https://example.com"
+        )
         form1 = Form.objects.create(name="form1")
         form2 = Form.objects.create(name="form2")
         self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            identifier="group-1", name="Group 1"
+            identifier="group-1",
+            name="Group 1",
+            objects_service=svc,
+            objecttypes_service=svc,
         )
-        ObjectsAPIGroupConfig.objects.create(identifier="group-2", name="Group 2")
+        ObjectsAPIGroupConfig.objects.create(
+            identifier="group-2",
+            name="Group 2",
+            objects_service=svc,
+            objecttypes_service=svc,
+        )
         self.backend_without_api_group = FormRegistrationBackend.objects.create(
             form=form1, backend="zgw-create-zaak", options={}
         )

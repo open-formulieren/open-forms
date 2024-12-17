@@ -12,7 +12,6 @@ _CATALOGUE_SET = ~models.Q(catalogue_domain="") & ~models.Q(catalogue_rsin="")
 
 
 class ObjectsAPIGroupConfig(models.Model):
-    # TODO OF 3.0: remove `null=True` from the service fields
     name = models.CharField(
         _("name"),
         max_length=255,
@@ -30,7 +29,7 @@ class ObjectsAPIGroupConfig(models.Model):
         verbose_name=_("Objects API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
-        null=True,
+        null=False,
         related_name="+",
     )
     objecttypes_service = models.ForeignKey(
@@ -38,7 +37,7 @@ class ObjectsAPIGroupConfig(models.Model):
         verbose_name=_("Objecttypes API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
-        null=True,
+        null=False,
         related_name="+",
     )
     drc_service = models.ForeignKey(

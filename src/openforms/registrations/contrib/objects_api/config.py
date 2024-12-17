@@ -1,6 +1,6 @@
 import warnings
 
-from django.db.models import IntegerChoices, Q
+from django.db.models import IntegerChoices
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
@@ -67,11 +67,9 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
-        queryset=ObjectsAPIGroupConfig.objects.exclude(
-            Q(objects_service=None)
-            | Q(objecttypes_service=None)
-            | Q(drc_service=None)
-            | Q(catalogi_service=None)
+        queryset=ObjectsAPIGroupConfig.objects.filter(
+            drc_service__isnull=False,
+            catalogi_service__isnull=False,
         ),
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),

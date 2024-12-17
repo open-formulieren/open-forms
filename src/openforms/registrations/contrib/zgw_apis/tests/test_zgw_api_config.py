@@ -536,36 +536,6 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         self.assertEqual(list_documenten_2.hostname, "documenten-2.nl")
         self.assertEqual(list_zaaktypen_2.hostname, "catalogi-2.nl")
 
-    def test_check_config_no_zrc_service(self, m):
-        self.install_mocks(m)
-        self.zgw_group1.zrc_service = None
-        self.zgw_group1.save()
-
-        plugin = ZGWRegistration("zgw")
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
-    def test_check_config_no_drc_service(self, m):
-        self.install_mocks(m)
-        self.zgw_group1.drc_service = None
-        self.zgw_group1.save()
-
-        plugin = ZGWRegistration("zgw")
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
-    def test_check_config_no_ztc_service(self, m):
-        self.install_mocks(m)
-        self.zgw_group1.ztc_service = None
-        self.zgw_group1.save()
-
-        plugin = ZGWRegistration("zgw")
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
     def test_check_config_http_error(self, m):
         self.install_mocks(m)
         m.get("https://zaken-1.nl/api/v1/zaken", exc=HTTPError)

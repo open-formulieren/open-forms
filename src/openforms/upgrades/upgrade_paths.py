@@ -80,7 +80,7 @@ UPGRADE_PATHS = {
         valid_ranges={
             VersionRange(minimum="2.8.0"),
         },
-        scripts=["check_temporary_uploads"],
+        scripts=["check_temporary_uploads", "check_api_groups_null"],
     ),
     "2.8": UpgradeConstraint(
         valid_ranges={

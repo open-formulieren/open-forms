@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
 from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.models import Service
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -12,24 +11,7 @@ from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigF
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIGroupConfig
-
 TEST_FILES = Path(__file__).parent / "files"
-
-
-def get_test_config() -> ObjectsAPIGroupConfig:
-    """Returns a preconfigured ``ObjectsAPIGroupConfig`` instance matching the docker compose configuration."""
-
-    return ObjectsAPIGroupConfig(
-        objecttypes_service=Service(
-            api_root="http://localhost:8001/api/v2/",
-            api_type=APITypes.orc,
-            oas="https://example.com/",
-            header_key="Authorization",
-            header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-            auth_type=AuthTypes.api_key,
-        )
-    )
 
 
 class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
@@ -40,9 +22,8 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         super().setUpTestData()
-        cls.config = get_test_config()
-        cls.config.objecttypes_service.save()
-        cls.config.save()
+
+        cls.config = ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
 
     def test_auth_required(self):
         response = self.client.get(self.endpoint)
@@ -101,9 +82,8 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         super().setUpTestData()
-        cls.config = get_test_config()
-        cls.config.objecttypes_service.save()
-        cls.config.save()
+
+        cls.config = ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
 
     def test_auth_required(self):
         response = self.client.get(self.endpoint)
@@ -156,9 +136,8 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         super().setUpTestData()
-        cls.config = get_test_config()
-        cls.config.objecttypes_service.save()
-        cls.config.save()
+
+        cls.config = ObjectsAPIGroupConfigFactory.create(for_test_docker_compose=True)
 
     def test_auth_required(self):
         response = self.client.post(self.endpoint)

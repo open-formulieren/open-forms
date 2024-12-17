@@ -67,7 +67,7 @@ class ZGWApiGroupConfig(models.Model):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.zrc},
         related_name="zgwset_zrc_config",
-        null=True,
+        null=False,
     )
     drc_service = models.ForeignKey(
         "zgw_consumers.Service",
@@ -75,7 +75,7 @@ class ZGWApiGroupConfig(models.Model):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
         related_name="zgwset_drc_config",
-        null=True,
+        null=False,
     )
     ztc_service = models.ForeignKey(
         "zgw_consumers.Service",
@@ -83,7 +83,7 @@ class ZGWApiGroupConfig(models.Model):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.ztc},
         related_name="zgwset_ztc_config",
-        null=True,
+        null=False,
     )
 
     #

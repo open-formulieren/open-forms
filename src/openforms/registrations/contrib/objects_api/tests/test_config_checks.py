@@ -40,28 +40,6 @@ class ConfigCheckTests(TestCase):
             headers={"API-version": "1.0.0"},
         )
 
-    def test_no_objects_service_configured(self):
-        self.config.objects_service = None
-        self.config.save()
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
-    @requests_mock.Mocker()
-    def test_no_objecttypes_service_configured(self, m: requests_mock.Mocker):
-        # Objects API needs to be set up as services are checked in a certain order
-        m.get(
-            "https://objects.example.com/api/v1/objects?pageSize=1",
-            json={"results": []},
-        )
-        self.config.objecttypes_service = None
-        self.config.save()
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
     @requests_mock.Mocker()
     def test_objects_service_misconfigured_connection_error(self, m):
         m.get(

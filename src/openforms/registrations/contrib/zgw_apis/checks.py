@@ -4,12 +4,7 @@ import requests
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from .client import (
-    NoServiceConfigured,
-    get_catalogi_client,
-    get_documents_client,
-    get_zaken_client,
-)
+from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig
 
 
@@ -43,12 +38,6 @@ def check_config():
 
             try:
                 check_function(config)
-            except NoServiceConfigured as exc:
-                raise InvalidPluginConfiguration(
-                    _(
-                        "{api_name} endpoint is not configured for ZGW API set {zgw_api_set}."
-                    ).format(api_name=api_name, zgw_api_set=config.name)
-                ) from exc
             except requests.RequestException as exc:
                 raise InvalidPluginConfiguration(
                     _(
