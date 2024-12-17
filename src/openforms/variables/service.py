@@ -8,8 +8,9 @@ from openforms.submissions.models import Submission
 
 from .base import BaseStaticVariable
 from .registry import register_static_variable as static_variables_registry
+from .utils import get_variables_for_context
 
-__all__ = ["get_static_variables"]
+__all__ = ["get_static_variables", "get_variables_for_context"]
 
 
 type VariablesRegistry = BaseRegistry[BaseStaticVariable]

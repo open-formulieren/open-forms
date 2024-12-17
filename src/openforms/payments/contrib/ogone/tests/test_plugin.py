@@ -11,9 +11,12 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ....registry import register
 from ....tests.factories import SubmissionPaymentFactory
 from ..constants import OgoneStatus, PaymentStatus
-from ..plugin import RETURN_ACTION_PARAM
+from ..plugin import RETURN_ACTION_PARAM, OgoneLegacyPaymentPlugin
 from ..signing import calculate_sha_out
+from ..typing import PaymentOptions
 from .factories import OgoneMerchantFactory
+
+factory = RequestFactory()
 
 
 @override_settings(
@@ -43,7 +46,6 @@ class OgoneTests(TestCase):
         plugin = register["ogone-legacy"]
 
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
 
         # start url
@@ -147,7 +149,6 @@ class OgoneTests(TestCase):
         plugin = register["ogone-legacy"]
 
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
 
         # start url
@@ -203,3 +204,47 @@ class OgoneTests(TestCase):
         plugin.apply_status(payment, OgoneStatus.payment_requested, "12345")
         # still registered
         self.assertEqual(payment.status, PaymentStatus.registered)
+
+    def test_custom_com_and_title_attributes(self):
+        merchant = OgoneMerchantFactory.create()
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "textfield",
+                    "key": "inputField",
+                    "label": "Some text input",
+                }
+            ],
+            submitted_data={"inputField": "bröther gib lämp"},
+            with_public_registration_reference=True,
+            public_registration_reference="OF-1234",
+            form__payment_backend="ogone-legacy",
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        assert submission.payment_required
+        assert not submission.payment_user_has_paid
+        plugin = OgoneLegacyPaymentPlugin("ogone-legacy")
+        options: PaymentOptions = {
+            "merchant_id": merchant,
+            # No length limit applies to the title
+            "title_template": r"Input: {{ inputField }} - ref: {{ public_reference }}",
+            # result must be capped at 100 chars, see
+            # https://support.legacy.worldline-solutions.com/en/help/parameter-cookbook
+            "com_template": r"Input: {{ inputField }} - ref: {{ public_reference }} "
+            + "A" * 90,
+        }
+        # we need an arbitrary request
+        request = factory.get("/foo")
+
+        payment_info = plugin.start_payment(request, payment, options)
+
+        assert payment_info.data is not None
+        self.assertEqual(
+            payment_info.data["TITLE"], "Input: bröther gib lämp - ref: OF-1234"
+        )
+        self.assertEqual(
+            payment_info.data["COM"],
+            "Input: bröther gib lämp - ref: OF-1234 "
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        )

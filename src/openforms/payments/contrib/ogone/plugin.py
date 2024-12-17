@@ -15,7 +15,10 @@ from openforms.config.data import Entry
 from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import logevent
 from openforms.submissions.tokens import submission_status_token_generator
+from openforms.template import render_from_string, sandbox_backend
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.variables.service import get_variables_for_context
 
 from ...base import BasePlugin
 from ...constants import PAYMENT_STATUS_FINAL, UserAction
@@ -35,6 +38,38 @@ class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         queryset=OgoneMerchant.objects.all(),
         required=True,
         help_text=_("Merchant to use"),
+    )
+    title_template = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        label=_("TITLE template"),
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.sandbox_backend")
+        ],
+        help_text=_(
+            "Optional custom template for the title displayed on the payment page. "
+            "You can use all form variables (using their keys) and the "
+            "`public_reference` template variable. If unspecified, a default "
+            "description is used."
+        ),
+    )
+    com_template = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        label=_("COM template"),
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.sandbox_backend")
+        ],
+        help_text=_(
+            "Optional custom template for the description, included in the payment "
+            "overviews for the backoffice. Use this to link the payment back to a "
+            "particular process or form. You can use all form variables (using their "
+            "keys) and the `public_reference` template variable. If unspecified, a "
+            "default description is used. Note that the length of the result is capped "
+            "to 100 characters and only alpha-numeric characters are allowed."
+        ),
     )
 
 
@@ -57,8 +92,24 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
 
         return_url = self.get_return_url(request, payment)
 
-        description = (
-            f"{_('Submission')}: {payment.submission.public_registration_reference}"
+        public_reference = payment.submission.public_registration_reference
+        default_description = f"{_('Submission')}: {public_reference}"
+
+        # evaluate custom templates, if specified
+        template_context = get_variables_for_context(payment.submission)
+        template_context["public_reference"] = public_reference
+
+        title_value = (
+            render_from_string(
+                title_template, template_context, backend=sandbox_backend
+            )
+            if (title_template := options["title_template"])
+            else default_description
+        )
+        com_value = (
+            render_from_string(com_template, template_context, backend=sandbox_backend)
+            if (com_template := options["com_template"])
+            else default_description
         )
 
         info = client.get_payment_info(
@@ -66,7 +117,8 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             amount_cents,
             return_url,
             RETURN_ACTION_PARAM,
-            description,
+            title=title_value,
+            com=com_value[:100],
         )
         return info
 

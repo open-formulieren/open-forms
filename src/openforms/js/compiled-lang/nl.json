@@ -2314,6 +2314,60 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
+  "JHQfjZ": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can use all form variables (using their keys) and the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "public_reference"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " template variable. If unspecified, a default description is used."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Note"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ": the length of the result is capped to 100 characters."
+    }
+  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -3905,6 +3959,12 @@
       "value": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier."
     }
   ],
+  "ZSvQcR": [
+    {
+      "type": 0,
+      "value": "TITLE parameter"
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -4465,6 +4525,12 @@
     {
       "type": 0,
       "value": "'Groep bewaren'-tekst"
+    }
+  ],
+  "eZJFP7": [
+    {
+      "type": 0,
+      "value": "COM parameter"
     }
   ],
   "ee4oWr": [
@@ -6263,6 +6329,36 @@
     {
       "type": 0,
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "vikURf": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the title displayed on the payment page."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can use all form variables (using their keys) and the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "public_reference"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " template variable. If unspecified, a default description is used."
     }
   ],
   "vlY36U": [
