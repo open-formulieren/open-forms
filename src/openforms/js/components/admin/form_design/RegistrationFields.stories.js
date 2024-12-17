@@ -682,7 +682,7 @@ export const ConfiguredBackends = {
         key: 'backend11',
         name: 'JSON',
         backend: 'json',
-        options: {extraLine: 'We are checking.'},
+        options: {relativeApiEndpoint: 'Example endpoint'},
       },
     ],
     validationErrors: [
@@ -941,7 +941,7 @@ export const JSON = {
         name: 'JSON',
         backend: 'json',
         options: {
-          extraLine: 'We are checking.',
+          relativeApiEndpoint: 'We are checking.',
         },
       },
     ],
