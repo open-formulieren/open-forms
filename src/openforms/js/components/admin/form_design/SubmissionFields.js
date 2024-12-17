@@ -61,7 +61,7 @@ export const SubmissionLimitFields = ({submissionLimit, formUuid, onChange}) => 
             }
             helpText={
               <FormattedMessage
-                description="Successful Submissions Removal Limit help text"
+                description="Form submissionLimit field help text"
                 defaultMessage="The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
               />
             }

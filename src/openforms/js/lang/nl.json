@@ -44,11 +44,6 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/cUjWg": {
-    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
-    "description": "Successful Submissions Removal Limit help text",
-    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
-  },
   "/fAEsY": {
     "defaultMessage": "Informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -106,7 +101,7 @@
     "originalDefault": "Confirm"
   },
   "1Hb/pK": {
-    "defaultMessage": "This is used to perform validation to verify that the authenticated user is the owner of the object.",
+    "defaultMessage": "Dit attribuut wordt gebruikt om te controleren dat de ingelogde gebruiker bij het object hoort dat bijgewerkt wordt.",
     "description": "Objects API registration: authAttributePath helpText",
     "originalDefault": "This is used to perform validation to verify that the authenticated user is the owner of the object."
   },
@@ -550,7 +545,7 @@
     "originalDefault": "Confidentiality"
   },
   "AdyBdF": {
-    "defaultMessage": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly.",
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn.",
     "description": "ZGW APIs registrations options: role type error",
     "originalDefault": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
@@ -686,7 +681,7 @@
     "originalDefault": "Boolean"
   },
   "DFQ0Pq": {
-    "defaultMessage": "Update existing objects",
+    "defaultMessage": "Bestaand object bijwerken",
     "description": "Objects registration: update existing objects settings",
     "originalDefault": "Update existing objects"
   },
@@ -696,7 +691,7 @@
     "originalDefault": "Move down"
   },
   "DHVDF/": {
-    "defaultMessage": "Cosign subject",
+    "defaultMessage": "Onderwerp (bij mede-ondertekenen)",
     "description": "Confirmation Email for cosign Subject label",
     "originalDefault": "Cosign subject"
   },
@@ -889,7 +884,7 @@
     "originalDefault": "Use existing form definition"
   },
   "GJ8Ok2": {
-    "defaultMessage": "Reset submissions counter",
+    "defaultMessage": "Reset aantal gemaakte inzendingen",
     "description": "Reset submissions counter",
     "originalDefault": "Reset submissions counter"
   },
@@ -984,7 +979,7 @@
     "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
   },
   "HVG1xy": {
-    "defaultMessage": "Cosign content",
+    "defaultMessage": "Inhoud (bij mede-ondertekenen)",
     "description": "Confirmation Email for cosign Content label",
     "originalDefault": "Cosign content"
   },
@@ -1019,7 +1014,7 @@
     "originalDefault": "Appointment enabled"
   },
   "HrSXGN": {
-    "defaultMessage": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?",
+    "defaultMessage": "Je staat op het punt om het aantal gemaakte inzendingen terug op nul te zetten. Dit kan niet ongedaan gemaakt worden. Ben je zeker dat je door wil gaan?",
     "description": "Reset the submissions counter confirmation message",
     "originalDefault": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
   },
@@ -1089,7 +1084,7 @@
     "originalDefault": "Authentication failure"
   },
   "JHQfjZ": {
-    "defaultMessage": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
+    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen.<br></br>Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de <code>public_reference</code> sjabloonvariabele. Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.<br></br><strong>Opmerking</strong>: het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan.",
     "description": "Ogone legacy payment options 'comTemplate' help text",
     "originalDefault": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
   },
@@ -1863,7 +1858,7 @@
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
   "ZSvQcR": {
-    "defaultMessage": "TITLE parameter",
+    "defaultMessage": "TITLE-parameter",
     "description": "Ogone legacy payment options 'titleTemplate' label",
     "originalDefault": "TITLE parameter"
   },
@@ -2115,7 +2110,7 @@
     "originalDefault": "Zds zaaktype status code"
   },
   "eZJFP7": {
-    "defaultMessage": "COM parameter",
+    "defaultMessage": "COM-parameter",
     "description": "Ogone legacy payment options 'comTemplate' label",
     "originalDefault": "COM parameter"
   },
@@ -2263,6 +2258,11 @@
     "defaultMessage": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Form step previous text field help text",
     "originalDefault": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "h8DIWk": {
+    "defaultMessage": "Het maximum aantal inzendingen die voor dit formulier mogen gedaan worden. Laat dit leeg als er geen limiet is.",
+    "description": "Form submissionLimit field help text",
+    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
   },
   "h9debR": {
     "defaultMessage": "Minimale betrouwbaarheidsniveaus",
@@ -2521,7 +2521,7 @@
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
   "lu7yMK": {
-    "defaultMessage": "Path to auth attribute (e.g. BSN/KVK) in objects",
+    "defaultMessage": "Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)",
     "description": "Objects API registration: authAttributePath label",
     "originalDefault": "Path to auth attribute (e.g. BSN/KVK) in objects"
   },
@@ -2636,7 +2636,7 @@
     "originalDefault": "Attach files to email"
   },
   "oWOr9u": {
-    "defaultMessage": "Submission",
+    "defaultMessage": "Inzendingen",
     "description": "Form submission options tab title",
     "originalDefault": "Submission"
   },
@@ -2891,7 +2891,7 @@
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
   "u+IP17": {
-    "defaultMessage": "Maximum allowed number of submissions",
+    "defaultMessage": "Limiet aantal inzendingen",
     "description": "Form submissionLimit field label",
     "originalDefault": "Maximum allowed number of submissions"
   },
@@ -2956,7 +2956,7 @@
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
   "vikURf": {
-    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.",
+    "defaultMessage": "Sjabloon voor de titel die op de betaalpagina getoond wordt. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de <code>public_reference</code> sjabloonvariabele.<br></br>Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.",
     "description": "Ogone legacy payment options 'titleTemplate' help text",
     "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used."
   },
@@ -3031,7 +3031,7 @@
     "originalDefault": "Variable"
   },
   "xBb5YI": {
-    "defaultMessage": "Select an object type and version before you can pick a source path.",
+    "defaultMessage": "Kies eerst een objecttype en versie voor je een brondpad kan selecteren.",
     "description": "Object type target path selection for auth attribute message for missing options because no object type has been selected.",
     "originalDefault": "Select an object type and version before you can pick a source path."
   },
@@ -3051,7 +3051,7 @@
     "originalDefault": "Create definition"
   },
   "xxyIg/": {
-    "defaultMessage": "Indicates whether appointments are enabled for this form.",
+    "defaultMessage": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn.",
     "description": "Form appointment enabled field help text",
     "originalDefault": "Indicates whether appointments are enabled for this form."
   },
