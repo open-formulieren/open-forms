@@ -200,7 +200,7 @@ def json_schema_matches(
     if "string" in target_types and (target_format := target_schema.get("format")):
         variable_format = variable_schema.get("format")
         if variable_format is None:
-            return False
+            return True
         return variable_format == target_format
 
     return True
