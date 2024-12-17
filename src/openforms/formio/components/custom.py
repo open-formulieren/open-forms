@@ -31,7 +31,13 @@ from ..formatters.custom import (
 )
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import AddressNLComponent, Component, DateComponent, DatetimeComponent
+from ..typing import (
+    AddressNLComponent,
+    Component,
+    DateComponent,
+    DatetimeComponent,
+    MapComponent,
+)
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
@@ -186,11 +192,11 @@ class Datetime(BasePlugin):
 
 
 @register("map")
-class Map(BasePlugin[Component]):
+class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
 
     def mutate_config_dynamically(
-        self, component, submission: Submission, data: DataMapping
+        self, component: MapComponent, submission: Submission, data: DataMapping
     ) -> None:
         if (identifier := component.get("tileLayerIdentifier")) is not None:
             tile_layer = MapTileLayer.objects.filter(identifier=identifier).first()
@@ -199,7 +205,7 @@ class Map(BasePlugin[Component]):
                 component["tileLayerUrl"] = tile_layer.url
 
     @staticmethod
-    def rewrite_for_request(component, request: Request):
+    def rewrite_for_request(component: MapComponent, request: Request):
         if component.get("useConfigDefaultMapSettings", False):
             config = GlobalConfiguration.get_solo()
             component["defaultZoom"] = config.form_map_default_zoom_level
@@ -207,7 +213,7 @@ class Map(BasePlugin[Component]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: Component) -> serializers.ListField:
+    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
         base = serializers.FloatField(
