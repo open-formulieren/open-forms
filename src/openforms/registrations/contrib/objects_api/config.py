@@ -175,7 +175,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
     )
 
-    # DeprecationWarning: remove in OF 3.0
+    # DeprecationWarning: remove in OF 4.0
     informatieobjecttype_submission_report = serializers.URLField(
         label=_("submission report PDF informatieobjecttype"),
         help_text=_(
