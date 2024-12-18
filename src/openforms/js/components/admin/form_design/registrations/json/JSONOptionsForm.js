@@ -16,14 +16,15 @@ import {
 //  straightforward.
 import FormVariablesSelect from './fields/FormVariablesSelect';
 import RelativeAPIEndpoint from './fields/RelativeAPIEndpoint';
-// import Service from './fields/Service';
+import ServiceSelect from './fields/ServiceSelect';
+import {getChoicesFromSchema} from '../../../../../utils/json-schema';
 
 
-const JSONOptionsForm = ({name, label, formData, onChange}) => {
+const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
-  // Get form variables
+  // Get form variables and create form variable options
   const formContext = useContext(FormContext)
   const formVariables = formContext.formVariables ?? [];
   const staticVariables = formContext.staticVariables ?? [];
@@ -31,8 +32,14 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
 
   const formVariableOptions = [];
   for (const formVariable of allFormVariables) {
-    formVariableOptions.push({value: formVariable.key, label: formVariable.name})
+    formVariableOptions.push({value: formVariable.key, label: formVariable.name});
   }
+
+  // Create service options
+  const {service} = schema.properties;
+  const serviceOptions = getChoicesFromSchema(
+    service.enum, service.enumNames
+  ).map(([value, label]) => ({value, label}));
 
   return (
     <ModalOptionsConfiguration
@@ -51,7 +58,7 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
     >
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
-          {/*<Service />*/}
+          <ServiceSelect options={serviceOptions}/>
           <RelativeAPIEndpoint />
           <FormVariablesSelect options={formVariableOptions}/>
         </Fieldset>
@@ -63,7 +70,16 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
 JSONOptionsForm.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
+  schema: PropTypes.shape({
+    properties: PropTypes.shape({
+      service: PropTypes.shape({
+        enum: PropTypes.arrayOf(PropTypes.number).isRequired,
+        enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
   formData: PropTypes.shape({
+    service: PropTypes.number,
     relativeApiEndpoint: PropTypes.string,
     // TODO-4098: might need to rename this to selectedFormVariables to avoid confusion or even
     //  naming conflicts
