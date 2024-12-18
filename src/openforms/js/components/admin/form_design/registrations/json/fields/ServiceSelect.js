@@ -9,7 +9,7 @@ const ServiceSelect = ({options}) => {
   return (
     <FormRow>
       <Field
-        name="serviceSelect"
+        name="service"
         label={
           <FormattedMessage
             description="JSON registration options 'serviceSelect' label"
@@ -18,7 +18,7 @@ const ServiceSelect = ({options}) => {
         }
       >
         <ReactSelect
-          name="serviceSelect"
+          name="service"
           options={options}
           required
         />
