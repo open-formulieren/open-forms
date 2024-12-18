@@ -398,10 +398,14 @@ export default {
       },
       {
         id: 'json',
-        label: 'JSON',
+        label: 'JSON registration',
         schema: {
+          type: 'object',
           properties: {
-            // TODO-4098: update this with all properties
+            service: {
+              enum: [1, 2],
+            enumNames: ['Service 1', 'Service 2'],
+            },
             relativeApiEndpoint: {
               minLength: 1,
               title: 'Relative API endpoint',
@@ -414,10 +418,9 @@ export default {
                 type: 'string',
                 title: 'form variable',
                 minLength: 1,
-              }
+              },
             },
           },
-          type: 'object',
         },
       },
     ],
@@ -765,9 +768,9 @@ export const ConfiguredBackends = {
         name: 'JSON',
         backend: 'json',
         options: {
-          // TODO-4098: update this with all variables
+          service: 1,
           relativeApiEndpoint: 'Example endpoint',
-          formVariables: []
+          formVariables: [],
         },
       },
     ],
@@ -1025,7 +1028,7 @@ export const JSON = {
         name: 'JSON',
         backend: 'json',
         options: {
-          // TODO-4908: update this with all properties
+          service: 1,
           relativeApiEndpoint: 'We are checking.',
           formVariables: [],
         },
