@@ -17,7 +17,7 @@ class ThemeFactory(factory.django.DjangoModelFactory):
 
 
 class MapTileLayerFactory(factory.django.DjangoModelFactory):
-    identifier = factory.Faker("word")
+    identifier = factory.Sequence(lambda n: f"map-tile-layer-{n}")
     url = factory.Sequence(lambda n: f"http://example-{n}.com")
     label = factory.Faker("word")
 

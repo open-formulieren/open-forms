@@ -15,12 +15,14 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import LogicActionTypes, PropertyTypes
 from openforms.forms.tests.factories import FormLogicFactory
+from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.base import PreRegistrationResult
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
+from openforms.tests.utils import log_flaky
 from openforms.utils.tests.logging import ensure_logger_level
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
@@ -893,8 +895,24 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         mock_payment_status_update.assert_not_called()
 
         mails = mail.outbox
+        submission.refresh_from_db()
 
-        self.assertEqual(1, len(mails))  # No cosign request email!
+        # FLAKINESS HERE happens something, try to figure out what's going wrong
+        if not mails:
+            log_flaky()
+
+            # try to detect why no registration email was sent
+            print(f"{submission.registration_status=}")
+            print(f"{submission.payment_required=}")
+            print(f"{submission.confirmation_email_sent=}")
+            print(f"{submission.form.send_confirmation_email=}")
+            # and print logevents
+            logs = TimelineLogProxy.objects.for_object(submission)
+            for log in logs:
+                print(log.message().strip())
+
+        self.assertEqual(len(mails), 1)  # No cosign request email!
+
         self.assertEqual(
             mails[0].subject, "Confirmation of your Pretty Form submission"
         )
@@ -904,8 +922,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         cosign_info = "This form will not be processed until it has been co-signed. A co-sign request was sent to cosign@test.nl."
 
         self.assertNotIn(cosign_info, mails[0].body.strip("\n"))
-
-        submission.refresh_from_db()
 
         self.assertFalse(submission.cosign_request_email_sent)
         self.assertTrue(submission.confirmation_email_sent)
