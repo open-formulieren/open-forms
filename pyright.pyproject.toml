@@ -1,5 +1,6 @@
 [tool.pyright]
 include = [
+    "src/openforms/api/urls",
     # plugin/registry-related code (base classes etc.)
     "src/openforms/plugins",
     "src/openforms/appointments/base.py",
