@@ -373,7 +373,14 @@ class DownloadSubmissionReportTests(APITestCase):
                 "filekey": [{"originalName": "download(2).pdf"}],
                 "ibankey": "NL56 INGB 0705 0051 00",
                 "licenseplatekey": "AA-00-13",
-                "mapkey": [52.193459, 5.279538],
+                "mapkey": {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [52.193459, 5.279538],
+                    },
+                },
                 "numberkey": "1",
                 "passwordkey": "Panda1911!",
                 "phonenumberkey": "+49 1234 567 890",

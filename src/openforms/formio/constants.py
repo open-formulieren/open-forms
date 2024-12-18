@@ -1,3 +1,5 @@
+from django.db import models
+
 COMPONENT_DATATYPES = {
     "date": "date",
     "time": "time",
@@ -11,3 +13,9 @@ COMPONENT_DATATYPES = {
     "editgrid": "array",
     "datetime": "datetime",
 }
+
+
+class GeoJsonGeometryTypes(models.TextChoices):
+    point = "Point", "Point"
+    polygon = "Polygon", "Polygon"
+    line_string = "LineString", "LineString"
