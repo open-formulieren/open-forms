@@ -14,7 +14,7 @@ from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.brk.models import BRKConfig
-from openforms.contrib.brk.tests.base import BRK_SERVICE
+from openforms.contrib.brk.tests.base import BRK_SERVICE, INVALID_BRK_SERVICE
 from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -244,74 +244,7 @@ class FailedPrefillTests(TestCase):
 @override_settings(LANGUAGE_CODE="en")
 class BrokenConfigurationTests(TestCase):
 
-    @patch(
-        "openforms.contrib.brk.client.BRKConfig.get_solo",
-        return_value=BRKConfig(service=BRK_SERVICE),
-    )
-    @requests_mock.Mocker()
-    def test_valid_brk_congiguration_for_addressNL_not_collected(self, brk_config, m):
-        FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "key": "addressNl",
-                        "type": "addressNL",
-                        "label": "AddressNL",
-                        "defaultValue": {
-                            "postcode": "",
-                            "houseLetter": "",
-                            "houseNumber": "",
-                            "houseNumberAddition": "",
-                        },
-                    }
-                ],
-            },
-        )
-
-        m.get(
-            "https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
-            json={"_embedded": {}},
-        )
-
-        broken_configuration = collect_broken_configurations()
-
-        self.assertEqual(broken_configuration, [])
-
-    @patch(
-        "openforms.contrib.brk.client.BRKConfig.get_solo",
-        return_value=BRKConfig(service=None),
-    )
-    def test_invalid_brk_configuration_for_addressNL_is_collected(self, brk_config):
-        FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "key": "addressNl",
-                        "type": "addressNL",
-                        "label": "AddressNL",
-                        "defaultValue": {
-                            "postcode": "",
-                            "houseLetter": "",
-                            "houseNumber": "",
-                            "houseNumberAddition": "",
-                        },
-                    }
-                ],
-            },
-        )
-
-        broken_configuration = collect_broken_configurations()
-
-        self.assertEqual(len(broken_configuration), 1)
-        self.assertEqual(broken_configuration[0].config_name, "BRK Client")
-
-    @patch(
-        "openforms.contrib.brk.client.BRKConfig.get_solo",
-        return_value=BRKConfig(service=None),
-    )
-    def test_invalid_brk_congiguration_but_unused_not_collected(self, brk_config):
+    def test_no_addressNL_component_not_collected(self):
         FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__configuration={
@@ -328,6 +261,198 @@ class BrokenConfigurationTests(TestCase):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=None),
+    )
+    def test_no_brk_conf_for_addressnl_and_missing_validator_not_collected(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=None),
+    )
+    def test_no_brk_conf_for_addressnl_and_existing_validator_not_collected(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                        "validate": {"plugins": ["brk-zakelijk-gerechtigd"]},
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=BRK_SERVICE),
+    )
+    def test_valid_brk_conf_for_addressnl_and_missing_validator_not_collected(
+        self, brk_config
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=BRK_SERVICE),
+    )
+    @requests_mock.Mocker()
+    def test_valid_brk_conf_for_addressnl_and_existing_validator_not_collected(
+        self, brk_config, m
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                        "validate": {"plugins": ["brk-zakelijk-gerechtigd"]},
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            "https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
+            json={"_embedded": {}},
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=INVALID_BRK_SERVICE),
+    )
+    def test_invalid_brk_conf_for_addressnl_and_missing_validator_not_collected(
+        self, brk_config
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.contrib.brk.client.BRKConfig.get_solo",
+        return_value=BRKConfig(service=INVALID_BRK_SERVICE),
+    )
+    @requests_mock.Mocker()
+    def test_invalid_brk_conf_for_addressnl_and_existing_validator_collected(
+        self, brk_config, m
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                        "validate": {"plugins": ["brk-zakelijk-gerechtigd"]},
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            "https://api.brk.kadaster.nl/invalid/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
+            status_code=400,
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertEqual(broken_configuration[0].config_name, "BRK Client")
 
     @patch(
         "openforms.contrib.kadaster.models.KadasterApiConfig.get_solo",
@@ -464,10 +589,8 @@ class BrokenConfigurationTests(TestCase):
 
         broken_configuration = collect_broken_configurations()
 
-        self.assertEqual(len(broken_configuration), 2)
-        self.assertIn(
-            "BAG Client", [config.config_name for config in broken_configuration]
-        )
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertEqual(broken_configuration[0].config_name, "BAG Client")
 
     @patch("openforms.contrib.kadaster.models.KadasterApiConfig.get_solo")
     def test_invalid_bag_configuration_for_address_nl_component_not_collected_when_disabled(
@@ -491,10 +614,7 @@ class BrokenConfigurationTests(TestCase):
 
         broken_configuration = collect_broken_configurations()
 
-        self.assertEqual(len(broken_configuration), 1)
-        self.assertNotIn(
-            "BAG Client", [config.config_name for config in broken_configuration]
-        )
+        self.assertEqual(len(broken_configuration), 0)
 
 
 @override_settings(LANGUAGE_CODE="en")
