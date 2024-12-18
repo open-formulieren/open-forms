@@ -8,7 +8,6 @@ import {TextInput} from 'components/admin/forms/Inputs';
 
 
 const RelativeAPIEndpoint = () => {
-  // TODO-4098: is this the serializer name?
   const [fieldProps] = useField('relativeApiEndpoint');
   return (
     <FormRow>
