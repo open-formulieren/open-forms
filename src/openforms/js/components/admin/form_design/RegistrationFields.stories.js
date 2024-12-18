@@ -727,13 +727,13 @@ export const ObjectsAPI = {
       'Path to auth attribute is required if updating existing objects is enabled',
       async () => {
         const otherSettingsTitle = modal.getByRole('heading', {
-          name: 'Update existing objects (Tonen)',
+          name: 'Bestaand object bijwerken (Tonen)',
         });
         expect(otherSettingsTitle).toBeVisible();
         await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
 
         const authAttributePath = modal.getByText(
-          'Path to auth attribute (e.g. BSN/KVK) in objects'
+          'Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)'
         );
 
         expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');

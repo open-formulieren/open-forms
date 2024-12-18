@@ -44,11 +44,6 @@
     "description": "action type \"step-applicable\" label",
     "originalDefault": "Mark the form step as applicable"
   },
-  "/cUjWg": {
-    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
-    "description": "Successful Submissions Removal Limit help text",
-    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
-  },
   "/fAEsY": {
     "defaultMessage": "Submission report CSV informatieobjecttype",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
@@ -2243,6 +2238,11 @@
     "defaultMessage": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration.",
     "description": "Form step previous text field help text",
     "originalDefault": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "h8DIWk": {
+    "defaultMessage": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed.",
+    "description": "Form submissionLimit field help text",
+    "originalDefault": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
   },
   "h9debR": {
     "defaultMessage": "Minimal levels of assurance",

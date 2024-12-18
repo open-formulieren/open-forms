@@ -89,12 +89,6 @@
       "value": "Default Value"
     }
   ],
-  "/cUjWg": [
-    {
-      "type": 0,
-      "value": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
-    }
-  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -4821,6 +4815,12 @@
     {
       "type": 0,
       "value": "Fieldset content"
+    }
+  ],
+  "h8DIWk": [
+    {
+      "type": 0,
+      "value": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
     }
   ],
   "h9debR": [

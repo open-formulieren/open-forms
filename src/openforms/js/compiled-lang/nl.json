@@ -89,12 +89,6 @@
       "value": "Standaardwaarde"
     }
   ],
-  "/cUjWg": [
-    {
-      "type": 0,
-      "value": "The maximum number of allowed submissions for this form. Leave this empty if no limit is needed."
-    }
-  ],
   "/fAEsY": [
     {
       "type": 0,
@@ -230,7 +224,7 @@
   "1Hb/pK": [
     {
       "type": 0,
-      "value": "This is used to perform validation to verify that the authenticated user is the owner of the object."
+      "value": "Dit attribuut wordt gebruikt om te controleren dat de ingelogde gebruiker bij het object hoort dat bijgewerkt wordt."
     }
   ],
   "1HfdUc": [
@@ -1238,7 +1232,7 @@
   "AdyBdF": [
     {
       "type": 0,
-      "value": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
+      "value": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
   "AtBVAV": [
@@ -1619,7 +1613,7 @@
   "DFQ0Pq": [
     {
       "type": 0,
-      "value": "Update existing objects"
+      "value": "Bestaand object bijwerken"
     }
   ],
   "DGpAyT": [
@@ -1631,7 +1625,7 @@
   "DHVDF/": [
     {
       "type": 0,
-      "value": "Cosign subject"
+      "value": "Onderwerp (bij mede-ondertekenen)"
     }
   ],
   "DJ8XX2": [
@@ -1999,7 +1993,7 @@
   "GJ8Ok2": [
     {
       "type": 0,
-      "value": "Reset submissions counter"
+      "value": "Reset aantal gemaakte inzendingen"
     }
   ],
   "GO9yud": [
@@ -2145,7 +2139,7 @@
   "HVG1xy": [
     {
       "type": 0,
-      "value": "Cosign content"
+      "value": "Inhoud (bij mede-ondertekenen)"
     }
   ],
   "HXE3Mm": [
@@ -2187,7 +2181,7 @@
   "HrSXGN": [
     {
       "type": 0,
-      "value": "You are about to reset the submissions counter and this action is irreversible. Are you sure that you want to do this?"
+      "value": "Je staat op het punt om het aantal gemaakte inzendingen terug op nul te zetten. Dit kan niet ongedaan gemaakt worden. Ben je zeker dat je door wil gaan?"
     }
   ],
   "HuAm1K": [
@@ -2317,7 +2311,7 @@
   "JHQfjZ": [
     {
       "type": 0,
-      "value": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen."
     },
     {
       "children": [
@@ -2327,7 +2321,7 @@
     },
     {
       "type": 0,
-      "value": " You can use all form variables (using their keys) and the "
+      "value": "Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de "
     },
     {
       "children": [
@@ -2341,7 +2335,7 @@
     },
     {
       "type": 0,
-      "value": " template variable. If unspecified, a default description is used."
+      "value": " sjabloonvariabele. Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
     },
     {
       "children": [
@@ -2350,14 +2344,10 @@
       "value": "br"
     },
     {
-      "type": 0,
-      "value": " "
-    },
-    {
       "children": [
         {
           "type": 0,
-          "value": "Note"
+          "value": "Opmerking"
         }
       ],
       "type": 8,
@@ -2365,7 +2355,7 @@
     },
     {
       "type": 0,
-      "value": ": the length of the result is capped to 100 characters."
+      "value": ": het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan."
     }
   ],
   "JKq3TC": [
@@ -3962,7 +3952,7 @@
   "ZSvQcR": [
     {
       "type": 0,
-      "value": "TITLE parameter"
+      "value": "TITLE-parameter"
     }
   ],
   "ZdZ2Mb": [
@@ -4530,7 +4520,7 @@
   "eZJFP7": [
     {
       "type": 0,
-      "value": "COM parameter"
+      "value": "COM-parameter"
     }
   ],
   "ee4oWr": [
@@ -4843,6 +4833,12 @@
     {
       "type": 0,
       "value": "Veldengroepinhoud"
+    }
+  ],
+  "h8DIWk": [
+    {
+      "type": 0,
+      "value": "Het maximum aantal inzendingen die voor dit formulier mogen gedaan worden. Laat dit leeg als er geen limiet is."
     }
   ],
   "h9debR": [
@@ -5434,7 +5430,7 @@
   "lu7yMK": [
     {
       "type": 0,
-      "value": "Path to auth attribute (e.g. BSN/KVK) in objects"
+      "value": "Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)"
     }
   ],
   "m20av3": [
@@ -5668,7 +5664,7 @@
   "oWOr9u": [
     {
       "type": 0,
-      "value": "Submission"
+      "value": "Inzendingen"
     }
   ],
   "oXOxWz": [
@@ -6206,7 +6202,7 @@
   "u+IP17": [
     {
       "type": 0,
-      "value": "Maximum allowed number of submissions"
+      "value": "Limiet aantal inzendingen"
     }
   ],
   "u/0IPY": [
@@ -6334,17 +6330,7 @@
   "vikURf": [
     {
       "type": 0,
-      "value": "Optional custom template for the title displayed on the payment page."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " You can use all form variables (using their keys) and the "
+      "value": "Sjabloon voor de titel die op de betaalpagina getoond wordt. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de "
     },
     {
       "children": [
@@ -6358,7 +6344,17 @@
     },
     {
       "type": 0,
-      "value": " template variable. If unspecified, a default description is used."
+      "value": " sjabloonvariabele."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": "Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
     }
   ],
   "vlY36U": [
@@ -6512,7 +6508,7 @@
   "xBb5YI": [
     {
       "type": 0,
-      "value": "Select an object type and version before you can pick a source path."
+      "value": "Kies eerst een objecttype en versie voor je een brondpad kan selecteren."
     }
   ],
   "xI6md8": [
@@ -6554,7 +6550,7 @@
   "xxyIg/": [
     {
       "type": 0,
-      "value": "Indicates whether appointments are enabled for this form."
+      "value": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn."
     }
   ],
   "xyVtKp": [
