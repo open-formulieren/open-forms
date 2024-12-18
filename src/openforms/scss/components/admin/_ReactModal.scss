@@ -74,12 +74,14 @@
     right: 12px;
     padding: 8px;
     cursor: pointer;
+    color: var(--body-fg);
     background: transparent;
     border: none;
     opacity: 0.5;
     line-height: 1;
 
-    &:hover {
+    &:hover,
+    &:focus {
       opacity: 0.8;
     }
   }
