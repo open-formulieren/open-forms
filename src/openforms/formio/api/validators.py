@@ -96,6 +96,16 @@ class MimeTypeValidator:
             raise serializers.ValidationError(
                 _("The provided file is not a {file_type}.").format(file_type=f".{ext}")
             )
+        # gh #4886
+        # We need to accept text/plain as a valid MIME type for CSV files.
+        # If the file does not strictly follow the conventions of CSV (e.g. non-standard delimiters),
+        # may not be considered as a valid CSV.
+        elif (
+            value.content_type == "text/csv"
+            and mime_type == "text/plain"
+            and ext == "csv"
+        ):
+            return
         elif mime_type == "image/heic" and value.content_type in (
             "image/heic",
             "image/heif",
