@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {
@@ -22,11 +23,16 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
-  const formVariableOptions = [
-    {value: "1", label: "One"},
-    {value: "2", label: "Two"},
-    {value: "3", label: "Three"},
-  ]
+  // Get form variables
+  const formContext = useContext(FormContext)
+  const formVariables = formContext.formVariables ?? [];
+  const staticVariables = formContext.staticVariables ?? [];
+  const allFormVariables = staticVariables.concat(formVariables);
+
+  const formVariableOptions = [];
+  for (const formVariable of allFormVariables) {
+    formVariableOptions.push({value: formVariable.key, label: formVariable.name})
+  }
 
   return (
     <ModalOptionsConfiguration
@@ -39,7 +45,7 @@ const JSONOptionsForm = ({name, label, formData, onChange}) => {
           defaultMessage="Plugin configuration: JSON"
         />
       }
-      initialFormData={{relativeApiEndpoint: '', ...formData}}
+      initialFormData={{...formData}}
       onSubmit={values => onChange({formData: values})}
       modalSize="small"
     >
@@ -59,6 +65,8 @@ JSONOptionsForm.propTypes = {
   label: PropTypes.node.isRequired,
   formData: PropTypes.shape({
     relativeApiEndpoint: PropTypes.string,
+    // TODO-4098: might need to rename this to selectedFormVariables to avoid confusion or even
+    //  naming conflicts
     formVariables: PropTypes.arrayOf(PropTypes.string),
   }),
   onChange: PropTypes.func.isRequired,

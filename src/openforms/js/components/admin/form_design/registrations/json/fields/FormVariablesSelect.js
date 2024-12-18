@@ -6,11 +6,11 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
+// TODO-4908: where to add already selected form variables from the variables table?
 const FormVariablesSelect = ({options}) => {
   const [fieldProps, , fieldHelpers] = useField('formVariables');
   const {setValue} = fieldHelpers;
 
-  // TODO-4098: what does this do?
   const values = [];
   if (fieldProps.value && fieldProps.value.length) {
     fieldProps.value.forEach(item => {
@@ -38,7 +38,6 @@ const FormVariablesSelect = ({options}) => {
           isMulti
           required
           value={values}
-          // TODO-4098: what does this do?
           onChange={newValue => {
             setValue(newValue.map(item => item.value));
           }}
