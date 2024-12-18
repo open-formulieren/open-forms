@@ -188,6 +188,20 @@ class MimeTypeValidatorTests(SimpleTestCase):
 
             validator(sample)
 
+    def test_allowed_mime_types_for_csv_files(self):
+        valid_types = ("text/csv", "text/plain")
+        csv_file = TEST_FILES / "test-csv-file.csv"
+        validator = validators.MimeTypeValidator()
+
+        for valid_type in valid_types:
+            sample = SimpleUploadedFile(
+                "test-csv-file.csv",
+                csv_file.read_bytes(),
+                content_type=valid_type,
+            )
+
+            validator(sample)
+
     def test_validate_files_multiple_mime_types(self):
         """Assert that validation of files associated with multiple mime types works
 
