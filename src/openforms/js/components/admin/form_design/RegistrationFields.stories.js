@@ -395,11 +395,20 @@ export default {
         label: 'JSON',
         schema: {
           properties: {
-            // TODO-4098: add actual relevant properties
-            extraLine: {
+            // TODO-4098: update this with all properties
+            relativeApiEndpoint: {
               minLength: 1,
-              title: 'Extra print statement',
+              title: 'Relative API endpoint',
               type: 'string',
+            },
+            formVariables: {
+              type: 'array',
+              title: 'List of form variables',
+              items: {
+                type: 'string',
+                title: 'form variable',
+                minLength: 1,
+              }
             },
           },
           type: 'object',
@@ -749,7 +758,11 @@ export const ConfiguredBackends = {
         key: 'backend11',
         name: 'JSON',
         backend: 'json',
-        options: {relativeApiEndpoint: 'Example endpoint'},
+        options: {
+          // TODO-4098: update this with all variables
+          relativeApiEndpoint: 'Example endpoint',
+          formVariables: []
+        },
       },
     ],
     validationErrors: [
@@ -1008,8 +1021,44 @@ export const JSON = {
         name: 'JSON',
         backend: 'json',
         options: {
+          // TODO-4908: update this with all properties
           relativeApiEndpoint: 'We are checking.',
+          formVariables: [],
         },
+      },
+    ],
+    availableFormVariables: [
+      {
+        dataType: 'string',
+        form: null,
+        formDefinition: null,
+        key: 'firstName',
+        name: 'First name',
+        source: 'user_defined',
+      },
+      {
+        dataType: 'string',
+        form: null,
+        formDefinition: null,
+        key: 'lastName',
+        name: 'Last name',
+        source: 'user_defined',
+      },
+      {
+        dataType: 'file',
+        form: null,
+        formDefinition: null,
+        key: 'attachment',
+        name: 'Attachment',
+        source: 'user_defined',
+      },
+    ],
+    availableStaticVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'BSN',
+        key: 'auth_bsn',
       },
     ],
   },
