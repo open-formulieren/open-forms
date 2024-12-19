@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
@@ -47,15 +49,17 @@ class JSONBackendTests(TestCase):
         )
 
         json_form_options = dict(
-            service=ServiceFactory(),
-            relative_api_endpoint="test",
+            service=ServiceFactory(api_root="http://example.com/api/v2"),
+            relative_api_endpoint="",
             form_variables=["firstName", "lastName", "file", "auth_bsn"],
         )
         email_submission = JSONRegistration("json_plugin")
 
         set_submission_reference(submission)
 
-        data_to_be_sent = email_submission.register_submission(submission, json_form_options)
+        with patch("zgw_consumers.nlx.NLXClient.post") as mock_post:
+            data_to_be_sent = email_submission.register_submission(submission, json_form_options)
+            mock_post.assert_called_once()
 
         expected_data_to_be_sent = {
             "values": {
