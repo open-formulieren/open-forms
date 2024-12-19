@@ -33,14 +33,15 @@ class JSONBackendTests(TestCase):
                     }
                 ],
             },
-            bsn=123456789,
+            bsn="123456789",
         )
 
         submission_file_attachment = SubmissionFileAttachmentFactory.create(
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
-            file_name="my-foo.bin",
-            content_type="application/foo",
+            file_name="test_file.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
             _component_configuration_path="components.2",
             _component_data_path="file",
         )
@@ -54,4 +55,77 @@ class JSONBackendTests(TestCase):
 
         set_submission_reference(submission)
 
-        email_submission.register_submission(submission, json_form_options)
+        data_to_be_sent = email_submission.register_submission(submission, json_form_options)
+
+        expected_data_to_be_sent = {
+            "values": {
+                "firstName": "We Are",
+                "lastName": "Checking",
+                "file": b"This is example content.",
+                "auth_bsn": "123456789",
+            }
+        }
+        self.assertEqual(data_to_be_sent, expected_data_to_be_sent)
+
+    # def test_create_submission_with_digid(self):
+    #     v2_options: RegistrationOptionsV2 = {
+    #         "objects_api_group": self.group,
+    #         "version": 2,
+    #         "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+    #         "objecttype_version": 1,
+    #         "update_existing_object": False,
+    #         "auth_attribute_path": [],
+    #         "variables_mapping": [
+    #             {
+    #                 "variable_key": "auth_context",
+    #                 "target_path": ["auth_context"],
+    #             },
+    #         ],
+    #         "iot_attachment": "",
+    #         "iot_submission_csv": "",
+    #         "iot_submission_report": "",
+    #     }
+    #
+    #
+    #     submission = SubmissionFactory.from_components(
+    #         [
+    #             # fmt: off
+    #             {
+    #                 "key": "firstName",
+    #                 "type": "textField"
+    #             },
+    #             {
+    #                 "key": "lastName",
+    #                 "type": "textfield",
+    #             },
+    #             # fmt: on
+    #         ],
+    #         completed=True,
+    #         submitted_data={
+    #             "firstName": "We Are",
+    #             "lastName": "Checking",
+    #         },
+    #         with_public_registration_reference=True,
+    #         auth_info__is_digid=True,
+    #     )
+    #     expected = {
+    #         "middel": "digid",
+    #         "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+    #         "vertegenwoordigde": "",
+    #         "soort_vertegenwoordigde": "",
+    #         "gemachtigde": "999991607",
+    #         "soort_gemachtigde": "bsn",
+    #         "actor": "",
+    #         "soort_actor": "",
+    #     }
+    #
+    #     ObjectsAPIRegistrationData.objects.create(submission=submission)
+    #
+    #     handler = ObjectsAPIV2Handler()
+    #     record_data = handler.get_record_data(
+    #         submission=submission, options=v2_options
+    #     )
+    #
+    #     data = record_data["data"]
+    #     print(submission.data)
+    #     self.assertEqual(data["authn"], expected)
