@@ -19,6 +19,7 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         max_length=255,
         label=_("Relative API endpoint"),
         help_text=_("The API endpoint to send the data to (relative to the service API root)."),
+        allow_blank=True,
     )
     form_variables = serializers.ListField(
         child=FormioVariableKeyField(max_length=50),
