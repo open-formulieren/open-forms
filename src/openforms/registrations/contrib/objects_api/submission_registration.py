@@ -72,7 +72,8 @@ logger = logging.getLogger(__name__)
 def _point_coordinate(value: Any) -> dict[str, Any] | object:
     if not isinstance(value, list) or len(value) != 2:
         return SKIP
-    return {"type": "Point", "coordinates": [value[0], value[1]]}
+    # Providing the coordinates as [lng, lat] #4955
+    return {"type": "Point", "coordinates": [value[1], value[0]]}
 
 
 def _resolve_documenttype(

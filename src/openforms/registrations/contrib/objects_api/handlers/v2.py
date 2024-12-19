@@ -109,7 +109,8 @@ def process_mapped_variable(
             assert isinstance(value, list) and len(value) == 2
             value = {
                 "type": "Point",
-                "coordinates": [value[0], value[1]],
+                # Providing the coordinates as [lng, lat] #4955
+                "coordinates": [value[1], value[0]],
             }
 
         # not a component or standard behaviour where no transformation is necessary
