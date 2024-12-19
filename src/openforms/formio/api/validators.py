@@ -111,6 +111,11 @@ class MimeTypeValidator:
             "image/heif",
         ):
             return
+        # 4795
+        # The sdk cannot determine the file type of .msg files, which result into
+        # content_type "". So we have to validate these for ourselves
+        elif mime_type == "application/vnd.ms-outlook" and ext == "msg":
+            return
 
         # gh #4658
         # Windows use application/x-zip-compressed as a mimetype for .zip files, which
