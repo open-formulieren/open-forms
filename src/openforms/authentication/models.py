@@ -20,6 +20,7 @@ from .types import (
     DigiDMachtigenContext,
     EHerkenningContext,
     EHerkenningMachtigenContext,
+    EmployeeContext,
 )
 
 logger = logging.getLogger(__name__)
@@ -254,6 +255,7 @@ class AuthInfo(BaseAuthInfo):
         | DigiDMachtigenContext
         | EHerkenningContext
         | EHerkenningMachtigenContext
+        | EmployeeContext
     ):
         if self.attribute_hashed:
             logger.debug(
@@ -347,6 +349,25 @@ class AuthInfo(BaseAuthInfo):
                         "branchNumber"
                     ] = branch_number
                 return ehm_context
+
+            # Employee login
+            # ---
+            # Experimental feature that is different from the defined authentication context.
+            # This will have to be re-worked and re-thought-out, and will most definitely change.
+            # This fixes the issue of #4863
+            case (AuthAttribute.employee_id, ""):
+                employee_context: EmployeeContext = {
+                    "source": "custom",
+                    "levelOfAssurance": "unknown",
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "opaque",
+                            "identifier": self.value,
+                        }
+                    },
+                }
+                return employee_context
+
             case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
 
