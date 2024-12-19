@@ -54,10 +54,20 @@ class JSONRegistration(BasePlugin):
 
         print(values)
 
-        # TODO-4908: send `values` to the service
-        # TODO-4908: added return for testing purposes
-        return {"values": values}
+        # Send to the service
+        json = {"values": values}
+        service = options["service"]
+        submission.registration_result = result = {}
+        with build_client(service) as client:
+            result["api_response"] = res = client.post(
+                options.get("relative_api_endpoint", ""),
+                json=json,
+                headers={"Content-Type": "application/json"},
+            )
+            res.raise_for_status()
 
-    # TODO-4098: what to do in here?
-    def check_config(self):
+        return result
+
+    def check_config(self) -> None:
+        # Config checks are not really relevant for this plugin right now
         pass
