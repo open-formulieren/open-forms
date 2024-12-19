@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-17 15:19+0100\n"
+"POT-Creation-Date: 2024-12-19 17:20+0100\n"
 "PO-Revision-Date: 2024-12-17 15:18+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -114,7 +114,7 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:81 openforms/forms/models/form.py:702
+#: openforms/accounts/models.py:81 openforms/forms/models/form.py:697
 #: openforms/forms/models/form_version.py:64 soap/models.py:50
 msgid "user"
 msgstr "gebruiker"
@@ -1261,7 +1261,7 @@ msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
 msgid "Appointment information"
 msgstr "Afspraakinformatie"
 
-#: openforms/appointments/models.py:112 openforms/authentication/models.py:30
+#: openforms/appointments/models.py:112 openforms/authentication/models.py:31
 msgid "plugin"
 msgstr "plugin"
 
@@ -1716,112 +1716,112 @@ msgstr "Doorgaan als medewerker"
 msgid "Use either BSN or KvK"
 msgstr "Geef een BSN of KvK-nummer op"
 
-#: openforms/authentication/models.py:31 openforms/authentication/views.py:258
+#: openforms/authentication/models.py:32 openforms/authentication/views.py:258
 msgid "Identifier of the authentication plugin."
 msgstr "Unieke identificatie van de authenticatieplugin"
 
-#: openforms/authentication/models.py:35
+#: openforms/authentication/models.py:36
 msgid "attribute"
 msgstr "attribuut"
 
-#: openforms/authentication/models.py:36
+#: openforms/authentication/models.py:37
 msgid "Name of the attribute returned by the authentication plugin."
 msgstr "Naam van het attribuut voorzien door de authenticatieplugin"
 
-#: openforms/authentication/models.py:41 openforms/config/models/csp.py:62
+#: openforms/authentication/models.py:42 openforms/config/models/csp.py:62
 #: openforms/submissions/models/submission_value_variable.py:325
 #: openforms/validations/api/views.py:72
 msgid "value"
 msgstr "waarde"
 
-#: openforms/authentication/models.py:42
+#: openforms/authentication/models.py:43
 msgid "Value of the attribute returned by the authentication plugin."
 msgstr "Waarde van het attribuut voorzien door de authenticatieplugin"
 
-#: openforms/authentication/models.py:46
+#: openforms/authentication/models.py:47
 msgid "identifying attributes hashed"
 msgstr "Identificerende attributen gehasht"
 
-#: openforms/authentication/models.py:47
+#: openforms/authentication/models.py:48
 msgid "Are the auth/identifying attributes hashed?"
 msgstr "Zijn de authenticatie-/identificerende gegevens gehasht?"
 
-#: openforms/authentication/models.py:58 openforms/authentication/models.py:59
-#: openforms/authentication/models.py:217
+#: openforms/authentication/models.py:59 openforms/authentication/models.py:60
 #: openforms/authentication/models.py:218
+#: openforms/authentication/models.py:219
 msgid "Authentication details"
 msgstr "Authenticatiedetails"
 
-#: openforms/authentication/models.py:133
-#: openforms/authentication/models.py:357 openforms/emails/constants.py:16
+#: openforms/authentication/models.py:134
+#: openforms/authentication/models.py:378 openforms/emails/constants.py:16
 #: openforms/formio/api/serializers.py:33
 #: openforms/submissions/api/serializers.py:587
 msgid "Submission"
 msgstr "Inzending"
 
-#: openforms/authentication/models.py:135
-#: openforms/authentication/models.py:359
+#: openforms/authentication/models.py:136
+#: openforms/authentication/models.py:380
 msgid "Submission related to this authentication information"
 msgstr "Inzending waar deze authenticatiegegevens bijhoren"
 
-#: openforms/authentication/models.py:147
+#: openforms/authentication/models.py:148
 msgid "Level of assurance"
 msgstr "Betrouwbaarheidsniveau"
 
-#: openforms/authentication/models.py:149
+#: openforms/authentication/models.py:150
 msgid ""
 "How certain is the identity provider that this identity belongs to this user."
 msgstr ""
 "Indicatie van de mate van zekerheid over de identiteit van de gebruiker, "
 "afgegeven door de identity provider."
 
-#: openforms/authentication/models.py:159
+#: openforms/authentication/models.py:160
 msgid "acting subject identifier type"
 msgstr "identificatiesoort handelende persoon"
 
-#: openforms/authentication/models.py:161
-#: openforms/authentication/models.py:177
+#: openforms/authentication/models.py:162
+#: openforms/authentication/models.py:178
 msgid "The identifier type determines how to interpret the identifier value."
 msgstr ""
 "De identificatiesoort bepaalt hoe de identificatie geïnterpreteerd moet "
 "worden."
 
-#: openforms/authentication/models.py:168
+#: openforms/authentication/models.py:169
 msgid "acting subject identifier"
 msgstr "identificatie handelende persoon"
 
-#: openforms/authentication/models.py:169
+#: openforms/authentication/models.py:170
 msgid "(Contextually) unique identifier for the acting subject."
 msgstr "Unieke identificatie die de handelende persoon vaststelt."
 
-#: openforms/authentication/models.py:175
+#: openforms/authentication/models.py:176
 msgid "legal subject identifier type"
 msgstr "identificatiesoort (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:184
+#: openforms/authentication/models.py:185
 msgid "legal subject identifier"
 msgstr "identificatie (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:185
+#: openforms/authentication/models.py:186
 msgid "(Contextually) unique identifier for the legal subject."
 msgstr "Unieke identificatie die de (wettelijke) vertegenwoordiger bepaalt."
 
-#: openforms/authentication/models.py:192
+#: openforms/authentication/models.py:193
 msgid "legal subject service restriction"
 msgstr "dienstverleningbeperking (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:194
+#: openforms/authentication/models.py:195
 msgid ""
 "Optional service restriction information within the bigger legal subject."
 msgstr ""
 "Niet-verplichte beperking binnen de hele (wettelijke) vertegenwoordiger, "
 "bijvoorbeeld een vestigingsnummer."
 
-#: openforms/authentication/models.py:201
+#: openforms/authentication/models.py:202
 msgid "mandate context"
 msgstr "machtigingscontext"
 
-#: openforms/authentication/models.py:203
+#: openforms/authentication/models.py:204
 msgid ""
 "If a mandate is in play, then the mandate context must be provided. The "
 "details are tracked here, in line with the authentication context data JSON "
@@ -1832,12 +1832,12 @@ msgstr ""
 "dat overeenkomt met het JSON Schema van het "
 "authenticatiecontextgegevensmodel."
 
-#: openforms/authentication/models.py:364
-#: openforms/authentication/models.py:365
+#: openforms/authentication/models.py:385
+#: openforms/authentication/models.py:386
 msgid "Registrator authentication details"
 msgstr "Authenticatiedetails van de registrator"
 
-#: openforms/authentication/models.py:370
+#: openforms/authentication/models.py:391
 msgid "Can register submission for customers"
 msgstr "Mag inzendingen opvoeren voor klanten"
 
@@ -3158,7 +3158,7 @@ msgid "An easily recognizable name for the theme, used to identify it."
 msgstr "Een herkenbare naam om deze stijl te identificeren."
 
 #: openforms/config/models/theme.py:26 openforms/forms/models/category.py:10
-#: openforms/forms/models/form.py:58 openforms/forms/models/form.py:689
+#: openforms/forms/models/form.py:58 openforms/forms/models/form.py:684
 #: openforms/forms/models/form_definition.py:39
 #: openforms/forms/models/form_step.py:24
 #: openforms/forms/models/form_version.py:44 openforms/forms/models/logic.py:11
@@ -3399,15 +3399,15 @@ msgstr "BRK API"
 msgid "Service for API interaction with the BRK."
 msgstr "Service voor interactie met de BRK-API."
 
-#: openforms/contrib/brk/validators.py:45
+#: openforms/contrib/brk/validators.py:47
 msgid "BRK - Zakelijk gerechtigd"
 msgstr "BRK - Zakelijk gerechtigd"
 
-#: openforms/contrib/brk/validators.py:49
+#: openforms/contrib/brk/validators.py:51
 msgid "No BSN is available to validate your address."
 msgstr "Er is geen BSN beschikbaar voor de adrescontrole."
 
-#: openforms/contrib/brk/validators.py:51
+#: openforms/contrib/brk/validators.py:53
 msgid ""
 "There was an error while retrieving the available properties. Please try "
 "again later."
@@ -3415,12 +3415,12 @@ msgstr ""
 "Er deed zich een fout voor bij het opvragen van de beschikbare eigendommen. "
 "Gelieve het later opnieuw te proberen."
 
-#: openforms/contrib/brk/validators.py:54
+#: openforms/contrib/brk/validators.py:56
 msgid "According to our records, you are not a legal owner of this property."
 msgstr ""
 "Volgens onze gegevens ben je geen zakelijk gerechtigde op dit eigendom."
 
-#: openforms/contrib/brk/validators.py:56
+#: openforms/contrib/brk/validators.py:58
 msgid "No property found for this address."
 msgstr "Kon geen onroerend goed vinden voor dit adres."
 
@@ -3924,7 +3924,7 @@ msgstr "Lijst van beschikbare documenttypen (Objecten API)"
 
 #: openforms/contrib/objects_api/apps.py:8
 #: openforms/contrib/objects_api/models.py:29
-#: openforms/prefill/contrib/objects_api/plugin.py:29
+#: openforms/prefill/contrib/objects_api/plugin.py:28
 msgid "Objects API"
 msgstr "Objecten API"
 
@@ -5247,28 +5247,28 @@ msgstr "Bestandsgrootte"
 msgid "The provided file is not a valid file type."
 msgstr "Het bestand is geen toegestaan bestandstype."
 
-#: openforms/formio/api/validators.py:97 openforms/formio/api/validators.py:116
+#: openforms/formio/api/validators.py:97 openforms/formio/api/validators.py:131
 #, python-brace-format
 msgid "The provided file is not a {file_type}."
 msgstr "Het bestand is geen {file_type}."
 
-#: openforms/formio/api/validators.py:142
+#: openforms/formio/api/validators.py:157
 msgid "The virus scan could not be performed at this time. Please retry later."
 msgstr ""
 "Het is momenteel niet mogelijk om bestanden te scannen op virussen. Probeer "
 "het later opnieuw."
 
-#: openforms/formio/api/validators.py:151
+#: openforms/formio/api/validators.py:166
 #, python-brace-format
 msgid ""
 "File did not pass the virus scan. It was found to contain '{virus_name}'."
 msgstr "Er is een virus gedetecteerd in het bestand: '{virus_name}'."
 
-#: openforms/formio/api/validators.py:157
+#: openforms/formio/api/validators.py:172
 msgid "The virus scan on this file returned an error."
 msgstr "Er deed zich een onbekende fout voor bij het scannen op virussen."
 
-#: openforms/formio/api/validators.py:169
+#: openforms/formio/api/validators.py:184
 msgid "The virus scan returned an unexpected status."
 msgstr "De virusscan resulteerde in een onverwachte status."
 
@@ -5377,66 +5377,58 @@ msgstr "De waarde is na de maximale tijd"
 msgid "Value is not between mininum and maximum time."
 msgstr "De waarde ligt niet tussen de minimale en maximale tijd."
 
-#: openforms/formio/components/vanilla.py:344
-msgid ""
-"Could not determine the file type. Please make sure the file name has an "
-"extension."
-msgstr ""
-"Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam met "
-"een extensie eindigt (bijvoorbeel '.pdf' of '.png')."
-
-#: openforms/formio/components/vanilla.py:365
+#: openforms/formio/components/vanilla.py:358
 #, python-brace-format
 msgid "The value of {root_key} must match the value of {nested_key} in 'data'."
 msgstr ""
 "De waarde van {root_key} moet overeenkomen met de waarde van {nested_key} in "
 "'data'."
 
-#: openforms/formio/components/vanilla.py:374
-#: openforms/formio/components/vanilla.py:387
+#: openforms/formio/components/vanilla.py:367
+#: openforms/formio/components/vanilla.py:380
 msgid "Invalid URL."
 msgstr "Ongeldige URL."
 
-#: openforms/formio/components/vanilla.py:378
+#: openforms/formio/components/vanilla.py:371
 msgid "Size does not match the uploaded file."
 msgstr "De grootte komt niet overeen met de bestandsgrootte van de upload."
 
-#: openforms/formio/components/vanilla.py:383
+#: openforms/formio/components/vanilla.py:376
 msgid "Name does not match the uploaded file."
 msgstr "De bestandsnaam komt niet overeen met de upload."
 
-#: openforms/formio/components/vanilla.py:508
+#: openforms/formio/components/vanilla.py:501
 msgid "Checkbox must be checked."
 msgstr "Het selectievakje moet aangevinkt zijn."
 
-#: openforms/formio/components/vanilla.py:539
+#: openforms/formio/components/vanilla.py:532
 #, python-brace-format
 msgid "Ensure this field has at least {min_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {min_selected_count} of meer opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:542
+#: openforms/formio/components/vanilla.py:535
 #, python-brace-format
 msgid ""
 "Ensure this field has no more than {max_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {max_selected_count} of minder opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:768
+#: openforms/formio/components/vanilla.py:761
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Een lijst van waarden was verwacht, maar kreeg \"{input_type}\"."
 
-#: openforms/formio/components/vanilla.py:769
+#: openforms/formio/components/vanilla.py:762
 msgid "This list may not be empty."
 msgstr "De lijst mag niet leeg zijn."
 
-#: openforms/formio/components/vanilla.py:770
+#: openforms/formio/components/vanilla.py:763
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr "Zorg dat dit veld {min_length} of meer waarden heeft."
 
-#: openforms/formio/components/vanilla.py:771
+#: openforms/formio/components/vanilla.py:764
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
@@ -6872,35 +6864,35 @@ msgstr "{slug}-kopie"
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:691
+#: openforms/forms/models/form.py:686
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:693
+#: openforms/forms/models/form.py:688
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:696
+#: openforms/forms/models/form.py:691
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:697
+#: openforms/forms/models/form.py:692
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:703
+#: openforms/forms/models/form.py:698
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:710
+#: openforms/forms/models/form.py:705
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:711
+#: openforms/forms/models/form.py:706
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:714
+#: openforms/forms/models/form.py:709
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
@@ -9363,16 +9355,11 @@ msgstr "Lijst van beschikbare attributen voor de Objecten API"
 msgid "Objects API prefill plugin"
 msgstr "Objecten-API prefill-plugin"
 
-#: openforms/prefill/contrib/objects_api/plugin.py:75
+#: openforms/prefill/contrib/objects_api/plugin.py:74
 #: openforms/registrations/contrib/objects_api/plugin.py:134
-#: openforms/registrations/contrib/zgw_apis/plugin.py:612
+#: openforms/registrations/contrib/zgw_apis/plugin.py:613
 msgid "Manage API groups"
 msgstr "API-groepen beheren"
-
-#: openforms/prefill/contrib/objects_api/plugin.py:81
-#: openforms/registrations/contrib/objects_api/plugin.py:138
-msgid "Defaults configuration"
-msgstr "Standaardinstellingen"
 
 #: openforms/prefill/contrib/stufbg/apps.py:8
 msgid "StUF-BG prefill plugin"
@@ -10308,6 +10295,10 @@ msgstr ""
 msgid "Objects API registration"
 msgstr "Objecten API registratie"
 
+#: openforms/registrations/contrib/objects_api/plugin.py:138
+msgid "Defaults configuration"
+msgstr "Standaardinstellingen"
+
 #: openforms/registrations/contrib/objects_api/registration_variables.py:31
 #: openforms/submissions/api/serializers.py:446
 msgid "Public reference"
@@ -10798,11 +10789,11 @@ msgid "Could not find a roltype with this description related to the zaaktype."
 msgstr ""
 "Kon geen roltype vinden met deze omschrijving binnen het opgegeven zaaktype."
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:172
+#: openforms/registrations/contrib/zgw_apis/plugin.py:173
 msgid "ZGW API's"
 msgstr "ZGW API's"
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:414
+#: openforms/registrations/contrib/zgw_apis/plugin.py:415
 msgid "Employee who registered the case on behalf of the customer."
 msgstr "Medewerker die de zaak registreerde voor de klant."
 
@@ -13627,3 +13618,10 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
+
+#~ msgid ""
+#~ "Could not determine the file type. Please make sure the file name has an "
+#~ "extension."
+#~ msgstr ""
+#~ "Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam "
+#~ "met een extensie eindigt (bijvoorbeel '.pdf' of '.png')."
