@@ -33,14 +33,14 @@ class JSONRegistration(BasePlugin):
                     f.seek(0)
                     values[attachment.form_key] = base64.b64encode(f.read()).decode()
 
-        # TODO-4908: what should the behaviour be when a form
-        #  variable is not in the data or static variables?
         # Create static variables dict
         static_variables = get_static_variables(submission=submission)
         static_variables_dict = {
             variable.key: variable.initial_value for variable in static_variables
         }
 
+        # TODO-4908: what should the behaviour be when a form
+        #  variable is not in the data or static variables?
         # Update values dict with relevant form data
         values.update({
             form_variable: submission.data.get(
@@ -54,12 +54,15 @@ class JSONRegistration(BasePlugin):
         # Send to the service
         json = {"values": values}
         service = options["service"]
+        # TODO-4098: is the service type relevant here?
         with build_client(service) as client:
             url = f"{client.base_url}{options['relative_api_endpoint']}"
             response = client.post(url, json=json, headers={"Content-Type": "application/json"})
             response.raise_for_status()
+            print(response.json())
 
-            # TODO-4908: does this need to be used? If so, what to put in spec?
+            # TODO-4908: does this need to be used (what does it even do, there is no documentation)?
+            #  If so, what to put in spec?
             # result = execute_unless_result_exists(
             #     partial(
             #         client.post,
@@ -73,6 +76,7 @@ class JSONRegistration(BasePlugin):
         # TODO-4908: added return for testing purposes
         return json
 
-    # TODO-4098: what to do in here?
     def check_config(self):
+        # TODO-4098: check if it's possible to connect to the service
+        # TODO-4098: check anything else?
         pass
