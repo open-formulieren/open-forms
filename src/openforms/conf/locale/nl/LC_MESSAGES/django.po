@@ -4591,7 +4591,7 @@ msgid ""
 "extension."
 msgstr ""
 "Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam met "
-"een extensie eindigt (bijvoorbeel '.pdf' of '.png')."
+"een extensie eindigt (bijvoorbeeld '.pdf' of '.png')."
 
 #: openforms/formio/components/vanilla.py:332
 #, python-brace-format

@@ -108,6 +108,23 @@ class MimeTypeValidatorTests(SimpleTestCase):
         except ValidationError as e:
             self.fail(f"Valid file failed validation: {e}")
 
+    def test_unknown_file_type(self):
+        file = SimpleUploadedFile(
+            "unknown-type",
+            b"test",
+            content_type="application/octet-stream",  # see e2e test SingleFileTests.test_unknown_file_type
+        )
+        validator = validators.MimeTypeValidator(
+            allowed_mime_types=None
+        )  # allows any mime type
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            "Could not determine the file type. Please make sure the file name "
+            "has an extension.",
+        ):
+            validator(file)
+
     def test_star_wildcard_in_allowed_mimetypes(self):
         validator = validators.MimeTypeValidator({"*"})
 
@@ -201,6 +218,23 @@ class MimeTypeValidatorTests(SimpleTestCase):
             )
 
             validator(sample)
+
+    def test_allowed_mime_types_for_msg_files(self):
+        valid_type = "application/vnd.ms-outlook"
+        msg_file = TEST_FILES / "test.msg"
+        validator = validators.MimeTypeValidator(allowed_mime_types=[valid_type])
+
+        # 4795
+        # The sdk cannot determine the content_type for .msg files correctly.
+        # Because .msg is a windows specific file, and linux and MacOS don't know it.
+        # So we simulate the scenario where content_type is unknown
+        sample = SimpleUploadedFile(
+            name="test.msg",
+            content=msg_file.read_bytes(),
+            content_type="",  # replicate the behaviour of the frontend
+        )
+
+        validator(sample)
 
     def test_validate_files_multiple_mime_types(self):
         """Assert that validation of files associated with multiple mime types works

@@ -311,14 +311,7 @@ class FileSerializer(serializers.Serializer):
     originalName = serializers.CharField(trim_whitespace=False)
     size = serializers.IntegerField(min_value=0)
     storage = serializers.ChoiceField(choices=["url"])
-    type = serializers.CharField(
-        error_messages={
-            "blank": _(
-                "Could not determine the file type. Please make sure the file name "
-                "has an extension."
-            ),
-        }
-    )
+    type = serializers.CharField(required=True, allow_blank=True)
     url = serializers.URLField()
     data = FileDataSerializer()  # type: ignore
 
