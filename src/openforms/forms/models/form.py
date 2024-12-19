@@ -675,11 +675,6 @@ class Form(models.Model):
         logger.debug("Deactivating form %s", self.admin_name)
         self.save(update_fields=["active", "deactivate_on"])
 
-    def has_component(self, component_type: str) -> bool:
-        return any(
-            component["type"] == component_type for component in self.iter_components()
-        )
-
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     pass

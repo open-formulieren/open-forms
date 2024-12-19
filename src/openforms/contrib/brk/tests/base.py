@@ -12,11 +12,16 @@ BRK_API_KEY = os.getenv("BRK_API_KEY", "placeholder_key")
 
 BRK_SERVICE = ServiceFactory.build(
     api_root="https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/",
-    oas="https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/",  # ignored/unused
     api_type=APITypes.orc,
     auth_type=AuthTypes.api_key,
     header_key="X-Api-Key",
     header_value=BRK_API_KEY,
+)
+
+INVALID_BRK_SERVICE = ServiceFactory.build(
+    api_root="https://api.brk.kadaster.nl/invalid",
+    api_type=APITypes.orc,
+    auth_type=AuthTypes.api_key,
 )
 
 
