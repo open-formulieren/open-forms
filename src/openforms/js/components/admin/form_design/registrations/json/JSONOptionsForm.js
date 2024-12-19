@@ -54,7 +54,7 @@ const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
       }
       initialFormData={{...formData}}
       onSubmit={values => onChange({formData: values})}
-      modalSize="small"
+      modalSize="medium"
     >
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
