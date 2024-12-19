@@ -244,7 +244,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                     "startAt": date.today().isoformat(),
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [52.36673378967122, 4.893164274470299],
+                        "coordinates": [4.893164274470299, 52.36673378967122],
                     },
                 },
             }
@@ -263,7 +263,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                     "data": submitted_object_data["record"]["data"],
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [52.36673378967122, 4.893164274470299],
+                        "coordinates": [4.893164274470299, 52.36673378967122],
                     },
                     "startAt": date.today().isoformat(),
                     "endAt": None,
