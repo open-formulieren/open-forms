@@ -7,6 +7,7 @@ from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
@@ -15,6 +16,7 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.brk.models import BRKConfig
+from openforms.contrib.brk.tests.base import INVALID_BRK_SERVICE
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -118,11 +120,14 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
     @patch(
         "openforms.contrib.brk.client.BRKConfig.get_solo",
-        return_value=BRKConfig(service=None),
+        return_value=BRKConfig(service=INVALID_BRK_SERVICE),
     )
     @freeze_time("2023-01-03T01:00:00+01:00")
     @override_settings(BASE_URL="http://testserver")
-    def test_email_sent_when_there_are_failures(self, mock_global_config, brk_config):
+    @requests_mock.Mocker()
+    def test_email_sent_when_there_are_failures(
+        self, mock_global_config, brk_config, m
+    ):
         """Integration test for all the possible failures
 
         - failed emails
@@ -147,6 +152,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
                             "houseNumber": "",
                             "houseNumberAddition": "",
                         },
+                        "validate": {"plugins": ["brk-zakelijk-gerechtigd"]},
                     }
                 ],
             },
@@ -200,6 +206,11 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 )
                 ServiceFactory.create(client_certificate=certificate)
 
+            m.get(
+                "https://api.brk.kadaster.nl/invalid/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
+                status_code=400,
+            )
+
         # send the email digest
         send_email_digest()
         sent_email = mail.outbox[-1]
@@ -250,7 +261,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
         with self.subTest("broken configuration"):
             self.assertIn(
-                "The configuration for 'BRK Client' is invalid (KVK endpoint is not configured).",
+                "The configuration for 'BRK Client' is invalid",
                 sent_email.body,
             )
 
