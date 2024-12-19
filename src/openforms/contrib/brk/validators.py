@@ -21,6 +21,8 @@ from .constants import AddressValue
 
 logger = logging.getLogger(__name__)
 
+BRK_ZAKELIJK_GERECHTIGD_VALIDATOR_ID = "brk-zakelijk-gerechtigd"
+
 
 @contextmanager
 def suppress_api_errors(error_message: str) -> Iterator[None]:
