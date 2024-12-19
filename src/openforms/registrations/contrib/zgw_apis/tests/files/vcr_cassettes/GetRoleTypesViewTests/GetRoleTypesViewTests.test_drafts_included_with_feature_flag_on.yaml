@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjg3OTU1OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.OshyROitdmBDABRyqlX81xMaHYyaTvMPCq2PBDFSevM
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDU5Njc2OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.tJi4Zjw5vnJsg4TvhQIyerUn6P26wCRo_adzfAn8kq4
       Connection:
       - keep-alive
       User-Agent:
@@ -47,7 +47,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjg3OTU1OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.OshyROitdmBDABRyqlX81xMaHYyaTvMPCq2PBDFSevM
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDU5Njc2OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.tJi4Zjw5vnJsg4TvhQIyerUn6P26wCRo_adzfAn8kq4
       Connection:
       - keep-alive
       User-Agent:
@@ -88,13 +88,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczMjg3OTU1OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.OshyROitdmBDABRyqlX81xMaHYyaTvMPCq2PBDFSevM
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDU5Njc2OSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.tJi4Zjw5vnJsg4TvhQIyerUn6P26wCRo_adzfAn8kq4
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8003/catalogi/api/v1/roltypen?zaaktypeIdentificatie=DRAFT-01&status=alles
+    uri: http://localhost:8003/catalogi/api/v1/roltypen?status=alles&zaaktypeIdentificatie=DRAFT-01
   response:
     body:
       string: '{"count":2,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/roltypen/b79db762-5f02-43ea-b550-6de3519e7057","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1","zaaktypeIdentificatie":"DRAFT-01","omschrijving":"Baliemedewerker","omschrijvingGeneriek":"klantcontacter","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","beginGeldigheid":null,"eindeGeldigheid":null,"beginObject":null,"eindeObject":null},{"url":"http://localhost:8003/catalogi/api/v1/roltypen/5cdeb40f-1e28-415b-b826-1b36dac54232","zaaktype":"http://localhost:8003/catalogi/api/v1/zaaktypen/cf903a2f-0acd-4dbf-9c77-6e5e35d794e1","zaaktypeIdentificatie":"DRAFT-01","omschrijving":"Draft","omschrijvingGeneriek":"belanghebbende","catalogus":"http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749","beginGeldigheid":null,"eindeGeldigheid":null,"beginObject":null,"eindeObject":null}]}'
