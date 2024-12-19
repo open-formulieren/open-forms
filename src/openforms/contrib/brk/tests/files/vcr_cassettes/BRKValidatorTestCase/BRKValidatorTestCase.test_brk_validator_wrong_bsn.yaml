@@ -43,7 +43,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 26 Nov 2024 10:16:49 GMT
+      - Thu, 19 Dec 2024 06:26:56 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
@@ -106,7 +106,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Tue, 26 Nov 2024 10:16:50 GMT
+      - Thu, 19 Dec 2024 06:26:56 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
