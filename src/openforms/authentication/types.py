@@ -80,3 +80,19 @@ class EHMandate(TypedDict):
 class EHerkenningMachtigenContext(EHerkenningContext):
     representee: EHRepresenteeEntity
     mandate: EHMandate
+
+
+class EmployeeLegalSubject(TypedDict):
+    identifierType: Literal["opaque"]
+    identifier: str
+
+
+class EmployeeAuthorizee(TypedDict):
+    legalSubject: EmployeeLegalSubject
+
+
+# This type definition is highly experimental, and will most definitely change
+class EmployeeContext(TypedDict):
+    source: Literal["custom"]
+    levelOfAssurance: Literal["unknown"]
+    authorizee: EmployeeAuthorizee
