@@ -307,7 +307,7 @@ class ZGWBackendTests(TestCase):
                 create_zaak_body["zaakgeometrie"],
                 {
                     "type": "Point",
-                    "coordinates": [52.36673378967122, 4.893164274470299],
+                    "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             )
 
@@ -528,7 +528,7 @@ class ZGWBackendTests(TestCase):
                 create_zaak_body["zaakgeometrie"],
                 {
                     "type": "Point",
-                    "coordinates": [52.36673378967122, 4.893164274470299],
+                    "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             )
 
@@ -815,7 +815,7 @@ class ZGWBackendTests(TestCase):
                 create_zaak_body["zaakgeometrie"],
                 {
                     "type": "Point",
-                    "coordinates": [52.36673378967122, 4.893164274470299],
+                    "coordinates": [4.893164274470299, 52.36673378967122],
                 },
             )
 
@@ -1772,7 +1772,7 @@ class ZGWBackendTests(TestCase):
                     "startAt": date.today().isoformat(),
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [52.36673378967122, 4.893164274470299],
+                        "coordinates": [4.893164274470299, 52.36673378967122],
                     },
                     "endAt": None,
                     "registrationAt": date.today().isoformat(),
