@@ -4,11 +4,6 @@
 eHerkenning and eIDAS authentication
 ====================================
 
-.. warning::
-
-    This plugin cannot be configured via the admin interface and requires an
-    update of the Open Forms installation.
-
 Some forms can require authentication. Open Forms supports authentication
 using `eHerkenning`_ and `eIDAS`_. To use eHerkenning and/or eIDAS, you must
 have a contract with an `approved eHerkenning supplier`_.
