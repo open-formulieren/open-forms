@@ -107,7 +107,8 @@ class ObjectsAPIPrefillPluginEndpointTests(OFVCRMixin, APITestCase):
         self.assertEqual(
             response.json(),
             [
-                {"version": 3, "status": "draft"},
+                {"version": 4, "status": "draft"},
+                {"version": 3, "status": "published"},
                 {"version": 2, "status": "published"},
                 {"version": 1, "status": "published"},
             ],
