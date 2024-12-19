@@ -1,0 +1,82 @@
+import base64
+
+from django.utils.translation import gettext_lazy as _
+
+from zgw_consumers.client import build_client
+
+from openforms.submissions.models import Submission
+from openforms.variables.service import get_static_variables
+
+from ...base import BasePlugin, OptionsT  # openforms.registrations.base
+from ...registry import register  # openforms.registrations.registry
+from ...utils import execute_unless_result_exists
+from .config import JSONOptionsSerializer
+
+
+@register("json")
+class JSONRegistration(BasePlugin):
+    verbose_name = _("JSON registration")
+    configuration_options = JSONOptionsSerializer
+
+    def register_submission(self, submission: Submission, options: OptionsT) -> None:
+        # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
+        # TODO-4908: add typing for options dict
+
+        values = {}
+        # Encode (base64) and add attachments to values dict if they were specified in the form variables list
+        if submission.attachments.exists():
+            for attachment in submission.attachments:
+                if not attachment.form_key in options["form_variables"]:
+                    continue
+                options["form_variables"].remove(attachment.form_key)
+                with attachment.content.open("rb") as f:
+                    f.seek(0)
+                    values[attachment.form_key] = base64.b64encode(f.read()).decode()
+
+        # Create static variables dict
+        static_variables = get_static_variables(submission=submission)
+        static_variables_dict = {
+            variable.key: variable.initial_value for variable in static_variables
+        }
+
+        # TODO-4908: what should the behaviour be when a form
+        #  variable is not in the data or static variables?
+        # Update values dict with relevant form data
+        values.update({
+            form_variable: submission.data.get(
+                form_variable, static_variables_dict.get(form_variable)
+            )
+            for form_variable in options["form_variables"]
+        })
+
+        print(values)
+
+        # Send to the service
+        json = {"values": values}
+        service = options["service"]
+        # TODO-4098: is the service type relevant here?
+        with build_client(service) as client:
+            url = f"{client.base_url}{options['relative_api_endpoint']}"
+            response = client.post(url, json=json, headers={"Content-Type": "application/json"})
+            response.raise_for_status()
+            print(response.json())
+
+            # TODO-4908: does this need to be used (what does it even do, there is no documentation)?
+            #  If so, what to put in spec?
+            # result = execute_unless_result_exists(
+            #     partial(
+            #         client.post,
+            #         json=json,
+            #         headers={},
+            #     ),
+            #     submission,
+            #     spec="???",
+            # )
+
+        # TODO-4908: added return for testing purposes
+        return json
+
+    def check_config(self):
+        # TODO-4098: check if it's possible to connect to the service
+        # TODO-4098: check anything else?
+        pass

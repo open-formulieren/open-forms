@@ -1,0 +1,61 @@
+import {useField} from 'formik';
+import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
+
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import ReactSelect from 'components/admin/forms/ReactSelect';
+
+// TODO-4908: where to add already selected form variables from the variables table?
+// TODO-4098: the select box does not change size when you add more form variables, which causes
+//  selected form variables to be hidden
+const FormVariablesSelect = ({options}) => {
+  const [fieldProps, , fieldHelpers] = useField('formVariables');
+  const {setValue} = fieldHelpers;
+
+  const values = [];
+  if (fieldProps.value && fieldProps.value.length) {
+    fieldProps.value.forEach(item => {
+      const selectedOption = options.find(option => option.value === item);
+      if (selectedOption) {
+        values.push(selectedOption);
+      }
+    });
+  }
+
+  return (
+    <FormRow>
+      <Field
+        name="formVariables"
+        label={
+          <FormattedMessage
+            description="JSON registration options 'formVariables' label"
+            defaultMessage="Form variables"
+          />
+        }
+      >
+        <ReactSelect
+          name="formVariables"
+          options={options}
+          isMulti
+          required
+          value={values}
+          onChange={newValue => {
+            setValue(newValue.map(item => item.value));
+          }}
+        />
+      </Field>
+    </FormRow>
+  );
+};
+
+FormVariablesSelect.propTypes = {
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.node.isRequired,
+    })
+  ).isRequired,
+};
+
+export default FormVariablesSelect;
