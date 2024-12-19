@@ -173,7 +173,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             result["record"]["geometry"],
             {
                 "type": "Point",
-                "coordinates": [52.36673378967122, 4.893164274470299],
+                "coordinates": [4.893164274470299, 52.36673378967122],
             },
         )
 
@@ -498,7 +498,7 @@ class V2HandlerTests(TestCase):
             data["pointCoordinates"],
             {
                 "type": "Point",
-                "coordinates": [52.36673378967122, 4.893164274470299],
+                "coordinates": [4.893164274470299, 52.36673378967122],
             },
         )
 

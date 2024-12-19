@@ -76,7 +76,8 @@ def get_property_mappings_from_submission(
 def _point_coordinate(value):
     if not value or not isinstance(value, list) or len(value) != 2:
         return SKIP
-    return {"type": "Point", "coordinates": [value[0], value[1]]}
+    # Providing the coordinates as [lng, lat] #4955
+    return {"type": "Point", "coordinates": [value[1], value[0]]}
 
 
 def _gender_choices(value):
