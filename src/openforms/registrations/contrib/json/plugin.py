@@ -1,3 +1,5 @@
+import base64
+
 from django.utils.translation import gettext_lazy as _
 
 from openforms.submissions.models import Submission
@@ -26,7 +28,8 @@ class JSONRegistration(BasePlugin):
                     continue
                 options["form_variables"].remove(attachment.form_key)
                 with attachment.content.open("rb") as f:
-                    values[attachment.form_key] = f.read()
+                    f.seek(0)
+                    values[attachment.form_key] = base64.b64encode(f.read()).decode()
 
         # TODO-4908: what should the behaviour be when a form
         #  variable is not in the data or static variables?

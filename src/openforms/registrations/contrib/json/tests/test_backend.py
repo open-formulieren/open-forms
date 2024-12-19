@@ -61,7 +61,7 @@ class JSONBackendTests(TestCase):
             "values": {
                 "firstName": "We Are",
                 "lastName": "Checking",
-                "file": b"This is example content.",
+                "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
                 "auth_bsn": "123456789",
             }
         }
