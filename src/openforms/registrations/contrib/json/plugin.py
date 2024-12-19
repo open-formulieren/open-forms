@@ -51,9 +51,27 @@ class JSONRegistration(BasePlugin):
 
         print(values)
 
-        # TODO-4908: send `values` to the service
+        # Send to the service
+        json = {"values": values}
+        service = options["service"]
+        with build_client(service) as client:
+            url = f"{client.base_url}{options['relative_api_endpoint']}"
+            response = client.post(url, json=json, headers={"Content-Type": "application/json"})
+            response.raise_for_status()
+
+            # TODO-4908: does this need to be used? If so, what to put in spec?
+            # result = execute_unless_result_exists(
+            #     partial(
+            #         client.post,
+            #         json=json,
+            #         headers={},
+            #     ),
+            #     submission,
+            #     spec="???",
+            # )
+
         # TODO-4908: added return for testing purposes
-        return {"values": values}
+        return json
 
     # TODO-4098: what to do in here?
     def check_config(self):
