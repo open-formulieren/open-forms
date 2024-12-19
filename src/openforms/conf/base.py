@@ -631,11 +631,11 @@ ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 # while staying backwards compatible for existing instances
 USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
     "USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS",
-    default=True,
+    default=False,
 )
 USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
     "USE_LEGACY_ORG_OIDC_ENDPOINTS",
-    default=True,
+    default=False,
 )
 
 ##############################
@@ -1030,7 +1030,7 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
 # DeprecationWarning
 # XXX: remove in Open Forms 3.0
-_USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=True)
+_USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=False)
 OIDC_AUTHENTICATION_CALLBACK_URL = (
     "legacy_oidc:oidc_authentication_callback"
     if _USE_LEGACY_OIDC_ENDPOINTS

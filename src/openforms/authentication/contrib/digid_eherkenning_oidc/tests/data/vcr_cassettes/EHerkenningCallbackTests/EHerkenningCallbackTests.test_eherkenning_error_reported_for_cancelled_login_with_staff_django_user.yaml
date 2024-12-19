@@ -18,12 +18,12 @@ interactions:
         \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
         />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
         name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
-        in to test</title>\n    <link rel=\"icon\" href=\"/resources/2px5l/login/keycloak/img/favicon.ico\"
-        />\n            <link href=\"/resources/2px5l/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/2px5l/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/2px5l/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/2px5l/common/keycloak/lib/pficon/pficon.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/2px5l/login/keycloak/css/login.css\"
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/ghaym/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/login/keycloak/css/login.css\"
         rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
         \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
         \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
@@ -68,13 +68,13 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=badscope&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Feherkenning-oidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=badscope&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fauth%2Foidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
   response:
     body:
       string: ''
     headers:
       Location:
-      - http://testserver/eherkenning-oidc/callback/?error=invalid_scope&error_description=Invalid+scopes%3A+badscope&state=not-a-random-string&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest
+      - http://testserver/auth/oidc/callback/?error=invalid_scope&error_description=Invalid+scopes%3A+badscope&state=not-a-random-string&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest
       Referrer-Policy:
       - no-referrer
       Strict-Transport-Security:

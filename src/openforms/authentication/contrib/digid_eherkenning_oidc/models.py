@@ -31,7 +31,7 @@ class OFDigiDConfig(DigiDConfig):
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
         if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
             warnings.warn(
-                "Legacy DigiD-eHerkenning callback endpoints will be removed in 3.0",
+                "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
             )
             return "digid_oidc:callback"
@@ -51,7 +51,7 @@ class OFDigiDMachtigenConfig(DigiDMachtigenConfig):
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
         if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
             warnings.warn(
-                "Legacy DigiD-eHerkenning callback endpoints will be removed in 3.0",
+                "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
             )
             return "digid_machtigen_oidc:callback"
@@ -71,7 +71,7 @@ class OFEHerkenningConfig(EHerkenningConfig):
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
         if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
             warnings.warn(
-                "Legacy DigiD-eHerkenning callback endpoints will be removed in 3.0",
+                "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
             )
             return "eherkenning_oidc:callback"
@@ -91,7 +91,7 @@ class OFEHerkenningBewindvoeringConfig(EHerkenningBewindvoeringConfig):
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
         if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
             warnings.warn(
-                "Legacy DigiD-eHerkenning callback endpoints will be removed in 3.0",
+                "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
             )
             return "eherkenning_bewindvoering_oidc:callback"

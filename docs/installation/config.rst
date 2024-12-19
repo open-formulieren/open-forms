@@ -277,23 +277,6 @@ Other settings
   enable :ref:`Organization accounts <configuration_authentication_oidc>`. Defaults
   to ``False``.
 
-* ``USE_LEGACY_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
-  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
-  ``/auth/oidc/callback/``, if ``True``, it is ``/oidc/callback/``.
-
-* ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
-  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
-  ``/auth/oidc/callback/``, if ``True``, they are:
-
-      - ``/digid-oidc/callback/``
-      - ``/eherkenning-oidc/callback/``
-      - ``/digid-machtigen-oidc/callback/``
-      - ``/eherkenning-bewindvoering-oidc/callback/``
-
-* ``USE_LEGACY_ORG_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
-  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
-  ``/auth/oidc/callback/``, if ``True``, it is ``/org-oidc/callback/``.
-
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the
   administrative interface. Enabling this forces users to log in every time they open

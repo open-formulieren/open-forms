@@ -24,7 +24,8 @@ class CallbackURLConfigurationTests(TestCase):
         self.addCleanup(OFDigiDMachtigenConfig.clear_cache)
         self.addCleanup(OFEHerkenningBewindvoeringConfig.clear_cache)
 
-    def test_default_settings_backwards_compatible(self):
+    @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
+    def test_legacy_settings(self):
         cases = (
             (OFDigiDConfig, "/digid-oidc/callback/"),
             (OFEHerkenningConfig, "/eherkenning-oidc/callback/"),
@@ -45,8 +46,7 @@ class CallbackURLConfigurationTests(TestCase):
 
                 self.assertEqual(url, expected_url)
 
-    @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=False)
-    def test_new_behaviour(self):
+    def test_default_settings_behaviour(self):
         cases = (
             OFDigiDConfig,
             OFEHerkenningConfig,
