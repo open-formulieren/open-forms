@@ -20,6 +20,8 @@ class JSONRegistration(BasePlugin):
 
     def register_submission(self, submission: Submission, options: JSONOptions) -> None:
         # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
+        #  Doesn't look like it. Seems to be used as a model for default configuration options, which
+        #  which wouldn't really be useful for this plugin
 
         # TODO-4908: any other form field types that need 'special attention'?
 
@@ -40,8 +42,9 @@ class JSONRegistration(BasePlugin):
             variable.key: variable.initial_value for variable in static_variables
         }
 
-        # TODO-4908: what should the behaviour be when a form
-        #  variable is not in the data or static variables?
+        # TODO-4908: what should the behaviour be when a form variable is not in the data or static variables?
+        #  Raising an error probably a good idea, the form variable is currently just set to None in the
+        #  resulting values dict
         # Update values dict with relevant form data
         values.update({
             form_variable: submission.data.get(
@@ -58,7 +61,7 @@ class JSONRegistration(BasePlugin):
         # TODO-4098: is the service type relevant here?
         with build_client(service) as client:
             response = client.post(
-                options["relative_api_endpoint"],
+                options.get("relative_api_endpoint", ""),
                 json=json,
                 headers={"Content-Type": "application/json"},
             )
