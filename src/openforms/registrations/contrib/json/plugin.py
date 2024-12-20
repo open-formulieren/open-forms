@@ -36,16 +36,15 @@ class JSONRegistration(BasePlugin):
             variable.key: variable.initial_value for variable in static_variables
         }
 
-        # TODO-4908: what should the behaviour be when a form variable is not in the data or static variables?
-        #  Raising an error probably a good idea, the form variable is currently just set to None in the
-        #  resulting values dict
         # Update values dict with relevant form data
-        values.update({
-            form_variable: submission.data.get(
-                form_variable, static_variables_dict.get(form_variable)
-            )
-            for form_variable in options["form_variables"]
-        })
+        values.update(
+            {
+                form_variable: submission.data.get(
+                    form_variable, static_variables_dict[form_variable]
+                )
+                for form_variable in options["form_variables"]
+            }
+        )
 
         print(values)
 
