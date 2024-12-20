@@ -17,7 +17,7 @@ class JSONRegistration(BasePlugin):
     verbose_name = _("JSON registration")
     configuration_options = JSONOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: JSONOptions) -> None:
+    def register_submission(self, submission: Submission, options: JSONOptions) -> dict:
         values = {}
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
@@ -44,22 +44,19 @@ class JSONRegistration(BasePlugin):
             }
         )
 
-        print(values)
-
         # Send to the service
         json = {"values": values}
         service = options["service"]
+        submission.registration_result = result = {}
         with build_client(service) as client:
-            response = client.post(
+            result["api_response"] = res = client.post(
                 options.get("relative_api_endpoint", ""),
                 json=json,
                 headers={"Content-Type": "application/json"},
             )
-            response.raise_for_status()
-            print(response.json())
+            res.raise_for_status()
 
-        # TODO-4908: added return for testing purposes
-        return json
+        return result
 
     def check_config(self):
         # TODO-4908: check if it's possible to connect to the service
