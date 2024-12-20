@@ -12,7 +12,7 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-// TODO-4098: maybe create separate file (JSONOptionsFormFields) for all the fields?
+// TODO-4908: maybe create separate file (JSONOptionsFormFields) for all the fields?
 //  Though, no need to use multiple FieldSets, so adding the fields to the form is pretty
 //  straightforward.
 import FormVariablesSelect from './fields/FormVariablesSelect';
@@ -81,7 +81,7 @@ JSONOptionsForm.propTypes = {
   formData: PropTypes.shape({
     service: PropTypes.number,
     relativeApiEndpoint: PropTypes.string,
-    // TODO-4098: might need to rename this to selectedFormVariables to avoid confusion or even
+    // TODO-4908: might need to rename this to selectedFormVariables to avoid confusion or even
     //  naming conflicts
     formVariables: PropTypes.arrayOf(PropTypes.string),
   }),
