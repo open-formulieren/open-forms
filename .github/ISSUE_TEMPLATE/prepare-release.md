@@ -24,7 +24,6 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.haal_centraal.tests.test_integration`
     - [ ] `openforms.contrib.kvk`
     - [ ] `openforms.contrib.objects_api.tests`
-    - [ ] `soap.tests.test_client`
     - `suwinet.tests.test_client` (testenv access has been retracted and won't be reinstated)
   - Forms
     - [ ] `openforms.forms.tests.test_import_export`
