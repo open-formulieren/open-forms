@@ -1,4 +1,5 @@
 import zipfile
+from datetime import date
 from uuid import uuid4
 
 from django import forms
@@ -8,14 +9,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.http import content_disposition_header
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic.edit import FormView
 
+from import_export.formats.base_formats import XLSX
 from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
@@ -125,6 +128,23 @@ class ExportSubmissionStatisticsView(
 
     # must be set by the ModelAdmin
     media: forms.Media | None = None
+
+    def form_valid(self, form: ExportStatisticsForm) -> HttpResponse:
+        start_date: date = form.cleaned_data["start_date"]
+        end_date: date = form.cleaned_data["end_date"]
+        dataset = form.export()
+        format = XLSX()
+        filename = f"submissions_{start_date.isoformat()}_{end_date.isoformat()}.xlsx"
+        return HttpResponse(
+            format.export_data(dataset),
+            content_type=format.get_content_type(),
+            headers={
+                "Content-Disposition": content_disposition_header(
+                    as_attachment=True,
+                    filename=filename,
+                ),
+            },
+        )
 
     def get_context_data(self, **kwargs):
         assert (

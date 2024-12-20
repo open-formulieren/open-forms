@@ -216,10 +216,22 @@ registration_debug.__doc__ = (
 )
 
 
+REGISTRATION_SUCCESS_EVENT = "registration_success"
+
+
 def registration_success(submission: Submission, plugin):
+    extra_data = {
+        # note: these keys are used in form statistics exports!
+        "public_reference": submission.public_registration_reference,
+        "form_id": submission.form.pk,
+        "form_name": submission.form.name,
+        "internal_form_name": submission.form.internal_name,
+        "submitted_on": submission.completed_on,
+    }
     _create_log(
         submission,
-        "registration_success",
+        REGISTRATION_SUCCESS_EVENT,
+        extra_data=extra_data,
         plugin=plugin,
     )
 
