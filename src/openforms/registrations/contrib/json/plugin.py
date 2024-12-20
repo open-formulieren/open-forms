@@ -56,8 +56,11 @@ class JSONRegistration(BasePlugin):
         service = options["service"]
         # TODO-4098: is the service type relevant here?
         with build_client(service) as client:
-            url = f"{client.base_url}{options['relative_api_endpoint']}"
-            response = client.post(url, json=json, headers={"Content-Type": "application/json"})
+            response = client.post(
+                options["relative_api_endpoint"],
+                json=json,
+                headers={"Content-Type": "application/json"},
+            )
             response.raise_for_status()
             print(response.json())
 
