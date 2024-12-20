@@ -7,7 +7,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 // TODO-4908: where to add already selected form variables from the variables table?
-// TODO-4098: the select box does not change size when you add more form variables, which causes
+// TODO-4908: the select box does not change size when you add more form variables, which causes
 //  selected form variables to be hidden
 const FormVariablesSelect = ({options}) => {
   const [fieldProps, , fieldHelpers] = useField('formVariables');

@@ -11,6 +11,8 @@ from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
+# TODO-4908: when you select a form variable in the configurations and then remove it again,
+#  it is possible to save the plugin and form without validation errors.
 class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     service = PrimaryKeyRelatedAsChoicesField(
         queryset=Service.objects.filter(api_type=APITypes.orc),
@@ -18,7 +20,7 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Which service to use."),
         required=True,
     )
-    # TODO-4098: show the complete API endpoint as a (tooltip) hint after user entry?
+    # TODO-4908: show the complete API endpoint as a (tooltip) hint after user entry?
     #  Might be a front-end thing...
     relative_api_endpoint = serializers.CharField(
         max_length=255,
