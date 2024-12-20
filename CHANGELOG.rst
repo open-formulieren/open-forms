@@ -2,6 +2,107 @@
 Changelog
 =========
 
+3.0.0 "Heerlijkheid" (2025-01-07)
+=================================
+
+Open Forms 3.0.0 is a feature release.
+
+.. epigraph::
+
+   "Heerlijkheid"
+
+**Breaking changes**
+
+* [:backend:`4375`] Removed environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
+  Objects API.
+
+Upgrade procedure
+-----------------
+
+* ⚠️ Ensure you upgrade to Open Forms 2.8.2 before upgrading to the 3.0 release series.
+
+* ⚠️ Please review the instructions in the documentation under **Installation** >
+  **Upgrade details to Open Forms 3.0.0** before and during upgrading.
+
+Major features
+--------------
+
+**Product Prefill**
+
+**Cosign Improvements**
+
+**Submission Price in Variable**
+
+Detailed changes
+----------------
+
+This contains the changes from the alpha and fixes applied until the stable version.
+
+
+**New features**
+
+* [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
+* [:backend:`4396`, :backend:`4693`, :backend:`4608`] You can now configure a variable to be prefilled
+  from the Objects API (a.k.a. "product prefill"):
+
+    - It's possible to assign individual properties from the object type to particular form variables.
+    - To avoid duplicating configuration, you can copy the configuration from a configured registration
+      backend.
+* [#4764] Added the ability to set the submission price calculation to variable.
+* [#4716] Added translations for form fields and associated error messages improvements.
+* [:backend:`4524`, :backend:`4675`] Selecting a form variable is now more user friendly.
+  Variables are logically grouped and a search box was added.
+* [:backend:`4709`] Improved the error feedback if unexpected errors happening during form
+  saving in the form designer.
+* [#4608] Implemented prefill configuration modal:
+
+    - Cleaned up API of VariablesMapping component.
+    - Refactored VariablesMapping component.
+    - Refactored ObjectTypeVersionSelect.
+
+**Bugfixes**
+
+* [:backend:`4726`] Fixed the styling for form delete buttons.
+* [:backend:`4744`] Fixed a performance regression in the logic check calls and general
+  submission processing.
+* [:backend:`4774`] Fixed ``textfield`` data not being converted to a string when
+  numeric data is received from a prefill plugin.
+* Fixed docs concerning invalid SSL certs and broken links.
+* [#4765] Fixed bug in components migration converter when multiple is True.
+* [:backend:`4546`] Fixed the soft-required validation errors being shown in the summary PDF.
+* Fixed validation error when saving a new form definition via the admin.
+* [:backend:`4659`] Fixed ``null`` default values for text-based fields.
+* [:backend:`4528`] Fixed vague error/log out situation when logging in with OIDC.
+* [:backend:`3629`] Fixed submission bulk export crashing when the form has repeating
+  groups.
+* [:backend:`3705`] Updated timestamps in str representations.
+* [:backend:`4713`] Fixed pre-request hook not running for all "Haal Centraal BRP
+  Personen bevragen" operations (fixes Token Exchange extension).
+* [:backend:`4600`] Fixed not all the content on the page getting translated after changing
+  the form language.
+* [:backend:`4659`] Fixed ``null`` default values for text-based fields.
+* [:backend:`4733`] Fixed a segmentation fault that could occur in dev environments.
+* [:backend:`4628`] Fixed a crash when copying a form with a "block next step" logic
+* [:backend:`4711`] Fixed broken submission form row styling.
+* [:backend:`4695`] Fixed a performance issue during legacy Objects API registration
+  plugin validation.
+* [#4652] Fixed misaligned validation errors in the form designer UI.
+* [#4658] Fixed certain variants of ZIP files not passing validation on Windows.
+* [:backend:`4656`] Fixed a crash during validation when you have file upload components
+  inside repeating groups.
+
+**Project maintenance**
+
+* Bumped django-silk version to be compatible with Python 3.12.
+* Cleaned up CI workflow.
+* Updated trivy-action to 0.24.0.
+* Upgraded to Storybook 8.3.5.
+* Removed 2.6.x from supported versions in Docker Hub description.
+* Added 2.8.x to Docker Hub description.
+* [:backend:`4721`] Updated the screenshots in the documentation for prefill and the
+  Objects API manual.
+* Moved 2.5 to unsupported versions in developer docs and documented 2.5.x EOL status.
+
 3.0.0-alpha.1 (2024-11-28)
 ==========================
 
