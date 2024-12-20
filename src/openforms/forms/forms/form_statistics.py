@@ -8,8 +8,10 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from dateutil.relativedelta import relativedelta
+from tablib import Dataset
 
 from ..models import Form
+from ..statistics import export_registration_statistics
 
 
 def get_first_of_previous_month() -> date:
@@ -55,3 +57,12 @@ class ExportStatisticsForm(forms.Form):
             "multiple options."
         ),
     )
+
+    def export(self) -> Dataset:
+        start_date: date = self.cleaned_data["start_date"]
+        end_date: date = self.cleaned_data["end_date"]
+        return export_registration_statistics(
+            start_date,
+            end_date,
+            self.cleaned_data["limit_to_forms"],
+        )
