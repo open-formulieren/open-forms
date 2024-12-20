@@ -1,0 +1,49 @@
+from typing import Required, TypedDict
+
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import serializers
+from zgw_consumers.constants import APITypes
+from zgw_consumers.models import Service
+
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.utils.mixins import JsonSchemaSerializerMixin
+
+
+# TODO-4908: when you select a form variable in the configurations and then remove it again,
+#  it is possible to save the plugin and form without validation errors.
+class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    service = PrimaryKeyRelatedAsChoicesField(
+        queryset=Service.objects.filter(api_type=APITypes.orc),
+        label=_("Service"),
+        help_text=_("Which service to use."),
+        required=True,
+    )
+    # TODO-4908: show the complete API endpoint as a (tooltip) hint after user entry?
+    #  Might be a front-end thing...
+    relative_api_endpoint = serializers.CharField(
+        max_length=255,
+        label=_("Relative API endpoint"),
+        help_text=_("The API endpoint to send the data to (relative to the service API root)."),
+        allow_blank=True,
+        required=False,
+    )
+    form_variables = serializers.ListField(
+        child=FormioVariableKeyField(max_length=50),
+        label=_("Form variable key list"),
+        help_text=_("A list of form variables (can also include static variables) to use."),
+        required=True,
+    )
+
+
+class JSONOptions(TypedDict):
+    """
+    JSON registration plugin options
+
+    This describes the shape of :attr:`JSONOptionsSerializer.validated_data`, after
+    the input data has been cleaned/validated.
+    """
+    service: Required[Service]
+    relative_api_endpoint: str
+    form_variables: Required[list[str]]
