@@ -22,8 +22,11 @@ class JSONRegistration(BasePlugin):
         # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
         # TODO-4908: add typing for options dict
 
+        # TODO-4908: any other form field types that need 'special attention'?
+
         values = {}
-        # Encode (base64) and add attachments to values dict if they were specified in the form variables list
+        # Encode (base64) and add attachments to values dict if their form keys were specified in the
+        # form variables list
         if submission.attachments.exists():
             for attachment in submission.attachments:
                 if not attachment.form_key in options["form_variables"]:
@@ -81,5 +84,6 @@ class JSONRegistration(BasePlugin):
 
     def check_config(self):
         # TODO-4098: check if it's possible to connect to the service
+        #  (using the 'connection check endpoint' of the service)
         # TODO-4098: check anything else?
         pass
