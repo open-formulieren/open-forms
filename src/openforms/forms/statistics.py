@@ -34,7 +34,7 @@ def export_registration_statistics(
     )
 
     _start_date = make_aware(datetime.combine(start_date, time.min))
-    _end_date = make_aware(datetime.combine(end_date, time.max))
+    _end_date = make_aware(datetime.combine(end_date, time.min))
 
     log_records = TimelineLogProxy.objects.filter(
         content_type=ContentType.objects.get_for_model(Submission),
