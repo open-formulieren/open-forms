@@ -1,3 +1,5 @@
+from typing import Required, TypedDict
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -28,3 +30,15 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "A comma-separated list of form variables (can also include static variables) to use."
         )
     )
+
+
+class JSONOptions(TypedDict):
+    """
+    JSON registration plugin options
+
+    This describes the shape of :attr:`JSONOptionsSerializer.validated_data`, after
+    the input data has been cleaned/validated.
+    """
+    service: Required[Service]
+    relative_api_endpoint: str
+    form_variables: Required[list[str]]

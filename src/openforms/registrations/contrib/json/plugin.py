@@ -7,10 +7,10 @@ from zgw_consumers.client import build_client
 from openforms.submissions.models import Submission
 from openforms.variables.service import get_static_variables
 
-from ...base import BasePlugin, OptionsT  # openforms.registrations.base
+from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
 from ...utils import execute_unless_result_exists
-from .config import JSONOptionsSerializer
+from .config import JSONOptions, JSONOptionsSerializer
 
 
 @register("json")
@@ -18,9 +18,8 @@ class JSONRegistration(BasePlugin):
     verbose_name = _("JSON registration")
     configuration_options = JSONOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: OptionsT) -> None:
+    def register_submission(self, submission: Submission, options: JSONOptions) -> dict:
         # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
-        # TODO-4908: add typing for options dict
 
         # TODO-4908: any other form field types that need 'special attention'?
 
