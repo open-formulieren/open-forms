@@ -1,0 +1,15 @@
+version: '3.8'
+
+name: json-registration
+
+services:
+  flask_app:
+    build: ./json-registration
+    ports:
+      - "80:80"
+    volumes:
+      - ./json-registration/:/app/
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
