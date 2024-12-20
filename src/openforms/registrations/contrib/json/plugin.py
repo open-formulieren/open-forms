@@ -36,11 +36,10 @@ class JSONRegistration(BasePlugin):
         }
 
         # Update values dict with relevant form data
+        all_variables = {**submission.data, **static_variables_dict}
         values.update(
             {
-                form_variable: submission.data.get(
-                    form_variable, static_variables_dict[form_variable]
-                )
+                form_variable: all_variables[form_variable]
                 for form_variable in options["form_variables"]
             }
         )
