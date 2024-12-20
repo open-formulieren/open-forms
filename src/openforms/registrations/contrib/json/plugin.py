@@ -27,14 +27,13 @@ class JSONRegistration(BasePlugin):
         values = {}
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
-        if submission.attachments.exists():
-            for attachment in submission.attachments:
-                if not attachment.form_key in options["form_variables"]:
-                    continue
-                options["form_variables"].remove(attachment.form_key)
-                with attachment.content.open("rb") as f:
-                    f.seek(0)
-                    values[attachment.form_key] = base64.b64encode(f.read()).decode()
+        for attachment in submission.attachments:
+            if not attachment.form_key in options["form_variables"]:
+                continue
+            options["form_variables"].remove(attachment.form_key)
+            with attachment.content.open("rb") as f:
+                f.seek(0)
+                values[attachment.form_key] = base64.b64encode(f.read()).decode()
 
         # Create static variables dict
         static_variables = get_static_variables(submission=submission)
