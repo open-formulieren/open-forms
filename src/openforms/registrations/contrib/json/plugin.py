@@ -19,12 +19,6 @@ class JSONRegistration(BasePlugin):
     configuration_options = JSONOptionsSerializer
 
     def register_submission(self, submission: Submission, options: JSONOptions) -> None:
-        # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
-        #  Doesn't look like it. Seems to be used as a model for default configuration options, which
-        #  which wouldn't really be useful for this plugin
-
-        # TODO-4908: any other form field types that need 'special attention'?
-
         values = {}
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
@@ -58,7 +52,6 @@ class JSONRegistration(BasePlugin):
         # Send to the service
         json = {"values": values}
         service = options["service"]
-        # TODO-4098: is the service type relevant here?
         with build_client(service) as client:
             response = client.post(
                 options.get("relative_api_endpoint", ""),
@@ -67,19 +60,6 @@ class JSONRegistration(BasePlugin):
             )
             response.raise_for_status()
             print(response.json())
-
-            # TODO-4908: does this need to be used (what does it even do, there is no documentation)?
-            #  If so, what to put in spec?
-            # result = execute_unless_result_exists(
-            #     partial(
-            #         client.post,
-            #         options["relative_api_endpoint"],
-            #         json=json,
-            #         headers={},
-            #     ),
-            #     submission,
-            #     spec="???",
-            # )
 
         # TODO-4908: added return for testing purposes
         return json
