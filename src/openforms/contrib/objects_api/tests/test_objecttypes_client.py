@@ -47,7 +47,7 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
                 "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"
             )
 
-        self.assertEqual(len(data), 3)
+        self.assertEqual(len(data), 4)
 
     def test_get_objecttype_version(self):
         with get_objecttypes_client(self.test_config) as client:

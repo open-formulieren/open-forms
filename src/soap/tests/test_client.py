@@ -229,6 +229,10 @@ class ClientTransportTests(OFVCRMixin, TestCase):
         self.assertEqual(m.last_request.url, "https://example.com/api/relative")
 
     def test_it_can_build_a_functional_client(self):
+        # NOTE - soapclient.com no longer exists so we can't re-record these
+        # cassettes. That's not a problem, as we mostly check that the WSDL processing
+        # works as expected and it's not a real service that we talk to that may break
+        # our application.
         service = SoapServiceFactory.build(
             url="http://www.soapclient.com/xml/soapresponder.wsdl"
         )
