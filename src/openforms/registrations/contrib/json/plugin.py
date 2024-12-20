@@ -9,7 +9,6 @@ from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
-from ...utils import execute_unless_result_exists
 from .config import JSONOptions, JSONOptionsSerializer
 
 
@@ -19,10 +18,6 @@ class JSONRegistration(BasePlugin):
     configuration_options = JSONOptionsSerializer
 
     def register_submission(self, submission: Submission, options: JSONOptions) -> dict:
-        # TODO-4908: the email plugin works with a EmailConfig singleton model. Is that useful here?
-
-        # TODO-4908: any other form field types that need 'special attention'?
-
         values = {}
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
