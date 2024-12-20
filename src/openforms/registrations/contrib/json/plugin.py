@@ -9,7 +9,6 @@ from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
-from ...utils import execute_unless_result_exists
 from .config import JSONOptions, JSONOptionsSerializer
 
 
@@ -64,7 +63,7 @@ class JSONRegistration(BasePlugin):
         return json
 
     def check_config(self):
-        # TODO-4098: check if it's possible to connect to the service
+        # TODO-4908: check if it's possible to connect to the service
         #  (using the 'connection check endpoint' of the service)
-        # TODO-4098: check anything else?
+        # TODO-4908: check anything else?
         pass
