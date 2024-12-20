@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block title %} {% trans "Export submission statistics" %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:forms_formstatistics_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans 'Export submission statistics' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans 'Export submission statistics' %}</h1>
+
+<div id="content-main">
+    <form action="." method="post">
+        {% csrf_token %}
+
+        <fieldset class="module aligned">
+            <div class="description">{% blocktrans trimmed %}
+              <p>Here you can create an export of successfully registered form submissions. The
+              export file contains the following columns: public reference, form name,
+              form internal name, the submission datetime and the timestamp of registration.</p>
+
+              <p>You can use the filters below to limit the result set in the export.</p>
+            {% endblocktrans %}</div>
+
+            {# TODO: doesn't handle checkboxes, see admin/includes/fieldset.html for when this is necessary #}
+            {% for field in form_fields %}
+                <div class="form-row {% if field.errors %}errors{% endif %}">
+                    {{ field.errors }}
+                    <div>
+                        <div class="flex-container {% if field.errors %}errors{% endif %}">
+                            {{ field.label_tag }}
+                            {{ field.field }}
+                        </div>
+                    </div>
+
+                    {% if field.field.help_text %}
+                        <div class="help" {% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                            <div>{{ field.field.help_text|safe }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <div class="submit-row">
+            <input type="submit" class="default" value="{% trans 'Export' %}">
+        </div>
+    </form>
+</div>
+{% endblock %}

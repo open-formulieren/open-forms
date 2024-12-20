@@ -3,12 +3,15 @@ from uuid import uuid4
 
 from django import forms
 from django.contrib import messages
+from django.contrib.admin.helpers import AdminField
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic.edit import FormView
@@ -18,8 +21,9 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.logging import logevent
 
+from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
-from ..models.form import Form, FormsExport
+from ..models import Form, FormsExport, FormStatistics
 from ..utils import import_form
 from .tasks import process_forms_export, process_forms_import
 
@@ -109,3 +113,36 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
         filename = private_media_storage.save(name, import_file)
 
         process_forms_import.delay(filename, self.request.user.id)
+
+
+@method_decorator(staff_member_required, name="dispatch")
+class ExportSubmissionStatisticsView(
+    LoginRequiredMixin, PermissionRequiredMixin, FormView
+):
+    permission_required = "forms.view_formstatistics"
+    template_name = "admin/forms/formstatistics/export_form.html"
+    form_class = ExportStatisticsForm
+
+    # must be set by the ModelAdmin
+    media: forms.Media | None = None
+
+    def get_context_data(self, **kwargs):
+        assert (
+            self.media is not None
+        ), "You must pass media=self.media in the model admin"
+        context = super().get_context_data(**kwargs)
+
+        form = context["form"]
+
+        def form_fields():
+            for name in form.fields:
+                yield AdminField(form, name, is_first=False)
+
+        context.update(
+            {
+                "opts": FormStatistics._meta,
+                "media": self.media + form.media,
+                "form_fields": form_fields,
+            }
+        )
+        return context
