@@ -3,6 +3,7 @@ from typing import Required, TypedDict
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -12,7 +13,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     service = PrimaryKeyRelatedAsChoicesField(
-        queryset=Service.objects.all(),
+        queryset=Service.objects.filter(api_type=APITypes.orc),
         label=_("Service"),
         help_text=_("Which service to use."),
         required=True,
