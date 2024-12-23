@@ -11,8 +11,6 @@ from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
-# TODO-4908: when you select a form variable in the configurations and then remove it again,
-#  it is possible to save the plugin and form without validation errors.
 class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     service = PrimaryKeyRelatedAsChoicesField(
         queryset=Service.objects.filter(api_type=APITypes.orc),
@@ -34,6 +32,7 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("Form variable key list"),
         help_text=_("A list of form variables (can also include static variables) to use."),
         required=True,
+        min_length=1,
     )
 
 
