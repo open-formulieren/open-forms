@@ -626,3 +626,36 @@ class PrefillHookTests(TransactionTestCase):
         result = plugin.get_identifier_value(submission, IdentifierRoles.main)
 
         self.assertEqual("123123123", result)
+
+    def test_prefill_logging_with_mismatching_login_method(self):
+        components = [
+            {
+                "key": "mainPersonName",
+                "type": "textfield",
+                "prefill": {
+                    "plugin": "demo",
+                    "attribute": "naam.voornamen",
+                    "identifierRole": IdentifierRoles.main,
+                },
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            components_list=components, kvk="69599084"
+        )
+        register = Registry()
+
+        @register("demo")
+        class MismatchPlugin(DemoPrefill):
+            requires_auth = AuthAttribute.bsn
+
+            @staticmethod
+            def get_prefill_values(submission, attributes, identifier_role):
+                return {}
+
+        apply_prefill(
+            configuration={"components": components},
+            submission=submission,
+            register=register,
+        )
+
+        self.assertFalse(TimelineLogProxy.objects.exists())
