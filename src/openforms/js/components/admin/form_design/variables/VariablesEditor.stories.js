@@ -654,6 +654,63 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
   },
 };
 
+export const WithJSONRegistrationBackend = {
+  args: {
+    registrationBackends: [
+      {
+        backend: 'json',
+        key: 'test_json_backend',
+        name: 'JSON registration',
+        options: {
+          service: 2,
+          relativeApiEndpoint: 'test',
+          formVariables: ['aSingleFile', 'now'],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    // TODO-4098: can I get the formVariables backendOptions here?
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    await expect(editIcons).toHaveLength(3);
+
+    await step('formioComponent checkbox unchecked', async () => {
+      await userEvent.click(editIcons[0]);
+
+      const checkbox = await canvas.findByRole('checkbox');
+      await expect(checkbox).not.toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    })
+
+    await step('aSingleFile checkbox checked', async () => {
+      await userEvent.click(editIcons[1]);
+
+      const checkbox = await canvas.findByRole('checkbox');
+      await expect(checkbox).toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    })
+
+    await step('now checkbox checked', async () => {
+      const staticVariables = canvas.getByRole('tab', {name: 'Vaste variabelen'});
+      await userEvent.click(staticVariables);
+
+      const editIcon = canvas.getByTitle('Registratie-instellingen bewerken')
+      await userEvent.click(editIcon)
+
+      const checkbox = await canvas.findByRole('checkbox');
+      await expect(checkbox).toBeChecked();
+    })
+
+
+  },
+};
+
 export const ConfigurePrefill = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
