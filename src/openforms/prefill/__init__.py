@@ -81,7 +81,11 @@ def _fetch_prefill_values(
             if values:
                 logevent.prefill_retrieve_success(submission, plugin, fields)
             else:
-                logevent.prefill_retrieve_empty(submission, plugin, fields)
+                if (required_attribute := plugin.requires_auth) is None or (
+                    (auth_info := getattr(submission, "auth_info", None))
+                    and auth_info.attribute == required_attribute
+                ):
+                    logevent.prefill_retrieve_empty(submission, plugin, fields)
 
         return plugin_id, identifier_role, values
 
