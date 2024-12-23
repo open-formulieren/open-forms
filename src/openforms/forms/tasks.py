@@ -102,33 +102,45 @@ def recouple_submission_variables_to_form_variables(form_id: int) -> None:
 
     When the FormVariable bulk create/update endpoint is called, all existing FormVariable related to the form are
     deleted and new are created. If there are existing submissions for this form, the SubmissionValueVariables don't
-    have a related FormVariable anymore. This task tries to recouple them.
+    have a related FormVariable anymore. This task tries to recouple them and does the same for
+    other Forms in case of reusable FormDefinitions
     """
     from openforms.submissions.models import SubmissionValueVariable
 
-    form = Form.objects.get(id=form_id)
-    submission_variables_to_recouple = SubmissionValueVariable.objects.filter(
-        form_variable__isnull=True, submission__form=form
-    )
+    from .models import FormDefinition  # due to circular import
 
-    form_variables = {
-        variable.key: variable for variable in form.formvariable_set.all()
-    }
-
-    submission_variables_to_update = []
-    for submission_variable in submission_variables_to_recouple:
-        if form_variable := form_variables.get(submission_variable.key):
-            submission_variable.form_variable = form_variable
-            submission_variables_to_update.append(submission_variable)
-
-    try:
-        SubmissionValueVariable.objects.bulk_update(
-            submission_variables_to_update, fields=["form_variable"]
+    def recouple(form):
+        submission_variables_to_recouple = SubmissionValueVariable.objects.filter(
+            form_variable__isnull=True, submission__form=form
         )
-    except IntegrityError:
-        # Issue #1970: If the form is saved again from the form editor while this task was running, the form variables
-        # retrieved don't exist anymore. Another task will be scheduled from the endpoint, so nothing more to do here.
-        logger.info("Form variables were updated while this task was runnning.")
+
+        form_variables = {
+            variable.key: variable for variable in form.formvariable_set.all()
+        }
+
+        submission_variables_to_update = []
+        for submission_variable in submission_variables_to_recouple:
+            if form_variable := form_variables.get(submission_variable.key):
+                submission_variable.form_variable = form_variable
+                submission_variables_to_update.append(submission_variable)
+
+        try:
+            SubmissionValueVariable.objects.bulk_update(
+                submission_variables_to_update, fields=["form_variable"]
+            )
+        except IntegrityError:
+            # Issue #1970: If the form is saved again from the form editor while this task was running, the form variables
+            # retrieved don't exist anymore. Another task will be scheduled from the endpoint, so nothing more to do here.
+            logger.info("Form variables were updated while this task was runnning.")
+
+    recouple(Form.objects.get(id=form_id))
+
+    fds = FormDefinition.objects.filter(formstep__form=form_id, is_reusable=True)
+    other_forms = Form.objects.filter(formstep__form_definition__in=fds).exclude(
+        id=form_id
+    )
+    for form in other_forms:
+        recouple(form)
 
 
 @app.task(ignore_result=True)
