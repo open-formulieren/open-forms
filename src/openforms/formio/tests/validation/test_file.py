@@ -602,10 +602,10 @@ class FileValidationMimeTypeTests(TestCase):
         }
 
         is_valid, errors = validate_formio_data(component, data, submission=submission)
-        error = extract_error(errors["foo"][0], "type")
+        error = extract_error(errors["foo"][0], "non_field_errors")
 
         self.assertFalse(is_valid)
-        self.assertEqual(error.code, "blank")
+        self.assertEqual(error.code, "invalid")
         self.assertEqual(
             error,
             _(
