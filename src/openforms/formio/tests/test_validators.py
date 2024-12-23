@@ -108,6 +108,23 @@ class MimeTypeValidatorTests(SimpleTestCase):
         except ValidationError as e:
             self.fail(f"Valid file failed validation: {e}")
 
+    def test_unknown_file_type(self):
+        file = SimpleUploadedFile(
+            "unknown-type",
+            b"test",
+            content_type="application/octet-stream",  # see e2e test SingleFileTests.test_unknown_file_type
+        )
+        validator = validators.MimeTypeValidator(
+            allowed_mime_types=None
+        )  # allows any mime type
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            "Could not determine the file type. Please make sure the file name "
+            "has an extension.",
+        ):
+            validator(file)
+
     def test_star_wildcard_in_allowed_mimetypes(self):
         validator = validators.MimeTypeValidator({"*"})
 
