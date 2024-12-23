@@ -9,10 +9,10 @@ received data. The `test_connection` endpoint just returns an 'OK' message.
 
 ## docker compose
 
-Start an instance in your local environment from the project root:
+Start an instance in your local environment from the parent directory:
 
 ```bash
-docker compose -f docker/docker-compose.json-registration.yml up -d
+docker compose -f docker-compose.json-registration.yml up -d
 ```
 
 This starts a flask application at http://localhost:80/ with the endpoints `json_plugin` and `test_connection`.
