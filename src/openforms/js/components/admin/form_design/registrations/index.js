@@ -1,7 +1,9 @@
 import CamundaOptionsForm from './camunda';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
-import JSONOptionsForm from './json';
+import JSONOptionsForm from './json/JSONOptionsForm';
+import JSONSummaryHandler from './json/JSONSummaryHandler';
+import JSONVariableConfigurationEditor from './json/JSONVariableConfigurationEditor';
 import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
@@ -47,7 +49,12 @@ export const BACKEND_OPTIONS_FORMS = {
     form: StufZDSOptionsForm,
   },
   'microsoft-graph': {form: MSGraphOptionsForm},
-  'json': {form: JSONOptionsForm},
+  'json': {
+    form: JSONOptionsForm,
+    configurableFromVariables: true,
+    summaryHandler: JSONSummaryHandler,
+    variableConfigurationEditor: JSONVariableConfigurationEditor,
+  },
   // demo plugins
   demo: {form: DemoOptionsForm},
   'failing-demo': {form: DemoOptionsForm},
