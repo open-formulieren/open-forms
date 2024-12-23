@@ -3,6 +3,7 @@ import time
 from unittest.mock import patch
 
 from django.db import close_old_connections
+from django.db.models import Q
 from django.test import TestCase, TransactionTestCase, override_settings, tag
 
 from openforms.forms.tasks import (
@@ -19,11 +20,16 @@ from openforms.submissions.models import SubmissionValueVariable
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
 )
 from openforms.variables.constants import FormVariableSources
 
 from ...models import FormVariable
-from ...tasks import create_form_variables_for_components, on_formstep_save_event
+from ...tasks import (
+    create_form_variables_for_components,
+    on_formstep_save_event,
+    on_variables_bulk_update_event,
+)
 
 
 class FormVariableTasksTest(TestCase):
@@ -253,6 +259,88 @@ class CreateFormVariablesForComponentsTests(TestCase):
             self.assertEqual(variables.count(), 1)
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class RecoupleSubmissionVariablesToFormVariables(TestCase):
+    def test_recouple(self):
+        form = FormFactory.create()
+        other_form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "firstName",
+                        "type": "textfield",
+                        "label": "First Name",
+                    },
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            },
+            is_reusable=True,
+        )
+        form_step1 = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_step2 = FormStepFactory.create(
+            form=other_form, form_definition=form_definition
+        )
+
+        submission1 = SubmissionFactory.create(form=form)
+        submission2 = SubmissionFactory.create(form=other_form)
+
+        SubmissionStepFactory.create(
+            submission=submission1,
+            form_step=form_step1,
+            data={"firstName": "John"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission2,
+            form_step=form_step2,
+            data={"firstName": "John"},
+        )
+
+        # Task should ignore keys for which there is no FormVariable
+        SubmissionValueVariableFactory.create(
+            submission=submission1, key="non-existent", form_variable=None
+        )
+        SubmissionValueVariable.objects.filter(
+            Q(submission__form=form) | Q(submission__form=other_form),
+        ).update(form_variable=None)
+
+        first_name_var1 = FormVariable.objects.get(form=form, key="firstName")
+        first_name_var2 = FormVariable.objects.get(form=other_form, key="firstName")
+
+        recouple_submission_variables_to_form_variables(form.id)
+
+        with self.subTest(
+            "Existing submission values are recoupled with new variables"
+        ):
+            submission_vars1 = SubmissionValueVariable.objects.filter(
+                submission__form=form
+            )
+
+            self.assertEqual(submission_vars1.count(), 2)
+
+            first_name_submission_var1, _ = submission_vars1.order_by("key")
+
+            self.assertEqual(first_name_submission_var1.form_variable, first_name_var1)
+
+        with self.subTest(
+            "Existing submission values for other form are recoupled with new variables"
+        ):
+            submission_vars2 = SubmissionValueVariable.objects.filter(
+                submission__form=other_form
+            )
+
+            self.assertEqual(submission_vars2.count(), 1)
+
+            [first_name_submission_var2] = submission_vars2
+
+            self.assertEqual(first_name_submission_var2.form_variable, first_name_var2)
+
+
 @tag("gh-4824")
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class OnFormStepSaveEventTests(TestCase):
@@ -337,15 +425,106 @@ class OnFormStepSaveEventTests(TestCase):
 
             self.assertEqual(first_name_submission_var1.form_variable, first_name_var1)
 
-        # with self.subTest(
-        #     "Existing submission values for other form are recoupled with new variables"
-        # ):
-        #     submission_vars2 = SubmissionValueVariable.objects.filter(
-        #         submission__form=other_form
-        #     )
+        with self.subTest(
+            "Existing submission values for other form are recoupled with new variables"
+        ):
+            submission_vars2 = SubmissionValueVariable.objects.filter(
+                submission__form=other_form
+            )
 
-        #     self.assertEqual(submission_vars1.count(), 1)
+            self.assertEqual(submission_vars2.count(), 1)
 
-        #     [first_name_submission_var2] = submission_vars2
+            [first_name_submission_var2] = submission_vars2
 
-        #     self.assertEqual(first_name_submission_var2.form_variable, first_name_var2)
+            self.assertEqual(first_name_submission_var2.form_variable, first_name_var2)
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class OnVariablesBulkUpdateEventTests(TestCase):
+    def test_on_variables_bulk_update_event(self):
+        form = FormFactory.create()
+        other_form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "firstName",
+                        "type": "textfield",
+                        "label": "First Name",
+                    },
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            },
+            is_reusable=True,
+        )
+        form_step1 = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_step2 = FormStepFactory.create(
+            form=other_form, form_definition=form_definition
+        )
+
+        submission1 = SubmissionFactory.create(form=form)
+        submission2 = SubmissionFactory.create(form=other_form)
+
+        SubmissionStepFactory.create(
+            submission=submission1,
+            form_step=form_step1,
+            data={"firstName": "John"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission2,
+            form_step=form_step2,
+            data={"firstName": "John"},
+        )
+
+        on_variables_bulk_update_event(form.id)
+
+        with self.subTest("Form has appropriate FormVariables"):
+            self.assertEqual(FormVariable.objects.filter(form=form).count(), 2)
+            first_name_var1, last_name_var1 = FormVariable.objects.filter(
+                form=form
+            ).order_by("pk")
+            self.assertEqual(first_name_var1.key, "firstName")
+            self.assertEqual(last_name_var1.key, "lastName")
+
+        with self.subTest(
+            "other Form that reuses this FormDefinition has appropriate FormVariables"
+        ):
+            self.assertEqual(FormVariable.objects.filter(form=other_form).count(), 2)
+
+            first_name_var2, last_name_var2 = FormVariable.objects.filter(
+                form=other_form
+            ).order_by("pk")
+
+            self.assertEqual(first_name_var2.key, "firstName")
+            self.assertEqual(last_name_var2.key, "lastName")
+
+        with self.subTest(
+            "Existing submission values are recoupled with new variables"
+        ):
+            submission_vars1 = SubmissionValueVariable.objects.filter(
+                submission__form=form
+            )
+
+            self.assertEqual(submission_vars1.count(), 1)
+
+            [first_name_submission_var1] = submission_vars1
+
+            self.assertEqual(first_name_submission_var1.form_variable, first_name_var1)
+
+        with self.subTest(
+            "Existing submission values for other form are recoupled with new variables"
+        ):
+            submission_vars2 = SubmissionValueVariable.objects.filter(
+                submission__form=other_form
+            )
+
+            self.assertEqual(submission_vars2.count(), 1)
+
+            [first_name_submission_var2] = submission_vars2
+
+            self.assertEqual(first_name_submission_var2.form_variable, first_name_var2)
