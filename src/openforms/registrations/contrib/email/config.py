@@ -13,11 +13,40 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from .constants import AttachmentFormat
 
 
+class Options(TypedDict):
+    """
+    Shape of the email registration plugin options.
+
+    This describes the shape of :attr:`EmailOptionsSerializer.validated_data`, after
+    the input data has been cleaned/validated.
+    """
+
+    to_emails: NotRequired[list[str]]
+    to_emails_from_variable: NotRequired[str]
+    attachment_formats: NotRequired[list[AttachmentFormat | str]]
+    payment_emails: NotRequired[list[str]]
+    attach_files_to_email: bool | None
+    email_subject: NotRequired[str]
+    email_payment_subject: NotRequired[str]
+    email_content_template_html: NotRequired[str]
+    email_content_template_text: NotRequired[str]
+
+
 class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     to_emails = serializers.ListField(
         child=serializers.EmailField(),
         label=_("The email addresses to which the submission details will be sent"),
-        required=True,
+        required=False,  # Either to_emails or to_emails_from_variable should be required
+    )
+    to_emails_from_variable = serializers.CharField(
+        label=_("Key of the target variable containing the email address"),
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Key of the target variable whose value will be used for the mailing. "
+            "When using this field, the mailing will only be send to this email address. "
+            "The email addresses field would then be ignored. "
+        ),
     )
     attachment_formats = serializers.ListField(
         child=serializers.ChoiceField(choices=AttachmentFormat.choices),
@@ -99,23 +128,19 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             ),
         ]
 
+    def validate(self, attrs: Options) -> Options:
+        # The email registration requires either `to_emails` or `to_emails_from_variable`
+        # to determine which email address to use.
+        # Both may be set - in that case, `to_emails_from_variable` is preferred.
+        if not attrs.get("to_emails") and not attrs.get("to_emails_from_variable"):
+            raise serializers.ValidationError(
+                {
+                    "to_emails": _("This field is required."),
+                },
+                code="required",
+            )
 
-class Options(TypedDict):
-    """
-    Shape of the email registration plugin options.
-
-    This describes the shape of :attr:`EmailOptionsSerializer.validated_data`, after
-    the input data has been cleaned/validated.
-    """
-
-    to_emails: list[str]
-    attachment_formats: NotRequired[list[AttachmentFormat | str]]
-    payment_emails: NotRequired[list[str]]
-    attach_files_to_email: bool | None
-    email_subject: NotRequired[str]
-    email_payment_subject: NotRequired[str]
-    email_content_template_html: NotRequired[str]
-    email_content_template_text: NotRequired[str]
+        return attrs
 
 
 # sanity check for development - keep serializer and type definitions in sync

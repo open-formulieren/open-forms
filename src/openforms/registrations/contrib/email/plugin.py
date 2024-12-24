@@ -3,6 +3,8 @@ from mimetypes import types_map
 from typing import Any
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, gettext_lazy as _
@@ -42,11 +44,41 @@ class EmailRegistration(BasePlugin[Options]):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
+    def get_recipients(self, submission: Submission, options: Options) -> list[str]:
+        state = submission.load_submission_value_variables_state()
+        recipients = []
+
+        # If the 'recipients from variable' is used and it exists
+        if (
+            (variable_key := options.get("to_emails_from_variable"))
+            and variable_key in state.variables
+            and (variable_value := state.variables[variable_key].value)
+        ):
+            # To simplify things, treat all variable values as lists
+            if type(variable_value) != list:
+                variable_value = [variable_value]
+
+            # Only if all email addresses are valid, they will be used as recipients
+            try:
+                for value in variable_value:
+                    validate_email(value)
+            except ValidationError:
+                pass
+            else:
+                recipients = variable_value
+
+        # If the variable cannot be used, fallback to the general email addresses
+        if not recipients and "to_emails" in options:
+            recipients = options["to_emails"]
+
+        return recipients
+
     def register_submission(self, submission: Submission, options: Options) -> None:
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
-        self.send_registration_email(options["to_emails"], submission, options)
+        recipients = self.get_recipients(submission, options)
+        self.send_registration_email(recipients, submission, options)
 
         # ensure that the payment email is also sent if registration is deferred until
         # payment is completed
@@ -187,8 +219,9 @@ class EmailRegistration(BasePlugin[Options]):
 
     def update_payment_status(self, submission: "Submission", options: Options):
         recipients = options.get("payment_emails")
+
         if not recipients:
-            recipients = options["to_emails"]
+            recipients = self.get_recipients(submission, options)
 
         order_ids = submission.payments.get_completed_public_order_ids()
         extra_context = {
