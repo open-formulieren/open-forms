@@ -56,7 +56,8 @@ class MimeTypeValidator:
 
     def __call__(self, value: UploadedFile) -> None:
         head = value.read(2048)
-        ext = value.name.split(".")[-1]
+        file_name_parts = value.name.split(".")
+        ext = file_name_parts[-1]
         mime_type = magic.from_buffer(head, mime=True)
 
         # gh #2520
@@ -74,6 +75,14 @@ class MimeTypeValidator:
         ):
             raise serializers.ValidationError(
                 _("The provided file is not a valid file type.")
+            )
+
+        if len(file_name_parts) == 1:
+            raise serializers.ValidationError(
+                _(
+                    "Could not determine the file type. Please make sure the file name "
+                    "has an extension."
+                )
             )
 
         # Contents is allowed. Do extension or submitted content_type agree?
@@ -110,6 +119,11 @@ class MimeTypeValidator:
             "image/heic",
             "image/heif",
         ):
+            return
+        # 4795
+        # The sdk cannot determine the file type of .msg files, which result into
+        # content_type "". So we have to validate these for ourselves
+        elif mime_type == "application/vnd.ms-outlook" and ext == "msg":
             return
 
         # gh #4658

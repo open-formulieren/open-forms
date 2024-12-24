@@ -202,6 +202,22 @@ class MimeTypeValidatorTests(SimpleTestCase):
 
             validator(sample)
 
+    def test_allowed_mime_types_for_msg_files(self):
+        valid_type = "application/vnd.ms-outlook"
+        msg_file = TEST_FILES / "test.msg"
+        validator = validators.MimeTypeValidator(allowed_mime_types=[valid_type])
+
+        # 4795
+        # The sdk cannot determine the content_type for .msg files correctly.
+        # Because .msg is a windows specific file, and linux and MacOS don't know it.
+        # So we simulate the scenario where content_type is unknown
+        sample = SimpleUploadedFile(
+            "test.msg",
+            msg_file.read_bytes(),
+        )
+
+        validator(sample)
+
     def test_validate_files_multiple_mime_types(self):
         """Assert that validation of files associated with multiple mime types works
 
