@@ -2545,6 +2545,11 @@
     "description": "\"variable\" operand type",
     "originalDefault": "the variable"
   },
+  "mOh/pF": {
+    "defaultMessage": "The email address described in this variable will be used for the mailing. If a variable is selected, the general registration addresses will be used as fallback option.",
+    "description": "Email registration options 'toEmailsFromVariable' helpText",
+    "originalDefault": "The email address described in this variable will be used for the mailing. If a variable is selected, the general registration addresses will be used as fallback option."
+  },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",
     "description": "Form design tab title",
@@ -2934,6 +2939,11 @@
     "defaultMessage": "Geschiedenis",
     "description": "History link button",
     "originalDefault": "History"
+  },
+  "uwCD8e": {
+    "defaultMessage": "Using a variable to decide to which email address the submission details will be sent",
+    "description": "Email registration options 'toEmailsFromVariable' label",
+    "originalDefault": "Using a variable to decide to which email address the submission details will be sent"
   },
   "vAZDY4": {
     "defaultMessage": "Bronpad",

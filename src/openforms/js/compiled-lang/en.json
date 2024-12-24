@@ -5457,6 +5457,12 @@
       "value": "the variable"
     }
   ],
+  "mOh/pF": [
+    {
+      "type": 0,
+      "value": "The email address described in this variable will be used for the mailing. If a variable is selected, the general registration addresses will be used as fallback option."
+    }
+  ],
   "mOjKcm": [
     {
       "type": 0,
@@ -6271,6 +6277,12 @@
     {
       "type": 0,
       "value": "Do not display the configured label and top line as the header in the fieldset."
+    }
+  ],
+  "uwCD8e": [
+    {
+      "type": 0,
+      "value": "Using a variable to decide to which email address the submission details will be sent"
     }
   ],
   "vAZDY4": [
