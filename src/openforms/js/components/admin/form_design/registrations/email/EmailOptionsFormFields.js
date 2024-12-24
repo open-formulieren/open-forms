@@ -17,6 +17,7 @@ import EmailHasAttachmentSelect from './fields/EmailHasAttachmentSelect';
 import EmailPaymentSubject from './fields/EmailPaymentSubject';
 import EmailPaymentUpdateRecipients from './fields/EmailPaymentUpdateRecipients';
 import EmailRecipients from './fields/EmailRecipients';
+import EmailRecipientsFromVariable from './fields/EmailRecipientsFromVariable';
 import EmailSubject from './fields/EmailSubject';
 
 const EmailOptionsFormFields = ({name, schema}) => {
@@ -37,6 +38,7 @@ const EmailOptionsFormFields = ({name, schema}) => {
     <ValidationErrorsProvider errors={relevantErrors}>
       <Fieldset>
         <EmailRecipients />
+        <EmailRecipientsFromVariable />
         <EmailSubject />
         <EmailContentTemplateHTML />
         <EmailContentTemplateText />
