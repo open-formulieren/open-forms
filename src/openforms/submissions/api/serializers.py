@@ -200,7 +200,11 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         return super().create(validated_data)
 
     def to_representation(self, instance):
-        check_submission_logic(instance, unsaved_data=self.context.get("unsaved_data"))
+        check_submission_logic(
+            instance,
+            unsaved_data=self.context.get("unsaved_data"),
+            current_step=self.context.get("current_step"),
+        )
         return super().to_representation(instance)
 
 

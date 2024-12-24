@@ -188,7 +188,9 @@ def evaluate_form_logic(
 
 
 def check_submission_logic(
-    submission: "Submission", unsaved_data: dict | None = None
+    submission: "Submission",
+    unsaved_data: dict | None = None,
+    current_step: "SubmissionStep | None" = None,
 ) -> None:
     if getattr(submission, "_form_logic_evaluated", False):
         return
@@ -198,7 +200,7 @@ def check_submission_logic(
     if not submission_state.form_steps:
         return
 
-    rules = get_rules_to_evaluate(submission)
+    rules = get_rules_to_evaluate(submission, current_step)
 
     # load the data state and all variables
     submission_variables_state = submission.load_submission_value_variables_state()
