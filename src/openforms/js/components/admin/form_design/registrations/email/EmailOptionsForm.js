@@ -51,6 +51,7 @@ EmailOptionsForm.propTypes = {
     emailSubject: PropTypes.string,
     paymentEmails: PropTypes.arrayOf(PropTypes.string),
     toEmails: PropTypes.arrayOf(PropTypes.string),
+    toEmailsFromVariable: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
 };
