@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.urls import path
 
 from ..models import FormStatistics
+from .views import ExportSubmissionStatisticsView
 
 
 @admin.register(FormStatistics)
@@ -31,3 +33,15 @@ class FormStatisticsAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def get_urls(self):
+        urls = super().get_urls()
+        export_view = self.admin_site.admin_view(
+            ExportSubmissionStatisticsView.as_view(
+                media=self.media,
+            )  # pyright: ignore[reportArgumentType]
+        )
+        custom_urls = [
+            path("export/", export_view, name="formstatistics_export"),
+        ]
+        return custom_urls + urls
