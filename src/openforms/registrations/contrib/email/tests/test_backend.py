@@ -249,6 +249,158 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn(f"{expected_download_url_1} (my-foo.bin)", message_text)
         self.assertIn(f"{expected_download_url_2} (my-bar.txt)", message_text)
 
+    def test_submission_with_email_backend_using_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+        email_form_options = dict(
+            to_emails_from_variable="email_recipient_variable",
+        )
+        email_submission = EmailRegistration("email")
+
+        set_submission_reference(submission)
+
+        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
+            email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["foo@example.com"])
+
+    def test_submission_with_email_backend_using_to_emails_from_variable_with_multiple_email_addresses(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value=["foo@example.com", "bar@example.com"],
+        )
+        email_form_options = dict(
+            to_emails_from_variable="email_recipient_variable",
+        )
+        email_submission = EmailRegistration("email")
+
+        set_submission_reference(submission)
+
+        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
+            email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["foo@example.com", "bar@example.com"])
+
+    def test_submission_with_email_backend_unknown_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        email_form_options = dict(
+            to_emails_from_variable="email_recipient_variable",
+        )
+        email_submission = EmailRegistration("email")
+
+        set_submission_reference(submission)
+
+        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
+            email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email wasn't sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_submission_with_email_backend_invalid_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo.com",
+        )
+        email_form_options = dict(
+            to_emails_from_variable="email_recipient_variable",
+        )
+        email_submission = EmailRegistration("email")
+
+        set_submission_reference(submission)
+
+        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
+            email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email wasn't sent
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_submission_with_email_backend_invalid_to_emails_from_variable_with_fallback(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo.com",
+        )
+        email_form_options = dict(
+            to_emails_from_variable="email_recipient_variable",
+            to_emails=["bar@example.com"],
+        )
+        email_submission = EmailRegistration("email")
+
+        set_submission_reference(submission)
+
+        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
+            email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["bar@example.com"])
+
     def test_submission_with_email_backend_strip_out_urls(self):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = []
@@ -476,6 +628,71 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         # check we used the payment_emails
         self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
+
+    def test_register_and_update_paid_product_with_payment_email_recipient_and_variable_email_recipient(
+        self,
+    ):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            to_emails_from_variable="email_recipient_variable",
+            # payment_emails would override to_emails and to_emails_from_variable
+            payment_emails=["payment@bar.nl", "payment@foo.nl"],
+        )
+        email_submission = EmailRegistration("email")
+        email_submission.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
+
+    def test_register_and_update_paid_product_with_variable_email_recipient(
+        self,
+    ):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            # to_emails_from_variable would override to_emails
+            to_emails_from_variable="email_recipient_variable",
+        )
+        email_submission = EmailRegistration("email")
+        email_submission.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["foo@example.com"])
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_export_csv_xlsx(self):
