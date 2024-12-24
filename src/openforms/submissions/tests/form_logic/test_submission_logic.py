@@ -225,6 +225,126 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertTrue(data["steps"][1]["isApplicable"])
         self.assertFalse(data["steps"][1]["canSubmit"])
 
+    @tag("gh-4579")
+    def test_properly_determine_current_step(self):
+        """
+        Assert that the submission logic check properly determines the current step for
+        rules that define `triggerFromStep`
+
+        * We fill out step 1 and continue to step 2
+        * In step two the logic rule triggers that prevents us from continuing
+        * We go back to step 1 and it should be possible to continue to step 2 from there
+        """
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    }
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="verdergaan",
+            user_defined=True,
+            data_type=FormVariableDataTypes.string,
+        )
+        # set up logic rules:
+        # 1. setting `text1` to `trigger-value` should set our user defined variable to `nee`
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
+            actions=[
+                {
+                    "component": "",
+                    "variable": "verdergaan",
+                    "formStepUuid": None,
+                    "action": {"type": "variable", "value": "nee"},
+                }
+            ],
+        )
+        # 2. if `verdergaan` is `nee`, block going to step3
+        FormLogicFactory.create(
+            form=form,
+            trigger_from_step=step2,
+            json_logic_trigger={"==": [{"var": "verdergaan"}, "nee"]},
+            actions=[
+                {
+                    "component": "",
+                    "formStepUuid": None,
+                    "action": {"type": "disable-next"},
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        with self.subTest("fill in step1"):
+            endpoint = reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step1.uuid,
+                },
+            )
+
+            response = self.client.put(
+                endpoint, data={"data": {"text1": "trigger-rule"}}
+            )
+
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+            data = response.json()
+
+            self.assertTrue(data["completed"])
+            self.assertTrue(data["canSubmit"])
+
+        with self.subTest("logic step for step 2 should not allow submitting"):
+            endpoint = reverse(
+                "api:submission-steps-logic-check",
+                kwargs={"submission_uuid": submission.uuid, "step_uuid": step2.uuid},
+            )
+            response = self.client.post(endpoint, data={"data": {"text2": "foo"}})
+
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+            data = response.json()
+
+            self.assertFalse(data["step"]["canSubmit"])
+
+        with self.subTest("logic check for step 1 should still allow submitting"):
+            endpoint = reverse(
+                "api:submission-steps-logic-check",
+                kwargs={"submission_uuid": submission.uuid, "step_uuid": step1.uuid},
+            )
+
+            response = self.client.post(
+                endpoint, data={"data": {"text1": "trigger-rule"}}
+            )
+
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+            data = response.json()
+
+            # It should be possible to go to the next step, because the logic rule
+            # to block going to the next step should only trigger from step2
+            self.assertTrue(data["step"]["canSubmit"])
+
     def test_check_logic_with_full_datetime(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

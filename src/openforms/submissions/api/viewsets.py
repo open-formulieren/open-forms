@@ -635,6 +635,10 @@ class SubmissionStepViewSet(
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
-            context={"request": request, "unsaved_data": data},
+            context={
+                "request": request,
+                "unsaved_data": data,
+                "current_step": submission_step,
+            },
         )
         return Response(submission_state_logic_serializer.data)
