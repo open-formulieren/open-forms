@@ -5,7 +5,7 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 class MigrateToExplicitObjectsAPIGroupsTests(TestMigrations):
     app = "zgw_apis"
-    migrate_from = "0014_zgwapigroupconfig_catalogue_domain_and_more"
+    migrate_from = "0001_initial_to_v280"
     migrate_to = "0015_explicit_objects_api_groups"
 
     def setUpBeforeMigration(self, apps: StateApps):
