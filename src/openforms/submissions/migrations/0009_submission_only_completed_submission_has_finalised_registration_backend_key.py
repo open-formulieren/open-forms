@@ -3,17 +3,6 @@
 from django.db import migrations, models
 
 
-def clear_registration_backend_key_for_incomplete_submissions(apps, _):
-    Submission = apps.get_model("submissions", "Submission")
-
-    # clear the value of the registration backend key for submissions that are not
-    # completed yet
-    qs = Submission.objects.filter(completed_on__isnull=True).exclude(
-        finalised_registration_backend_key=""
-    )
-    qs.update(finalised_registration_backend_key="")
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -21,10 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            clear_registration_backend_key_for_incomplete_submissions,
-            migrations.RunPython.noop,
-        ),
+        # RunPython operation removed as part of 3.0 release cycle - these migrations are
+        # guaranteed to have been executed on Open Forms 2.8.x for existing instances.
         migrations.AddConstraint(
             model_name="submission",
             constraint=models.CheckConstraint(
