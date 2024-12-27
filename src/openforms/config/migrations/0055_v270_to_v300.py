@@ -7,6 +7,7 @@ import django.core.validators
 from django.db import migrations, models
 from django.db.migrations.state import StateApps
 
+import django_jsonform.models.fields
 import tinymce.models
 
 import openforms.config.models.config
@@ -54,6 +55,14 @@ class Migration(migrations.Migration):
     replaces = [
         (
             "config",
+            "0059_alter_globalconfiguration_form_upload_default_file_types",
+        ),
+        (
+            "config",
+            "0062_merge_backport_zip_mimetypes",
+        ),
+        (
+            "config",
             "0055_globalconfiguration_email_verification_request_content_and_more",
         ),
         ("config", "0056_disable_prefill_objects_api_plugin"),
@@ -82,6 +91,54 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterField(
+            model_name="globalconfiguration",
+            name="form_upload_default_file_types",
+            field=django_jsonform.models.fields.ArrayField(
+                base_field=models.CharField(
+                    choices=[
+                        ("*", "any filetype"),
+                        ("image/heic", ".heic"),
+                        ("image/png", ".png"),
+                        ("image/jpeg", ".jpg"),
+                        ("application/pdf", ".pdf"),
+                        ("application/vnd.ms-excel", ".xls"),
+                        (
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            ".xlsx",
+                        ),
+                        ("text/csv", ".csv"),
+                        ("text/plain", ".txt"),
+                        ("application/msword", ".doc"),
+                        (
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            ".docx",
+                        ),
+                        (
+                            "application/vnd.oasis.opendocument.*,application/vnd.stardivision.*,application/vnd.sun.xml.*",
+                            "Open Office",
+                        ),
+                        (
+                            "application/zip,application/zip-compressed,application/x-zip-compressed",
+                            ".zip",
+                        ),
+                        ("application/vnd.rar", ".rar"),
+                        ("application/x-tar", ".tar"),
+                        ("application/vnd.ms-outlook", ".msg"),
+                        (
+                            "application/acad.dwg,application/autocad_dwg.dwg,application/dwg.dwg,application/x-acad.dwg,application/x-autocad.dwg,application/x-dwg.dwg,drawing/dwg.dwg,image/vnd.dwg,image/x-dwg.dwg",
+                            ".dwg",
+                        ),
+                    ],
+                    max_length=256,
+                ),
+                blank=True,
+                default=list,
+                help_text="Provide a list of default allowed file upload types. If empty, all extensions are allowed.",
+                size=None,
+                verbose_name="Default allowed file upload types",
+            ),
+        ),
         migrations.AddField(
             model_name="globalconfiguration",
             name="email_verification_request_content",
