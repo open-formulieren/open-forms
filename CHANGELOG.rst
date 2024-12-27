@@ -2,6 +2,265 @@
 Changelog
 =========
 
+3.0.0 "Heerlijkheid" (2025-01-07)
+=================================
+
+Open Forms 3.0.0 is a feature release.
+
+.. epigraph::
+
+   "Heerlijkheid"
+
+**Breaking changes**
+
+* [:backend:`4375`] Removed environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
+  Objects API.
+
+Upgrade procedure
+-----------------
+
+* ⚠️ Ensure you upgrade to Open Forms 2.8.2 before upgrading to the 3.0 release series.
+
+* ⚠️ Please review the instructions in the documentation under **Installation** >
+  **Upgrade details to Open Forms 3.0.0** before and during upgrading. You can find
+  details for the deprecated code and how this can affect you.
+
+Major features
+--------------
+
+**Product Prefill**
+
+* You can now build a form based on a specific product (currently started by supporting an object 
+  in the Objects API) and you can prefill variables by mapping them to specific properties of the
+  object. Object can be updated with the data provided by the user when they are the owner of the
+  object.
+
+  A form example is defined in :ref:`Prefill examples <examples_objects_prefill>`
+
+**Cosign Improvements**
+
+* We have been working on improving several aspects of the co-sign and all these are descibed in detail
+  below.
+
+**Submission Price in Variable**
+
+* Price logic rules are removed in favour of setting the submission price via a form
+  variable and normal logic rules. The conversion is automatic.
+
+Detailed changes
+----------------
+
+This contains the changes from the alpha and fixes applied until the stable version.
+
+
+**New features**
+
+* The documentation of Open Forms is now available for offline access too. You can find a PDF link
+  on the bottom of the page.
+* Added documentation for product prefill in user manual (examples are also provided).
+* Updated technical configuration documentation for Objects API.
+* [:backend:`2173`] The map component now supports using a different background/tile layer
+* [:backend:`4319`] You can now provide a custom document's title for StUF-ZDS via the component's
+  configuration.
+* [:backend:`3457`] Custom `title` and `com` parameters can now be defined in Ogone payment plugin.
+* [:backend:`4321`] Forms can now have a submission limit. The SDK displays appropriate messages when
+  this limit is reached.
+* [:backend:`4907`] Improved developer installation documentation.
+* [:backend:`4895`] Ensured that custom email headers are used for confirmation emails and cosign
+  request.
+* [:backend:`4859`] Improved form state handling.
+* [:backend:`4789`, :backend:`4788`] Added `django-setup-configuration` to configure Open Forms to
+  Open Zaak and Objecten.
+* [:backend:`4787`] It's now possible to load a confguration file via the ``setup_configuration``
+  management command. Additional information/instructions are provided in
+  :ref:`installation_configuration_cli`.
+* [:backend:`4398`] The object ownership is now checked, when a user is authenticated, during prefill
+  and pre-registration.
+* [:backend:`4606`] Improved the user experience of the ZGW APIs registration plugin:
+
+    - All dropdowns/comboboxes now have a search field.
+    - You can now select which catalogue to use, which enables you to select the case and
+      document types in dropdowns that show only relevant options.
+    - During registration the plugin will now automatically select the right version of a case and
+      document type.
+    - The URL-based configuration can still be used, but it's deprecated and will be removed in the
+      future.
+* [:backend:`4418`] You can now map individual parts of the addressNL component in the Objects API
+  registration plugin.
+* [:backend:`4796`] You can now select a product to be set on the created case from the selected case
+  type in the ZGW APIs registration plugin.
+* [:backend:`4762`] The cosigner identifier (BSN) is now included in the created case in the StUF-ZDS
+  registration plugin.
+* Updated documentation concerning frontend toolchains and formio search strategies.
+* [:backend:`4798`] Made the confirmation box consistent with other modals and improved the UX.
+* [:backend:`4344`] You can now select which Objects API group to use in the ZGW APIs registration 
+  plugin rather than "the first one" being used always.
+* [:backend:`4320`] Improved the cosign flow and the texts used in cosign flows, while adding more
+  flexibility:
+
+    - You can now use templates specifically for cosigning for the confirmation screen content,
+      with the ability to include a 'cosign now' button.
+    - You can now use templates specifically for cosigning for the confirmation email subject and content.
+    - When links are used in the cosign request email, the cosigner can now directly click through without
+      having to enter a code to retrieve the submission.
+    - Updated the default templates with better text/instructions.
+    - Updated translations of improved texts.
+* [:backend:`4815`] Changed submission removal limit to 0, allowing submissions to be deleted after 0 days
+  (i.e. on the same day).
+* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents. 
+* [:backend:`4719`] Improved accessibility in postcode fields.
+* [:backend:`4707`] You can now resize the Json-Logic widgets.
+* [:backend:`4686`] All the registration plugin configuration options are now consistently managed in a 
+  modal with better UX.
+* [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
+* [:backend:`4396`, :backend:`4693`, :backend:`4608`, :backend:`4859`] You can now configure a variable
+  to be prefilled from the Objects API (a.k.a. "product prefill"):
+
+    - It's possible to assign individual properties from the object type to particular form variables.
+    - To avoid duplicating configuration, you can copy the configuration from a configured registration
+      backend. The button is shown only when there are available backends configured.
+    - Cleaned up API of VariablesMapping component.
+    - Refactored VariablesMapping component.
+    - Refactored ObjectTypeVersionSelect.
+* [:backend:`4764`] Added the ability to set the submission price calculation to variable.
+* [:backend:`4716`] Added translations for form fields and associated error messages improvements.
+* [:backend:`4524`, :backend:`4675`] Selecting a form variable is now more user friendly. Variables
+  are logically grouped and a search box was added.
+* [:backend:`4709`] Improved the error feedback if unexpected errors happening during form saving
+  in the form designer.
+
+**Bugfixes**
+
+* [:backend:`4825`] Log prefill failures for empty data only for the authentication flow that
+  is used to log in.
+* [:backend:`4863`] Fixed authentication flow when OIDC is used through an `employee_id`.
+* [:backend:`4955`] Fixed coordinates order for Objects API and ZGW APIs.
+* [:backend:`4821`] Ensured that email digest reports the expected problems for BRK and addressNL
+  component.
+* [:backend:`4949`] Fixed Modal's close button on dark mode.
+* [:backend:`4886`] Fixed certain variants of CSV files not passing validation on Windows.
+* [:backend:`4832`] Fixed json schema matcher in Objects API, in case format is not provided.
+* [:backend:`4853`, :backend:`4899`] Fixed optional serializer fields in multiple registration
+  backends.
+* [:backend:`4884`] Ensured that no form variables are created for soft required errors
+  component.
+* [:backend:`4874`] Fixed Dockerfile concerning missing scripts.
+* [:backend:`3901`] Fixed cosign state not taking the logic/dynamic behaviour of cosign
+  component into account.
+* [:backend:`4824`] Ensured that the FormVariables are in line with the state of the
+  FormDefinitions after saving.
+* Fixed Django admin form field markup after Django v4.2.
+* Fixed long words taking a lot of place and pushing icons.
+* Fixed markup of checkboxes with help text.
+* Fixed migration for update summary tag.
+* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission 
+  still requires cosigning.
+* Fixed variables mapping by applying fallback for missing form values.
+* [:backend:`4862`] Fixed unintended hashing of identifying attributes when the cosigner
+  logs out.
+* [:backend:`4732`] Fixed CSP issues for Expoints and Govmetric analytics.
+* Fixed examples in the documentation for logic with date and duration calculations.
+* [:backend:`4745`] Fixed missing registration variable to the Objects API with all
+  the attachment URLs.
+* [:backend:`4823`] Fixed uploaded files with leading or trailing whitespaces in the
+  filename.
+* [:backend:`4810`] Fixed uppercase component variable values turing lowercase.
+* [:backend:`4772`] Fixed select components with integer values being treated as numbers
+  instead of strings.
+* [:backend:`4727`] Fixed crash when a user defined variable was changed to an array
+  datatype.
+* Fixed type error in the preset nested validate schema for components.
+* [:backend:`4802`] Fixed some dropdowns taking up more horizontal space than intended.
+* [:backend:`4763`] Fixed temporary file uploads not being delete-able in the admin interface.
+* [:backend:`4726`] Fixed the styling for form delete buttons.
+* [:backend:`4744`] Fixed a performance regression in the logic check calls and general
+  submission processing.
+* [:backend:`4774`] Fixed ``textfield`` data not being converted to a string when numeric
+  data is received from a prefill plugin.
+* Fixed docs concerning invalid SSL certs and broken links.
+* [:backend:`4765`] Fixed bug in components migration converter when multiple is True.
+* [:backend:`4546`] Fixed the soft-required validation errors being shown in the summary PDF.
+* Fixed validation error when saving a new form definition via the admin.
+* [:backend:`4659`] Fixed ``null`` default values for text-based fields.
+* [:backend:`4528`] Fixed vague error/log out situation when logging in with OIDC.
+* [:backend:`3629`] Fixed submission bulk export crashing when the form has repeating
+  groups.
+* [:backend:`3705`] Updated timestamps in str representations.
+* [:backend:`4713`] Fixed pre-request hook not running for all "Haal Centraal BRP
+  Personen bevragen" operations (fixes Token Exchange extension).
+* [:backend:`4600`] Fixed not all the content on the page getting translated after changing
+  the form language.
+* [:backend:`4733`] Fixed a segmentation fault that could occur in dev environments.
+* [:backend:`4628`] Fixed a crash when copying a form with a "block next step" logic.
+* [:backend:`4711`] Fixed broken submission form row styling.
+* [:backend:`4695`] Fixed a performance issue during legacy Objects API registration
+  plugin validation.
+* [:backend:`4652`] Fixed misaligned validation errors in the form designer UI.
+* [:backend:`4658`] Fixed certain variants of ZIP files not passing validation on Windows.
+* [:backend:`4656`] Fixed a crash during validation when you have file upload components
+  inside repeating groups.
+
+**Project maintenance**
+
+* [:backend:`3283`] Removed deprecated code (please review the instructions in the documentation
+  under **Installation** > **Upgrade details to Open Forms 3.0.0** for all the necessary details):
+
+    - ``registration_backend`` and ``registration_backend_options`` fields from form.
+    - Old API location url.
+    - Conversion of ``stuf-zds-create-zaak:ext-utrecht`` to ``stuf-zds-create-zaak`` during import.
+    - Objecttype URL to UUID import conversion.
+    - Backwards compatible styling.
+    - Password Formio component.
+    - Legacy formio translation converter.
+    - Deprecated/disabled legacy OIDC callback endpoints by default.
+    - Documented registration backend migration procedure.
+    - Made Objects API and ZGW APIs group fields non-nullable where this is necessary.
+    - Normalized API endpoints to use kebab-case instead of snake-case.
+    - Removed unnecessary filter behaviour on form definitions endpoint.
+    - Removed legacy machtigen context.
+    - Removed old appointments flow and refactored code according to the new one.
+    - Made submission in temporary file uploads non-nullable.
+    - Removed conversion of form step URL to form step UUID.
+    - Made form definition name read only.
+* Documented expired domains for VCR testing.
+* [:backend:`4920`] Updated backend and frontend translations.
+* Improved test flakiness.
+* [:backend:`3457`] Extended type checking to most of the payments app.
+* Removed migration tests which relied on real models.
+* Addressed warnings in DMN components.
+* Removed duplicated MS Graph stories/plugin options.
+* Removed unused uiSchema property from registration fields.
+* Deleted obsoleted `.admin-fieldset` styling.
+* Removed the custom helptext-as-tooltip styling and applied the default styling of Django.
+* Replaced ``summary`` tag implementation with ``confirmation_summary``.
+* Bumped Django to 4.2.17 patch release.
+* Refactored/updated variables editor stories.
+* [:backend:`4398`] Refactored the ``TargetPathSelect`` component.
+* Bumped tornado version.
+* [:backend:`4771`] Deprecated price logic rules (see breaking changes section for further instructions).
+* [:backend:`4849`] Updated prepare release template with missing VCR paths.
+* Upgraded to MSW 2.x.
+* Updated API endpoints concerning the language (NL -> En).
+* [:backend:`4431`] Improved addressNL mapping backwards compatibility and refactored ObjectsAPI v2
+  handler.
+* Bumped lxml html cleaner.
+* Fixed recursion issues in component search strategies.
+* Bumped waitress.
+* Replaced duplicated code for payment/registration plugin configuration option forms, by adding a
+  generic component.
+* Dropped RJSF dependency.
+* Now, we use explicit React config form for MS Graph registration options.
+* Refactored demo plugins configuration to use modal.
+* Bumped django-silk version to be compatible with Python 3.12.
+* Cleaned up CI workflow.
+* Updated trivy-action to 0.24.0.
+* Upgraded to Storybook 8.3.5.
+* Removed 2.6.x from supported versions in Docker Hub description.
+* Added 2.8.x to Docker Hub description.
+* [:backend:`4721`] Updated the screenshots in the documentation for prefill and the
+  Objects API manual.
+* Moved 2.5 to unsupported versions in developer docs and documented 2.5.x EOL status.
+
 3.0.0-alpha.1 (2024-11-28)
 ==========================
 
@@ -46,7 +305,7 @@ Detailed changes
     - Updated the default templates with better text/instructions.
 * [:backend:`4815`] Changed submission removal limit to 0, allowing submissions to be deleted after 0 days
   (i.e. on the same day).
-* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents. 
+* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents.
 * [:backend:`4707`] You can now resize the Json-Logic widgets.
 * [:backend:`4686`} All the registration plugin configuration options are now consistently managed in a 
   modal with better UX.
