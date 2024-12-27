@@ -5,8 +5,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 class MigrateSummaryTag(TestMigrations):
     app = "config"
-    migrate_from = "0068_alter_globalconfiguration_cosign_request_template_and_more"
-    migrate_to = "0068_update_summary_tags"
+    migrate_from = "0054_v250_to_v270"
+    migrate_to = "0055_v270_to_v300"
 
     def setUpBeforeMigration(self, apps: StateApps):
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")

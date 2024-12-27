@@ -24,11 +24,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("objects_api", "0001_initial"),
-        # Related to https://github.com/open-formulieren/open-forms/issues/4654
-        # Because the table was moved from registrations_objects_api to this app,
-        # there needs to be a dependency here to ensure the table is actually created
-        # when running tests
-        ("registrations_objects_api", "0025_delete_objectsapigroupconfig"),
     ]
 
     operations = [
