@@ -3,17 +3,6 @@
 from django.db import migrations
 
 
-def disable_objects_api_prefill_plugin(apps, _):
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    config, _ = GlobalConfiguration.objects.get_or_create(
-        pk=1
-    )  # must match GlobalConfiguration.singleton_instance_id
-
-    config.plugin_configuration.setdefault("prefill", {})
-    config.plugin_configuration["prefill"].setdefault("objects_api", {"enabled": False})
-    config.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -23,8 +12,6 @@ class Migration(migrations.Migration):
         ),
     ]
 
-    operations = [
-        migrations.RunPython(
-            disable_objects_api_prefill_plugin, migrations.RunPython.noop
-        ),
-    ]
+    # RunPython operation removed as part of 3.0 release cycle - these migrations are
+    # guaranteed to have been executed on Open Forms 2.8.x for existing instances.
+    operations = []
