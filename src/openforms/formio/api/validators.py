@@ -132,9 +132,10 @@ class MimeTypeValidator:
             # which is deprecated but still we need to support it. Instead, the common
             # case for zip files is application/zip or application/zip-compressed
             # mimetype.
+            # libmagic 5.46+ doesn't detect application/zip anymore.
             case (
                 "application/zip-compressed" | "application/x-zip-compressed",
-                "application/zip",
+                "application/zip" | "application/octet-stream",
                 "zip",
             ):
                 return
