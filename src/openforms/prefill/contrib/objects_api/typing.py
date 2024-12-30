@@ -13,5 +13,6 @@ class ObjectsAPIOptions(TypedDict):
     objects_api_group: ObjectsAPIGroupConfig
     objecttype_uuid: UUID
     objecttype_version: int
+    skip_ownership_check: bool
     auth_attribute_path: list[str]
     variables_mapping: list[VariableMapping]
