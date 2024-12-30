@@ -136,6 +136,14 @@ The ``formStep`` key was deprecated in favour of ``formStepUuid`` and the conver
 code has been removed. This may affect form exports from before Open Forms 2.1.0. We
 recommend re-creating the exports on a newer version of Open Forms.
 
+Removal of cosign template tag patching
+---------------------------------------
+
+In Open Forms 2.3, the template tag ``{% cosign_information %}`` was introduced and
+automatically added to confirmation templates during import if it was absent. This
+automatic patching has now been removed. We recommend re-creating the exports on Open
+Forms 2.3 or newer.
+
 Removal of /api/v2/location/get-street-name-and-city endpoint
 =============================================================
 
