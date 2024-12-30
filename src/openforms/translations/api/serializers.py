@@ -105,37 +105,3 @@ class ModelTranslationsSerializer(serializers.Serializer):
         return build_translated_model_fields_serializer(
             base, language_code, translatable_fields
         )
-
-
-class ComponentTranslationsSerializer(serializers.Serializer):
-    """
-    Nest translations for literals used in the FormIO configuration inside the serializer.
-
-    This serializer produces a similar structure as the `translations` for model fields,
-    except that the literals are dependent on the literals used in the components defined
-    in the FormIO configuration.
-
-    Literals are mapped to their translation, e.g. a configuration with a `TextField`
-    with default label `Text field` and `FileField` with default label `File field`
-    could look as follows:
-
-        ParentModelSerializer:
-            ... other fields/serializers
-
-            ComponentTranslationsSerializer:
-                nl:
-                    "Text field": "Tekstveld"
-                    "File field": "Uploadveld"
-                en:
-                    "Text field": "Text field"
-                    "File field": "File field"
-    """
-
-    def get_fields(self):
-        fields = {
-            language_code: serializers.DictField(
-                child=serializers.CharField(), required=False
-            )
-            for language_code, label in settings.LANGUAGES
-        }
-        return fields
