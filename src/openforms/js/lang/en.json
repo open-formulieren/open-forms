@@ -559,6 +559,11 @@
     "description": "Email registration options 'emailPaymentSubject' label",
     "originalDefault": "Email payment subject"
   },
+  "BHr/3M": {
+    "defaultMessage": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable.",
+    "description": "Email registration options 'toEmailsFromVariable' helpText",
+    "originalDefault": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable."
+  },
   "BKTOtD": {
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }",
     "description": "Managed Camunda process vars state feedback",
@@ -813,6 +818,11 @@
     "defaultMessage": "The co-sign component requires at least one authentication plugin to be enabled.",
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
+  },
+  "FNT8nq": {
+    "defaultMessage": "Variable containing email addresses",
+    "description": "Email registration options 'toEmailsFromVariable' label",
+    "originalDefault": "Variable containing email addresses"
   },
   "FQ1JZc": {
     "defaultMessage": "Zaaktype code for newly created Zaken in StUF-ZDS",
@@ -2534,11 +2544,6 @@
     "description": "\"variable\" operand type",
     "originalDefault": "the variable"
   },
-  "mOh/pF": {
-    "defaultMessage": "The email address described in this variable will be used for the mailing. If a variable is selected, the general registration addresses will be used as fallback option.",
-    "description": "Email registration options 'toEmailsFromVariable' helpText",
-    "originalDefault": "The email address described in this variable will be used for the mailing. If a variable is selected, the general registration addresses will be used as fallback option."
-  },
   "mOjKcm": {
     "defaultMessage": "Steps and fields",
     "description": "Form design tab title",
@@ -2593,6 +2598,11 @@
     "defaultMessage": "The registration result will be an object from the selected type.",
     "description": "Objects API registration options 'Objecttype' helpText",
     "originalDefault": "The registration result will be an object from the selected type."
+  },
+  "nhBYT3": {
+    "defaultMessage": "Recipients",
+    "description": "Email registration: recipients fieldset title",
+    "originalDefault": "Recipients"
   },
   "nkr7r0": {
     "defaultMessage": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.",
@@ -2934,11 +2944,6 @@
     "description": "History link button",
     "originalDefault": "History"
   },
-  "uwCD8e": {
-    "defaultMessage": "Using a variable to decide to which email address the submission details will be sent",
-    "description": "Email registration options 'toEmailsFromVariable' label",
-    "originalDefault": "Using a variable to decide to which email address the submission details will be sent"
-  },
   "vAZDY4": {
     "defaultMessage": "Source path",
     "description": "Prefill / Objects API: column header for object type property selection",
@@ -2953,6 +2958,11 @@
     "defaultMessage": "Create a new form definition",
     "description": "Create form definition tile",
     "originalDefault": "Create a new form definition"
+  },
+  "vaO0I+": {
+    "defaultMessage": "Content",
+    "description": "Email registration: content fieldset title",
+    "originalDefault": "Content"
   },
   "viEfGU": {
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
