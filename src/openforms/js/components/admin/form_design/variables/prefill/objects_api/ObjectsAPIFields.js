@@ -240,7 +240,7 @@ const ObjectsAPIFields = () => {
           objectsApiGroup={objectsApiGroup}
           objecttypeUuid={objecttypeUuid}
           objecttypeVersion={objecttypeVersion}
-          style={{maxWidth: '10em'}}
+          required
         />
       </Fieldset>
 

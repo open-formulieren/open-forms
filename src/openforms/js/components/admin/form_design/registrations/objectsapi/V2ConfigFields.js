@@ -158,6 +158,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
           objecttypeUuid={objecttype}
           objecttypeVersion={objecttypeVersion}
           disabled={!updateExistingObject}
+          required={updateExistingObject}
         />
       </Fieldset>
 

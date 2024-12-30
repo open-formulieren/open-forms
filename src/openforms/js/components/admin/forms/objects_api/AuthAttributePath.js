@@ -17,6 +17,7 @@ const AuthAttributePath = ({
   objecttypeUuid,
   objecttypeVersion,
   disabled = false,
+  required = false,
 }) => {
   const intl = useIntl();
   const {csrftoken} = useContext(APIContext);
@@ -66,6 +67,7 @@ const AuthAttributePath = ({
           />
         }
         disabled={disabled}
+        required={required}
       >
         <TargetPathSelect
           name={name}
@@ -86,6 +88,7 @@ AuthAttributePath.propTypes = {
   objecttypeUuid: PropTypes.string,
   objecttypeVersion: PropTypes.number,
   disabled: PropTypes.bool,
+  required: PropTypes.bool,
 };
 
 export default AuthAttributePath;

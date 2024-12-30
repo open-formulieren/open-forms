@@ -135,6 +135,7 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
           objecttypeUuid={objecttype}
           objecttypeVersion={objecttypeVersion}
           disabled={!updateExistingObject}
+          required={updateExistingObject}
         />
       </Fieldset>
 
