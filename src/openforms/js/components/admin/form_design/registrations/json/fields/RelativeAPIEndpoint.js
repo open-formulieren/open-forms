@@ -19,6 +19,12 @@ const RelativeAPIEndpoint = () => {
             defaultMessage="Relative API Endpoint"
           />
         }
+        helpText={
+          <FormattedMessage
+            description="JSON registration options 'relativeApiEndpoint' helpText"
+            defaultMessage="Relative endpoint to send the data to (will be added to the root endpoint of the service)."
+          />
+        }
       >
         <TextInput id="id_relativeApiEndpoint" {...fieldProps} />
       </Field>
