@@ -19,11 +19,6 @@ from openforms.emails.constants import (
     EmailContentTypeChoices,
     EmailEventChoices,
 )
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
@@ -32,7 +27,6 @@ from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
-    SubmissionReportFactory,
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
     TemporaryFileUploadFactory,
@@ -83,35 +77,6 @@ def _get_sent_email(index: int = 0) -> tuple[mail.EmailMultiAlternatives, str, s
     LANGUAGE_CODE="nl",
 )
 class EmailBackendTests(HTMLAssertMixin, TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        fd = FormDefinitionFactory.create(
-            configuration={
-                "components": [
-                    {
-                        "key": "someField",
-                        "label": "Some Field",
-                        "type": "textfield",
-                    },
-                    {
-                        "key": "someList",
-                        "label": "Some list",
-                        "type": "textfield",
-                        "multiple": True,
-                    },
-                ],
-            }
-        )
-        form = FormFactory.create(
-            name="MyName",
-            internal_name="MyInternalName",
-            registration_backend="email",
-        )
-        cls.fs = FormStepFactory.create(form=form, form_definition=fd)
-        cls.form = form
-        cls.fd = fd
 
     def setUp(self):
         super().setUp()
@@ -217,7 +182,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = f"Inzendingdetails van MyName (verzonden op 12:00:00 01-01-2021)"
+        detail_line = "Inzendingdetails van MyName (verzonden op 12:00:00 01-01-2021)"
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
@@ -533,7 +498,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = f"Betaling ontvangen voor {self.form.name} (ingezonden op 12:00:00 01-01-2021)"
+        detail_line = (
+            "Betaling ontvangen voor MyName (ingezonden op 12:00:00 01-01-2021)"
+        )
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
@@ -665,16 +632,29 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "attachment_formats": [AttachmentFormat.csv, AttachmentFormat.xlsx],
             "attach_files_to_email": None,
         }
-
-        data = {"someField": "value0", "someList": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "someField",
+                    "label": "Some Field",
+                    "type": "textfield",
+                },
+                {
+                    "key": "someList",
+                    "label": "Some list",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
+            completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
+            form__name="MyName",
+            form__internal_name="MyInternalName",
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
+        submission_step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -750,18 +730,26 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             "attachment_formats": [AttachmentFormat.pdf],
             "attach_files_to_email": None,
         }
-
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "someField",
+                    "label": "Some Field",
+                    "type": "textfield",
+                },
+                {
+                    "key": "someList",
+                    "label": "Some list",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
+            completed=True,
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
-        report = SubmissionReportFactory.create(submission=submission)
-
+        submission_step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -785,9 +773,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(len(message.attachments), 1)
 
         pdf_export = message.attachments[0]
-
-        self.assertEqual(pdf_export[0], f"{report.title}.pdf")
-        self.assertEqual(pdf_export[1], report.content.read())
+        self.assertEqual(pdf_export[0], f"{submission.report.title}.pdf")
+        self.assertEqual(pdf_export[1], submission.report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
 
     def test_regression_nested_components_columns(self):
@@ -1107,7 +1094,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message, message_text, message_html = _get_sent_email()
         self.assertEqual(message.extra_headers["Content-Language"], "en")
         self.assertIn("Engels", message_text)
-        html_message = message.alternatives[0][0]
         self.assertIn("Engels", message_html)
 
     @tag("gh-3144")
