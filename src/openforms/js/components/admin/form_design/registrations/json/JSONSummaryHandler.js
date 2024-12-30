@@ -1,5 +1,6 @@
-import {FormattedMessage} from 'react-intl';
+import PropTypes from 'prop-types';
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
 
 const JSONSummaryHandler = ({variable, backendOptions}) => {
 
@@ -24,9 +25,13 @@ const JSONSummaryHandler = ({variable, backendOptions}) => {
 };
 
 
-// TODO-4098: ??
 JSONSummaryHandler.propTypes = {
-
+  variable: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+  }).isRequired,
+  backendOptions: PropTypes.shape({
+    formVariables: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
 };
 
 export default JSONSummaryHandler;
