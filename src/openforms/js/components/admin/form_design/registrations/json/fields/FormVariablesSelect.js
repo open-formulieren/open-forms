@@ -1,5 +1,6 @@
 import {useField} from 'formik';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -31,6 +32,12 @@ const FormVariablesSelect = ({options}) => {
           <FormattedMessage
             description="JSON registration options 'formVariables' label"
             defaultMessage="Form variables"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="JSON registration options 'formVariables' helpText"
+            defaultMessage="Which form variables to include in the data to be sent"
           />
         }
       >
