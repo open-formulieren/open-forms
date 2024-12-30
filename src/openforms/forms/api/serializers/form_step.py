@@ -7,10 +7,7 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
-from openforms.translations.api.serializers import (
-    ComponentTranslationsSerializer,
-    ModelTranslationsSerializer,
-)
+from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import FormDefinition, FormStep
 from ...tasks import on_formstep_save_event
@@ -95,10 +92,6 @@ class FormStepSerializer(
         read_only=True,
     )
     translations = ModelTranslationsSerializer()
-    component_translations = ComponentTranslationsSerializer(
-        source="form_definition.component_translations",
-        read_only=True,
-    )
 
     parent_lookup_kwargs = {
         "form_uuid_or_slug": "form__uuid",
@@ -120,7 +113,6 @@ class FormStepSerializer(
             "is_reusable",
             "literals",
             "translations",
-            "component_translations",
         )
         public_fields = (
             "uuid",
@@ -135,7 +127,6 @@ class FormStepSerializer(
             "login_required",
             "is_reusable",
             "literals",
-            "component_translations",
         )
 
         extra_kwargs = {
