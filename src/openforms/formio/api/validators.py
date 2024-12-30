@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Iterable
 
 from django.core.files.uploadedfile import UploadedFile
@@ -56,29 +57,40 @@ class MimeTypeValidator:
 
     def __call__(self, value: UploadedFile) -> None:
         head = value.read(2048)
-        ext = value.name.split(".")[-1]
-        mime_type = magic.from_buffer(head, mime=True)
+        ext = Path(value.name or "").suffix[1:]
+        detected_mime_type = magic.from_buffer(head, mime=True)
+        provided_mime_type = value.content_type or "application/octet-stream"
 
         # gh #2520
         # application/x-ole-storage on Arch with shared-mime-info 2.0+155+gf4e7cbc-1
-        if mime_type in ["application/CDFV2", "application/x-ole-storage"]:
+        if detected_mime_type in ["application/CDFV2", "application/x-ole-storage"]:
             whole_file = head + value.read()
-            mime_type = magic.from_buffer(whole_file, mime=True)
+            detected_mime_type = magic.from_buffer(whole_file, mime=True)
 
-        if mime_type == "image/heif":
-            mime_type = "image/heic"
+        if detected_mime_type == "image/heif":
+            detected_mime_type = "image/heic"
 
         if not (
             self.any_allowed
-            or mimetype_allowed(mime_type, self._regular_mimes, self._wildcard_mimes)
+            or mimetype_allowed(
+                detected_mime_type, self._regular_mimes, self._wildcard_mimes
+            )
         ):
             raise serializers.ValidationError(
                 _("The provided file is not a valid file type.")
             )
 
+        if not ext:
+            raise serializers.ValidationError(
+                _(
+                    "Could not determine the file type. Please make sure the file name "
+                    "has an extension."
+                )
+            )
+
         # Contents is allowed. Do extension or submitted content_type agree?
-        if value.content_type == "application/octet-stream":
-            m = magic.Magic(extension=True)
+        if provided_mime_type == "application/octet-stream":
+            m = magic.Magic(extension=True)  # pyright: ignore[reportCallIssue]
             extensions = m.from_buffer(head).split("/")
             # magic db doesn't know any more specific extension(s), so accept the
             # file
@@ -101,27 +113,26 @@ class MimeTypeValidator:
         # If the file does not strictly follow the conventions of CSV (e.g. non-standard delimiters),
         # may not be considered as a valid CSV.
         elif (
-            value.content_type == "text/csv"
-            and mime_type == "text/plain"
+            provided_mime_type == "text/csv"
+            and detected_mime_type == "text/plain"
             and ext == "csv"
         ):
             return
-        elif mime_type == "image/heic" and value.content_type in (
+        elif detected_mime_type == "image/heic" and provided_mime_type in (
             "image/heic",
             "image/heif",
         ):
             return
-
         # gh #4658
         # Windows use application/x-zip-compressed as a mimetype for .zip files, which
         # is deprecated but still we need to support it. Instead, the common case for
         # zip files is application/zip or application/zip-compressed mimetype.
-        elif mime_type == "application/zip" and value.content_type in (
+        elif detected_mime_type == "application/zip" and provided_mime_type in (
             "application/zip-compressed",
             "application/x-zip-compressed",
         ):
             return
-        elif mime_type != value.content_type:
+        elif provided_mime_type != detected_mime_type:
             raise serializers.ValidationError(
                 _("The provided file is not a {file_type}.").format(
                     filename=value.name, file_type=f".{ext}"

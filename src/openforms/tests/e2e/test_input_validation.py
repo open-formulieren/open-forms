@@ -939,8 +939,8 @@ class SingleFileTests(ValidationsTestCase):
 
         # The frontend validation will *not* create a TemporaryFileUpload,
         # as the frontend will block the upload because of the invalid file type.
-        # However the user could do an handcrafted API call.
-        # For this reason, we manually create an invalid TemporaryFileUpload
+        # However the user could do a handcrafted API call.
+        # For this reason, we manually try to create an invalid TemporaryFileUpload
         # and use it for the `api_value`:
 
         with open(TEST_FILES / "unknown-type", "rb") as infile:
@@ -955,7 +955,7 @@ class SingleFileTests(ValidationsTestCase):
                 ui_files=[TEST_FILES / "unknown-type"],
                 expected_ui_error=(
                     "Het bestandstype kon niet bepaald worden. Controleer of de "
-                    "bestandsnaam met een extensie eindigt (bijvoorbeel '.pdf' of "
+                    "bestandsnaam met een extensie eindigt (bijvoorbeeld '.pdf' of "
                     "'.png')."
                 ),
                 api_value=[
@@ -966,8 +966,8 @@ class SingleFileTests(ValidationsTestCase):
                 ],
             )
 
-        # Make sure the frontend did not create one:
-        self.assertEqual(TemporaryFileUpload.objects.count(), 1)
+        # Make sure that no temporary files were created
+        self.assertEqual(TemporaryFileUpload.objects.count(), 0)
 
 
 class SingleAddressNLTests(ValidationsTestCase):
