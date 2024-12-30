@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -14,6 +15,12 @@ const ServiceSelect = ({options}) => {
           <FormattedMessage
             description="JSON registration options 'serviceSelect' label"
             defaultMessage="Service"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="JSON registration options 'serviceSelect' helpText"
+            defaultMessage="Which service to send the data to"
           />
         }
       >
