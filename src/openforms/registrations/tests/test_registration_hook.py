@@ -312,7 +312,7 @@ class RegistrationHookTests(TestCase):
             completed=True,
             form__registration_backend="email",
             form__registration_backend_options={},
-        )  # Missing "to_emails" and "to_emails_from_variable" option
+        )  # Missing "to_emails" option
 
         with (
             self.subTest("On completion - does NOT raise"),
@@ -333,48 +333,6 @@ class RegistrationHookTests(TestCase):
             self.assertRaises(ValidationError),
         ):
             register_submission(submission.id, PostSubmissionEvents.on_retry)
-
-    def test_email_registration_backend_with_to_emails(self):
-        submission = SubmissionFactory.create(
-            completed=True,
-            form__registration_backend="email",
-            form__registration_backend_options={"to_emails": ["foo@example.com"]},
-        )
-
-        with (
-            self.subTest("On completion - logs as successful"),
-            self.assertLogs(level="INFO") as logs,
-        ):
-            register_submission(submission.id, PostSubmissionEvents.on_completion)
-
-            submission.refresh_from_db()
-            self.assertIn(
-                "Registration using plugin '%r' for submission '%s' succeeded",
-                logs.records[-1].msg,
-            )
-            self.assertFalse(submission.needs_on_completion_retry)
-
-    def test_email_registration_backend_with_to_emails_from_variable(self):
-        submission = SubmissionFactory.create(
-            completed=True,
-            form__registration_backend="email",
-            form__registration_backend_options={
-                "to_emails_from_variable": "email_example_variable"
-            },
-        )
-
-        with (
-            self.subTest("On completion - logs as successful"),
-            self.assertLogs(level="INFO") as logs,
-        ):
-            register_submission(submission.id, PostSubmissionEvents.on_completion)
-
-            submission.refresh_from_db()
-            self.assertIn(
-                "Registration using plugin '%r' for submission '%s' succeeded",
-                logs.records[-1].msg,
-            )
-            self.assertFalse(submission.needs_on_completion_retry)
 
     def test_calling_registration_task_with_serialized_args(self):
         submission = SubmissionFactory.create(
