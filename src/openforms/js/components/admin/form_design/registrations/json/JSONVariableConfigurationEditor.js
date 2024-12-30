@@ -1,11 +1,11 @@
-// TODO-4908: fix imports
-import {Checkbox} from 'components/admin/forms/Inputs';
-import Field from '../../../forms/Field';
-import {FormattedMessage} from 'react-intl';
-import FormRow from '../../../forms/FormRow';
-import React from 'react';
-import {useField, useFormikContext} from 'formik';
+import {useField} from 'formik';
 import PropTypes from 'prop-types';
+import React from 'react';
+
+import {FormattedMessage} from 'react-intl';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import {Checkbox} from 'components/admin/forms/Inputs';
 
 
 const JSONVariableConfigurationEditor = ({variable}) => {
@@ -34,23 +34,21 @@ const JSONVariableConfigurationEditor = ({variable}) => {
           }
           checked={isIncluded}
           onChange={event => {
-            const formVariablesNew = formVariables.slice();
-            const index = formVariablesNew.indexOf(variable.key);
+            const index = formVariables.indexOf(variable.key);
             if (event.target.checked) {
-              // TODO-4908: remove this when testing is implemented
               if (index !== -1) {throw new Error(
                 "This form variable is already on the list of " +
-                "form variables to include. This shouldn't happen"
+                "form variables to include. This shouldn't happen."
               );}
-              formVariablesNew.push(variable.key);
+              formVariables.push(variable.key);
             } else {
               if (index === -1) {throw new Error(
                 "This form variable is not yet on the list of " +
                 "form variables to include. This shouldn't happen."
               );}
-              formVariablesNew.splice(index, 1);
+              formVariables.splice(index, 1);
             }
-            setValue(formVariablesNew);
+            setValue(formVariables);
           }}
         />
       </Field>
@@ -58,7 +56,6 @@ const JSONVariableConfigurationEditor = ({variable}) => {
   )
 }
 
-// TODO-4098: ???
 JSONVariableConfigurationEditor.propTypes = {
   variable: PropTypes.shape({
     key: PropTypes.string.isRequired,

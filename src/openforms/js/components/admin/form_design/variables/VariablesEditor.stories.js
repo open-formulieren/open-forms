@@ -612,7 +612,6 @@ export const WithJSONRegistrationBackend = {
     ],
   },
   play: async ({canvasElement, step}) => {
-    // TODO-4098: can I get the formVariables backendOptions here?
     const canvas = within(canvasElement);
 
     const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
