@@ -344,6 +344,29 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         self.assertEqual(message.to, ["foo.com"])
 
+    def test_submission_with_email_backend_empty_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[{"key": "recipient", "type": "email", "label": "foo"}],
+            submitted_data={"recipient": ""},
+            form__registration_backend="email",
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "recipient",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email was queued - it will fail to deliver though and that will
+        # be visible in error monitoring.
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["fallback@example.com"])
+
     def test_submission_with_email_backend_strip_out_urls(self):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = (  # pyright: ignore[reportAttributeAccessIssue]

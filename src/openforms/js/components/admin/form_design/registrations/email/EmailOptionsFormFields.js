@@ -36,9 +36,26 @@ const EmailOptionsFormFields = ({name, schema}) => {
   const relevantErrors = filterErrors(name, validationErrors);
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
-      <Fieldset>
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Email registration: recipients fieldset title"
+            defaultMessage="Recipients"
+          />
+        }
+      >
         <EmailRecipients />
         <EmailRecipientsFromVariable />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Email registration: content fieldset title"
+            defaultMessage="Content"
+          />
+        }
+      >
         <EmailSubject />
         <EmailContentTemplateHTML />
         <EmailContentTemplateText />

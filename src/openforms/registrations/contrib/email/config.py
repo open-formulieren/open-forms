@@ -131,20 +131,6 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             ),
         ]
 
-    def validate(self, attrs: Options) -> Options:
-        # The email registration requires either `to_emails` or `to_emails_from_variable`
-        # to determine which email address to use.
-        # Both may be set - in that case, `to_emails_from_variable` is preferred.
-        if not attrs.get("to_emails") and not attrs.get("to_emails_from_variable"):
-            raise serializers.ValidationError(
-                {
-                    "to_emails": _("This field is required."),
-                },
-                code="required",
-            )
-
-        return attrs
-
 
 # sanity check for development - keep serializer and type definitions in sync
 _serializer_fields = EmailOptionsSerializer._declared_fields.keys()

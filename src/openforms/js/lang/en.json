@@ -1034,6 +1034,11 @@
     "description": "Objects API prefill mappings fieldset title",
     "originalDefault": "Mappings"
   },
+  "Igt0Rc": {
+    "defaultMessage": "Skip ownership check",
+    "description": "Objects API registration: skipOwnershipCheck label",
+    "originalDefault": "Skip ownership check"
+  },
   "IhIqdj": {
     "defaultMessage": "Decision definition ID",
     "description": "Decision definition ID label",
@@ -1563,6 +1568,11 @@
     "defaultMessage": "Open editor",
     "description": "Text on button to open design token editor in modal.",
     "originalDefault": "Open editor"
+  },
+  "T2TGaF": {
+    "defaultMessage": "Ownership checks",
+    "description": "Objects API ownership check fieldset title",
+    "originalDefault": "Ownership checks"
   },
   "TB/ku3": {
     "defaultMessage": "Add variable",
@@ -2728,6 +2738,11 @@
     "defaultMessage": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
     "description": "Errored Submissions Removal Method help text",
     "originalDefault": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+  },
+  "qdV9zh": {
+    "defaultMessage": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!",
+    "description": "Objects API registration: skipOwnershipCheck helpText",
+    "originalDefault": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!"
   },
   "qo1UbS": {
     "defaultMessage": "Export",

@@ -7,8 +7,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
 const EmailRecipientsFromVariable = () => {
-  const [fieldProps, , fieldHelpers] = useField('toEmailsFromVariable');
-  const {setValue} = fieldHelpers;
+  const [fieldProps, , {setValue}] = useField('toEmailsFromVariable');
   return (
     <FormRow>
       <Field
@@ -16,25 +15,27 @@ const EmailRecipientsFromVariable = () => {
         label={
           <FormattedMessage
             description="Email registration options 'toEmailsFromVariable' label"
-            defaultMessage="Using a variable to decide to which email address the
-            submission details will be sent"
+            defaultMessage="Variable containing email addresses"
           />
         }
         helpText={
           <FormattedMessage
             description="Email registration options 'toEmailsFromVariable' helpText"
-            defaultMessage="The email address described in this variable will be used
-            for the mailing. If a variable is selected, the general registration
-            addresses will be used as fallback option. "
+            defaultMessage={`If specified, the recipient email addresses will be taken
+            from the selected variable. You must still specify 'regular' email addresses
+            as a fallback, in case something is wrong with the variable.
+            `}
           />
         }
       >
         <VariableSelection
-          name="toEmailsFromVariable"
-          value={fieldProps.value}
+          {...fieldProps}
+          isClearable
           onChange={event => {
-            setValue(event.target.value);
+            const newValue = event.target.value;
+            setValue(newValue == null ? '' : newValue);
           }}
+          filter={variable => ['string', 'array'].includes(variable.dataType)}
         />
       </Field>
     </FormRow>
