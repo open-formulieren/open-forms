@@ -955,7 +955,7 @@ class SingleFileTests(ValidationsTestCase):
                 ui_files=[TEST_FILES / "unknown-type"],
                 expected_ui_error=(
                     "Het bestandstype kon niet bepaald worden. Controleer of de "
-                    "bestandsnaam met een extensie eindigt (bijvoorbeel '.pdf' of "
+                    "bestandsnaam met een extensie eindigt (bijvoorbeeld '.pdf' of "
                     "'.png')."
                 ),
                 api_value=[
