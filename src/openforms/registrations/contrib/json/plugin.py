@@ -1,15 +1,19 @@
 import base64
 
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
+from requests import RequestException
 from zgw_consumers.client import build_client
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
 from .config import JSONOptions, JSONOptionsSerializer
+from .models import JSONConfig
 
 
 @register("json")
@@ -58,8 +62,27 @@ class JSONRegistration(BasePlugin):
 
         return result
 
-    def check_config(self):
-        # TODO-4908: check if it's possible to connect to the service
-        #  (using the 'connection check endpoint' of the service)
-        # TODO-4908: check anything else?
-        pass
+    def check_config(self) -> None:
+        # Get service
+        config = JSONConfig.get_solo()
+        if (service := config.service) is None:
+            raise InvalidPluginConfiguration(_("Please configure a service"))
+
+        # Check connection to service
+        with build_client(service) as client:
+            try:
+                res = client.get(service.api_connection_check_path)
+                res.raise_for_status()
+            except RequestException as exc:
+                raise InvalidPluginConfiguration(_(f"Invalid response: {exc}")) from exc
+
+    def get_config_actions(self) -> list[tuple[str, str]]:
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:registrations_json_jsonconfig_change",
+                    args=(JSONConfig.singleton_instance_id,)
+                )
+            )
+        ]
