@@ -1,10 +1,9 @@
 import html
+import logging
 from mimetypes import types_map
 from typing import Any
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, gettext_lazy as _
@@ -38,38 +37,53 @@ from .constants import PLUGIN_ID, AttachmentFormat
 from .models import EmailConfig
 from .utils import get_registration_email_templates
 
+logger = logging.getLogger(__name__)
+
 
 @register(PLUGIN_ID)
 class EmailRegistration(BasePlugin[Options]):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
-    def get_recipients(self, submission: Submission, options: Options) -> list[str]:
+    @staticmethod
+    def get_recipients(submission: Submission, options: Options) -> list[str]:
         state = submission.load_submission_value_variables_state()
-        recipients = []
+        # ensure we have a fallback
+        recipients: list[str] = options["to_emails"]
 
-        # If the 'recipients from variable' is used and it exists
-        if (
-            (variable_key := options.get("to_emails_from_variable"))
-            and variable_key in state.variables
-            and (variable_value := state.variables[variable_key].value)
-        ):
-            # To simplify things, treat all variable values as lists
-            if type(variable_value) != list:
-                variable_value = [variable_value]
-
-            # Only if all email addresses are valid, they will be used as recipients
+        # TODO: validate in the options that this key/variable exists, but we can't
+        # do that because variables get created *after* the registration options are
+        # submitted...
+        if variable_key := options.get("to_emails_from_variable"):
             try:
-                for value in variable_value:
-                    validate_email(value)
-            except ValidationError:
-                pass
+                variable = state.get_variable(variable_key)
+            except KeyError:
+                logger.info(
+                    "Variable %s does not exist in submission %r",
+                    variable_key,
+                    submission.uuid,
+                    extra={
+                        "variable_key": variable_key,
+                        "form": submission.form.uuid,
+                        "submission": submission.uuid,
+                    },
+                )
             else:
-                recipients = variable_value
+                if variable_value := variable.value:
+                    # Normalize to a list of email addresses. Note that a form component
+                    # could be used with multiple=True, then it will already be a list of
+                    # values.
+                    if not isinstance(variable_value, list):
+                        variable_value = [variable_value]
 
-        # If the variable cannot be used, fallback to the general email addresses
-        if not recipients and "to_emails" in options:
-            recipients = options["to_emails"]
+                    # do not validate that the values are emails, if they're wrong values,
+                    # we want to see this in error monitoring.
+                    recipients = variable_value
+                    logger.info(
+                        "Determined recipients from form variable %r: %r",
+                        variable_key,
+                        recipients,
+                    )
 
         return recipients
 

@@ -77,6 +77,8 @@ Mede-ondertekend door: {{ co_signer }}
 class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         fd = FormDefinitionFactory.create(
             configuration={
                 "components": [
@@ -107,10 +109,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         super().setUp()
 
         self.addCleanup(GlobalConfiguration.clear_cache)
+        self.addCleanup(EmailConfig.clear_cache)
 
     def test_submission_with_email_backend(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
@@ -170,12 +174,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             _component_configuration_path="components.3",
             _component_data_path="file2",
         )
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-        email_submission = EmailRegistration("email")
-
-        set_submission_reference(submission)
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -185,7 +188,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -205,9 +208,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = (
-            f"Inzendingdetails van {self.form.name} (verzonden op 12:00:00 01-01-2021)"
-        )
+        detail_line = f"Inzendingdetails van MyName (verzonden op 12:00:00 01-01-2021)"
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
@@ -252,6 +253,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
     def test_submission_with_email_backend_using_to_emails_from_variable(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
@@ -265,19 +267,17 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             key="email_recipient_variable",
             value="foo@example.com",
         )
-        email_form_options = dict(
-            to_emails_from_variable="email_recipient_variable",
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "attach_files_to_email": None,
+            "to_emails_from_variable": "email_recipient_variable",
+        }
+        plugin = EmailRegistration("email")
 
-        set_submission_reference(submission)
-
-        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
-            email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
-
         message = mail.outbox[0]
         self.assertEqual(message.to, ["foo@example.com"])
 
@@ -286,6 +286,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
     ):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
@@ -299,47 +300,48 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             key="email_recipient_variable",
             value=["foo@example.com", "bar@example.com"],
         )
-        email_form_options = dict(
-            to_emails_from_variable="email_recipient_variable",
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "email_recipient_variable",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
-        set_submission_reference(submission)
-
-        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
-            email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
-
         message = mail.outbox[0]
         self.assertEqual(message.to, ["foo@example.com", "bar@example.com"])
 
-    def test_submission_with_email_backend_unknown_to_emails_from_variable(self):
+    def test_submission_with_email_backend_bad_to_emails_from_variable_pointer(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
             submitted_data={"foo": "bar"},
             form__registration_backend="email",
         )
-        email_form_options = dict(
-            to_emails_from_variable="email_recipient_variable",
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "badVariableReference",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
-        set_submission_reference(submission)
-
-        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
-            email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email wasn't sent
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["fallback@example.com"])
 
     def test_submission_with_email_backend_invalid_to_emails_from_variable(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
@@ -351,55 +353,22 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
-            value="foo.com",
+            value="foo.com",  # invalid email value
         )
-        email_form_options = dict(
-            to_emails_from_variable="email_recipient_variable",
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "email_recipient_variable",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
-        set_submission_reference(submission)
+        plugin.register_submission(submission, email_form_options)
 
-        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
-            email_submission.register_submission(submission, email_form_options)
-
-        # Verify that email wasn't sent
-        self.assertEqual(len(mail.outbox), 0)
-
-    def test_submission_with_email_backend_invalid_to_emails_from_variable_with_fallback(
-        self,
-    ):
-        submission = SubmissionFactory.from_components(
-            completed=True,
-            components_list=[
-                {"key": "foo", "type": "textfield", "label": "foo"},
-            ],
-            submitted_data={"foo": "bar"},
-            form__registration_backend="email",
-        )
-        SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
-            submission=submission,
-            key="email_recipient_variable",
-            value="foo.com",
-        )
-        email_form_options = dict(
-            to_emails_from_variable="email_recipient_variable",
-            to_emails=["bar@example.com"],
-        )
-        email_submission = EmailRegistration("email")
-
-        set_submission_reference(submission)
-
-        with patch("openforms.registrations.contrib.email.utils.EmailConfig.get_solo"):
-            email_submission.register_submission(submission, email_form_options)
-
-        # Verify that email was sent
+        # Verify that email was queued - it will fail to deliver though and that will
+        # be visible in error monitoring.
         self.assertEqual(len(mail.outbox), 1)
-
         message = mail.outbox[0]
-        self.assertEqual(message.to, ["bar@example.com"])
+        self.assertEqual(message.to, ["foo.com"])
 
     def test_submission_with_email_backend_strip_out_urls(self):
         config = GlobalConfiguration.get_solo()
@@ -421,8 +390,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         submission.save()
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -448,8 +417,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         submission = SubmissionFactory.from_data(data, completed=True)
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -474,7 +443,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -482,7 +451,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 subject="Subject: {{ form_name }} - submission {{ public_reference }}",
             ),
         ):
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -539,7 +508,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             to_emails=["foo@bar.nl", "bar@foo.nl"],
             attachment_formats=[AttachmentFormat.pdf],
         )
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -549,7 +518,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.update_payment_status(submission, email_form_options)
+            plugin.update_payment_status(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -620,8 +589,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             # payment_emails would override to_emails
             payment_emails=["payment@bar.nl", "payment@foo.nl"],
         )
-        email_submission = EmailRegistration("email")
-        email_submission.update_payment_status(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
 
         self.assertEqual(len(mail.outbox), 1)
 
@@ -653,8 +622,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             # payment_emails would override to_emails and to_emails_from_variable
             payment_emails=["payment@bar.nl", "payment@foo.nl"],
         )
-        email_submission = EmailRegistration("email")
-        email_submission.update_payment_status(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
 
         self.assertEqual(len(mail.outbox), 1)
 
@@ -685,8 +654,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             # to_emails_from_variable would override to_emails
             to_emails_from_variable="email_recipient_variable",
         )
-        email_submission = EmailRegistration("email")
-        email_submission.update_payment_status(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
 
         self.assertEqual(len(mail.outbox), 1)
 
@@ -723,8 +692,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form_key="attachment2",
         )
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -807,8 +776,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             content_type="text/bar",
         )
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -984,8 +953,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         message = mail.outbox[0]
 
@@ -1049,7 +1018,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             file_name="my-bar.txt",
             content_type="text/bar",
         )
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         for global_config, options_override in cases:
             with self.subTest(
@@ -1062,7 +1031,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 }
                 mock_get_solo.return_value = global_config
 
-                email_submission.register_submission(submission, email_form_options)
+                plugin.register_submission(submission, email_form_options)
 
                 # Verify that email was sent
                 self.assertEqual(len(mail.outbox), 1)
@@ -1103,9 +1072,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
 
         email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
-        email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -1124,7 +1093,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
 
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -1133,9 +1102,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.register_submission(
-                submission, {"to_emails": ["foo@example.com"]}
-            )
+            plugin.register_submission(submission, {"to_emails": ["foo@example.com"]})
 
         message = mail.outbox[0]
         self.assertEqual(message.extra_headers["Content-Language"], "en")
@@ -1258,12 +1225,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
         )
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.plugin.send_mail_html"
         ) as mock_send:
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         args = mock_send.call_args.kwargs
         self.assertEqual(

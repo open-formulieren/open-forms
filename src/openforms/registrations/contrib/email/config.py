@@ -7,6 +7,7 @@ from typing_extensions import NotRequired
 
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.emails.validators import URLSanitationValidator
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -21,7 +22,7 @@ class Options(TypedDict):
     the input data has been cleaned/validated.
     """
 
-    to_emails: NotRequired[list[str]]
+    to_emails: list[str]
     to_emails_from_variable: NotRequired[str]
     attachment_formats: NotRequired[list[AttachmentFormat | str]]
     payment_emails: NotRequired[list[str]]
@@ -36,15 +37,17 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     to_emails = serializers.ListField(
         child=serializers.EmailField(),
         label=_("The email addresses to which the submission details will be sent"),
-        required=False,  # Either to_emails or to_emails_from_variable should be required
+        # always required, even if using to_emails_from_variable because that may contain
+        # bad data/unexpectedly be empty due to reasons (failing prefill, for example)
+        required=True,
     )
-    to_emails_from_variable = serializers.CharField(
+    to_emails_from_variable = FormioVariableKeyField(
         label=_("Key of the target variable containing the email address"),
         required=False,
         allow_blank=True,
         help_text=_(
             "Key of the target variable whose value will be used for the mailing. "
-            "When using this field, the mailing will only be send to this email address. "
+            "When using this field, the mailing will only be sent to this email address. "
             "The email addresses field would then be ignored. "
         ),
     )
