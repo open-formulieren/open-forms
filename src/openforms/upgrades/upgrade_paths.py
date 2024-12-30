@@ -78,18 +78,13 @@ class UpgradeConstraint:
 UPGRADE_PATHS = {
     "3.0": UpgradeConstraint(
         valid_ranges={
-            VersionRange(minimum="2.8.0"),
+            VersionRange(minimum="2.8.2"),
         },
         scripts=["check_temporary_uploads", "check_api_groups_null"],
     ),
     "2.8": UpgradeConstraint(
         valid_ranges={
             VersionRange(minimum="2.7.4"),
-        },
-    ),
-    "3.0.0": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.8.2"),
         },
     ),
 }

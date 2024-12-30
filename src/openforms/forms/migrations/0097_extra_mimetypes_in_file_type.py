@@ -2,8 +2,6 @@
 
 from django.db import migrations
 
-from ..migration_operations import ConvertComponentsOperation
-
 
 class Migration(migrations.Migration):
 
@@ -11,8 +9,6 @@ class Migration(migrations.Migration):
         ("forms", "0092_v250_to_v267"),
     ]
 
-    operations = [
-        ConvertComponentsOperation(
-            "file", "ensure_extra_zip_mimetypes_exist_in_file_type"
-        ),
-    ]
+    # RunPython operation removed as part of 3.0 release cycle - these migrations are
+    # guaranteed to have been executed on Open Forms 2.8.x for existing instances.
+    operations = []

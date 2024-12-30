@@ -8,8 +8,8 @@ from openforms.variables.constants import FormVariableDataTypes, FormVariableSou
 
 class FormLogicMigrationTests(TestMigrations):
     app = "forms"
-    migrate_from = "0105_alter_form_all_submissions_removal_limit_and_more"
-    migrate_to = "0106_convert_price_logic_rules"
+    migrate_from = "0097_v267_to_v270"
+    migrate_to = "0098_v270_to_v300"
 
     def setUpBeforeMigration(self, apps: StateApps):
         # set up some variants that will each be hit for different submissions. After
@@ -60,8 +60,8 @@ class FormLogicMigrationTests(TestMigrations):
 
 class DuplicatePriceVariableMigrationTests(TestMigrations):
     app = "forms"
-    migrate_from = "0105_alter_form_all_submissions_removal_limit_and_more"
-    migrate_to = "0106_convert_price_logic_rules"
+    migrate_from = "0097_v267_to_v270"
+    migrate_to = "0098_v270_to_v300"
 
     def setUpBeforeMigration(self, apps: StateApps):
         # set up some variants that will each be hit for different submissions. After

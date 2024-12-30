@@ -5,58 +5,11 @@ import functools
 from django.db import migrations, models
 
 import tinymce.models
-from flags.conditions import boolean_condition
 
 import openforms.config.models.config
 import openforms.emails.validators
 import openforms.payments.validators
 import openforms.template.validators
-
-FIELDS = (
-    "enable_demo_plugins",
-    "display_sdk_information",
-)
-
-
-def move_from_config_to_flagstate(apps, _):
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    FlagState = apps.get_model("flags", "FlagState")
-
-    # ensure we have an instance, for a fresh install, this will set up the
-    # defaults explicitly.
-    config = GlobalConfiguration.objects.first() or GlobalConfiguration()
-    for field in FIELDS:
-        current_value = getattr(config, field)
-        FlagState.objects.get_or_create(
-            name=field.upper(),
-            defaults={
-                "condition": "boolean",
-                "value": str(current_value),
-                "required": False,
-            },
-        )
-
-
-def move_from_flagstate_to_config(apps, _):
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    FlagState = apps.get_model("flags", "FlagState")
-
-    # if there's no config, there's nothing to do
-    config = GlobalConfiguration.objects.first()
-    if config is None:
-        return
-
-    for field in FIELDS:
-        flag_state = FlagState.objects.filter(
-            name=field.upper(), condition="boolean"
-        ).first()
-        if flag_state is None:
-            continue
-
-        value = boolean_condition(flag_state.value)
-        setattr(config, field, value)
-
-    config.save()
 
 
 class Migration(migrations.Migration):
@@ -162,10 +115,8 @@ class Migration(migrations.Migration):
             model_name="globalconfiguration",
             name="show_form_link_in_cosign_email",
         ),
-        migrations.RunPython(
-            code=move_from_config_to_flagstate,
-            reverse_code=move_from_flagstate_to_config,
-        ),
+        # RunPython operation removed as part of 3.0 release cycle - these migrations are
+        # guaranteed to have been executed on Open Forms 2.8.x for existing instances.
         migrations.RemoveField(
             model_name="globalconfiguration",
             name="display_sdk_information",
