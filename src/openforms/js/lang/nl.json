@@ -1428,6 +1428,11 @@
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' helpText",
     "originalDefault": "Zaaktype status code for newly created zaken in StUF-ZDS"
   },
+  "P7Wd+/": {
+    "defaultMessage": "Inhoud",
+    "description": "form.introductionPageContent label",
+    "originalDefault": "Content"
+  },
   "PC7ICN": {
     "defaultMessage": "Ingeschakeld",
     "description": "Manage process vars enabled checkbox column title",
@@ -1574,10 +1579,20 @@
     "description": "Variable source group label for static variables",
     "originalDefault": "Static variables"
   },
+  "ShUATL": {
+    "defaultMessage": "Toelichting",
+    "description": "Start page explanation text label",
+    "originalDefault": "Explanation"
+  },
   "SjbNyf": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add zaakeigenschap (mapping) button",
     "originalDefault": "Add variable"
+  },
+  "SlvZKo": {
+    "defaultMessage": "Je kan (optioneel) een extra introductiepagina instellen die vóór de startpagina getoond wordt. Laat de inhoud leeg om deze pagina uit te schakelen - gebruikers komen dan meteen op de startpagina uit.",
+    "description": "Introduction page description",
+    "originalDefault": "You can (optionally) configure an introduction page shown before the form start page. Leave the content field blank to disable this page - users will then immediately go to the start page."
   },
   "Sw6TLH": {
     "defaultMessage": "Documenttype",
@@ -1837,11 +1852,6 @@
     "description": "Email registration options 'emailContentTemplateHtml' helpText",
     "originalDefault": "Content of the registration email message (as html)."
   },
-  "Z5lydZ": {
-    "defaultMessage": "Introductiepagina",
-    "description": "form.introductionPageContent label",
-    "originalDefault": "Introduction page"
-  },
   "Z8f4hI": {
     "defaultMessage": "Vertrouwelijkheidaanduiding documenten",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' label",
@@ -2054,6 +2064,11 @@
     "description": "Export form button title",
     "originalDefault": "Export this form"
   },
+  "d6q6wz": {
+    "defaultMessage": "Introductiepagina",
+    "description": "Introduction page fieldset title",
+    "originalDefault": "Introduction page"
+  },
   "dGBYF7": {
     "defaultMessage": "{collapsed, select, true {(Tonen)} other {(Verbergen)}}",
     "description": "Fieldset collapse link text",
@@ -2073,11 +2088,6 @@
     "defaultMessage": "Lijst (array)",
     "description": "JSON variable type \"array\" representation",
     "originalDefault": "Array"
-  },
-  "ddR92A": {
-    "defaultMessage": "Toelichtingssjabloon",
-    "description": "Start page explanation text label",
-    "originalDefault": "Explanation template"
   },
   "deoN5r": {
     "defaultMessage": "Toon voortgang",

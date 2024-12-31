@@ -2914,6 +2914,12 @@
       "value": "Zaakstatuscode voor de nieuw aan te maken zaak."
     }
   ],
+  "P7Wd+/": [
+    {
+      "type": 0,
+      "value": "Inhoud"
+    }
+  ],
   "PC7ICN": [
     {
       "type": 0,
@@ -3252,10 +3258,22 @@
       "value": "Vaste variabelen"
     }
   ],
+  "ShUATL": [
+    {
+      "type": 0,
+      "value": "Toelichting"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
       "value": "Variabele toevoegen"
+    }
+  ],
+  "SlvZKo": [
+    {
+      "type": 0,
+      "value": "Je kan (optioneel) een extra introductiepagina instellen die vóór de startpagina getoond wordt. Laat de inhoud leeg om deze pagina uit te schakelen - gebruikers komen dan meteen op de startpagina uit."
     }
   ],
   "Su4nqf": [
@@ -3876,12 +3894,6 @@
       "value": "Inhoud van de registratiemail (HTML)."
     }
   ],
-  "Z5lydZ": [
-    {
-      "type": 0,
-      "value": "Introductiepagina"
-    }
-  ],
   "Z8f4hI": [
     {
       "type": 0,
@@ -4355,6 +4367,12 @@
       "value": "Item verwijderen"
     }
   ],
+  "d6q6wz": [
+    {
+      "type": 0,
+      "value": "Introductiepagina"
+    }
+  ],
   "dD9O3Q": [
     {
       "type": 0,
@@ -4431,12 +4449,6 @@
     {
       "type": 0,
       "value": "Als de formuliercomponent"
-    }
-  ],
-  "ddR92A": [
-    {
-      "type": 0,
-      "value": "Toelichtingssjabloon"
     }
   ],
   "deoN5r": [

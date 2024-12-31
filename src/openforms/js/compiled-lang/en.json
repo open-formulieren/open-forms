@@ -2897,6 +2897,12 @@
       "value": "Zaaktype status code for newly created zaken in StUF-ZDS"
     }
   ],
+  "P7Wd+/": [
+    {
+      "type": 0,
+      "value": "Content"
+    }
+  ],
   "PC7ICN": [
     {
       "type": 0,
@@ -3239,10 +3245,22 @@
       "value": "Static variables"
     }
   ],
+  "ShUATL": [
+    {
+      "type": 0,
+      "value": "Explanation"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
       "value": "Add variable"
+    }
+  ],
+  "SlvZKo": [
+    {
+      "type": 0,
+      "value": "You can (optionally) configure an introduction page shown before the form start page. Leave the content field blank to disable this page - users will then immediately go to the start page."
     }
   ],
   "Su4nqf": [
@@ -3863,12 +3881,6 @@
       "value": "Content of the registration email message (as html)."
     }
   ],
-  "Z5lydZ": [
-    {
-      "type": 0,
-      "value": "Introduction page"
-    }
-  ],
   "Z8f4hI": [
     {
       "type": 0,
@@ -4337,6 +4349,12 @@
       "value": "Remove item"
     }
   ],
+  "d6q6wz": [
+    {
+      "type": 0,
+      "value": "Introduction page"
+    }
+  ],
   "dD9O3Q": [
     {
       "type": 0,
@@ -4413,12 +4431,6 @@
     {
       "type": 0,
       "value": "When the form component"
-    }
-  ],
-  "ddR92A": [
-    {
-      "type": 0,
-      "value": "Explanation template"
     }
   ],
   "deoN5r": [
