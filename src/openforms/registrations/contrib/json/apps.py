@@ -2,7 +2,7 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-# TODO-4908: maybe rename to FVaJ (Form Variables as JSON)
+# TODO-4908: maybe rename to FVaJ (Form Variables as JSON) or similar?
 class JSONAppConfig(AppConfig):
     name = "openforms.registrations.contrib.json"
     label = "registrations_json"
