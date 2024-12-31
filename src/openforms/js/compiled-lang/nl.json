@@ -2956,6 +2956,12 @@
       "value": "Aantal jaren. Lege waarden worden genegeerd."
     }
   ],
+  "PtFAWx": [
+    {
+      "type": 0,
+      "value": "Weergave/layout"
+    }
+  ],
   "PtZ96W": [
     {
       "type": 0,
@@ -3408,6 +3414,30 @@
       "value": "Variabelekoppelingen"
     }
   ],
+  "U3g0MU": [
+    {
+      "type": 0,
+      "value": "Inloggen "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: geen methoden ingesteld)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasAuth"
+    }
+  ],
   "UCGSib": [
     {
       "type": 0,
@@ -3634,6 +3664,12 @@
     {
       "type": 0,
       "value": "Datum/tijd"
+    }
+  ],
+  "WHxJpx": [
+    {
+      "type": 0,
+      "value": "Deze instellingen bepalen of een gebruiker op de overzichtspagina de inzending kan bevestigen en wat ervoor nodig is om dit te kunnen doen."
     }
   ],
   "WNPDeM": [
@@ -4541,6 +4577,12 @@
       "value": "Geavanceerde opties"
     }
   ],
+  "eNSJ0f": [
+    {
+      "type": 0,
+      "value": "Functionaliteiten"
+    }
+  ],
   "eO6MNT": [
     {
       "type": 0,
@@ -5193,6 +5235,30 @@
     {
       "type": 0,
       "value": "Maplocatie"
+    }
+  ],
+  "jtJACV": [
+    {
+      "type": 0,
+      "value": "Beschikbaarheid "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: publiek benaderbaar)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isAvailable"
     }
   ],
   "jtWzSW": [
@@ -6801,6 +6867,12 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Ogone legacy"
+    }
+  ],
+  "zqnTBZ": [
+    {
+      "type": 0,
+      "value": "Inzending-instellingen"
     }
   ],
   "zwOwrD": [

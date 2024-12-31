@@ -49,7 +49,6 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
         />
       }
       errors={errors}
-      required
     >
       <div>{authCheckboxes}</div>
     </Field>

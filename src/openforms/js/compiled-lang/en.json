@@ -2939,6 +2939,12 @@
       "value": "Number of years. Empty values are ignored."
     }
   ],
+  "PtFAWx": [
+    {
+      "type": 0,
+      "value": "Presentation / appearance"
+    }
+  ],
   "PtZ96W": [
     {
       "type": 0,
@@ -3395,6 +3401,30 @@
       "value": "Variables Mapping"
     }
   ],
+  "U3g0MU": [
+    {
+      "type": 0,
+      "value": "Authentication "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: none configured)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasAuth"
+    }
+  ],
   "UCGSib": [
     {
       "type": 0,
@@ -3621,6 +3651,12 @@
     {
       "type": 0,
       "value": "Date/time"
+    }
+  ],
+  "WHxJpx": [
+    {
+      "type": 0,
+      "value": "The configuration options here control if the user can submit the form on the overview page and what the requirements are to do so."
     }
   ],
   "WNPDeM": [
@@ -4523,6 +4559,12 @@
       "value": "Advanced options"
     }
   ],
+  "eNSJ0f": [
+    {
+      "type": 0,
+      "value": "Features"
+    }
+  ],
   "eO6MNT": [
     {
       "type": 0,
@@ -5175,6 +5217,30 @@
     {
       "type": 0,
       "value": "Folder path"
+    }
+  ],
+  "jtJACV": [
+    {
+      "type": 0,
+      "value": "Availability "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: publicly available)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isAvailable"
     }
   ],
   "jtWzSW": [
@@ -6783,6 +6849,12 @@
     {
       "type": 0,
       "value": "Plugin configuration: Ogone legacy"
+    }
+  ],
+  "zqnTBZ": [
+    {
+      "type": 0,
+      "value": "Submission settings"
     }
   ],
   "zwOwrD": [

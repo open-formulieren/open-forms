@@ -12,7 +12,7 @@ from openforms.tests.e2e.base import (
 )
 
 from ..factories import FormFactory
-from .helpers import close_modal
+from .helpers import close_modal, open_fieldset
 from .test_form_designer import drag_and_drop_component
 
 
@@ -146,6 +146,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
             # Check that there is no warning
             await expect(warning_node).not_to_be_visible()
 
+            await open_fieldset(page, "Authentication")
             await page.get_by_role("checkbox", name="DigiD", checked=True).click()
 
             # Check that the warning has appeared

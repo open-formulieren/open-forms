@@ -1458,6 +1458,11 @@
     "description": "StUF-ZDS registration options modal title",
     "originalDefault": "Plugin configuration: StUF-ZDS"
   },
+  "PtFAWx": {
+    "defaultMessage": "Weergave/layout",
+    "description": "Form presentation fieldset title",
+    "originalDefault": "Presentation / appearance"
+  },
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
@@ -1679,6 +1684,11 @@
     "description": "Objects API registration backend options 'Variables Mapping' tab label",
     "originalDefault": "Variables Mapping"
   },
+  "U3g0MU": {
+    "defaultMessage": "Inloggen {hasAuth, select, false {(status: geen methoden ingesteld)} other {}}",
+    "description": "Form authentication fieldset title",
+    "originalDefault": "Authentication {hasAuth, select, false {(status: none configured)} other {}}"
+  },
   "UKTqb8": {
     "defaultMessage": "Bewaartermijn van inzendingen",
     "description": "All Submissions Removal Limit field label",
@@ -1734,6 +1744,11 @@
     "defaultMessage": "Datum/tijd",
     "description": "Date/time column header",
     "originalDefault": "Date/time"
+  },
+  "WHxJpx": {
+    "defaultMessage": "Deze instellingen bepalen of een gebruiker op de overzichtspagina de inzending kan bevestigen en wat ervoor nodig is om dit te kunnen doen.",
+    "description": "Form submission settings description",
+    "originalDefault": "The configuration options here control if the user can submit the form on the overview page and what the requirements are to do so."
   },
   "WNPDeM": {
     "defaultMessage": "Catalogus",
@@ -2134,6 +2149,11 @@
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
+  "eNSJ0f": {
+    "defaultMessage": "Functionaliteiten",
+    "description": "Form feature fields fieldset title",
+    "originalDefault": "Features"
+  },
   "eO6MNT": {
     "defaultMessage": "Zaakstatuscode",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
@@ -2464,6 +2484,11 @@
     "defaultMessage": "Maplocatie",
     "description": "MS Graph registration options 'folderPath' label",
     "originalDefault": "Folder path"
+  },
+  "jtJACV": {
+    "defaultMessage": "Beschikbaarheid {isAvailable, select, true {(status: publiek benaderbaar)} other {}}",
+    "description": "Form availability fieldset title",
+    "originalDefault": "Availability {isAvailable, select, true {(status: publicly available)} other {}}"
   },
   "jy1jTd": {
     "defaultMessage": "{numErrors, plural, one {Er is een validatiefout.} other {Er zijn {numErrors} validatefouten.} }",
@@ -3175,6 +3200,11 @@
     "defaultMessage": "Plugin-instellingen: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
+  },
+  "zqnTBZ": {
+    "defaultMessage": "Inzending-instellingen",
+    "description": "Form submission settings fieldset title",
+    "originalDefault": "Submission settings"
   },
   "zwOwrD": {
     "defaultMessage": "Selecteer een attribuut uit het objecttype",

@@ -1444,6 +1444,11 @@
     "description": "StUF-ZDS registration options modal title",
     "originalDefault": "Plugin configuration: StUF-ZDS"
   },
+  "PtFAWx": {
+    "defaultMessage": "Presentation / appearance",
+    "description": "Form presentation fieldset title",
+    "originalDefault": "Presentation / appearance"
+  },
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
@@ -1664,6 +1669,11 @@
     "description": "Objects API registration backend options 'Variables Mapping' tab label",
     "originalDefault": "Variables Mapping"
   },
+  "U3g0MU": {
+    "defaultMessage": "Authentication {hasAuth, select, false {(status: none configured)} other {}}",
+    "description": "Form authentication fieldset title",
+    "originalDefault": "Authentication {hasAuth, select, false {(status: none configured)} other {}}"
+  },
   "UKTqb8": {
     "defaultMessage": "All Submissions Removal Limit",
     "description": "All Submissions Removal Limit field label",
@@ -1718,6 +1728,11 @@
     "defaultMessage": "Date/time",
     "description": "Date/time column header",
     "originalDefault": "Date/time"
+  },
+  "WHxJpx": {
+    "defaultMessage": "The configuration options here control if the user can submit the form on the overview page and what the requirements are to do so.",
+    "description": "Form submission settings description",
+    "originalDefault": "The configuration options here control if the user can submit the form on the overview page and what the requirements are to do so."
   },
   "WNPDeM": {
     "defaultMessage": "Catalogue",
@@ -2114,6 +2129,11 @@
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
+  "eNSJ0f": {
+    "defaultMessage": "Features",
+    "description": "Form feature fields fieldset title",
+    "originalDefault": "Features"
+  },
   "eO6MNT": {
     "defaultMessage": "Zds zaaktype status code",
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' label",
@@ -2443,6 +2463,11 @@
     "defaultMessage": "Folder path",
     "description": "MS Graph registration options 'folderPath' label",
     "originalDefault": "Folder path"
+  },
+  "jtJACV": {
+    "defaultMessage": "Availability {isAvailable, select, true {(status: publicly available)} other {}}",
+    "description": "Form availability fieldset title",
+    "originalDefault": "Availability {isAvailable, select, true {(status: publicly available)} other {}}"
   },
   "jy1jTd": {
     "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
@@ -3153,6 +3178,11 @@
     "defaultMessage": "Plugin configuration: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
+  },
+  "zqnTBZ": {
+    "defaultMessage": "Submission settings",
+    "description": "Form submission settings fieldset title",
+    "originalDefault": "Submission settings"
   },
   "zwOwrD": {
     "defaultMessage": "Select a property from the object type",
