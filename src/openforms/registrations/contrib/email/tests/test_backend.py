@@ -22,6 +22,7 @@ from openforms.emails.constants import (
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -34,7 +35,8 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import AttachmentFormat
+from ....tasks import pre_registration
+from ..constants import PLUGIN_ID, AttachmentFormat
 from ..models import EmailConfig
 from ..plugin import EmailRegistration, Options
 
@@ -1281,3 +1283,31 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         # Verify that email was sent
         emails = mail.outbox
         self.assertEqual(len(emails), 2)
+
+    @tag("gh-4650")
+    def test_register_submission_with_initial_data_reference(self):
+        """
+        Test that submissions with initial data references can be registered.
+
+        For email, no access control checks can be performed and there is no 'update
+        existing object' mechanic, so any submission with some initial data reference
+        (for prefill, for example) needs to be accepted.
+        """
+        email_form_options: Options = {
+            "to_emails": ["recipient@example.com"],
+            "attach_files_to_email": None,
+        }
+        submission = SubmissionFactory.from_data(
+            {"whatever": "156/Silence"},
+            completed_not_preregistered=True,
+            initial_data_reference="some-reference",
+            form__registration_backend=PLUGIN_ID,
+            form__registration_backend_options=email_form_options,
+        )
+
+        pre_registration(submission.pk, event=PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertFalse(submission.needs_on_completion_retry)
+        self.assertTrue(submission.pre_registration_completed)
+        self.assertNotEqual(submission.public_registration_reference, "")

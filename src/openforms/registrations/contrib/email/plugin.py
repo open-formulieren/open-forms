@@ -45,6 +45,14 @@ class EmailRegistration(BasePlugin[Options]):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
+    def verify_initial_data_ownership(
+        self, submission: Submission, options: Options
+    ) -> None:
+        """
+        Ownership checks for email registration are not meaningful, allow anything.
+        """
+        pass
+
     @staticmethod
     def get_recipients(submission: Submission, options: Options) -> list[str]:
         state = submission.load_submission_value_variables_state()
