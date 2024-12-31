@@ -2,7 +2,11 @@ import {fn} from '@storybook/test';
 import {Form, Formik} from 'formik';
 import {Fragment} from 'react';
 
-import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
+import {
+  FeatureFlagsContext,
+  FormContext,
+  TinyMceContext,
+} from 'components/admin/form_design/Context';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ReactSelectContext} from 'components/admin/forms/ReactSelect';
 import {ValidationErrorsProvider} from 'components/admin/forms/ValidationErrors';
@@ -59,10 +63,27 @@ export const FormDecorator = (Story, {args}) => (
       },
       components: args.availableComponents || {},
       registrationBackends: args.registrationBackends || [],
+      languages: [
+        {
+          code: 'nl',
+          label: 'Nederlands',
+        },
+        {
+          code: 'en',
+          label: 'Engels',
+        },
+      ],
+      translationEnabled: false,
     }}
   >
     <Story />
   </FormContext.Provider>
+);
+
+export const TinyMceDecorator = Story => (
+  <TinyMceContext.Provider value="static/tinymce/tinymce.min.js">
+    <Story />
+  </TinyMceContext.Provider>
 );
 
 export const ValidationErrorsDecorator = (Story, {args, parameters}) => (

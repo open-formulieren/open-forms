@@ -12,6 +12,7 @@ const config = {
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
     {from: '../static/img', to: 'static/img'},
+    {from: '../static/tinymce', to: 'static/tinymce'},
     // required in dev mode due to style-loader usage
     {from: '../static/admin', to: 'admin'},
     {from: '../static/fonts', to: 'fonts'},

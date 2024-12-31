@@ -1,6 +1,6 @@
 import '../src/openforms/scss/screen.scss';
 import '../src/openforms/scss/admin/admin_overrides.scss';
-import {withModalDecorator, withReactSelectDecorator} from 'components/admin/form_design/story-decorators';
+import {withModalDecorator, withReactSelectDecorator, TinyMceDecorator} from 'components/admin/form_design/story-decorators';
 import {initialize, mswLoader} from 'msw-storybook-addon';
 import {reactIntl} from './reactIntl.js';
 import ReactModal from 'react-modal';
@@ -15,7 +15,7 @@ initialize({
 ReactModal.setAppElement(document.getElementById('storybook-root'));
 
 export default {
-  decorators: [withModalDecorator, withReactSelectDecorator],
+  decorators: [withModalDecorator, withReactSelectDecorator, TinyMceDecorator],
   parameters: {
     controls: {
       matchers: {
