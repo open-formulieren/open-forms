@@ -61,14 +61,26 @@ class MimeTypeValidator:
         detected_mime_type = magic.from_buffer(head, mime=True)
         provided_mime_type = value.content_type or "application/octet-stream"
 
-        # gh #2520
-        # application/x-ole-storage on Arch with shared-mime-info 2.0+155+gf4e7cbc-1
-        if detected_mime_type in ["application/CDFV2", "application/x-ole-storage"]:
-            whole_file = head + value.read()
-            detected_mime_type = magic.from_buffer(whole_file, mime=True)
+        # bail early if no extension was provided
+        if not ext:
+            raise serializers.ValidationError(
+                _(
+                    "Could not determine the file type. Please make sure the file name "
+                    "has an extension."
+                )
+            )
 
-        if detected_mime_type == "image/heif":
-            detected_mime_type = "image/heic"
+        # remap detected mime types in some cases
+        match detected_mime_type:
+            # gh #2520
+            # application/x-ole-storage on Arch with shared-mime-info 2.0+155+gf4e7cbc-1
+            case "application/CDFV2" | "application/x-ole-storage":
+                whole_file = head + value.read()
+                detected_mime_type = magic.from_buffer(whole_file, mime=True)
+            # gh #2911 - see commit 8d59d2d95b140ec525759ae089c63277b7f64610
+            # Note that the ``uncompress=True`` option *might* help.
+            case "image/heif":
+                detected_mime_type = "image/heic"
 
         if not (
             self.any_allowed
@@ -78,14 +90,6 @@ class MimeTypeValidator:
         ):
             raise serializers.ValidationError(
                 _("The provided file is not a valid file type.")
-            )
-
-        if not ext:
-            raise serializers.ValidationError(
-                _(
-                    "Could not determine the file type. Please make sure the file name "
-                    "has an extension."
-                )
             )
 
         # Contents is allowed. Do extension or submitted content_type agree?
@@ -108,31 +112,38 @@ class MimeTypeValidator:
             raise serializers.ValidationError(
                 _("The provided file is not a {file_type}.").format(file_type=f".{ext}")
             )
-        # gh #4886
-        # We need to accept text/plain as a valid MIME type for CSV files.
-        # If the file does not strictly follow the conventions of CSV (e.g. non-standard delimiters),
-        # may not be considered as a valid CSV.
-        elif (
-            provided_mime_type == "text/csv"
-            and detected_mime_type == "text/plain"
-            and ext == "csv"
-        ):
-            return
-        elif detected_mime_type == "image/heic" and provided_mime_type in (
-            "image/heic",
-            "image/heif",
-        ):
-            return
-        # gh #4658
-        # Windows use application/x-zip-compressed as a mimetype for .zip files, which
-        # is deprecated but still we need to support it. Instead, the common case for
-        # zip files is application/zip or application/zip-compressed mimetype.
-        elif detected_mime_type == "application/zip" and provided_mime_type in (
-            "application/zip-compressed",
-            "application/x-zip-compressed",
-        ):
-            return
-        elif provided_mime_type != detected_mime_type:
+
+        # Handle edge cases where detection is not exact/reliable.
+        match (provided_mime_type, detected_mime_type, ext):
+            # gh #4886
+            # We need to accept text/plain as a valid MIME type for CSV files.
+            # If the file does not strictly follow the conventions of CSV (e.g.
+            # non-standard delimiters),
+            # may not be considered as a valid CSV.
+            case ("text/csv", "text/plain", "csv"):
+                return
+
+            # See earlier - heic/heif can be considered equivalent
+            case ("image/heic" | "image/heif", "image/heic", _):
+                return
+
+            # gh #4658
+            # Windows use application/x-zip-compressed as a mimetype for .zip files,
+            # which is deprecated but still we need to support it. Instead, the common
+            # case for zip files is application/zip or application/zip-compressed
+            # mimetype.
+            # libmagic 5.46+ doesn't detect application/zip anymore.
+            case (
+                "application/zip-compressed" | "application/x-zip-compressed",
+                "application/zip" | "application/octet-stream",
+                "zip",
+            ):
+                return
+
+            case _:
+                pass
+
+        if provided_mime_type != detected_mime_type:
             raise serializers.ValidationError(
                 _("The provided file is not a {file_type}.").format(
                     filename=value.name, file_type=f".{ext}"
