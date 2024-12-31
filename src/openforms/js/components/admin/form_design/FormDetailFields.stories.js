@@ -1,6 +1,6 @@
 import {fn} from '@storybook/test';
 
-import {FormDecorator, TinyMceDecorator} from 'components/admin/form_design/story-decorators';
+import {FormDecorator} from 'components/admin/form_design/story-decorators';
 
 import FormDetailFields from './FormDetailFields';
 
