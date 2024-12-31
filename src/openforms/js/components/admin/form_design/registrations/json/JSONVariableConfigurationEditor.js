@@ -9,8 +9,7 @@ import {Checkbox} from 'components/admin/forms/Inputs';
 
 
 const JSONVariableConfigurationEditor = ({variable}) => {
-  const [fieldProps, , fieldHelpers] = useField('formVariables');
-  const {setValue} = fieldHelpers;
+  const [fieldProps, , {setValue}] = useField('formVariables');
 
   const formVariables = fieldProps.value
   const isIncluded = formVariables.includes(variable.key);
@@ -34,21 +33,22 @@ const JSONVariableConfigurationEditor = ({variable}) => {
           }
           checked={isIncluded}
           onChange={event => {
-            const index = formVariables.indexOf(variable.key);
+            const formVariablesNew = formVariables.slice()
+            const index = formVariablesNew.indexOf(variable.key);
             if (event.target.checked) {
               if (index !== -1) {throw new Error(
                 "This form variable is already on the list of " +
                 "form variables to include. This shouldn't happen."
               );}
-              formVariables.push(variable.key);
+              formVariablesNew.push(variable.key);
             } else {
               if (index === -1) {throw new Error(
                 "This form variable is not yet on the list of " +
                 "form variables to include. This shouldn't happen."
               );}
-              formVariables.splice(index, 1);
+              formVariablesNew.splice(index, 1);
             }
-            setValue(formVariables);
+            setValue(formVariablesNew);
           }}
         />
       </Field>
