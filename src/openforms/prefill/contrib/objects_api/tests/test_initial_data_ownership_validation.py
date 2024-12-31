@@ -159,3 +159,19 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
                 logs.filter_event("object_ownership_check_success").exists()
             )
             self.assertFalse(logs.filter_event("prefill_retrieve_success").exists())
+
+    def test_allow_prefill_when_ownership_check_is_skipped(self):
+        self.variable.prefill_options["skip_ownership_check"] = True
+        self.variable.save()
+        submission = SubmissionFactory.create(
+            form=self.form,
+            # invalid BSN
+            auth_info__value="000XXX000",
+            auth_info__attribute=AuthAttribute.bsn,
+            initial_data_reference=self.object_ref,
+        )
+
+        try:
+            prefill_variables(submission=submission)
+        except PermissionDenied as exc:
+            raise self.failureException("Ownership check should be skipped") from exc

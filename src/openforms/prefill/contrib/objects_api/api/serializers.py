@@ -8,6 +8,8 @@ from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
+from ..typing import ObjectsAPIOptions
+
 
 class PrefillTargetPathsSerializer(serializers.Serializer):
     target_path = serializers.ListField(
@@ -63,6 +65,14 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=True,
         help_text=_("Version of the objecttype in the Objecttypes API."),
     )
+    skip_ownership_check = serializers.BooleanField(
+        label=_("skip ownership check"),
+        help_text=_(
+            "If enabled, no authentication/ownership checks of the referenced object "
+            "are performed."
+        ),
+        default=False,
+    )
     auth_attribute_path = serializers.ListField(
         child=serializers.CharField(label=_("Segment of a JSON path")),
         label=_("Path to auth attribute (e.g. BSN/KVK) in objects"),
@@ -70,11 +80,28 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "This is used to perform validation to verify that the authenticated "
             "user is the owner of the object."
         ),
-        allow_empty=False,
-        required=True,
+        required=False,
+        default=list,
+        allow_empty=True,
     )
     variables_mapping = ObjecttypeVariableMappingSerializer(
         label=_("variables mapping"),
         many=True,
         required=True,
     )
+
+    def validate(self, attrs: ObjectsAPIOptions) -> ObjectsAPIOptions:
+        # ensure that an auth_attribute_path is specified when ownership checks are
+        # not skipped.
+        if not attrs["skip_ownership_check"] and not attrs["auth_attribute_path"]:
+            raise serializers.ValidationError(
+                {
+                    "auth_attribute_path": _(
+                        "You must specify which attribute to compare the authenticated "
+                        "user identifier with."
+                    ),
+                },
+                code="empty",
+            )
+
+        return attrs

@@ -19,21 +19,14 @@ from openforms.emails.constants import (
     EmailContentTypeChoices,
     EmailEventChoices,
 )
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
-from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
-    SubmissionReportFactory,
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
     TemporaryFileUploadFactory,
@@ -69,48 +62,32 @@ Mede-ondertekend door: {{ co_signer }}
 """
 
 
+def _get_sent_email(index: int = 0) -> tuple[mail.EmailMultiAlternatives, str, str]:
+    message = mail.outbox[index]
+    assert isinstance(message, mail.EmailMultiAlternatives)
+    text_body = message.body
+    html_body = message.alternatives[0][0]
+    assert isinstance(html_body, str)
+    return message, str(text_body), html_body
+
+
 @override_settings(
     DEFAULT_FROM_EMAIL="info@open-forms.nl",
     BASE_URL="https://example.com",
     LANGUAGE_CODE="nl",
 )
 class EmailBackendTests(HTMLAssertMixin, TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        fd = FormDefinitionFactory.create(
-            configuration={
-                "components": [
-                    {
-                        "key": "someField",
-                        "label": "Some Field",
-                        "type": "textfield",
-                    },
-                    {
-                        "key": "someList",
-                        "label": "Some list",
-                        "type": "textfield",
-                        "multiple": True,
-                    },
-                ],
-            }
-        )
-        form = FormFactory.create(
-            name="MyName",
-            internal_name="MyInternalName",
-            registration_backend="email",
-        )
-        cls.fs = FormStepFactory.create(form=form, form_definition=fd)
-        cls.form = form
-        cls.fd = fd
 
     def setUp(self):
         super().setUp()
 
         self.addCleanup(GlobalConfiguration.clear_cache)
+        self.addCleanup(EmailConfig.clear_cache)
 
     def test_submission_with_email_backend(self):
         submission = SubmissionFactory.from_components(
             completed=True,
+            with_public_registration_reference=True,
             completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
@@ -154,9 +131,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             },
             language_code="nl",
         )
+        step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        )
         submission_file_attachment_1 = SubmissionFileAttachmentFactory.create(
             form_key="file1",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=step,
             file_name="my-foo.bin",
             content_type="application/foo",
             _component_configuration_path="components.2",
@@ -164,18 +144,17 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         submission_file_attachment_2 = SubmissionFileAttachmentFactory.create(
             form_key="file2",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=step,
             file_name="my-bar.txt",
             content_type="text/bar",
             _component_configuration_path="components.3",
             _component_data_path="file2",
         )
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-        email_submission = EmailRegistration("email")
-
-        set_submission_reference(submission)
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -185,12 +164,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
-        message = mail.outbox[0]
+        message, message_text, message_html = _get_sent_email()
         self.assertEqual(
             message.subject,
             f"Subject: MyName - submission {submission.public_registration_reference}",
@@ -199,15 +178,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        message_text = message.body
-        message_html = message.alternatives[0][0]
         self.assertHTMLValid(message_html)
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = (
-            f"Inzendingdetails van {self.form.name} (verzonden op 12:00:00 01-01-2021)"
-        )
+        detail_line = "Inzendingdetails van MyName (verzonden op 12:00:00 01-01-2021)"
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
@@ -249,68 +224,197 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn(f"{expected_download_url_1} (my-foo.bin)", message_text)
         self.assertIn(f"{expected_download_url_2} (my-bar.txt)", message_text)
 
+    def test_submission_with_email_backend_using_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "attach_files_to_email": None,
+            "to_emails_from_variable": "email_recipient_variable",
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["foo@example.com"])
+
+    def test_submission_with_email_backend_using_to_emails_from_variable_with_multiple_email_addresses(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value=["foo@example.com", "bar@example.com"],
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "email_recipient_variable",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["foo@example.com", "bar@example.com"])
+
+    def test_submission_with_email_backend_bad_to_emails_from_variable_pointer(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "badVariableReference",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email wasn't sent
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["fallback@example.com"])
+
+    def test_submission_with_email_backend_invalid_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            submitted_data={"foo": "bar"},
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo.com",  # invalid email value
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "email_recipient_variable",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email was queued - it will fail to deliver though and that will
+        # be visible in error monitoring.
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["foo.com"])
+
+    def test_submission_with_email_backend_empty_to_emails_from_variable(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[{"key": "recipient", "type": "email", "label": "foo"}],
+            submitted_data={"recipient": ""},
+            form__registration_backend="email",
+        )
+        email_form_options: Options = {
+            "to_emails": ["fallback@example.com"],
+            "to_emails_from_variable": "recipient",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, email_form_options)
+
+        # Verify that email was queued - it will fail to deliver though and that will
+        # be visible in error monitoring.
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, ["fallback@example.com"])
+
     def test_submission_with_email_backend_strip_out_urls(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = []
+        config.email_template_netloc_allowlist = (  # pyright: ignore[reportAttributeAccessIssue]
+            []
+        )
         config.save()
-
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-
-        data = {
-            "foo": "https://someurl.com",
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
         }
-
-        submission = SubmissionFactory.create(form=self.form)
-        SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
+        submission = SubmissionFactory.from_data(
+            {"foo": "https://someurl.com"}, completed=True
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
-        message = mail.outbox[0]
-        message_html = message.alternatives[0][0]
-
-        self.assertNotIn("https://someurl.com", message.body)
+        _, message_text, message_html = _get_sent_email()
+        self.assertNotIn("https://someurl.com", message_text)
         self.assertNotIn("https://someurl.com", message_html)
 
     def test_submission_with_email_backend_keep_allowed_urls(self):
         config = GlobalConfiguration.get_solo()
-        config.email_template_netloc_allowlist = ["allowed.com"]
+        # fmt: off
+        config.email_template_netloc_allowlist = ["allowed.com"]  # pyright: ignore[reportAttributeAccessIssue]
+        # fmt: on
         config.save()
-
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-
-        data = {
-            "foo": "https://allowed.com",
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
         }
-
-        submission = SubmissionFactory.from_data(data, completed=True)
-
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        submission = SubmissionFactory.from_data(
+            {"foo": "https://allowed.com"}, completed=True
+        )
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
-        message = mail.outbox[0]
-        message_html = message.alternatives[0][0]
-
-        self.assertIn("https://allowed.com", message.body)
+        _, message_text, message_html = _get_sent_email()
+        self.assertIn("https://allowed.com", message_text)
         self.assertIn("https://allowed.com", message_html)
 
     def test_html_in_email_subject(self):
         """Assert that HTML is not escaped in the subject of Emails"""
-
         submission = SubmissionFactory.from_components(
             completed=True,
             components_list=[
@@ -319,10 +423,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__name="Foo's bar",
             public_registration_reference="XYZ",
         )
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -330,7 +435,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 subject="Subject: {{ form_name }} - submission {{ public_reference }}",
             ),
         ):
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -345,6 +450,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         """
         submission = SubmissionFactory.from_components(
             completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
             components_list=[
                 {"key": "voornaam", "type": "textfield"},
                 {"key": "someFile", "type": "file"},
@@ -367,7 +473,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             registration_success=True,
             public_registration_reference="XYZ",
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
         payment = SubmissionPaymentFactory.for_submission(
             submission=submission, status=PaymentStatus.completed
         )
@@ -380,14 +485,14 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             _component_configuration_path="components.1",
             _component_data_path="someFile",
         )
+        assert submission.payment_required
 
-        self.assertTrue(submission.payment_required)
-
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-            attachment_formats=[AttachmentFormat.pdf],
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+            "attachment_formats": [AttachmentFormat.pdf],
+        }
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -397,7 +502,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.update_payment_status(submission, email_form_options)
+            plugin.update_payment_status(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -411,13 +516,14 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
 
         # Check that the template is used
-        message_text = message.body
-        message_html = message.alternatives[0][0]
+        message, message_text, message_html = _get_sent_email()
         self.assertHTMLValid(message_html)
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = f"Betaling ontvangen voor {self.form.name} (ingezonden op 12:00:00 01-01-2021)"
+        detail_line = (
+            "Betaling ontvangen voor MyName (ingezonden op 12:00:00 01-01-2021)"
+        )
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
@@ -461,15 +567,15 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             registration_success=True,
             public_registration_reference="XYZ",
         )
-        self.assertTrue(submission.payment_required)
-
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-            # payment_emails would override to_emails
-            payment_emails=["payment@bar.nl", "payment@foo.nl"],
-        )
-        email_submission = EmailRegistration("email")
-        email_submission.update_payment_status(submission, email_form_options)
+        assert submission.payment_required
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            # payment_emails must override to_emails
+            "payment_emails": ["payment@bar.nl", "payment@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
 
         self.assertEqual(len(mail.outbox), 1)
 
@@ -477,22 +583,101 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         # check we used the payment_emails
         self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
 
+    def test_register_and_update_paid_product_with_payment_email_recipient_and_variable_email_recipient(
+        self,
+    ):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "to_emails_from_variable": "email_recipient_variable",
+            # payment_emails must override to_emails
+            "payment_emails": ["payment@bar.nl", "payment@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
+
+    def test_register_and_update_paid_product_with_variable_email_recipient(
+        self,
+    ):
+        submission = SubmissionFactory.from_data(
+            {"voornaam": "Foo"},
+            form__product__price=Decimal("11.35"),
+            form__payment_backend="demo",
+            registration_success=True,
+            public_registration_reference="XYZ",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="email_recipient_variable",
+            value="foo@example.com",
+        )
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            # to_emails_from_variable would override to_emails
+            "to_emails_from_variable": "email_recipient_variable",
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+        plugin.update_payment_status(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # check we used the payment_emails
+        self.assertEqual(message.to, ["foo@example.com"])
+
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_export_csv_xlsx(self):
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-            attachment_formats=[AttachmentFormat.csv, AttachmentFormat.xlsx],
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attachment_formats": [AttachmentFormat.csv, AttachmentFormat.xlsx],
+            "attach_files_to_email": None,
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "someField",
+                    "label": "Some Field",
+                    "type": "textfield",
+                },
+                {
+                    "key": "someList",
+                    "label": "Some list",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
+            completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
+            form__name="MyName",
+            form__internal_name="MyInternalName",
         )
-
-        data = {"someField": "value0", "someList": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
+        submission_step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -506,8 +691,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form_key="attachment2",
         )
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -563,22 +748,31 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_export_pdf(self):
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-            attachment_formats=[AttachmentFormat.pdf],
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attachment_formats": [AttachmentFormat.pdf],
+            "attach_files_to_email": None,
+        }
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "someField",
+                    "label": "Some Field",
+                    "type": "textfield",
+                },
+                {
+                    "key": "someList",
+                    "label": "Some list",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={"someField": "value0", "someList": ["value1", "value2"]},
+            completed=True,
         )
-
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(form=self.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=self.fs, data=data
+        submission_step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
         )
-        submission.completed_on = timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0))
-        submission.save()
-
-        report = SubmissionReportFactory.create(submission=submission)
-
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
@@ -590,8 +784,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             content_type="text/bar",
         )
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin = EmailRegistration("email")
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -602,9 +796,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(len(message.attachments), 1)
 
         pdf_export = message.attachments[0]
-
-        self.assertEqual(pdf_export[0], f"{report.title}.pdf")
-        self.assertEqual(pdf_export[1], report.content.read())
+        self.assertEqual(pdf_export[0], f"{submission.report.title}.pdf")
+        self.assertEqual(pdf_export[1], submission.report.content.read())
         self.assertEqual(pdf_export[2], "application/pdf")
 
     def test_regression_nested_components_columns(self):
@@ -763,16 +956,15 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 "eMailadres": "foo@bar.nl",
             },
         )
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
-        email_submission = EmailRegistration("email")
-        email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
-        message = mail.outbox[0]
-
-        message_html = message.alternatives[0][0]
+        _, _, message_html = _get_sent_email()
         self.assertInHTML("<ul><li>Backend</li><li>Frontend</li></ul>", message_html)
 
     @patch("openforms.registrations.contrib.email.plugin.EmailConfig.get_solo")
@@ -820,19 +1012,22 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__internal_name="MyInternalName",
             form__registration_backend="email",
         )
+        step = (
+            submission.submissionstep_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        )
         SubmissionFileAttachmentFactory.create(
             form_key="file1",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=step,
             file_name="my-foo.bin",
             content_type="application/foo",
         )
         SubmissionFileAttachmentFactory.create(
             form_key="file2",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=step,
             file_name="my-bar.txt",
             content_type="text/bar",
         )
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         for global_config, options_override in cases:
             with self.subTest(
@@ -845,7 +1040,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 }
                 mock_get_solo.return_value = global_config
 
-                email_submission.register_submission(submission, email_form_options)
+                plugin.register_submission(submission, email_form_options)
 
                 # Verify that email was sent
                 self.assertEqual(len(mail.outbox), 1)
@@ -885,17 +1080,18 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             value="test2",
         )
 
-        email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
-        email_submission.register_submission(submission, email_form_options)
+        plugin.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
 
-        message = mail.outbox[0]
-        message_text = message.body
-
+        _, message_text, _ = _get_sent_email()
         self.assertIn("User defined var 1: test1", message_text)
         self.assertIn("User defined var 2: test2", message_text)
 
@@ -907,7 +1103,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
 
-        email_submission = EmailRegistration("email")
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
@@ -916,15 +1112,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 content_text=TEST_TEMPLATE_NL,
             ),
         ):
-            email_submission.register_submission(
-                submission, {"to_emails": ["foo@example.com"]}
-            )
+            plugin.register_submission(submission, {"to_emails": ["foo@example.com"]})
 
-        message = mail.outbox[0]
+        message, message_text, message_html = _get_sent_email()
         self.assertEqual(message.extra_headers["Content-Language"], "en")
-        self.assertIn("Engels", message.body)
-        html_message = message.alternatives[0][0]
-        self.assertIn("Engels", html_message)
+        self.assertIn("Engels", message_text)
+        self.assertIn("Engels", message_html)
 
     @tag("gh-3144")
     def test_file_attachments_in_registration_email(self):
@@ -1020,8 +1213,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         attach_uploads_to_submission_step(submission_step)
 
-        subject, body_html, body_text = EmailRegistration.render_registration_email(
-            submission, is_payment_update=False
+        subject, body_html, body_text = (
+            EmailRegistration.render_registration_email(  # pyright: ignore[reportAttributeAccessIssue]
+                submission, is_payment_update=False
+            )
         )
 
         with self.subTest("Normal attachment"):
@@ -1038,15 +1233,16 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
     def test_extra_headers(self):
         submission = SubmissionFactory.create()
-        email_form_options = dict(
-            to_emails=["foo@bar.nl", "bar@foo.nl"],
-        )
-        email_submission = EmailRegistration("email")
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
 
         with patch(
             "openforms.registrations.contrib.email.plugin.send_mail_html"
         ) as mock_send:
-            email_submission.register_submission(submission, email_form_options)
+            plugin.register_submission(submission, email_form_options)
 
         args = mock_send.call_args.kwargs
         self.assertEqual(

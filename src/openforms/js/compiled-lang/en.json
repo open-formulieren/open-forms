@@ -1273,6 +1273,12 @@
       "value": "Minimum value"
     }
   ],
+  "BHr/3M": [
+    {
+      "type": 0,
+      "value": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable."
+    }
+  ],
   "BKTOtD": [
     {
       "offset": 0,
@@ -1873,6 +1879,12 @@
       "value": "The co-sign component requires at least one authentication plugin to be enabled."
     }
   ],
+  "FNT8nq": [
+    {
+      "type": 0,
+      "value": "Variable containing email addresses"
+    }
+  ],
   "FOlQaP": [
     {
       "type": 0,
@@ -2231,6 +2243,12 @@
     {
       "type": 0,
       "value": " is unknown. We can only display the JSON definition."
+    }
+  ],
+  "Igt0Rc": [
+    {
+      "type": 0,
+      "value": "Skip ownership check"
     }
   ],
   "IhIqdj": [
@@ -3249,6 +3267,12 @@
     {
       "type": 0,
       "value": "Open editor"
+    }
+  ],
+  "T2TGaF": [
+    {
+      "type": 0,
+      "value": "Ownership checks"
     }
   ],
   "T2dCIS": [
@@ -5571,6 +5595,12 @@
       "value": "The registration result will be an object from the selected type."
     }
   ],
+  "nhBYT3": [
+    {
+      "type": 0,
+      "value": "Recipients"
+    }
+  ],
   "nkr7r0": [
     {
       "type": 0,
@@ -5887,6 +5917,12 @@
     {
       "type": 0,
       "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+    }
+  ],
+  "qdV9zh": [
+    {
+      "type": 0,
+      "value": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!"
     }
   ],
   "qmBAmr": [
@@ -6295,6 +6331,12 @@
     {
       "type": 0,
       "value": "Value"
+    }
+  ],
+  "vaO0I+": [
+    {
+      "type": 0,
+      "value": "Content"
     }
   ],
   "ve3rsH": [

@@ -27,6 +27,7 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
 import CopyConfigurationFromRegistrationBackend from './CopyConfigurationFromRegistrationBackend';
+import SkipOwnershipCheck from './SkipOwnershipCheck';
 import useStatus from './useStatus';
 
 const PLUGIN_ID = 'objects_api';
@@ -82,7 +83,7 @@ const ObjectsAPIFields = () => {
   const {values, setFieldValue, setValues} = useFormikContext();
   const {
     plugin,
-    options: {objecttypeUuid, objecttypeVersion, objectsApiGroup},
+    options: {objecttypeUuid, objecttypeVersion, objectsApiGroup, skipOwnershipCheck},
   } = values;
   const {showCopyButton, toggleShowCopyButton} = useStatus();
 
@@ -90,6 +91,7 @@ const ObjectsAPIFields = () => {
     objectsApiGroup: null,
     objecttypeUuid: '',
     objecttypeVersion: null,
+    skipOwnershipCheck: false,
     authAttributePath: undefined,
     variablesMapping: [],
   };
@@ -235,13 +237,26 @@ const ObjectsAPIFields = () => {
             objectTypeFieldName="options.objecttypeUuid"
           />
         </ErrorBoundary>
-        <AuthAttributePath
-          name={'options.authAttributePath'}
-          objectsApiGroup={objectsApiGroup}
-          objecttypeUuid={objecttypeUuid}
-          objecttypeVersion={objecttypeVersion}
-          required
-        />
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Objects API ownership check fieldset title"
+            defaultMessage="Ownership checks"
+          />
+        }
+      >
+        <SkipOwnershipCheck />
+        {!skipOwnershipCheck && (
+          <AuthAttributePath
+            name={'options.authAttributePath'}
+            objectsApiGroup={objectsApiGroup}
+            objecttypeUuid={objecttypeUuid}
+            objecttypeVersion={objecttypeVersion}
+            required
+          />
+        )}
       </Fieldset>
 
       <Fieldset

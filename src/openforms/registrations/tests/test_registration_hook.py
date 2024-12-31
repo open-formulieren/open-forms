@@ -312,7 +312,7 @@ class RegistrationHookTests(TestCase):
             completed=True,
             form__registration_backend="email",
             form__registration_backend_options={},
-        )  # Missing "to_email" option
+        )  # Missing "to_emails" option
 
         with (
             self.subTest("On completion - does NOT raise"),

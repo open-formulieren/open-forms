@@ -95,7 +95,7 @@ class EmailConfig(SingletonModel):
         ],
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Email registration configuration")
 
     def __str__(self):

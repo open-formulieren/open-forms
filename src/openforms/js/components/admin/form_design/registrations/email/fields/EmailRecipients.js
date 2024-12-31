@@ -19,6 +19,7 @@ const EmailRecipients = () => {
             defaultMessage="The email addresses to which the submission details will be sent"
           />
         }
+        required
       >
         <ArrayInput
           name="toEmails"

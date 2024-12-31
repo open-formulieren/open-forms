@@ -1,4 +1,5 @@
 import html
+import logging
 from mimetypes import types_map
 from typing import Any
 
@@ -36,17 +37,62 @@ from .constants import PLUGIN_ID, AttachmentFormat
 from .models import EmailConfig
 from .utils import get_registration_email_templates
 
+logger = logging.getLogger(__name__)
+
 
 @register(PLUGIN_ID)
 class EmailRegistration(BasePlugin[Options]):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
+    @staticmethod
+    def get_recipients(submission: Submission, options: Options) -> list[str]:
+        state = submission.load_submission_value_variables_state()
+        # ensure we have a fallback
+        recipients: list[str] = options["to_emails"]
+
+        # TODO: validate in the options that this key/variable exists, but we can't
+        # do that because variables get created *after* the registration options are
+        # submitted...
+        if variable_key := options.get("to_emails_from_variable"):
+            try:
+                variable = state.get_variable(variable_key)
+            except KeyError:
+                logger.info(
+                    "Variable %s does not exist in submission %r",
+                    variable_key,
+                    submission.uuid,
+                    extra={
+                        "variable_key": variable_key,
+                        "form": submission.form.uuid,
+                        "submission": submission.uuid,
+                    },
+                )
+            else:
+                if variable_value := variable.value:
+                    # Normalize to a list of email addresses. Note that a form component
+                    # could be used with multiple=True, then it will already be a list of
+                    # values.
+                    if not isinstance(variable_value, list):
+                        variable_value = [variable_value]
+
+                    # do not validate that the values are emails, if they're wrong values,
+                    # we want to see this in error monitoring.
+                    recipients = variable_value
+                    logger.info(
+                        "Determined recipients from form variable %r: %r",
+                        variable_key,
+                        recipients,
+                    )
+
+        return recipients
+
     def register_submission(self, submission: Submission, options: Options) -> None:
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
-        self.send_registration_email(options["to_emails"], submission, options)
+        recipients = self.get_recipients(submission, options)
+        self.send_registration_email(recipients, submission, options)
 
         # ensure that the payment email is also sent if registration is deferred until
         # payment is completed
@@ -187,8 +233,9 @@ class EmailRegistration(BasePlugin[Options]):
 
     def update_payment_status(self, submission: "Submission", options: Options):
         recipients = options.get("payment_emails")
+
         if not recipients:
-            recipients = options["to_emails"]
+            recipients = self.get_recipients(submission, options)
 
         order_ids = submission.payments.get_completed_public_order_ids()
         extra_context = {

@@ -564,6 +564,11 @@
     "description": "Email registration options 'emailPaymentSubject' label",
     "originalDefault": "Email payment subject"
   },
+  "BHr/3M": {
+    "defaultMessage": "Als een variable geselecteerd is, dan wordt de waarde gebruikt als e-mailadres(sen) van de ontvangers. Je moet nog steeds een vast adres opgeven als terugvaloptie voor het geval er iets fout gaat met de variabele.",
+    "description": "Email registration options 'toEmailsFromVariable' helpText",
+    "originalDefault": "If specified, the recipient email addresses will be taken from the selected variable. You must still specify 'regular' email addresses as a fallback, in case something is wrong with the variable."
+  },
   "BKTOtD": {
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele gekoppeld)} other {({varCount} variabelen gekoppeld)} }",
     "description": "Managed Camunda process vars state feedback",
@@ -823,6 +828,11 @@
     "description": "MissingAuthCosignWarning message",
     "originalDefault": "The co-sign component requires at least one authentication plugin to be enabled."
   },
+  "FNT8nq": {
+    "defaultMessage": "Variabele die adres(sen) bevat",
+    "description": "Email registration options 'toEmailsFromVariable' label",
+    "originalDefault": "Variable containing email addresses"
+  },
   "FQ1JZc": {
     "defaultMessage": "Zaaktypecode waarmee de nieuwe zaak aangemaakt wordt.",
     "description": "StUF-ZDS registration options 'zdsZaaktypeCode' helpText",
@@ -1043,6 +1053,11 @@
     "description": "Objects API prefill mappings fieldset title",
     "originalDefault": "Mappings"
   },
+  "Igt0Rc": {
+    "defaultMessage": "Sla eigenaarcontrole over",
+    "description": "Objects API registration: skipOwnershipCheck label",
+    "originalDefault": "Skip ownership check"
+  },
   "IhIqdj": {
     "defaultMessage": "Beslisdefinitie-ID",
     "description": "Decision definition ID label",
@@ -1229,7 +1244,7 @@
     "originalDefault": "Something went wrong while retrieving the available products defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
   "LeVpdf": {
-    "defaultMessage": "Plugin-insellingen: e-mail",
+    "defaultMessage": "Plugin-instellingen: e-mail",
     "description": "Email registration options modal title",
     "originalDefault": "Plugin configuration: Email"
   },
@@ -1578,6 +1593,11 @@
     "defaultMessage": "Editor openen",
     "description": "Text on button to open design token editor in modal.",
     "originalDefault": "Open editor"
+  },
+  "T2TGaF": {
+    "defaultMessage": "Eigenaarcontroles",
+    "description": "Objects API ownership check fieldset title",
+    "originalDefault": "Ownership checks"
   },
   "TB/ku3": {
     "defaultMessage": "Variabele toevoegen",
@@ -2600,6 +2620,11 @@
     "description": "Objects API registration options 'Objecttype' helpText",
     "originalDefault": "The registration result will be an object from the selected type."
   },
+  "nhBYT3": {
+    "defaultMessage": "Ontvangers",
+    "description": "Email registration: recipients fieldset title",
+    "originalDefault": "Recipients"
+  },
   "nkr7r0": {
     "defaultMessage": "Aantal dagen dat een inzending bewaard blijft voordat deze definitief verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "All Submissions Removal Limit help text",
@@ -2744,6 +2769,11 @@
     "defaultMessage": "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Errored Submissions Removal Method help text",
     "originalDefault": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+  },
+  "qdV9zh": {
+    "defaultMessage": "Indien aangevinkt, dan worden geen controles uitgevoerd of de (ingelogde) gebruiker toegang heeft op het gerefereerde object. Valideer dat de objecten geen privacy-gevoelige gegevens bevatten voor je dit aanvinkt!",
+    "description": "Objects API registration: skipOwnershipCheck helpText",
+    "originalDefault": "If enabled, then no access control on the referenced object is performed. Ensure that it does not contain private data before checking this!"
   },
   "qo1UbS": {
     "defaultMessage": "Exporteren",
@@ -2949,6 +2979,11 @@
     "defaultMessage": "Maak een nieuwe formulierdefinitie",
     "description": "Create form definition tile",
     "originalDefault": "Create a new form definition"
+  },
+  "vaO0I+": {
+    "defaultMessage": "E-mailinhoud",
+    "description": "Email registration: content fieldset title",
+    "originalDefault": "Content"
   },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",

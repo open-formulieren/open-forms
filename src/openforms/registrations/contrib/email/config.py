@@ -7,17 +7,49 @@ from typing_extensions import NotRequired
 
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.emails.validators import URLSanitationValidator
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import AttachmentFormat
 
 
+class Options(TypedDict):
+    """
+    Shape of the email registration plugin options.
+
+    This describes the shape of :attr:`EmailOptionsSerializer.validated_data`, after
+    the input data has been cleaned/validated.
+    """
+
+    to_emails: list[str]
+    to_emails_from_variable: NotRequired[str]
+    attachment_formats: NotRequired[list[AttachmentFormat | str]]
+    payment_emails: NotRequired[list[str]]
+    attach_files_to_email: bool | None
+    email_subject: NotRequired[str]
+    email_payment_subject: NotRequired[str]
+    email_content_template_html: NotRequired[str]
+    email_content_template_text: NotRequired[str]
+
+
 class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     to_emails = serializers.ListField(
         child=serializers.EmailField(),
         label=_("The email addresses to which the submission details will be sent"),
+        # always required, even if using to_emails_from_variable because that may contain
+        # bad data/unexpectedly be empty due to reasons (failing prefill, for example)
         required=True,
+    )
+    to_emails_from_variable = FormioVariableKeyField(
+        label=_("Key of the target variable containing the email address"),
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Key of the target variable whose value will be used for the mailing. "
+            "When using this field, the mailing will only be sent to this email address. "
+            "The email addresses field would then be ignored. "
+        ),
     )
     attachment_formats = serializers.ListField(
         child=serializers.ChoiceField(choices=AttachmentFormat.choices),
@@ -98,24 +130,6 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 "email_content_template_text",
             ),
         ]
-
-
-class Options(TypedDict):
-    """
-    Shape of the email registration plugin options.
-
-    This describes the shape of :attr:`EmailOptionsSerializer.validated_data`, after
-    the input data has been cleaned/validated.
-    """
-
-    to_emails: list[str]
-    attachment_formats: NotRequired[list[AttachmentFormat | str]]
-    payment_emails: NotRequired[list[str]]
-    attach_files_to_email: bool | None
-    email_subject: NotRequired[str]
-    email_payment_subject: NotRequired[str]
-    email_content_template_html: NotRequired[str]
-    email_content_template_text: NotRequired[str]
 
 
 # sanity check for development - keep serializer and type definitions in sync

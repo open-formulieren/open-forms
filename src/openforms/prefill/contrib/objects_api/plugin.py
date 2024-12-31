@@ -31,6 +31,10 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     def verify_initial_data_ownership(
         self, submission: Submission, prefill_options: ObjectsAPIOptions
     ) -> None:
+        if prefill_options["skip_ownership_check"]:
+            logger.info("Skipping ownership check for submission %r.", submission.uuid)
+            return
+
         assert submission.initial_data_reference
         api_group = prefill_options["objects_api_group"]
         assert api_group, "Can't do anything useful without an API group"

@@ -1277,6 +1277,12 @@
       "value": "Minimale waarde"
     }
   ],
+  "BHr/3M": [
+    {
+      "type": 0,
+      "value": "Als een variable geselecteerd is, dan wordt de waarde gebruikt als e-mailadres(sen) van de ontvangers. Je moet nog steeds een vast adres opgeven als terugvaloptie voor het geval er iets fout gaat met de variabele."
+    }
+  ],
   "BKTOtD": [
     {
       "offset": 0,
@@ -1894,6 +1900,12 @@
       "value": "Er moet minstens één authenticatiemethode ingeschakeld zijn voor de mede-ondertekencomponent."
     }
   ],
+  "FNT8nq": [
+    {
+      "type": 0,
+      "value": "Variabele die adres(sen) bevat"
+    }
+  ],
   "FOlQaP": [
     {
       "type": 0,
@@ -2254,6 +2266,12 @@
       "value": " is niet bekend. We kunnen enkel de JSON-definitie weergeven."
     }
   ],
+  "Igt0Rc": [
+    {
+      "type": 0,
+      "value": "Sla eigenaarcontrole over"
+    }
+  ],
   "IhIqdj": [
     {
       "type": 0,
@@ -2597,7 +2615,7 @@
   "LeVpdf": [
     {
       "type": 0,
-      "value": "Plugin-insellingen: e-mail"
+      "value": "Plugin-instellingen: e-mail"
     }
   ],
   "LiXrER": [
@@ -3262,6 +3280,12 @@
     {
       "type": 0,
       "value": "Editor openen"
+    }
+  ],
+  "T2TGaF": [
+    {
+      "type": 0,
+      "value": "Eigenaarcontroles"
     }
   ],
   "T2dCIS": [
@@ -5589,6 +5613,12 @@
       "value": "Het registratieresultaat zal een object van dit type zijn."
     }
   ],
+  "nhBYT3": [
+    {
+      "type": 0,
+      "value": "Ontvangers"
+    }
+  ],
   "nkr7r0": [
     {
       "type": 0,
@@ -5905,6 +5935,12 @@
     {
       "type": 0,
       "value": "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "qdV9zh": [
+    {
+      "type": 0,
+      "value": "Indien aangevinkt, dan worden geen controles uitgevoerd of de (ingelogde) gebruiker toegang heeft op het gerefereerde object. Valideer dat de objecten geen privacy-gevoelige gegevens bevatten voor je dit aanvinkt!"
     }
   ],
   "qmBAmr": [
@@ -6313,6 +6349,12 @@
     {
       "type": 0,
       "value": "(Standaard)tekst"
+    }
+  ],
+  "vaO0I+": [
+    {
+      "type": 0,
+      "value": "E-mailinhoud"
     }
   ],
   "ve3rsH": [

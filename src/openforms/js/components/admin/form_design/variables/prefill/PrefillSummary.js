@@ -94,6 +94,8 @@ const PrefillSummary = ({
           }
           isOpen={modalOpen}
           closeModal={() => setModalOpen(false)}
+          // FIXME: push this down to the plugin-specific components, somehow
+          extraModifiers={plugin === 'objects_api' ? ['large'] : undefined}
         >
           <ErrorBoundary>
             <PrefillConfigurationForm

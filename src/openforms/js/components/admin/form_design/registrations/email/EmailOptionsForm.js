@@ -23,6 +23,7 @@ const EmailOptionsForm = ({name, label, schema, formData, onChange}) => {
         />
       }
       initialFormData={{
+        toEmailsFromVariable: '', // ensure an initial value is provided
         ...formData,
         // ensure we have a blank row initially
         toEmails: formData.toEmails?.length ? formData.toEmails : [''],
@@ -51,6 +52,7 @@ EmailOptionsForm.propTypes = {
     emailSubject: PropTypes.string,
     paymentEmails: PropTypes.arrayOf(PropTypes.string),
     toEmails: PropTypes.arrayOf(PropTypes.string),
+    toEmailsFromVariable: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
 };
