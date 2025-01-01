@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import '../src/openforms/scss/screen.scss';
 import '../src/openforms/scss/admin/admin_overrides.scss';
 import {withModalDecorator, withReactSelectDecorator, TinyMceDecorator} from 'components/admin/form_design/story-decorators';

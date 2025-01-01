@@ -9,7 +9,15 @@ import {StepsFieldSet} from './form-creation-form';
 
 export default {
   title: 'Form design / Tabs / Steps',
-  decorators: [FormDecorator, AdminChangeFormDecorator],
+  decorators: [
+    FormDecorator,
+    Story => (
+      <div className="react-form-create">
+        <Story />
+      </div>
+    ),
+    AdminChangeFormDecorator,
+  ],
   component: StepsFieldSet,
   args: {
     submitting: false,
