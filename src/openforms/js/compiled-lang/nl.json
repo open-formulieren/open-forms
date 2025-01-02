@@ -221,12 +221,6 @@
       "value": "Bevestigen"
     }
   ],
-  "1Hb/pK": [
-    {
-      "type": 0,
-      "value": "Dit attribuut wordt gebruikt om te controleren dat de ingelogde gebruiker bij het object hoort dat bijgewerkt wordt."
-    }
-  ],
   "1HfdUc": [
     {
       "type": 0,
@@ -3738,6 +3732,12 @@
       "value": "Actief"
     }
   ],
+  "X18/UP": [
+    {
+      "type": 0,
+      "value": "Identificatie-attribuut"
+    }
+  ],
   "XAKzo5": [
     {
       "type": 0,
@@ -4695,6 +4695,12 @@
       "value": "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "fB1baI": [
+    {
+      "type": 0,
+      "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker om de eigenaar van het object dat bijgewerkt wordt te controleren. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen bijwerken in plaast van zichzelf."
+    }
+  ],
   "fGTdJz": [
     {
       "type": 0,
@@ -4807,6 +4813,12 @@
     {
       "type": 0,
       "value": "Negeren"
+    }
+  ],
+  "g1i5ru": [
+    {
+      "type": 0,
+      "value": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen kunnen opvragen."
     }
   ],
   "gAf9pR": [
@@ -5527,12 +5539,6 @@
     {
       "type": 0,
       "value": "Partner 1"
-    }
-  ],
-  "lu7yMK": [
-    {
-      "type": 0,
-      "value": "Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)"
     }
   ],
   "m20av3": [

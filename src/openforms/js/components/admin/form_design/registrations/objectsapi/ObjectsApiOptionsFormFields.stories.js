@@ -1,9 +1,9 @@
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
-import selectEvent from 'react-select-event';
 
 import {
   FeatureFlagsDecorator,
+  FormModalContentDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
 import {rsSelect} from 'utils/storybookTestHelpers';
@@ -30,7 +30,7 @@ const render = ({apiGroups, formData}) => (
 
 export default {
   title: 'Form design/Registration/Objects API',
-  decorators: [ValidationErrorsDecorator, FeatureFlagsDecorator],
+  decorators: [ValidationErrorsDecorator, FeatureFlagsDecorator, FormModalContentDecorator],
   render,
   args: {
     apiGroups: [

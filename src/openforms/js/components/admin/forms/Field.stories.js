@@ -7,7 +7,19 @@ export default {
   title: 'Admin/Django/Field',
   component: Field,
 
-  decorators: [AdminChangeFormDecorator],
+  decorators: [
+    Story => (
+      <div class="form-row">
+        <Story />
+      </div>
+    ),
+    AdminChangeFormDecorator,
+    Story => (
+      <div class="react-form-create">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     adminChangeForm: {
       wrapFieldset: true,

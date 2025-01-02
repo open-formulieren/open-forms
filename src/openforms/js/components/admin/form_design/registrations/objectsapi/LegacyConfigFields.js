@@ -7,7 +7,6 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextArea, TextInput} from 'components/admin/forms/Inputs';
 import {
-  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -15,6 +14,7 @@ import {
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  AuthAttributePath,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
@@ -129,14 +129,7 @@ const LegacyConfigFields = ({apiGroupChoices}) => {
         fieldNames={['updateExistingObject', 'authAttributePath']}
       >
         <UpdateExistingObject />
-        <AuthAttributePath
-          name="authAttributePath"
-          objectsApiGroup={objectsApiGroup}
-          objecttypeUuid={objecttype}
-          objecttypeVersion={objecttypeVersion}
-          disabled={!updateExistingObject}
-          required={updateExistingObject}
-        />
+        <AuthAttributePath />
       </Fieldset>
 
       <Fieldset

@@ -18,6 +18,7 @@ import {
 import {
   AdminChangeFormDecorator,
   FormDecorator,
+  FormModalContentDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
 import {rsSelect} from 'utils/storybookTestHelpers';
@@ -26,7 +27,12 @@ import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
-  decorators: [ValidationErrorsDecorator, FormDecorator, AdminChangeFormDecorator],
+  decorators: [
+    ValidationErrorsDecorator,
+    FormDecorator,
+    AdminChangeFormDecorator,
+    FormModalContentDecorator,
+  ],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -799,9 +805,7 @@ export const ObjectsAPI = {
         expect(otherSettingsTitle).toBeVisible();
         await userEvent.click(within(otherSettingsTitle).getByRole('link', {name: '(Tonen)'}));
 
-        const authAttributePath = modal.getByText(
-          'Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)'
-        );
+        const authAttributePath = modal.getByText('Identificatie-attribuut');
 
         expect(authAttributePath.parentElement.parentElement).toHaveClass('field--disabled');
 

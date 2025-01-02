@@ -18,6 +18,7 @@ const AuthAttributePath = ({
   objecttypeVersion,
   disabled = false,
   required = false,
+  helpText = undefined,
 }) => {
   const intl = useIntl();
   const {csrftoken} = useContext(APIContext);
@@ -57,15 +58,10 @@ const AuthAttributePath = ({
         label={
           <FormattedMessage
             description="Objects API registration: authAttributePath label"
-            defaultMessage="Path to auth attribute (e.g. BSN/KVK) in objects"
+            defaultMessage="Owner identifier"
           />
         }
-        helpText={
-          <FormattedMessage
-            description="Objects API registration: authAttributePath helpText"
-            defaultMessage="This is used to perform validation to verify that the authenticated user is the owner of the object."
-          />
-        }
+        helpText={helpText}
         disabled={disabled}
         required={required}
       >
@@ -89,6 +85,7 @@ AuthAttributePath.propTypes = {
   objecttypeVersion: PropTypes.number,
   disabled: PropTypes.bool,
   required: PropTypes.bool,
+  helpText: PropTypes.node,
 };
 
 export default AuthAttributePath;

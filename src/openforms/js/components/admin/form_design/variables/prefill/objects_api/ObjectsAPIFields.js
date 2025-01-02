@@ -255,6 +255,14 @@ const ObjectsAPIFields = () => {
             objecttypeUuid={objecttypeUuid}
             objecttypeVersion={objecttypeVersion}
             required
+            helpText={
+              <FormattedMessage
+                description="Objects API prefill: authAttributePath helpText"
+                defaultMessage={`The property that gets compared with the identifier (e.g. BSN/KVK) of
+                the authenticated user. This is important to prevent malicious users
+                looking up private information of other people.`}
+              />
+            }
           />
         )}
       </Fieldset>
