@@ -913,6 +913,12 @@
       "value": "De e-mailadressen waarnaar de update van de betalingsstatus wordt verzonden (standaard wordt het algemene e-mailadres gebruikt)."
     }
   ],
+  "7jY1U4": [
+    {
+      "type": 0,
+      "value": "Velden"
+    }
+  ],
   "7qqbU9": [
     {
       "type": 1,
@@ -5153,12 +5159,6 @@
       "value": "Informatieobjecttype inzendings-PDF"
     }
   ],
-  "jARYB7": [
-    {
-      "type": 0,
-      "value": "(Herbruikbare) stapgegevens"
-    }
-  ],
   "jLg5l6": [
     {
       "type": 0,
@@ -6225,6 +6225,30 @@
     {
       "type": 0,
       "value": "optie 1: € 10,99"
+    }
+  ],
+  "t+J++o": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Stapinstellingen"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Herbruikbare stapinstellingen"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isReusable"
     }
   ],
   "t5fg/K": [

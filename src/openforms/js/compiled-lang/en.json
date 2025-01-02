@@ -909,6 +909,12 @@
       "value": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
     }
   ],
+  "7jY1U4": [
+    {
+      "type": 0,
+      "value": "Fields"
+    }
+  ],
   "7qqbU9": [
     {
       "type": 1,
@@ -5135,12 +5141,6 @@
       "value": "Submission report PDF informatieobjecttype"
     }
   ],
-  "jARYB7": [
-    {
-      "type": 0,
-      "value": "Form definition"
-    }
-  ],
   "jLg5l6": [
     {
       "type": 0,
@@ -6207,6 +6207,34 @@
     {
       "type": 0,
       "value": "option 1: € 10,99"
+    }
+  ],
+  "t+J++o": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Step"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Reusable step"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isReusable"
+    },
+    {
+      "type": 0,
+      "value": " settings"
     }
   ],
   "t5fg/K": [

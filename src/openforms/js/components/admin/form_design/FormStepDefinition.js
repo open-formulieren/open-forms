@@ -13,7 +13,7 @@ import FormIOBuilder from 'components/formio_builder/builder';
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import {FormContext} from './Context';
-import LanguageTabs from './LanguageTabs';
+import LanguageTabs, {DEFAULT_LANGUAGE} from './LanguageTabs';
 import LogicWarning from './LogicWarning';
 import PluginWarning from './PluginWarning';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
@@ -168,6 +168,8 @@ const FormStepDefinition = ({
     erroredLanguages.add(langCode);
   }
 
+  const hasName = !!translations[DEFAULT_LANGUAGE].name;
+
   return (
     <>
       <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
@@ -175,14 +177,17 @@ const FormStepDefinition = ({
       <AuthenticationWarning loginRequired={loginRequired} configuration={configuration} />
       <LogicWarning warnings={warnings} />
 
-      <Fieldset>
-        <h2>
+      <Fieldset
+        title={
           <FormattedMessage
             description="Form definition module title"
-            defaultMessage="Form definition"
+            defaultMessage="{isReusable, select, true {Reusable step} other {Step}} settings"
+            values={{isReusable: isReusable}}
           />
-        </h2>
-
+        }
+        collapsible
+        initialCollapsed={hasName && !!slug && !errors.length}
+      >
         <LanguageTabs haveErrors={[...erroredLanguages]}>
           {(langCode, defaultLang) => (
             <>

@@ -393,6 +393,11 @@
     "description": "Email registration options 'paymentEmails' label",
     "originalDefault": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
   },
+  "7jY1U4": {
+    "defaultMessage": "Velden",
+    "description": "Form definition formio configuration",
+    "originalDefault": "Fields"
+  },
   "833GAg": {
     "defaultMessage": "Invoerparameters",
     "description": "Input mapping title",
@@ -2435,11 +2440,6 @@
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
   },
-  "jARYB7": {
-    "defaultMessage": "(Herbruikbare) stapgegevens",
-    "description": "Form definition module title",
-    "originalDefault": "Form definition"
-  },
   "jLv6k8": {
     "defaultMessage": "DMN-variabele",
     "description": "Accessible label for DMN variable dropdown",
@@ -2904,6 +2904,11 @@
     "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+  },
+  "t+J++o": {
+    "defaultMessage": "{isReusable, select, true {Herbruikbare stapinstellingen} other {Stapinstellingen}}",
+    "description": "Form definition module title",
+    "originalDefault": "{isReusable, select, true {Reusable step} other {Step}} settings"
   },
   "t5fg/K": {
     "defaultMessage": "één of meer acties zijn ongeldig",
