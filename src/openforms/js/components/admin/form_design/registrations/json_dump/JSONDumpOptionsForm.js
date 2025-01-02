@@ -12,14 +12,9 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-// TODO-4908: maybe create separate file (JSONOptionsFormFields) for all the fields?
-//  Though, no need to use multiple FieldSets, so adding the fields to the form is pretty
-//  straightforward.
-import FormVariablesSelect from './fields/FormVariablesSelect';
-import RelativeAPIEndpoint from './fields/RelativeAPIEndpoint';
-import ServiceSelect from './fields/ServiceSelect';
+import {FormVariablesSelect, RelativeAPIEndpoint, ServiceSelect} from './fields';
 
-const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
+const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
@@ -51,7 +46,12 @@ const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
           defaultMessage="Plugin configuration: JSON"
         />
       }
-      initialFormData={{...formData}}
+      initialFormData={{
+        service: null,
+        relativeApiEndpoint: '',
+        formVariables: [],
+        ...formData,
+      }}
       onSubmit={values => onChange({formData: values})}
       modalSize="medium"
     >
@@ -66,7 +66,7 @@ const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
   );
 };
 
-JSONOptionsForm.propTypes = {
+JSONDumpOptionsForm.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
   schema: PropTypes.shape({
@@ -87,4 +87,4 @@ JSONOptionsForm.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export default JSONOptionsForm;
+export default JSONDumpOptionsForm;

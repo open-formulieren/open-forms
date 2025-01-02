@@ -1,14 +1,14 @@
 version: '3.8'
 
-name: json-registration
+name: json-dump
 
 services:
   flask_app:
-    build: ./json-registration
+    build: ./json-dump
     ports:
       - "80:80"
     volumes:
-      - ./json-registration/:/app/
+      - ./json-dump/:/app/
 
 networks:
   open-forms-dev:

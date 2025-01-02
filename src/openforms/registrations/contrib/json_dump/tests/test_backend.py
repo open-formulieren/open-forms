@@ -1,3 +1,6 @@
+from base64 import b64decode
+from pathlib import Path
+
 from django.test import TestCase
 
 from requests import RequestException
@@ -8,16 +11,17 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..plugin import JSONRegistration
+from ..plugin import JSONDumpRegistration
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
-class JSONBackendTests(OFVCRMixin, TestCase):
+class JSONDumpBackendTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
-    def test_submission_with_json_backend(self):
+    def test_submission_with_json_dump_backend(self):
         submission = SubmissionFactory.from_components(
             [
                 {"key": "firstName", "type": "textField"},
@@ -40,7 +44,7 @@ class JSONBackendTests(OFVCRMixin, TestCase):
             bsn="123456789",
         )
 
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="test_file.txt",
@@ -51,12 +55,11 @@ class JSONBackendTests(OFVCRMixin, TestCase):
         )
 
         json_form_options = dict(
-            service=ServiceFactory(api_root="http://example.com/api/v2"),
-            relative_api_endpoint="",
-            form_variables=["firstName", "lastName", "file", "auth_bsn"],
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["firstName", "file", "auth_bsn"],
         )
-        email_submission = JSONRegistration("json_plugin")
-
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
         expected_response = {
@@ -82,4 +85,34 @@ class JSONBackendTests(OFVCRMixin, TestCase):
             },
             "message": "Data received",
         }
-        self.assertEqual(data_to_be_sent, expected_data_to_be_sent)
+
+        res = json_plugin.register_submission(submission, json_form_options)
+        res_json = res["api_response"].json()
+
+        self.assertEqual(res_json, expected_response)
+
+        with self.subTest("attachment content encoded"):
+            decoded_content = b64decode(res_json["data"]["values"]["file"])
+            self.assertEqual(decoded_content, b"This is example content.")
+
+    def test_exception_raised_when_service_returns_unexpected_status_code(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textField"},
+                {"key": "lastName", "type": "textfield"},
+            ],
+            completed=True,
+            submitted_data={"firstName": "We Are", "lastName": "Checking"},
+            bsn="123456789",
+        )
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="fake_endpoint",
+            form_variables=["firstName", "auth_bsn"],
+        )
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        with self.assertRaises(RequestException):
+            json_plugin.register_submission(submission, json_form_options)

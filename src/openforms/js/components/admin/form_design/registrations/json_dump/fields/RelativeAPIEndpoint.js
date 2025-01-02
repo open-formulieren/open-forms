@@ -25,7 +25,7 @@ const RelativeAPIEndpoint = () => {
           />
         }
       >
-        <TextInput id="id_relativeApiEndpoint" {...fieldProps} />
+        <TextInput {...fieldProps} />
       </Field>
     </FormRow>
   );
