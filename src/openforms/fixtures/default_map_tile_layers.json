@@ -1,7 +1,6 @@
 [
 {
     "model": "config.maptilelayer",
-    "pk": 1,
     "fields": {
         "identifier": "brt",
         "url": "https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png",
@@ -10,7 +9,6 @@
 },
 {
     "model": "config.maptilelayer",
-    "pk": 2,
     "fields": {
         "identifier": "luchtfoto",
         "url": "https://service.pdok.nl/hwh/luchtfotorgb/wmts/v1_0/Actueel_orthoHR/EPSG:28992/{z}/{x}/{y}.png",

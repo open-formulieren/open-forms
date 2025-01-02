@@ -8,4 +8,9 @@
 #
 # Run this script from the root of the repository
 
-src/manage.py dumpdata --indent=4 --natural-foreign --natural-primary config.MapTileLayer > src/openforms/fixtures/default_map_tile_layers.json
+src/manage.py dumpdata \
+    --indent=4 \
+    --natural-foreign \
+    --natural-primary \
+    config.MapTileLayer \
+    > src/openforms/fixtures/default_map_tile_layers.json
