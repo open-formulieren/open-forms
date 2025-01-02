@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-const JSONSummaryHandler = ({variable, backendOptions}) => {
+const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
   const isIncluded = backendOptions.formVariables.includes(variable.key);
 
   if (isIncluded) {
@@ -19,7 +19,7 @@ const JSONSummaryHandler = ({variable, backendOptions}) => {
   }
 };
 
-JSONSummaryHandler.propTypes = {
+JSONDumpSummaryHandler.propTypes = {
   variable: PropTypes.shape({
     key: PropTypes.string.isRequired,
   }).isRequired,
@@ -28,4 +28,4 @@ JSONSummaryHandler.propTypes = {
   }).isRequired,
 };
 
-export default JSONSummaryHandler;
+export default JSONDumpSummaryHandler;

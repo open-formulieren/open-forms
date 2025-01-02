@@ -654,13 +654,13 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
   },
 };
 
-export const WithJSONRegistrationBackend = {
+export const WithJSONDumpRegistrationBackend = {
   args: {
     registrationBackends: [
       {
-        backend: 'json',
-        key: 'test_json_backend',
-        name: 'JSON registration',
+        backend: 'json_dump',
+        key: 'test_json_dump_backend',
+        name: 'JSON dump registration',
         options: {
           service: 2,
           relativeApiEndpoint: 'test',

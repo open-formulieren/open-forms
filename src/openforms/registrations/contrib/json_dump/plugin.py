@@ -9,15 +9,17 @@ from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
-from .config import JSONOptions, JSONOptionsSerializer
+from .config import JSONDumpOptions, JSONDumpOptionsSerializer
 
 
-@register("json")
-class JSONRegistration(BasePlugin):
-    verbose_name = _("JSON registration")
-    configuration_options = JSONOptionsSerializer
+@register("json_dump")
+class JSONDumpRegistration(BasePlugin):
+    verbose_name = _("JSON dump registration")
+    configuration_options = JSONDumpOptionsSerializer
 
-    def register_submission(self, submission: Submission, options: JSONOptions) -> dict:
+    def register_submission(
+        self, submission: Submission, options: JSONDumpOptions
+    ) -> dict:
         values = {}
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list

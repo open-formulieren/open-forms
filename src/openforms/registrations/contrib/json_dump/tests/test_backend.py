@@ -13,15 +13,15 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..plugin import JSONRegistration
+from ..plugin import JSONDumpRegistration
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
-class JSONBackendTests(OFVCRMixin, TestCase):
+class JSONDumpBackendTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
-    def test_submission_with_json_backend(self):
+    def test_submission_with_json_dump_backend(self):
         submission = SubmissionFactory.from_components(
             [
                 {"key": "firstName", "type": "textField"},
@@ -59,7 +59,7 @@ class JSONBackendTests(OFVCRMixin, TestCase):
             relative_api_endpoint="json_plugin",
             form_variables=["firstName", "file", "auth_bsn"],
         )
-        json_plugin = JSONRegistration("json_registration_plugin")
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
         expected_response = {
@@ -111,7 +111,7 @@ class JSONBackendTests(OFVCRMixin, TestCase):
             relative_api_endpoint="fake_endpoint",
             form_variables=["firstName", "auth_bsn"],
         )
-        json_plugin = JSONRegistration("json_registration_plugin")
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
         with self.assertRaises(RequestException):
