@@ -71,3 +71,41 @@ export default {
 };
 
 export const Default = {};
+
+export const WithValidationErrors = {
+  args: {
+    steps: [
+      {
+        configuration: {
+          display: 'form',
+          components: [],
+        },
+        formDefinition: '',
+        index: 0,
+        name: 'Step 1',
+        internalName: '',
+        slug: 'step-1',
+        isApplicable: true,
+        loginRequired: false,
+        isReusable: false,
+        url: '',
+        isNew: false,
+        validationErrors: [['translations.nl.name', 'Computer says no']],
+        translations: {
+          nl: {
+            name: 'Stap 1',
+            saveText: '',
+            previousText: '',
+            nextText: '',
+          },
+          en: {
+            name: 'Step 1',
+            saveText: '',
+            previousText: '',
+            nextText: '',
+          },
+        },
+      },
+    ],
+  },
+};
