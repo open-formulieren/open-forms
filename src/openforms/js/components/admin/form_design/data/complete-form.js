@@ -123,8 +123,6 @@ const saveForm = async (state, csrftoken) => {
   const cleanedState = produce(state, draft => {
     // ensure we don't overwrite the submission counter with a stale state
     delete draft.form.submissionCounter;
-    delete draft.form.registrationBackend; // deprecated
-    delete draft.form.registrationBackendOptions; // deprecated
     normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
