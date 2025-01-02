@@ -12,12 +12,7 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-// TODO-4908: maybe create separate file (JSONDumpOptionsFormFields) for all the fields?
-//  Though, no need to use multiple FieldSets, so adding the fields to the form is pretty
-//  straightforward.
-import FormVariablesSelect from './fields/FormVariablesSelect';
-import RelativeAPIEndpoint from './fields/RelativeAPIEndpoint';
-import ServiceSelect from './fields/ServiceSelect';
+import {FormVariablesSelect, RelativeAPIEndpoint, ServiceSelect} from './fields';
 
 const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
