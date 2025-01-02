@@ -46,7 +46,12 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
           defaultMessage="Plugin configuration: JSON"
         />
       }
-      initialFormData={{...formData}}
+      initialFormData={{
+        service: null,
+        relativeApiEndpoint: '',
+        formVariables: [],
+        ...formData
+    }}
       onSubmit={values => onChange({formData: values})}
       modalSize="medium"
     >
