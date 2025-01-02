@@ -17,6 +17,7 @@ from openforms.tests.e2e.base import (
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ...models import Form
 from ..factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -1299,6 +1300,52 @@ class FormDesignerRegressionTests(E2ETestCase):
             await dropdown.focus()
             await page.keyboard.press("ArrowDown")
             await expect(page.get_by_text("Field 2 (field2)")).to_be_visible()
+
+    @tag("gh-4969")
+    async def test_saving_form_does_not_reset_submission_counter(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(generate_minimal_setup=True, submission_counter=0)
+            return form
+
+        @sync_to_async
+        def update_submission_counter(form: Form):
+            form.submission_counter = 10
+            form.save(update_fields=["submission_counter"])
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await expect(
+                page.get_by_role("tab", name="Steps and fields")
+            ).to_be_visible()
+
+            # now, after loading the form, modify the submission counter, simulating some
+            # submissions happened while the form was opened in some admin screen.
+            await update_submission_counter(form)
+
+            # Save form
+            await page.get_by_role("button", name="Save", exact=True).click()
+            changelist_url = str(
+                furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+            )
+            await expect(page).to_have_url(changelist_url)
+
+        @sync_to_async
+        def assert_state(form: Form):
+            form.refresh_from_db()
+
+            self.assertEqual(form.submission_counter, 10)
+
+        await assert_state(form)
 
 
 class FormDesignerTooltipTests(E2ETestCase):
