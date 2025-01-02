@@ -1,6 +1,6 @@
 import {fn} from '@storybook/test';
 import {Form, Formik} from 'formik';
-import {Fragment} from 'react';
+import {Fragment, useEffect} from 'react';
 
 import {
   FeatureFlagsContext,
@@ -44,6 +44,27 @@ export const AdminChangeFormDecorator = (Story, {parameters}) => {
         <Story />
       </Wrapper>
     </form>
+  );
+};
+
+/**
+ * Decorator to mark story as being rendered inside a modal.
+ *
+ * It ensures that the DOM layout/hierarchy is as expected w/r to styling effects.
+ */
+export const FormModalContentDecorator = Story => {
+  // // remove the change-form body class which affects the positioning of validation errors
+  // useEffect(() => {
+  //   // body of the story inside the story iframe
+  //   const body = document.querySelector('body');
+  //   body.classList.remove('change-form');
+  // }, []);
+  return (
+    <div className="react-modal">
+      <div className="react-modal__form">
+        <Story />
+      </div>
+    </div>
   );
 };
 

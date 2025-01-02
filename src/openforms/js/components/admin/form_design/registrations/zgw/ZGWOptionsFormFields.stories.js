@@ -4,6 +4,7 @@ import {Form, Formik} from 'formik';
 import {
   FeatureFlagsDecorator,
   FormDecorator,
+  FormModalContentDecorator,
   ValidationErrorsDecorator,
 } from 'components/admin/form_design/story-decorators';
 import {rsSelect} from 'utils/storybookTestHelpers';
@@ -56,7 +57,12 @@ const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices,
 export default {
   title: 'Form design/Registration/ZGW',
   component: ZGWFormFields,
-  decorators: [ValidationErrorsDecorator, FormDecorator, FeatureFlagsDecorator],
+  decorators: [
+    ValidationErrorsDecorator,
+    FormDecorator,
+    FeatureFlagsDecorator,
+    FormModalContentDecorator,
+  ],
   render,
   args: {
     apiGroups: [
