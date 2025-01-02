@@ -7,7 +7,6 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-
 // TODO-4908: the select box does not change size when you add more form variables, which causes
 //  selected form variables to be hidden
 const FormVariablesSelect = ({options}) => {

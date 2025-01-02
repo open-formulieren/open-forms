@@ -2,8 +2,8 @@ from base64 import b64decode
 from pathlib import Path
 
 from django.test import TestCase
-from requests import RequestException
 
+from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.public_references import set_submission_reference
@@ -14,7 +14,6 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import JSONRegistration
-
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -75,20 +74,10 @@ class JSONBackendTests(OFVCRMixin, TestCase):
                     "$schema": "https://json-schema.org/draft/2020-12/schema",
                     "type": "object",
                     "properties": {
-                        "static_var_1": {
-                            "type": "string",
-                            "pattern": "^cool_pattern$"
-                        },
-                        "form_var_1": {
-                            "type": "string"
-                        },
-                        "form_var_2": {
-                            "type": "string"
-                        },
-                        "attachment": {
-                            "type": "string",
-                            "contentEncoding": "base64"
-                        },
+                        "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
+                        "form_var_1": {"type": "string"},
+                        "form_var_2": {"type": "string"},
+                        "attachment": {"type": "string", "contentEncoding": "base64"},
                     },
                     "required": ["static_var_1", "form_var_1", "form_var_2"],
                     "additionalProperties": False,

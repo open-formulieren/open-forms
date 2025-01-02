@@ -398,7 +398,7 @@ export default {
           properties: {
             service: {
               enum: [1, 2],
-            enumNames: ['Service 1', 'Service 2'],
+              enumNames: ['Service 1', 'Service 2'],
             },
             relativeApiEndpoint: {
               minLength: 1,
@@ -1014,7 +1014,6 @@ export const STUFZDS = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
   },
 };
-
 
 export const JSON = {
   args: {
