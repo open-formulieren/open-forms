@@ -6,7 +6,6 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-
 const RelativeAPIEndpoint = () => {
   const [fieldProps] = useField('relativeApiEndpoint');
   return (

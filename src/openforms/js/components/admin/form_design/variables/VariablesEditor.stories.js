@@ -670,7 +670,6 @@ export const WithJSONRegistrationBackend = {
     ],
   },
   play: async ({canvasElement, step}) => {
-    // TODO-4098: can I get the formVariables backendOptions here?
     const canvas = within(canvasElement);
 
     const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
@@ -684,7 +683,7 @@ export const WithJSONRegistrationBackend = {
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
-    })
+    });
 
     await step('aSingleFile checkbox checked', async () => {
       await userEvent.click(editIcons[1]);
@@ -694,20 +693,18 @@ export const WithJSONRegistrationBackend = {
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
-    })
+    });
 
     await step('now checkbox checked', async () => {
       const staticVariables = canvas.getByRole('tab', {name: 'Vaste variabelen'});
       await userEvent.click(staticVariables);
 
-      const editIcon = canvas.getByTitle('Registratie-instellingen bewerken')
-      await userEvent.click(editIcon)
+      const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
+      await userEvent.click(editIcon);
 
       const checkbox = await canvas.findByRole('checkbox');
       await expect(checkbox).toBeChecked();
-    })
-
-
+    });
   },
 };
 

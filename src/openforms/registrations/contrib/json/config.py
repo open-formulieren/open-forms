@@ -23,14 +23,18 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     relative_api_endpoint = serializers.CharField(
         max_length=255,
         label=_("Relative API endpoint"),
-        help_text=_("The API endpoint to send the data to (relative to the service API root)."),
+        help_text=_(
+            "The API endpoint to send the data to (relative to the service API root)."
+        ),
         allow_blank=True,
         required=False,
     )
     form_variables = serializers.ListField(
         child=FormioVariableKeyField(max_length=50),
         label=_("Form variable key list"),
-        help_text=_("A list of form variables (can also include static variables) to use."),
+        help_text=_(
+            "A list of form variables (can also include static variables) to use."
+        ),
         required=True,
         min_length=1,
     )
@@ -43,6 +47,7 @@ class JSONOptions(TypedDict):
     This describes the shape of :attr:`JSONOptionsSerializer.validated_data`, after
     the input data has been cleaned/validated.
     """
+
     service: Required[Service]
     relative_api_endpoint: str
     form_variables: Required[list[str]]

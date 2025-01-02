@@ -4,14 +4,16 @@ import Field from '../../../forms/Field';
 import {FormattedMessage} from 'react-intl';
 import FormRow from '../../../forms/FormRow';
 import React from 'react';
-import {useField, useFormikContext} from 'formik';
-import PropTypes from 'prop-types';
+import {FormattedMessage} from 'react-intl';
 
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import {Checkbox} from 'components/admin/forms/Inputs';
 
 const JSONVariableConfigurationEditor = ({variable}) => {
   const [fieldProps, , {setValue}] = useField('formVariables');
 
-  const formVariables = fieldProps.value
+  const formVariables = fieldProps.value;
   const isIncluded = formVariables.includes(variable.key);
 
   return (
@@ -36,17 +38,20 @@ const JSONVariableConfigurationEditor = ({variable}) => {
             const formVariablesNew = formVariables.slice();
             const index = formVariablesNew.indexOf(variable.key);
             if (event.target.checked) {
-              // TODO-4908: remove this when testing is implemented
-              if (index !== -1) {throw new Error(
-                "This form variable is already on the list of " +
-                "form variables to include. This shouldn't happen"
-              );}
+              if (index !== -1) {
+                throw new Error(
+                  'This form variable is already on the list of ' +
+                    "form variables to include. This shouldn't happen."
+                );
+              }
               formVariablesNew.push(variable.key);
             } else {
-              if (index === -1) {throw new Error(
-                "This form variable is not yet on the list of " +
-                "form variables to include. This shouldn't happen."
-              );}
+              if (index === -1) {
+                throw new Error(
+                  'This form variable is not yet on the list of ' +
+                    "form variables to include. This shouldn't happen."
+                );
+              }
               formVariablesNew.splice(index, 1);
             }
             setValue(formVariablesNew);
@@ -54,8 +59,8 @@ const JSONVariableConfigurationEditor = ({variable}) => {
         />
       </Field>
     </FormRow>
-  )
-}
+  );
+};
 
 // TODO-4098: ???
 JSONVariableConfigurationEditor.propTypes = {
@@ -64,5 +69,4 @@ JSONVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-
-export default JSONVariableConfigurationEditor
+export default JSONVariableConfigurationEditor;

@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
+from requests import RequestException
+from zgw_consumers.test.factories import ServiceFactory
+
 from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -9,9 +11,11 @@ from openforms.submissions.tests.factories import (
 
 from ..plugin import JSONRegistration
 
+VCR_TEST_FILES = Path(__file__).parent / "files"
 
-class JSONBackendTests(TestCase):
-    # VCR_TEST_FILES = VCR_TEST_FILES
+
+class JSONBackendTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = VCR_TEST_FILES
 
     def test_submission_with_json_backend(self):
         submission = SubmissionFactory.from_components(
@@ -55,14 +59,27 @@ class JSONBackendTests(TestCase):
 
         set_submission_reference(submission)
 
-        data_to_be_sent = email_submission.register_submission(submission, json_form_options)
-
-        expected_data_to_be_sent = {
-            "values": {
-                "firstName": "We Are",
-                "lastName": "Checking",
-                "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
-                "auth_bsn": "123456789",
-            }
+        expected_response = {
+            # Note that `lastName` is not included here as it wasn't specified in the form_variables
+            "data": {
+                "values": {
+                    "auth_bsn": "123456789",
+                    "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # Content of the attachment encoded using base64
+                    "firstName": "We Are",
+                },
+                "schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {
+                        "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
+                        "form_var_1": {"type": "string"},
+                        "form_var_2": {"type": "string"},
+                        "attachment": {"type": "string", "contentEncoding": "base64"},
+                    },
+                    "required": ["static_var_1", "form_var_1", "form_var_2"],
+                    "additionalProperties": False,
+                },
+            },
+            "message": "Data received",
         }
         self.assertEqual(data_to_be_sent, expected_data_to_be_sent)
