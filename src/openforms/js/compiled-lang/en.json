@@ -481,6 +481,12 @@
       "value": "CSS class"
     }
   ],
+  "3uau0j": [
+    {
+      "type": 0,
+      "value": "Not included"
+    }
+  ],
   "3z1hhJ": [
     {
       "type": 0,
@@ -667,6 +673,12 @@
     {
       "type": 0,
       "value": "User defined"
+    }
+  ],
+  "5rj0a+": [
+    {
+      "type": 0,
+      "value": "Service"
     }
   ],
   "5uaKBM": [
@@ -1231,6 +1243,12 @@
       "value": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
     }
   ],
+  "AkG8Zu": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: JSON"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
@@ -1779,6 +1797,12 @@
     {
       "type": 0,
       "value": "There are multiple co-sign components specified in this form. At most one should be present."
+    }
+  ],
+  "EODRpS": [
+    {
+      "type": 0,
+      "value": "Included"
     }
   ],
   "EQho4S": [
@@ -2691,6 +2715,12 @@
       "value": "Case type"
     }
   ],
+  "N9t/nl": [
+    {
+      "type": 0,
+      "value": "Relative endpoint to send the data to (will be added to the root endpoint of the service)."
+    }
+  ],
   "NE5h2q": [
     {
       "type": 0,
@@ -2859,6 +2889,12 @@
     {
       "type": 0,
       "value": "Advanced"
+    }
+  ],
+  "OpkUgV": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the data to be sent."
     }
   ],
   "Orf0vr": [
@@ -4623,6 +4659,12 @@
       "value": "Deriving the location via text fields is deprecated. Use the AddressNL component instead."
     }
   ],
+  "fKJ4SC": [
+    {
+      "type": 0,
+      "value": "Form variables"
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -4633,6 +4675,12 @@
     {
       "type": 0,
       "value": "Pricing logic"
+    }
+  ],
+  "fP/5HK": [
+    {
+      "type": 0,
+      "value": "Relative API Endpoint"
     }
   ],
   "fQuLvm": [
@@ -5589,6 +5637,12 @@
       "value": "Something went wrong while retrieving the available object type versions."
     }
   ],
+  "nZZkHx": [
+    {
+      "type": 0,
+      "value": "Include variable"
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -5899,6 +5953,12 @@
     {
       "type": 0,
       "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+    }
+  ],
+  "qPiUic": [
+    {
+      "type": 0,
+      "value": "Which service to send the data to"
     }
   ],
   "qUYLVg": [
@@ -6527,6 +6587,12 @@
     {
       "type": 0,
       "value": "Variable"
+    }
+  ],
+  "x89214": [
+    {
+      "type": 0,
+      "value": "Which form variables to include in the data to be sent"
     }
   ],
   "xBb5YI": [
