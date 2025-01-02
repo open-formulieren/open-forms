@@ -100,11 +100,6 @@
     "description": "Camunda complex process variables confirm button",
     "originalDefault": "Confirm"
   },
-  "1Hb/pK": {
-    "defaultMessage": "Dit attribuut wordt gebruikt om te controleren dat de ingelogde gebruiker bij het object hoort dat bijgewerkt wordt.",
-    "description": "Objects API registration: authAttributePath helpText",
-    "originalDefault": "This is used to perform validation to verify that the authenticated user is the owner of the object."
-  },
   "1HfdUc": {
     "defaultMessage": "De API-groep bepaalt welke services voor de objecten- en objecttypen-API's gebruikt wordt.",
     "description": "Objects API group field help text",
@@ -1787,6 +1782,11 @@
     "description": "Form list 'active' column header",
     "originalDefault": "Active"
   },
+  "X18/UP": {
+    "defaultMessage": "Identificatie-attribuut",
+    "description": "Objects API registration: authAttributePath label",
+    "originalDefault": "Owner identifier"
+  },
   "XAKzo5": {
     "defaultMessage": "Authenticatie automatische login",
     "description": "Auto-login field label",
@@ -2194,6 +2194,11 @@
     "description": "Incomplete Submissions Removal Limit help text",
     "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
+  "fB1baI": {
+    "defaultMessage": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker om de eigenaar van het object dat bijgewerkt wordt te controleren. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen bijwerken in plaast van zichzelf.",
+    "description": "Objects API registration: authAttributePath helpText",
+    "originalDefault": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user to verify ownership of the object being updated. This is important to prevent malicious users modifying information of other people than themselves."
+  },
   "fLCWjk": {
     "defaultMessage": "Naam",
     "description": "Variable table name title",
@@ -2248,6 +2253,11 @@
     "defaultMessage": "Negeren",
     "description": "Session expiry warning \"do nothing\" button",
     "originalDefault": "Do nothing"
+  },
+  "g1i5ru": {
+    "defaultMessage": "Het attribuut dat vergeleken wordt met de identificatiewaarde (bijv. BSN/KVK-nummer) van de ingelogde gebruiker. Dit is belangrijk om te voorkomen dat kwaadwillenden gegevens van anderen kunnen opvragen.",
+    "description": "Objects API prefill: authAttributePath helpText",
+    "originalDefault": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user. This is important to prevent malicious users looking up private information of other people."
   },
   "gAf9pR": {
     "defaultMessage": "(nog niet ingesteld)",
@@ -2574,11 +2584,6 @@
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
-  },
-  "lu7yMK": {
-    "defaultMessage": "Bronpad van het autorisatiekenmerk (bijv. BSN/KVK)",
-    "description": "Objects API registration: authAttributePath label",
-    "originalDefault": "Path to auth attribute (e.g. BSN/KVK) in objects"
   },
   "m83ECr": {
     "defaultMessage": "Wanneer je de instellingen van een registratiepluginoptie overneemt, dan worden alle bestaande instellingen overschreven. Ben je zeker dat je door wil gaan?",

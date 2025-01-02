@@ -5,7 +5,6 @@ import {FormattedMessage} from 'react-intl';
 import useConfirm from 'components/admin/form_design/useConfirm';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {
-  AuthAttributePath,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -13,6 +12,7 @@ import {
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  AuthAttributePath,
   DocumentTypesFieldet,
   LegacyDocumentTypesFieldet,
   OrganisationRSIN,
@@ -152,14 +152,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         fieldNames={['updateExistingObject', 'authAttributePath']}
       >
         <UpdateExistingObject />
-        <AuthAttributePath
-          name={'authAttributePath'}
-          objectsApiGroup={objectsApiGroup}
-          objecttypeUuid={objecttype}
-          objecttypeVersion={objecttypeVersion}
-          disabled={!updateExistingObject}
-          required={updateExistingObject}
-        />
+        <AuthAttributePath />
       </Fieldset>
 
       <Fieldset
