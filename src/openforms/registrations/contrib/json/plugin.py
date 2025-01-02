@@ -29,8 +29,6 @@ class JSONRegistration(BasePlugin):
                 f.seek(0)
                 values[attachment.form_key] = base64.b64encode(f.read()).decode()
 
-        # TODO-4908: what should the behaviour be when a form
-        #  variable is not in the data or static variables?
         # Create static variables dict
         static_variables = get_static_variables(submission=submission)
         static_variables_dict = {
@@ -46,10 +44,33 @@ class JSONRegistration(BasePlugin):
             }
         )
 
-        print(values)
+        # Generate schema
+        # TODO: will be added in #4980. Hardcoded example for now.
+        schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "static_var_1": {
+                    "type": "string",
+                    "pattern": "^cool_pattern$"
+                },
+                "form_var_1": {
+                    "type": "string"
+                },
+                "form_var_2": {
+                    "type": "string"
+                },
+                "attachment": {
+                    "type": "string",
+                    "contentEncoding": "base64"
+                },
+            },
+            "required": ["static_var_1", "form_var_1", "form_var_2"],
+            "additionalProperties": False,
+        }
 
         # Send to the service
-        json = {"values": values}
+        json = {"values": values, "schema": schema}
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
