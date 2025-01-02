@@ -1,5 +1,12 @@
+from __future__ import annotations
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+
+class MapTileLayerManager(models.Manager["MapTileLayer"]):
+    def get_by_natural_key(self, identifier: str) -> MapTileLayer:
+        return self.get(identifier=identifier)
 
 
 class MapTileLayer(models.Model):
@@ -27,6 +34,8 @@ class MapTileLayer(models.Model):
         ),
     )
 
+    objects = MapTileLayerManager()
+
     class Meta:
         verbose_name = _("map tile layer")
         verbose_name_plural = _("map tile layers")
@@ -34,3 +43,6 @@ class MapTileLayer(models.Model):
 
     def __str__(self):
         return self.label
+
+    def natural_key(self):
+        return (self.identifier,)
