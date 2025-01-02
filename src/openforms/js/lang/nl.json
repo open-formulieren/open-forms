@@ -393,6 +393,11 @@
     "description": "Email registration options 'paymentEmails' label",
     "originalDefault": "The email addresses to which the payment status update will be sent (defaults to general registration addresses)"
   },
+  "7jY1U4": {
+    "defaultMessage": "Velden",
+    "description": "Form definition formio configuration",
+    "originalDefault": "Fields"
+  },
   "833GAg": {
     "defaultMessage": "Invoerparameters",
     "description": "Input mapping title",
@@ -1428,6 +1433,11 @@
     "description": "StUF-ZDS registration options 'zdsZaaktypeStatusCode' helpText",
     "originalDefault": "Zaaktype status code for newly created zaken in StUF-ZDS"
   },
+  "P7Wd+/": {
+    "defaultMessage": "Inhoud",
+    "description": "form.introductionPageContent label",
+    "originalDefault": "Content"
+  },
   "PC7ICN": {
     "defaultMessage": "Ingeschakeld",
     "description": "Manage process vars enabled checkbox column title",
@@ -1452,6 +1462,11 @@
     "defaultMessage": "Plugin-instellingen: StUF-ZDS",
     "description": "StUF-ZDS registration options modal title",
     "originalDefault": "Plugin configuration: StUF-ZDS"
+  },
+  "PtFAWx": {
+    "defaultMessage": "Weergave/layout",
+    "description": "Form presentation fieldset title",
+    "originalDefault": "Presentation / appearance"
   },
   "PtZ96W": {
     "defaultMessage": "Alias",
@@ -1574,10 +1589,20 @@
     "description": "Variable source group label for static variables",
     "originalDefault": "Static variables"
   },
+  "ShUATL": {
+    "defaultMessage": "Toelichting",
+    "description": "Start page explanation text label",
+    "originalDefault": "Explanation"
+  },
   "SjbNyf": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add zaakeigenschap (mapping) button",
     "originalDefault": "Add variable"
+  },
+  "SlvZKo": {
+    "defaultMessage": "Je kan (optioneel) een extra introductiepagina instellen die vóór de startpagina getoond wordt. Laat de inhoud leeg om deze pagina uit te schakelen - gebruikers komen dan meteen op de startpagina uit.",
+    "description": "Introduction page description",
+    "originalDefault": "You can (optionally) configure an introduction page shown before the form start page. Leave the content field blank to disable this page - users will then immediately go to the start page."
   },
   "Sw6TLH": {
     "defaultMessage": "Documenttype",
@@ -1664,6 +1689,11 @@
     "description": "Objects API registration backend options 'Variables Mapping' tab label",
     "originalDefault": "Variables Mapping"
   },
+  "U3g0MU": {
+    "defaultMessage": "Inloggen {hasAuth, select, false {(status: geen methoden ingesteld)} other {}}",
+    "description": "Form authentication fieldset title",
+    "originalDefault": "Authentication {hasAuth, select, false {(status: none configured)} other {}}"
+  },
   "UKTqb8": {
     "defaultMessage": "Bewaartermijn van inzendingen",
     "description": "All Submissions Removal Limit field label",
@@ -1719,6 +1749,11 @@
     "defaultMessage": "Datum/tijd",
     "description": "Date/time column header",
     "originalDefault": "Date/time"
+  },
+  "WHxJpx": {
+    "defaultMessage": "Deze instellingen bepalen of een gebruiker op de overzichtspagina de inzending kan bevestigen en wat ervoor nodig is om dit te kunnen doen.",
+    "description": "Form submission settings description",
+    "originalDefault": "The configuration options here control if the user can submit the form on the overview page and what the requirements are to do so."
   },
   "WNPDeM": {
     "defaultMessage": "Catalogus",
@@ -1836,11 +1871,6 @@
     "defaultMessage": "Inhoud van de registratiemail (HTML).",
     "description": "Email registration options 'emailContentTemplateHtml' helpText",
     "originalDefault": "Content of the registration email message (as html)."
-  },
-  "Z5lydZ": {
-    "defaultMessage": "Introductiepagina",
-    "description": "form.introductionPageContent label",
-    "originalDefault": "Introduction page"
   },
   "Z8f4hI": {
     "defaultMessage": "Vertrouwelijkheidaanduiding documenten",
@@ -2054,6 +2084,11 @@
     "description": "Export form button title",
     "originalDefault": "Export this form"
   },
+  "d6q6wz": {
+    "defaultMessage": "Introductiepagina",
+    "description": "Introduction page fieldset title",
+    "originalDefault": "Introduction page"
+  },
   "dGBYF7": {
     "defaultMessage": "{collapsed, select, true {(Tonen)} other {(Verbergen)}}",
     "description": "Fieldset collapse link text",
@@ -2073,11 +2108,6 @@
     "defaultMessage": "Lijst (array)",
     "description": "JSON variable type \"array\" representation",
     "originalDefault": "Array"
-  },
-  "ddR92A": {
-    "defaultMessage": "Toelichtingssjabloon",
-    "description": "Start page explanation text label",
-    "originalDefault": "Explanation template"
   },
   "deoN5r": {
     "defaultMessage": "Toon voortgang",
@@ -2123,6 +2153,11 @@
     "defaultMessage": "Geavanceerde opties",
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
+  },
+  "eNSJ0f": {
+    "defaultMessage": "Functionaliteiten",
+    "description": "Form feature fields fieldset title",
+    "originalDefault": "Features"
   },
   "eO6MNT": {
     "defaultMessage": "Zaakstatuscode",
@@ -2405,11 +2440,6 @@
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
   },
-  "jARYB7": {
-    "defaultMessage": "(Herbruikbare) stapgegevens",
-    "description": "Form definition module title",
-    "originalDefault": "Form definition"
-  },
   "jLv6k8": {
     "defaultMessage": "DMN-variabele",
     "description": "Accessible label for DMN variable dropdown",
@@ -2454,6 +2484,11 @@
     "defaultMessage": "Maplocatie",
     "description": "MS Graph registration options 'folderPath' label",
     "originalDefault": "Folder path"
+  },
+  "jtJACV": {
+    "defaultMessage": "Beschikbaarheid {isAvailable, select, true {(status: publiek benaderbaar)} other {}}",
+    "description": "Form availability fieldset title",
+    "originalDefault": "Availability {isAvailable, select, true {(status: publicly available)} other {}}"
   },
   "jy1jTd": {
     "defaultMessage": "{numErrors, plural, one {Er is een validatiefout.} other {Er zijn {numErrors} validatefouten.} }",
@@ -2870,6 +2905,11 @@
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
   },
+  "t+J++o": {
+    "defaultMessage": "{isReusable, select, true {Herbruikbare stapinstellingen} other {Stapinstellingen}}",
+    "description": "Form definition module title",
+    "originalDefault": "{isReusable, select, true {Reusable step} other {Step}} settings"
+  },
   "t5fg/K": {
     "defaultMessage": "één of meer acties zijn ongeldig",
     "description": "Logic rule warning message about problematic actions.",
@@ -3165,6 +3205,11 @@
     "defaultMessage": "Plugin-instellingen: Ogone legacy",
     "description": "Ogone legacy options modal title",
     "originalDefault": "Plugin configuration: Ogone legacy"
+  },
+  "zqnTBZ": {
+    "defaultMessage": "Inzending-instellingen",
+    "description": "Form submission settings fieldset title",
+    "originalDefault": "Submission settings"
   },
   "zwOwrD": {
     "defaultMessage": "Selecteer een attribuut uit het objecttype",

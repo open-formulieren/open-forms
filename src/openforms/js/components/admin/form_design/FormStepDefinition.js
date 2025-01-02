@@ -5,6 +5,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import FormIOBuilder from 'components/formio_builder/builder';
@@ -12,7 +13,7 @@ import FormIOBuilder from 'components/formio_builder/builder';
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import {FormContext} from './Context';
-import LanguageTabs from './LanguageTabs';
+import LanguageTabs, {DEFAULT_LANGUAGE} from './LanguageTabs';
 import LogicWarning from './LogicWarning';
 import PluginWarning from './PluginWarning';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
@@ -67,7 +68,7 @@ const FormStepDefinition = ({
     });
   };
 
-  const {translationEnabled, formSteps, registrationBackends} = useContext(FormContext);
+  const {formSteps, registrationBackends} = useContext(FormContext);
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
   // a key is unique across steps
@@ -167,6 +168,8 @@ const FormStepDefinition = ({
     erroredLanguages.add(langCode);
   }
 
+  const hasName = !!translations[DEFAULT_LANGUAGE].name;
+
   return (
     <>
       <ChangedFormDefinitionWarning changed={changed} affectedForms={affectedForms} />
@@ -174,14 +177,17 @@ const FormStepDefinition = ({
       <AuthenticationWarning loginRequired={loginRequired} configuration={configuration} />
       <LogicWarning warnings={warnings} />
 
-      <fieldset className="module aligned">
-        <h2>
+      <Fieldset
+        title={
           <FormattedMessage
             description="Form definition module title"
-            defaultMessage="Form definition"
+            defaultMessage="{isReusable, select, true {Reusable step} other {Step}} settings"
+            values={{isReusable: isReusable}}
           />
-        </h2>
-
+        }
+        collapsible
+        initialCollapsed={hasName && !!slug && !errors.length}
+      >
         <LanguageTabs haveErrors={[...erroredLanguages]}>
           {(langCode, defaultLang) => (
             <>
@@ -209,6 +215,8 @@ const FormStepDefinition = ({
                     onBlur={() => setSlug(langCode)}
                   />
                 </Field>
+              </FormRow>
+              <FormRow>
                 <Field
                   name="internalName"
                   label={
@@ -228,6 +236,8 @@ const FormStepDefinition = ({
                 >
                   <TextInput value={internalName} onChange={onFieldChange} />
                 </Field>
+              </FormRow>
+              <FormRow>
                 <Field
                   name="slug"
                   label={
@@ -272,6 +282,8 @@ const FormStepDefinition = ({
                     maxLength="50"
                   />
                 </Field>
+              </FormRow>
+              <FormRow>
                 <Field
                   name={`translations.${langCode}.saveText`}
                   label={
@@ -294,6 +306,8 @@ const FormStepDefinition = ({
                     maxLength="50"
                   />
                 </Field>
+              </FormRow>
+              <FormRow>
                 <Field
                   name={`translations.${langCode}.nextText`}
                   label={
@@ -386,9 +400,14 @@ const FormStepDefinition = ({
             </>
           )}
         </LanguageTabs>
-      </fieldset>
+      </Fieldset>
 
-      <h2>Velden</h2>
+      <h2>
+        <FormattedMessage
+          description="Form definition formio configuration"
+          defaultMessage="Fields"
+        />
+      </h2>
 
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />

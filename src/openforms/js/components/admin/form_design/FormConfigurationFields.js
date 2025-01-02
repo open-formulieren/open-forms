@@ -80,229 +80,27 @@ const getThemeChoices = available => {
   return choices;
 };
 
-/**
- * Component to render the metadata admin form for an Open Forms form.
- */
-const FormConfigurationFields = ({
-  form,
-  onChange,
-  availableAuthPlugins,
-  availableThemes,
-  selectedAuthPlugins,
-  onAuthPluginChange,
-  availableCategories,
-}) => {
-  const {
-    uuid,
-    internalName,
-    slug,
-    showProgressIndicator,
-    showSummaryProgress,
-    active,
-    category,
-    theme,
-    isDeleted,
-    activateOn,
-    deactivateOn,
-    maintenanceMode,
-    translationEnabled,
-    submissionAllowed,
-    suspensionAllowed,
-    askPrivacyConsent,
-    askStatementOfTruth,
-    appointmentOptions,
-  } = form;
-
-  const intl = useIntl();
-
+const AvailabilityFields = ({active, activateOn, deactivateOn, maintenanceMode, onChange}) => {
   const onCheckboxChange = (event, currentValue) => {
     const {
       target: {name},
     } = event;
     onChange({target: {name, value: !currentValue}});
   };
-
-  const isAppointment = appointmentOptions?.isAppointment ?? false;
-
   return (
     <Fieldset
       title={
         <FormattedMessage
-          defaultMessage="Form configuration"
-          description="Form configuration fieldset title"
+          description="Form availability fieldset title"
+          defaultMessage="Availability {isAvailable, select, true {(status: publicly available)} other {}}"
+          values={{
+            isAvailable: active && !maintenanceMode,
+          }}
         />
       }
+      collapsible
+      initialCollapsed={active}
     >
-      <FormRow>
-        <Field
-          name="form.uuid"
-          label={<FormattedMessage defaultMessage="ID" description="Form ID field label" />}
-          helpText={
-            <FormattedMessage
-              defaultMessage="Unique identifier for the form"
-              description="Form ID field help text"
-            />
-          }
-          required
-        >
-          <TextInput value={uuid} onChange={onChange} disabled={true} />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="form.internalName"
-          label={
-            <FormattedMessage defaultMessage="Internal name" description="Form name field label" />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Internal name/title of the form"
-              description="Form name field help text"
-            />
-          }
-        >
-          <TextInput value={internalName} onChange={onChange} maxLength="150" />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="form.slug"
-          label={<FormattedMessage defaultMessage="Slug" description="Form slug field label" />}
-          helpText={
-            <FormattedMessage
-              defaultMessage="Slug of the form, used in URLs"
-              description="Form slug field help text"
-            />
-          }
-          required
-        >
-          <TextInput value={slug} onChange={onChange} />
-        </Field>
-      </FormRow>
-
-      <FormRow>
-        <Field
-          name="form.category"
-          label={
-            <FormattedMessage defaultMessage="Category" description="Form category field label" />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Optional category for internal organisation."
-              description="Form category field help text"
-            />
-          }
-        >
-          <Select
-            choices={getCategoryChoices(availableCategories)}
-            value={category || ''}
-            onChange={onChange}
-          />
-        </Field>
-      </FormRow>
-
-      {availableThemes.length ? (
-        <FormRow>
-          <Field
-            name="form.theme"
-            label={<FormattedMessage defaultMessage="Theme" description="Form theme field label" />}
-            helpText={
-              <FormattedMessage
-                defaultMessage="Optional theme to use for styling."
-                description="Form theme field help text"
-              />
-            }
-          >
-            <Select
-              choices={getThemeChoices(availableThemes)}
-              value={theme || ''}
-              onChange={onChange}
-            />
-          </Field>
-        </FormRow>
-      ) : null}
-
-      {!isAppointment && (
-        <>
-          <FormRow>
-            <AuthPluginField
-              availableAuthPlugins={availableAuthPlugins}
-              selectedAuthPlugins={selectedAuthPlugins}
-              onChange={onAuthPluginChange}
-            />
-          </FormRow>
-          <FormRow>
-            <Field
-              name="form.autoLoginAuthenticationBackend"
-              label={
-                <FormattedMessage
-                  defaultMessage="Authentication automatic login"
-                  description="Auto-login field label"
-                />
-              }
-              helpText={
-                <FormattedMessage
-                  defaultMessage="Select which authentication backend is automatically redirected to."
-                  description="Auto-login field help text"
-                />
-              }
-            >
-              <AuthPluginAutoLoginField
-                eligiblePlugins={availableAuthPlugins.filter(plugin =>
-                  selectedAuthPlugins.includes(plugin.id)
-                )}
-                value={form.autoLoginAuthenticationBackend}
-                onChange={onChange}
-              ></AuthPluginAutoLoginField>
-            </Field>
-          </FormRow>
-          <LoAOverrideOption
-            availableAuthPlugins={availableAuthPlugins}
-            selectedAuthPlugins={selectedAuthPlugins}
-            authenticationBackendOptions={form.authenticationBackendOptions}
-            onChange={onChange}
-          />
-        </>
-      )}
-
-      <FormRow>
-        <Checkbox
-          name="form.showProgressIndicator"
-          label={
-            <FormattedMessage
-              defaultMessage="Show progress indicator"
-              description="Progress indicator field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Whether the step progression should be displayed in the UI or not."
-              description="Progress indicator help text"
-            />
-          }
-          checked={showProgressIndicator}
-          onChange={event => onCheckboxChange(event, showProgressIndicator)}
-        />
-      </FormRow>
-      <FormRow>
-        <Checkbox
-          name="form.showSummaryProgress"
-          label={
-            <FormattedMessage
-              defaultMessage="Show summary progress"
-              description="showSummaryProgress field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Whether to display the short progress summary, indicating the current step number and total amount of steps."
-              description="Summary of the progress help text"
-            />
-          }
-          checked={showSummaryProgress}
-          onChange={event => onCheckboxChange(event, showSummaryProgress)}
-        />
-      </FormRow>
       <FormRow>
         <Checkbox
           name="form.active"
@@ -357,22 +155,6 @@ const FormConfigurationFields = ({
       </FormRow>
       <FormRow>
         <Checkbox
-          name="form.isDeleted"
-          label={
-            <FormattedMessage defaultMessage="Is deleted" description="Form deleted field label" />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Whether the form is (soft) deleted"
-              description="Form deleted field help text"
-            />
-          }
-          checked={isDeleted}
-          onChange={event => onCheckboxChange(event, isDeleted)}
-        />
-      </FormRow>
-      <FormRow>
-        <Checkbox
           name="form.maintenanceMode"
           label={
             <FormattedMessage
@@ -390,71 +172,220 @@ const FormConfigurationFields = ({
           onChange={event => onCheckboxChange(event, maintenanceMode)}
         />
       </FormRow>
+    </Fieldset>
+  );
+};
+
+AvailabilityFields.propTypes = {
+  active: PropTypes.bool.isRequired,
+  activateOn: PropTypes.string,
+  deactivateOn: PropTypes.string,
+  maintenanceMode: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const AuthenticationFields = ({
+  availableAuthPlugins,
+  selectedAuthPlugins,
+  onAuthPluginChange,
+  autoLoginAuthenticationBackend,
+  authenticationBackendOptions,
+  onChange,
+}) => {
+  const eligibleAutoLoginPlugins = availableAuthPlugins.filter(plugin =>
+    selectedAuthPlugins.includes(plugin.id)
+  );
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Form authentication fieldset title"
+          defaultMessage="Authentication {hasAuth, select, false {(status: none configured)} other {}}"
+          values={{
+            hasAuth: selectedAuthPlugins.length > 0,
+          }}
+        />
+      }
+      collapsible
+    >
       <FormRow>
-        <Checkbox
-          name="form.translationEnabled"
-          label={
-            <FormattedMessage
-              defaultMessage="Translation enabled"
-              description="Form translation enabled field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Indicates whether translations are enabled for this form."
-              description="Form translation enabled field help text"
-            />
-          }
-          checked={translationEnabled}
-          onChange={event => onCheckboxChange(event, translationEnabled)}
+        <AuthPluginField
+          availableAuthPlugins={availableAuthPlugins}
+          selectedAuthPlugins={selectedAuthPlugins}
+          onChange={onAuthPluginChange}
         />
       </FormRow>
-      <FormRow>
-        <Field
-          name="form.submissionAllowed"
-          label={
-            <FormattedMessage
-              defaultMessage="Submission allowed"
-              description="Form submissionAllowed field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
-              description="Form submissionAllowed field help text"
-            />
-          }
-        >
-          <Select
-            choices={getTranslatedChoices(intl, SUMBISSION_ALLOWED_CHOICES)}
-            value={submissionAllowed}
-            onChange={onChange}
-          />
-        </Field>
-      </FormRow>
-
-      {!isAppointment && (
+      {eligibleAutoLoginPlugins.length ? (
         <FormRow>
-          <Checkbox
-            name="form.suspensionAllowed"
+          <Field
+            name="form.autoLoginAuthenticationBackend"
             label={
               <FormattedMessage
-                defaultMessage="Suspension allowed"
-                description="Form suspensionAllowed field label"
+                defaultMessage="Authentication automatic login"
+                description="Auto-login field label"
               />
             }
             helpText={
               <FormattedMessage
-                defaultMessage="Whether the user is allowed to suspend this form or not."
-                description="Form suspensionAllowed field help text"
+                defaultMessage="Select which authentication backend is automatically redirected to."
+                description="Auto-login field help text"
               />
             }
-            checked={suspensionAllowed}
-            onChange={event => onCheckboxChange(event, suspensionAllowed)}
-          />
+          >
+            <AuthPluginAutoLoginField
+              eligiblePlugins={eligibleAutoLoginPlugins}
+              value={autoLoginAuthenticationBackend}
+              onChange={onChange}
+            />
+          </Field>
+        </FormRow>
+      ) : null}
+      <LoAOverrideOption
+        availableAuthPlugins={availableAuthPlugins}
+        selectedAuthPlugins={selectedAuthPlugins}
+        authenticationBackendOptions={authenticationBackendOptions}
+        onChange={onChange}
+      />
+    </Fieldset>
+  );
+};
+
+const PresentationFields = ({
+  availableThemes,
+  theme,
+  showProgressIndicator,
+  showSummaryProgress,
+  onChange,
+}) => {
+  const onCheckboxChange = (event, currentValue) => {
+    const {
+      target: {name},
+    } = event;
+    onChange({target: {name, value: !currentValue}});
+  };
+
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Form presentation fieldset title"
+          defaultMessage="Presentation / appearance"
+        />
+      }
+      collapsible
+    >
+      {availableThemes.length ? (
+        <FormRow>
+          <Field
+            name="form.theme"
+            label={<FormattedMessage defaultMessage="Theme" description="Form theme field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Optional theme to use for styling."
+                description="Form theme field help text"
+              />
+            }
+          >
+            <Select
+              choices={getThemeChoices(availableThemes)}
+              value={theme || ''}
+              onChange={onChange}
+            />
+          </Field>
+        </FormRow>
+      ) : null}
+      <FormRow>
+        <Checkbox
+          name="form.showProgressIndicator"
+          label={
+            <FormattedMessage
+              defaultMessage="Show progress indicator"
+              description="Progress indicator field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Whether the step progression should be displayed in the UI or not."
+              description="Progress indicator help text"
+            />
+          }
+          checked={showProgressIndicator}
+          onChange={event => onCheckboxChange(event, showProgressIndicator)}
+        />
+      </FormRow>
+      <FormRow>
+        <Checkbox
+          name="form.showSummaryProgress"
+          label={
+            <FormattedMessage
+              defaultMessage="Show summary progress"
+              description="showSummaryProgress field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Whether to display the short progress summary, indicating the current step number and total amount of steps."
+              description="Summary of the progress help text"
+            />
+          }
+          checked={showSummaryProgress}
+          onChange={event => onCheckboxChange(event, showSummaryProgress)}
+        />
+      </FormRow>
+    </Fieldset>
+  );
+};
+
+const SubmissionFields = ({
+  isAppointment,
+  submissionAllowed,
+  askPrivacyConsent,
+  askStatementOfTruth,
+  onChange,
+}) => {
+  const intl = useIntl();
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Form submission settings fieldset title"
+          defaultMessage="Submission settings"
+        />
+      }
+      collapsible
+    >
+      <div className="description">
+        <FormattedMessage
+          description="Form submission settings description"
+          defaultMessage={`The configuration options here control if the user can submit
+          the form on the overview page and what the requirements are to do so.`}
+        />
+      </div>
+      {!isAppointment && (
+        <FormRow>
+          <Field
+            name="form.submissionAllowed"
+            label={
+              <FormattedMessage
+                defaultMessage="Submission allowed"
+                description="Form submissionAllowed field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not."
+                description="Form submissionAllowed field help text"
+              />
+            }
+          >
+            <Select
+              choices={getTranslatedChoices(intl, SUMBISSION_ALLOWED_CHOICES)}
+              value={submissionAllowed}
+              onChange={onChange}
+            />
+          </Field>
         </FormRow>
       )}
-
       <FormRow>
         <Field
           name="form.askPrivacyConsent"
@@ -501,7 +432,26 @@ const FormConfigurationFields = ({
           />
         </Field>
       </FormRow>
+    </Fieldset>
+  );
+};
 
+const FeatureFields = ({isAppointment, translationEnabled, suspensionAllowed, onChange}) => {
+  const onCheckboxChange = (event, currentValue) => {
+    const {
+      target: {name},
+    } = event;
+    onChange({target: {name, value: !currentValue}});
+  };
+  return (
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Form feature fields fieldset title"
+          defaultMessage="Features"
+        />
+      }
+    >
       <FormRow>
         <Checkbox
           name="form.appointmentOptions.isAppointment"
@@ -518,10 +468,241 @@ const FormConfigurationFields = ({
             />
           }
           checked={isAppointment}
-          onChange={event => onCheckboxChange(event, appointmentOptions?.isAppointment)}
+          onChange={event => onCheckboxChange(event, isAppointment)}
         />
       </FormRow>
+
+      <FormRow>
+        <Checkbox
+          name="form.translationEnabled"
+          label={
+            <FormattedMessage
+              defaultMessage="Translation enabled"
+              description="Form translation enabled field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Indicates whether translations are enabled for this form."
+              description="Form translation enabled field help text"
+            />
+          }
+          checked={translationEnabled}
+          onChange={event => onCheckboxChange(event, translationEnabled)}
+        />
+      </FormRow>
+
+      {!isAppointment && (
+        <FormRow>
+          <Checkbox
+            name="form.suspensionAllowed"
+            label={
+              <FormattedMessage
+                defaultMessage="Suspension allowed"
+                description="Form suspensionAllowed field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Whether the user is allowed to suspend this form or not."
+                description="Form suspensionAllowed field help text"
+              />
+            }
+            checked={suspensionAllowed}
+            onChange={event => onCheckboxChange(event, suspensionAllowed)}
+          />
+        </FormRow>
+      )}
     </Fieldset>
+  );
+};
+
+/**
+ * Component to render the metadata admin form for an Open Forms form.
+ */
+const FormConfigurationFields = ({
+  form,
+  onChange,
+  availableAuthPlugins,
+  availableThemes,
+  selectedAuthPlugins,
+  onAuthPluginChange,
+  availableCategories,
+}) => {
+  const {
+    uuid,
+    internalName,
+    slug,
+    showProgressIndicator,
+    showSummaryProgress,
+    active,
+    category,
+    theme,
+    isDeleted,
+    activateOn,
+    deactivateOn,
+    maintenanceMode,
+    translationEnabled,
+    submissionAllowed,
+    suspensionAllowed,
+    askPrivacyConsent,
+    askStatementOfTruth,
+    appointmentOptions,
+  } = form;
+
+  const onCheckboxChange = (event, currentValue) => {
+    const {
+      target: {name},
+    } = event;
+    onChange({target: {name, value: !currentValue}});
+  };
+
+  const isAppointment = appointmentOptions?.isAppointment ?? false;
+
+  return (
+    <>
+      <Fieldset
+        title={
+          <FormattedMessage
+            defaultMessage="Form configuration"
+            description="Form configuration fieldset title"
+          />
+        }
+      >
+        <FormRow>
+          <Field
+            name="form.uuid"
+            label={<FormattedMessage defaultMessage="ID" description="Form ID field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Unique identifier for the form"
+                description="Form ID field help text"
+              />
+            }
+            required
+          >
+            <TextInput value={uuid} onChange={onChange} disabled={true} />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name="form.internalName"
+            label={
+              <FormattedMessage
+                defaultMessage="Internal name"
+                description="Form name field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Internal name/title of the form"
+                description="Form name field help text"
+              />
+            }
+          >
+            <TextInput value={internalName} onChange={onChange} maxLength="150" />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name="form.slug"
+            label={<FormattedMessage defaultMessage="Slug" description="Form slug field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Slug of the form, used in URLs"
+                description="Form slug field help text"
+              />
+            }
+            required
+          >
+            <TextInput value={slug} onChange={onChange} />
+          </Field>
+        </FormRow>
+
+        <FormRow>
+          <Field
+            name="form.category"
+            label={
+              <FormattedMessage defaultMessage="Category" description="Form category field label" />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Optional category for internal organisation."
+                description="Form category field help text"
+              />
+            }
+          >
+            <Select
+              choices={getCategoryChoices(availableCategories)}
+              value={category || ''}
+              onChange={onChange}
+            />
+          </Field>
+        </FormRow>
+
+        <FormRow>
+          <Checkbox
+            name="form.isDeleted"
+            label={
+              <FormattedMessage
+                defaultMessage="Is deleted"
+                description="Form deleted field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Whether the form is (soft) deleted"
+                description="Form deleted field help text"
+              />
+            }
+            checked={isDeleted}
+            onChange={event => onCheckboxChange(event, isDeleted)}
+          />
+        </FormRow>
+      </Fieldset>
+
+      <FeatureFields
+        isAppointment={isAppointment}
+        translationEnabled={translationEnabled}
+        suspensionAllowed={suspensionAllowed}
+        onChange={onChange}
+      />
+
+      {!isAppointment && (
+        <AuthenticationFields
+          availableAuthPlugins={availableAuthPlugins}
+          selectedAuthPlugins={selectedAuthPlugins}
+          onAuthPluginChange={onAuthPluginChange}
+          autoLoginAuthenticationBackend={form.autoLoginAuthenticationBackend}
+          authenticationBackendOptions={form.authenticationBackendOptions}
+          onChange={onChange}
+        />
+      )}
+
+      <PresentationFields
+        availableThemes={availableThemes}
+        theme={theme}
+        showProgressIndicator={showProgressIndicator}
+        showSummaryProgress={showSummaryProgress}
+        onChange={onChange}
+      />
+
+      <AvailabilityFields
+        active={active}
+        activateOn={activateOn}
+        deactivateOn={deactivateOn}
+        maintenanceMode={maintenanceMode}
+        onChange={onChange}
+      />
+
+      <SubmissionFields
+        isAppointment={isAppointment}
+        submissionAllowed={submissionAllowed}
+        askPrivacyConsent={askPrivacyConsent}
+        askStatementOfTruth={askStatementOfTruth}
+        onChange={onChange}
+      />
+    </>
   );
 };
 

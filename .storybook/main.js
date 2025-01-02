@@ -12,6 +12,7 @@ const config = {
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
     {from: '../static/img', to: 'static/img'},
+    {from: '../static/tinymce', to: 'static/tinymce'},
     // required in dev mode due to style-loader usage
     {from: '../static/admin', to: 'admin'},
     {from: '../static/fonts', to: 'fonts'},
@@ -83,6 +84,18 @@ const config = {
             },
           },
         ].filter(Boolean),
+      },
+      // .ejs
+      {
+        test: /\.ejs$/,
+        exclude: /node_modules/,
+        loader: 'ejs-loader',
+        options: {
+          variable: 'ctx',
+          evaluate: /\{%([\s\S]+?)%\}/g,
+          interpolate: /\{\{([\s\S]+?)\}\}/g,
+          escape: /\{\{\{([\s\S]+?)\}\}\}/g,
+        },
       }
     );
     return config;

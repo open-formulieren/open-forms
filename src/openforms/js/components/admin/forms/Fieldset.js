@@ -63,7 +63,7 @@ const Fieldset = ({
     </h2>
   ) : null;
   const className = classNames('module', 'aligned', extraClassName, {
-    'collapse in': collapsible,
+    'collapse in show': collapsible,
     collapsed: collapsed,
   });
 

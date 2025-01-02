@@ -100,6 +100,7 @@
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
     "babel-plugin-formatjs": "^10.5.1",
+    "bootstrap": "~4.6.0",
     "browserslist": "^4.21.5",
     "copy-webpack-plugin": "^6.4.1",
     "css-has-pseudo": "^6.0.1",

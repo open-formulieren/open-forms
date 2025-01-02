@@ -873,7 +873,7 @@ function reducer(draft, action) {
   }
 }
 
-const StepsFieldSet = ({submitting = false, loadingErrors, steps = [], ...props}) => {
+export const StepsFieldSet = ({submitting = false, loadingErrors, steps = [], ...props}) => {
   if (loadingErrors) {
     return <div className="fetch-error">{loadingErrors}</div>;
   }

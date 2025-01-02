@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '../../vars';
 
 .edit-panel {
@@ -8,7 +10,7 @@
     margin-top: 20px;
   }
 
-  &__submit-layer {
+  @include bem.element('submit-layer') {
     position: fixed;
     z-index: 1;
     top: 0;
@@ -22,13 +24,13 @@
     align-items: center;
   }
 
-  &__nav {
+  @include bem.element('nav') {
     width: 25%;
     max-width: 300px;
     margin-right: 10px;
   }
 
-  &__edit-area {
+  @include bem.element('edit-area') {
     flex-grow: 1;
     min-width: 0;
     width: 75%;
@@ -37,6 +39,15 @@
     h2 {
       background: var(--edit-panel-title-bg);
       color: var(--edit-panel-title-fg);
+    }
+
+    // provide sufficient contrast in light mode
+    @at-root & fieldset .collapse-toggle {
+      color: var(--edit-panel-title-fg);
+    }
+
+    @at-root & fieldset.collapsed .collapse-toggle {
+      color: var(--link-fg);
     }
   }
 }

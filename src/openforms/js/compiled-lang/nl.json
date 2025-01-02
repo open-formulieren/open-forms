@@ -913,6 +913,12 @@
       "value": "De e-mailadressen waarnaar de update van de betalingsstatus wordt verzonden (standaard wordt het algemene e-mailadres gebruikt)."
     }
   ],
+  "7jY1U4": [
+    {
+      "type": 0,
+      "value": "Velden"
+    }
+  ],
   "7qqbU9": [
     {
       "type": 1,
@@ -2914,6 +2920,12 @@
       "value": "Zaakstatuscode voor de nieuw aan te maken zaak."
     }
   ],
+  "P7Wd+/": [
+    {
+      "type": 0,
+      "value": "Inhoud"
+    }
+  ],
   "PC7ICN": [
     {
       "type": 0,
@@ -2948,6 +2960,12 @@
     {
       "type": 0,
       "value": "Aantal jaren. Lege waarden worden genegeerd."
+    }
+  ],
+  "PtFAWx": [
+    {
+      "type": 0,
+      "value": "Weergave/layout"
     }
   ],
   "PtZ96W": [
@@ -3252,10 +3270,22 @@
       "value": "Vaste variabelen"
     }
   ],
+  "ShUATL": [
+    {
+      "type": 0,
+      "value": "Toelichting"
+    }
+  ],
   "SjbNyf": [
     {
       "type": 0,
       "value": "Variabele toevoegen"
+    }
+  ],
+  "SlvZKo": [
+    {
+      "type": 0,
+      "value": "Je kan (optioneel) een extra introductiepagina instellen die vóór de startpagina getoond wordt. Laat de inhoud leeg om deze pagina uit te schakelen - gebruikers komen dan meteen op de startpagina uit."
     }
   ],
   "Su4nqf": [
@@ -3388,6 +3418,30 @@
     {
       "type": 0,
       "value": "Variabelekoppelingen"
+    }
+  ],
+  "U3g0MU": [
+    {
+      "type": 0,
+      "value": "Inloggen "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: geen methoden ingesteld)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasAuth"
     }
   ],
   "UCGSib": [
@@ -3616,6 +3670,12 @@
     {
       "type": 0,
       "value": "Datum/tijd"
+    }
+  ],
+  "WHxJpx": [
+    {
+      "type": 0,
+      "value": "Deze instellingen bepalen of een gebruiker op de overzichtspagina de inzending kan bevestigen en wat ervoor nodig is om dit te kunnen doen."
     }
   ],
   "WNPDeM": [
@@ -3874,12 +3934,6 @@
     {
       "type": 0,
       "value": "Inhoud van de registratiemail (HTML)."
-    }
-  ],
-  "Z5lydZ": [
-    {
-      "type": 0,
-      "value": "Introductiepagina"
     }
   ],
   "Z8f4hI": [
@@ -4355,6 +4409,12 @@
       "value": "Item verwijderen"
     }
   ],
+  "d6q6wz": [
+    {
+      "type": 0,
+      "value": "Introductiepagina"
+    }
+  ],
   "dD9O3Q": [
     {
       "type": 0,
@@ -4431,12 +4491,6 @@
     {
       "type": 0,
       "value": "Als de formuliercomponent"
-    }
-  ],
-  "ddR92A": [
-    {
-      "type": 0,
-      "value": "Toelichtingssjabloon"
     }
   ],
   "deoN5r": [
@@ -4527,6 +4581,12 @@
     {
       "type": 0,
       "value": "Geavanceerde opties"
+    }
+  ],
+  "eNSJ0f": [
+    {
+      "type": 0,
+      "value": "Functionaliteiten"
     }
   ],
   "eO6MNT": [
@@ -5099,12 +5159,6 @@
       "value": "Informatieobjecttype inzendings-PDF"
     }
   ],
-  "jARYB7": [
-    {
-      "type": 0,
-      "value": "(Herbruikbare) stapgegevens"
-    }
-  ],
   "jLg5l6": [
     {
       "type": 0,
@@ -5181,6 +5235,30 @@
     {
       "type": 0,
       "value": "Maplocatie"
+    }
+  ],
+  "jtJACV": [
+    {
+      "type": 0,
+      "value": "Beschikbaarheid "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(status: publiek benaderbaar)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isAvailable"
     }
   ],
   "jtWzSW": [
@@ -6149,6 +6227,30 @@
       "value": "optie 1: € 10,99"
     }
   ],
+  "t+J++o": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Stapinstellingen"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Herbruikbare stapinstellingen"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isReusable"
+    }
+  ],
   "t5fg/K": [
     {
       "type": 0,
@@ -6789,6 +6891,12 @@
     {
       "type": 0,
       "value": "Plugin-instellingen: Ogone legacy"
+    }
+  ],
+  "zqnTBZ": [
+    {
+      "type": 0,
+      "value": "Inzending-instellingen"
     }
   ],
   "zwOwrD": [
