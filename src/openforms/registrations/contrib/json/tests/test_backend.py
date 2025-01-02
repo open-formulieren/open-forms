@@ -1,19 +1,26 @@
-from unittest.mock import patch
+from base64 import b64decode
+from pathlib import Path
 
 from django.test import TestCase
+from requests import RequestException
 
-from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
+from zgw_consumers.test.factories import ServiceFactory
+
 from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import JSONRegistration
 
 
-class JSONBackendTests(TestCase):
-    # VCR_TEST_FILES = VCR_TEST_FILES
+VCR_TEST_FILES = Path(__file__).parent / "files"
+
+
+class JSONBackendTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = VCR_TEST_FILES
 
     def test_submission_with_json_backend(self):
         submission = SubmissionFactory.from_components(
@@ -38,7 +45,7 @@ class JSONBackendTests(TestCase):
             bsn="123456789",
         )
 
-        submission_file_attachment = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="test_file.txt",
@@ -49,87 +56,74 @@ class JSONBackendTests(TestCase):
         )
 
         json_form_options = dict(
-            service=ServiceFactory(api_root="http://example.com/api/v2"),
-            relative_api_endpoint="",
-            form_variables=["firstName", "lastName", "file", "auth_bsn"],
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["firstName", "file", "auth_bsn"],
         )
-        email_submission = JSONRegistration("json_plugin")
-
+        json_plugin = JSONRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
-        with patch("zgw_consumers.nlx.NLXClient.post") as mock_post:
-            data_to_be_sent = email_submission.register_submission(submission, json_form_options)
-            mock_post.assert_called_once()
-
-        expected_data_to_be_sent = {
-            "values": {
-                "firstName": "We Are",
-                "lastName": "Checking",
-                "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
-                "auth_bsn": "123456789",
-            }
+        expected_response = {
+            # Note that `lastName` is not included here as it wasn't specified in the form_variables
+            "data": {
+                "values": {
+                    "auth_bsn": "123456789",
+                    "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # Content of the attachment encoded using base64
+                    "firstName": "We Are",
+                },
+                "schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {
+                        "static_var_1": {
+                            "type": "string",
+                            "pattern": "^cool_pattern$"
+                        },
+                        "form_var_1": {
+                            "type": "string"
+                        },
+                        "form_var_2": {
+                            "type": "string"
+                        },
+                        "attachment": {
+                            "type": "string",
+                            "contentEncoding": "base64"
+                        },
+                    },
+                    "required": ["static_var_1", "form_var_1", "form_var_2"],
+                    "additionalProperties": False,
+                },
+            },
+            "message": "Data received",
         }
-        self.assertEqual(data_to_be_sent, expected_data_to_be_sent)
 
-    # def test_create_submission_with_digid(self):
-    #     v2_options: RegistrationOptionsV2 = {
-    #         "objects_api_group": self.group,
-    #         "version": 2,
-    #         "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-    #         "objecttype_version": 1,
-    #         "update_existing_object": False,
-    #         "auth_attribute_path": [],
-    #         "variables_mapping": [
-    #             {
-    #                 "variable_key": "auth_context",
-    #                 "target_path": ["auth_context"],
-    #             },
-    #         ],
-    #         "iot_attachment": "",
-    #         "iot_submission_csv": "",
-    #         "iot_submission_report": "",
-    #     }
-    #
-    #
-    #     submission = SubmissionFactory.from_components(
-    #         [
-    #             # fmt: off
-    #             {
-    #                 "key": "firstName",
-    #                 "type": "textField"
-    #             },
-    #             {
-    #                 "key": "lastName",
-    #                 "type": "textfield",
-    #             },
-    #             # fmt: on
-    #         ],
-    #         completed=True,
-    #         submitted_data={
-    #             "firstName": "We Are",
-    #             "lastName": "Checking",
-    #         },
-    #         with_public_registration_reference=True,
-    #         auth_info__is_digid=True,
-    #     )
-    #     expected = {
-    #         "middel": "digid",
-    #         "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-    #         "vertegenwoordigde": "",
-    #         "soort_vertegenwoordigde": "",
-    #         "gemachtigde": "999991607",
-    #         "soort_gemachtigde": "bsn",
-    #         "actor": "",
-    #         "soort_actor": "",
-    #     }
-    #
-    #     ObjectsAPIRegistrationData.objects.create(submission=submission)
-    #
-    #     handler = ObjectsAPIV2Handler()
-    #     record_data = handler.get_record_data(
-    #         submission=submission, options=v2_options
-    #     )
-    #
-    #     data = record_data["data"]
-    #     print(submission.data)
-    #     self.assertEqual(data["authn"], expected)
+        res = json_plugin.register_submission(submission, json_form_options)
+        res_json = res["api_response"].json()
+
+        self.assertEqual(res_json, expected_response)
+
+        with self.subTest("attachment content encoded"):
+            decoded_content = b64decode(res_json["data"]["values"]["file"])
+            self.assertEqual(decoded_content, b"This is example content.")
+
+    def test_exception_raised_when_service_returns_unexpected_status_code(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textField"},
+                {"key": "lastName", "type": "textfield"},
+            ],
+            completed=True,
+            submitted_data={"firstName": "We Are", "lastName": "Checking"},
+            bsn="123456789",
+        )
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="fake_endpoint",
+            form_variables=["firstName", "auth_bsn"],
+        )
+        json_plugin = JSONRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        with self.assertRaises(RequestException):
+            json_plugin.register_submission(submission, json_form_options)
