@@ -11,7 +11,7 @@ from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
-class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     service = PrimaryKeyRelatedAsChoicesField(
         queryset=Service.objects.filter(api_type=APITypes.orc),
         label=_("Service"),
@@ -38,11 +38,11 @@ class JSONOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
 
-class JSONOptions(TypedDict):
+class JSONDumpOptions(TypedDict):
     """
-    JSON registration plugin options
+    JSON dump registration plugin options
 
-    This describes the shape of :attr:`JSONOptionsSerializer.validated_data`, after
+    This describes the shape of :attr:`JSONDumpOptionsSerializer.validated_data`, after
     the input data has been cleaned/validated.
     """
 

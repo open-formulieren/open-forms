@@ -391,8 +391,8 @@ export default {
         },
       },
       {
-        id: 'json',
-        label: 'JSON registration',
+        id: 'json_dump',
+        label: 'JSON Dump registration',
         schema: {
           type: 'object',
           properties: {
@@ -759,11 +759,11 @@ export const ConfiguredBackends = {
       },
       {
         key: 'backend11',
-        name: 'JSON',
-        backend: 'json',
+        name: 'JSON Dump',
+        backend: 'json_dump',
         options: {
           service: 1,
-          relativeApiEndpoint: 'Example endpoint',
+          relativeApiEndpoint: 'example/endpoint',
           formVariables: [],
         },
       },
@@ -1015,16 +1015,16 @@ export const STUFZDS = {
   },
 };
 
-export const JSON = {
+export const JSONDump = {
   args: {
     configuredBackends: [
       {
         key: 'backend11',
-        name: 'JSON',
-        backend: 'json',
+        name: 'JSON Dump',
+        backend: 'json_dump',
         options: {
           service: 1,
-          relativeApiEndpoint: 'We are checking.',
+          relativeApiEndpoint: 'example/endpoint',
           formVariables: [],
         },
       },

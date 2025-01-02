@@ -7,7 +7,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 
-const JSONVariableConfigurationEditor = ({variable}) => {
+const JSONDumpVariableConfigurationEditor = ({variable}) => {
   const [fieldProps, , {setValue}] = useField('formVariables');
 
   const formVariables = fieldProps.value;
@@ -59,10 +59,10 @@ const JSONVariableConfigurationEditor = ({variable}) => {
   );
 };
 
-JSONVariableConfigurationEditor.propTypes = {
+JSONDumpVariableConfigurationEditor.propTypes = {
   variable: PropTypes.shape({
     key: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-export default JSONVariableConfigurationEditor;
+export default JSONDumpVariableConfigurationEditor;
