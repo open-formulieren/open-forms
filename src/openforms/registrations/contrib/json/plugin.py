@@ -48,8 +48,33 @@ class JSONRegistration(BasePlugin):
             }
         )
 
+        # Generate schema
+        # TODO: will be added in #4980. Hardcoded example for now.
+        schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "static_var_1": {
+                    "type": "string",
+                    "pattern": "^cool_pattern$"
+                },
+                "form_var_1": {
+                    "type": "string"
+                },
+                "form_var_2": {
+                    "type": "string"
+                },
+                "attachment": {
+                    "type": "string",
+                    "contentEncoding": "base64"
+                },
+            },
+            "required": ["static_var_1", "form_var_1", "form_var_2"],
+            "additionalProperties": False,
+        }
+
         # Send to the service
-        json = {"values": values}
+        json = {"values": values, "schema": schema}
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
