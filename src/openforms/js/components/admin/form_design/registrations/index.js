@@ -49,7 +49,7 @@ export const BACKEND_OPTIONS_FORMS = {
     form: StufZDSOptionsForm,
   },
   'microsoft-graph': {form: MSGraphOptionsForm},
-  'json': {
+  json: {
     form: JSONOptionsForm,
     configurableFromVariables: true,
     summaryHandler: JSONSummaryHandler,

@@ -1,7 +1,7 @@
 import base64
 
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from requests import RequestException
 from zgw_consumers.client import build_client
@@ -26,7 +26,7 @@ class JSONRegistration(BasePlugin):
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
         for attachment in submission.attachments:
-            if not attachment.form_key in options["form_variables"]:
+            if attachment.form_key not in options["form_variables"]:
                 continue
             options["form_variables"].remove(attachment.form_key)
             with attachment.content.open("rb") as f:
@@ -54,20 +54,10 @@ class JSONRegistration(BasePlugin):
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object",
             "properties": {
-                "static_var_1": {
-                    "type": "string",
-                    "pattern": "^cool_pattern$"
-                },
-                "form_var_1": {
-                    "type": "string"
-                },
-                "form_var_2": {
-                    "type": "string"
-                },
-                "attachment": {
-                    "type": "string",
-                    "contentEncoding": "base64"
-                },
+                "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
+                "form_var_1": {"type": "string"},
+                "form_var_2": {"type": "string"},
+                "attachment": {"type": "string", "contentEncoding": "base64"},
             },
             "required": ["static_var_1", "form_var_1", "form_var_2"],
             "additionalProperties": False,
@@ -107,7 +97,7 @@ class JSONRegistration(BasePlugin):
                 _("Configuration"),
                 reverse(
                     "admin:registrations_json_jsonconfig_change",
-                    args=(JSONConfig.singleton_instance_id,)
-                )
+                    args=(JSONConfig.singleton_instance_id,),
+                ),
             )
         ]

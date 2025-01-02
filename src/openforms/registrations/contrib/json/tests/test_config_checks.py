@@ -11,7 +11,6 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..models import JSONConfig
 from ..plugin import JSONRegistration
 
-
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
@@ -31,7 +30,7 @@ class ConfigCheckTests(OFVCRMixin, TestCase):
 
         with patch(
             "openforms.registrations.contrib.json.plugin.JSONConfig.get_solo",
-            return_value=config
+            return_value=config,
         ):
             json_plugin.check_config()
 
@@ -41,7 +40,7 @@ class ConfigCheckTests(OFVCRMixin, TestCase):
 
         with patch(
             "openforms.registrations.contrib.json.plugin.JSONConfig.get_solo",
-            return_value=config
+            return_value=config,
         ):
             self.assertRaises(InvalidPluginConfiguration, json_plugin.check_config)
 
@@ -57,6 +56,6 @@ class ConfigCheckTests(OFVCRMixin, TestCase):
 
         with patch(
             "openforms.registrations.contrib.json.plugin.JSONConfig.get_solo",
-            return_value=config
+            return_value=config,
         ):
             self.assertRaises(InvalidPluginConfiguration, json_plugin.check_config)

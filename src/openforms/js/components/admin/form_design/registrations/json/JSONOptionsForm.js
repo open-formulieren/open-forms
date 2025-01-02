@@ -19,13 +19,12 @@ import FormVariablesSelect from './fields/FormVariablesSelect';
 import RelativeAPIEndpoint from './fields/RelativeAPIEndpoint';
 import ServiceSelect from './fields/ServiceSelect';
 
-
 const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
   // Get form variables and create form variable options
-  const formContext = useContext(FormContext)
+  const formContext = useContext(FormContext);
   const formVariables = formContext.formVariables ?? [];
   const staticVariables = formContext.staticVariables ?? [];
   const allFormVariables = staticVariables.concat(formVariables);
@@ -37,9 +36,9 @@ const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
 
   // Create service options
   const {service} = schema.properties;
-  const serviceOptions = getChoicesFromSchema(
-    service.enum, service.enumNames
-  ).map(([value, label]) => ({value, label}));
+  const serviceOptions = getChoicesFromSchema(service.enum, service.enumNames).map(
+    ([value, label]) => ({value, label})
+  );
 
   return (
     <ModalOptionsConfiguration
@@ -58,9 +57,9 @@ const JSONOptionsForm = ({name, label, schema, formData, onChange}) => {
     >
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
-          <ServiceSelect options={serviceOptions}/>
+          <ServiceSelect options={serviceOptions} />
           <RelativeAPIEndpoint />
-          <FormVariablesSelect options={formVariableOptions}/>
+          <FormVariablesSelect options={formVariableOptions} />
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
