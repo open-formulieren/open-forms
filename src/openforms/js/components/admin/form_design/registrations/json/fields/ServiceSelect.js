@@ -24,11 +24,7 @@ const ServiceSelect = ({options}) => {
           />
         }
       >
-        <ReactSelect
-          name="service"
-          options={options}
-          required
-        />
+        <ReactSelect name="service" options={options} required />
       </Field>
     </FormRow>
   );

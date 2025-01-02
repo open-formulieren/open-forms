@@ -3,18 +3,13 @@ import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 const JSONSummaryHandler = ({variable, backendOptions}) => {
-
   const isIncluded = backendOptions.formVariables.includes(variable.key);
 
   if (isIncluded) {
     return (
-      <FormattedMessage
-        description="JSON registration summary message"
-        defaultMessage="Included"
-      />
+      <FormattedMessage description="JSON registration summary message" defaultMessage="Included" />
     );
-  }
-  else {
+  } else {
     return (
       <FormattedMessage
         description="JSON registration summary message"
@@ -23,7 +18,6 @@ const JSONSummaryHandler = ({variable, backendOptions}) => {
     );
   }
 };
-
 
 JSONSummaryHandler.propTypes = {
   variable: PropTypes.shape({
