@@ -69,7 +69,6 @@ class JSONDumpRegistration(BasePlugin):
             result["api_response"] = res = client.post(
                 options.get("relative_api_endpoint", ""),
                 json=json,
-                headers={"Content-Type": "application/json"},
             )
             res.raise_for_status()
 

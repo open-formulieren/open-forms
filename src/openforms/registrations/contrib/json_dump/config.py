@@ -26,9 +26,10 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         ),
         allow_blank=True,
         required=False,
+        default="",
     )
     form_variables = serializers.ListField(
-        child=FormioVariableKeyField(max_length=50),
+        child=FormioVariableKeyField(),
         label=_("Form variable key list"),
         help_text=_(
             "A list of form variables (can also include static variables) to use."
@@ -46,6 +47,6 @@ class JSONDumpOptions(TypedDict):
     the input data has been cleaned/validated.
     """
 
-    service: Required[Service]
+    service: Service
     relative_api_endpoint: str
-    form_variables: Required[list[str]]
+    form_variables: list[str]

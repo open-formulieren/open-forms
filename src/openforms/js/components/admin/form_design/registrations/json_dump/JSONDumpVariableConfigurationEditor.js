@@ -1,4 +1,4 @@
-import {useField} from 'formik';
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -8,9 +8,10 @@ import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 
 const JSONDumpVariableConfigurationEditor = ({variable}) => {
-  const [fieldProps, , {setValue}] = useField('formVariables');
-
-  const formVariables = fieldProps.value;
+  const {
+    values: {formVariables = []},
+    setFieldValue,
+  } = useFormikContext();
   const isIncluded = formVariables.includes(variable.key);
 
   return (
@@ -32,26 +33,11 @@ const JSONDumpVariableConfigurationEditor = ({variable}) => {
           }
           checked={isIncluded}
           onChange={event => {
-            const formVariablesNew = formVariables.slice();
-            const index = formVariablesNew.indexOf(variable.key);
-            if (event.target.checked) {
-              if (index !== -1) {
-                throw new Error(
-                  'This form variable is already on the list of ' +
-                    "form variables to include. This shouldn't happen."
-                );
-              }
-              formVariablesNew.push(variable.key);
-            } else {
-              if (index === -1) {
-                throw new Error(
-                  'This form variable is not yet on the list of ' +
-                    "form variables to include. This shouldn't happen."
-                );
-              }
-              formVariablesNew.splice(index, 1);
-            }
-            setValue(formVariablesNew);
+            const shouldBeIncluded = event.target.checked;
+            const newFormVariables = shouldBeIncluded
+              ? [...formVariables, variable.key] // add the variable to the array
+              : formVariables.filter(key => key !== variable.key); // remove the variable from the array
+            setFieldValue('formVariables', newFormVariables);
           }}
         />
       </Field>
