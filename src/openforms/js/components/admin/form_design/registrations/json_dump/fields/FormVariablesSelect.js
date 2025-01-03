@@ -38,6 +38,8 @@ const FormVariablesSelect = ({options}) => {
             defaultMessage="Which form variables to include in the data to be sent"
           />
         }
+        required
+        noManageChildProps
       >
         <ReactSelect
           name="formVariables"
