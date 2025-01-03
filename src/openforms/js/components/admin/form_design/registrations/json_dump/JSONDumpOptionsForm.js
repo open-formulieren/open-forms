@@ -50,8 +50,8 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
         service: null,
         relativeApiEndpoint: '',
         formVariables: [],
-        ...formData
-    }}
+        ...formData,
+      }}
       onSubmit={values => onChange({formData: values})}
       modalSize="medium"
     >

@@ -1,7 +1,11 @@
 import CamundaOptionsForm from './camunda';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
-import {JSONDumpOptionsForm, JSONDumpSummaryHandler, JSONDumpVariableConfigurationEditor} from './json_dump';
+import {
+  JSONDumpOptionsForm,
+  JSONDumpSummaryHandler,
+  JSONDumpVariableConfigurationEditor,
+} from './json_dump';
 import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';

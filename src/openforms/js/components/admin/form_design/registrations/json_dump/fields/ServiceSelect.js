@@ -23,6 +23,8 @@ const ServiceSelect = ({options}) => {
             defaultMessage="Which service to send the data to"
           />
         }
+        required
+        noManageChildProps
       >
         <ReactSelect name="service" options={options} required />
       </Field>
@@ -33,7 +35,7 @@ const ServiceSelect = ({options}) => {
 ServiceSelect.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
       label: PropTypes.node.isRequired,
     })
   ).isRequired,

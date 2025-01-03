@@ -1,22 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+
+import {IconNo, IconYes} from 'components/admin/BooleanIcons';
 
 const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
   const isIncluded = backendOptions.formVariables.includes(variable.key);
 
-  if (isIncluded) {
-    return (
-      <FormattedMessage description="JSON registration summary message" defaultMessage="Included" />
-    );
-  } else {
-    return (
-      <FormattedMessage
-        description="JSON registration summary message"
-        defaultMessage="Not included"
-      />
-    );
-  }
+  return isIncluded ? <IconYes /> : <IconNo />;
 };
 
 JSONDumpSummaryHandler.propTypes = {
