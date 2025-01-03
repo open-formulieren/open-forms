@@ -26,6 +26,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..contrib.demo.plugin import DemoPrefill
 from ..service import prefill_variables
@@ -265,13 +266,23 @@ class OwnershipCheckFailsPlugin(DemoPrefill):
 class PrefillVariablesFromOptionsTests(TestCase):
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_options",
-        return_value={"voornamen": "Not so random string"},
+        return_value={
+            "object_data": {
+                "voornamen": "Not so random string",
+            },
+            "voornamen": "Not so random string",
+        },
     )
     def test_applying_prefill_plugin_from_user_defined_with_options(self, m_prefill):
         submission = SubmissionFactory.create()
         FormVariableFactory.create(
-            key="voornamen",
+            key="voornamen", form=submission.form, user_defined=True
+        )
+        FormVariableFactory.create(
+            key="object_data",
             form=submission.form,
+            user_defined=True,
+            data_type=FormVariableDataTypes.object,
             prefill_plugin="objects_api",
             prefill_options={
                 "objects_api_group": 1,
@@ -285,16 +296,9 @@ class PrefillVariablesFromOptionsTests(TestCase):
 
         prefill_variables(submission=submission)
 
-        submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
-        )
-
-        self.assertEqual(1, len(submission_value_variables_state.variables))
-
-        submission_variable = submission_value_variables_state.get_variable(
-            key="voornamen"
-        )
-
+        variables_state = submission.load_submission_value_variables_state(refresh=True)
+        self.assertEqual(len(variables_state.variables), 2)
+        submission_variable = variables_state.get_variable(key="voornamen")
         self.assertEqual("Not so random string", submission_variable.value)
         self.assertEqual(
             SubmissionValueVariableSources.prefill, submission_variable.source
