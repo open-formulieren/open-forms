@@ -284,6 +284,7 @@ export const WithObjectsAPIRegistrationBackends = {
               targetPath: ['other', 'path'],
             },
           ],
+          geometryVariableKey: '',
         },
       },
       {
@@ -301,6 +302,7 @@ export const WithObjectsAPIRegistrationBackends = {
               targetPath: ['path', 'to.the', 'target'],
             },
           ],
+          geometryVariableKey: '',
         },
       },
       {
@@ -372,6 +374,62 @@ export const WithObjectsAPIRegistrationBackends = {
     // With a single backend, the heading shouldn't display:
     const objectsApiTitle = canvas.queryByRole('heading', {name: 'Objects API registration'});
     expect(objectsApiTitle).toBeNull();
+  },
+};
+
+// gh-4978 regression for geometry field on empty variable
+export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
+  args: {
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [
+            {
+              variableKey: 'formioComponent',
+              targetPath: ['path', 'to.the', 'target'],
+            },
+            {
+              variableKey: 'userDefined',
+              targetPath: ['other', 'path'],
+            },
+          ],
+          geometryVariableKey: '',
+        },
+      },
+    ],
+    variables: [
+      // add a variable as if the user clicked "add new user defined variable"
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: '',
+        key: '',
+        source: 'user_defined',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+        prefillOptions: {},
+      },
+    ],
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const userDefinedVarsTab = canvas.getByRole('tab', {name: 'Gebruikersvariabelen'});
+    await userEvent.click(userDefinedVarsTab);
+    expect(canvas.queryAllByText('record.geometry')).toHaveLength(0);
   },
 };
 
