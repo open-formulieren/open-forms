@@ -15,11 +15,20 @@ import {
 import LegacyConfigFields from './LegacyConfigFields';
 import V2ConfigFields from './V2ConfigFields';
 
+const VERSION_TO_INDEX_MAP = {
+  2: 0, // first tab
+  1: 1, // second tab
+};
+
+const INDEX_TO_VERSION_MAP = Object.fromEntries(
+  Object.entries(VERSION_TO_INDEX_MAP).map(([version, index]) => [index, parseInt(version, 10)])
+);
+
 const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   const intl = useIntl();
   const {values, setValues} = useFormikContext();
   const validationErrors = useContext(ValidationErrorContext);
-  const {version = 1} = values;
+  const {version = 2} = values;
 
   const v1SwitchMessage = intl.formatMessage({
     defaultMessage: `Switching to the legacy registration options will remove the existing variables mapping.
@@ -48,7 +57,7 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   } = useConfirm();
 
   const changeVersion = async tabIndex => {
-    const newVersion = tabIndex + 1;
+    const newVersion = INDEX_TO_VERSION_MAP[tabIndex];
 
     // change form fields values depending on the newly selected version
     const newValues = {...values, version: newVersion};
@@ -82,30 +91,30 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   const relevantErrors = filterErrors(name, validationErrors);
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
-      <Tabs selectedIndex={version - 1} onSelect={changeVersion}>
+      <Tabs selectedIndex={VERSION_TO_INDEX_MAP[version]} onSelect={changeVersion}>
         <TabList>
-          <Tab>
-            <FormattedMessage
-              defaultMessage="Legacy"
-              description="Objects API registration backend options 'Legacy' tab label"
-            />
-          </Tab>
           <Tab>
             <FormattedMessage
               defaultMessage="Variables Mapping"
               description="Objects API registration backend options 'Variables Mapping' tab label"
             />
           </Tab>
+          <Tab>
+            <FormattedMessage
+              defaultMessage="Legacy"
+              description="Objects API registration backend options 'Legacy' tab label"
+            />
+          </Tab>
         </TabList>
-
-        {/* Legacy format, template based */}
-        <TabPanel>
-          <LegacyConfigFields apiGroupChoices={apiGroupChoices} />
-        </TabPanel>
 
         {/* Tight objecttypes integration */}
         <TabPanel>
           <V2ConfigFields apiGroupChoices={apiGroupChoices} />
+        </TabPanel>
+
+        {/* Legacy format, template based */}
+        <TabPanel>
+          <LegacyConfigFields apiGroupChoices={apiGroupChoices} />
         </TabPanel>
       </Tabs>
       <ConfirmationModalV1 {...confirmationModalV1Props} message={v1SwitchMessage} />
