@@ -89,7 +89,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "The schema version of the objects API Options. Not to be confused with the objecttype version."
         ),
         choices=VersionChoices.choices,
-        default=1,
+        default=2,
     )
     objecttype = serializers.UUIDField(
         label=_("objecttype"),

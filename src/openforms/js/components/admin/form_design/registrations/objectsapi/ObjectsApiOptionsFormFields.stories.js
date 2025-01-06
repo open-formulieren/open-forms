@@ -84,18 +84,8 @@ export const SwitchToV2Empty = {
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    await step('Activate v2 tab', async () => {
-      const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-      await userEvent.click(v2Tab);
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {name: 'Accepteren'})
-      );
-      // Wait for v2Tab to be the selected tab
-      await waitFor(() => {
-        expect(v2Tab).toHaveAttribute('aria-selected', 'true');
-      });
-    });
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
+    expect(v2Tab).toHaveAttribute('aria-selected', 'true');
 
     const groupSelect = canvas.getByLabelText('API-groep');
     await rsSelect(groupSelect, 'Objects API group 1');
@@ -132,43 +122,28 @@ export const SwitchToV2Existing = {
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-    await userEvent.click(v2Tab);
-
-    await waitFor(async () => {
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
-      );
-
-      // Expect v2Tab to be the selected tab
-      expect(v2Tab).toHaveAttribute('aria-selected', 'true');
-    });
+    expect(v2Tab).toHaveAttribute('aria-selected', 'true');
 
     const testForm = await canvas.findByTestId('test-form');
 
-    await waitFor(() => {
-      expect(testForm).toHaveFormValues({
-        objectsApiGroup: '1',
-        objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
-        objecttypeVersion: '1',
-      });
+    expect(await canvas.findByText('Person (open)')).toBeVisible();
+    expect(await canvas.findByText('1 (published)')).toBeVisible();
+    expect(testForm).toHaveFormValues({
+      objectsApiGroup: '1',
+      objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
+      objecttypeVersion: '1',
     });
-    expect(canvas.getByText('Person (open)')).toBeVisible();
-    expect(canvas.getByText('1 (published)')).toBeVisible();
 
     const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
     await userEvent.click(v1Tab);
 
-    await waitFor(async () => {
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
-      );
-
+    // Close the confirmation modal
+    await userEvent.click(
+      within(await canvas.findByRole('dialog')).getByRole('button', {
+        name: 'Accepteren',
+      })
+    );
+    await waitFor(() => {
       // Expect v1Tab to be the selected tab
       expect(v1Tab).toHaveAttribute('aria-selected', 'true');
     });
@@ -194,18 +169,8 @@ export const SwitchToV2NonExisting = {
   play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    await step('Activate v2 tab', async () => {
-      const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-      await userEvent.click(v2Tab);
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {name: 'Accepteren'})
-      );
-      // Wait for v2Tab to be the selected tab
-      await waitFor(() => {
-        expect(v2Tab).toHaveAttribute('aria-selected', 'true');
-      });
-    });
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
+    expect(v2Tab).toHaveAttribute('aria-selected', 'true');
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
@@ -230,19 +195,7 @@ export const APIFetchError = {
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
-    await userEvent.click(v2Tab);
-
-    await waitFor(async () => {
-      // Close the confirmation modal
-      await userEvent.click(
-        within(await canvas.findByRole('dialog')).getByRole('button', {
-          name: 'Accepteren',
-        })
-      );
-
-      // Expect v2Tab to be the selected tab
-      expect(v2Tab).toHaveAttribute('aria-selected', 'true');
-    });
+    expect(v2Tab).toHaveAttribute('aria-selected', 'true');
 
     await step('Retrieving object types', async () => {
       const groupSelect = canvas.getByLabelText('API-groep');
