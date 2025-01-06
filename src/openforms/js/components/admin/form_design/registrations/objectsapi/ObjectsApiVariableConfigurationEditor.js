@@ -51,7 +51,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
 
   if (version !== 2) throw new Error('Not supported, must be config version 2.');
 
-  const isGeometry = geometryVariableKey === variable.key;
+  const isGeometry = geometryVariableKey && geometryVariableKey === variable.key;
 
   // get the index of our variable in the mapping, if it exists
   let index = variablesMapping.findIndex(

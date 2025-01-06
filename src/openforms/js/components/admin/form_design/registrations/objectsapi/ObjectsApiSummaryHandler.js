@@ -17,7 +17,7 @@ import {FormattedMessage} from 'react-intl';
 const ObjectsApiSummaryHandler = ({variable, backendOptions}) => {
   const geometryVariableKey = backendOptions.geometryVariableKey;
 
-  if (geometryVariableKey === variable.key) {
+  if (geometryVariableKey && geometryVariableKey === variable.key) {
     return (
       <FormattedMessage
         description="'Mapped to geometry' registration summary message"
