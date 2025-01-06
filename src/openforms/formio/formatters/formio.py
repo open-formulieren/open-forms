@@ -81,10 +81,14 @@ class FileFormatter(FormatterBase):
             return value
 
     def process_result(self, component: Component, formatted: str) -> str:
-        # prefix joined filenames to match legacy
-        if formatted:
+        if not formatted:
+            return ""
+
+        # Make sure we don't mangle safe-strings!
+        if self.as_html:
+            return formatted
+        else:
             return _("attachment: %s") % formatted
-        return formatted
 
     def format(self, component: Component, value: dict) -> str:
         # this is only valid for display to the user (because filename component option, dedupe etc)
