@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
 const config = {
   core: {
@@ -50,6 +51,8 @@ const config = {
       'node_modules',
       path.resolve(__dirname, '../src/openforms/js'),
     ];
+
+    config.plugins.push(new webpack.DefinePlugin({STATIC_URL: JSON.stringify('./static/')}));
 
     if (isEnvProduction) {
       config.plugins.push(new MiniCssExtractPlugin({filename: 'static/bundles/[name].css'}));
