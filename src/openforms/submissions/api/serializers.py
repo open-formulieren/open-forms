@@ -461,11 +461,13 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
         label=_("Confirmation page title"),
         required=False,
         help_text=_("Title of the confirmation page."),
+        allow_blank=True,
     )
     confirmation_page_content = CSPPostProcessedHTMLField(
         label=_("Confirmation page content"),
         required=False,
         help_text=_("Body text of the confirmation page. May contain HTML!"),
+        allow_blank=True,
     )
     report_download_url = serializers.URLField(
         label=_("Report download URL"),

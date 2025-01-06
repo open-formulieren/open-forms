@@ -133,6 +133,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT."),
         required=False,
+        allow_blank=True,
     )
 
     iot_submission_report = serializers.CharField(

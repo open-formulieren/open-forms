@@ -107,4 +107,5 @@ class CaseTypeProductSerializer(serializers.Serializer):
         label=_("description"),
         help_text=_("The description of a product bound to a case type. "),
         required=False,
+        allow_blank=True,
     )

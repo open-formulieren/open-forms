@@ -30,6 +30,7 @@ class CatalogueSerializer(serializers.Serializer):
         ),
         default="",
         validators=[validate_uppercase],
+        allow_blank=True,
     )
     rsin = serializers.CharField(
         label=_("RSIN"),
@@ -40,6 +41,7 @@ class CatalogueSerializer(serializers.Serializer):
             "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
         ),
         default="",
+        allow_blank=True,
     )
 
     class Meta:

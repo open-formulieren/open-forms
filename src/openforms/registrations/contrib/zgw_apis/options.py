@@ -72,6 +72,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "timestamp. When you specify this field, you MUST also specify a catalogue."
         ),
         default="",
+        allow_blank=True,
     )
     document_type_description = serializers.CharField(
         required=False,  # either htis field or informatieobjecttype (legacy) must be provided
@@ -84,6 +85,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "are valid."
         ),
         default="",
+        allow_blank=True,
     )
     product_url = serializers.URLField(
         label=_("Product url"),
@@ -113,6 +115,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the ZAAK"),
+        allow_blank=True,
     )
     zaak_vertrouwelijkheidaanduiding = serializers.ChoiceField(
         label=_("Vertrouwelijkheidaanduiding"),
@@ -127,6 +130,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_(
             "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
         ),
+        allow_blank=True,
     )
 
     # Objects API
@@ -149,6 +153,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "3) data (the submitted form data)"
         ),
         required=False,
+        allow_blank=True,
     )
     objecttype_version = serializers.IntegerField(
         label=_("objects API - objecttype version"),
@@ -166,6 +171,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             ),
         ],
         required=False,
+        allow_blank=True,
     )
 
     # Eigenschappen

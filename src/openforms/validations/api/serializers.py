@@ -24,6 +24,7 @@ class ValidatorsFilterSerializer(serializers.Serializer):
         help_text=_(
             "Only return validators applicable for the specified component type."
         ),
+        allow_blank=True,
     )
 
     def to_internal_value(self, data):

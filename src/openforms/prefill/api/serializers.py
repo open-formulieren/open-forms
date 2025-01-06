@@ -33,6 +33,7 @@ class PrefillPluginQueryParameterSerializer(serializers.Serializer):
         required=False,
         label=_("Form.io component type"),
         help_text=_("Only return plugins applicable for the specified component type."),
+        allow_blank=True,
     )
 
     def to_internal_value(self, data):
