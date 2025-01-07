@@ -431,6 +431,13 @@ class AddressValueSerializer(serializers.Serializer):
     def __init__(self, **kwargs):
         self.derive_address = kwargs.pop("derive_address", None)
         self.component = kwargs.pop("component", None)
+
+        required = kwargs.get("required", False)
+
+        self.fields["postcode"].required = required
+        self.fields["postcode"].allow_blank = not required
+        self.fields["houseNumber"].required = required
+        self.fields["houseNumber"].allow_blank = not required
         super().__init__(**kwargs)
 
     def validate_city(self, value: str) -> str:
