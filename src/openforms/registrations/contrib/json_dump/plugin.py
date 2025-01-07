@@ -1,12 +1,13 @@
 import base64
+import json
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject
-from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
@@ -59,15 +60,17 @@ class JSONDumpRegistration(BasePlugin):
         }
 
         # Send to the service
-        json = {"values": values, "schema": schema}
+        data = json.dumps({"values": values, "schema": schema}, cls=DjangoJSONEncoder)
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
-            result["api_response"] = res = client.post(
+            res = client.post(
                 options.get("relative_api_endpoint", ""),
-                json=json,
+                json=data,
             )
             res.raise_for_status()
+
+            result["api_response"] = res.json()
 
         return result
 
