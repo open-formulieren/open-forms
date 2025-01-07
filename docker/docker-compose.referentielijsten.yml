@@ -1,0 +1,57 @@
+version: '3.8'
+
+name: referentielijsten
+
+services:
+  referentielijsten-redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - open-forms-dev
+
+  referentielijsten-db:
+    image: postgres:${PG_VERSION:-14}
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./referentielijsten/docker-init-referentielijsten-db/:/docker-entrypoint-initdb.d
+      - referentielijsten-db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
+
+  referentielijsten-web.local:
+    image: maykinmedia/referentielijsten-api:${REFERENTIELIJSTEN_VERSION:-0.2.0}
+    environment: &referentielijsten_web_env
+      - DJANGO_SETTINGS_MODULE=referentielijsten.conf.docker
+      - SECRET_KEY=${SECRET_KEY:-7&3f^bo1(-5($bre4iv-!nt%1xr!b54b&y7+97j5f&ndm_e=lz}
+      - ALLOWED_HOSTS=referentielijsten-web.local,localhost
+      - DB_NAME=referentielijsten
+      - DB_USER=referentielijsten
+      - DB_HOST=referentielijsten-db
+      - DISABLE_2FA=true
+      - IS_HTTPS=no
+      - CACHE_DEFAULT=referentielijsten-redis:6379/0
+      - CACHE_AXES=referentielijsten-redis:6379/0
+      - SUBPATH=${SUBPATH:-/}
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    ports:
+      - 8004:8000
+    volumes: &referentielijsten_web_volumes
+      # mount fixtures dir to automatically populate the DB
+      - ./referentielijsten/fixtures/:/app/fixtures
+      - media:/app/media  # Shared media volume to get access to saved OAS files
+      - private-media:/app/private-media
+    depends_on:
+      - referentielijsten-db
+      - referentielijsten-redis
+    networks:
+      - open-forms-dev
+
+volumes:
+  referentielijsten-db:
+  media:
+  private-media:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
