@@ -31,7 +31,7 @@ from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
@@ -68,7 +68,7 @@ from ..typing import (
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
-from .utils import _normalize_pattern
+from .utils import _normalize_pattern, to_multiple, handle_component_properties
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -136,6 +136,13 @@ class TextField(BasePlugin[TextFieldComponent]):
         )
         return serializers.ListField(child=base) if multiple else base
 
+    @staticmethod
+    def as_json_schema(component: TextFieldComponent) -> JSONObject:
+        label = component.get("label", "Text")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)
+
 
 class EmailVerificationValidator:
     message = _("The email address {value} has not been verified yet.")
@@ -195,6 +202,13 @@ class Email(BasePlugin):
             **extra,
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Email")
+
+        base = {"title": label, "type": "string", "format": "email"}
+        return handle_component_properties(base, component)
 
 
 class FormioTimeField(serializers.TimeField):
@@ -276,6 +290,13 @@ class Time(BasePlugin[Component]):
         )
         return serializers.ListField(child=base) if multiple else base
 
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Time")
+
+        base = {"title": label, "type": "string", "format": "time"}
+        return handle_component_properties(base, component)
+
 
 @register("phoneNumber")
 class PhoneNumber(BasePlugin):
@@ -322,6 +343,13 @@ class PhoneNumber(BasePlugin):
             **extra,
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Phone number")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)
 
 
 class FileDataSerializer(serializers.Serializer):
@@ -433,6 +461,42 @@ class File(BasePlugin[FileComponent]):
             required=required,
         )
 
+    @staticmethod
+    def as_json_schema(component: FileComponent) -> JSONObject:
+        label = component.get("label", "File")
+
+        # fmt: off
+        base = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "originalName": {"type": "string"},
+                    "size": {"type": "number", "description": "Size in bytes"},
+                    "storage": {"type": "string"},
+                    "type": {"type": "string"},
+                    "url": {"type": "string", "format": "uri"},
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "baseUrl": {"type": "string", "format": "uri"},
+                            "form": {"type": "string"},
+                            "name": {"type": "string"},
+                            "project": {"type": "string"},
+                            "size": {"type": "number", "description": "Size in bytes"},
+                            "url": {"type": "string", "format": "uri"},
+                        },
+                        "required": ["baseUrl", "form", "name", "project", "size", "url"],
+                    },
+                },
+                "required": ["name", "originalName", "size", "storage", "type", "url", "data"],
+            },
+        }
+        # fmt: on
+        return base
+
 
 @register("textarea")
 class TextArea(BasePlugin[Component]):
@@ -459,6 +523,13 @@ class TextArea(BasePlugin[Component]):
             **extra,
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Text area")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)
 
 
 @register("number")
@@ -490,6 +561,13 @@ class Number(BasePlugin):
             required=required, allow_null=not required, **extra
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Number")
+
+        base = {"title": label, "type": "number"}
+        return handle_component_properties(base, component)
 
 
 def validate_required_checkbox(value: bool) -> None:
@@ -523,6 +601,13 @@ class Checkbox(BasePlugin[Component]):
             extra["validators"] = validators
 
         return serializers.BooleanField(**extra)
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Checkbox")
+
+        base = {"title": label, "type": "boolean"}
+        return base
 
 
 class SelectboxesField(serializers.Serializer):
@@ -600,6 +685,23 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
         return serializer
 
+    @staticmethod
+    def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
+        label = component.get("label", "Select boxes")
+
+        properties = {
+            options["value"]: {"type": "boolean"} for options in component["values"]
+        }
+
+        base = {
+            "title": label,
+            "type": "object",
+            "properties": properties,
+            "additionalProperties": False,
+            "required": list(properties.keys()),
+        }
+        return base
+
 
 @register("select")
 class Select(BasePlugin[SelectComponent]):
@@ -649,6 +751,20 @@ class Select(BasePlugin[SelectComponent]):
             **field_kwargs,
         )
 
+    @staticmethod
+    def as_json_schema(component: SelectComponent) -> JSONObject:
+        multiple = component.get("multiple", False)
+        label = component.get("label", "Select")
+
+        choices = [options["value"] for options in component["data"]["values"]]
+
+        base = {"type": "string", "enum": choices}
+        if multiple:
+            base = {"type": "array", "items": base}
+        base["title"] = label
+
+        return base
+
 
 @register("currency")
 class Currency(BasePlugin[Component]):
@@ -674,6 +790,13 @@ class Currency(BasePlugin[Component]):
         return serializers.FloatField(
             required=required, allow_null=not required, **extra
         )
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Currency")
+        base = {"title": label, "type": "number"}
+
+        return base
 
 
 @register("radio")
@@ -710,6 +833,15 @@ class Radio(BasePlugin[RadioComponent]):
             allow_null=not required,
         )
 
+    @staticmethod
+    def as_json_schema(component: RadioComponent) -> JSONObject:
+        label = component.get("label", "Radio")
+
+        choices = [options["value"] for options in component["values"]]
+        base = {"title": label, "type": "string", "enum": choices}
+
+        return base
+
 
 @register("signature")
 class Signature(BasePlugin[Component]):
@@ -719,6 +851,13 @@ class Signature(BasePlugin[Component]):
         validate = component.get("validate", {})
         required = validate.get("required", False)
         return serializers.CharField(required=required, allow_blank=not required)
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Signature")
+        base = {"title": label, "type": "string", "format": "base64"}
+
+        return base
 
 
 @register("content")
@@ -743,6 +882,11 @@ class Content(BasePlugin):
            security risk.
         """
         component["html"] = post_process_html(component["html"], request)
+
+    @staticmethod
+    def as_json_schema(component: ContentComponent) -> JSONObject:
+        # Not relevant as content components don't have values
+        raise NotImplementedError()
 
 
 class EditGridField(serializers.Field):
@@ -858,3 +1002,27 @@ class EditGrid(BasePlugin[EditGridComponent]):
             allow_empty=not required,
             **kwargs,
         )
+
+    @staticmethod
+    def as_json_schema(component: EditGridComponent) -> JSONObject:
+        label = component.get("label", "Edit grid")
+
+        # Build the edit grid object properties by iterating over the child components
+        properties = {
+            child["key"]: register[child["type"]].as_json_schema(child)
+            for child in component["components"]
+        }
+
+        base = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": properties,
+                # TODO-4980: should this depend on if the field are required?
+                "required": list(properties.keys()),
+                "additionalProperties": False,
+            },
+        }
+
+        return base
