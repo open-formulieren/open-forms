@@ -34,6 +34,10 @@ class PaymentCompleted(BaseStaticVariable):
             return None
         return submission.payment_user_has_paid
 
+    @staticmethod
+    def as_json_schema():
+        raise NotImplementedError()
+
 
 @register("payment_amount")
 class PaymentAmount(BaseStaticVariable):
@@ -47,6 +51,10 @@ class PaymentAmount(BaseStaticVariable):
             return None
         return float(submission.price)
 
+    @staticmethod
+    def as_json_schema():
+        raise NotImplementedError()
+
 
 @register("payment_public_order_ids")
 class PaymentPublicOrderIds(BaseStaticVariable):
@@ -57,6 +65,10 @@ class PaymentPublicOrderIds(BaseStaticVariable):
         if submission is None:
             return None
         return submission.payments.get_completed_public_order_ids()
+
+    @staticmethod
+    def as_json_schema():
+        raise NotImplementedError()
 
 
 @register("provider_payment_ids")
@@ -69,3 +81,6 @@ class ProviderPaymentIds(BaseStaticVariable):
             return None
 
         return submission.payments.get_completed_provider_payment_ids()
+
+    def as_json_schema():
+        raise NotImplementedError()
