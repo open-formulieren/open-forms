@@ -139,6 +139,13 @@ class InputValidationRegressionTests(E2ETestCase):
                                 }
                             ],
                         },
+                        {
+                            "key": "addressNl",
+                            "type": "addressNL",
+                            "label": "Optional AddressNL",
+                            "validate": {"required": False},
+                            "deriveAddress": False,
+                        },
                     ]
                 },
             )
