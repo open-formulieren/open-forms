@@ -66,11 +66,13 @@ class JSONDumpRegistration(BasePlugin):
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
-            result["api_response"] = res = client.post(
+            res = client.post(
                 options.get("relative_api_endpoint", ""),
                 json=json,
             )
             res.raise_for_status()
+
+            result["api_response"] = res.json()
 
         return result
 
