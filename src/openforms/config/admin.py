@@ -161,7 +161,15 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             },
         ),
         (_("Search engines"), {"fields": ("allow_indexing_form_detail",)}),
-        (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
+        (
+            _("Plugin configuration"),
+            {
+                "fields": (
+                    "plugin_configuration",
+                    "referentielijsten_services",
+                )
+            },
+        ),
         (
             _("Registration"),
             {
@@ -198,6 +206,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
         ),
     )
     readonly_fields = ("feature_flags_link",)
+    filter_horizontal = ("referentielijsten_services",)
 
     @admin.display(description=_("feature flags"))
     def feature_flags_link(self, obj) -> str:
