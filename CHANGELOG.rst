@@ -31,41 +31,11 @@ To upgrade to 3.0, please:
 
 * ⚠️ Please review the instructions in the documentation under **Installation** >
   **Upgrade details to Open Forms 3.0.0** before and during upgrading. You can find
-  details for the deprecated code and how this can affect you.
+  details for the deprecated code and how this might affect you.
   
 Where possible, we have included upgrade checks that can you inform about detected problems before
 any database changes are made. We will add (some) of these checks to the next 2.8.x patch release
 to so you can run them to explore possible impact.
-
-Changes
--------
-
-**Breaking changes**
-
-* [:backend:`4375`] Removed environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
-  Objects API.
-* Removed automatic patching for `cosign_information` template tag.
-* [:backend:`3283`] Removed deprecated code (please review the instructions in the documentation
-  under **Installation** > **Upgrade details to Open Forms 3.0.0** for all the necessary details):
-
-    - ``registration_backend`` and ``registration_backend_options`` fields from form.
-    - Old API location url.
-    - Conversion of ``stuf-zds-create-zaak:ext-utrecht`` to ``stuf-zds-create-zaak`` during import.
-    - Objecttype URL to UUID import conversion.
-    - Backwards compatible styling.
-    - Password Formio component.
-    - Legacy formio translation converter.
-    - Deprecated/disabled legacy OIDC callback endpoints by default.
-    - Documented registration backend migration procedure.
-    - Made Objects API and ZGW APIs group fields non-nullable where this is necessary.
-    - Normalized API endpoints to use kebab-case instead of snake-case.
-    - Removed unnecessary filter behaviour on form definitions endpoint.
-    - Removed legacy machtigen context.
-    - Removed old appointments flow and refactored code according to the new one.
-    - Made submission in temporary file uploads non-nullable.
-    - Removed conversion of form step URL to form step UUID.
-    - Made form definition name read only.
-* [:backend:`4771`] Removed price logic rules in favour of normal logic rules.
 
 Major features
 --------------
@@ -118,6 +88,33 @@ And, wherever you need to choose a form variable, you now have the options group
 
 Detailed changes
 ----------------
+
+**Breaking changes**
+
+* [:backend:`4375`] Removed environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for
+  Objects API.
+* Removed automatic patching for ``cosign_information`` template tag.
+* [:backend:`3283`] Removed deprecated code (please review the instructions in the documentation
+  under **Installation** > **Upgrade details to Open Forms 3.0.0** for all the necessary details):
+
+    - ``registration_backend`` and ``registration_backend_options`` fields from form.
+    - Old API location url.
+    - Conversion of ``stuf-zds-create-zaak:ext-utrecht`` to ``stuf-zds-create-zaak`` during import.
+    - Objecttype URL to UUID import conversion.
+    - Backwards compatible styling.
+    - Password Formio component.
+    - Legacy formio translation converter.
+    - Deprecated/disabled legacy OIDC callback endpoints by default.
+    - Documented registration backend migration procedure.
+    - Made Objects API and ZGW APIs group fields non-nullable where this is necessary.
+    - Normalized API endpoints to use kebab-case instead of snake-case.
+    - Removed unnecessary filter behaviour on form definitions endpoint.
+    - Removed legacy machtigen context.
+    - Removed old appointments flow and refactored code according to the new one.
+    - Made submission in temporary file uploads non-nullable.
+    - Removed conversion of form step URL to form step UUID.
+    - Made form definition name read only.
+* [:backend:`4771`] Removed price logic rules in favour of normal logic rules.
 
 **New features**
 
@@ -189,7 +186,7 @@ Detailed changes
 * [:backend:`4321`] Forms can now have a submission limit. The SDK displays appropriate messages when
   this limit is reached.
 * [:backend:`4895`] Added metadata to the outgoing confirmation and cosign request emails.
-* [:backend:`4789`, :backend:`4788`, :backend:`4787`] Added `django-setup-configuration` to programmatically
+* [:backend:`4789`, :backend:`4788`, :backend:`4787`] Added ``django-setup-configuration`` to programmatically
   configure Open Forms' connection details to the Objects and ZGW APIs. You can load a confguration file via
   the ``setup_configuration`` management command. Additional information/instructions are provided in
   :ref:`installation_configuration_cli`.
@@ -585,7 +582,7 @@ Detailed changes
 2.6.15 (2024-10-08)
 ===================
 
-Final bugfix release in the `2.6.x` series.
+Final bugfix release in the ``2.6.x`` series.
 
 * [#4602] Fixed missing Dutch translation for minimum required checked items error
   message in the selectboxes component.
