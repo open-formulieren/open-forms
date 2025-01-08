@@ -257,7 +257,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.18.0
+django-digid-eherkenning==0.19.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
