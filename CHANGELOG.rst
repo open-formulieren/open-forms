@@ -2,6 +2,11 @@
 Changelog
 =========
 
+.. note::
+    
+    The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
+
+
 3.0.0 "Heerlijkheid" (2025-01-08)
 =================================
 
@@ -43,8 +48,8 @@ Major features
 **📥 Objects API Prefill (a.k.a. product prefill)**
 
 If you store information about requests/products for users in the Objects API, you can now use this data
-to populate a form to request or renew the product again. Bits of information from the referenced record
-are prefilled into form fields and variables.
+to populate a form. For example to request or renew the product (object) again. Bits of information from the referenced
+record are prefilled into form fields and variables.
 
 Additionally, you can opt to update the existing object rather than create a new one during registration!
 
