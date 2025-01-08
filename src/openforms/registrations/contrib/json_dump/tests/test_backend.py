@@ -87,7 +87,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         res = json_plugin.register_submission(submission, json_form_options)
-        res_json = res["api_response"].json()
+        res_json = res["api_response"]
 
         self.assertEqual(res_json, expected_response)
 
