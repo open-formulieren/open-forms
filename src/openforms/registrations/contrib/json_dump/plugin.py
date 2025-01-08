@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
+from openforms.forms.utils import form_variables_to_json_schema
 from openforms.formio.typing import Component
 from openforms.submissions.models import Submission, SubmissionValueVariable, \
     SubmissionFileAttachment
@@ -38,19 +39,25 @@ class JSONDumpRegistration(BasePlugin):
         self.process_variables(submission, values)
 
         # Generate schema
-        # TODO: will be added in #4980. Hardcoded example for now.
-        schema = {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
-            "properties": {
-                "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
-                "form_var_1": {"type": "string"},
-                "form_var_2": {"type": "string"},
-                "attachment": {"type": "string", "contentEncoding": "base64"},
-            },
-            "required": ["static_var_1", "form_var_1", "form_var_2"],
-            "additionalProperties": False,
-        }
+        schema = form_variables_to_json_schema(submission.form, options["form_variables"])
+
+        # TODO-4980: this can be cleaned up probably
+        # Change schema of files, as we do some custom processing in this plugin
+        attachment_vars = [
+            var for var in submission.form.formvariable_set.all()
+            if var.key in set(options["form_variables"]).difference(form_vars)
+        ]
+        for variable in attachment_vars:
+            form_def = variable.form_definition
+            component = form_def.configuration_wrapper.component_map[variable.key]
+            # TODO-4980: enable this when the attachment processing is cleaned up
+            # multiple = component.get("multiple", False)
+            multiple = False
+
+            base = {"type": "string", "format": "base64"}
+            schema["properties"][variable.key] = (
+                {"type": "array", "items": base} if multiple else base
+            )
 
         # Send to the service
         json = {"values": values, "schema": schema}
