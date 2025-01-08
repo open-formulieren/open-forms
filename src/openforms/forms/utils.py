@@ -3,7 +3,7 @@ import logging
 import random
 import string
 import zipfile
-from typing import Any
+from typing import Any, Sequence
 from uuid import uuid4
 
 from django.conf import settings
@@ -16,9 +16,13 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
+from openforms.formio.registry import register as component_registry
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.registry import (
+    register_static_variable as static_variable_registry,
+)
 
 from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
@@ -127,6 +131,72 @@ def form_to_json(form_id: int) -> dict:
     }
 
     return resources
+
+
+# TODO-4980: what should the name be? Do we need the submission, or is just the form
+#  sufficient here?
+# TODO-4980: pass form_id instead of the form?
+def form_variables_to_json_schema(
+    form: Form, variables_to_include: Sequence[str]
+) -> JSONObject:
+    """Generate a JSON schema from a form, for the specified variables.
+
+    :param form: The form to generate JSON schema for.
+    :param variables_to_include: Variables that will be included in the schema.
+
+    :returns: A JSON schema representing the form variables.
+    """
+
+    # Handle static variables
+    static_var_properties = {
+        key: static_variable_registry[key].as_json_schema()
+        for key in variables_to_include
+        if key in static_variable_registry
+    }
+
+    # Handle form variables
+    all_form_vars = {var.key: var for var in form.formvariable_set.all()}
+
+    # TODO-4980: add to FormVariable?
+    def get_json_schema_from_form_variable(form_variable):
+        form_def = form_variable.form_definition
+
+        component = form_def.configuration_wrapper.component_map[form_variable.key]
+        component_plugin = component_registry[component["type"]]
+
+        return component_plugin.as_json_schema(component)
+
+    form_var_properties = {
+        key: get_json_schema_from_form_variable(all_form_vars[key])
+        for key in variables_to_include
+        if key in all_form_vars
+    }
+
+    # Required
+    def is_required(form_variable):
+        form_def = form_variable.form_definition
+        component = form_def.configuration_wrapper.component_map[form_variable.key]
+
+        validate = component.get("validate", {})
+        return validate.get("required", False)
+
+    required_form_variables = [
+        var for var in form_var_properties.keys() if is_required(all_form_vars[var])
+    ]
+
+    required = [*static_var_properties.keys(), *required_form_variables]
+
+    # Result
+    var_properties = {**static_var_properties, **form_var_properties}
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": var_properties,
+        "required": required,
+        "additionalProperties": False,
+    }
+
+    return schema
 
 
 def export_form(form_id, archive_name=None, response=None):

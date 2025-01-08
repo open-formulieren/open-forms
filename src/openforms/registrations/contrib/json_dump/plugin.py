@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from zgw_consumers.client import build_client
 
 from openforms.formio.typing import Component
+from openforms.forms.utils import form_variables_to_json_schema
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -32,6 +33,7 @@ class JSONDumpRegistration(BasePlugin):
     ) -> dict:
         state = submission.load_submission_value_variables_state()
 
+        # Generate values
         all_values: JSONObject = {
             **state.get_static_data(),
             **state.get_data(),  # dynamic values from user input
@@ -42,23 +44,11 @@ class JSONDumpRegistration(BasePlugin):
             if key in options["variables"]
         }
 
-        # Process attachments
-        self.process_variables(submission, values)
-
         # Generate schema
-        # TODO: will be added in #4980. Hardcoded example for now.
-        schema = {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
-            "properties": {
-                "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
-                "form_var_1": {"type": "string"},
-                "form_var_2": {"type": "string"},
-                "attachment": {"type": "string", "contentEncoding": "base64"},
-            },
-            "required": ["static_var_1", "form_var_1", "form_var_2"],
-            "additionalProperties": False,
-        }
+        schema = form_variables_to_json_schema(submission.form, options["variables"])
+
+        # Post-processing
+        self.post_processing(submission, values, schema)
 
         # Send to the service
         data = json.dumps({"values": values, "schema": schema}, cls=DjangoJSONEncoder)
@@ -77,11 +67,17 @@ class JSONDumpRegistration(BasePlugin):
         pass
 
     @staticmethod
-    def process_variables(submission: Submission, values: JSONObject):
-        """Process variables.
+    def post_processing(
+        submission: Submission, values: JSONObject, schema: JSONObject
+    ) -> None:
+        """Post-processing of values and schema.
 
         File components need special treatment, as we send the content of the file
         encoded with base64, instead of the output from the serializer.
+
+        :param submission: Submission
+        :param values: JSONObject
+        :param schema: JSONObject
         """
         state = submission.load_submission_value_variables_state()
 
@@ -97,6 +93,7 @@ class JSONDumpRegistration(BasePlugin):
 
             component = get_component(variable)
             if component is None or component["type"] != "file":
+                # Only file components need to be processed
                 continue
 
             encoded_attachments: list[JSONValue] = [
@@ -136,11 +133,11 @@ def encode_attachment(attachment: SubmissionFileAttachment) -> str:
         return base64.b64encode(f.read()).decode()
 
 
-def get_component(variable: SubmissionValueVariable) -> Component:
+def get_component(variable: SubmissionValueVariable) -> Component | None:
     """Get the component from a submission value variable.
 
     :param variable: SubmissionValueVariable
-    :return component: Component
+    :return component: None if the form variable has no form definition
     """
     config_wrapper = variable.form_variable.form_definition.configuration_wrapper
     component = config_wrapper.component_map[variable.key]
