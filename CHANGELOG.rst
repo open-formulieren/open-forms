@@ -7,7 +7,7 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
-3.0.0 "Heerlijkheid" (2025-01-08)
+3.0.0 "Heerlijkheid" (2025-01-09)
 =================================
 
 Open Forms 3.0.0 is a feature release.

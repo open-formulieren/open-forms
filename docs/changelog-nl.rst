@@ -9,7 +9,7 @@ Changelog (NL)
     This is the Dutch version of the changelog. The English version can be
     found :ref:`here <changelog>`.
 
-3.0.0 "Heerlijkheid" (8 januari 2025)
+3.0.0 "Heerlijkheid" (9 januari 2025)
 =====================================
 
 Open Formulieren 3.0.0 is een feature release.
