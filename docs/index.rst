@@ -45,5 +45,6 @@ To get you started, you might find some of these links relevant:
    configuration/index
    developers/index
    changelog
+   changelog-nl
    changelog-sdk
    archive/index
