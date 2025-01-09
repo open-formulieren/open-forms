@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from zgw_consumers.client import build_client
 
 from openforms.submissions.models import Submission
+from openforms.typing import JSONObject
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
@@ -20,7 +21,18 @@ class JSONDumpRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: JSONDumpOptions
     ) -> dict:
-        values = {}
+        state = submission.load_submission_value_variables_state()
+
+        all_values: JSONObject = {
+            **state.get_static_data(),
+            **state.get_data(),  # dynamic values from user input
+        }
+        values = {
+            key: value
+            for key, value in all_values.items()
+            if key in options["form_variables"]
+        }
+
         # Encode (base64) and add attachments to values dict if their form keys were specified in the
         # form variables list
         for attachment in submission.attachments:
@@ -30,21 +42,6 @@ class JSONDumpRegistration(BasePlugin):
             with attachment.content.open("rb") as f:
                 f.seek(0)
                 values[attachment.form_key] = base64.b64encode(f.read()).decode()
-
-        # Create static variables dict
-        static_variables = get_static_variables(submission=submission)
-        static_variables_dict = {
-            variable.key: variable.initial_value for variable in static_variables
-        }
-
-        # Update values dict with relevant form data
-        all_variables = {**submission.data, **static_variables_dict}
-        values.update(
-            {
-                form_variable: all_variables[form_variable]
-                for form_variable in options["form_variables"]
-            }
-        )
 
         # Generate schema
         # TODO: will be added in #4980. Hardcoded example for now.
