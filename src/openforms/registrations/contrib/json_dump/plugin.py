@@ -6,7 +6,12 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.submissions.models import Submission
+from openforms.formio.typing import Component
+from openforms.submissions.models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionValueVariable,
+)
 from openforms.typing import JSONObject
 
 from ...base import BasePlugin  # openforms.registrations.base
@@ -34,15 +39,8 @@ class JSONDumpRegistration(BasePlugin):
             if key in options["form_variables"]
         }
 
-        # Encode (base64) and add attachments to values dict if their form keys were specified in the
-        # form variables list
-        for attachment in submission.attachments:
-            if attachment.form_key not in options["form_variables"]:
-                continue
-            options["form_variables"].remove(attachment.form_key)
-            with attachment.content.open("rb") as f:
-                f.seek(0)
-                values[attachment.form_key] = base64.b64encode(f.read()).decode()
+        # Process attachments
+        self.process_variables(submission, values)
 
         # Generate schema
         # TODO: will be added in #4980. Hardcoded example for now.
@@ -77,3 +75,69 @@ class JSONDumpRegistration(BasePlugin):
     def check_config(self) -> None:
         # Config checks are not really relevant for this plugin right now
         pass
+
+    @staticmethod
+    def process_variables(submission: Submission, values: JSONObject):
+        """Process variables.
+
+        File components need special treatment, as we send the content of the file
+        encoded with base64, instead of the output from the serializer.
+        """
+        state = submission.load_submission_value_variables_state()
+
+        for key in values.keys():
+            variable = state.variables.get(key)
+            if variable is None:
+                # None for static variables
+                continue
+
+            component = get_component(variable)
+            if component is None or component["type"] != "file":
+                continue
+
+            encoded_attachments = [
+                {
+                    "file_name": attachment.original_name,
+                    "content": encode_attachment(attachment),
+                }
+                for attachment in submission.attachments
+                if attachment.form_key == key
+            ]
+
+            match (
+                multiple := component.get("multiple", False),
+                n_attachments := len(encoded_attachments)
+            ):
+                case False, 0:
+                    values[key] = None
+                case False, 1:
+                    values[key] = encoded_attachments[0]
+                case True, _:
+                    values[key] = encoded_attachments
+                case _:
+                    raise ValueError(
+                        f"Combination of multiple ({multiple}) and number of "
+                        f"attachments ({n_attachments}) is not allowed."
+                    )
+
+def encode_attachment(attachment: SubmissionFileAttachment) -> str:
+    """Encode an attachment using base64
+
+    :param attachment: Attachment to encode
+    :returns: Encoded base64 data as a string
+    """
+    with attachment.content.open("rb") as f:
+        f.seek(0)
+        return base64.b64encode(f.read()).decode()
+
+
+def get_component(variable: SubmissionValueVariable) -> Component:
+    """Get the component from a submission value variable.
+
+    :param variable: SubmissionValueVariable
+    :return component: Component
+    """
+    config_wrapper = variable.form_variable.form_definition.configuration_wrapper
+    component = config_wrapper.component_map[variable.key]
+
+    return component

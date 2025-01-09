@@ -116,3 +116,65 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         with self.assertRaises(RequestException):
             json_plugin.register_submission(submission, json_form_options)
+
+    def test_multiple_file_uploads(self):
+        submission = SubmissionFactory.from_components(
+            [{"key": "file", "type": "file", "multiple": True}],
+            completed=True,
+            submitted_data={
+                "file": [
+                    {
+                        "url": "some://url",
+                        "name": "file1.txt",
+                        "type": "application/text",
+                        "originalName": "file1.txt",
+                    },
+                    {
+                        "url": "some://url",
+                        "name": "file2.txt",
+                        "type": "application/text",
+                        "originalName": "file2.txt",
+                    }
+                ],
+            },
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="file",
+            submission_step=submission.submissionstep_set.get(),
+            file_name="file1.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_configuration_path="components.2",
+            _component_data_path="file",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="file",
+            submission_step=submission.submissionstep_set.get(),
+            file_name="file2.txt",
+            content_type="application/text",
+            content__data=b"Content example is this.",
+            _component_configuration_path="components.2",
+            _component_data_path="file",
+        )
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["file"],
+        )
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        expected_values = {
+            "file": {
+                "file1.txt": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
+                "file2.txt": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+            },
+        }
+
+        res = json_plugin.register_submission(submission, json_form_options)
+        res_json = res["api_response"]
+
+        self.assertEqual(res_json["data"]["values"], expected_values)
