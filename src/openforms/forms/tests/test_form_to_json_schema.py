@@ -121,3 +121,44 @@ class FormToJsonSchemaTestCase(TestCase):
         schema = form_variables_to_json_schema(form, ["select"])
 
         self.assertEqual(schema["properties"]["select"]["enum"], ["A", "B", "C"])
+
+    def test_select_boxes_component_with_form_variable_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Select Boxes",
+                        "key": "selectBoxes",
+                        "type": "selectboxes",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "translations": {},
+                            "itemsExpression": {"var": "valuesForSelectBoxes"}
+                        },
+                        "values": []
+                    },
+                ]
+            }
+        )
+        form_step_1 = FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        FormVariableFactory.create(
+            form=form,
+            name="Values for select",
+            key="valuesForSelect",
+            user_defined=True,
+            initial_value=["A", "B", "C"]
+        )
+
+        schema = form_variables_to_json_schema(form, ["selectBoxes"])
+
+        self.assertEqual(
+            schema["properties"]["selectBoxes"]["properties"],
+            {
+                "A": {"type": "boolean"},
+                "B": {"type": "boolean"},
+                "C": {"type": "boolean"},
+            }
+        )
+        self.assertEqual(schema["properties"]["selectBoxes"]["required"], ["A", "B", "C"])
