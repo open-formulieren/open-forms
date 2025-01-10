@@ -14,29 +14,6 @@ import openforms.submissions.models.submission_value_variable
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("submissions", "0002_change_json_encoder"),
-        ("submissions", "0003_cleanup_urls"),
-        ("submissions", "0004_auto_20231128_1536"),
-        ("submissions", "0005_temporaryfileupload_legacy_and_more"),
-        ("submissions", "0006_set_legacy_true"),
-        ("submissions", "0007_add_legacy_constraint"),
-        ("submissions", "0008_submission_initial_data_reference"),
-        (
-            "submissions",
-            "0009_submission_only_completed_submission_has_finalised_registration_backend_key",
-        ),
-        ("submissions", "0010_emailverification"),
-        ("submissions", "0011_remove_submissionstep__data"),
-        ("submissions", "0012_alter_submission_price"),
-        (
-            "submissions",
-            "0013_remove_temporaryfileupload_non_legacy_submission_not_null_and_more",
-        ),
-        ("submissions", "0013_remove_submission_previous_submission"),
-        ("submissions", "0014_merge_20241211_1732"),
-    ]
-
     dependencies = [
         ("submissions", "0001_initial_to_openforms_v230"),
     ]
