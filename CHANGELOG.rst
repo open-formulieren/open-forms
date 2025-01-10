@@ -2,6 +2,61 @@
 Changelog
 =========
 
+2.8.3 (2025-01-09)
+==================
+
+Regular bugfix release
+
+* Backported check scripts for 3.0 upgrade.
+* [:backend:`4795`] Fixed not always being able to upload ``.msg`` files.
+* [:backend:`4900`] Fixed submission value variables recoupling for reusable form
+  definitions.
+* [:backend:`4579`] Fixed wrong steps being blocked when logic uses the "trigger from
+  step" option.
+* [:backend:`4825`] Fixed logging to only log empty retrieved data for the
+  authentication flow that is used in the submission.
+* [:backend:`4863`] Fixed authentication flow of an employee via OIDC.
+* [:backend:`4955`] Fixed the order of coordinates in Objects API and in ZGW APIs.
+* [:backend:`4821`] Fixed email digest for addressNL component, in combination with BRK
+  validator.
+* [:backend:`4886`] Fixed certain variants of CSV files not passing validation.
+* [:backend:`4949`] Fixed modal close button on dark mode.
+* [:backend:`4832`] Fixed json schema matcher in Objects API.
+* [:backend:`4853`] Fixed registration backends serializers concerning non required
+  fields.
+* [:backend:`4824`] Ensured that the form variables are in line with the state of the
+  form definitions after saving a form.
+* [:backend:`4874`] Updated Dockerfile with missing scripts.
+* Bumped packages to their latest (security) releases.
+* [:backend:`4862`] Fixed unintended hashing of identifying attributes when the cosigner
+  logs out.
+
+2.7.11 (2025-01-09)
+===================
+	
+Final bugfix release in the ``2.7.x`` series.
+
+* [:backend:`4795`] Fixed not always being able to upload ``.msg`` files.
+* [:backend:`4900`] Fixed submission value variables recoupling for reusable form
+  definitions.
+* [:backend:`4579`] Fixed wrong steps being blocked when logic uses the "trigger from
+  step" option.
+* [:backend:`4825`] Fixed logging to only log empty retrieved data for the
+  authentication flow that is used in the submission.
+* [:backend:`4863`] Fixed authentication flow of an employee via OIDC.
+* [:backend:`4955`] Fixed the order of coordinates in Objects API and in ZGW APIs.
+* [:backend:`4821`] Fixed email digest for addressNL component, in combination with BRK
+  validator.
+* [:backend:`4886`] Fixed certain variants of CSV files not passing validation.
+* [:backend:`4949`] Fixed modal close button on dark mode.
+* [:backend:`4832`] Fixed json schema matcher in Objects API.
+* [:backend:`4824`] Ensured that the form variables are in line with the state of the
+  form definitions after saving a form.
+* [:backend:`4874`] Updated Dockerfile with missing scripts.
+* Bumped packages to their latest (security) releases.
+* [:backend:`4862`] Fixed unintended hashing of identifying attributes when the cosigner
+  logs out.
+
 .. note::
     
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
