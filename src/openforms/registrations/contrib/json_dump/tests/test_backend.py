@@ -18,7 +18,7 @@ from ..plugin import JSONDumpRegistration
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
-class JSONDumpBackendTests(TestCase):
+class JSONDumpBackendTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
     def test_submission_with_json_dump_backend(self):
@@ -134,7 +134,7 @@ class JSONDumpBackendTests(TestCase):
                         "name": "file2.txt",
                         "type": "application/text",
                         "originalName": "file2.txt",
-                    }
+                    },
                 ],
             },
         )
@@ -143,6 +143,7 @@ class JSONDumpBackendTests(TestCase):
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="file1.txt",
+            original_name="file1.txt",
             content_type="application/text",
             content__data=b"This is example content.",
             _component_configuration_path="components.2",
@@ -153,6 +154,7 @@ class JSONDumpBackendTests(TestCase):
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="file2.txt",
+            original_name="file2.txt",
             content_type="application/text",
             content__data=b"Content example is this.",
             _component_configuration_path="components.2",
@@ -167,14 +169,33 @@ class JSONDumpBackendTests(TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
-        expected_values = {
-            "file": {
-                "file1.txt": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
-                "file2.txt": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
-            },
-        }
-
         res = json_plugin.register_submission(submission, json_form_options)
         res_json = res["api_response"]
 
-        self.assertEqual(res_json["data"]["values"], expected_values)
+        expected_data = {
+            "values": {
+                "file": {
+                    "file1.txt": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
+                    "file2.txt": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+                },
+            },
+            "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "object",
+                        "properties": {
+                            "file1.txt": {"type": "string", "format": "base64"},
+                            "file2.txt": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file1.txt", "file2.txt"],
+                        "additionalProperties": False,
+                    }
+                },
+                "additionalProperties": False,
+                "required": [],
+            },
+        }
+
+        self.assertEqual(res_json["data"], expected_data)

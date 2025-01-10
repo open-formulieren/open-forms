@@ -100,7 +100,7 @@ class JSONDumpRegistration(BasePlugin):
                 continue
 
             encoded_attachments = {
-                attachment.file_name: encode_attachment(attachment)
+                attachment.original_name: encode_attachment(attachment)
                 for attachment in submission.attachments
                 if attachment.form_key == key
             }
@@ -114,9 +114,12 @@ class JSONDumpRegistration(BasePlugin):
             # Schema
             base = {"type": "string", "format": "base64"}
             schema["properties"][variable.key] = (
-                # TODO-4980: we can get the actual file names here and list them as
-                #  properties instead of additionalProperties.
-                {"type": "object", "additionalProperties": base}
+                {
+                    "type": "object",
+                    "properties": {key: base for key in encoded_attachments.keys()},
+                    "required": list(encoded_attachments.keys()),
+                    "additionalProperties": False,
+                }
                 if multiple
                 else base
             )
