@@ -4,6 +4,7 @@ from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.forms.utils import form_variables_to_json_schema
 
@@ -80,8 +81,43 @@ class FormToJsonSchemaTestCase(TestCase):
             "auth_bsn",
             "today",
         )
-        var_properties = form_variables_to_json_schema(form, vars_to_include)
+        schema = form_variables_to_json_schema(form, vars_to_include)
 
-        from pprint import pprint
-        pprint(var_properties)
+    def test_select_component_with_form_variable_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "type": "select",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "translations": {},
+                            "itemsExpression": {"var": "valuesForSelect"}
+                        },
+                        "data": {
+                            "values": [],
+                            "json": "",
+                            "url": "",
+                            "resource": "",
+                            "custom": "",
+                        },
+                    },
+                ]
+            }
+        )
+        form_step_1 = FormStepFactory.create(form=form, form_definition=form_def_1)
 
+        FormVariableFactory.create(
+            form=form,
+            name="Values for select",
+            key="valuesForSelect",
+            user_defined=True,
+            initial_value=["A", "B", "C"]
+        )
+
+        schema = form_variables_to_json_schema(form, ["select"])
+
+        self.assertEqual(schema["properties"]["select"]["enum"], ["A", "B", "C"])
