@@ -73,22 +73,40 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "data": {
                 "values": {
                     "auth_bsn": "123456789",
+                    "firstName": "We Are",
                     "file": {
                         "file_name": "test_file.txt",
                         "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
                     },
-                    "firstName": "We Are",
                 },
                 "schema": {
                     "$schema": "https://json-schema.org/draft/2020-12/schema",
                     "type": "object",
                     "properties": {
-                        "static_var_1": {"type": "string", "pattern": "^cool_pattern$"},
-                        "form_var_1": {"type": "string"},
-                        "form_var_2": {"type": "string"},
-                        "attachment": {"type": "string", "contentEncoding": "base64"},
+                        "auth_bsn": {
+                            "title": "BSN",
+                            "description": (
+                                "Uniquely identifies the authenticated person. This "
+                                "value follows the rules for Dutch social security "
+                                "numbers."
+                            ),
+                            "type": "string",
+                            "pattern": "^\\d{9}$",
+                            "format": "nl-bsn",
+                        },
+                        "firstName": {"title": "Firstname", "type": "string"},
+                        "file": {
+                            "title": "File",
+                            "type": "object",
+                            "properties": {
+                                "file_name": {"type": "string"},
+                                "content": {"type": "string", "format": "base64"},
+                            },
+                            "required": ["file_name", "content"],
+                            "additionalProperties": False,
+                        },
                     },
-                    "required": ["static_var_1", "form_var_1", "form_var_2"],
+                    "required": ["auth_bsn"],
                     "additionalProperties": False,
                 },
             },
@@ -180,23 +198,42 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
-        expected_files = [
-            {
-                "file_name": "file1.txt",
-                "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
+        expected_data = {
+            "values": {
+                "file": [
+                    {
+                        "file_name": "file1.txt",
+                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
+                    },
+                    {
+                        "file_name": "file2.txt",
+                        "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+                    },
+                ],
             },
-            {
-                "file_name": "file2.txt",
-                "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+            "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "object",
+                        "properties": {
+                            "file1.txt": {"type": "string", "format": "base64"},
+                            "file2.txt": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file1.txt", "file2.txt"],
+                        "additionalProperties": False,
+                    }
+                },
+                "additionalProperties": False,
+                "required": [],
             },
-        ]
+        }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(
-            result["api_response"]["data"]["values"]["file"], expected_files
-        )
+        self.assertEqual(result["api_response"]["data"], expected_data)
 
     def test_one_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(

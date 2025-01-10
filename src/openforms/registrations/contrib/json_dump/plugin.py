@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
+from openforms.formio.components.utils import to_multiple
 from openforms.formio.typing import Component
 from openforms.forms.utils import form_variables_to_json_schema
 from openforms.submissions.models import (
@@ -96,7 +97,7 @@ class JSONDumpRegistration(BasePlugin):
                 # Only file components need to be processed
                 continue
 
-            encoded_attachments: list[JSONValue] = [
+            encoded_attachments = [
                 {
                     "file_name": attachment.original_name,
                     "content": encode_attachment(attachment),
@@ -105,21 +106,43 @@ class JSONDumpRegistration(BasePlugin):
                 if attachment.form_key == key
             ]
 
+            base_schema = {
+                "title": component["label"],
+                "type": "object",
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "content": {"type": "string", "format": "base64"},
+                },
+                "required": (
+                    ["file_name", "content"]
+                    if len(encoded_attachments) != 0
+                    else []
+                    # No required properties when there are no attachments
+                ),
+                "additionalProperties": False,
+            }
+
             match (
                 component.get("multiple", False),
                 n_attachments := len(encoded_attachments),
             ):
                 case False, 0:
-                    values[key] = None
+                    value = None
+
+                    base_schema = {"title": component["label"], "type": "null"}
                 case False, 1:
-                    values[key] = encoded_attachments[0]
+                    value = encoded_attachments[0]
                 case True, int():
-                    values[key] = encoded_attachments
+                    value = encoded_attachments
+
+                    base_schema = to_multiple(base_schema)
                 case False, int():  # pragma: no cover
                     raise ValueError(
-                        f"Cannot have multiple attachments ({n_attachments}) for a "
-                        "single file component."
+                        f"Cannot have multiple attachments ({n_attachments}) "
+                        "for a single file component."
                     )
+            values[key] = value
+            schema["properties"][key] = base_schema
 
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
