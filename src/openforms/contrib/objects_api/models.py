@@ -171,10 +171,6 @@ class ObjectsAPIGroupConfig(models.Model):
     )
 
     class Meta:
-        # TODO
-        # Remove db_table when squashing migrations has been completed.
-        # Related to github issue #4654
-        db_table = "registrations_objects_api_objectsapigroupconfig"
         verbose_name = _("Objects API group")
         verbose_name_plural = _("Objects API groups")
         constraints = [
