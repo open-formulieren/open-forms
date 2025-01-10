@@ -448,7 +448,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        start: ['2.8.2']
+        start: ['3.0.1']
 
     steps:
       - uses: actions/checkout@v4
@@ -472,7 +472,7 @@ jobs:
           docker compose run -e RELEASE=${RELEASE} web \
             python src/manage.py migrate
         env:
-          RELEASE: '2.8.0-beta.0'
+          RELEASE: '3.1.0-dev.0'
           # ensure local image gets used
           TAG: ${{ needs.docker_build_setup.outputs.version }}
 
