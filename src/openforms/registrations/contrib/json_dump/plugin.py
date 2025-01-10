@@ -1,14 +1,19 @@
 import base64
+from typing import Sequence
 
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.forms.utils import form_variables_to_json_schema
 from openforms.formio.typing import Component
-from openforms.submissions.models import Submission, SubmissionValueVariable, \
-    SubmissionFileAttachment
+from openforms.forms.utils import form_variables_to_json_schema
+from openforms.submissions.models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionValueVariable,
+)
 from openforms.typing import JSONObject
+from openforms.variables.constants import FormVariableSources
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
@@ -25,6 +30,7 @@ class JSONDumpRegistration(BasePlugin):
     ) -> dict:
         state = submission.load_submission_value_variables_state()
 
+        # Generate values
         all_values: JSONObject = {
             **state.get_static_data(),
             **state.get_data(),  # dynamic values from user input
@@ -35,35 +41,20 @@ class JSONDumpRegistration(BasePlugin):
             if key in options["form_variables"]
         }
 
-        # Process attachments
-        self.process_variables(submission, values)
-
         # Generate schema
-        schema = form_variables_to_json_schema(submission.form, options["form_variables"])
+        schema = form_variables_to_json_schema(
+            submission.form, options["form_variables"]
+        )
 
-        # TODO-4980: this can be cleaned up probably
-        # Change schema of files, as we do some custom processing in this plugin
-        attachment_vars = [
-            var for var in submission.form.formvariable_set.all()
-            if var.key in set(options["form_variables"]).difference(form_vars)
-        ]
-        for variable in attachment_vars:
-            form_def = variable.form_definition
-            component = form_def.configuration_wrapper.component_map[variable.key]
-            # TODO-4980: enable this when the attachment processing is cleaned up
-            # multiple = component.get("multiple", False)
-            multiple = False
-
-            base = {"type": "string", "format": "base64"}
-            schema["properties"][variable.key] = (
-                {"type": "array", "items": base} if multiple else base
-            )
+        # Post-processing
+        self.post_processing(submission, values, schema)
 
         # Send to the service
         json = {"values": values, "schema": schema}
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
+            print(json)
             res = client.post(
                 options.get("relative_api_endpoint", ""),
                 json=json,
@@ -79,22 +70,33 @@ class JSONDumpRegistration(BasePlugin):
         pass
 
     @staticmethod
-    def process_variables(submission: Submission, values: JSONObject):
-        """Process variables.
+    def post_processing(
+        submission: Submission, values: JSONObject, schema: JSONObject
+    ) -> None:
+        """Post-processing of values and schema.
 
         File components need special treatment, as we send the content of the file
         encoded with base64, instead of the output from the serializer.
+
+        :param submission: Submission
+        :param values: JSONObject
+        :param schema: JSONObject
         """
         state = submission.load_submission_value_variables_state()
 
         for key in values.keys():
             variable = state.variables.get(key)
-            if variable is None:
-                # None for static variables
+            if (
+                variable is None
+                or variable.form_variable.source == FormVariableSources.user_defined
+            ):
+                # None for static variables, and processing user defined variables is
+                # not relevant here
                 continue
 
             component = get_component(variable)
             if component is None or component["type"] != "file":
+                # Only file components need to be processed
                 continue
 
             encoded_attachments = {
@@ -109,6 +111,16 @@ class JSONDumpRegistration(BasePlugin):
                 else list(encoded_attachments.values())[0]
             )
 
+            # Schema
+            base = {"type": "string", "format": "base64"}
+            schema["properties"][variable.key] = (
+                # TODO-4980: we can get the actual file names here and list them as
+                #  properties instead of additionalProperties.
+                {"type": "object", "additionalProperties": base}
+                if multiple
+                else base
+            )
+
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
     """Encode an attachment using base64
@@ -121,11 +133,11 @@ def encode_attachment(attachment: SubmissionFileAttachment) -> str:
         return base64.b64encode(f.read()).decode()
 
 
-def get_component(variable: SubmissionValueVariable) -> Component:
+def get_component(variable: SubmissionValueVariable) -> Component | None:
     """Get the component from a submission value variable.
 
     :param variable: SubmissionValueVariable
-    :return component: Component
+    :return component: None if the form variable has no form definition
     """
     config_wrapper = variable.form_variable.form_definition.configuration_wrapper
     component = config_wrapper.component_map[variable.key]
