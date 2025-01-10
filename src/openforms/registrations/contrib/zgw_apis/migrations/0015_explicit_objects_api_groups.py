@@ -2,34 +2,15 @@
 
 from django.db import migrations
 
-PLUGIN_ID = "zgw-create-zaak"
-
-
-def define_explicit_objects_api_groups(apps, schema_editor):
-    ObjectsAPIGroupConfig = apps.get_model("objects_api", "ObjectsAPIGroupConfig")
-    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
-
-    # Behaviour before the objects API group could be defined explicity: always use the
-    # objects API group with the lowest primary key
-    objects_api_group = ObjectsAPIGroupConfig.objects.order_by("pk").first()
-    objects_api_group_pk = None if objects_api_group is None else objects_api_group.pk
-
-    for backend in FormRegistrationBackend.objects.filter(backend=PLUGIN_ID):
-        group = objects_api_group_pk if backend.options.get("objecttype") else None
-        backend.options["objects_api_group"] = group
-        backend.save()
-
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0001_initial_to_v250"),
-        ("registrations_objects_api", "0016_objectsapigroupconfig"),
-        ("zgw_apis", "0014_zgwapigroupconfig_catalogue_domain_and_more"),
+        ("registrations_objects_api", "0001_initial_to_v267"),
+        ("zgw_apis", "0001_initial_to_v280"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            define_explicit_objects_api_groups, migrations.RunPython.noop
-        )
-    ]
+    # RunPython operation removed as it's guaranteed to have been executed as part of
+    # the 3.0 upgrade cycle.
+    operations = []

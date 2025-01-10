@@ -11,22 +11,7 @@ import openforms.utils.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("zgw_apis", "0001_initial"),
-        ("zgw_apis", "0002_auto_20210514_1129"),
-        ("zgw_apis", "0003_auto_20210521_1352"),
-        ("zgw_apis", "0004_auto_20210902_2120"),
-        ("zgw_apis", "0005_auto_20230221_1552"),
-        ("zgw_apis", "0006_zgwapigroupconfig"),
-        ("zgw_apis", "0007_move_singleton_data"),
-        ("zgw_apis", "0008_auto_20230608_1443"),
-        ("zgw_apis", "0009_add_default"),
-        ("zgw_apis", "0010_zgwapigroupconfig_content_json"),
-        ("zgw_apis", "0011_move_zgw_api_group_defaults_to_form"),
-        ("zgw_apis", "0012_remove_zgwapigroupconfig_informatieobjecttype_and_more"),
-        ("zgw_apis", "0013_set_zgw_api_group"),
-        ("zgw_apis", "0014_zgwapigroupconfig_catalogue_domain_and_more"),
-    ]
+    initial = True
 
     dependencies = [
         ("zgw_consumers", "0019_alter_service_uuid"),
