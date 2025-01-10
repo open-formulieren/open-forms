@@ -93,56 +93,61 @@ class JSONDumpRegistration(BasePlugin):
                 continue
 
             component = get_component(variable)
-            if component is None or component["type"] != "file":
-                # Only file components need to be processed
-                continue
+            match component["type"]:
+                case "file":
+                    encoded_attachments = [
+                        {
+                            "file_name": attachment.original_name,
+                            "content": encode_attachment(attachment),
+                        }
+                        for attachment in submission.attachments
+                        if attachment.form_key == key
+                    ]
 
-            encoded_attachments = [
-                {
-                    "file_name": attachment.original_name,
-                    "content": encode_attachment(attachment),
-                }
-                for attachment in submission.attachments
-                if attachment.form_key == key
-            ]
+                    base_schema = {
+                        "title": component["label"],
+                        "type": "object",
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
+                        },
+                        "required": (
+                            ["file_name", "content"]
+                            if len(encoded_attachments) != 0
+                            else []
+                            # No required properties when there are no attachments
+                        ),
+                        "additionalProperties": False,
+                    }
 
-            base_schema = {
-                "title": component["label"],
-                "type": "object",
-                "properties": {
-                    "file_name": {"type": "string"},
-                    "content": {"type": "string", "format": "base64"},
-                },
-                "required": (
-                    ["file_name", "content"]
-                    if len(encoded_attachments) != 0
-                    else []
-                    # No required properties when there are no attachments
-                ),
-                "additionalProperties": False,
-            }
+                    match (
+                        component.get("multiple", False),
+                        n_attachments := len(encoded_attachments),
+                    ):
+                        case False, 0:
+                            value = None
 
-            match (
-                component.get("multiple", False),
-                n_attachments := len(encoded_attachments),
-            ):
-                case False, 0:
-                    value = None
+                            base_schema = {"title": component["label"], "type": "null"}
+                        case False, 1:
+                            value = encoded_attachments[0]
+                        case True, int():
+                            value = encoded_attachments
 
-                    base_schema = {"title": component["label"], "type": "null"}
-                case False, 1:
-                    value = encoded_attachments[0]
-                case True, int():
-                    value = encoded_attachments
-
-                    base_schema = to_multiple(base_schema)
-                case False, int():  # pragma: no cover
-                    raise ValueError(
-                        f"Cannot have multiple attachments ({n_attachments}) "
-                        "for a single file component."
-                    )
-            values[key] = value
-            schema["properties"][key] = base_schema
+                            base_schema = to_multiple(base_schema)
+                        case False, int():  # pragma: no cover
+                            raise ValueError(
+                                f"Cannot have multiple attachments ({n_attachments}) "
+                                "for a single file component."
+                            )
+                    values[key] = value
+                    schema["properties"][key] = base_schema
+                case "selectboxes":
+                    # If the select boxes component is not filled, set required
+                    # properties to empty list
+                    if not values[key]:
+                        schema["properties"][variable.key]["required"] = list()
+                case _:
+                    pass
 
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:

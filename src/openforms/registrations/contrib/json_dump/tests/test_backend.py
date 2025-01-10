@@ -354,3 +354,34 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 options["path"] = path
                 with self.assertRaises(SuspiciousOperation):
                     json_plugin.register_submission(submission, options)
+
+    def test_required_in_schema_is_empty_if_select_boxes_component_unfilled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "values": [
+                        {"label": "Option 1", "value": "option1"},
+                        {"label": "Option 2", "value": "option2"},
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={"selectboxes": {}},
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "..",
+            "variables": ["selectboxes"],
+        }
+        result = json_plugin.register_submission(submission, options)
+
+        self.assertEqual(
+            result["api_response"]["data"]["schema"]["properties"]["selectboxes"]["required"],
+            []
+        )
+
