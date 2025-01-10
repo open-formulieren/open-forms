@@ -6,6 +6,12 @@ Changelog
     
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.0.1 (2025-01-10)
+==================
+
+Hotfix release addressing a potential upgrade issue.
+
+* Fixed an upgrade check not blocking the database migrations from starting.
 
 3.0.0 "Heerlijkheid" (2025-01-09)
 =================================

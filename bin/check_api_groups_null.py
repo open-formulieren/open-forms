@@ -49,7 +49,7 @@ def check_for_null_services_in_api_groups():
             problems.append((*problem, "No Catalogi API service configured"))
 
     if not problems:
-        return False
+        return True
 
     print(
         "Can't upgrade yet - some API group services are not properly configured yet."
@@ -63,7 +63,7 @@ def check_for_null_services_in_api_groups():
             headers=("API group type", "ID", "Name", "Problem"),
         )
     )
-    return True
+    return False
 
 
 def main(skip_setup=False) -> bool:
