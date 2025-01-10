@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.test import TestCase
 
+from glom import glom
 from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -199,3 +200,35 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         self.assertEqual(res_json["data"], expected_data)
+
+    def test_required_in_schema_is_empty_if_select_boxes_component_unfilled(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "values": [
+                        {"label": "Option 1", "value": "option1"},
+                        {"label": "Option 2", "value": "option2"},
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={"selectboxes": {}},
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["selectboxes"],
+        )
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        self.assertEqual(
+            glom(res, "api_response.data.schema.properties.selectboxes.required"), []
+        )
+

@@ -95,34 +95,45 @@ class JSONDumpRegistration(BasePlugin):
                 continue
 
             component = get_component(variable)
-            if component is None or component["type"] != "file":
-                # Only file components need to be processed
+            if component is None:
                 continue
 
-            encoded_attachments = {
-                attachment.original_name: encode_attachment(attachment)
-                for attachment in submission.attachments
-                if attachment.form_key == key
-            }
-            multiple = component.get("multiple", False)
-            values[key] = (
-                encoded_attachments
-                if multiple
-                else list(encoded_attachments.values())[0]
-            )
+            match component["type"]:
+                case "file":
+                    # Values
+                    encoded_attachments = {
+                        attachment.original_name: encode_attachment(attachment)
+                        for attachment in submission.attachments
+                        if attachment.form_key == key
+                    }
+                    multiple = component.get("multiple", False)
+                    values[key] = (
+                        encoded_attachments
+                        if multiple
+                        else list(encoded_attachments.values())[0]
+                    )
 
-            # Schema
-            base = {"type": "string", "format": "base64"}
-            schema["properties"][variable.key] = (
-                {
-                    "type": "object",
-                    "properties": {key: base for key in encoded_attachments.keys()},
-                    "required": list(encoded_attachments.keys()),
-                    "additionalProperties": False,
-                }
-                if multiple
-                else base
-            )
+                    # Schema
+                    base = {"type": "string", "format": "base64"}
+                    schema["properties"][variable.key] = (
+                        {
+                            "type": "object",
+                            "properties": {
+                                key: base for key in encoded_attachments.keys()
+                            },
+                            "required": list(encoded_attachments.keys()),
+                            "additionalProperties": False,
+                        }
+                        if multiple
+                        else base
+                    )
+                case "selectboxes":
+                    # If the select boxes component is not filled, set required
+                    # properties to empty list
+                    if not values[key]:
+                        schema["properties"][variable.key]["required"] = list()
+                case _:
+                    pass
 
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
