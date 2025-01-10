@@ -757,6 +757,7 @@ class Select(BasePlugin[SelectComponent]):
         label = component.get("label", "Select")
 
         choices = [options["value"] for options in component["data"]["values"]]
+        choices.append("")  # Take into account an unfilled field
 
         base = {"type": "string", "enum": choices}
         if multiple:
@@ -838,6 +839,8 @@ class Radio(BasePlugin[RadioComponent]):
         label = component.get("label", "Radio")
 
         choices = [options["value"] for options in component["values"]]
+        choices.append("")  # Take into account an unfilled field
+
         base = {"title": label, "type": "string", "enum": choices}
 
         return base
