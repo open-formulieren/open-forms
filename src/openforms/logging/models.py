@@ -8,9 +8,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
 
-from openforms.forms.models import Form
-from openforms.logging.constants import TimelineLogTags
-from openforms.submissions.models import Submission
+from .constants import TimelineLogTags
 
 
 class TimelineLogProxyQueryset(models.QuerySet):
@@ -32,7 +30,7 @@ class TimelineLogProxyQueryset(models.QuerySet):
 class TimelineLogProxy(TimelineLog):
     objects = TimelineLogProxyQueryset.as_manager()
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True
         verbose_name = _("timeline log entry")
         verbose_name_plural = _("timeline log entries")
@@ -79,10 +77,14 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def is_submission(self) -> bool:
+        from openforms.submissions.models import Submission
+
         return isinstance(self.content_object, Submission)
 
     @property
     def is_form(self) -> bool:
+        from openforms.forms.models import Form
+
         return isinstance(self.content_object, Form)
 
     @property
@@ -180,7 +182,7 @@ class AVGTimelineLogProxyManager(models.Manager):
 class AVGTimelineLogProxy(TimelineLogProxy):
     objects = AVGTimelineLogProxyManager()
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True
         verbose_name = _("avg timeline log entry")
         verbose_name_plural = _("avg timeline log entries")

@@ -133,8 +133,26 @@ def submission_step_fill(step: SubmissionStep):
     )
 
 
+def _snapshot_submission_statistics(submission: Submission):
+    return {
+        # note: these keys are used in the form statistics admin view!
+        "public_reference": submission.public_registration_reference,
+        "form_id": submission.form.pk,
+        "form_name": submission.form.name,
+        "internal_form_name": submission.form.internal_name,
+        "submitted_on": submission.completed_on,
+    }
+
+
+FORM_SUBMIT_SUCCESS_EVENT = "form_submit_success"
+
+
 def form_submit_success(submission: Submission):
-    _create_log(submission, "form_submit_success")
+    _create_log(
+        submission,
+        FORM_SUBMIT_SUCCESS_EVENT,
+        extra_data=_snapshot_submission_statistics(submission),
+    )
 
 
 # - - -
@@ -220,18 +238,10 @@ REGISTRATION_SUCCESS_EVENT = "registration_success"
 
 
 def registration_success(submission: Submission, plugin):
-    extra_data = {
-        # note: these keys are used in form statistics exports!
-        "public_reference": submission.public_registration_reference,
-        "form_id": submission.form.pk,
-        "form_name": submission.form.name,
-        "internal_form_name": submission.form.internal_name,
-        "submitted_on": submission.completed_on,
-    }
     _create_log(
         submission,
         REGISTRATION_SUCCESS_EVENT,
-        extra_data=extra_data,
+        extra_data=_snapshot_submission_statistics(submission),
         plugin=plugin,
     )
 
