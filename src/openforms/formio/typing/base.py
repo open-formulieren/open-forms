@@ -44,6 +44,9 @@ class OpenFormsConfig(TypedDict):
     translations: NotRequired[TranslationsDict]
     components: NotRequired[AddressValidationComponents]
     requireVerification: NotRequired[bool]
+    dataSrc: NotRequired[Literal["manual", "variable", "referentielijsten"]]
+    code: NotRequired[str]
+    service: NotRequired[str]
 
 
 class OpenFormsOptionExtension(TypedDict):
