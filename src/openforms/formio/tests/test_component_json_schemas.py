@@ -300,4 +300,137 @@ class ComponentValidJsonSchemaTestsMixin(TestCase):
         self._test_component(component_class, component, multiple=True)
 
 
+class RadioTests(TestCase):
 
+    def test_manual_data_source(self):
+        component = {
+            "label": "Radio label",
+            "key": "radio",
+            "values": [
+                {"label": "A", "value": "a"},
+                {"label": "B", "value": "b"},
+            ],
+        }
+
+        expected_schema = {
+            "title": "Radio label",
+            "type": "string",
+            "enum": ["a", "b", ""],
+        }
+        schema = Radio.as_json_schema(component)
+        self.assertEqual(expected_schema, schema)
+
+    def test_data_source_is_another_form_variable(self):
+        component = {
+            "label": "Radio label",
+            "key": "radio",
+            "values": [
+                {"label": "", "value": ""},
+            ],
+            "openForms": {"dataSrc": "variable"},
+        }
+
+        expected_schema = {"title": "Radio label", "type": "string"}
+        schema = Radio.as_json_schema(component)
+        self.assertEqual(expected_schema, schema)
+
+
+
+class SelectTests(TestCase):
+
+    def test_manual_data_source(self):
+        component = {
+            "label": "Select label",
+            "key": "select",
+            "data": {
+                "values": [
+                    {"label": "A", "value": "a"},
+                    {"label": "B", "value": "b"},
+                ],
+            },
+            "type": "select",
+        }
+
+        with self.subTest("single"):
+            expected_schema = {
+                "title": "Select label", "type": "string", "enum": ["a", "b", ""]
+            }
+            schema = Select.as_json_schema(component)
+            self.assertEqual(schema, expected_schema)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            expected_schema = {
+                "title": "Select label",
+                "type": "array",
+                "items": {"type": "string", "enum": ["a", "b", ""]},
+            }
+            schema = Select.as_json_schema(component)
+            self.assertEqual(schema, expected_schema)
+
+    def test_data_source_is_another_form_variable(self):
+        component = {
+            "label": "Select label",
+            "key": "select",
+            "data": {
+                "values": [
+                    {"label": "", "value": ""},
+                ],
+            },
+            "openForms": {"dataSrc": "variable"},
+            "type": "select",
+        }
+
+        with self.subTest("single"):
+            expected_schema = {"title": "Select label", "type": "string"}
+            schema = Select.as_json_schema(component)
+            self.assertEqual(schema, expected_schema)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            expected_schema = {
+                "title": "Select label", "type": "array", "items": {"type": "string"}
+            }
+            schema = Select.as_json_schema(component)
+            self.assertEqual(schema, expected_schema)
+
+
+class SelectBoxesTests(TestCase):
+    def test_manual_data_source(self):
+        component = {
+            "label": "Select boxes label",
+            "key": "selectBoxes",
+            "values": [
+                {"label": "A", "value": "a"},
+                {"label": "B", "value": "b"},
+            ]
+        }
+
+        expected_schema = {
+            "title": "Select boxes label",
+            "type": "object",
+            "properties": {
+                "a": {"type": "boolean"},
+                "b": {"type": "boolean"},
+            },
+            "required": ["a", "b"],
+            "additionalProperties": False,
+        }
+        schema = SelectBoxes.as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
+
+    def test_data_source_is_another_form_variable(self):
+        component = {
+            "label": "Select boxes label",
+            "key": "selectBoxes",
+            "values": [
+                {"label": "", "value": ""},
+            ],
+            "openForms": {"dataSrc": "variable"},
+        }
+
+        expected_schema = {
+            "title": "Select boxes label", "type": "object", "additionalProperties": True
+        }
+        schema = SelectBoxes.as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
