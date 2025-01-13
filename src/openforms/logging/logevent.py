@@ -123,12 +123,15 @@ def submission_auth(
 
 
 def submission_step_fill(step: SubmissionStep):
+    from openforms.forms.models import FormStep
+
+    assert isinstance(step.form_step, FormStep)
     _create_log(
         step.submission,
         "submission_step_fill",
         extra_data={
             "step": str(step.form_step.form_definition.name),
-            "step_id": step.id,
+            "step_id": step.pk,
         },
     )
 

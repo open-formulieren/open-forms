@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import capfirst
@@ -7,6 +8,8 @@ from django.utils.html import format_html
 from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
+
+from openforms.typing import StrOrPromise
 
 from .constants import TimelineLogTags
 
@@ -28,6 +31,9 @@ class TimelineLogProxyQueryset(models.QuerySet):
 
 
 class TimelineLogProxy(TimelineLog):
+    content_type_id: int
+    user_id: int | None
+
     objects = TimelineLogProxyQueryset.as_manager()
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
@@ -51,9 +57,11 @@ class TimelineLogProxy(TimelineLog):
 
     @property
     def fmt_sub(self) -> str:
+        from openforms.submissions.models import Submission
+
         if not self.is_submission:
             return ""
-        prefix = capfirst(Submission._meta.verbose_name)
+        prefix = capfirst(str(Submission._meta.verbose_name))
         return f"{prefix} {self.object_id}"
 
     @property
@@ -62,6 +70,7 @@ class TimelineLogProxy(TimelineLog):
         if self.user_id:
             return _("Staff user {user}").format(user=str(self.user))
         if self.is_submission:
+            assert self.content_object is not None
             auth = self.content_object.get_auth_mode_display()
             if auth:
                 return _("Authenticated via plugin {auth}").format(auth=auth)
@@ -70,8 +79,10 @@ class TimelineLogProxy(TimelineLog):
     @property
     def fmt_form(self) -> str:
         if self.is_submission:
+            assert self.content_object is not None
             return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
         elif self.is_form:
+            assert self.content_object is not None
             return f'"{self.content_object}" (ID: {self.object_id})'
         return ""
 
@@ -88,7 +99,7 @@ class TimelineLogProxy(TimelineLog):
         return isinstance(self.content_object, Form)
 
     @property
-    def fmt_plugin(self) -> str:
+    def fmt_plugin(self) -> StrOrPromise:
         if not self.extra_data:
             return _("(unknown)")
         plugin_id = self.extra_data.get("plugin_id", "")
@@ -99,6 +110,7 @@ class TimelineLogProxy(TimelineLog):
 
     def get_formatted_prefill_fields(self, fields) -> list:
         formatted_fields = []
+        assert self.content_object is not None
         components = self.content_object.form.iter_components(recursive=True)
 
         for component in components:
@@ -112,7 +124,7 @@ class TimelineLogProxy(TimelineLog):
         return formatted_fields
 
     @property
-    def fmt_prefill_fields(self) -> str:
+    def fmt_prefill_fields(self) -> StrOrPromise:
         if (
             not self.extra_data
             or "prefill_fields" not in self.extra_data
@@ -125,7 +137,7 @@ class TimelineLogProxy(TimelineLog):
         return ", ".join(formatted_fields)
 
     @property
-    def fmt_url(self) -> str:
+    def fmt_url(self) -> StrOrPromise:
         if not self.extra_data or "url" not in self.extra_data:
             return _("(unknown)")
         return self.extra_data["url"]
@@ -143,22 +155,21 @@ class TimelineLogProxy(TimelineLog):
     @property
     def fmt_submission_registration_attempts(self):
         if self.is_submission:
+            assert self.content_object is not None
             return self.content_object.registration_attempts
         else:
             return ""
 
+    @admin.display(description=_("content object"))
     def content_admin_link(self) -> str:
         if not (url := self.content_admin_url):
             return ""
 
         return format_html('<a href="{u}">{t}</a>', u=url, t=str(self.content_object))
 
-    content_admin_link.short_description = _("content object")
-
+    @admin.display(description=_("message"))
     def message(self) -> str:
         return self.get_message()
-
-    message.short_description = _("message")
 
     @property
     def event(self):

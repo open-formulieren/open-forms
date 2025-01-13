@@ -34,6 +34,9 @@ include = [
     "src/openforms/contrib/objects_api/",
     # Emails
     "src/openforms/emails/templatetags/cosign_information.py",
+    # Logging
+    "src/openforms/logging/logevent.py",
+    "src/openforms/logging/models.py",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/",
