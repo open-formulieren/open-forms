@@ -17,7 +17,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-&rsaquo; <a href="{% url 'admin:forms_formstatistics_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; <a href="{% url 'admin:forms_formsubmissionstatistics_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
 &rsaquo; {% trans 'Export submission statistics' %}
 </div>
 {% endblock %}

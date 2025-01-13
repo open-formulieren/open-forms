@@ -26,7 +26,7 @@ from openforms.logging import logevent
 
 from ..forms import ExportStatisticsForm
 from ..forms.form import FormImportForm
-from ..models import Form, FormsExport, FormStatistics
+from ..models import Form, FormsExport, FormSubmissionStatistics
 from ..utils import import_form
 from .tasks import process_forms_export, process_forms_import
 
@@ -122,8 +122,8 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
 class ExportSubmissionStatisticsView(
     LoginRequiredMixin, PermissionRequiredMixin, FormView
 ):
-    permission_required = "forms.view_formstatistics"
-    template_name = "admin/forms/formstatistics/export_form.html"
+    permission_required = "forms.view_formsubmissionstatistics"
+    template_name = "admin/forms/formsubmissionstatistics/export_form.html"
     form_class = ExportStatisticsForm
 
     # must be set by the ModelAdmin
@@ -160,7 +160,7 @@ class ExportSubmissionStatisticsView(
 
         context.update(
             {
-                "opts": FormStatistics._meta,
+                "opts": FormSubmissionStatistics._meta,
                 "media": self.media + form.media,
                 "form_fields": form_fields,
             }

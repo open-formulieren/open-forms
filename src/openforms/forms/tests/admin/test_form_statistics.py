@@ -16,7 +16,7 @@ from ..factories import FormFactory
 
 @disable_admin_mfa()
 class SubmissionStatisticsAdminTests(WebTest):
-    admin_url = reverse_lazy("admin:forms_formsubmissionstatisticsv2_changelist")
+    admin_url = reverse_lazy("admin:forms_formsubmissionstatistics_changelist")
 
     def test_access_control_no_access(self):
         # various flavours of users do not have access, only if the right permissions
@@ -36,7 +36,7 @@ class SubmissionStatisticsAdminTests(WebTest):
                 "user with perms no staff",
                 UserFactory.create(
                     is_staff=False,
-                    user_permissions=["forms.view_formsubmissionstatisticsv2"],
+                    user_permissions=["forms.view_formsubmissionstatistics"],
                 ),
                 302,
             ),
@@ -164,7 +164,8 @@ class FormStatisticsExportAdminTests(WebTest):
             (
                 "user with perms no staff",
                 UserFactory.create(
-                    is_staff=False, user_permissions=["forms.view_formstatistics"]
+                    is_staff=False,
+                    user_permissions=["forms.view_formsubmissionstatistics"],
                 ),
                 302,
             ),
@@ -183,10 +184,10 @@ class FormStatisticsExportAdminTests(WebTest):
 
     def test_navigate_from_changelist(self):
         user = UserFactory.create(
-            is_staff=True, user_permissions=["forms.view_formstatistics"]
+            is_staff=True, user_permissions=["forms.view_formsubmissionstatistics"]
         )
         changelist = self.app.get(
-            reverse("admin:forms_formstatistics_changelist"), user=user
+            reverse("admin:forms_formsubmissionstatistics_changelist"), user=user
         )
 
         export_page = changelist.click(_("Export submission statistics"))
@@ -196,7 +197,7 @@ class FormStatisticsExportAdminTests(WebTest):
     def test_successful_export_downloads_file(self):
         user = UserFactory.create(
             is_staff=True,
-            user_permissions=["forms.view_formstatistics"],
+            user_permissions=["forms.view_formsubmissionstatistics"],
         )
         # create some log records for submissions
         with freeze_time("2024-12-20T16:44:00+01:00"):
