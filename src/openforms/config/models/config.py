@@ -13,6 +13,7 @@ from django_jsonform.models.fields import ArrayField
 from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
+from zgw_consumers.models import Service
 
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
@@ -556,6 +557,17 @@ class GlobalConfiguration(SingletonModel):
             "Configuration of plugins for authentication, payments, prefill, "
             "registrations and validation"
         ),
+    )
+
+    referentielijsten_services = models.ManyToManyField(
+        Service,
+        verbose_name=_("referentielijsten services"),
+        help_text=_(
+            "List of services that are instances of the Referentielijsten API. "
+            "The selected services will be shown as options when configuring "
+            "select or selectboxes components to be populated from Referentielijsten."
+        ),
+        blank=True,
     )
 
     # search engine configuration
