@@ -54,7 +54,7 @@ def export_registration_statistics(
     log_records = TimelineLogProxy.objects.filter(
         content_type=ContentType.objects.get_for_model(Submission),
         timestamp__gte=_start_date,
-        timestamp__lt=_end_date,
+        timestamp__lte=_end_date,
         # see openforms.logging.logevent for the data structure of the extra_data
         # JSONField
         extra_data__log_event=logevent.REGISTRATION_SUCCESS_EVENT,
