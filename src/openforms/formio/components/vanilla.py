@@ -68,7 +68,7 @@ from ..typing import (
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
-from .utils import _normalize_pattern, to_multiple, handle_component_properties
+from .utils import _normalize_pattern, handle_component_properties
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -688,18 +688,25 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     @staticmethod
     def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
         label = component.get("label", "Select boxes")
+        data_src = component.get("openForms", {}).get("dataSrc")
 
-        properties = {
-            options["value"]: {"type": "boolean"} for options in component["values"]
-        }
+        base = {"title": label, "type": "object"}
+        if data_src != "variable":
+            # If the data source is another variable, the component[values] is not
+            # updated here, so it does not make sense to create properties in this case
+            properties = {
+                options["value"]: {"type": "boolean"} for options in component["values"]
+            }
+            base.update(
+                {
+                    "properties": properties,
+                    "required": list(properties.keys()),
+                    "additionalProperties": False,
+                }
+            )
+        else:
+            base["additionalProperties"] = True
 
-        base = {
-            "title": label,
-            "type": "object",
-            "properties": properties,
-            "additionalProperties": False,
-            "required": list(properties.keys()),
-        }
         return base
 
 
@@ -755,11 +762,17 @@ class Select(BasePlugin[SelectComponent]):
     def as_json_schema(component: SelectComponent) -> JSONObject:
         multiple = component.get("multiple", False)
         label = component.get("label", "Select")
+        data_src = component.get("openForms", {}).get("dataSrc")
 
-        choices = [options["value"] for options in component["data"]["values"]]
-        choices.append("")  # Take into account an unfilled field
+        base = {"type": "string"}
+        if data_src != "variable":
+            # If the data source is another variable, the component[data][values] is not
+            # updated here, so it does not make sense to create a list
+            # of choices for the enum
+            choices = [options["value"] for options in component["data"]["values"]]
+            choices.append("")  # Take into account an unfilled field
+            base["enum"] = choices
 
-        base = {"type": "string", "enum": choices}
         if multiple:
             base = {"type": "array", "items": base}
         base["title"] = label
@@ -837,11 +850,16 @@ class Radio(BasePlugin[RadioComponent]):
     @staticmethod
     def as_json_schema(component: RadioComponent) -> JSONObject:
         label = component.get("label", "Radio")
+        data_src = component.get("openForms", {}).get("dataSrc")
 
-        choices = [options["value"] for options in component["values"]]
-        choices.append("")  # Take into account an unfilled field
-
-        base = {"title": label, "type": "string", "enum": choices}
+        base = {"title": label, "type": "string"}
+        if data_src != "variable":
+            # If the data source is another variable, the component[values] is not
+            # updated here, so it does not make sense to create a list
+            # of choices for the enum
+            choices = [options["value"] for options in component["values"]]
+            choices.append("")  # Take into account an unfilled field
+            base["enum"] = choices
 
         return base
 
