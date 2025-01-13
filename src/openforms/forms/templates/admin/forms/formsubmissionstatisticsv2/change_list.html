@@ -33,8 +33,20 @@
                 </th>
             </tr>
         </thead>
+
+        <tbody>
+            {% for submission_statistic in aggregated_qs %}
+                <tr>
+                    <td>{{ submission_statistic.form_name }}</td>
+                    <td>{{ submission_statistic.submission_count }}</td>
+                    <td>{{ submission_statistic.first_submission }}</td>
+                    <td>{{ submission_statistic.last_submission }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
+
 {% endblock %}
 
 {# No pagination - we display all aggregation results #}

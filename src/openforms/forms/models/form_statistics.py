@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.formats import localize
@@ -76,9 +78,11 @@ class FormSubmissionStatisticsV2(TimelineLogProxy):
     retrieve the data of statistics.
     """
 
-    # aggregation fields
+    # annotation fields
     form_name: str
     submission_count: int
+    first_submission: datetime
+    last_submission: datetime
 
     objects = FormStatisticsV2Manager()
 
