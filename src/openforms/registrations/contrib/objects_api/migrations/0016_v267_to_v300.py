@@ -5,34 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("registrations_objects_api", "0016_objectsapigroupconfig"),
-        ("registrations_objects_api", "0017_move_singleton_data"),
-        (
-            "registrations_objects_api",
-            "0018_remove_objectsapiconfig_catalogi_service_and_more",
-        ),
-        ("registrations_objects_api", "0019_add_default_objects_api_group"),
-        ("registrations_objects_api", "0020_objecttype_url_to_uuid"),
-        (
-            "registrations_objects_api",
-            "0021_objectsapigroupconfig_catalogue_domain_and_more",
-        ),
-        (
-            "registrations_objects_api",
-            "0022_objectsapigroupconfig_iot_attachment_and_more",
-        ),
-        (
-            "registrations_objects_api",
-            "0023_alter_objectsapigroupconfig_catalogue_domain",
-        ),
-        (
-            "registrations_objects_api",
-            "0024_alter_objectsapigroupconfig_catalogi_service_and_more",
-        ),
-        ("registrations_objects_api", "0025_delete_objectsapigroupconfig"),
-    ]
-
     dependencies = [
         ("forms", "0097_v267_to_v270"),
         ("registrations_objects_api", "0001_initial_to_v267"),

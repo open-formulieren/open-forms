@@ -8,34 +8,7 @@ import openforms.analytics_tools.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("analytics_tools", "0001_initial"),
-        ("analytics_tools", "0002_auto_20230119_1500"),
-        ("analytics_tools", "0003_cspsetting_identifier"),
-        (
-            "analytics_tools",
-            "0004_analyticstoolsconfiguration_enable_piwik_pro_tag_manager",
-        ),
-        ("analytics_tools", "0005_auto_20231206_1202"),
-        ("analytics_tools", "0006_auto_20240112_1046"),
-        (
-            "analytics_tools",
-            "0007_alter_analyticstoolsconfiguration_analytics_cookie_consent_group",
-        ),
-        (
-            "analytics_tools",
-            "0008_analyticstoolsconfiguration_govmetric_secure_guid_form_abort_and_more",
-        ),
-        ("analytics_tools", "0009_convert_ids_govmetric"),
-        (
-            "analytics_tools",
-            "0010_remove_analyticstoolsconfiguration_govmetric_secure_guid_and_more",
-        ),
-        (
-            "analytics_tools",
-            "0011_analyticstoolsconfiguration_enable_expoints_analytics_and_more",
-        ),
-    ]
+    initial = True
 
     dependencies = [
         ("cookie_consent", "0002_auto__add_logitem"),
