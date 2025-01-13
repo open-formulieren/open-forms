@@ -214,6 +214,10 @@ django-admin-index==3.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+django-admin-rangefilter==0.13.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-appconf==1.0.4
     # via
     #   -c requirements/base.txt

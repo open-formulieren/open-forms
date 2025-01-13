@@ -36,6 +36,7 @@ schwifty
 # Framework libraries
 django ~= 4.2
 django-admin-index
+django-admin-rangefilter
 django-autoslug
 django-axes[ipware]
 django-camunda
