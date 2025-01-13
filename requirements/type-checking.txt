@@ -507,7 +507,7 @@ glom==23.5.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-greenlet==3.0.3
+greenlet==3.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -751,7 +751,7 @@ platformdirs==2.2.0
     #   -r requirements/ci.txt
     #   black
     #   zeep
-playwright==1.44.0
+playwright==1.49.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -819,7 +819,7 @@ pydyf==0.8.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-pyee==11.1.0
+pyee==12.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
