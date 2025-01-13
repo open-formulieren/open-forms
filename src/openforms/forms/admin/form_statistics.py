@@ -1,8 +1,13 @@
 from django.contrib import admin
-from django.http import HttpRequest
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from rangefilter.filters import DateRangeFilterBuilder
+
+from ..forms.form_statistics import (
+    get_first_of_previous_month,
+    get_last_of_previous_month,
+)
 from ..models import FormStatistics, FormSubmissionStatisticsV2
 from .views import ExportSubmissionStatisticsView
 
@@ -55,7 +60,16 @@ class FormSubmissionStatisticsV2Admin(admin.ModelAdmin):
         "form_name",
         "timestamp",
     )
-    list_filter = ("timestamp",)
+    list_filter = (
+        (
+            "timestamp",
+            DateRangeFilterBuilder(
+                title=_("submitted between"),
+                default_start=lambda *args: get_first_of_previous_month(),
+                default_end=lambda *args: get_last_of_previous_month(),
+            ),
+        ),
+    )
 
     def has_add_permission(self, request):
         return False
@@ -69,9 +83,6 @@ class FormSubmissionStatisticsV2Admin(admin.ModelAdmin):
     @admin.display(description=_("form name"))
     def form_name(self, obj: FormSubmissionStatisticsV2) -> str:
         # if we have snapshot data, use it
-        if form_name := obj.extra_data.get("form_name", ""):
-            return form_name
-        if submission := obj.content_object:
-            return submission.form.name
-
-        return "- unknown -"
+        if not (form_name := obj.extra_data.get("form_name", "")):
+            return "- unknown -"
+        return form_name
