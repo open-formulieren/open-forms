@@ -3,8 +3,8 @@ from . import (
     form,
     form_definition,
     form_logic,
-    form_statistics,
     form_step,
+    form_submission_statistics,
     form_variable,
     form_version,
 )
@@ -14,7 +14,7 @@ __all__ = [
     "form",
     "form_definition",
     "form_logic",
-    "form_statistics",
+    "form_submission_statistics",
     "form_step",
     "form_variable",
     "form_version",
