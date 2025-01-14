@@ -17,6 +17,7 @@ class DocumentTypesFilter(serializers.Serializer):
         help_text=_("Filter document types against this catalogue URL."),
         required=False,
         default="",
+        allow_blank=True,
     )
     case_type_identification = serializers.CharField(
         required=False,
@@ -28,6 +29,7 @@ class DocumentTypesFilter(serializers.Serializer):
             "document type if it occurs within any version of the specified case type."
         ),
         default="",
+        allow_blank=True,
     )
 
     def validate(self, attrs):

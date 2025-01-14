@@ -62,7 +62,8 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
-            }
+            },
+            "slug": {"allow_blank": True},
         }
 
 
@@ -137,6 +138,7 @@ class FormStepSerializer(
             "uuid": {
                 "read_only": True,
             },
+            "slug": {"allow_blank": True},
         }
         validators = [FormStepIsApplicableIfFirstValidator()]
 

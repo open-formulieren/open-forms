@@ -26,6 +26,7 @@ class PrivacyPolicyInfoSerializer(serializers.Serializer):
             "The formatted label to use next to the checkbox when asking the user to agree to the privacy policy."
         ),
         required=False,
+        allow_blank=True,
     )
 
 

@@ -3238,7 +3238,6 @@ paths:
         schema:
           type: string
           default: ''
-          minLength: 1
         description: Filter document types for a given case type. The identification
           is unique within the catalogue for a case type. Note that multiple versions
           of the same case type with the same identification exist. The filter returns
@@ -3249,7 +3248,6 @@ paths:
           type: string
           format: uri
           default: ''
-          minLength: 1
         description: Filter document types against this catalogue URL.
       - in: query
         name: objects_api_group
@@ -3942,7 +3940,6 @@ paths:
         schema:
           type: string
           default: ''
-          minLength: 1
         description: Filter document types for a given case type. The identification
           is unique within the catalogue for a case type. Note that multiple versions
           of the same case type with the same identification exist. The filter returns
@@ -3953,7 +3950,6 @@ paths:
           type: string
           format: uri
           default: ''
-          minLength: 1
         description: Filter document types against this catalogue URL.
       - in: query
         name: zgw_api_group

@@ -22,6 +22,7 @@ class GetStreetNameAndCityViewResultSerializer(serializers.Serializer):
         label=_("city and street name secret"),
         help_text=_("Secret for the combination of city and street name"),
         required=False,
+        allow_blank=True,
     )
 
 

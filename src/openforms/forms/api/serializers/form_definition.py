@@ -106,6 +106,7 @@ class FormDefinitionSerializer(
             "name": {"read_only": True},  # writing is done via the `translations` field
             "slug": {
                 "required": False,
+                "allow_blank": True,
             },
         }
 

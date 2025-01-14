@@ -343,7 +343,8 @@ class FileSerializer(serializers.Serializer):
     data = FileDataSerializer()  # type: ignore
 
     def __init__(self, *args, **kwargs) -> None:
-        self.mime_type_validator = MimeTypeValidator(kwargs.pop("allowed_mime_types"))
+        allowed_mime_types = kwargs.pop("allowed_mime_types", [])
+        self.mime_type_validator = MimeTypeValidator(allowed_mime_types)
         super().__init__(*args, **kwargs)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:

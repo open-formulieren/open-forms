@@ -1,10 +1,20 @@
+import inspect
+import logging
 import os
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.backends.cache import SessionStore
 from django.core.checks import Error, Warning, register
+from django.db import ProgrammingError
 from django.forms import ModelForm
 
+from psycopg.errors import DatabaseError
+from rest_framework.serializers import CharField, Serializer, empty
+from rest_framework.test import APIRequestFactory
 from treebeard.forms import MoveNodeForm
+
+logger = logging.getLogger(__name__)
 
 
 def get_subclasses(cls):
@@ -80,4 +90,59 @@ def check_missing_init_files(app_configs, **kwargs):
             )
         )
 
+    return errors
+
+
+@register
+def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cover
+    app_configs, **kwargs
+):
+    """
+    Check for serializers.CharFields that have ``required=False``, but not ``allow_blank=True``
+    to avoid bogus validation errors occurring when empty strings are provided by the frontend.
+    """
+    request = APIRequestFactory().get("/")
+    request.user = AnonymousUser()
+    request.session = SessionStore()
+
+    errors = []
+    serializers = get_subclasses(Serializer)
+    for serializer_class in serializers:
+        serializer_defined_in = inspect.getfile(serializer_class)
+        if not serializer_defined_in.startswith(settings.DJANGO_PROJECT_DIR):
+            continue  # ignore code not defined in our own codebase
+
+        if hasattr(serializer_class, "Meta") and not hasattr(
+            serializer_class.Meta, "model"
+        ):
+            continue
+
+        try:
+            serializer = serializer_class(context={"request": request})
+            fields = serializer.fields
+        except (ProgrammingError, DatabaseError) as e:
+            logger.debug(f"Could not instantiate {serializer_class}: {e}")
+            continue
+
+        for field_name, field in fields.items():
+            if not isinstance(field, CharField) or field.read_only:
+                continue
+
+            if (
+                not field.required
+                and field.default in ("", None, empty)
+                and not field.allow_blank
+            ):
+                file_path = inspect.getfile(serializer_class)
+
+                errors.append(
+                    Warning(
+                        (
+                            f"{serializer_class.__module__}.{serializer_class.__qualname__}.{field_name} does not have `allow_blank=True`\n"
+                            f"{file_path}"
+                        ),
+                        hint="Consider setting `allow_blank=True` to allow providing empty string values",
+                        id="utils.W002",
+                    )
+                )
     return errors
