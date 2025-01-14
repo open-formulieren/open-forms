@@ -275,6 +275,7 @@ class FormStatisticsExportAdminTests(WebTest):
         with self.subTest("filter on start date"):
             export_form1 = ExportStatisticsForm(
                 data={
+                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-12-14",
                     "end_date": "2024-12-31",
                 }
@@ -289,6 +290,7 @@ class FormStatisticsExportAdminTests(WebTest):
         with self.subTest("filter on end date"):
             export_form2 = ExportStatisticsForm(
                 data={
+                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-01-01",
                     "end_date": "2024-12-05",
                 }
@@ -304,6 +306,7 @@ class FormStatisticsExportAdminTests(WebTest):
         with self.subTest("filter on subset of forms"):
             export_form3 = ExportStatisticsForm(
                 data={
+                    "kind": logevent.REGISTRATION_SUCCESS_EVENT,
                     "start_date": "2024-01-01",
                     "end_date": "2024-12-31",
                     "limit_to_forms": [form2.pk, form3.pk],
