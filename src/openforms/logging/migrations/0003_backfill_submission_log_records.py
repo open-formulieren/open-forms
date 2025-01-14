@@ -45,6 +45,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("logging", "0002_avgtimelinelogproxy"),
+        ("submissions", "0002_v230_to_v300"),
+        ("contenttypes", "0002_remove_content_type_name"),
     ]
 
     operations = [
