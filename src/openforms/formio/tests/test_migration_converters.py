@@ -3,12 +3,13 @@ from django.test import SimpleTestCase
 from ..migration_converters import (
     ensure_addressnl_has_deriveAddress,
     ensure_licensplate_validate_pattern,
+    ensure_map_has_interactions,
     ensure_postcode_validate_pattern,
     fix_empty_default_value,
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
 )
-from ..typing import AddressNLComponent, Component
+from ..typing import AddressNLComponent, Component, MapComponent
 
 
 class LicensePlateTests(SimpleTestCase):
@@ -684,3 +685,34 @@ class AddressNLTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertFalse(component["deriveAddress"])
+
+
+class MapTests(SimpleTestCase):
+    def test_existing_interactions(self):
+        component: MapComponent = {
+            "key": "map",
+            "type": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+            "interactions": {"marker": False, "polygon": True, "polyline": True},
+        }
+
+        changed = ensure_map_has_interactions(component)
+
+        self.assertFalse(changed)
+
+    def test_missing_interactions(self):
+        component: MapComponent = {
+            "key": "map",
+            "type": "map",
+            "label": "Map",
+            "useConfigDefaultMapSettings": True,
+        }
+
+        changed = ensure_map_has_interactions(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(
+            component["interactions"],
+            {"marker": True, "polygon": False, "polyline": False},
+        )
