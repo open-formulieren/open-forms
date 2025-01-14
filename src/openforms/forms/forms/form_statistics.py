@@ -4,11 +4,14 @@ from datetime import date
 
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from django.db.models import TextChoices
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from dateutil.relativedelta import relativedelta
 from tablib import Dataset
+
+from openforms.logging import logevent
 
 from ..models import Form
 from ..statistics import export_registration_statistics
@@ -28,7 +31,24 @@ def get_last_of_previous_month() -> date:
     return get_last_of_previous_month.date()
 
 
+class EventChoices(TextChoices):
+    registration_success = logevent.REGISTRATION_SUCCESS_EVENT, _(
+        "Successfully registered"
+    )
+    submission_success = logevent.FORM_SUBMIT_SUCCESS_EVENT, _("Completed")
+
+
 class ExportStatisticsForm(forms.Form):
+    kind = forms.ChoiceField(
+        label=_("Kind"),
+        choices=EventChoices.choices,
+        initial=EventChoices.registration_success,
+        help_text=_(
+            "Successfully registered submissions were sent to an external system for "
+            "further processing. Completed submissions are form submissions finished "
+            "by the end-user that may or may not be registered."
+        ),
+    )
     start_date = forms.DateField(
         label=_("From"),
         required=True,
@@ -50,7 +70,7 @@ class ExportStatisticsForm(forms.Form):
     limit_to_forms = forms.ModelMultipleChoiceField(
         label=_("Forms"),
         required=False,
-        queryset=Form.objects.filter(_is_deleted=False),
+        queryset=Form.objects.filter(_is_deleted=False).order_by("name"),
         help_text=_(
             "Limit the export to the selected forms, if specified. Leave the field "
             "empty to export all forms. Hold CTRL (or COMMAND on Mac) to select "
@@ -61,8 +81,10 @@ class ExportStatisticsForm(forms.Form):
     def export(self) -> Dataset:
         start_date: date = self.cleaned_data["start_date"]
         end_date: date = self.cleaned_data["end_date"]
+        event: str = self.cleaned_data["kind"]
         return export_registration_statistics(
             start_date,
             end_date,
             self.cleaned_data["limit_to_forms"],
+            event,
         )

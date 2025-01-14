@@ -1,0 +1,43 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{# Override the entire table rendering to display the aggregated query results. #}
+{% block result_list %}
+<div class="results">
+    <table id="result_list">
+        <thead>
+            <tr>
+                <th scope="col">
+                    <div class="text">
+                        <span>{% filter capfirst %}{% trans "form name" %}{% endfilter %}</span>
+                    </div>
+                    <div class="clear"></div>
+                </th>
+                <th scope="col">
+                    <div class="text">
+                        <span>{% filter capfirst %}{% trans "submission count" %}{% endfilter %}</span>
+                    </div>
+                    <div class="clear"></div>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for submission_statistic in aggregated_qs %}
+                <tr>
+                    <td class="field-form_name">
+                        {{ submission_statistic.form_name }}
+                    </td>
+                    <td class="field-submission_count">
+                        {{ submission_statistic.submission_count }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{# No pagination - we display all aggregation results #}
+{% block pagination %}{% endblock %}

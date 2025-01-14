@@ -189,6 +189,7 @@ INSTALLED_APPS = [
     "import_export",
     "flags",
     "django_setup_configuration",
+    "rangefilter",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",

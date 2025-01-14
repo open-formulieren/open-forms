@@ -70,7 +70,7 @@
             ],
             [
                 "forms",
-                "formstatistics"
+                "formsubmissionstatistics"
             ]
         ]
     }
@@ -301,16 +301,16 @@
                 "message"
             ],
             [
+                "log_outgoing_requests",
+                "outgoingrequestslog"
+            ],
+            [
                 "logging",
                 "avgtimelinelogproxy"
             ],
             [
                 "logging",
                 "timelinelogproxy"
-            ],
-            [
-                "log_outgoing_requests",
-                "outgoingrequestslog"
             ],
             [
                 "submissions",

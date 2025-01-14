@@ -4,9 +4,7 @@ from django.db import transaction
 from django.db.models import F
 from django.db.models.signals import post_delete
 from django.dispatch import Signal, receiver
-from django.utils import timezone
 
-from openforms.forms.models.form_statistics import FormStatistics
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -81,34 +79,10 @@ def delete_submission_report_files(
     instance.content.delete(save=False)
 
 
-@receiver(submission_complete, dispatch_uid="submission.increment_form_counter")
-def increment_form_counter(sender, instance: Submission, **kwargs):
-    submitted_form = instance.form
-
-    # TODO
-    # Replace get_or_create with update_or_create and do this in one block
-    # (needs Django v5.2+)
-    form_statistics, created = FormStatistics.objects.get_or_create(
-        form=submitted_form,
-        defaults={
-            "form": submitted_form,
-            "form_name": submitted_form.name,
-            "submission_count": 1,
-            "last_submission": timezone.now(),
-        },
-    )
-
-    if not created:
-        form_statistics.form_name = submitted_form.name
-        form_statistics.submission_count = F("submission_count") + 1
-        form_statistics.last_submission = timezone.now()
-        form_statistics.save()
-
-
 @receiver(
     submission_complete, dispatch_uid="submission.increment_submissions_form_counter"
 )
 def increment_submissions_form_counter(sender, instance: Submission, **kwargs):
     if instance.form.submission_limit:
         instance.form.submission_counter = F("submission_counter") + 1
-        instance.form.save()
+        instance.form.save(update_fields=("submission_counter",))
