@@ -85,7 +85,7 @@ const VariableSelection = ({
 VariableSelection.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   onChange: PropTypes.func.isRequired,
   includeStaticVariables: PropTypes.bool,
   filter: PropTypes.func,

@@ -6,7 +6,7 @@ import {VARIABLE_SOURCES} from '../form_design/variables/constants';
 import {ReactSelectContext} from './ReactSelect';
 import VariableSelection from './VariableSelection';
 
-const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
+const render = ({name, includeStaticVariables, filter, menuIsOpen = false, isMulti = false}) => {
   const [{value}, updateArgs] = useArgs();
   return (
     <VariableSelection
@@ -16,6 +16,7 @@ const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
       onChange={event => updateArgs({value: event.target.value})}
       filter={filter}
       menuIsOpen={menuIsOpen}
+      isMulti={isMulti}
     />
   );
 };
@@ -128,5 +129,21 @@ export const menuOpen = {
   ],
   args: {
     menuIsOpen: true,
+  },
+};
+
+export const multiSelection = {
+  decorators: [
+    // workaround for https://github.com/JedWatson/react-select/issues/3708
+    Story => (
+      <ReactSelectContext.Provider value={{parentSelector: () => undefined}}>
+        <Story />
+      </ReactSelectContext.Provider>
+    ),
+  ],
+  args: {
+    value: ['key2', 'key5'],
+    menuIsOpen: true,
+    isMulti: true,
   },
 };
