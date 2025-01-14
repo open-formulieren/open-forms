@@ -1279,6 +1279,11 @@
     "description": "Formio component selection label",
     "originalDefault": "Component"
   },
+  "MIrPon": {
+    "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute.",
+    "description": "Prefill plugin requires unavailable auth attribute warning",
+    "originalDefault": "Component \"{label}\" uses a prefill that requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute."
+  },
   "MUfBmP": {
     "defaultMessage": "The value of the selected field will be the process variable value.",
     "description": "Column help text for variable to map to property",
@@ -1693,11 +1698,6 @@
     "defaultMessage": "Page content",
     "description": "Confirmation page content label",
     "originalDefault": "Page content"
-  },
-  "VQYmOD": {
-    "defaultMessage": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute.",
-    "description": "Prefill plugin requires unavailable auth attribute warning",
-    "originalDefault": "Component \"{label}\" uses a prefill that requires the \"{requiredAuthAttribute}\" attribute. Please select an authentication plugin that provides this attribute."
   },
   "VUOOSy": {
     "defaultMessage": "Name",

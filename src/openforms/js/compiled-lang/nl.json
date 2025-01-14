@@ -2666,6 +2666,28 @@
       "value": "Veld"
     }
   ],
+  "MIrPon": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
+    }
+  ],
   "MTdKuN": [
     {
       "type": 0,
@@ -3540,28 +3562,6 @@
     {
       "type": 0,
       "value": "Maximaal aantal aangevinkte opties (bijv. 1)"
-    }
-  ],
-  "VQYmOD": [
-    {
-      "type": 0,
-      "value": "De component \""
-    },
-    {
-      "type": 1,
-      "value": "label"
-    },
-    {
-      "type": 0,
-      "value": "\" gebruikt een prefill die het \""
-    },
-    {
-      "type": 1,
-      "value": "requiredAuthAttribute"
-    },
-    {
-      "type": 0,
-      "value": "\"-attribuut nodig heeft. Gebruik een authenticatiemethode die dit attribuut aanbiedt."
     }
   ],
   "VUOOSy": [

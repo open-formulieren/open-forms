@@ -14,6 +14,7 @@ from openforms.submissions.models.submission_value_variable import (
 )
 from openforms.typing import JSONEncodable
 
+from .base import BasePlugin
 from .constants import IdentifierRoles
 from .registry import Registry
 
@@ -51,10 +52,9 @@ def fetch_prefill_values_from_attribute(
 
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
-        item: tuple[str, IdentifierRoles, list[dict[str, str]]]
+        item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]]
     ) -> tuple[list[dict[str, str]], dict[str, JSONEncodable]]:
-        plugin_id, identifier_role, fields = item
-        plugin = register[plugin_id]
+        plugin, identifier_role, fields = item
 
         if not plugin.is_enabled:
             raise PluginNotEnabled()
@@ -70,17 +70,20 @@ def fetch_prefill_values_from_attribute(
             if values:
                 logevent.prefill_retrieve_success(submission, plugin, fields)
             else:
-                if (required_attribute := plugin.requires_auth) is None or (
-                    (auth_info := getattr(submission, "auth_info", None))
-                    and auth_info.attribute == required_attribute
-                ):
-                    logevent.prefill_retrieve_empty(submission, plugin, fields)
+                logevent.prefill_retrieve_empty(submission, plugin, fields)
         return fields, values
 
     invoke_plugin_args = []
     for plugin_id, field_groups in grouped_fields.items():
+        plugin = register[plugin_id]
+
+        # check if we need to run the plugin when the user is authenticated
+        auth_info = getattr(submission, "auth_info", None)
+        if auth_info and auth_info.attribute not in plugin.requires_auth:
+            continue
+
         for identifier_role, fields in field_groups.items():
-            invoke_plugin_args.append((plugin_id, identifier_role, fields))
+            invoke_plugin_args.append((plugin, identifier_role, fields))
 
     with parallel() as executor:
         results = executor.map(invoke_plugin, invoke_plugin_args)

@@ -12,7 +12,7 @@ from ...registry import Registry
 
 
 class TestPrefill(BasePlugin):
-    requires_auth = AuthAttribute.bsn
+    requires_auth = (AuthAttribute.bsn,)
     verbose_name = "Test"
 
     def get_available_attributes(self):
@@ -26,7 +26,7 @@ register("test")(TestPrefill)
 
 @register("onlyvars")
 class OnlyVarsPrefill(BasePlugin):
-    requires_auth = AuthAttribute.bsn
+    requires_auth = (AuthAttribute.bsn,)
     verbose_name = "Only Vars"
     for_components = ()
 
@@ -36,7 +36,7 @@ class OnlyVarsPrefill(BasePlugin):
 
 @register("vanityplates")
 class VanityPlatePrefill(BasePlugin):
-    requires_auth = AuthAttribute.bsn
+    requires_auth = (AuthAttribute.bsn,)
     verbose_name = "Vanity Plates"
     for_components = {"licenseplate"}
 
@@ -111,19 +111,19 @@ class ResponseTests(APITestCase):
             {
                 "id": "test",
                 "label": "Test",
-                "requiresAuth": AuthAttribute.bsn,
+                "requiresAuth": [AuthAttribute.bsn],
                 "configurationContext": None,
             },
             {
                 "id": "onlyvars",
                 "label": "Only Vars",
-                "requiresAuth": AuthAttribute.bsn,
+                "requiresAuth": [AuthAttribute.bsn],
                 "configurationContext": None,
             },
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
-                "requiresAuth": AuthAttribute.bsn,
+                "requiresAuth": [AuthAttribute.bsn],
                 "configurationContext": None,
             },
         ]
@@ -141,14 +141,14 @@ class ResponseTests(APITestCase):
             {
                 "id": "test",
                 "label": "Test",
-                "requiresAuth": AuthAttribute.bsn,
+                "requiresAuth": [AuthAttribute.bsn],
                 "configurationContext": None,
             },
             # spec'd for licenseplate
             {
                 "id": "vanityplates",
                 "label": "Vanity Plates",
-                "requiresAuth": AuthAttribute.bsn,
+                "requiresAuth": [AuthAttribute.bsn],
                 "configurationContext": None,
             },
         ]

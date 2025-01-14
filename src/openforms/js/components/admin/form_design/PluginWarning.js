@@ -35,7 +35,7 @@ const PluginWarning = ({loginRequired, configuration}) => {
       const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
       if (!authPlugin) break;
 
-      if (authPlugin.providesAuth.includes(requiredAuthAttribute)) {
+      if (requiredAuthAttribute.includes(authPlugin.providesAuth)) {
         pluginProvidesAttribute = true;
         break;
       }
@@ -46,12 +46,12 @@ const PluginWarning = ({loginRequired, configuration}) => {
         <FormattedMessage
           description="Prefill plugin requires unavailable auth attribute warning"
           defaultMessage={
-            'Component "{label}" uses a prefill that requires the "{requiredAuthAttribute}" attribute. \
-                        Please select an authentication plugin that provides this attribute.'
+            'Component "{label}" uses a prefill that requires one of the "{requiredAuthAttribute}" attributes. \
+            Please select one or more authentication plugins that provide such an attribute.'
           }
           values={{
             label: configuration.label,
-            requiredAuthAttribute,
+            requiredAuthAttribute: requiredAuthAttribute.join(', '),
           }}
         />
       );

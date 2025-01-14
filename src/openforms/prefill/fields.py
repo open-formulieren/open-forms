@@ -35,7 +35,7 @@ class PrefillPluginChoiceField(CharField):
     def _get_plugin_choices(self):
         choices = []
         for plugin in register.iter_enabled_plugins():
-            if plugin.requires_auth != self.auth_attribute:
+            if self.auth_attribute not in plugin.requires_auth:
                 continue
             choices.append((plugin.identifier, plugin.get_label()))
         return choices

@@ -35,7 +35,7 @@ def _select_address(items, type_):
 class KVK_KVKNumberPrefill(BasePlugin):
     verbose_name = _("KvK Company by KvK number")
 
-    requires_auth = AuthAttribute.kvk
+    requires_auth = (AuthAttribute.kvk,)
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
@@ -50,7 +50,8 @@ class KVK_KVKNumberPrefill(BasePlugin):
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == cls.requires_auth
+            and cls.requires_auth
+            and submission.auth_info.attribute in cls.requires_auth
         ):
             return submission.auth_info.value
 

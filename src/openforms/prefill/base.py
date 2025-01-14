@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import Any, Container, Iterable, TypedDict
 
 from rest_framework import serializers
@@ -29,7 +30,7 @@ SerializerCls = type[serializers.Serializer]
 
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
-    requires_auth: AuthAttribute | None = None
+    requires_auth: Collection[AuthAttribute] = ()
     for_components: Container[str] = AllComponentTypes()
     options: SerializerCls = EmptyOptions
 
@@ -139,7 +140,8 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == cls.requires_auth
+            and cls.requires_auth
+            and submission.auth_info.attribute in cls.requires_auth
         ):
             return submission.auth_info.value
 
