@@ -2649,6 +2649,28 @@
       "value": "Component"
     }
   ],
+  "MIrPon": [
+    {
+      "type": 0,
+      "value": "Component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" uses a prefill that requires one of the \""
+    },
+    {
+      "type": 1,
+      "value": "requiredAuthAttribute"
+    },
+    {
+      "type": 0,
+      "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
+    }
+  ],
   "MTdKuN": [
     {
       "type": 0,
@@ -3527,28 +3549,6 @@
     {
       "type": 0,
       "value": "Maximum selected checkboxes (e.g. 1)"
-    }
-  ],
-  "VQYmOD": [
-    {
-      "type": 0,
-      "value": "Component \""
-    },
-    {
-      "type": 1,
-      "value": "label"
-    },
-    {
-      "type": 0,
-      "value": "\" uses a prefill that requires the \""
-    },
-    {
-      "type": 1,
-      "value": "requiredAuthAttribute"
-    },
-    {
-      "type": 0,
-      "value": "\" attribute. Please select an authentication plugin that provides this attribute."
     }
   ],
   "VUOOSy": [

@@ -95,7 +95,7 @@ ATTRIBUTES_TO_STUF_BG_MAPPING = {
 @register("stufbg")
 class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
-    requires_auth = AuthAttribute.bsn
+    requires_auth = (AuthAttribute.bsn,)
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
@@ -138,7 +138,8 @@ class StufBgPrefill(BasePlugin):
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == cls.requires_auth
+            and cls.requires_auth
+            and submission.auth_info.attribute in cls.requires_auth
         ):
             return submission.auth_info.value
 

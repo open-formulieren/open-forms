@@ -71,7 +71,7 @@ class CoSignPrefillTests:
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth)
+        add_co_sign_representation(submission, plugin.requires_auth[0])
 
         submission.refresh_from_db()
         expected = {
@@ -96,7 +96,7 @@ class CoSignPrefillTests:
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth)
+        add_co_sign_representation(submission, plugin.requires_auth[0])
 
         submission.refresh_from_db()
         expected = {
@@ -178,7 +178,7 @@ class CoSignPrefillEmptyConfigTests(TestCase):
             }
         )
 
-        add_co_sign_representation(submission, plugin.requires_auth)
+        add_co_sign_representation(submission, plugin.requires_auth[0])
 
         submission.refresh_from_db()
         expected = {

@@ -9541,11 +9541,12 @@ components:
           type: string
           description: The human-readable name for a plugin.
         requiresAuth:
-          type: string
-          nullable: true
-          title: Required authentication attribute
-          description: The authentication attribute required for this plugin to lookup
-            remote data.
+          type: array
+          items:
+            type: string
+            title: Required authentication attribute
+            description: The authentication attribute required for this plugin to
+              lookup remote data.
         configurationContext:
           nullable: true
           title: Extra configuration context

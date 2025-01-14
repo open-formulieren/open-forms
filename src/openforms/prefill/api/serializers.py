@@ -12,12 +12,13 @@ from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
 class PrefillPluginSerializer(PluginBaseSerializer):
-    requires_auth = serializers.CharField(
-        label=_("Required authentication attribute"),
-        help_text=_(
-            "The authentication attribute required for this plugin to lookup remote data."
+    requires_auth = serializers.ListField(
+        child=serializers.CharField(
+            label=_("Required authentication attribute"),
+            help_text=_(
+                "The authentication attribute required for this plugin to lookup remote data."
+            ),
         ),
-        allow_null=True,
     )
     configuration_context = serializers.JSONField(
         label=_("Extra configuration context"),

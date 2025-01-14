@@ -614,7 +614,7 @@ class PrefillHookTests(TransactionTestCase):
 
     def test_demo_prefill_get_identifier_authenticated(self):
         class TestPlugin(BasePlugin):
-            requires_auth = AuthAttribute.bsn
+            requires_auth = (AuthAttribute.bsn,)
 
         plugin = TestPlugin(identifier="test")
 
@@ -646,7 +646,7 @@ class PrefillHookTests(TransactionTestCase):
 
         @register("demo")
         class MismatchPlugin(DemoPrefill):
-            requires_auth = AuthAttribute.bsn
+            requires_auth = (AuthAttribute.bsn,)
 
             @staticmethod
             def get_prefill_values(submission, attributes, identifier_role):

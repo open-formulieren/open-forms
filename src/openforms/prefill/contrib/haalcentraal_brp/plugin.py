@@ -45,7 +45,7 @@ def get_attributes_cls():
 @register(PLUGIN_IDENTIFIER)
 class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal: BRP Personen Bevragen")
-    requires_auth = AuthAttribute.bsn
+    requires_auth = (AuthAttribute.bsn,)
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
@@ -84,7 +84,8 @@ class HaalCentraalPrefill(BasePlugin):
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == cls.requires_auth
+            and cls.requires_auth
+            and submission.auth_info.attribute in cls.requires_auth
         ):
             return submission.auth_info.value
 
