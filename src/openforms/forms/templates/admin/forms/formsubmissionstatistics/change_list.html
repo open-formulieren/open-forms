@@ -19,18 +19,6 @@
                     </div>
                     <div class="clear"></div>
                 </th>
-                <th scope="col">
-                    <div class="text">
-                        <span>{% filter capfirst %}{% trans "first submission" %}{% endfilter %}</span>
-                    </div>
-                    <div class="clear"></div>
-                </th>
-                <th scope="col">
-                    <div class="text">
-                        <span>{% filter capfirst %}{% trans "last submission" %}{% endfilter %}</span>
-                    </div>
-                    <div class="clear"></div>
-                </th>
             </tr>
         </thead>
 
@@ -42,12 +30,6 @@
                     </td>
                     <td class="field-submission_count">
                         {{ submission_statistic.submission_count }}
-                    </td>
-                    <td class="field-first_submission">
-                        {{ submission_statistic.first_submission }}
-                    </td>
-                    <td class="field-last_submission">
-                        {{ submission_statistic.last_submission }}
                     </td>
                 </tr>
             {% endfor %}

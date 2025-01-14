@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.db.models import Count, ExpressionWrapper, F, IntegerField, Max, Min
+from django.db.models import Count, ExpressionWrapper, F, IntegerField
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
@@ -83,12 +83,10 @@ class FormSubmissionStatisticsAdmin(admin.ModelAdmin):
                 )
             )
             .exclude(form_id__isnull=True)
-            .values("extra_data__form_id")
+            .values("form_id")
             .annotate(
                 submission_count=Count("id"),
                 form_name=F("extra_data__form_name"),
-                first_submission=Min("timestamp"),
-                last_submission=Max("timestamp"),
             )
             .order_by("form_name")
         )
