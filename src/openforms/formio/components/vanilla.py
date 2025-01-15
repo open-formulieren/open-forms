@@ -692,8 +692,9 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
 
         base = {"title": label, "type": "object"}
         if data_src != "variable":
-            # If the data source is another variable, the component[values] is not
-            # updated here, so it does not make sense to create properties in this case
+            # Only add properties if the data source IS NOT another variable, because
+            # component[values] is not updated when it IS. So it does not make sense to
+            # add properties in that case.
             properties = {
                 options["value"]: {"type": "boolean"} for options in component["values"]
             }
@@ -766,9 +767,9 @@ class Select(BasePlugin[SelectComponent]):
 
         base = {"type": "string"}
         if data_src != "variable":
-            # If the data source is another variable, the component[data][values] is not
-            # updated here, so it does not make sense to create a list
-            # of choices for the enum
+            # Only add properties if the data source IS NOT another variable, because
+            # component[data][values] is not updated when it IS. So it does not make
+            # sense to add properties in that case.
             choices = [options["value"] for options in component["data"]["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices
@@ -854,9 +855,9 @@ class Radio(BasePlugin[RadioComponent]):
 
         base = {"title": label, "type": "string"}
         if data_src != "variable":
-            # If the data source is another variable, the component[values] is not
-            # updated here, so it does not make sense to create a list
-            # of choices for the enum
+            # Only add enum if the data source IS NOT another variable, because
+            # component[values] is not updated when it IS. So it does not make sense to
+            # add a list of choices to the enum in that case.
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices
