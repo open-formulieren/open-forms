@@ -6,7 +6,21 @@ import {VARIABLE_SOURCES} from '../form_design/variables/constants';
 import {ReactSelectContext} from './ReactSelect';
 import VariableSelection from './VariableSelection';
 
-const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
+// workaround for https://github.com/JedWatson/react-select/issues/3708
+const resetParentSelector = Story => (
+  <ReactSelectContext.Provider value={{parentSelector: () => undefined}}>
+    <Story />
+  </ReactSelectContext.Provider>
+);
+
+const render = ({
+  name,
+  includeStaticVariables,
+  filter,
+  menuIsOpen = false,
+  isMulti = false,
+  isClearable = false,
+}) => {
   const [{value}, updateArgs] = useArgs();
   return (
     <VariableSelection
@@ -16,6 +30,8 @@ const render = ({name, includeStaticVariables, filter, menuIsOpen = false}) => {
       onChange={event => updateArgs({value: event.target.value})}
       filter={filter}
       menuIsOpen={menuIsOpen}
+      isMulti={isMulti}
+      isClearable={isClearable}
     />
   );
 };
@@ -118,15 +134,23 @@ export default {
 export const Default = {};
 
 export const menuOpen = {
-  decorators: [
-    // workaround for https://github.com/JedWatson/react-select/issues/3708
-    Story => (
-      <ReactSelectContext.Provider value={{parentSelector: () => undefined}}>
-        <Story />
-      </ReactSelectContext.Provider>
-    ),
-  ],
+  decorators: [resetParentSelector],
   args: {
     menuIsOpen: true,
+  },
+};
+
+export const multiSelection = {
+  decorators: [resetParentSelector],
+  args: {
+    value: ['key2', 'key5'],
+    menuIsOpen: true,
+    isMulti: true,
+  },
+};
+
+export const Clearable = {
+  args: {
+    isClearable: true,
   },
 };

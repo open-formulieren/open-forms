@@ -11,11 +11,9 @@ const styles = {
   control: (...args) => ({
     ...initialStyles.control(...args),
     minHeight: '1.875rem',
-    height: '1.875rem',
   }),
   valueContainer: (...args) => ({
     ...initialStyles.valueContainer(...args),
-    height: 'calc(1.875rem - 2px)',
     padding: '0 6px',
   }),
   input: (...args) => ({
@@ -24,12 +22,15 @@ const styles = {
   }),
   indicatorsContainer: baseStyles => ({
     ...baseStyles,
-    height: 'calc(1.875rem - 2px)',
-    padding: '0 2px',
+    padding: '0px 2px',
   }),
   dropdownIndicator: (...args) => ({
     ...initialStyles.dropdownIndicator(...args),
-    padding: '5px 2px',
+    padding: '4px 2px',
+  }),
+  clearIndicator: (...args) => ({
+    ...initialStyles.clearIndicator(...args),
+    padding: '4px 2px',
   }),
 };
 
@@ -90,9 +91,15 @@ const SelectWithoutFormik = ({name, options, value, className, onChange, ...prop
       menuPlacement="auto"
       menuPortalTarget={parentSelector()}
       options={options}
-      value={getValue(options, value)}
+      value={props.isMulti ? value.map(v => getValue(options, v)) : getValue(options, value)}
       onChange={selectedOption => {
-        onChange(selectedOption === null ? undefined : selectedOption.value);
+        let transformedValue;
+        if (props.isMulti) {
+          transformedValue = selectedOption.map(option => option.value);
+        } else {
+          transformedValue = selectedOption === null ? undefined : selectedOption.value;
+        }
+        onChange(transformedValue);
       }}
       {...props}
     />
