@@ -1,6 +1,7 @@
 import base64
 import json
 
+from django.core.exceptions import SuspiciousOperation
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 
@@ -62,10 +63,10 @@ class JSONDumpRegistration(BasePlugin):
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
-            res = client.post(
-                options.get("relative_api_endpoint", ""),
-                json=data,
-            )
+            if ".." in (path := options["relative_api_endpoint"]):
+                raise SuspiciousOperation("Possible path traversal detected")
+
+            res = client.post(path, json=data)
             res.raise_for_status()
 
             result["api_response"] = res.json()
@@ -119,6 +120,7 @@ class JSONDumpRegistration(BasePlugin):
                         f"Combination of multiple ({multiple}) and number of "
                         f"attachments ({n_attachments}) is not allowed."
                     )
+
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
     """Encode an attachment using base64
