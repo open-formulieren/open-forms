@@ -54,7 +54,7 @@ outside of our control. We're aware of this feature request though.
     EH4         hoog/high       urn:etoegang:core:assurance-class:loa4
     =========== =============== ===========================================
 
-    Source: `Afsprakenstelsel eToegang <https://afsprakenstelsel.etoegang.nl/Startpagina/AS1.24b/level-of-assurance>`_
+    Source: `Afsprakenstelsel eToegang <https://afsprakenstelsel.etoegang.nl/Startpagina/as/level-of-assurance>`_
 
 Step by step overview
 =====================
