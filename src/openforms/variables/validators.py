@@ -261,12 +261,12 @@ def has_whitespace_padding(s: str) -> bool:
 
 
 def validate_path_context_values(v: object) -> str:
-    if v == "..":
+    if str(v).startswith(".."):
         # GH-4015: requests is applying path traversal on "..", i.e. https://web.com/path1/../path2
         # will request to https://web.com/path2. "../" and similar are fine as '/' is escaped by `quote`.
         # see https://github.com/urllib3/urllib3/issues/1781
         # see https://mazinahmed.net/blog/testing-for-path-traversal-with-python/
         raise SuspiciousOperation(
-            "Usage of '..' in service fetch can lead to path traversal attacks"
+            "Usage of '..' in a path can lead to path traversal attacks"
         )
     return quote(str(v), safe="")

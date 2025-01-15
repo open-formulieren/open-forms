@@ -1,6 +1,7 @@
 from base64 import b64decode
 from pathlib import Path
 
+from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 
 from requests import RequestException
@@ -178,3 +179,28 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         res_json = res["api_response"]
 
         self.assertEqual(res_json["data"]["values"], expected_values)
+
+    def test_path_traversal_attack(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textField"},
+                {"key": "lastName", "type": "textfield"},
+            ],
+            completed=True,
+            submitted_data={
+                "firstName": "We Are",
+                "lastName": "Checking",
+            },
+            bsn="123456789",
+        )
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            path="..",
+            form_variables=["firstName", "file", "auth_bsn"],
+        )
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        with self.assertRaises(SuspiciousOperation):
+            json_plugin.register_submission(submission, json_form_options)

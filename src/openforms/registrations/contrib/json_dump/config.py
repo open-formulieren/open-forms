@@ -1,5 +1,6 @@
 from typing import Required, TypedDict
 
+from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -9,6 +10,17 @@ from zgw_consumers.models import Service
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.variables.validators import validate_path_context_values
+
+
+def validate_path(v: object) -> None:
+    """Wrapper around validate_path_context_values, which allows it to be used by the
+    serializer validators.
+    """
+    try:
+        validate_path_context_values(v)
+    except SuspiciousOperation as e:
+        raise ValidationError(e)
 
 
 class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -27,6 +39,7 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         allow_blank=True,
         required=False,
         default="",
+        validators=[validate_path],
     )
     form_variables = serializers.ListField(
         child=FormioVariableKeyField(),
