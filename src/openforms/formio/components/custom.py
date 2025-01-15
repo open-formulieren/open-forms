@@ -16,7 +16,7 @@ from rest_framework.request import Request
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
@@ -43,7 +43,12 @@ from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
-from .utils import _normalize_pattern, salt_location_message
+from .utils import (
+    _normalize_pattern,
+    handle_component_properties,
+    salt_location_message,
+    to_multiple,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +113,13 @@ class Date(BasePlugin[DateComponent]):
             validators=validators,
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: DateComponent) -> JSONObject:
+        label = component.get("label", "Date")
+
+        base = {"title": label, "format": "date"}
+        return handle_component_properties(base, component)
 
 
 class FormioDateTimeField(serializers.DateTimeField):
@@ -190,6 +202,13 @@ class Datetime(BasePlugin):
         )
         return serializers.ListField(child=base) if multiple else base
 
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Date time")
+
+        base = {"title": label, "format": "date-time"}
+        return handle_component_properties(base, component)
+
 
 @register("map")
 class Map(BasePlugin[MapComponent]):
@@ -222,6 +241,24 @@ class Map(BasePlugin[MapComponent]):
         )
         return serializers.ListField(child=base, min_length=2, max_length=2)
 
+    @staticmethod
+    def as_json_schema(component: MapComponent) -> JSONObject:
+        label = component.get("label", "Map coordinate")
+
+        base = {
+            "title": label,
+            "type": "array",
+            "prefixItems": [
+                {"title": "Latitude", "type": "number"},
+                {"title": "Longitude", "type": "number"},
+            ],
+            "items": False,
+            "minItems": 2,
+            "maxItems": 2,
+        }
+
+        return base
+
 
 @register("postcode")
 class Postcode(BasePlugin[Component]):
@@ -253,8 +290,8 @@ class Postcode(BasePlugin[Component]):
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         validators = []
-        # adding in the validator is more explicit than changing to serialiers.RegexField,
-        # which essentially does the same.
+        # adding in the validator is more explicit than changing to
+        # serializers.RegexField, which essentially does the same.
         if pattern := validate.get("pattern"):
             validators.append(
                 RegexValidator(
@@ -273,6 +310,13 @@ class Postcode(BasePlugin[Component]):
             required=required, allow_blank=not required, **extra
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Postcode")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)
 
 
 class FamilyMembersHandler(Protocol):
@@ -362,6 +406,12 @@ class NPFamilyMembers(BasePlugin):
                 for value, label in child_choices
             ]
 
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        # This component plugin is transformed into a SelectBoxes component, so a schema
+        # is not relevant here
+        raise NotImplementedError()
+
 
 @register("bsn")
 class BSN(BasePlugin[Component]):
@@ -392,6 +442,18 @@ class BSN(BasePlugin[Component]):
             **extra,
         )
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "BSN")
+
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": "^\\d{9}",
+            "format": "nl-bsn",
+        }
+        return handle_component_properties(base, component)
 
 
 class AddressValueSerializer(serializers.Serializer):
@@ -510,6 +572,29 @@ class AddressNL(BasePlugin[AddressNLComponent]):
             **extra,
         )
 
+    @staticmethod
+    def as_json_schema(component: AddressNLComponent) -> JSONObject:
+        label = component.get("label", "Address NL")
+        base = {
+            "title": label,
+            "type": "object",
+            "properties": {
+                "city": {"type": "string"},
+                "houseLetter": {"type": "string"},
+                "houseNumber": {"type": "string"},
+                "houseNumberAddition": {"type": "string"},
+                "postcode": {"type": "string"},
+                "secretStreetCity": {
+                    "description": "Secret for the combination of city and street name",
+                    "type": "string",
+                },
+                "streetName": {"type": "string"},
+            },
+            "required": ["houseNumber", "postcode"],
+        }
+
+        return base
+
 
 @register("cosign")
 class Cosign(BasePlugin):
@@ -519,6 +604,14 @@ class Cosign(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
         return serializers.EmailField(required=required, allow_blank=not required)
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Cosign email")
+
+        base = {"title": label, "type": "string", "format": "email"}
+
+        return base
 
 
 @register("iban")
@@ -542,6 +635,13 @@ class Iban(BasePlugin):
         )
         return serializers.ListField(child=base) if multiple else base
 
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "IBAN")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)
+
 
 @register("licenseplate")
 class LicensePlate(BasePlugin):
@@ -556,8 +656,8 @@ class LicensePlate(BasePlugin):
 
         extra = {}
         validators = []
-        # adding in the validator is more explicit than changing to serialiers.RegexField,
-        # which essentially does the same.
+        # adding in the validator is more explicit than changing to
+        # serializers.RegexField, which essentially does the same.
         if pattern := validate.get("pattern"):
             validators.append(
                 RegexValidator(
@@ -579,3 +679,10 @@ class LicensePlate(BasePlugin):
         )
 
         return serializers.ListField(child=base) if multiple else base
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "License plate")
+
+        base = {"title": label, "type": "string"}
+        return handle_component_properties(base, component)

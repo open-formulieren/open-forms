@@ -475,6 +475,12 @@
       "value": "Weergavestijl"
     }
   ],
+  "3uau0j": [
+    {
+      "type": 0,
+      "value": "Not included"
+    }
+  ],
   "3z1hhJ": [
     {
       "type": 0,
@@ -661,6 +667,12 @@
     {
       "type": 0,
       "value": "Gebruikersvariabelen"
+    }
+  ],
+  "5rj0a+": [
+    {
+      "type": 0,
+      "value": "Service"
     }
   ],
   "5uaKBM": [
@@ -1235,6 +1247,12 @@
       "value": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
+  "AkG8Zu": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: JSON"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
@@ -1800,6 +1818,12 @@
     {
       "type": 0,
       "value": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is."
+    }
+  ],
+  "EODRpS": [
+    {
+      "type": 0,
+      "value": "Included"
     }
   ],
   "EQho4S": [
@@ -2730,6 +2754,12 @@
       "value": "Zaaktype"
     }
   ],
+  "N9t/nl": [
+    {
+      "type": 0,
+      "value": "Relative endpoint to send the data to (will be added to the root endpoint of the service)."
+    }
+  ],
   "NE5h2q": [
     {
       "type": 0,
@@ -2898,6 +2928,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "OpkUgV": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the data to be sent."
     }
   ],
   "Orf0vr": [
@@ -4707,6 +4743,12 @@
       "value": "Het afleiden van adres via tekstveld-componenten is verouderd. Gebruik in de plaats de 'AddressNL'-component (in de 'Speciale velden' groep)."
     }
   ],
+  "fKJ4SC": [
+    {
+      "type": 0,
+      "value": "Form variables"
+    }
+  ],
   "fLCWjk": [
     {
       "type": 0,
@@ -4717,6 +4759,12 @@
     {
       "type": 0,
       "value": "Prijslogica"
+    }
+  ],
+  "fP/5HK": [
+    {
+      "type": 0,
+      "value": "Relative API Endpoint"
     }
   ],
   "fQuLvm": [
@@ -5691,6 +5739,12 @@
       "value": "Er ging iets fout bij het ophalen van de objecttypeversies."
     }
   ],
+  "nZZkHx": [
+    {
+      "type": 0,
+      "value": "Include variable"
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -6001,6 +6055,12 @@
     {
       "type": 0,
       "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
+    }
+  ],
+  "qPiUic": [
+    {
+      "type": 0,
+      "value": "Which service to send the data to"
     }
   ],
   "qUYLVg": [
@@ -6653,6 +6713,12 @@
     {
       "type": 0,
       "value": "Variabele"
+    }
+  ],
+  "x89214": [
+    {
+      "type": 0,
+      "value": "Which form variables to include in the data to be sent"
     }
   ],
   "xBb5YI": [

@@ -216,6 +216,11 @@
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
+  "3uau0j": {
+    "defaultMessage": "Not included",
+    "description": "JSON registration summary message",
+    "originalDefault": "Not included"
+  },
   "3z1hhJ": {
     "defaultMessage": "Toon/verberg JSON Schema",
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
@@ -275,6 +280,11 @@
     "defaultMessage": "Gebruikersvariabelen",
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
+  },
+  "5rj0a+": {
+    "defaultMessage": "Service",
+    "description": "JSON registration options 'serviceSelect' label",
+    "originalDefault": "Service"
   },
   "5uaKBM": {
     "defaultMessage": "minus",
@@ -549,6 +559,11 @@
     "description": "ZGW APIs registrations options: role type error",
     "originalDefault": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
+  "AkG8Zu": {
+    "defaultMessage": "Plugin configuration: JSON",
+    "description": "JSON registration options modal title",
+    "originalDefault": "Plugin configuration: JSON"
+  },
   "AtBVAV": {
     "defaultMessage": "Bevestigen",
     "description": "Form definition select confirm button",
@@ -770,6 +785,11 @@
     "defaultMessage": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is.",
     "description": "Too many cosign components",
     "originalDefault": "There are multiple co-sign components specified in this form. At most one should be present."
+  },
+  "EODRpS": {
+    "defaultMessage": "Included",
+    "description": "JSON registration summary message",
+    "originalDefault": "Included"
   },
   "EQho4S": {
     "defaultMessage": "API-groep",
@@ -1324,6 +1344,11 @@
     "description": "ZGW APIs registration options 'case type' label",
     "originalDefault": "Case type"
   },
+  "N9t/nl": {
+    "defaultMessage": "Relative endpoint to send the data to (will be added to the root endpoint of the service).",
+    "description": "JSON registration options 'relativeApiEndpoint' helpText",
+    "originalDefault": "Relative endpoint to send the data to (will be added to the root endpoint of the service)."
+  },
   "NE5h2q": {
     "defaultMessage": "Omschrijving",
     "description": "Description column header",
@@ -1405,6 +1430,11 @@
     "defaultMessage": "Geavanceerd",
     "description": "Advanced logic type",
     "originalDefault": "Advanced"
+  },
+  "OpkUgV": {
+    "defaultMessage": "Whether to include this variable in the data to be sent.",
+    "description": "'Include variable' checkbox help text",
+    "originalDefault": "Whether to include this variable in the data to be sent."
   },
   "Orf0vr": {
     "defaultMessage": "Update",
@@ -2199,6 +2229,11 @@
     "description": "Objects API registration: authAttributePath helpText",
     "originalDefault": "The property that gets compared with the identifier (e.g. BSN/KVK) of the authenticated user to verify ownership of the object being updated. This is important to prevent malicious users modifying information of other people than themselves."
   },
+  "fKJ4SC": {
+    "defaultMessage": "Form variables",
+    "description": "JSON registration options 'formVariables' label",
+    "originalDefault": "Form variables"
+  },
   "fLCWjk": {
     "defaultMessage": "Naam",
     "description": "Variable table name title",
@@ -2208,6 +2243,11 @@
     "defaultMessage": "Prijslogica",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
+  },
+  "fP/5HK": {
+    "defaultMessage": "Relative API Endpoint",
+    "description": "JSON registration options 'relativeApiEndpoint' label",
+    "originalDefault": "Relative API Endpoint"
   },
   "fQuLvm": {
     "defaultMessage": "Registratie-instellingen overnemen",
@@ -2655,6 +2695,11 @@
     "description": "Objects API registrations options: object type version select error",
     "originalDefault": "Something went wrong while retrieving the available object type versions."
   },
+  "nZZkHx": {
+    "defaultMessage": "Include variable",
+    "description": "'Include variable' checkbox label",
+    "originalDefault": "Include variable"
+  },
   "neCqv9": {
     "defaultMessage": "Het registratieresultaat zal een object van dit type zijn.",
     "description": "Objects API registration options 'Objecttype' helpText",
@@ -2794,6 +2839,11 @@
     "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+  },
+  "qPiUic": {
+    "defaultMessage": "Which service to send the data to",
+    "description": "JSON registration options 'serviceSelect' helpText",
+    "originalDefault": "Which service to send the data to"
   },
   "qUYLVg": {
     "defaultMessage": "Product en betaling",
@@ -3109,6 +3159,11 @@
     "defaultMessage": "Variabele",
     "description": "Price variable label",
     "originalDefault": "Variable"
+  },
+  "x89214": {
+    "defaultMessage": "Which form variables to include in the data to be sent",
+    "description": "JSON registration options 'formVariables' helpText",
+    "originalDefault": "Which form variables to include in the data to be sent"
   },
   "xBb5YI": {
     "defaultMessage": "Kies eerst een objecttype en versie voor je een brondpad kan selecteren.",

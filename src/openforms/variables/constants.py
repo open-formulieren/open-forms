@@ -54,3 +54,16 @@ CHECK_VARIABLE_TYPE = {
     FormVariableDataTypes.date: check_date,
     FormVariableDataTypes.time: check_time,
 }
+
+
+FORM_VARIABLE_DATA_TYPE_TO_JSON_SCHEMA = {
+    FormVariableDataTypes.string: {"type": "string"},
+    FormVariableDataTypes.boolean: {"type": "boolean"},
+    FormVariableDataTypes.object: {"type": "object"},
+    FormVariableDataTypes.array: {"type": "array"},
+    FormVariableDataTypes.int: {"type": "integer"},
+    FormVariableDataTypes.float: {"type": "number"},
+    FormVariableDataTypes.datetime: {"type": "string", "format": "date-time"},
+    FormVariableDataTypes.date: {"type": "string", "format": "date"},
+    FormVariableDataTypes.time: {"type": "string", "format": "time"},
+}
