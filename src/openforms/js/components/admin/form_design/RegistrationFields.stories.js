@@ -411,7 +411,7 @@ export default {
               title: 'Relative API endpoint',
               type: 'string',
             },
-            formVariables: {
+            variables: {
               type: 'array',
               title: 'List of form variables',
               items: {
@@ -770,7 +770,7 @@ export const ConfiguredBackends = {
         options: {
           service: 1,
           path: 'example/endpoint',
-          formVariables: [],
+          variables: [],
         },
       },
     ],
@@ -1029,7 +1029,7 @@ export const JSONDump = {
         options: {
           service: 1,
           path: 'example/endpoint',
-          formVariables: [],
+          variables: [],
         },
       },
     ],

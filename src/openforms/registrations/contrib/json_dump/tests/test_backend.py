@@ -58,13 +58,13 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
             path="json_plugin",
-            form_variables=["firstName", "file", "auth_bsn"],
+            variables=["firstName", "file", "auth_bsn"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
         expected_response = {
-            # Note that `lastName` is not included here as it wasn't specified in the form_variables
+            # Note that `lastName` is not included here as it wasn't specified in the variables
             "data": {
                 "values": {
                     "auth_bsn": "123456789",
@@ -110,7 +110,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
             path="fake_endpoint",
-            form_variables=["firstName", "auth_bsn"],
+            variables=["firstName", "auth_bsn"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
@@ -163,7 +163,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
             path="json_plugin",
-            form_variables=["file"],
+            variables=["file"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
@@ -197,7 +197,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
             path="..",
-            form_variables=["firstName", "file", "auth_bsn"],
+            variables=["firstName", "file", "auth_bsn"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)

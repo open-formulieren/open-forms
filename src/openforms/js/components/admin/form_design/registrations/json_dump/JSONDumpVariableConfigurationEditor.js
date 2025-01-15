@@ -9,10 +9,10 @@ import {Checkbox} from 'components/admin/forms/Inputs';
 
 const JSONDumpVariableConfigurationEditor = ({variable}) => {
   const {
-    values: {formVariables = []},
+    values: {variables = []},
     setFieldValue,
   } = useFormikContext();
-  const isIncluded = formVariables.includes(variable.key);
+  const isIncluded = variables.includes(variable.key);
 
   return (
     <FormRow>
@@ -34,10 +34,10 @@ const JSONDumpVariableConfigurationEditor = ({variable}) => {
           checked={isIncluded}
           onChange={event => {
             const shouldBeIncluded = event.target.checked;
-            const newFormVariables = shouldBeIncluded
-              ? [...formVariables, variable.key] // add the variable to the array
-              : formVariables.filter(key => key !== variable.key); // remove the variable from the array
-            setFieldValue('formVariables', newFormVariables);
+            const newVariables = shouldBeIncluded
+              ? [...variables, variable.key] // add the variable to the array
+              : variables.filter(key => key !== variable.key); // remove the variable from the array
+            setFieldValue('variables', variables);
           }}
         />
       </Field>
