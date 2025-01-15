@@ -663,7 +663,7 @@ export const WithJSONDumpRegistrationBackend = {
         name: 'JSON dump registration',
         options: {
           service: 2,
-          relativeApiEndpoint: 'test',
+          path: 'test',
           formVariables: ['aSingleFile', 'now'],
         },
       },

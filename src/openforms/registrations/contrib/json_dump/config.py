@@ -1,4 +1,4 @@
-from typing import Required, TypedDict
+from typing import TypedDict
 
 from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -30,12 +30,10 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         help_text=_("Which service to use."),
         required=True,
     )
-    relative_api_endpoint = serializers.CharField(
+    path = serializers.CharField(
         max_length=255,
-        label=_("Relative API endpoint"),
-        help_text=_(
-            "The API endpoint to send the data to (relative to the service API root)."
-        ),
+        label=_("Path"),
+        help_text=_("Path relative to the Service API root."),
         allow_blank=True,
         required=False,
         default="",
@@ -61,5 +59,5 @@ class JSONDumpOptions(TypedDict):
     """
 
     service: Service
-    relative_api_endpoint: str
+    path: str
     form_variables: list[str]

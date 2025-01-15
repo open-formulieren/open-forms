@@ -406,7 +406,7 @@ export default {
               enum: [1, 2],
               enumNames: ['Service 1', 'Service 2'],
             },
-            relativeApiEndpoint: {
+            path: {
               minLength: 1,
               title: 'Relative API endpoint',
               type: 'string',
@@ -769,7 +769,7 @@ export const ConfiguredBackends = {
         backend: 'json_dump',
         options: {
           service: 1,
-          relativeApiEndpoint: 'example/endpoint',
+          path: 'example/endpoint',
           formVariables: [],
         },
       },
@@ -1028,7 +1028,7 @@ export const JSONDump = {
         backend: 'json_dump',
         options: {
           service: 1,
-          relativeApiEndpoint: 'example/endpoint',
+          path: 'example/endpoint',
           formVariables: [],
         },
       },

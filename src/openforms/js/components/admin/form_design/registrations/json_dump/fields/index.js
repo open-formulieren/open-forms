@@ -1,5 +1,5 @@
 import FormVariablesSelect from './FormVariablesSelect';
-import RelativeAPIEndpoint from './RelativeAPIEndpoint';
+import Path from './Path';
 import ServiceSelect from './ServiceSelect';
 
-export {FormVariablesSelect, RelativeAPIEndpoint, ServiceSelect};
+export {FormVariablesSelect, Path, ServiceSelect};

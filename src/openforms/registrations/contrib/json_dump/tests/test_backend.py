@@ -57,7 +57,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
+            path="json_plugin",
             form_variables=["firstName", "file", "auth_bsn"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
@@ -109,7 +109,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="fake_endpoint",
+            path="fake_endpoint",
             form_variables=["firstName", "auth_bsn"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")
@@ -135,7 +135,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                         "name": "file2.txt",
                         "type": "application/text",
                         "originalName": "file2.txt",
-                    }
+                    },
                 ],
             },
         )
@@ -162,7 +162,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         json_form_options = dict(
             service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
+            path="json_plugin",
             form_variables=["file"],
         )
         json_plugin = JSONDumpRegistration("json_registration_plugin")

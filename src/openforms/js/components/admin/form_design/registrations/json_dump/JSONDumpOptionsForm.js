@@ -12,7 +12,7 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-import {FormVariablesSelect, RelativeAPIEndpoint, ServiceSelect} from './fields';
+import {FormVariablesSelect, Path, ServiceSelect} from './fields';
 
 const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -48,7 +48,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
       }
       initialFormData={{
         service: null,
-        relativeApiEndpoint: '',
+        path: '',
         formVariables: [],
         ...formData,
       }}
@@ -58,7 +58,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
       <ValidationErrorsProvider errors={relevantErrors}>
         <Fieldset>
           <ServiceSelect options={serviceOptions} />
-          <RelativeAPIEndpoint />
+          <Path />
           <FormVariablesSelect options={formVariableOptions} />
         </Fieldset>
       </ValidationErrorsProvider>
@@ -79,7 +79,7 @@ JSONDumpOptionsForm.propTypes = {
   }).isRequired,
   formData: PropTypes.shape({
     service: PropTypes.number,
-    relativeApiEndpoint: PropTypes.string,
+    path: PropTypes.string,
     // TODO-4908: might need to rename this to selectedFormVariables to avoid confusion or even
     //  naming conflicts
     formVariables: PropTypes.arrayOf(PropTypes.string),

@@ -6,22 +6,22 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-const RelativeAPIEndpoint = () => {
-  const [fieldProps] = useField('relativeApiEndpoint');
+const Path = () => {
+  const [fieldProps] = useField('path');
   return (
     <FormRow>
       <Field
-        name="relativeApiEndpoint"
+        name="path"
         label={
           <FormattedMessage
-            description="JSON registration options 'relativeApiEndpoint' label"
-            defaultMessage="Relative API Endpoint"
+            description="JSON registration options 'path' label"
+            defaultMessage="Path"
           />
         }
         helpText={
           <FormattedMessage
-            description="JSON registration options 'relativeApiEndpoint' helpText"
-            defaultMessage="Relative endpoint to send the data to (will be added to the root endpoint of the service)."
+            description="JSON registration options 'path' helpText"
+            defaultMessage="Path relative to the Service API root"
           />
         }
       >
@@ -31,4 +31,4 @@ const RelativeAPIEndpoint = () => {
   );
 };
 
-export default RelativeAPIEndpoint;
+export default Path;
