@@ -22,11 +22,11 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const formContext = useContext(FormContext);
   const formVariables = formContext.formVariables ?? [];
   const staticVariables = formContext.staticVariables ?? [];
-  const allFormVariables = staticVariables.concat(formVariables);
+  const allVariables = staticVariables.concat(formVariables);
 
-  const formVariableOptions = [];
-  for (const formVariable of allFormVariables) {
-    formVariableOptions.push({value: formVariable.key, label: formVariable.name});
+  const variableOptions = [];
+  for (const variable of allVariables) {
+    variableOptions.push({value: variable.key, label: variable.name});
   }
 
   // Create service options
@@ -49,7 +49,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
       initialFormData={{
         service: null,
         path: '',
-        formVariables: [],
+        variables: [],
         ...formData,
       }}
       onSubmit={values => onChange({formData: values})}
@@ -59,7 +59,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
         <Fieldset>
           <ServiceSelect options={serviceOptions} />
           <Path />
-          <FormVariablesSelect options={formVariableOptions} />
+          <FormVariablesSelect options={variableOptions} />
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
@@ -80,9 +80,7 @@ JSONDumpOptionsForm.propTypes = {
   formData: PropTypes.shape({
     service: PropTypes.number,
     path: PropTypes.string,
-    // TODO-4908: might need to rename this to selectedFormVariables to avoid confusion or even
-    //  naming conflicts
-    formVariables: PropTypes.arrayOf(PropTypes.string),
+    variables: PropTypes.arrayOf(PropTypes.string),
   }),
   onChange: PropTypes.func.isRequired,
 };

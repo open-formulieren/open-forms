@@ -664,7 +664,7 @@ export const WithJSONDumpRegistrationBackend = {
         options: {
           service: 2,
           path: 'test',
-          formVariables: ['aSingleFile', 'now'],
+          variables: ['aSingleFile', 'now'],
         },
       },
     ],

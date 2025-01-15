@@ -8,7 +8,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
 const FormVariablesSelect = ({options}) => {
-  const [fieldProps, , {setValue}] = useField('formVariables');
+  const [fieldProps, , {setValue}] = useField('variables');
 
   const values = [];
   if (fieldProps.value && fieldProps.value.length) {
@@ -23,24 +23,24 @@ const FormVariablesSelect = ({options}) => {
   return (
     <FormRow>
       <Field
-        name="formVariables"
+        name="variables"
         label={
           <FormattedMessage
-            description="JSON registration options 'formVariables' label"
-            defaultMessage="Form variables"
+            description="JSON registration options 'variables' label"
+            defaultMessage="Variables"
           />
         }
         helpText={
           <FormattedMessage
-            description="JSON registration options 'formVariables' helpText"
-            defaultMessage="Which form variables to include in the data to be sent"
+            description="JSON registration options 'variables' helpText"
+            defaultMessage="Which variables to include in the data to be sent"
           />
         }
         required
         noManageChildProps
       >
         <ReactSelect
-          name="formVariables"
+          name="variables"
           options={options}
           isMulti
           required

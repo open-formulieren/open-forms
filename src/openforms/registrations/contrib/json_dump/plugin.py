@@ -38,7 +38,7 @@ class JSONDumpRegistration(BasePlugin):
         values = {
             key: value
             for key, value in all_values.items()
-            if key in options["form_variables"]
+            if key in options["variables"]
         }
 
         # Process attachments

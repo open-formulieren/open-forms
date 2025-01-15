@@ -4,7 +4,7 @@ import React from 'react';
 import {IconNo, IconYes} from 'components/admin/BooleanIcons';
 
 const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
-  const isIncluded = backendOptions.formVariables.includes(variable.key);
+  const isIncluded = backendOptions.variables.includes(variable.key);
 
   return isIncluded ? <IconYes /> : <IconNo />;
 };
@@ -14,7 +14,7 @@ JSONDumpSummaryHandler.propTypes = {
     key: PropTypes.string.isRequired,
   }).isRequired,
   backendOptions: PropTypes.shape({
-    formVariables: PropTypes.arrayOf(PropTypes.string).isRequired,
+    variables: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };
 
