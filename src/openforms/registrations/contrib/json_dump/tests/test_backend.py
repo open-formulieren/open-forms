@@ -8,10 +8,12 @@ from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import (
+    FormVariableFactory,
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..config import JSONDumpOptions
 from ..plugin import JSONDumpRegistration
@@ -385,3 +387,188 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             []
         )
 
+    def test_select_component_with_form_variable_as_data_source(self):
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Select",
+                    "key": "select",
+                    "type": "select",
+                    "multiple": True,
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "valuesForSelect"},
+                    },
+                    "data": {
+                        "values": [],
+                        "json": "",
+                        "url": "",
+                        "resource": "",
+                        "custom": "",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={"select": ["A", "C"]},
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for select",
+            key="valuesForSelect",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["select"],
+        )
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        self.assertEqual(
+            glom(res, "api_response.data.schema.properties.select.items.enum"),
+            ["A", "B", "C", ""],
+        )
+
+    def test_select_boxes_component_with_form_variable_as_data_source(self):
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Select Boxes",
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "translations": {},
+                        "itemsExpression": {"var": "valuesForSelectBoxes"},
+                    },
+                    "values": [],
+                },
+            ],
+            completed=True,
+            submitted_data={"selectBoxes": {"A": True, "B": False, "C": True}},
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for select boxes",
+            key="valuesForSelectBoxes",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["selectBoxes"],
+        )
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        expected_schema = {
+            "title": "Select Boxes",
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "A": {"type": "boolean"},
+                "B": {"type": "boolean"},
+                "C": {"type": "boolean"},
+            },
+            "required": ["A", "B", "C"],
+        }
+
+        self.assertEqual(
+            glom(res, "api_response.data.schema.properties.selectBoxes"),
+            expected_schema
+        )
+
+    def test_select_boxes_schema_required_is_empty_when_no_data_is_submitted(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Select Boxes",
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "values": [
+                        {"label": "A", "value": "a"},
+                        {"label": "B", "value": "b"},
+                        {"label": "C", "value": "c"},
+                    ],
+                },
+            ],
+            completed=True,
+            submitted_data={"selectBoxes": {}},
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["selectBoxes"],
+        )
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        self.assertEqual(
+            glom(res, "api_response.data.schema.properties.selectBoxes.required"),
+            [],
+        )
+
+    def test_radio_component_with_form_variable_as_data_source(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "translations": {},
+                        "itemsExpression": {"var": "valuesForRadio"},
+                    },
+                    "values": [],
+                },
+            ],
+            completed=True,
+            submitted_data={"radio": "A"},
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for radio",
+            key="valuesForRadio",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            relative_api_endpoint="json_plugin",
+            form_variables=["radio"],
+        )
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        self.assertEqual(
+            glom(res, "api_response.data.schema.properties.radio.enum"),
+            ["A", "B", "C", ""],
+        )
