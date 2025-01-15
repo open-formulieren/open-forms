@@ -28,6 +28,10 @@ const styles = {
     ...initialStyles.dropdownIndicator(...args),
     padding: '4px 2px',
   }),
+  clearIndicator: (...args) => ({
+    ...initialStyles.clearIndicator(...args),
+    padding: '4px 2px',
+  }),
 };
 
 /**
