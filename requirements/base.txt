@@ -85,7 +85,7 @@ defusedxml==0.7.1
     #   odfpy
 diff-match-patch==20230430
     # via django-import-export
-django==4.2.17
+django==4.2.18
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -469,8 +469,6 @@ rstr==3.2.2
     # via schwifty
 ruamel-yaml==0.18.6
     # via prance
-ruamel-yaml-clib==0.2.8
-    # via ruamel-yaml
 schwifty==2024.5.3
     # via -r requirements/base.in
 self-certifi==1.0.0
@@ -514,7 +512,7 @@ tinycss2==1.1.0
     #   weasyprint
 tornado==6.4.2
     # via flower
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
