@@ -105,13 +105,7 @@ def process_mapped_variable(
             value = value[0] if value else ""
 
         case {"type": "map"}:
-            # Currently we only support Point coordinates
-            assert isinstance(value, list) and len(value) == 2
-            value = {
-                "type": "Point",
-                # Providing the coordinates as [lng, lat] #4955
-                "coordinates": [value[1], value[0]],
-            }
+            assert isinstance(value, dict)
 
         # not a component or standard behaviour where no transformation is necessary
         case None | _:

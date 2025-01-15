@@ -1544,7 +1544,8 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
-            await page.get_by_role("button", name="Map configuration").click()
+            await page.get_by_role("tab", name="Map settings").click()
+            await page.get_by_role("button", name="Initial focus").click()
             # both fields are required so we clear one.
             await page.get_by_label("Latitude").clear()
 
@@ -1595,7 +1596,8 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
-            await page.get_by_role("button", name="Map configuration").click()
+            await page.get_by_role("tab", name="Map settings").click()
+            await page.get_by_role("button", name="Initial focus").click()
             # both fields are required so we clear one.
             await page.get_by_label("Longitude").clear()
 

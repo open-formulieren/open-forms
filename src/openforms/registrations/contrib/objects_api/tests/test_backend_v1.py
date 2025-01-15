@@ -130,7 +130,10 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
-                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
             language_code="en",
             uuid=FIXED_SUBMISSION_UUID,
@@ -186,7 +189,10 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                         "achternaam": "Bar",
                         "tussenvoegsel": "de",
                         "geboortedatum": "2000-12-31",
-                        "coordinaat": [52.36673378967122, 4.893164274470299],
+                        "coordinaat": {
+                            "type": "Point",
+                            "coordinates": [4.893164274470299, 52.36673378967122],
+                        },
                     }
                 },
                 "taal": "en",

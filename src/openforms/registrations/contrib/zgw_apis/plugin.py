@@ -26,6 +26,7 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
+from openforms.formio.formatters.custom import GeoJsonGeometry
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.date import datetime_in_amsterdam
@@ -75,11 +76,8 @@ def get_property_mappings_from_submission(
     return property_mappings
 
 
-def _point_coordinate(value):
-    if not value or not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    # Providing the coordinates as [lng, lat] #4955
-    return {"type": "Point", "coordinates": [value[1], value[0]]}
+def _point_coordinate(value: GeoJsonGeometry) -> GeoJsonGeometry:
+    return value
 
 
 def _gender_choices(value):

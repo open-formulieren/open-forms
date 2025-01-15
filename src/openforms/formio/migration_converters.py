@@ -15,7 +15,7 @@ from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
-from .typing import AddressNLComponent, Component
+from .typing import AddressNLComponent, Component, MapComponent
 
 logger = logging.getLogger(__name__)
 
@@ -271,6 +271,23 @@ def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
     return True
 
 
+def ensure_map_has_interactions(component: Component) -> bool:
+    component = cast(MapComponent, component)
+
+    if "interactions" in component:
+        return False
+
+    component.setdefault(
+        "interactions",
+        {
+            "marker": True,
+            "polygon": False,
+            "polyline": False,
+        },
+    )
+    return True
+
+
 def rename_identifier_role_authorizee(component: Component) -> bool:
     if "prefill" not in component:
         return False
@@ -351,6 +368,9 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "textarea": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
         "fix_empty_default_value": fix_empty_default_value,
+    },
+    "map": {
+        "ensure_map_has_interactions": ensure_map_has_interactions,
     },
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,

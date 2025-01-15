@@ -2,7 +2,7 @@ from typing import NotRequired
 
 from .base import Component
 from .dates import DatePickerConfig, DatePickerCustomOptions
-from .map import MapInitialCenter
+from .map import MapInitialCenter, MapInteractions
 
 
 class DateComponent(Component):
@@ -19,5 +19,6 @@ class MapComponent(Component):
     defaultZoom: NotRequired[int]
     initialCenter: NotRequired[MapInitialCenter]
     tileLayerIdentifier: NotRequired[str]
+    interactions: MapInteractions
     # The tileLayerUrl will be dynamically generated from the tileLayerIdentifier
     tileLayerUrl: NotRequired[str]

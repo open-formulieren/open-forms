@@ -1199,6 +1199,65 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
         self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)
 
+    def test_import_applies_converters_map_component_interactions(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "mapWithoutInteractions",
+                        "type": "map",
+                        "label": "Map",
+                        "useConfigDefaultMapSettings": True,
+                    },
+                    {
+                        "key": "mapWithInteractions",
+                        "type": "map",
+                        "label": "Map",
+                        "useConfigDefaultMapSettings": True,
+                        "interactions": {
+                            "marker": False,
+                            "polygon": True,
+                            "polyline": True,
+                        },
+                    },
+                ]
+            },
+        )
+        call_command("export", form.pk, self.filepath)
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.exclude(pk=form.pk).get()
+        fd = imported_form.formstep_set.get().form_definition
+
+        self.assertEqual(
+            fd.configuration["components"],
+            [
+                {
+                    "key": "mapWithoutInteractions",
+                    "type": "map",
+                    "label": "Map",
+                    "useConfigDefaultMapSettings": True,
+                    "interactions": {
+                        "marker": True,
+                        "polygon": False,
+                        "polyline": False,
+                    },
+                },
+                {
+                    "key": "mapWithInteractions",
+                    "type": "map",
+                    "label": "Map",
+                    "useConfigDefaultMapSettings": True,
+                    "interactions": {
+                        "marker": False,
+                        "polygon": True,
+                        "polyline": True,
+                    },
+                },
+            ],
+        )
+
 
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.

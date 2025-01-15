@@ -21,6 +21,7 @@ from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_dat
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
 
+from ...api.geojson import GeoJsonGeometryPolymorphicSerializer
 from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import (
     AddressNLFormatter,
@@ -213,14 +214,15 @@ class Map(BasePlugin[MapComponent]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
+    def build_serializer_field(
+        self, component: MapComponent
+    ) -> GeoJsonGeometryPolymorphicSerializer:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        base = serializers.FloatField(
-            required=required,
-            allow_null=not required,
+
+        return GeoJsonGeometryPolymorphicSerializer(
+            required=required, allow_null=not required
         )
-        return serializers.ListField(child=base, min_length=2, max_length=2)
 
 
 @register("postcode")

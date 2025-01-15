@@ -33,11 +33,12 @@ from openforms.contrib.zgw.service import (
     create_csv_document,
     create_report_document,
 )
+from openforms.formio.formatters.custom import GeoJsonGeometry
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
-from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
+from openforms.submissions.mapping import FieldConf, apply_data_mapping
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -69,11 +70,8 @@ from .typing import (
 logger = logging.getLogger(__name__)
 
 
-def _point_coordinate(value: Any) -> dict[str, Any] | object:
-    if not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    # Providing the coordinates as [lng, lat] #4955
-    return {"type": "Point", "coordinates": [value[1], value[0]]}
+def _point_coordinate(value: GeoJsonGeometry) -> GeoJsonGeometry:
+    return value
 
 
 def _resolve_documenttype(
