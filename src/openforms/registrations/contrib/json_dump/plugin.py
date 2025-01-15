@@ -14,6 +14,7 @@ from openforms.submissions.models import (
     SubmissionValueVariable,
 )
 from openforms.typing import JSONObject
+from openforms.variables.constants import FormVariableSources
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
@@ -63,7 +64,7 @@ class JSONDumpRegistration(BasePlugin):
         service = options["service"]
         submission.registration_result = result = {}
         with build_client(service) as client:
-            if ".." in (path := options["relative_api_endpoint"]):
+            if ".." in (path := options["path"]):
                 raise SuspiciousOperation("Possible path traversal detected")
 
             res = client.post(path, json=data)
@@ -88,8 +89,12 @@ class JSONDumpRegistration(BasePlugin):
 
         for key in values.keys():
             variable = state.variables.get(key)
-            if variable is None:
-                # None for static variables
+            if (
+                variable is None
+                or variable.form_variable.source == FormVariableSources.user_defined
+            ):
+                # None for static variables, and processing user defined variables is
+                # not relevant here
                 continue
 
             component = get_component(variable)
