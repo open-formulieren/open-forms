@@ -814,11 +814,6 @@ ruamel-yaml==0.18.6
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   prance
-ruamel-yaml-clib==0.2.8
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   ruamel-yaml
 schwifty==2024.5.3
     # via
     #   -c requirements/base.txt
@@ -890,7 +885,7 @@ tornado==6.4.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

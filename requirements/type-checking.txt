@@ -991,11 +991,6 @@ ruamel-yaml==0.18.6
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   prance
-ruamel-yaml-clib==0.2.8
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   ruamel-yaml
 schwifty==2024.5.3
     # via
     #   -c requirements/ci.txt
@@ -1161,7 +1156,7 @@ types-requests==2.32.0.20240622
     # via
     #   -r requirements/type-checking.in
     #   djangorestframework-stubs
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
