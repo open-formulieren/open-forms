@@ -1,0 +1,15 @@
+version: '3.8'
+
+name: json-dump
+
+services:
+  flask_app:
+    build: ./json-dump
+    ports:
+      - "80:80"
+    volumes:
+      - ./json-dump/:/app/
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev

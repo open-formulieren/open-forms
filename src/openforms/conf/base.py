@@ -225,6 +225,7 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.objects_api",
     "openforms.registrations.contrib.microsoft_graph.apps.MicrosoftGraphApp",
     "openforms.registrations.contrib.camunda.apps.CamundaApp",
+    "openforms.registrations.contrib.json_dump",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
     "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",
