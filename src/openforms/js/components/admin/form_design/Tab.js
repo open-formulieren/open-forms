@@ -18,7 +18,7 @@ const Tab = ({hasErrors = false, children, ...props}) => {
   return (
     <ReactTab {...allProps}>
       {children}
-      {hasErrors ? <ErrorIcon extraClassname="react-tabs__error-badge" texxt={title} /> : null}
+      {hasErrors ? <ErrorIcon extraClassname="react-tabs__error-badge" text={title} /> : null}
     </ReactTab>
   );
 };
