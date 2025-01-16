@@ -4,6 +4,7 @@ from pathlib import Path
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 
+from glom import Path as Path_glom, glom
 from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -22,7 +23,7 @@ VCR_TEST_FILES = Path(__file__).parent / "files"
 class JSONDumpBackendTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
-    def test_submission_with_json_dump_backend(self):
+    def test_submission_happy_flow(self):
         submission = SubmissionFactory.from_components(
             [
                 {"key": "firstName", "type": "textField"},
@@ -49,6 +50,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="test_file.txt",
+            original_name="test_file.txt",
             content_type="application/text",
             content__data=b"This is example content.",
             _component_configuration_path="components.2",
@@ -68,7 +70,10 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "data": {
                 "values": {
                     "auth_bsn": "123456789",
-                    "file": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # Content of the attachment encoded using base64
+                    "file": {
+                        "file_name": "test_file.txt",
+                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"
+                    },
                     "firstName": "We Are",
                 },
                 "schema": {
@@ -88,12 +93,13 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         res = json_plugin.register_submission(submission, json_form_options)
-        res_json = res["api_response"]
 
-        self.assertEqual(res_json, expected_response)
+        self.assertEqual(res["api_response"], expected_response)
 
         with self.subTest("attachment content encoded"):
-            decoded_content = b64decode(res_json["data"]["values"]["file"])
+            decoded_content = b64decode(
+                glom(res, "api_response.data.values.file.content")
+            )
             self.assertEqual(decoded_content, b"This is example content.")
 
     def test_exception_raised_when_service_returns_unexpected_status_code(self):
@@ -144,6 +150,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="file1.txt",
+            original_name="file1.txt",
             content_type="application/text",
             content__data=b"This is example content.",
             _component_configuration_path="components.2",
@@ -154,6 +161,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             form_key="file",
             submission_step=submission.submissionstep_set.get(),
             file_name="file2.txt",
+            original_name="file2.txt",
             content_type="application/text",
             content__data=b"Content example is this.",
             _component_configuration_path="components.2",
@@ -168,17 +176,41 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         set_submission_reference(submission)
 
-        expected_values = {
-            "file": {
-                "file1.txt": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
-                "file2.txt": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+        expected_files = [
+            {
+                "file_name": "file1.txt",
+                "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
             },
-        }
+            {
+                "file_name": "file2.txt",
+                "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+            },
+        ]
 
         res = json_plugin.register_submission(submission, json_form_options)
-        res_json = res["api_response"]
 
-        self.assertEqual(res_json["data"]["values"], expected_values)
+        self.assertEqual(glom(res, "api_response.data.values.file"), expected_files)
+
+    def test_no_file_upload(self):
+        submission = SubmissionFactory.from_components(
+            [{"key": "file", "type": "file"}],
+            completed=True,
+            submitted_data={
+                "file": [],
+            },
+        )
+
+        json_form_options = dict(
+            service=(ServiceFactory(api_root="http://localhost:80/")),
+            path="json_plugin",
+            variables=["file"],
+        )
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        set_submission_reference(submission)
+
+        res = json_plugin.register_submission(submission, json_form_options)
+
+        self.assertEqual(glom(res, "api_response.data.values.file"), {})
 
     def test_path_traversal_attack(self):
         submission = SubmissionFactory.from_components(
