@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request
+import json
 
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -7,8 +8,10 @@ app = Flask(__name__)
 def json_plugin_post():
     data = request.get_json()
 
+    app.logger.info(f"Data received: {data}")
+
     message = "No data" if data is None else "Data received"
-    return jsonify({"message": message, "data": data}), 201
+    return jsonify({"message": message, "data": json.loads(data)}), 201
 
 
 @app.route("/test_connection", methods=["GET"])
