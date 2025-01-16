@@ -19,7 +19,8 @@ def get_service(slug: str) -> Service:
 
 class ZGWApiConfigurationStep(BaseConfigurationStep[ZGWApiGroupConfigModel]):
     """
-    Configure configuration groups for the ZGW API backend
+    Configure groups for the ZGW APIs registration backend. This step uses identifiers to refer to
+    Services that should be loaded by the previous step that loads Services.
     """
 
     verbose_name = "Configuration to set up ZGW API registration backend services"
@@ -41,8 +42,8 @@ class ZGWApiConfigurationStep(BaseConfigurationStep[ZGWApiGroupConfigModel]):
                 "catalogue_domain": config.catalogue_domain,  # type: ignore
                 "catalogue_rsin": config.catalogue_rsin,  # type: ignore
                 "organisatie_rsin": config.organisatie_rsin,  # type: ignore
-                "zaak_vertrouwelijkheidaanduiding": config.zaak_vertrouwelijkheidaanduiding,
-                "doc_vertrouwelijkheidaanduiding": config.doc_vertrouwelijkheidaanduiding,
+                "zaak_vertrouwelijkheidaanduiding": config.zaak_vertrouwelijkheidaanduiding,  # type: ignore
+                "doc_vertrouwelijkheidaanduiding": config.doc_vertrouwelijkheidaanduiding,  # type: ignore
                 "auteur": config.auteur,  # type: ignore
                 "content_json": config.objects_api_json_content_template,
             }

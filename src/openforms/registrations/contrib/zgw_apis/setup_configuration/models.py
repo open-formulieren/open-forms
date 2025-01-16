@@ -21,16 +21,6 @@ class SingleZGWApiGroupConfigModel(ConfigurationModel):
         ZGWApiGroupConfig, "content_json"
     )
 
-    # FIXME choices and blank=True doesn't seem to be picked up properly
-    zaak_vertrouwelijkheidaanduiding: str = DjangoModelRef(
-        ZGWApiGroupConfig,
-        "zaak_vertrouwelijkheidaanduiding",
-        default="",
-    )
-    doc_vertrouwelijkheidaanduiding: str = DjangoModelRef(
-        ZGWApiGroupConfig, "doc_vertrouwelijkheidaanduiding", default=""
-    )
-
     class Meta:
         django_model_refs = {
             ZGWApiGroupConfig: [
@@ -40,9 +30,18 @@ class SingleZGWApiGroupConfigModel(ConfigurationModel):
                 "catalogue_rsin",
                 "organisatie_rsin",
                 "auteur",
+                "zaak_vertrouwelijkheidaanduiding",
+                "doc_vertrouwelijkheidaanduiding",
             ]
+        }
+        extra_kwargs = {
+            "identifier": {"examples": ["open-zaak-acceptance"]},
+            "name": {"examples": ["Open Zaak acceptance environment"]},
+            "catalogue_domain": {"examples": ["ABCD"]},
+            "catalogue_rsin": {"examples": ["111222333"]},
+            "organisatie_rsin": {"examples": ["123456782"]},
         }
 
 
 class ZGWApiGroupConfigModel(ConfigurationModel):
-    groups: list[SingleZGWApiGroupConfigModel] = Field(default_factory=list)
+    groups: list[SingleZGWApiGroupConfigModel] = Field()

@@ -19,7 +19,8 @@ def get_service(slug: str) -> Service:
 
 class ObjectsAPIConfigurationStep(BaseConfigurationStep[ObjectsAPIGroupConfigModel]):
     """
-    Configure configuration groups for the Objects API backend
+    Configure groups for the Objects API backend. This step uses identifiers to refer to
+    Services that should be loaded by the previous step that loads Services.
     """
 
     verbose_name = "Configuration to set up Objects API registration backend services"

@@ -9729,6 +9729,8 @@ components:
         apiRoot:
           type: string
           title: Api root url
+          description: The root URL of the service that will be used to construct
+            the URLs when making requests.
           maxLength: 255
         apiType:
           allOf:

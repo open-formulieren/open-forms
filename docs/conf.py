@@ -42,6 +42,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_tabs.tabs",
     "sphinxcontrib.mermaid",
+    "django_setup_configuration.documentation.setup_config_example",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
