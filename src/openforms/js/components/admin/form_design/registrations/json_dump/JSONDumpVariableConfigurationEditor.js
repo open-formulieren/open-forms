@@ -37,7 +37,7 @@ const JSONDumpVariableConfigurationEditor = ({variable}) => {
             const newVariables = shouldBeIncluded
               ? [...variables, variable.key] // add the variable to the array
               : variables.filter(key => key !== variable.key); // remove the variable from the array
-            setFieldValue('variables', variables);
+            setFieldValue('variables', newVariables);
           }}
         />
       </Field>

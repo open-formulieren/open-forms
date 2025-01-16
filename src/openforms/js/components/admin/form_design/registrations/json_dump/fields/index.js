@@ -1,5 +1,5 @@
-import FormVariablesSelect from './FormVariablesSelect';
 import Path from './Path';
 import ServiceSelect from './ServiceSelect';
+import Variables from './Variables';
 
-export {FormVariablesSelect, Path, ServiceSelect};
+export {Path, ServiceSelect, Variables};
