@@ -1,0 +1,57 @@
+[
+{
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$DCgCQRA6R57PicaatiWGHU$S65r6Yedgkfv/exr8gFZogpyuCgortmrloq7+LBdnyY=",
+        "last_login": "2025-01-07T14:17:06.242Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-01-07T14:10:46.508Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "api.tabel",
+    "pk": 1,
+    "fields": {
+        "code": "tabel1",
+        "naam": "Tabel1",
+        "einddatum_geldigheid": null,
+        "beheerder_naam": "John Doe",
+        "beheerder_email": "john@doe.nl",
+        "beheerder_afdeling": "",
+        "beheerder_organisatie": ""
+    }
+},
+{
+    "model": "api.item",
+    "pk": 1,
+    "fields": {
+        "tabel": 1,
+        "code": "option1",
+        "naam": "Option 1",
+        "begindatum_geldigheid": "2025-01-07T14:17:53Z",
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 2,
+    "fields": {
+        "tabel": 1,
+        "code": "option2",
+        "naam": "Option 2",
+        "begindatum_geldigheid": "2025-01-07T14:17:59Z",
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+}
+]
