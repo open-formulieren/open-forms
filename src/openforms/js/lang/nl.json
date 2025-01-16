@@ -276,6 +276,11 @@
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
   },
+  "5rj0a+": {
+    "defaultMessage": "Service",
+    "description": "JSON registration options 'serviceSelect' label",
+    "originalDefault": "Service"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -549,6 +554,11 @@
     "description": "ZGW APIs registrations options: role type error",
     "originalDefault": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
+  "AkG8Zu": {
+    "defaultMessage": "Plugin configuration: JSON",
+    "description": "JSON registration options modal title",
+    "originalDefault": "Plugin configuration: JSON"
+  },
   "AtBVAV": {
     "defaultMessage": "Bevestigen",
     "description": "Form definition select confirm button",
@@ -654,6 +664,11 @@
     "defaultMessage": "de waarde",
     "description": "\"literal\" operand type",
     "originalDefault": "value"
+  },
+  "CZ774U": {
+    "defaultMessage": "Which variables to include in the data to be sent",
+    "description": "JSON registration options 'variables' helpText",
+    "originalDefault": "Which variables to include in the data to be sent"
   },
   "CiaAYL": {
     "defaultMessage": "Selecteer de toegestane authenticatie-plugins om in te loggen aan het begin van het formulier.",
@@ -1053,6 +1068,11 @@
     "description": "Objects API prefill mappings fieldset title",
     "originalDefault": "Mappings"
   },
+  "Ibejpf": {
+    "defaultMessage": "Path relative to the Service API root",
+    "description": "JSON registration options 'path' helpText",
+    "originalDefault": "Path relative to the Service API root"
+  },
   "Igt0Rc": {
     "defaultMessage": "Sla eigenaarcontrole over",
     "description": "Objects API registration: skipOwnershipCheck label",
@@ -1172,6 +1192,11 @@
     "defaultMessage": "Handmatig ingesteld",
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
+  },
+  "Kl9yvd": {
+    "defaultMessage": "Path",
+    "description": "JSON registration options 'path' label",
+    "originalDefault": "Path"
   },
   "KtVIGz": {
     "defaultMessage": "Documenttypen (oud)",
@@ -1405,6 +1430,11 @@
     "defaultMessage": "Geavanceerd",
     "description": "Advanced logic type",
     "originalDefault": "Advanced"
+  },
+  "OpkUgV": {
+    "defaultMessage": "Whether to include this variable in the data to be sent.",
+    "description": "'Include variable' checkbox help text",
+    "originalDefault": "Whether to include this variable in the data to be sent."
   },
   "Orf0vr": {
     "defaultMessage": "Update",
@@ -1831,6 +1861,11 @@
     "defaultMessage": "Bestemmingspad huisnummer",
     "description": "Objects registration variable mapping, addressNL component: 'options.houseNumber schema target' label",
     "originalDefault": "House number Schema target"
+  },
+  "XyDeaD": {
+    "defaultMessage": "Variables",
+    "description": "JSON registration options 'variables' label",
+    "originalDefault": "Variables"
   },
   "YDjQH8": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare catalogi en/of documenttypen.",
@@ -2655,6 +2690,11 @@
     "description": "Objects API registrations options: object type version select error",
     "originalDefault": "Something went wrong while retrieving the available object type versions."
   },
+  "nZZkHx": {
+    "defaultMessage": "Include variable",
+    "description": "'Include variable' checkbox label",
+    "originalDefault": "Include variable"
+  },
   "neCqv9": {
     "defaultMessage": "Het registratieresultaat zal een object van dit type zijn.",
     "description": "Objects API registration options 'Objecttype' helpText",
@@ -2794,6 +2834,11 @@
     "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+  },
+  "qPiUic": {
+    "defaultMessage": "Which service to send the data to",
+    "description": "JSON registration options 'serviceSelect' helpText",
+    "originalDefault": "Which service to send the data to"
   },
   "qUYLVg": {
     "defaultMessage": "Product en betaling",
