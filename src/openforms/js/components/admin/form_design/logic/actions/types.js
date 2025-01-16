@@ -25,6 +25,21 @@ const Action = PropTypes.shape({
   formStepUuid: PropTypes.string,
 });
 
+const ActionConfigMappingError = PropTypes.arrayOf(
+  PropTypes.shape({
+    dmnVariable: PropTypes.string,
+    formVariable: PropTypes.string,
+  })
+);
+
+const ActionConfigError = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.shape({
+    inputMapping: ActionConfigMappingError,
+    outputMapping: ActionConfigMappingError,
+  }),
+]);
+
 const ActionError = PropTypes.shape({
   action: PropTypes.shape({
     state: PropTypes.string,
@@ -34,10 +49,11 @@ const ActionError = PropTypes.shape({
       value: PropTypes.string,
     }),
     value: PropTypes.string,
+    config: ActionConfigError,
   }),
   component: PropTypes.string,
   formStep: PropTypes.string,
   formStepUuid: PropTypes.string,
 });
 
-export {jsonLogicVar, Action, ActionError};
+export {jsonLogicVar, Action, ActionError, ActionConfigError};

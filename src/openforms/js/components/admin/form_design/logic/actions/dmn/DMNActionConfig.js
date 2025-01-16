@@ -11,9 +11,11 @@ import {
 } from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
+import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
+import {ActionConfigError} from '../types';
 import DMNParametersForm from './DMNParametersForm';
 import {inputValuesType} from './types';
 
@@ -162,7 +164,7 @@ const DecisionDefinitionVersionField = () => {
   );
 };
 
-const DMNActionConfig = ({initialValues, onSave}) => {
+const DMNActionConfig = ({initialValues, onSave, errors = {}}) => {
   const {plugins} = useContext(FormContext);
 
   const validate = values => {
@@ -180,82 +182,85 @@ const DMNActionConfig = ({initialValues, onSave}) => {
   };
 
   return (
-    <div className="dmn-action-config">
-      <Formik
-        initialValues={{
-          ...initialValues,
-          pluginId:
-            plugins.availableDMNPlugins.length === 1
-              ? plugins.availableDMNPlugins[0].id
-              : initialValues.pluginId,
-        }}
-        onSubmit={values => onSave(values)}
-        validate={validate}
-      >
-        {formik => (
-          <Form>
-            <fieldset className="aligned">
-              <div className="form-row form-row--display-block form-row--no-bottom-line">
-                <Field
-                  name="pluginId"
-                  htmlFor="pluginId"
-                  label={
-                    <FormattedMessage defaultMessage="Plugin ID" description="Plugin ID label" />
-                  }
-                  errors={
-                    formik.touched.pluginId && formik.errors.pluginId
-                      ? [ERRORS[formik.errors.pluginId]]
-                      : []
-                  }
-                >
-                  <Select
-                    id="pluginId"
-                    name="pluginId"
-                    allowBlank={true}
-                    choices={plugins.availableDMNPlugins.map(choice => [choice.id, choice.label])}
-                    {...formik.getFieldProps('pluginId')}
-                    onChange={(...args) => {
-                      // Otherwise the field is set as 'touched' only on the blur event
-                      formik.setFieldTouched('pluginId');
-                      formik.handleChange(...args);
-                    }}
-                  />
-                </Field>
-              </div>
-            </fieldset>
-
-            <ErrorBoundary
-              errorMessage={
-                <FormattedMessage
-                  description="Admin error for API error when configuring Camunda actions"
-                  defaultMessage="Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
-                />
-              }
-            >
+    <ValidationErrorsProvider errors={Object.entries(errors)}>
+      <div className="dmn-action-config">
+        <Formik
+          initialValues={{
+            ...initialValues,
+            pluginId:
+              plugins.availableDMNPlugins.length === 1
+                ? plugins.availableDMNPlugins[0].id
+                : initialValues.pluginId,
+          }}
+          onSubmit={values => onSave(values)}
+          validate={validate}
+        >
+          {formik => (
+            <Form>
               <fieldset className="aligned">
                 <div className="form-row form-row--display-block form-row--no-bottom-line">
-                  <DecisionDefinitionIdField />
-                </div>
-                <div className="form-row form-row--display-block">
-                  <DecisionDefinitionVersionField />
+                  <Field
+                    name="pluginId"
+                    htmlFor="pluginId"
+                    label={
+                      <FormattedMessage defaultMessage="Plugin ID" description="Plugin ID label" />
+                    }
+                    errors={
+                      formik.touched.pluginId && formik.errors.pluginId
+                        ? [ERRORS[formik.errors.pluginId]]
+                        : []
+                    }
+                  >
+                    <Select
+                      id="pluginId"
+                      name="pluginId"
+                      allowBlank={true}
+                      choices={plugins.availableDMNPlugins.map(choice => [choice.id, choice.label])}
+                      {...formik.getFieldProps('pluginId')}
+                      onChange={(...args) => {
+                        // Otherwise the field is set as 'touched' only on the blur event
+                        formik.setFieldTouched('pluginId');
+                        formik.handleChange(...args);
+                      }}
+                    />
+                  </Field>
                 </div>
               </fieldset>
 
-              <DMNParametersForm />
-            </ErrorBoundary>
-            <div className="submit-row">
-              <input type="submit" name="_save" value="Save" />
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </div>
+              <ErrorBoundary
+                errorMessage={
+                  <FormattedMessage
+                    description="Admin error for API error when configuring Camunda actions"
+                    defaultMessage="Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+                  />
+                }
+              >
+                <fieldset className="aligned">
+                  <div className="form-row form-row--display-block form-row--no-bottom-line">
+                    <DecisionDefinitionIdField />
+                  </div>
+                  <div className="form-row form-row--display-block">
+                    <DecisionDefinitionVersionField />
+                  </div>
+                </fieldset>
+
+                <DMNParametersForm />
+              </ErrorBoundary>
+              <div className="submit-row">
+                <input type="submit" name="_save" value="Save" />
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </ValidationErrorsProvider>
   );
 };
 
 DMNActionConfig.propTypes = {
   initialValues: inputValuesType,
   onSave: PropTypes.func.isRequired,
+  errors: ActionConfigError,
 };
 
 export default DMNActionConfig;
