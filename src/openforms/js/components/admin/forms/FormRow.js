@@ -4,7 +4,7 @@ import React, {useContext} from 'react';
 
 import {ValidationErrorContext} from './ValidationErrors';
 
-const FormRow = ({fields = [], children}) => {
+const FormRow = ({fields = [], children, preventErrorsModifier = false}) => {
   const fieldClasses = fields.map(field => `field-${field}`);
 
   let hasErrors = false;
@@ -45,7 +45,7 @@ const FormRow = ({fields = [], children}) => {
 
   const className = classNames(
     'form-row',
-    {errors: processedChildren.length === 1 && hasErrors},
+    {errors: processedChildren.length === 1 && hasErrors && !preventErrorsModifier},
     ...fieldClasses
   );
   const inner = hasAnyFieldBox ? (
@@ -59,6 +59,11 @@ const FormRow = ({fields = [], children}) => {
 FormRow.propTypes = {
   fields: PropTypes.arrayOf(PropTypes.string),
   children: PropTypes.node,
+
+  /**
+   * Prevents the 'errors' modifier from being added to the 'form-row' component.
+   */
+  preventErrorsModifier: PropTypes.bool,
 };
 
 export default FormRow;
