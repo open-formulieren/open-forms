@@ -121,6 +121,10 @@ linkcheck_ignore = [
     r"https://www\.miniwebtool\.com/django-secret-key-generator/",  # seems to block the requests user agent
 ]
 
+linkcheck_anchors_ignore_for_url = [
+    r"https://.*github.*",
+]
+
 extlinks = {
     "backend": ("https://github.com/open-formulieren/open-forms/issues/%s", "#%s"),
     "sdk": ("https://github.com/open-formulieren/open-forms-sdk/issues/%s", "#%s"),
