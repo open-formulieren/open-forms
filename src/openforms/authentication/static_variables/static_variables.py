@@ -74,7 +74,11 @@ class Auth(BaseStaticVariable):
     @staticmethod
     def as_json_schema():
         # NOTE: this has been made 'vague' on purpose, see the comment on AuthContext.
-        return {"title": "Authentication summary", "type": "object"}
+        return {
+            "title": "Authentication summary",
+            "type": "object",
+            "additionalProperties": True,
+        }
 
 
 @register_static_variable("auth_type")
@@ -295,7 +299,7 @@ class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
             "title": "Legal subject authentication type",
             "description": (
                 "Authentication type of the legal subject (mandated to act on behalf "
-                "of the representee)",
+                "of the representee)"
             ),
             "type": "string",
         }
@@ -318,7 +322,7 @@ class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
             "title": "Legal subject authentication identifier",
             "description": (
                 "Authentication identifier of the legal subject (mandated to act on "
-                "behalf of the representee)",
+                "behalf of the representee)"
             ),
             "type": "string",
         }

@@ -48,8 +48,7 @@ def get_static_variables(
     ]
 
 
-# TODO-4980: where to add this?
-# TODO-4980: add tests
+# TODO-4980: can be combined with get_json_schema_from_form_variable?
 def get_json_schema_for_user_defined_variable(
     data_type: FormVariableDataTypes,
 ) -> JSONObject:
@@ -77,5 +76,5 @@ def get_json_schema_for_user_defined_variable(
             return {"type": "string", "format": "date"}
         case FormVariableDataTypes.time:
             return {"type": "string", "format": "time"}
-        case _:
+        case _:  # pragma: no cover
             raise NotImplementedError(f"Unrecognized data type: {data_type}")

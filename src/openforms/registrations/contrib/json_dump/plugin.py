@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.dynamic_config import rewrite_formio_components
 from openforms.formio.components.utils import to_multiple
+from openforms.formio.dynamic_config import rewrite_formio_components
 from openforms.formio.typing import Component
 from openforms.forms.utils import form_variables_to_json_schema
 from openforms.submissions.logic.datastructures import DataContainer
@@ -183,7 +183,7 @@ class JSONDumpRegistration(BasePlugin):
                             options["value"]: {"type": "boolean"}
                             for options in component["values"]
                         }
-                        schema["properties"][variable.key].update(
+                        schema["properties"][key].update(
                             {
                                 "properties": properties,
                                 "required": list(properties.keys()),
@@ -194,7 +194,7 @@ class JSONDumpRegistration(BasePlugin):
                     # If the select boxes component is not filled, set required
                     # properties to empty list
                     if not values[key]:
-                        schema["properties"][variable.key]["required"] = list()
+                        schema["properties"][key]["required"] = list()
                 case _:
                     pass
 
@@ -211,7 +211,7 @@ def encode_attachment(attachment: SubmissionFileAttachment) -> str:
 
 
 def get_component(
-    variable: SubmissionValueVariable, submission : Submission
+    variable: SubmissionValueVariable, submission: Submission
 ) -> Component | None:
     """Get the component from a submission value variable.
 

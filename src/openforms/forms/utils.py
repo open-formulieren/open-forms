@@ -202,7 +202,7 @@ def get_json_schema_from_form_variable(form_variable: FormVariable) -> JSONObjec
         case FormVariableSources.user_defined:
             schema = get_json_schema_for_user_defined_variable(form_variable.data_type)
             schema["title"] = form_variable.name
-        case _:
+        case _:  # pragma: no cover
             raise NotImplementedError("Unexpected form variable source")
 
     return schema
@@ -226,7 +226,7 @@ def is_form_variable_required(form_variable: FormVariable) -> bool:
         case FormVariableSources.user_defined:
             # User defined variables have no required property
             required = True
-        case _:
+        case _:  # pragma: no cover
             raise NotImplementedError("Unexpected form variable source")
 
     return required

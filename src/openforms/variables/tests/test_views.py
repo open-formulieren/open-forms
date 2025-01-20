@@ -56,6 +56,10 @@ class GetStaticVariablesViewTest(APITestCase):
             def get_initial_value(self, *args, **kwargs):
                 return "2021-07-16T21:15:00+00:00"
 
+            @staticmethod
+            def as_json_schema():
+                return {}
+
         register = VariableRegistry()
         register("now")(DemoNow)
 
@@ -128,6 +132,10 @@ class GetRegistrationPluginVariablesViewTest(APITestCase):
 
             def get_initial_value(self, *args, **kwargs):
                 return "demo initial value"
+
+            @staticmethod
+            def as_json_schema():
+                return {}
 
         variables_registry = VariableRegistry()
         variables_registry("now")(DemoNow)

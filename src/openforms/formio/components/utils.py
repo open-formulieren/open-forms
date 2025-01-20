@@ -4,6 +4,7 @@ from openforms.typing import JSONObject
 
 from ..typing import Component
 
+
 def _normalize_pattern(pattern: str) -> str:
     """
     Normalize a regex pattern so that it matches from beginning to the end of the value.

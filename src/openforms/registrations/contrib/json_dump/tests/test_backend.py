@@ -26,6 +26,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.service = ServiceFactory.create(api_root="http://localhost:80/")
 
     def test_submission_happy_flow(self):
@@ -218,13 +219,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 "type": "object",
                 "properties": {
                     "file": {
-                        "type": "object",
-                        "properties": {
-                            "file1.txt": {"type": "string", "format": "base64"},
-                            "file2.txt": {"type": "string", "format": "base64"},
+                        "title": "File",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "file_name": {"type": "string"},
+                                "content": {"type": "string", "format": "base64"},
+                            },
+                            "required": ["file_name", "content"],
+                            "additionalProperties": False,
                         },
-                        "required": ["file1.txt", "file2.txt"],
-                        "additionalProperties": False,
                     }
                 },
                 "additionalProperties": False,
@@ -275,15 +280,39 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(
-            result["api_response"]["data"]["values"]["file"],
-            [
-                {
-                    "file_name": "file1.txt",
-                    "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
-                }
-            ],
-        )
+        expected_data = {
+            "values": {
+                "file": [
+                    {
+                        "file_name": "file1.txt",
+                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
+                    },
+                ],
+            },
+            "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "title": "File",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "file_name": {"type": "string"},
+                                "content": {"type": "string", "format": "base64"},
+                            },
+                            "required": ["file_name", "content"],
+                            "additionalProperties": False,
+                        },
+                    }
+                },
+                "additionalProperties": False,
+                "required": [],
+            },
+        }
+
+        self.assertEqual(result["api_response"]["data"], expected_data)
 
     def test_no_file_upload_for_single_file_component(self):
         submission = SubmissionFactory.from_components(
@@ -305,7 +334,23 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(result["api_response"]["data"]["values"]["file"], None)
+        expected_data = {
+            "values": {"file": None},
+            "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "title": "File",
+                        "type": "null",
+                    },
+                },
+                "additionalProperties": False,
+                "required": [],
+            },
+        }
+
+        self.assertEqual(result["api_response"]["data"], expected_data)
 
     def test_no_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(
@@ -327,7 +372,32 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(result["api_response"]["data"]["values"]["file"], [])
+        expected_data = {
+            "values": {"file": []},
+            "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "title": "File",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "file_name": {"type": "string"},
+                                "content": {"type": "string", "format": "base64"},
+                            },
+                            "required": [],
+                            "additionalProperties": False,
+                        },
+                    }
+                },
+                "required": [],
+                "additionalProperties": False,
+            },
+        }
+
+        self.assertEqual(result["api_response"]["data"], expected_data)
 
     def test_path_traversal_attack(self):
         submission = SubmissionFactory.from_components(
@@ -357,7 +427,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 with self.assertRaises(SuspiciousOperation):
                     json_plugin.register_submission(submission, options)
 
-    def test_required_in_schema_is_empty_if_select_boxes_component_unfilled(self):
+    def test_select_boxes_schema_required_is_empty_when_no_data_is_submitted(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -371,20 +441,68 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ],
             completed=True,
             submitted_data={"selectboxes": {}},
+            with_public_registration_reference=True,
         )
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
             "service": self.service,
-            "path": "..",
+            "path": "json_plugin",
             "variables": ["selectboxes"],
         }
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["selectboxes"]["required"],
-            []
+            result["api_response"]["data"]["schema"]["properties"]["selectboxes"][
+                "required"
+            ],
+            [],
+        )
+
+    def test_select_component_with_manual_data_source(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Select",
+                    "key": "select",
+                    "type": "select",
+                    "multiple": True,
+                    "data": {
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                            {"value": "c", "label": "C"},
+                        ],
+                        "json": "",
+                        "url": "",
+                        "resource": "",
+                        "custom": "",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={"select": ["a", "c"]},
+            with_public_registration_reference=True,
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["select"],
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(
+            result["api_response"]["data"]["schema"]["properties"]["select"]["items"][
+                "enum"
+            ],
+            ["a", "b", "c", ""],
         )
 
     def test_select_component_with_form_variable_as_data_source(self):
@@ -411,6 +529,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ],
             completed=True,
             submitted_data={"select": ["A", "C"]},
+            with_public_registration_reference=True,
         )
 
         FormVariableFactory.create(
@@ -423,18 +542,20 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
-        set_submission_reference(submission)
 
-        json_form_options = dict(
-            service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
-            form_variables=["select"],
-        )
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["select"],
+        }
 
-        res = json_plugin.register_submission(submission, json_form_options)
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
-            glom(res, "api_response.data.schema.properties.select.items.enum"),
+            result["api_response"]["data"]["schema"]["properties"]["select"]["items"][
+                "enum"
+            ],
             ["A", "B", "C", ""],
         )
 
@@ -456,6 +577,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ],
             completed=True,
             submitted_data={"selectBoxes": {"A": True, "B": False, "C": True}},
+            with_public_registration_reference=True,
         )
 
         FormVariableFactory.create(
@@ -468,15 +590,15 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
-        set_submission_reference(submission)
 
-        json_form_options = dict(
-            service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
-            form_variables=["selectBoxes"],
-        )
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["selectBoxes"],
+        }
 
-        res = json_plugin.register_submission(submission, json_form_options)
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         expected_schema = {
             "title": "Select Boxes",
@@ -491,17 +613,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         self.assertEqual(
-            glom(res, "api_response.data.schema.properties.selectBoxes"),
-            expected_schema
+            result["api_response"]["data"]["schema"]["properties"]["selectBoxes"],
+            expected_schema,
         )
 
-    def test_select_boxes_schema_required_is_empty_when_no_data_is_submitted(self):
+    def test_radio_component_with_manual_data_source(self):
         submission = SubmissionFactory.from_components(
             [
                 {
-                    "label": "Select Boxes",
-                    "key": "selectBoxes",
-                    "type": "selectboxes",
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
                     "values": [
                         {"label": "A", "value": "a"},
                         {"label": "B", "value": "b"},
@@ -510,23 +632,23 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 },
             ],
             completed=True,
-            submitted_data={"selectBoxes": {}},
+            submitted_data={"radio": "b"},
         )
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
-        set_submission_reference(submission)
 
-        json_form_options = dict(
-            service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
-            form_variables=["selectBoxes"],
-        )
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["radio"],
+        }
 
-        res = json_plugin.register_submission(submission, json_form_options)
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
-            glom(res, "api_response.data.schema.properties.selectBoxes.required"),
-            [],
+            result["api_response"]["data"]["schema"]["properties"]["radio"]["enum"],
+            ["a", "b", "c", ""],
         )
 
     def test_radio_component_with_form_variable_as_data_source(self):
@@ -546,6 +668,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ],
             completed=True,
             submitted_data={"radio": "A"},
+            with_public_registration_reference=True,
         )
 
         FormVariableFactory.create(
@@ -558,17 +681,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
-        set_submission_reference(submission)
 
-        json_form_options = dict(
-            service=(ServiceFactory(api_root="http://localhost:80/")),
-            relative_api_endpoint="json_plugin",
-            form_variables=["radio"],
-        )
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["radio"],
+        }
 
-        res = json_plugin.register_submission(submission, json_form_options)
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
-            glom(res, "api_response.data.schema.properties.radio.enum"),
+            result["api_response"]["data"]["schema"]["properties"]["radio"]["enum"],
             ["A", "B", "C", ""],
         )

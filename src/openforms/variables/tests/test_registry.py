@@ -18,6 +18,10 @@ class RegistryTests(TestCase):
             def get_initial_value(self, *args, **kwargs):
                 return "Test!"
 
+            @staticmethod
+            def as_json_schema():
+                return {}
+
         static_vars = list(test_static_variables_register)
 
         self.assertEqual(1, len(static_vars))

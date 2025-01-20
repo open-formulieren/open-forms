@@ -2,22 +2,22 @@ interactions:
 - request:
     body: '"{\"values\": {\"auth_bsn\": \"123456789\", \"firstName\": \"We Are\"},
       \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"static_var_1\": {\"type\": \"string\",
-      \"pattern\": \"^cool_pattern$\"}, \"form_var_1\": {\"type\": \"string\"}, \"form_var_2\":
-      {\"type\": \"string\"}, \"attachment\": {\"type\": \"string\", \"contentEncoding\":
-      \"base64\"}}, \"required\": [\"static_var_1\", \"form_var_1\", \"form_var_2\"],
-      \"additionalProperties\": false}}"'
+      \"type\": \"object\", \"properties\": {\"auth_bsn\": {\"title\": \"BSN\", \"description\":
+      \"Uniquely identifies the authenticated person. This value follows the rules
+      for Dutch social security numbers.\", \"type\": \"string\", \"pattern\": \"^\\\\d{9}$\",
+      \"format\": \"nl-bsn\"}, \"firstName\": {\"title\": \"Firstname\", \"type\":
+      \"string\"}}, \"required\": [\"auth_bsn\"], \"additionalProperties\": false}}"'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3Mzc0Njk5MDAsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.VaaQtoX7c3ac2_Zf8GPvB8fAMYfmJft53c7qXNBY_lk
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3Mzc1NDYyOTcsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.RexAuQ6PNjAdp5DtEcz2dtcPXNknP0WnjZKKnr-LQEQ
       Connection:
       - keep-alive
       Content-Length:
-      - '516'
+      - '560'
       Content-Type:
       - application/json
       User-Agent:
@@ -46,7 +46,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Tue, 21 Jan 2025 14:31:40 GMT
+      - Wed, 22 Jan 2025 11:44:57 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.8
     status:
