@@ -52,7 +52,7 @@ Other (more complex) solutions are also possible, but out-of-scope for this docu
 
 .. _Redis sentinel: https://redis.io/docs/management/sentinel/
 .. _AOF: https://redis.io/docs/management/persistence/
-.. _Redis cluster: https://redis.io/docs/management/scaling/
+.. _Redis cluster: https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/
 .. _replication: https://redis.io/docs/management/replication/
 .. _different broker: https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html#configuration
 
