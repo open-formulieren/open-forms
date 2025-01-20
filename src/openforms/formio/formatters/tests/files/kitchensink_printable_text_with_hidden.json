@@ -94,7 +94,13 @@
     "Signature": "<!! test dynamically sets translated string like 'signature added' !!>",
     "Signature Hidden": "",
     "Signature Empty": "",
-    "Map": "52.373087283242505, 4.8923054658521945",
-    "Map Empty": "",
-    "Map Hidden": ""
+    "Map point": "52.373087283242505, 4.8923054658521945",
+    "Map point Empty": "",
+    "Map point Hidden": "",
+    "Map LineString": "[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]",
+    "Map LineString Empty": "",
+    "Map LineString Hidden": "",
+    "Map Polygon": "[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]",
+    "Map Polygon Empty": "",
+    "Map Polygon Hidden": ""
 }

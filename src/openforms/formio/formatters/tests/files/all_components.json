@@ -618,6 +618,295 @@
             "keyModified": true
         },
         {
+            "key": "mapPoint",
+            "type": "map",
+            "input": true,
+            "label": "Map point",
+            "showInPDF": true,
+            "tableView": true,
+            "showInEmail": false,
+            "interactions": {
+                "marker": true,
+                "polygon": false,
+                "polyline": false
+            },
+            "registration": {
+                "attribute": ""
+            },
+            "initialCenter": {},
+            "showInSummary": true,
+            "isSensitiveData": true,
+            "translatedErrors": {
+                "en": {
+                    "required": ""
+                },
+                "nl": {
+                    "required": ""
+                }
+            },
+            "tileLayerIdentifier": null,
+            "useConfigDefaultMapSettings": true,
+            "id": "el7xpks",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+                "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "minLength": "",
+                "maxLength": "",
+                "pattern": ""
+            },
+            "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+            },
+            "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "plain",
+            "inputMask": "",
+            "spellcheck": true
+        },
+        {
+            "key": "mapLineString",
+            "type": "map",
+            "input": true,
+            "label": "Map line string",
+            "showInPDF": true,
+            "tableView": true,
+            "showInEmail": false,
+            "interactions": {
+                "marker": false,
+                "polygon": false,
+                "polyline": true
+            },
+            "registration": {
+                "attribute": ""
+            },
+            "initialCenter": {},
+            "showInSummary": true,
+            "isSensitiveData": true,
+            "translatedErrors": {
+                "en": {
+                    "required": ""
+                },
+                "nl": {
+                    "required": ""
+                }
+            },
+            "useConfigDefaultMapSettings": true,
+            "id": "eypjh9l",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+                "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "minLength": "",
+                "maxLength": "",
+                "pattern": ""
+            },
+            "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+            },
+            "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "plain",
+            "inputMask": "",
+            "spellcheck": true
+        },
+        {
+            "key": "mapPolygon",
+            "type": "map",
+            "input": true,
+            "label": "Map polygon",
+            "showInPDF": true,
+            "tableView": true,
+            "showInEmail": false,
+            "interactions": {
+                "marker": false,
+                "polygon": true,
+                "polyline": false
+            },
+            "registration": {
+                "attribute": ""
+            },
+            "initialCenter": {},
+            "showInSummary": true,
+            "isSensitiveData": true,
+            "translatedErrors": {
+                "en": {
+                    "required": ""
+                },
+                "nl": {
+                    "required": ""
+                }
+            },
+            "useConfigDefaultMapSettings": true,
+            "id": "e5y0i2p",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+                "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "minLength": "",
+                "maxLength": "",
+                "pattern": ""
+            },
+            "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+            },
+            "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "plain",
+            "inputMask": "",
+            "spellcheck": true
+        },
+        {
             "id": "e1uq4e",
             "key": "number",
             "type": "number",

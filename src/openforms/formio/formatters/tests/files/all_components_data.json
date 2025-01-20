@@ -11,6 +11,18 @@
   "time": "16:26:00",
   "email": "test@example.com",
   "radio": "option2",
+  "mapPoint": {
+    "type": "Point",
+    "coordinates": [4.893164274470299, 52.36673378967122]
+  },
+  "mapLineString": {
+    "type": "LineString",
+    "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]]
+  },
+  "mapPolygon": {
+    "type": "Polygon",
+    "coordinates": [[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]]
+  },
   "number": 42.123,
   "select": "option1",
   "postcode": "1234 AA",

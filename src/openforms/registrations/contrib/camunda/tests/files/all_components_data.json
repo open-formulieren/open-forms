@@ -1,8 +1,16 @@
 {
   "bsn": "123456782",
-  "map": {
+  "mapPoint": {
     "type": "Point",
     "coordinates": [52.3782943985417, 4.899629917973432]
+  },
+  "mapLineString": {
+    "type": "LineString",
+    "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]]
+  },
+  "mapPolygon": {
+    "type": "Polygon",
+    "coordinates": [[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]]
   },
   "date": "2021-12-24",
   "file": [],

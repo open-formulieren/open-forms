@@ -152,17 +152,47 @@ class TypeMappingTests(SimpleTestCase):
             "licensePlateMulti": ["aa-bb-12", "1-aaa-12", "12-aa-34"],
             "licensePlateMultiEmpty": [None],
             "licenseplate": "aa-bb-12",
-            "map": {
+            "mapPoint": {
                 "type": "Point",
                 "coordinates": [52.373087283242505, 4.8923054658521945],
             },
-            "mapEmpty": {
+            "mapPointEmpty": {
                 "type": "Point",
                 "coordinates": [52.379648, 4.9020928],
             },
-            "mapHidden": {
+            "mapPointHidden": {
                 "type": "Point",
                 "coordinates": [52.379648, 4.9020928],
+            },
+            "mapLineString": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapLineStringEmpty": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapLineStringHidden": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapPolygon": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
+            "mapPolygonEmpty": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
+            "mapPolygonHidden": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
             },
             "number": 1234,
             "numberEmpty": None,
@@ -247,9 +277,19 @@ class TypeMappingTests(SimpleTestCase):
         data = load_json("all_components_data.json")
         expected = {
             "bsn": "123456782",
-            "map": {
+            "mapPoint": {
                 "type": "Point",
                 "coordinates": [52.3782943985417, 4.899629917973432],
+            },
+            "mapLineString": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapPolygon": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
             },
             "date": date(2021, 12, 24),
             "file": [],
