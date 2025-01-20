@@ -660,7 +660,9 @@ ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
 AXES_CACHE = "axes"  # refers to CACHES setting
 # The number of login attempts allowed before a record is created for the
 # failed logins. Default: 3
-AXES_FAILURE_LIMIT = 10
+AXES_FAILURE_LIMIT = config(
+    "AXES_FAILURE_LIMIT", default=10 
+)
 # If set, defines a period of inactivity after which old failed login attempts
 # will be forgotten. Can be set to a python timedelta object or an integer. If
 # an integer, will be interpreted as a number of hours. Default: None
