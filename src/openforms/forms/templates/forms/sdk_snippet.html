@@ -1,7 +1,7 @@
 {% load openforms %}{% if form %}{% with 'openforms-container' as div_id %}
 <div id="{{ div_id }}"></div>
-<script src="{{ sdk_js_url }}"></script>
-<script nonce="{{ request.csp_nonce }}">
+<script src="{{ sdk_js_url }}" nomodule></script>
+<script nonce="{{ request.csp_nonce }}" nomodule>
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
     const targetNode = document.getElementById('{{ div_id|escapejs }}');
