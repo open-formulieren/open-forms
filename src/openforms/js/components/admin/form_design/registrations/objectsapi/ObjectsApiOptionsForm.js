@@ -27,6 +27,8 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
         />
       }
       initialFormData={{
+        version: 2, // default to version 2, existing form data can override this
+        variablesMapping: [],
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
         objectsApiGroup: formData.objectsApiGroup ?? defaultGroup,

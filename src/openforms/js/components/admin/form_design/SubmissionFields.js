@@ -101,7 +101,7 @@ export const SubmissionLimitFields = ({submissionLimit, formUuid, onChange}) => 
 };
 
 SubmissionLimitFields.propTypes = {
-  submissionLimit: PropTypes.number.isRequired,
+  submissionLimit: PropTypes.number,
   formUuid: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
