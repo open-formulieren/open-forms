@@ -8,29 +8,15 @@ After deploying Open Forms, it needs to be configured to be fully functional. Th
 command line tool ``setup_configuration`` assists with this configuration by loading a
 YAML file in which the configuration information is specified.
 
-.. code-block:: bash
+For general information on how the command line tool works, refer to the
+:external+django-setup-configuration:ref:`documentation <usage_docs>`.
 
-    src/manage.py setup_configuration --yaml-file /path/to/your/yaml
+Below are example configurations for all the configuration steps this application provides.
+They can be used as a starting point and combined into a single YAML to use as input for the command.
 
-You can get the full command documentation with:
-
-.. code-block:: bash
-
-    src/manage.py setup_configuration --help
-
-.. warning:: This command is declarative - if configuration is manually changed after
-   running the command and you then run the exact same command again, the manual
-   changes will be reverted.
-
-Preparation
-===========
-
-The command executes the list of pluggable configuration steps, and each step
-requires specific configuration information, that should be prepared.
-Here is the description of all available configuration steps and the shape of the data,
-used by each step.
-
-All of the configuration must be part of a single YAML file that is passed to the command.
+.. warning::
+    The values in the following YAML examples contain defaults and in some case dummy values, make sure to edit
+    values of i.e. identifiers, secrets and other fields that have dummy values!
 
 OpenID Connect configuration for admin authentication
 -----------------------------------------------------
@@ -64,13 +50,3 @@ ZGW APIs registration configuration
     :noindex:
 
 .. setup-config-example:: openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep
-
-Execution
-=========
-
-Open Forms configuration
-------------------------
-
-With the full command invocation, all defined configuration steps are applied. Each step is idempotent,
-so it's safe to run the command multiple times. The steps will overwrite any manual changes made in
-the admin if you run the command after making these changes.

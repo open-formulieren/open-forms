@@ -83,6 +83,10 @@ intersphinx_mapping = {
         "https://objects-and-objecttypes-api.readthedocs.io/en/stable/",
         None,
     ),
+    "django-setup-configuration": (
+        "https://django-setup-configuration.readthedocs.io/en/stable/",
+        None,
+    ),
 }
 
 # -- Options for HTML output -------------------------------------------------
