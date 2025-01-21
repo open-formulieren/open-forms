@@ -71,8 +71,8 @@ Formulier maken
 
    * Tab **Weergave**
    
-     * "U betaald voor 1 hond hondenbelasting. U kunt het formulier 
-       `hier <http://example.com>`__ invullen."
+     * "U betaalt voor 1 hond hondenbelasting. U kunt het formulier
+       `hier <https://example.com>`__ invullen."
 
    * Tab **Geavanceerd**
      

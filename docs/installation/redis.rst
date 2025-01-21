@@ -26,7 +26,7 @@ certain period of time. By default, Redis will save the DB (see the default `red
 * After 300 seconds (5 minutes) if at least 100 changes were performed
 * After 60 seconds if at least 10000 changes were performed
 
-.. _redis.conf file: https://redis.io/docs/management/config-file/
+.. _redis.conf file: https://redis.io/docs/latest/operate/oss_and_stack/management/config-file/
 
 If Redis is abruptly terminated and any changes have not been written to the DB, the data will be lost. For Open-Forms,
 this means that Celery tasks that have been queued and have not yet been picked up by a worker might be lost.
@@ -50,10 +50,10 @@ Other (more complex) solutions are also possible, but out-of-scope for this docu
   in the :ref:`installation_environment_config`).
 
 
-.. _Redis sentinel: https://redis.io/docs/management/sentinel/
-.. _AOF: https://redis.io/docs/management/persistence/
+.. _Redis sentinel: https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/
+.. _AOF: https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/
 .. _Redis cluster: https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/
-.. _replication: https://redis.io/docs/management/replication/
+.. _replication: https://redis.io/docs/latest/operate/oss_and_stack/management/replication/
 .. _different broker: https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html#configuration
 
 Deploying multiple Redis instances
