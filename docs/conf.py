@@ -119,6 +119,8 @@ linkcheck_ignore = [
     r"https://stackoverflow\.com/.*",  # SO 403s when running on github actions :/
     r"https://sequencediagram\.org/index\.html",  # anchor are not server side
     r"https://www\.miniwebtool\.com/django-secret-key-generator/",  # seems to block the requests user agent
+    # our changelog generates many such links that slow down the link checks :)
+    r"https://github.com/open-formulieren/open-forms/issues/[0-9]+",
 ]
 
 linkcheck_anchors_ignore_for_url = [
