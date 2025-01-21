@@ -13,7 +13,7 @@ from openforms.submissions.models import (
     SubmissionFileAttachment,
     SubmissionValueVariable,
 )
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import FormVariableSources
 
 from ...base import BasePlugin  # openforms.registrations.base
@@ -26,6 +26,7 @@ class JSONDumpRegistration(BasePlugin):
     verbose_name = _("JSON dump registration")
     configuration_options = JSONDumpOptionsSerializer
 
+    # TODO: add JSONDumpResult typed dict to properly indicate return value
     def register_submission(
         self, submission: Submission, options: JSONDumpOptions
     ) -> dict:
@@ -62,17 +63,14 @@ class JSONDumpRegistration(BasePlugin):
         # Send to the service
         data = json.dumps({"values": values, "schema": schema}, cls=DjangoJSONEncoder)
         service = options["service"]
-        submission.registration_result = result = {}
         with build_client(service) as client:
             if ".." in (path := options["path"]):
                 raise SuspiciousOperation("Possible path traversal detected")
 
-            res = client.post(path, json=data)
-            res.raise_for_status()
+            result = client.post(path, json=data)
+            result.raise_for_status()
 
-            result["api_response"] = res.json()
-
-        return result
+        return {"api_response": result.json()}
 
     def check_config(self) -> None:
         # Config checks are not really relevant for this plugin right now
@@ -101,7 +99,7 @@ class JSONDumpRegistration(BasePlugin):
             if component is None or component["type"] != "file":
                 continue
 
-            encoded_attachments = [
+            encoded_attachments: list[JSONValue] = [
                 {
                     "file_name": attachment.original_name,
                     "content": encode_attachment(attachment),
@@ -111,19 +109,19 @@ class JSONDumpRegistration(BasePlugin):
             ]
 
             match (
-                multiple := component.get("multiple", False),
-                n_attachments := len(encoded_attachments)
+                component.get("multiple", False),
+                n_attachments := len(encoded_attachments),
             ):
                 case False, 0:
                     values[key] = None
                 case False, 1:
                     values[key] = encoded_attachments[0]
-                case True, _:
+                case True, int():
                     values[key] = encoded_attachments
-                case _:
+                case False, int():  # pragma: no cover
                     raise ValueError(
-                        f"Combination of multiple ({multiple}) and number of "
-                        f"attachments ({n_attachments}) is not allowed."
+                        f"Cannot have multiple attachments ({n_attachments}) for a "
+                        "single file component."
                     )
 
 

@@ -33,7 +33,7 @@ const Variables = () => {
           isMulti
           required
           closeMenuOnSelect={false}
-          includeStaticVariables={true}
+          includeStaticVariables
         />
       </Field>
     </FormRow>

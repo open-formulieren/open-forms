@@ -52,7 +52,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         SubmissionFileAttachmentFactory.create(
             form_key="file",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=submission.steps[0],
             file_name="test_file.txt",
             original_name="test_file.txt",
             content_type="application/text",
@@ -96,6 +96,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(result["api_response"], expected_response)
 
@@ -152,7 +153,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         SubmissionFileAttachmentFactory.create(
             form_key="file",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=submission.steps[0],
             file_name="file1.txt",
             original_name="file1.txt",
             content_type="application/text",
@@ -163,7 +164,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         SubmissionFileAttachmentFactory.create(
             form_key="file",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=submission.steps[0],
             file_name="file2.txt",
             original_name="file2.txt",
             content_type="application/text",
@@ -191,6 +192,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         ]
 
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
             result["api_response"]["data"]["values"]["file"], expected_files
@@ -215,7 +217,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         SubmissionFileAttachmentFactory.create(
             form_key="file",
-            submission_step=submission.submissionstep_set.get(),
+            submission_step=submission.steps[0],
             file_name="file1.txt",
             original_name="file1.txt",
             content_type="application/text",
@@ -232,6 +234,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(
             result["api_response"]["data"]["values"]["file"],
@@ -261,6 +264,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(result["api_response"]["data"]["values"]["file"], None)
 
@@ -282,6 +286,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         self.assertEqual(result["api_response"]["data"]["values"]["file"], [])
 
