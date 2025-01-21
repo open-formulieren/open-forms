@@ -156,6 +156,20 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
 
         mails = mail.outbox
 
+        # FLAKINESS HERE happens something, try to figure out what's going wrong
+        if not mails:
+            log_flaky()
+
+            # try to detect why no registration email was sent
+            print(f"{submission.registration_status=}")
+            print(f"{submission.payment_required=}")
+            print(f"{submission.confirmation_email_sent=}")
+            print(f"{submission.form.send_confirmation_email=}")
+            # and print logevents
+            logs = TimelineLogProxy.objects.for_object(submission)
+            for log in logs:
+                print(log.message().strip())
+
         self.assertEqual(2, len(mails))
         self.assertEqual(
             mails[0].subject,
