@@ -1,6 +1,22 @@
-{% load openforms %}{% if form %}{% with 'openforms-container' as div_id %}
-<div id="{{ div_id }}"></div>
-<script src="{{ sdk_js_url }}" nomodule></script>
+{% load openforms static %}{% if form %}{% with 'openforms-container' as div_id %}
+{# Preload the module #}
+<link href="{{ sdk_esm_url }}" rel="modulepreload" />
+<div
+    class="open-forms-sdk-root"
+    id="{{ div_id }}"
+    data-sdk-module="{{ sdk_esm_url }}"
+    data-form-id="{{ form.slug }}"
+    data-base-url="{% api_base_url %}"
+    data-base-path="{% if base_path %}{{ base_path }}{% else %}{% url 'forms:form-detail' slug=form.slug %}{% endif %}"
+    data-csp-nonce="{{ request.csp_nonce }}"
+    {% if sdk_sentry_dsn %}data-sentry-dsn{% endif %}
+    {% if sdk_sentry_env %}data-sentry-env{% endif %}
+></div>
+{# Modern browsers support modules, legacy browsers ignore this and use the fallback #}
+<script type="module" src="{% static 'sdk-wrapper.mjs' %}"></script>
+
+{# Fallback #}
+<script src="{{ sdk_umd_url }}" nomodule></script>
 <script nonce="{{ request.csp_nonce }}" nomodule>
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
