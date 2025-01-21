@@ -40,6 +40,7 @@ include = [
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/",
+    "src/openforms/registrations/contrib/json_dump/",
     "src/openforms/registrations/contrib/stuf_zds/options.py",
     "src/openforms/registrations/contrib/stuf_zds/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/typing.py",

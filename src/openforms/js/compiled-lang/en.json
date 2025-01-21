@@ -663,6 +663,12 @@
       "value": "User defined"
     }
   ],
+  "5rj0a+": [
+    {
+      "type": 0,
+      "value": "Service"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -1231,6 +1237,12 @@
       "value": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
     }
   ],
+  "AkG8Zu": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: JSON"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
@@ -1521,6 +1533,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "length"
+    }
+  ],
+  "CZ774U": [
+    {
+      "type": 0,
+      "value": "Which variables to include in the data to be sent"
     }
   ],
   "Cf5zSF": [
@@ -2245,6 +2263,12 @@
       "value": " is unknown. We can only display the JSON definition."
     }
   ],
+  "Ibejpf": [
+    {
+      "type": 0,
+      "value": "Path relative to the Service API root"
+    }
+  ],
   "Igt0Rc": [
     {
       "type": 0,
@@ -2485,6 +2509,12 @@
     {
       "type": 0,
       "value": "Manually defined"
+    }
+  ],
+  "Kl9yvd": [
+    {
+      "type": 0,
+      "value": "Path"
     }
   ],
   "KrJ+rN": [
@@ -2881,6 +2911,12 @@
     {
       "type": 0,
       "value": "Advanced"
+    }
+  ],
+  "OpkUgV": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the data to be sent."
     }
   ],
   "Orf0vr": [
@@ -3801,6 +3837,12 @@
     {
       "type": 0,
       "value": "Remove"
+    }
+  ],
+  "XyDeaD": [
+    {
+      "type": 0,
+      "value": "Variables"
     }
   ],
   "Y4oNhH": [
@@ -5673,6 +5715,12 @@
       "value": "Something went wrong while retrieving the available object type versions."
     }
   ],
+  "nZZkHx": [
+    {
+      "type": 0,
+      "value": "Include variable"
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -5983,6 +6031,12 @@
     {
       "type": 0,
       "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+    }
+  ],
+  "qPiUic": [
+    {
+      "type": 0,
+      "value": "Which service to send the data to"
     }
   ],
   "qUYLVg": [

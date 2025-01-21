@@ -396,6 +396,33 @@ export default {
           type: 'object',
         },
       },
+      {
+        id: 'json_dump',
+        label: 'JSON Dump registration',
+        schema: {
+          type: 'object',
+          properties: {
+            service: {
+              enum: [1, 2],
+              enumNames: ['Service 1', 'Service 2'],
+            },
+            path: {
+              minLength: 1,
+              title: 'Relative API endpoint',
+              type: 'string',
+            },
+            variables: {
+              type: 'array',
+              title: 'List of form variables',
+              items: {
+                type: 'string',
+                title: 'form variable',
+                minLength: 1,
+              },
+            },
+          },
+        },
+      },
     ],
     configuredBackends: [],
     onChange: fn(),
@@ -736,6 +763,16 @@ export const ConfiguredBackends = {
           ],
         },
       },
+      {
+        key: 'backend11',
+        name: 'JSON Dump',
+        backend: 'json_dump',
+        options: {
+          service: 1,
+          path: 'example/endpoint',
+          variables: [],
+        },
+      },
     ],
     validationErrors: [
       ['form.registrationBackends.1.options.zgwApiGroup', 'You sure about this?'],
@@ -971,6 +1008,97 @@ export const STUFZDS = {
           zdsZaaktypeStatusCode: '',
           zdsZaaktypeStatusOmschrijving: '',
         },
+      },
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
+
+export const JSONDump = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend11',
+        name: 'JSON Dump',
+        backend: 'json_dump',
+        options: {
+          service: 1,
+          path: 'example/endpoint',
+          variables: [],
+        },
+      },
+    ],
+    availableFormVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'First name',
+        key: 'firstName',
+        source: 'user_defined',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        prefillOptions: {},
+        dataType: 'string',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+      {
+        form: null,
+        formDefinition: null,
+        name: 'Last name',
+        key: 'lastName',
+        source: 'user_defined',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        prefillOptions: {},
+        dataType: 'string',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+      {
+        form: null,
+        formDefinition: null,
+        name: 'Attachment',
+        key: 'attachment',
+        source: 'user_defined',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        prefillOptions: {},
+        dataType: 'file',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+    ],
+    availableStaticVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'BSN',
+        key: 'auth_bsn',
+        source: 'static',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        prefillOptions: {},
+        dataType: 'string',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
       },
     ],
   },

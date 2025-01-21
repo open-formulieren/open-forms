@@ -663,6 +663,12 @@
       "value": "Gebruikersvariabelen"
     }
   ],
+  "5rj0a+": [
+    {
+      "type": 0,
+      "value": "Service"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -1235,6 +1241,12 @@
       "value": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
+  "AkG8Zu": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: JSON"
+    }
+  ],
   "AtBVAV": [
     {
       "type": 0,
@@ -1525,6 +1537,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "length"
+    }
+  ],
+  "CZ774U": [
+    {
+      "type": 0,
+      "value": "Which variables to include in the data to be sent"
     }
   ],
   "Cf5zSF": [
@@ -2266,6 +2284,12 @@
       "value": " is niet bekend. We kunnen enkel de JSON-definitie weergeven."
     }
   ],
+  "Ibejpf": [
+    {
+      "type": 0,
+      "value": "Path relative to the Service API root"
+    }
+  ],
   "Igt0Rc": [
     {
       "type": 0,
@@ -2502,6 +2526,12 @@
     {
       "type": 0,
       "value": "Handmatig ingesteld"
+    }
+  ],
+  "Kl9yvd": [
+    {
+      "type": 0,
+      "value": "Path"
     }
   ],
   "KrJ+rN": [
@@ -2898,6 +2928,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "OpkUgV": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the data to be sent."
     }
   ],
   "Orf0vr": [
@@ -3814,6 +3850,12 @@
     {
       "type": 0,
       "value": "Verwijderen"
+    }
+  ],
+  "XyDeaD": [
+    {
+      "type": 0,
+      "value": "Variables"
     }
   ],
   "Y4oNhH": [
@@ -5691,6 +5733,12 @@
       "value": "Er ging iets fout bij het ophalen van de objecttypeversies."
     }
   ],
+  "nZZkHx": [
+    {
+      "type": 0,
+      "value": "Include variable"
+    }
+  ],
   "neCqv9": [
     {
       "type": 0,
@@ -6001,6 +6049,12 @@
     {
       "type": 0,
       "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
+    }
+  ],
+  "qPiUic": [
+    {
+      "type": 0,
+      "value": "Which service to send the data to"
     }
   ],
   "qUYLVg": [
