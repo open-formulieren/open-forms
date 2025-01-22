@@ -72,10 +72,15 @@ class SDKRedirectView(RedirectView):
 
     def get_redirect_url(self, ext: str):
         urls = sdk_urls(self.request)
-        key = f"sdk_{ext}_url"
-        if key not in urls:
-            raise BadRequest(f"Invalid extension '{ext}'")
-        return urls[key]
+        match ext:
+            case "js":
+                return urls["sdk_umd_url"]
+            case "mjs":
+                return urls["sdk_esm_url"]
+            case "css":
+                return urls["sdk_css_url"]
+            case _:
+                raise BadRequest(f"Invalid extension '{ext}'")
 
 
 class DevViewMixin(LoginRequiredMixin, UserPassesTestMixin):

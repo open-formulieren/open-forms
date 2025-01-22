@@ -25,6 +25,16 @@ class StableSDKUrlTests(TestCase):
                 fetch_redirect_response=False,
             )
 
+        mjs_url = f"{base}open-forms-sdk.mjs"
+        with self.subTest(js_url=mjs_url):
+            js_response = self.client.get(mjs_url)
+
+            self.assertRedirects(
+                js_response,
+                f"{base}1.2.3/open-forms-sdk.mjs",
+                fetch_redirect_response=False,
+            )
+
         css_url = f"{base}open-forms-sdk.css"
         with self.subTest(css_url=css_url):
             css_response = self.client.get(css_url)
