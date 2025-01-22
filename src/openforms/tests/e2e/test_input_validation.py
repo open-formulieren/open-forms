@@ -542,6 +542,8 @@ class SingleCurrencyTests(ValidationsTestCase):
 
 
 class SingleMapTests(ValidationsTestCase):
+    fuzzy_match_invalid_param_names = True
+
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
         await page.wait_for_selector(
             f".openforms-leaflet-map, [aria-label='{label}']", state="visible"

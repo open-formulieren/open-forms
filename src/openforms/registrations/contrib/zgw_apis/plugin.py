@@ -75,13 +75,6 @@ def get_property_mappings_from_submission(
     return property_mappings
 
 
-def _point_coordinate(value):
-    if not value or not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    # Providing the coordinates as [lng, lat] #4955
-    return {"type": "Point", "coordinates": [value[1], value[0]]}
-
-
 def _gender_choices(value):
     """
     Convert value to lowercase, take only the first character and see if it's
@@ -214,9 +207,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
     }
 
     zaak_mapping = {
-        "zaakgeometrie": FieldConf(
-            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
-        ),
+        "zaakgeometrie": FieldConf(RegistrationAttribute.locatie_coordinaat),
     }
 
     @wrap_api_errors
@@ -623,10 +614,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         assert "content_json" in options
 
         object_mapping = {
-            "geometry": FieldConf(
-                RegistrationAttribute.locatie_coordinaat,
-                transform=_point_coordinate,
-            ),
+            "geometry": FieldConf(RegistrationAttribute.locatie_coordinaat),
         }
 
         context = {

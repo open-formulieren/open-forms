@@ -75,7 +75,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             submitted_data={
                 "age": 20,
                 "lastname": "My last name",
-                "location": [52.36673378967122, 4.893164274470299],
+                "location": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
         )
 
@@ -545,7 +548,10 @@ class V2HandlerTests(TestCase):
             ],
             completed=True,
             submitted_data={
-                "location": [52.36673378967122, 4.893164274470299],
+                "location": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
             },
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)

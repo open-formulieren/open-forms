@@ -13,6 +13,7 @@ from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
+from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
@@ -213,14 +214,15 @@ class Map(BasePlugin[MapComponent]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
+    def build_serializer_field(
+        self, component: MapComponent
+    ) -> GeoJsonGeometryPolymorphicSerializer:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        base = serializers.FloatField(
-            required=required,
-            allow_null=not required,
+
+        return GeoJsonGeometryPolymorphicSerializer(
+            required=required, allow_null=not required
         )
-        return serializers.ListField(child=base, min_length=2, max_length=2)
 
 
 @register("postcode")

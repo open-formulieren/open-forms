@@ -49,8 +49,12 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
 
         # empty map should send no coordinates
         # TODO update data fixture when #1346 is fixed
-        data["mapEmpty"] = []
-        data["mapHidden"] = []
+        data["mapPointEmpty"] = {}
+        data["mapPointHidden"] = {}
+        data["mapLineStringEmpty"] = {}
+        data["mapLineStringHidden"] = {}
+        data["mapPolygonEmpty"] = {}
+        data["mapPolygonHidden"] = {}
 
         # translated string
         assert "Signature" in text_printed

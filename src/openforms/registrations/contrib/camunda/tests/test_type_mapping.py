@@ -152,9 +152,48 @@ class TypeMappingTests(SimpleTestCase):
             "licensePlateMulti": ["aa-bb-12", "1-aaa-12", "12-aa-34"],
             "licensePlateMultiEmpty": [None],
             "licenseplate": "aa-bb-12",
-            "map": [52.373087283242505, 4.8923054658521945],
-            "mapEmpty": [52.379648, 4.9020928],
-            "mapHidden": [52.379648, 4.9020928],
+            "mapPoint": {
+                "type": "Point",
+                "coordinates": [52.373087283242505, 4.8923054658521945],
+            },
+            "mapPointEmpty": {
+                "type": "Point",
+                "coordinates": [52.379648, 4.9020928],
+            },
+            "mapPointHidden": {
+                "type": "Point",
+                "coordinates": [52.379648, 4.9020928],
+            },
+            "mapLineString": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapLineStringEmpty": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapLineStringHidden": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapPolygon": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
+            "mapPolygonEmpty": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
+            "mapPolygonHidden": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
             "number": 1234,
             "numberEmpty": None,
             "numberHidden": 1234,
@@ -238,7 +277,20 @@ class TypeMappingTests(SimpleTestCase):
         data = load_json("all_components_data.json")
         expected = {
             "bsn": "123456782",
-            "map": [52.3782943985417, 4.899629917973432],
+            "mapPoint": {
+                "type": "Point",
+                "coordinates": [52.3782943985417, 4.899629917973432],
+            },
+            "mapLineString": {
+                "type": "LineString",
+                "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]],
+            },
+            "mapPolygon": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]
+                ],
+            },
             "date": date(2021, 12, 24),
             "file": [],
             "iban": "RO09 BCYP 0000 0012 3456 7890",

@@ -132,18 +132,42 @@
     null
   ],
   "licenseplate": "aa-bb-12",
-  "map": [
-    52.373087283242505,
-    4.8923054658521945
-  ],
-  "mapEmpty": [
-    52.379648,
-    4.9020928
-  ],
-  "mapHidden": [
-    52.379648,
-    4.9020928
-  ],
+  "mapPoint": {
+    "type": "Point",
+    "coordinates": [52.373087283242505, 4.8923054658521945]
+  },
+  "mapPointEmpty": {
+    "type": "Point",
+    "coordinates": [52.379648, 4.9020928]
+  },
+  "mapPointHidden": {
+    "type": "Point",
+    "coordinates": [52.379648, 4.9020928]
+  },
+  "mapLineString": {
+    "type": "LineString",
+    "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]]
+  },
+  "mapLineStringEmpty": {
+    "type": "LineString",
+    "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]]
+  },
+  "mapLineStringHidden": {
+    "type": "LineString",
+    "coordinates": [[4.893, 52.366], [4.894, 52.367], [4.895, 52.368]]
+  },
+  "mapPolygon": {
+    "type": "Polygon",
+    "coordinates": [[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]]
+  },
+  "mapPolygonEmpty": {
+    "type": "Polygon",
+    "coordinates": [[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]]
+  },
+  "mapPolygonHidden": {
+    "type": "Polygon",
+    "coordinates": [[[4.893, 52.366], [4.893, 52.368], [4.895, 52.368], [4.895, 52.366]]]
+  },
   "number": 1234,
   "numberDecimal": 1234.56,
   "numberDecimalMulti": [
