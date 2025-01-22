@@ -105,7 +105,7 @@ def validate_not_staff(user: User):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    extra_field = serializers.CharField(required=False)
+    extra_field = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
