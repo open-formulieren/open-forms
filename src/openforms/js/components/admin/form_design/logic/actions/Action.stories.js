@@ -1,4 +1,5 @@
 import {useArgs} from '@storybook/preview-api';
+import {expect, userEvent, waitFor, within} from '@storybook/test';
 import {produce} from 'immer';
 import set from 'lodash/set';
 
@@ -195,5 +196,98 @@ export const EvaluateDMN = {
         mockDMNDecisionDefinitionVersionsGet,
       ],
     },
+  },
+};
+
+export const EvaluateDMNWithInitialErrors = {
+  render,
+  name: 'Evaluate DMN with initial errors',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: 'bar',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        config: {
+          pluginId: '',
+          decisionDefinitionId: '',
+        },
+        type: 'evaluate-dmn',
+        value: '',
+      },
+    },
+    errors: {
+      action: {
+        config: {
+          pluginId: 'This field is required.',
+          decisionDefinitionId: 'This field is required.',
+        },
+      },
+    },
+    availableDMNPlugins: [
+      {id: 'camunda7', label: 'Camunda 7'},
+      {id: 'some-other-engine', label: 'Some other engine'},
+    ],
+    availableFormVariables: [
+      {type: 'textfield', key: 'name', name: 'Name'},
+      {type: 'textfield', key: 'surname', name: 'Surname'},
+      {type: 'number', key: 'income', name: 'Income'},
+      {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
+    ],
+  },
+  decorators: [FormDecorator],
+
+  parameters: {
+    msw: {
+      handlers: [
+        mockDMNDecisionDefinitionsGet({
+          camunda7: [
+            {
+              id: 'approve-payment',
+              label: 'Approve payment',
+            },
+            {
+              id: 'invoiceClassification',
+              label: 'Invoice Classification',
+            },
+          ],
+          'some-other-engine': [{id: 'some-definition-id', label: 'Some definition id'}],
+        }),
+        mockDMNDecisionDefinitionVersionsGet,
+      ],
+    },
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    step('Verify that global DMN config error is shown', () => {
+      expect(
+        canvas.getByRole('listitem', {text: 'De DMN-instellingen zijn niet geldig.'})
+      ).toBeVisible();
+    });
+
+    step('Open configuration modal', async () => {
+      await userEvent.click(canvas.getByRole('button', {name: 'Instellen'}));
+
+      const dialog = within(canvas.getByRole('dialog'));
+
+      const pluginDropdown = dialog.getByLabelText('Plugin');
+      const decisionDefDropdown = dialog.getByLabelText('Beslisdefinitie-ID');
+
+      // Mark dropdowns as touched
+      await userEvent.click(pluginDropdown);
+      await userEvent.click(decisionDefDropdown);
+      await userEvent.tab();
+
+      await waitFor(async () => {
+        const errorMessages = await dialog.getAllByRole('listitem');
+
+        await expect(errorMessages.length).toBe(2);
+      });
+    });
   },
 };
