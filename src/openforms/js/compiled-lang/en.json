@@ -1141,6 +1141,12 @@
       "value": "Subtract"
     }
   ],
+  "9oJuUL": [
+    {
+      "type": 0,
+      "value": "Marker"
+    }
+  ],
   "9y3/ek": [
     {
       "type": 0,
@@ -2059,6 +2065,12 @@
     {
       "type": 0,
       "value": "Null"
+    }
+  ],
+  "Gjhh/5": [
+    {
+      "type": 0,
+      "value": "Available drawing shapes"
     }
   ],
   "GjumK9": [
@@ -3363,6 +3375,12 @@
       "value": "Double column"
     }
   ],
+  "T64zDz": [
+    {
+      "type": 0,
+      "value": "Polygon"
+    }
+  ],
   "TB/ku3": [
     {
       "type": 0,
@@ -3711,6 +3729,12 @@
     {
       "type": 0,
       "value": "Service"
+    }
+  ],
+  "WXpj4j": [
+    {
+      "type": 0,
+      "value": "Users can set a marker on the map"
     }
   ],
   "WZJG0y": [
@@ -4189,6 +4213,12 @@
       "value": "House letter addition"
     }
   ],
+  "b64egT": [
+    {
+      "type": 0,
+      "value": "Users can draw shapes (polygons) on the map"
+    }
+  ],
   "b9D64D": [
     {
       "type": 0,
@@ -4563,12 +4593,6 @@
     {
       "type": 0,
       "value": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
-    }
-  ],
-  "e6SsfR": [
-    {
-      "type": 0,
-      "value": "Map configuration"
     }
   ],
   "eAmrdi": [
@@ -5613,6 +5637,12 @@
       "value": "Steps and fields"
     }
   ],
+  "mRmbnJ": [
+    {
+      "type": 0,
+      "value": "Line"
+    }
+  ],
   "mWuCXv": [
     {
       "type": 0,
@@ -5951,6 +5981,12 @@
       "value": "User"
     }
   ],
+  "pM92DZ": [
+    {
+      "type": 0,
+      "value": "Users can draw straight lines on the map"
+    }
+  ],
   "pT5jx/": [
     {
       "type": 0,
@@ -5977,6 +6013,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "pdmkVe": [
+    {
+      "type": 0,
+      "value": "Initial focus"
     }
   ],
   "pfdsz9": [
@@ -6587,6 +6629,12 @@
     {
       "type": 0,
       "value": "Errored Submissions Removal Method"
+    }
+  ],
+  "wJ7Yha": [
+    {
+      "type": 0,
+      "value": "Map settings"
     }
   ],
   "wLfQfD": [

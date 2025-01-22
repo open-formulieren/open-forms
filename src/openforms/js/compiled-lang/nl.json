@@ -1145,6 +1145,12 @@
       "value": "Aftrekken"
     }
   ],
+  "9oJuUL": [
+    {
+      "type": 0,
+      "value": "Pin/punt"
+    }
+  ],
   "9y3/ek": [
     {
       "type": 0,
@@ -2080,6 +2086,12 @@
     {
       "type": 0,
       "value": "Leeg (null)"
+    }
+  ],
+  "Gjhh/5": [
+    {
+      "type": 0,
+      "value": "Beschikbare vormen"
     }
   ],
   "GjumK9": [
@@ -3376,6 +3388,12 @@
       "value": "Twee kolommen"
     }
   ],
+  "T64zDz": [
+    {
+      "type": 0,
+      "value": "Veelhoek (Polygoon)"
+    }
+  ],
   "TB/ku3": [
     {
       "type": 0,
@@ -3724,6 +3742,12 @@
     {
       "type": 0,
       "value": "Service"
+    }
+  ],
+  "WXpj4j": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen een punt aanduiden op de kaart."
     }
   ],
   "WZJG0y": [
@@ -4203,6 +4227,12 @@
       "value": "Huislettertoevoeging"
     }
   ],
+  "b64egT": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen een veelhoek (gesloten vorm die uit rechte lijnen bestaat) tekenen."
+    }
+  ],
   "b9D64D": [
     {
       "type": 0,
@@ -4581,12 +4611,6 @@
     {
       "type": 0,
       "value": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen."
-    }
-  ],
-  "e6SsfR": [
-    {
-      "type": 0,
-      "value": "Kaartinstellingen"
     }
   ],
   "eAmrdi": [
@@ -5631,6 +5655,12 @@
       "value": "Stappen en velden"
     }
   ],
+  "mRmbnJ": [
+    {
+      "type": 0,
+      "value": "Lijn"
+    }
+  ],
   "mWuCXv": [
     {
       "type": 0,
@@ -5969,6 +5999,12 @@
       "value": "Gebruiker"
     }
   ],
+  "pM92DZ": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen rechte lijnen tekenen op de kaart."
+    }
+  ],
   "pT5jx/": [
     {
       "type": 0,
@@ -5995,6 +6031,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "pdmkVe": [
+    {
+      "type": 0,
+      "value": "Begin focuspunt"
     }
   ],
   "pfdsz9": [
@@ -6601,6 +6643,12 @@
     {
       "type": 0,
       "value": "Opschoonmethode voor niet voltooide inzendingen"
+    }
+  ],
+  "wJ7Yha": [
+    {
+      "type": 0,
+      "value": "Kaartinstellingen"
     }
   ],
   "wLfQfD": [
