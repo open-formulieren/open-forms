@@ -9,14 +9,6 @@ from jsonschema import Draft202012Validator
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..registry import register_static_variable as register
-from ..static_variables.static_variables import (
-    CurrentYear,
-    Environment,
-    FormID,
-    FormName,
-    Now,
-    Today,
-)
 
 
 def _get_variable(key: str, **kwargs):
@@ -134,34 +126,39 @@ class TodayTests(TestCase):
 class StaticVariablesValidJsonSchemaTests(TestCase):
     validator = Draft202012Validator
 
-    def check_schema(self, properties):
+    @staticmethod
+    def _get_json_schema(key: str):
+        return register[key].as_json_schema()
+
+    def assertValidSchema(self, properties):
         schema = {
             "$schema": self.validator.META_SCHEMA["$id"],
             **properties,
         }
 
+        self.assertIn("type", schema)
         self.validator.check_schema(schema)
 
     def test_now(self):
-        schema = Now.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("now")
+        self.assertValidSchema(schema)
 
     def test_today(self):
-        schema = Today.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("today")
+        self.assertValidSchema(schema)
 
     def test_current_year(self):
-        schema = CurrentYear.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("current_year")
+        self.assertValidSchema(schema)
 
     def test_environment(self):
-        schema = Environment.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("environment")
+        self.assertValidSchema(schema)
 
     def test_form_name(self):
-        schema = FormName.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("form_name")
+        self.assertValidSchema(schema)
 
     def test_form_id(self):
-        schema = FormID.as_json_schema()
-        self.check_schema(schema)
+        schema = self._get_json_schema("form_id")
+        self.assertValidSchema(schema)

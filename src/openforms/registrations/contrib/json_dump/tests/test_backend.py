@@ -1,3 +1,4 @@
+import unittest
 from base64 import b64decode
 from pathlib import Path
 
@@ -109,7 +110,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                             "additionalProperties": False,
                         },
                     },
-                    "required": ["auth_bsn"],
+                    "required": ["firstName", "file", "auth_bsn"],
                     "additionalProperties": False,
                 },
             },
@@ -233,7 +234,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     }
                 },
                 "additionalProperties": False,
-                "required": [],
+                "required": ["file"],
             },
         }
 
@@ -308,7 +309,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     }
                 },
                 "additionalProperties": False,
-                "required": [],
+                "required": ["file"],
             },
         }
 
@@ -346,7 +347,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     },
                 },
                 "additionalProperties": False,
-                "required": [],
+                "required": ["file"],
             },
         }
 
@@ -392,7 +393,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                         },
                     }
                 },
-                "required": [],
+                "required": ["file"],
                 "additionalProperties": False,
             },
         }
@@ -422,10 +423,9 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         for path in ("..", "../foo", "foo/..", "foo/../bar"):
-            with self.subTest(path):
+            with self.subTest(path), self.assertRaises(SuspiciousOperation):
                 options["path"] = path
-                with self.assertRaises(SuspiciousOperation):
-                    json_plugin.register_submission(submission, options)
+                json_plugin.register_submission(submission, options)
 
     def test_select_boxes_schema_required_is_empty_when_no_data_is_submitted(self):
         submission = SubmissionFactory.from_components(
@@ -694,4 +694,33 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         self.assertEqual(
             result["api_response"]["data"]["schema"]["properties"]["radio"]["enum"],
             ["A", "B", "C", ""],
+        )
+
+    @unittest.expectedFailure
+    def test_nested_component_key(self):
+        # TODO: will be fixed with issue 5041
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "foo.bar", "type": "textfield", "label": "Nested key"},
+            ],
+            completed=True,
+            submitted_data={"foo": {"bar": "baz"}},
+            with_public_registration_reference=True,
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["foo.bar"],
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(result["api_response"]["data"]["values"]["foo.bar"], "baz")
+        self.assertEqual(
+            result["api_response"]["data"]["schema"]["properties"]["foo.bar"]["type"],
+            "string",
         )

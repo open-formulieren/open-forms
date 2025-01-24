@@ -5,28 +5,15 @@ from django.test import TestCase
 from jsonschema.validators import Draft202012Validator
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.static_variables.static_variables import (
-    Auth,
-    AuthBSN,
-    AuthContext,
-    AuthContextActingSubjectIdentifier,
-    AuthContextActingSubjectIdentifierType,
-    AuthContextBranchNumber,
-    AuthContextLegalSubjectIdentifier,
-    AuthContextLegalSubjectIdentifierType,
-    AuthContextLOA,
-    AuthContextRepresenteeIdentifier,
-    AuthContextRepresenteeType,
-    AuthContextSource,
-    AuthKvK,
-    AuthPseudo,
-    AuthType,
-    LanguageCode,
-    SubmissionID,
-)
 from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
+
+from ..static_variables.static_variables import register_static_variable as registry
+
+
+def _get_json_schema(key: str):
+    return registry[key].as_json_schema()
 
 
 class TestStaticVariables(TestCase):
@@ -161,78 +148,85 @@ class StaticVariableValidJsonSchemaTests(TestCase):
 
     validator = Draft202012Validator
 
-    def check_schema(self, properties):
+    def assertValidSchema(self, properties):
         schema = {
             "$schema": self.validator.META_SCHEMA["$id"],
             **properties,
         }
 
+        self.assertIn("type", schema)
         self.validator.check_schema(schema)
 
     def test_submission_id(self):
-        schema = SubmissionID.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("submission_id")
+        self.assertValidSchema(schema)
 
     def test_language_code(self):
-        schema = LanguageCode.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("language_code")
+        self.assertValidSchema(schema)
 
     def test_auth(self):
-        schema = Auth.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth")
+        self.assertValidSchema(schema)
 
     def test_auth_type(self):
-        schema = AuthType.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_type")
+        self.assertValidSchema(schema)
 
     def test_auth_bsn(self):
-        schema = AuthBSN.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_bsn")
+        self.assertValidSchema(schema)
 
     def test_auth_kvk(self):
-        schema = AuthKvK.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_kvk")
+        self.assertValidSchema(schema)
 
     def test_auth_pseudo(self):
-        schema = AuthPseudo.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_pseudo")
+        self.assertValidSchema(schema)
 
     def test_auth_context(self):
-        schema = AuthContext.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context")
+        self.assertValidSchema(schema)
 
     def test_auth_context_source(self):
-        schema = AuthContextSource.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_source")
+        self.assertValidSchema(schema)
 
     def test_auth_context_loa(self):
-        schema = AuthContextLOA.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_loa")
+        self.assertValidSchema(schema)
 
     def test_auth_context_representee_type(self):
-        schema = AuthContextRepresenteeType.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_representee_identifier_type")
+        self.assertValidSchema(schema)
 
     def test_auth_context_representee_identifier(self):
-        schema = AuthContextRepresenteeIdentifier.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_representee_identifier")
+        self.assertValidSchema(schema)
 
     def test_auth_context_legal_subject_identifier_type(self):
-        schema = AuthContextLegalSubjectIdentifierType.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_legal_subject_identifier_type")
+        self.assertValidSchema(schema)
 
     def test_auth_context_legal_subject_identifier(self):
-        schema = AuthContextLegalSubjectIdentifier.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_legal_subject_identifier")
+        self.assertValidSchema(schema)
 
     def test_auth_context_branch_number(self):
-        schema = AuthContextBranchNumber.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_branch_number")
+        self.assertValidSchema(schema)
 
     def test_auth_context_acting_subject_identifier_type(self):
-        schema = AuthContextActingSubjectIdentifierType.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_acting_subject_identifier_type")
+        self.assertValidSchema(schema)
 
     def test_auth_context_acting_subject_identifier(self):
-        schema = AuthContextActingSubjectIdentifier.as_json_schema()
-        self.check_schema(schema)
+        schema = _get_json_schema("auth_context_acting_subject_identifier")
+        self.assertValidSchema(schema)
+
+
+class LanguageCodeTests(TestCase):
+    def test_enum_in_json_schema(self):
+        schema = _get_json_schema("language_code")
+        self.assertEqual(schema["enum"], ["nl", "en"])

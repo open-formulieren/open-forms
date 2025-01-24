@@ -39,6 +39,8 @@ class JSONDumpRegistration(BasePlugin):
         state = submission.load_submission_value_variables_state()
 
         # Generate values
+        # TODO: keys with a period (e.g. `foo.bar`) will currently not be added to the
+        #  submission data. This will be fixed with issue 5041
         all_values: JSONObject = {
             **state.get_static_data(),
             **state.get_data(),  # dynamic values from user input

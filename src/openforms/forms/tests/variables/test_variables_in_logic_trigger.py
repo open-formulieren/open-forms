@@ -22,10 +22,6 @@ class DemoNow(BaseStaticVariable):
     def get_initial_value(self, *args, **kwargs):
         return "2021-07-16T21:15:00+00:00"
 
-    @staticmethod
-    def as_json_schema():
-        return {}
-
 
 class DemoAuth(BaseStaticVariable):
     name = "Authentication identifier"
@@ -37,10 +33,6 @@ class DemoAuth(BaseStaticVariable):
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
         }
-
-    @staticmethod
-    def as_json_schema():
-        return {}
 
 
 register = Registry()
