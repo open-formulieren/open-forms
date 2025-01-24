@@ -10,6 +10,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
         model = Service
         fields = (
             "url",
+            "slug",
             "label",
             "api_root",
             "api_type",

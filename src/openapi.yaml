@@ -4167,6 +4167,12 @@ paths:
 
         Note that this endpoint is **EXPERIMENTAL**.
       summary: List available services
+      parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+        description: 'The type of Services to return, possible values: `referentielijsten`'
       tags:
       - services
       security:
@@ -9729,6 +9735,13 @@ components:
           type: string
           format: uri
           readOnly: true
+        slug:
+          type: string
+          title: Service slug
+          description: A unique, human-friendly slug to identify this service. Primarily
+            useful for cross-instance import/export.
+          maxLength: 255
+          pattern: ^[-a-zA-Z0-9_]+$
         label:
           type: string
           maxLength: 100
@@ -9746,6 +9759,7 @@ components:
       - apiRoot
       - apiType
       - label
+      - slug
       - url
       x-experimental: true
     ServiceFetchConfiguration:

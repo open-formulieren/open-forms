@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.config.models import GlobalConfiguration
 
 
 class AccessControlTests(APITestCase):
@@ -30,6 +31,24 @@ class AccessControlTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
+
+    def test_service_list_filter_by_referentielijsten(self):
+        config = GlobalConfiguration.get_solo()
+        config.referentielijsten_services.set(
+            [ServiceFactory.create(label="Referentielijsten", slug="referentielijsten")]
+        )
+        config.save()
+        endpoint = reverse("api:service-list")
+        self.client.force_authenticate(user=self.admin_user)
+
+        response = self.client.get(endpoint, {"type": "referentielijsten"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        services = response.json()
+
+        self.assertEqual(len(services), 1)
+        self.assertEqual(services[0]["slug"], "referentielijsten")
 
     def test_returned_services_have_the_right_properties(self):
         expected_service = ServiceFactory.create()
