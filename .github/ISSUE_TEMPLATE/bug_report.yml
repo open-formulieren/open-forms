@@ -1,7 +1,8 @@
 name: Probleem melden / Bug report
 description: Meldt een probleem om ons te helpen verbeteren  / Create a report to help us improve
 title: "Title here"
-labels: ["bug", "triage"]
+type: "Bug"
+labels: ["triage"]
 assignees: []
 body:
   - type: input
@@ -9,7 +10,7 @@ body:
     attributes:
       label: Product versie / Product version
       description: Welke versie gebruikt u? / Which version do you use?
-      placeholder: "1.1.0"
+      placeholder: "3.0.0"
     validations:
       required: true
   - type: input
