@@ -32,6 +32,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
 from openforms.typing import DataMapping, JSONObject
+from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
@@ -68,7 +69,7 @@ from ..typing import (
 )
 from ..typing.base import OpenFormsConfig
 from .translations import translate_options
-from .utils import _normalize_pattern, to_multiple
+from .utils import _normalize_pattern
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission

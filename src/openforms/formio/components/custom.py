@@ -18,6 +18,7 @@ from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping, JSONObject
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
+from openforms.utils.json_schema import to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
 
@@ -43,7 +44,7 @@ from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
-from .utils import _normalize_pattern, salt_location_message, to_multiple
+from .utils import _normalize_pattern, salt_location_message
 
 logger = logging.getLogger(__name__)
 

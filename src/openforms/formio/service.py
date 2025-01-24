@@ -41,6 +41,7 @@ __all__ = [
     "iterate_data_with_components",
     "recursive_apply",
     "build_serializer",
+    "rewrite_formio_components",
 ]
 
 

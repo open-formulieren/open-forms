@@ -1,9 +1,5 @@
 from django.utils.crypto import salted_hmac
 
-from openforms.typing import JSONObject
-
-from ..typing import Component
-
 
 def _normalize_pattern(pattern: str) -> str:
     """
@@ -23,17 +19,3 @@ def salt_location_message(message_bits: dict[str, str]) -> str:
     computed_message = f"{message_bits['postcode']}/{message_bits['number']}/{message_bits['city']}/{message_bits['street_name']}"
     computed_hmac = salted_hmac("location_check", value=computed_message).hexdigest()
     return computed_hmac
-
-
-def to_multiple(schema: JSONObject) -> JSONObject:
-    """Convert a JSON schema of a component to a schema of multiple components.
-
-    :param schema: JSON schema of a component.
-    :returns: JSON schema of multiple components.
-    """
-    title = schema.pop("title")
-    return {
-        "title": title,
-        "type": "array",
-        "items": schema,
-    }
