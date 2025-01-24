@@ -5,18 +5,12 @@ Public Python API to access (static) form variables.
 from openforms.forms.models import FormVariable
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject
 
 from .base import BaseStaticVariable
-from .constants import FormVariableDataTypes
 from .registry import register_static_variable as static_variables_registry
 from .utils import get_variables_for_context
 
-__all__ = [
-    "get_json_schema_for_user_defined_variable",
-    "get_static_variables",
-    "get_variables_for_context",
-]
+__all__ = ["get_static_variables", "get_variables_for_context"]
 
 
 type VariablesRegistry = BaseRegistry[BaseStaticVariable]
@@ -46,35 +40,3 @@ def get_static_variables(
         registered_variable.get_static_variable(submission=submission)
         for registered_variable in variables_registry
     ]
-
-
-# TODO-4980: can be combined with get_json_schema_from_form_variable?
-def get_json_schema_for_user_defined_variable(
-    data_type: FormVariableDataTypes,
-) -> JSONObject:
-    """Return the JSON schema definition for a user-defined variable, depending on the
-    data type
-
-    :param data_type: The data type of the variable
-    """
-    match data_type:
-        case FormVariableDataTypes.string:
-            return {"type": "string"}
-        case FormVariableDataTypes.boolean:
-            return {"type": "boolean"}
-        case FormVariableDataTypes.object:
-            return {"type": "object"}
-        case FormVariableDataTypes.array:
-            return {"type": "array"}
-        case FormVariableDataTypes.int:
-            return {"type": "integer"}
-        case FormVariableDataTypes.float:
-            return {"type": "number"}
-        case FormVariableDataTypes.datetime:
-            return {"type": "string", "format": "date-time"}
-        case FormVariableDataTypes.date:
-            return {"type": "string", "format": "date"}
-        case FormVariableDataTypes.time:
-            return {"type": "string", "format": "time"}
-        case _:  # pragma: no cover
-            raise NotImplementedError(f"Unrecognized data type: {data_type}")

@@ -36,10 +36,6 @@ class PublicReference(BaseStaticVariable):
             return ""
         return submission.public_registration_reference
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("pdf_url")
 class PdfUrl(BaseStaticVariable):
@@ -53,10 +49,6 @@ class PdfUrl(BaseStaticVariable):
             submission.objects_api_registration_data  # pyright: ignore[reportAttributeAccessIssue]
         )
         return _data.pdf_url
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 @register("csv_url")
@@ -72,10 +64,6 @@ class CsvUrl(BaseStaticVariable):
         )
         return _data.csv_url
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("attachment_urls")
 class AttachmentUrls(BaseStaticVariable):
@@ -88,10 +76,6 @@ class AttachmentUrls(BaseStaticVariable):
         )
         return list(attachments.values_list("document_url", flat=True))
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("payment_completed")
 class PaymentCompleted(BaseStaticVariable):
@@ -102,10 +86,6 @@ class PaymentCompleted(BaseStaticVariable):
         if submission is None:
             return None
         return submission.payment_user_has_paid
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 @register("payment_amount")
@@ -120,10 +100,6 @@ class PaymentAmount(BaseStaticVariable):
             return None
         return float(submission.price)
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("payment_public_order_ids")
 class PaymentPublicOrderIds(BaseStaticVariable):
@@ -134,10 +110,6 @@ class PaymentPublicOrderIds(BaseStaticVariable):
         if submission is None:
             return None
         return submission.payments.get_completed_public_order_ids()
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 @register("provider_payment_ids")
@@ -150,10 +122,6 @@ class ProviderPaymentIds(BaseStaticVariable):
             return None
 
         return submission.payments.get_completed_provider_payment_ids()
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 @register("cosign_data")
@@ -168,10 +136,6 @@ class Cosign(BaseStaticVariable):
             return None
 
         return cosign.signing_details
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 def get_cosign_value(submission: Submission | None, attribute: AuthAttribute) -> str:
@@ -198,10 +162,6 @@ class CosignDate(BaseStaticVariable):
         cosign_date = cosign.signing_details.get("cosign_date")
         return datetime.fromisoformat(cosign_date) if cosign_date else None
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("cosign_bsn")
 class CosignBSN(BaseStaticVariable):
@@ -210,10 +170,6 @@ class CosignBSN(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.bsn)
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 @register("cosign_kvk")
@@ -224,10 +180,6 @@ class CosignKvK(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.kvk)
 
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
-
 
 @register("cosign_pseudo")
 class CosignPseudo(BaseStaticVariable):
@@ -236,10 +188,6 @@ class CosignPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.pseudo)
-
-    @staticmethod
-    def as_json_schema():
-        raise NotImplementedError()
 
 
 PAYMENT_VARIABLE_NAMES = [

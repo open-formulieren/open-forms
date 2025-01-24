@@ -24,8 +24,7 @@ class SubmissionID(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(submission.uuid) if submission else ""
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Submission identifier",
             "description": "UUID of the submission",
@@ -42,8 +41,7 @@ class LanguageCode(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return submission.language_code if submission else ""
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Language code",
             "description": "Abbreviation of the used langauge.",
@@ -71,8 +69,7 @@ class Auth(BaseStaticVariable):
 
         return auth_data
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         # NOTE: this has been made 'vague' on purpose, see the comment on AuthContext.
         return {
             "title": "Authentication summary",
@@ -91,8 +88,7 @@ class AuthType(BaseStaticVariable):
             return ""
         return submission.auth_info.attribute
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Authentication type",
             "type": "string",
@@ -118,8 +114,7 @@ class AuthBSN(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.bsn)
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "BSN",
             "description": (
@@ -140,8 +135,7 @@ class AuthKvK(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.kvk)
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "KVK",
             "description": (
@@ -162,8 +156,7 @@ class AuthPseudo(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {"title": "Pseudo", "type": "string"}
 
 
@@ -179,8 +172,7 @@ class AuthContext(BaseStaticVariable):
             return None
         return submission.auth_info.to_auth_context_data()
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         # NOTE: `auth_context` includes all relevant options for the authentication
         # plugin, which means its values are plugin dependent. Therefore, to discourage
         # users from using this, no specific object information will be provided here.
@@ -205,8 +197,7 @@ class AuthContextSource(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["source"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Authentication source",
             "description": "Name of the authentication source",
@@ -225,8 +216,7 @@ class AuthContextLOA(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["levelOfAssurance"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Authentication level of assurance",
             "description": (
@@ -251,8 +241,7 @@ class AuthContextRepresenteeType(BaseStaticVariable):
             return ""
         return auth_context["representee"]["identifierType"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Representee authentication type",
             "description": "Authentication type of the representee",
@@ -273,8 +262,7 @@ class AuthContextRepresenteeIdentifier(BaseStaticVariable):
             return ""
         return auth_context["representee"]["identifier"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Representee authentication identifier",
             "description": "Authentication identifier of the representee.",
@@ -293,8 +281,7 @@ class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["authorizee"]["legalSubject"]["identifierType"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Legal subject authentication type",
             "description": (
@@ -316,8 +303,7 @@ class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["authorizee"]["legalSubject"]["identifier"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Legal subject authentication identifier",
             "description": (
@@ -342,8 +328,7 @@ class AuthContextBranchNumber(BaseStaticVariable):
         legal_subject = auth_context["authorizee"]["legalSubject"]
         return legal_subject.get("branchNumber", "")
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {
             "title": "Authentication branch number",
             "description": (
@@ -367,8 +352,7 @@ class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
             return ""
         return auth_context["authorizee"]["actingSubject"]["identifierType"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {"title": "Acting subject authentication type", "type": "string"}
 
 
@@ -385,6 +369,5 @@ class AuthContextActingSubjectIdentifier(BaseStaticVariable):
             return ""
         return auth_context["authorizee"]["actingSubject"]["identifier"]
 
-    @staticmethod
-    def as_json_schema():
+    def as_json_schema(self):
         return {"title": "Acting subject authentication identifier", "type": "string"}
