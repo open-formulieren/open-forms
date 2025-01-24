@@ -3,7 +3,7 @@ import logging
 import random
 import string
 import zipfile
-from typing import Any, Sequence
+from typing import Any
 from uuid import uuid4
 
 from django.conf import settings
@@ -16,14 +16,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 from openforms.formio.migration_converters import CONVERTERS, DEFINITION_CONVERTERS
-from openforms.formio.registry import register as component_registry
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
-from openforms.variables.registry import (
-    register_static_variable as static_variable_registry,
-)
-from openforms.variables.service import get_json_schema_for_user_defined_variable
 
 from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
@@ -132,104 +127,6 @@ def form_to_json(form_id: int) -> dict:
     }
 
     return resources
-
-
-def form_variables_to_json_schema(
-    form: Form, variables_to_include: Sequence[str]
-) -> JSONObject:
-    """Generate a JSON schema from a form, for the specified variables.
-
-    :param form: The form to generate JSON schema for.
-    :param variables_to_include: Variables that will be included in the schema.
-
-    :returns: A JSON schema representing the form variables.
-    """
-
-    # Handle static variables
-    static_var_properties = {
-        key: static_variable_registry[key].as_json_schema()
-        for key in variables_to_include
-        # To ensure fetching form variables from static_variable_registry does not
-        # raise KeyError
-        if key in static_variable_registry
-    }
-
-    # Handle form variables
-    all_form_vars = {var.key: var for var in form.formvariable_set.all()}
-    form_var_properties = {
-        key: get_json_schema_from_form_variable(all_form_vars[key])
-        for key in variables_to_include
-        # To ensure fetching static variables from all_from_vars does not raise KeyError
-        if key in all_form_vars
-    }
-
-    # Required
-    required_form_variables = [
-        var
-        for var in form_var_properties.keys()
-        if is_form_variable_required(all_form_vars[var])
-    ]
-
-    required = [*static_var_properties.keys(), *required_form_variables]
-
-    # Result
-    var_properties = {**static_var_properties, **form_var_properties}
-    schema = {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "properties": var_properties,
-        "required": required,
-        "additionalProperties": False,
-    }
-
-    return schema
-
-
-# TODO-4980: add to FormVariable?
-def get_json_schema_from_form_variable(form_variable: FormVariable) -> JSONObject:
-    """Return a JSON schema for a form variable.
-
-    :param form_variable: The form variable to generate JSON schema for.
-    :returns schema: A JSON schema representing the form variable.
-    """
-
-    match form_variable.source:
-        case FormVariableSources.component:
-            form_def = form_variable.form_definition
-            component = form_def.configuration_wrapper.component_map[form_variable.key]
-            component_plugin = component_registry[component["type"]]
-            schema = component_plugin.as_json_schema(component)
-        case FormVariableSources.user_defined:
-            schema = get_json_schema_for_user_defined_variable(form_variable.data_type)
-            schema["title"] = form_variable.name
-        case _:  # pragma: no cover
-            raise NotImplementedError("Unexpected form variable source")
-
-    return schema
-
-
-# TODO-4980: add to FormVariable?
-def is_form_variable_required(form_variable: FormVariable) -> bool:
-    """Return if a form variable is required.
-
-    :param form_variable: The form variable to check.
-    :returns required: Whether the form variable is required.
-    """
-
-    match form_variable.source:
-        case FormVariableSources.component:
-            form_def = form_variable.form_definition
-            component = form_def.configuration_wrapper.component_map[form_variable.key]
-
-            validate = component.get("validate", {})
-            required = validate.get("required", False)
-        case FormVariableSources.user_defined:
-            # User defined variables have no required property
-            required = True
-        case _:  # pragma: no cover
-            raise NotImplementedError("Unexpected form variable source")
-
-    return required
 
 
 def export_form(form_id, archive_name=None, response=None):

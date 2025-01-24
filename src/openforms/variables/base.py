@@ -27,9 +27,11 @@ class BaseStaticVariable(ABC, AbstractBasePlugin):
         return deepcopy(DATA_TYPE_TO_JSON_SCHEMA[self.data_type])
 
     def get_static_variable(self, submission: Submission | None = None):
-        return FormVariable(
+        variable = FormVariable(
             name=self.name,
             key=self.identifier,
             data_type=self.data_type,
             initial_value=self.get_initial_value(submission=submission),
         )
+        variable.json_schema = self.as_json_schema()
+        return variable

@@ -15,7 +15,7 @@ from openforms.formio.typing import (
     SelectBoxesComponent,
     SelectComponent,
 )
-from openforms.forms.utils import form_variables_to_json_schema
+from openforms.forms.json_schema import generate_json_schema
 from openforms.submissions.models import Submission, SubmissionFileAttachment
 from openforms.submissions.service import DataContainer
 from openforms.typing import JSONObject
@@ -50,7 +50,7 @@ class JSONDumpRegistration(BasePlugin):
         }
 
         # Generate schema
-        schema = form_variables_to_json_schema(submission.form, options["variables"])
+        schema = generate_json_schema(submission.form, options["variables"])
 
         # Post-processing
         post_process(values, schema, submission)

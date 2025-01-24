@@ -57,6 +57,7 @@ from ..formatters.formio import (
 )
 from ..registry import BasePlugin, register
 from ..serializers import build_serializer
+from ..service import as_json_schema
 from ..typing import (
     Component,
     ContentComponent,
@@ -1039,8 +1040,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
 
         # Build the edit grid object properties by iterating over the child components
         properties = {
-            child["key"]: register[child["type"]].as_json_schema(child)
-            for child in component["components"]
+            child["key"]: as_json_schema(child) for child in component["components"]
         }
 
         base = {
