@@ -344,7 +344,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.4.0
+django-setup-configuration==0.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -399,8 +399,11 @@ djangorestframework-camel-case==1.4.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-docutils==0.20.1
+docutils==0.21.2
     # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-setup-configuration
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
@@ -898,11 +901,17 @@ rstr==3.2.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   schwifty
-ruamel-yaml==0.18.6
+ruamel-yaml==0.18.10
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-setup-configuration
     #   prance
+ruamel-yaml-clib==0.2.12
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   ruamel-yaml
 schwifty==2024.5.3
     # via
     #   -c requirements/base.txt
@@ -955,7 +964,7 @@ sphinx==7.3.0
     #   sphinx-rtd-theme
     #   sphinx-tabs
     #   sphinxcontrib-jquery
-sphinx-rtd-theme==2.0.0
+sphinx-rtd-theme==3.0.2
     # via -r requirements/docs.in
 sphinx-tabs==3.4.5
     # via -r requirements/docs.in
