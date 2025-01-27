@@ -427,7 +427,7 @@ export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const userDefinedVarsTab = canvas.getByRole('tab', {name: 'Gebruikersvariabelen'});
+    const userDefinedVarsTab = canvas.getByRole('tab', {name: /Gebruikersvariabelen/});
     await userEvent.click(userDefinedVarsTab);
     expect(canvas.queryAllByText('record.geometry')).toHaveLength(0);
   },
@@ -696,7 +696,7 @@ export const WithJSONDumpRegistrationBackend = {
     });
 
     await step('now checkbox checked', async () => {
-      const staticVariables = canvas.getByRole('tab', {name: 'Vaste variabelen'});
+      const staticVariables = canvas.getByRole('tab', {name: /Vaste variabelen/});
       await userEvent.click(staticVariables);
 
       const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
@@ -712,7 +712,7 @@ export const ConfigurePrefill = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+    const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
     expect(userDefinedVarsTab).toBeVisible();
     await userEvent.click(userDefinedVarsTab);
 
@@ -753,7 +753,7 @@ export const ConfigurePrefillObjectsAPI = {
     const canvas = within(canvasElement);
 
     await step('Open configuration modal', async () => {
-      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
 
@@ -859,7 +859,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
     const canvas = within(canvasElement);
 
     await step('Open configuration modal', async () => {
-      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
 
@@ -964,7 +964,7 @@ export const WithValidationErrors = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+    const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
     expect(userDefinedVarsTab).toBeVisible();
     await userEvent.click(userDefinedVarsTab);
 
@@ -1023,7 +1023,7 @@ export const ConfigurePrefillObjectsAPIWithValidationErrors = {
     const canvas = within(canvasElement);
 
     await step('Open configuration modal', async () => {
-      const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
       expect(userDefinedVarsTab).toBeVisible();
       await userEvent.click(userDefinedVarsTab);
 

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import Tab from 'components/admin/form_design/Tab';
 import Fieldset from 'components/admin/forms/Fieldset';
 
@@ -14,10 +15,10 @@ import {variableHasErrors} from './utils';
 
 const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) => {
   const intl = useIntl();
+  const {staticVariables} = useContext(FormContext);
   const userDefinedVariables = variables.filter(
     variable => variable.source === VARIABLE_SOURCES.userDefined
   );
-
   const componentVariables = variables.filter(
     variable => variable.source === VARIABLE_SOURCES.component
   );
@@ -36,12 +37,16 @@ const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) 
         <Tabs>
           <TabList>
             <Tab hasErrors={componentVariables.some(variable => variableHasErrors(variable))}>
-              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.component)}
+              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.component)} (
+              {componentVariables.length})
             </Tab>
             <Tab hasErrors={userDefinedVariables.some(variable => variableHasErrors(variable))}>
-              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.userDefined)}
+              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.userDefined)} (
+              {userDefinedVariables.length})
             </Tab>
-            <Tab>{intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.static)}</Tab>
+            <Tab>
+              {intl.formatMessage(VARIABLE_SOURCES_GROUP_LABELS.static)} ({staticVariables.length})
+            </Tab>
             <Tab>
               <FormattedMessage
                 defaultMessage="Registration"
