@@ -106,29 +106,6 @@ class AddressNLValidationTests(SimpleTestCase):
 
         self.assertTrue(is_valid)
 
-    def test_missing_keys(self):
-        component: AddressNLComponent = {
-            "key": "addressNl",
-            "type": "addressNL",
-            "label": "AddressNL missing keys",
-            "deriveAddress": False,
-        }
-
-        invalid_values = {
-            "addressNl": {
-                "houseLetter": "A",
-            }
-        }
-
-        is_valid, errors = validate_formio_data(component, invalid_values)
-
-        postcode_error = extract_error(errors["addressNl"], "postcode")
-        house_number_error = extract_error(errors["addressNl"], "houseNumber")
-
-        self.assertFalse(is_valid)
-        self.assertEqual(postcode_error.code, "required")
-        self.assertEqual(house_number_error.code, "required")
-
     def test_plugin_validator(self):
         with replace_validators_registry() as register:
             register("postcode_validator")(PostcodeValidator)
@@ -376,3 +353,57 @@ class AddressNLValidationTests(SimpleTestCase):
         is_valid, _ = validate_formio_data(component, data)
 
         self.assertTrue(is_valid)
+
+    def test_addressNL_when_non_required_postcode_is_required_if_houseNumber_is_provided(
+        self,
+    ):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL",
+            "deriveAddress": False,
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Amsterdam",
+                "streetName": "",
+            }
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+        postcode_error = extract_error(errors["addressNl"], "postcode")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(postcode_error.code, "required")
+
+    def test_addressNL_when_non_required_houseNumber_is_required_if_postcode_is_provided(
+        self,
+    ):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL",
+            "deriveAddress": False,
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1234 AB",
+                "houseNumber": "",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Amsterdam",
+                "streetName": "",
+            }
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+        house_number_error = extract_error(errors["addressNl"], "houseNumber")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(house_number_error.code, "required")

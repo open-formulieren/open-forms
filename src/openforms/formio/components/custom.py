@@ -468,11 +468,23 @@ class AddressValueSerializer(serializers.Serializer):
 
         city = attrs.get("city", "")
         street_name = attrs.get("streetName", "")
+        postcode = attrs.get("postcode", "")
+        number = attrs.get("houseNumber", "")
+
+        if postcode and not number:
+            raise serializers.ValidationError(
+                {"houseNumber": _('This field is required if "postcode" is provided')},
+                code="required",
+            )
+
+        if not postcode and number:
+            raise serializers.ValidationError(
+                {"postcode": _('This field is required if "house number" is provided')},
+                code="required",
+            )
 
         if self.derive_address:
             existing_hmac = attrs.get("secretStreetCity", "")
-            postcode = attrs.get("postcode", "")
-            number = attrs.get("houseNumber", "")
 
             computed_hmac = salt_location_message(
                 {
