@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-15 12:11+0100\n"
+"POT-Creation-Date: 2025-01-27 13:02+0100\n"
 "PO-Revision-Date: 2024-12-31 09:52+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -579,15 +579,15 @@ msgstr "Het verzoek is begrepen en valide, maar kan niet verwerkt worden."
 msgid "Service is not available."
 msgstr "Service niet beschikbaar"
 
-#: openforms/api/geojson.py:9
+#: openforms/api/geojson.py:11
 msgid "Point"
 msgstr "Pin/punt"
 
-#: openforms/api/geojson.py:10
+#: openforms/api/geojson.py:12
 msgid "Polygon"
 msgstr "Veelhoek (polygoon)"
 
-#: openforms/api/geojson.py:11
+#: openforms/api/geojson.py:13
 #, fuzzy
 #| msgid "String"
 msgid "LineString"
@@ -1132,7 +1132,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/prefill/contrib/suwinet/plugin.py:98
 #: openforms/registrations/contrib/camunda/plugin.py:158
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:120
-#: openforms/registrations/contrib/stuf_zds/plugin.py:404
+#: openforms/registrations/contrib/stuf_zds/plugin.py:397
 msgid "Configuration"
 msgstr "Configuratie"
 
@@ -5344,7 +5344,7 @@ msgid "Formio integration"
 msgstr "Form.io-integratie"
 
 #: openforms/formio/components/custom.py:264
-#: openforms/formio/components/custom.py:567
+#: openforms/formio/components/custom.py:586
 #: openforms/formio/components/vanilla.py:118
 #: openforms/formio/components/vanilla.py:305
 msgid "This value does not match the required pattern."
@@ -5362,15 +5362,29 @@ msgstr "Afgeleide straatnaam"
 msgid "Derived city"
 msgstr "Afgeleide stad"
 
-#: openforms/formio/components/custom.py:442
+#: openforms/formio/components/custom.py:449
 msgid "City does not match the specified pattern."
 msgstr "De stad komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:454
+#: openforms/formio/components/custom.py:461
 msgid "Postcode does not match the specified pattern."
 msgstr "De postcode komt niet overeen met het verwachtte patroon."
 
-#: openforms/formio/components/custom.py:481
+#: openforms/formio/components/custom.py:476
+#, fuzzy
+#| msgid "This field is required if \"Update existing object\" is checked"
+msgid "This field is required if \"postcode\" is provided"
+msgstr ""
+"Dit veld is verplicht wanneer \"postcode\" is opgegeven."
+
+#: openforms/formio/components/custom.py:482
+#, fuzzy
+#| msgid "This field is required if \"Update existing object\" is checked"
+msgid "This field is required if \"house number\" is provided"
+msgstr ""
+"Dit veld is verplicht wanneer \"huisnummer\" is opgegeven."
+
+#: openforms/formio/components/custom.py:500
 msgid "Invalid secret city - street name combination"
 msgstr "Ongeldige waarde voor sleutel voor de stad/straat-combinatie."
 
@@ -9497,7 +9511,7 @@ msgstr "Objecten-API prefill-plugin"
 
 #: openforms/prefill/contrib/objects_api/plugin.py:78
 #: openforms/registrations/contrib/objects_api/plugin.py:134
-#: openforms/registrations/contrib/zgw_apis/plugin.py:611
+#: openforms/registrations/contrib/zgw_apis/plugin.py:604
 msgid "Manage API groups"
 msgstr "API-groepen beheren"
 
@@ -10048,6 +10062,52 @@ msgid "Co-signed by: %(tt_openvariable)s co_signer %(tt_closevariable)s"
 msgstr ""
 "Mede-ondertekend door: %(tt_openvariable)s co_signer %(tt_closevariable)s"
 
+#: openforms/registrations/contrib/json_dump/apps.py:8
+#, fuzzy
+#| msgid "JSON logic"
+msgid "JSON Dump plugin"
+msgstr "JSON-logic"
+
+#: openforms/registrations/contrib/json_dump/config.py:30
+#, fuzzy
+#| msgid "Services"
+msgid "Service"
+msgstr "Services"
+
+#: openforms/registrations/contrib/json_dump/config.py:31
+#, fuzzy
+#| msgid "Which ZGW API set to use."
+msgid "Which service to use."
+msgstr "De gewenste ZGW API-groep."
+
+#: openforms/registrations/contrib/json_dump/config.py:36
+msgid "Path"
+msgstr ""
+
+#: openforms/registrations/contrib/json_dump/config.py:37
+#, fuzzy
+#| msgid "path relative to the Service API root"
+msgid "Path relative to the Service API root."
+msgstr "pad relatief t.o.v. de API-root in de service"
+
+#: openforms/registrations/contrib/json_dump/config.py:45
+#, fuzzy
+#| msgid "variable key"
+msgid "Variable key list"
+msgstr "sleutel variabele"
+
+#: openforms/registrations/contrib/json_dump/config.py:46
+#, fuzzy
+#| msgid "List form variables"
+msgid "A list of variables to use."
+msgstr "Formuliervariabelen weergeven"
+
+#: openforms/registrations/contrib/json_dump/plugin.py:26
+#, fuzzy
+#| msgid "Email registration"
+msgid "JSON dump registration"
+msgstr "E-mail registratie"
+
 #: openforms/registrations/contrib/microsoft_graph/apps.py:8
 msgid "Microsoft Graph registrations plugin"
 msgstr "Microsoft Graph registratie plugin"
@@ -10093,7 +10153,7 @@ msgid "MSGraphService not selected"
 msgstr "Microsoft Graph service is niet ingesteld."
 
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:105
-#: openforms/registrations/contrib/stuf_zds/plugin.py:398
+#: openforms/registrations/contrib/stuf_zds/plugin.py:391
 #, python-brace-format
 msgid "Could not connect: {exception}"
 msgstr "Kan geen verbinding maken: {exception}"
@@ -10566,11 +10626,11 @@ msgstr ""
 "Met deze variabelekoppelingen stel je in welke formuliervariabelen als extra "
 "elementen in StUF-ZDS meegestuurd worden, en met welke naam."
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:164
+#: openforms/registrations/contrib/stuf_zds/plugin.py:159
 msgid "StUF-ZDS"
 msgstr "StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:391
+#: openforms/registrations/contrib/stuf_zds/plugin.py:384
 msgid "StufService not selected"
 msgstr "StUF-service is niet ingesteld"
 
@@ -10939,11 +10999,11 @@ msgid "Could not find a roltype with this description related to the zaaktype."
 msgstr ""
 "Kon geen roltype vinden met deze omschrijving binnen het opgegeven zaaktype."
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:171
+#: openforms/registrations/contrib/zgw_apis/plugin.py:166
 msgid "ZGW API's"
 msgstr "ZGW API's"
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:413
+#: openforms/registrations/contrib/zgw_apis/plugin.py:406
 msgid "Employee who registered the case on behalf of the customer."
 msgstr "Medewerker die de zaak registreerde voor de klant."
 
