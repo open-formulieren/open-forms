@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -430,9 +431,8 @@ class Submission(models.Model):
             if len(form_steps) == 0:
                 return FormioConfigurationWrapper(configuration={})
 
-            wrapper = FormioConfigurationWrapper(
-                form_steps[0].form_definition.configuration
-            )
+            begin_configuration = deepcopy(form_steps[0].form_definition.configuration)
+            wrapper = FormioConfigurationWrapper(begin_configuration)
             for form_step in form_steps[1:]:
                 wrapper += form_step.form_definition.configuration_wrapper
             self._total_configuration_wrapper = wrapper

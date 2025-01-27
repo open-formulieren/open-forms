@@ -590,6 +590,57 @@ class SubmissionTests(TestCase):
 
         self.assertTrue(report.content.storage.exists(report.content.name))
 
+    @tag("gh-5035")
+    def test_total_configuration_wrapper_does_not_mutate_first_step(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield1",
+                        "type": "textfield",
+                        "label": "textfield",
+                    }
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            order=1,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield2",
+                        "type": "textfield",
+                        "label": "Text field 2",
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        configuration_wrapper = submission.total_configuration_wrapper
+
+        with self.subTest("all keys present"):
+            self.assertIn("textfield1", configuration_wrapper)
+            self.assertIn("textfield2", configuration_wrapper)
+
+        step1, step2 = submission.steps
+
+        with self.subTest("step 1 keys"):
+            step1_keys = [
+                c["key"]
+                for c in step1.form_step.form_definition.configuration["components"]
+            ]
+            self.assertEqual(step1_keys, ["textfield1"])
+
+        with self.subTest("step 2 keys"):
+            step2_keys = [
+                c["key"]
+                for c in step2.form_step.form_definition.configuration["components"]
+            ]
+            self.assertEqual(step2_keys, ["textfield2"])
+
 
 class TemporaryFileUploadTests(TestCase):
     def test_legacy_check_constraint(self):

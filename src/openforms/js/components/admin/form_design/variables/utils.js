@@ -76,12 +76,23 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
   return isComponentWithVariable || isEditGridChild;
 };
 
+/**
+ * Transform the Formio configuration into FormVariable instances.
+ * @param  {String} formDefinition API resource of the form definition that the configuration belongs to.
+ * @param  {OBject} configuration  The Formio form configuration.
+ */
 const getFormVariables = (formDefinition, configuration) => {
   const newFormVariables = [];
 
-  FormioUtils.eachComponent(configuration.components, component =>
-    newFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
-  );
+  FormioUtils.eachComponent(configuration.components, component => {
+    // sEE #5035 - the client side upload components variables are created on load, and
+    // then they get pushed to the server on save and are persisted too, which causes
+    // upload issues. This may even have been the root cause of this issue where
+    // "phantom" variables show up in the step data.
+    if (isInEditGrid(component, configuration)) return;
+
+    newFormVariables.push(makeNewVariableFromComponent(component, formDefinition));
+  });
   return newFormVariables;
 };
 
