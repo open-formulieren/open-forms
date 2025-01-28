@@ -142,6 +142,9 @@ class ZGWApiGroupConfig(models.Model):
     )
     auteur = models.CharField(
         _("auteur"),
+        help_text=_(
+            "The value of the `author` field for documents that will be created in Documenten API."
+        ),
         max_length=200,
         default="Aanvrager",
     )

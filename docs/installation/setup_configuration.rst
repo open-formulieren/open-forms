@@ -5,48 +5,48 @@ Open Forms configuration (CLI)
 ==============================
 
 After deploying Open Forms, it needs to be configured to be fully functional. The
-command line tool ``setup_configuration`` assist with this configuration by loading a
+command line tool ``setup_configuration`` assists with this configuration by loading a
 YAML file in which the configuration information is specified.
 
-You can get the full command documentation with:
+For general information on how the command line tool works, refer to the
+:external+django-setup-configuration:ref:`documentation <usage_docs>`.
 
-.. code-block:: bash
+Below are example configurations for all the configuration steps this application provides.
+They can be used as a starting point and combined into a single YAML to use as input for the command.
 
-    src/manage.py setup_configuration --help
+.. warning::
+    The values in the following YAML examples contain defaults and in some case dummy values, make sure to edit
+    values of i.e. identifiers, secrets and other fields that have dummy values!
 
-.. warning:: This command is declarative - if configuration is manually changed after
-   running the command and you then run the exact same command again, the manual
-   changes will be reverted.
+OpenID Connect configuration for admin authentication
+-----------------------------------------------------
 
-Preparation
-===========
+.. autoclass:: mozilla_django_oidc_db.setup_configuration.steps.AdminOIDCConfigurationStep
+    :noindex:
 
-The command executes the list of pluggable configuration steps, and each step
-requires specific configuration information, that should be prepared.
-Here is the description of all available configuration steps and the shape of the data,
-used by each step.
-
+.. setup-config-example:: mozilla_django_oidc_db.setup_configuration.steps.AdminOIDCConfigurationStep
 
 Services configuration
 ----------------------
 
-TODO: add generated documentation for ``zgw_consumers.ServiceConfigurationStep``
+.. autoclass:: zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep
+    :noindex:
+
+.. setup-config-example:: zgw_consumers.contrib.setup_configuration.steps.ServiceConfigurationStep
+
 
 Objects API registration configuration
 --------------------------------------
 
-TODO: add generated documentation for ``ObjectsAPIConfigurationStep``
+.. autoclass:: openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep
+    :noindex:
 
-Execution
-=========
+.. setup-config-example:: openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep
 
-Open Forms configuration
-------------------------
+ZGW APIs registration configuration
+-----------------------------------
 
-With the full command invocation, all defined configuration steps are applied. Each step is idempotent,
-so it's safe to run the command multiple times. The steps will overwrite any manual changes made in
-the admin if you run the command after making these changes.
+.. autoclass:: openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep
+    :noindex:
 
-.. code-block:: bash
-
-    src/manage.py setup_configuration
+.. setup-config-example:: openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep

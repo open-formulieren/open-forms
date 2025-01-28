@@ -362,7 +362,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.4.0
+django-setup-configuration==0.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -428,10 +428,11 @@ djangorestframework-camel-case==1.4.2
     #   -r requirements/ci.txt
 djangorestframework-stubs==3.15.0
     # via -r requirements/type-checking.in
-docutils==0.20.1
+docutils==0.21.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-setup-configuration
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
@@ -664,7 +665,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.21.1
+mozilla-django-oidc-db==0.22.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -986,11 +987,17 @@ rstr==3.2.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   schwifty
-ruamel-yaml==0.18.6
+ruamel-yaml==0.18.10
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-setup-configuration
     #   prance
+ruamel-yaml-clib==0.2.12
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   ruamel-yaml
 schwifty==2024.5.3
     # via
     #   -c requirements/ci.txt
@@ -1050,7 +1057,7 @@ sphinx==7.3.0
     #   sphinx-rtd-theme
     #   sphinx-tabs
     #   sphinxcontrib-jquery
-sphinx-rtd-theme==2.0.0
+sphinx-rtd-theme==3.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1285,7 +1292,7 @@ zeep==4.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.36.0
+zgw-consumers==0.37.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
