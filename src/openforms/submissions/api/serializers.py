@@ -300,7 +300,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         step_data_serializer = build_serializer(
             configuration["components"],
             data=data,
-            context={"submission": submission},
+            context={"submission": submission, "validate_on_complete": False},
         )
         step_data_serializer.is_valid(raise_exception=True)
 

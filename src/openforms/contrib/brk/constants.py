@@ -9,3 +9,4 @@ class AddressValue(TypedDict):
     city: NotRequired[str]
     streetName: NotRequired[str]
     secretStreetCity: NotRequired[str]
+    autoPopulated: NotRequired[bool]

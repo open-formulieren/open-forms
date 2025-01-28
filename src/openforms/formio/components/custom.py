@@ -490,11 +490,35 @@ class AddressValueSerializer(serializers.Serializer):
         required=False,
         allow_blank=True,
     )
+    autoPopulated = serializers.BooleanField(
+        label=_("city and street name auto populated"),
+        help_text=_("Whether city and street name have been retrieved from the API"),
+        default=False,
+    )
 
     def __init__(self, **kwargs):
         self.derive_address = kwargs.pop("derive_address", None)
         self.component = kwargs.pop("component", None)
         super().__init__(**kwargs)
+
+    def get_fields(self):
+        fields = super().get_fields()
+
+        # Some fields have to be treated as required or not dynamically and based on
+        # specific situations.
+        if self.component and (validate := self.component.get("validate")):
+            if validate["required"] is True:
+                if self.derive_address:
+                    fields["city"].required = True
+                    fields["city"].allow_blank = False
+                    fields["streetName"].required = True
+                    fields["streetName"].allow_blank = False
+            elif validate["required"] is False:
+                fields["postcode"].required = False
+                fields["postcode"].allow_blank = True
+                fields["houseNumber"].required = False
+                fields["houseNumber"].allow_blank = True
+        return fields
 
     def validate_city(self, value: str) -> str:
         if city_regex := glom(
@@ -522,18 +546,46 @@ class AddressValueSerializer(serializers.Serializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
+        auto_populated = attrs.get("autoPopulated", False)
+        postcode = attrs.get("postcode", "")
+        house_number = attrs.get("houseNumber", "")
         city = attrs.get("city", "")
         street_name = attrs.get("streetName", "")
 
-        if self.derive_address:
-            existing_hmac = attrs.get("secretStreetCity", "")
-            postcode = attrs.get("postcode", "")
-            number = attrs.get("houseNumber", "")
+        # Allow users to save(pause) the form even if one of the fields is missing.
+        # We validate the combination of them only during the subission of the form.
+        if self.context.get("validate_on_complete", False):
+            if postcode and not house_number:
+                raise serializers.ValidationError(
+                    {
+                        "houseNumber": _(
+                            'This field is required if "postcode" is provided'
+                        )
+                    },
+                    code="required",
+                )
 
+            if not postcode and house_number:
+                raise serializers.ValidationError(
+                    {
+                        "postcode": _(
+                            'This field is required if "house number" is provided'
+                        )
+                    },
+                    code="required",
+                )
+
+        if self.derive_address:
+            # When the user fills in manually the city and the street name we do not
+            # need to check the secret city - street name combination
+            if not auto_populated:
+                return attrs
+
+            existing_hmac = attrs.get("secretStreetCity", "")
             computed_hmac = salt_location_message(
                 {
                     "postcode": postcode,
-                    "number": number,
+                    "number": house_number,
                     "city": city,
                     "street_name": street_name,
                 }

@@ -981,6 +981,7 @@ class SingleAddressNLTests(ValidationsTestCase):
         ui_inputs: dict[str, str],
         expected_ui_error: str,
         api_value: dict[str, Any],
+        expected_error_keys: list[str] = [],
     ) -> None:
         form = create_form(component)
 
@@ -988,7 +989,13 @@ class SingleAddressNLTests(ValidationsTestCase):
             self._assertAddressNLFrontendValidation(form, ui_inputs, expected_ui_error)
 
         with self.subTest("backend validation"):
-            self._assertBackendValidation(form, component["key"], api_value)
+            if not expected_error_keys:
+                self._assertBackendValidation(form, component["key"], api_value)
+            else:
+                for key in expected_error_keys:
+                    self._assertBackendValidation(
+                        form, f"{component['key']}.{key}", api_value
+                    )
 
     @async_to_sync
     async def _assertAddressNLFrontendValidation(
@@ -1029,6 +1036,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                 "houseNumberAddition": "",
             },
             expected_ui_error="Dit veld mag niet leeg zijn.",
+            expected_error_keys=["postcode", "houseNumber"],
         )
 
     def test_regex_failure(self):
