@@ -15,7 +15,7 @@ import elasticapm
 from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -41,6 +41,8 @@ __all__ = [
     "iterate_data_with_components",
     "recursive_apply",
     "build_serializer",
+    "rewrite_formio_components",
+    "as_json_schema",
 ]
 
 
@@ -105,3 +107,18 @@ def build_serializer(
     puts them into a serializer instance ready for validation.
     """
     return _build_serializer(components, register=_register or register, **kwargs)
+
+
+def as_json_schema(
+    component: Component, _register: ComponentRegistry | None = None
+) -> JSONObject:
+    """Return a JSON schema of a component.
+
+    :param component: Component
+    :param _register: ComponentRegistry | None
+    :returns: JSONObject
+    """
+    registry = _register or register
+
+    component_plugin = registry[component["type"]]
+    return component_plugin.as_json_schema(component)

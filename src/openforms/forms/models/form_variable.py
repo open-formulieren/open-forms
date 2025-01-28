@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from django.db import models, transaction
@@ -15,7 +16,12 @@ from openforms.formio.utils import (
 )
 from openforms.formio.validators import variable_key_validator
 from openforms.prefill.constants import IdentifierRoles
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.typing import JSONObject
+from openforms.variables.constants import (
+    DATA_TYPE_TO_JSON_SCHEMA,
+    FormVariableDataTypes,
+    FormVariableSources,
+)
 from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
@@ -198,6 +204,8 @@ class FormVariable(models.Model):
         null=True,
     )
 
+    _json_schema = None
+
     objects = FormVariableManager()
 
     class Meta:
@@ -248,6 +256,37 @@ class FormVariable(models.Model):
 
     def __str__(self):
         return _("Form variable '{key}'").format(key=self.key)
+
+    @property
+    def json_schema(self) -> JSONObject | None:
+        return self._json_schema
+
+    @json_schema.setter
+    def json_schema(self, value: JSONObject):
+        self._json_schema = value
+
+    def as_json_schema(self) -> JSONObject:
+        """Return JSON schema of form variable.
+
+        If the schema generation for a formio component fails, fall back to a basic
+        schema based on the data type.
+        """
+        if self.source == FormVariableSources.component:
+            from openforms.formio.service import as_json_schema  # circular import
+
+            try:
+                component = self.form_definition.configuration_wrapper.component_map[
+                    self.key
+                ]
+                self.json_schema = as_json_schema(component)
+            except (AttributeError, KeyError):  # pragma: no cover
+                pass
+
+        if self.json_schema is None:
+            self.json_schema = deepcopy(DATA_TYPE_TO_JSON_SCHEMA[self.data_type])
+            self.json_schema["title"] = self.name
+
+        return self.json_schema
 
     def get_initial_value(self):
         return self.initial_value

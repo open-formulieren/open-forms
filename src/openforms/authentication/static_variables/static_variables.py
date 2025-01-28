@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from openforms.variables.base import BaseStaticVariable
@@ -23,6 +24,14 @@ class SubmissionID(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(submission.uuid) if submission else ""
 
+    def as_json_schema(self):
+        return {
+            "title": "Submission identifier",
+            "description": "UUID of the submission",
+            "type": "string",
+            "format": "uuid",
+        }
+
 
 @register_static_variable("language_code")
 class LanguageCode(BaseStaticVariable):
@@ -31,6 +40,14 @@ class LanguageCode(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return submission.language_code if submission else ""
+
+    def as_json_schema(self):
+        return {
+            "title": "Language code",
+            "description": "Abbreviation of the used langauge.",
+            "type": "string",
+            "enum": [language[0] for language in settings.LANGUAGES],
+        }
 
 
 @register_static_variable("auth")
@@ -52,6 +69,14 @@ class Auth(BaseStaticVariable):
 
         return auth_data
 
+    def as_json_schema(self):
+        # NOTE: this has been made 'vague' on purpose, see the comment on AuthContext.
+        return {
+            "title": "Authentication summary",
+            "type": "object",
+            "additionalProperties": True,
+        }
+
 
 @register_static_variable("auth_type")
 class AuthType(BaseStaticVariable):
@@ -62,6 +87,13 @@ class AuthType(BaseStaticVariable):
         if not submission or not submission.is_authenticated:
             return ""
         return submission.auth_info.attribute
+
+    def as_json_schema(self):
+        return {
+            "title": "Authentication type",
+            "type": "string",
+            "enum": AuthAttribute.values,
+        }
 
 
 def get_auth_value(submission: Submission | None, attribute: AuthAttribute) -> str:
@@ -82,6 +114,18 @@ class AuthBSN(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.bsn)
 
+    def as_json_schema(self):
+        return {
+            "title": "BSN",
+            "description": (
+                "Uniquely identifies the authenticated person. This value follows the "
+                "rules for Dutch social security numbers."
+            ),
+            "type": "string",
+            "pattern": "^\\d{9}$",
+            "format": "nl-bsn",
+        }
+
 
 @register_static_variable("auth_kvk")
 class AuthKvK(BaseStaticVariable):
@@ -91,6 +135,18 @@ class AuthKvK(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.kvk)
 
+    def as_json_schema(self):
+        return {
+            "title": "KVK",
+            "description": (
+                "Chamber of commerce number (KVK-nummer) that uniquely identifies the "
+                "company."
+            ),
+            "type": "string",
+            "pattern": "^\\d{8}$",
+            "format": "urn:etoegang:1.9:EntityConcernedID:KvKnr",
+        }
+
 
 @register_static_variable("auth_pseudo")
 class AuthPseudo(BaseStaticVariable):
@@ -99,6 +155,9 @@ class AuthPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)
+
+    def as_json_schema(self):
+        return {"title": "Pseudo", "type": "string"}
 
 
 @register_static_variable("auth_context")
@@ -113,6 +172,19 @@ class AuthContext(BaseStaticVariable):
             return None
         return submission.auth_info.to_auth_context_data()
 
+    def as_json_schema(self):
+        # NOTE: `auth_context` includes all relevant options for the authentication
+        # plugin, which means its values are plugin dependent. Therefore, to discourage
+        # users from using this, no specific object information will be provided here.
+        # Instead, variables like `auth_bsn` and `auth_kvk` should be used for
+        # extracting information about authentication (they are strictly defined with a
+        # schema)
+        return {
+            "title": "Authentication options",
+            "description": "Options for the selected authentication plugin",
+            "type": "object",
+        }
+
 
 @register_static_variable("auth_context_source")
 class AuthContextSource(BaseStaticVariable):
@@ -125,6 +197,13 @@ class AuthContextSource(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["source"]
 
+    def as_json_schema(self):
+        return {
+            "title": "Authentication source",
+            "description": "Name of the authentication source",
+            "type": "string",
+        }
+
 
 @register_static_variable("auth_context_loa")
 class AuthContextLOA(BaseStaticVariable):
@@ -136,6 +215,17 @@ class AuthContextLOA(BaseStaticVariable):
             return ""
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["levelOfAssurance"]
+
+    def as_json_schema(self):
+        return {
+            "title": "Authentication level of assurance",
+            "description": (
+                "afsprakenstelsel.etoegang.nl defines the available levels of "
+                "assurance *and* prescribes what the minimum level must be. Note that "
+                "a minimum of loa2plus is required these days."
+            ),
+            "type": "string",
+        }
 
 
 @register_static_variable("auth_context_representee_identifier_type")
@@ -151,6 +241,13 @@ class AuthContextRepresenteeType(BaseStaticVariable):
             return ""
         return auth_context["representee"]["identifierType"]
 
+    def as_json_schema(self):
+        return {
+            "title": "Representee authentication type",
+            "description": "Authentication type of the representee",
+            "type": "string",
+        }
+
 
 @register_static_variable("auth_context_representee_identifier")
 class AuthContextRepresenteeIdentifier(BaseStaticVariable):
@@ -165,6 +262,13 @@ class AuthContextRepresenteeIdentifier(BaseStaticVariable):
             return ""
         return auth_context["representee"]["identifier"]
 
+    def as_json_schema(self):
+        return {
+            "title": "Representee authentication identifier",
+            "description": "Authentication identifier of the representee.",
+            "type": "string",
+        }
+
 
 @register_static_variable("auth_context_legal_subject_identifier_type")
 class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
@@ -177,6 +281,16 @@ class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["authorizee"]["legalSubject"]["identifierType"]
 
+    def as_json_schema(self):
+        return {
+            "title": "Legal subject authentication type",
+            "description": (
+                "Authentication type of the legal subject (mandated to act on behalf "
+                "of the representee)"
+            ),
+            "type": "string",
+        }
+
 
 @register_static_variable("auth_context_legal_subject_identifier")
 class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
@@ -188,6 +302,16 @@ class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
             return ""
         auth_context = submission.auth_info.to_auth_context_data()
         return auth_context["authorizee"]["legalSubject"]["identifier"]
+
+    def as_json_schema(self):
+        return {
+            "title": "Legal subject authentication identifier",
+            "description": (
+                "Authentication identifier of the legal subject (mandated to act on "
+                "behalf of the representee)"
+            ),
+            "type": "string",
+        }
 
 
 @register_static_variable("auth_context_branch_number")
@@ -204,6 +328,16 @@ class AuthContextBranchNumber(BaseStaticVariable):
         legal_subject = auth_context["authorizee"]["legalSubject"]
         return legal_subject.get("branchNumber", "")
 
+    def as_json_schema(self):
+        return {
+            "title": "Authentication branch number",
+            "description": (
+                "The branch number imposes a restriction on the acting subject - it is "
+                "limited to act only on this particular branch of the legal subject."
+            ),
+            "type": "string",
+        }
+
 
 @register_static_variable("auth_context_acting_subject_identifier_type")
 class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
@@ -218,6 +352,9 @@ class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
             return ""
         return auth_context["authorizee"]["actingSubject"]["identifierType"]
 
+    def as_json_schema(self):
+        return {"title": "Acting subject authentication type", "type": "string"}
+
 
 @register_static_variable("auth_context_acting_subject_identifier")
 class AuthContextActingSubjectIdentifier(BaseStaticVariable):
@@ -231,3 +368,6 @@ class AuthContextActingSubjectIdentifier(BaseStaticVariable):
         if "actingSubject" not in auth_context["authorizee"]:
             return ""
         return auth_context["authorizee"]["actingSubject"]["identifier"]
+
+    def as_json_schema(self):
+        return {"title": "Acting subject authentication identifier", "type": "string"}

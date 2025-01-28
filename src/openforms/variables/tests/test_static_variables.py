@@ -4,6 +4,7 @@ from uuid import UUID
 from django.test import TestCase, override_settings
 
 from freezegun import freeze_time
+from jsonschema import Draft202012Validator
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -120,3 +121,44 @@ class TodayTests(TestCase):
         variable = _get_variable("today", submission=submission)
 
         self.assertEqual(variable.initial_value.day, 24)
+
+
+class StaticVariablesValidJsonSchemaTests(TestCase):
+    validator = Draft202012Validator
+
+    @staticmethod
+    def _get_json_schema(key: str):
+        return register[key].as_json_schema()
+
+    def assertValidSchema(self, properties):
+        schema = {
+            "$schema": self.validator.META_SCHEMA["$id"],
+            **properties,
+        }
+
+        self.assertIn("type", schema)
+        self.validator.check_schema(schema)
+
+    def test_now(self):
+        schema = self._get_json_schema("now")
+        self.assertValidSchema(schema)
+
+    def test_today(self):
+        schema = self._get_json_schema("today")
+        self.assertValidSchema(schema)
+
+    def test_current_year(self):
+        schema = self._get_json_schema("current_year")
+        self.assertValidSchema(schema)
+
+    def test_environment(self):
+        schema = self._get_json_schema("environment")
+        self.assertValidSchema(schema)
+
+    def test_form_name(self):
+        schema = self._get_json_schema("form_name")
+        self.assertValidSchema(schema)
+
+    def test_form_id(self):
+        schema = self._get_json_schema("form_id")
+        self.assertValidSchema(schema)

@@ -3,22 +3,22 @@ interactions:
     body: '"{\"values\": {\"file\": [{\"file_name\": \"file1.txt\", \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\"},
       {\"file_name\": \"file2.txt\", \"content\": \"Q29udGVudCBleGFtcGxlIGlzIHRoaXMu\"}]},
       \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"static_var_1\": {\"type\": \"string\",
-      \"pattern\": \"^cool_pattern$\"}, \"form_var_1\": {\"type\": \"string\"}, \"form_var_2\":
-      {\"type\": \"string\"}, \"attachment\": {\"type\": \"string\", \"contentEncoding\":
-      \"base64\"}}, \"required\": [\"static_var_1\", \"form_var_1\", \"form_var_2\"],
-      \"additionalProperties\": false}}"'
+      \"type\": \"object\", \"properties\": {\"file\": {\"title\": \"File\", \"type\":
+      \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"file_name\":
+      {\"type\": \"string\"}, \"content\": {\"type\": \"string\", \"format\": \"base64\"}},
+      \"required\": [\"file_name\", \"content\"], \"additionalProperties\": false}}},
+      \"required\": [\"file\"], \"additionalProperties\": false}}"'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3Mzc0Njk5MDAsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.VaaQtoX7c3ac2_Zf8GPvB8fAMYfmJft53c7qXNBY_lk
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3Mzc5NzkxODgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.1bWuAeZPvzPTeEVsggARdNYiy-X1V_uXIIdCICW2BVI
       Connection:
       - keep-alive
       Content-Length:
-      - '638'
+      - '654'
       Content-Type:
       - application/json
       User-Agent:
@@ -28,13 +28,15 @@ interactions:
   response:
     body:
       string: "{\n  \"data\": {\n    \"schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"attachment\":
-        {\n          \"contentEncoding\": \"base64\",\n          \"type\": \"string\"\n
-        \       },\n        \"form_var_1\": {\n          \"type\": \"string\"\n        },\n
-        \       \"form_var_2\": {\n          \"type\": \"string\"\n        },\n        \"static_var_1\":
-        {\n          \"pattern\": \"^cool_pattern$\",\n          \"type\": \"string\"\n
-        \       }\n      },\n      \"required\": [\n        \"static_var_1\",\n        \"form_var_1\",\n
-        \       \"form_var_2\"\n      ],\n      \"type\": \"object\"\n    },\n    \"values\":
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"file\":
+        {\n          \"items\": {\n            \"additionalProperties\": false,\n
+        \           \"properties\": {\n              \"content\": {\n                \"format\":
+        \"base64\",\n                \"type\": \"string\"\n              },\n              \"file_name\":
+        {\n                \"type\": \"string\"\n              }\n            },\n
+        \           \"required\": [\n              \"file_name\",\n              \"content\"\n
+        \           ],\n            \"type\": \"object\"\n          },\n          \"title\":
+        \"File\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\":
+        [\n        \"file\"\n      ],\n      \"type\": \"object\"\n    },\n    \"values\":
         {\n      \"file\": [\n        {\n          \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\",\n
         \         \"file_name\": \"file1.txt\"\n        },\n        {\n          \"content\":
         \"Q29udGVudCBleGFtcGxlIGlzIHRoaXMu\",\n          \"file_name\": \"file2.txt\"\n
@@ -43,11 +45,11 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '923'
+      - '1057'
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Jan 2025 14:31:40 GMT
+      - Mon, 27 Jan 2025 11:59:48 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.8
     status:

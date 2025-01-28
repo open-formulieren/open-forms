@@ -24,6 +24,9 @@ class Now(BaseStaticVariable):
         now = timezone.now()
         return now.replace(second=0, microsecond=0)
 
+    def as_json_schema(self):
+        return {"title": "Current date time", "type": "string", "format": "date-time"}
+
 
 @register_static_variable("today")
 class Today(BaseStaticVariable):
@@ -33,6 +36,9 @@ class Today(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> date:
         now_utc = timezone.now()
         return timezone.localtime(now_utc).date()
+
+    def as_json_schema(self):
+        return {"title": "Today's date", "type": "string", "format": "date"}
 
 
 @register_static_variable("current_year")
@@ -44,6 +50,9 @@ class CurrentYear(BaseStaticVariable):
         now_utc = timezone.now()
         return timezone.localtime(now_utc).year
 
+    def as_json_schema(self):
+        return {"title": "Current year", "type": "number"}
+
 
 @register_static_variable("environment")
 class Environment(BaseStaticVariable):
@@ -52,6 +61,9 @@ class Environment(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(settings.ENVIRONMENT)
+
+    def as_json_schema(self):
+        return {"title": "Environment", "type": "string"}
 
 
 @register_static_variable("form_name")
@@ -62,6 +74,9 @@ class FormName(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return submission.form.name if submission else ""
 
+    def as_json_schema(self):
+        return {"title": "Form name", "type": "string"}
+
 
 @register_static_variable("form_id")
 class FormID(BaseStaticVariable):
@@ -70,3 +85,6 @@ class FormID(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(submission.form.uuid) if submission else ""
+
+    def as_json_schema(self):
+        return {"title": "Form identifier", "type": "string", "format": "uuid"}

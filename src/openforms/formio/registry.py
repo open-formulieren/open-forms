@@ -22,7 +22,7 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 
 from .typing import Component
 from .utils import is_layout_component
@@ -108,6 +108,13 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         # Allow anything that is valid JSON, taking into account the 'required'
         # validation which is common for most components.
         return serializers.JSONField(required=required, allow_null=True)
+
+    @staticmethod
+    def as_json_schema(component: ComponentT) -> JSONObject:
+        """Return JSON schema for this formio component plugin. This routine should be
+        implemented in the child class
+        """
+        raise NotImplementedError()
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):

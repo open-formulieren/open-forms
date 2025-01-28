@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.typing import JSONObject
+
 from .utils import check_date, check_time
 
 
@@ -53,4 +55,17 @@ CHECK_VARIABLE_TYPE = {
     FormVariableDataTypes.datetime: check_date,
     FormVariableDataTypes.date: check_date,
     FormVariableDataTypes.time: check_time,
+}
+
+
+DATA_TYPE_TO_JSON_SCHEMA: dict[str, JSONObject] = {
+    FormVariableDataTypes.string: {"type": "string"},
+    FormVariableDataTypes.boolean: {"type": "boolean"},
+    FormVariableDataTypes.object: {"type": "object"},
+    FormVariableDataTypes.array: {"type": "array"},
+    FormVariableDataTypes.int: {"type": "integer"},
+    FormVariableDataTypes.float: {"type": "number"},
+    FormVariableDataTypes.datetime: {"type": "string", "format": "date-time"},
+    FormVariableDataTypes.date: {"type": "string", "format": "date"},
+    FormVariableDataTypes.time: {"type": "string", "format": "time"},
 }

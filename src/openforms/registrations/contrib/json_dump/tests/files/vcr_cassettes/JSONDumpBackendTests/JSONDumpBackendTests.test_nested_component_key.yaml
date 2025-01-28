@@ -1,8 +1,9 @@
 interactions:
 - request:
-    body: '"{\"values\": {\"file\": null}, \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"file\": {\"title\": \"File\", \"type\":
-      \"null\"}}, \"required\": [\"file\"], \"additionalProperties\": false}}"'
+    body: '"{\"values\": {}, \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
+      \"type\": \"object\", \"properties\": {\"foo.bar\": {\"title\": \"Nested key\",
+      \"type\": \"string\"}}, \"required\": [\"foo.bar\"], \"additionalProperties\":
+      false}}"'
     headers:
       Accept:
       - '*/*'
@@ -23,16 +24,16 @@ interactions:
   response:
     body:
       string: "{\n  \"data\": {\n    \"schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"file\":
-        {\n          \"title\": \"File\",\n          \"type\": \"null\"\n        }\n
-        \     },\n      \"required\": [\n        \"file\"\n      ],\n      \"type\":
-        \"object\"\n    },\n    \"values\": {\n      \"file\": null\n    }\n  },\n
-        \ \"message\": \"Data received\"\n}\n"
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"foo.bar\":
+        {\n          \"title\": \"Nested key\",\n          \"type\": \"string\"\n
+        \       }\n      },\n      \"required\": [\n        \"foo.bar\"\n      ],\n
+        \     \"type\": \"object\"\n    },\n    \"values\": {}\n  },\n  \"message\":
+        \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '394'
+      - '384'
       Content-Type:
       - application/json
       Date:

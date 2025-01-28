@@ -1,8 +1,9 @@
 interactions:
 - request:
-    body: '"{\"values\": {\"file\": null}, \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"file\": {\"title\": \"File\", \"type\":
-      \"null\"}}, \"required\": [\"file\"], \"additionalProperties\": false}}"'
+    body: '"{\"values\": {\"radio\": \"A\"}, \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
+      \"type\": \"object\", \"properties\": {\"radio\": {\"title\": \"Radio\", \"type\":
+      \"string\", \"enum\": [\"A\", \"B\", \"C\", \"\"]}}, \"required\": [\"radio\"],
+      \"additionalProperties\": false}}"'
     headers:
       Accept:
       - '*/*'
@@ -13,7 +14,7 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '261'
+      - '307'
       Content-Type:
       - application/json
       User-Agent:
@@ -23,16 +24,17 @@ interactions:
   response:
     body:
       string: "{\n  \"data\": {\n    \"schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"file\":
-        {\n          \"title\": \"File\",\n          \"type\": \"null\"\n        }\n
-        \     },\n      \"required\": [\n        \"file\"\n      ],\n      \"type\":
-        \"object\"\n    },\n    \"values\": {\n      \"file\": null\n    }\n  },\n
-        \ \"message\": \"Data received\"\n}\n"
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"radio\":
+        {\n          \"enum\": [\n            \"A\",\n            \"B\",\n            \"C\",\n
+        \           \"\"\n          ],\n          \"title\": \"Radio\",\n          \"type\":
+        \"string\"\n        }\n      },\n      \"required\": [\n        \"radio\"\n
+        \     ],\n      \"type\": \"object\"\n    },\n    \"values\": {\n      \"radio\":
+        \"A\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '394'
+      - '498'
       Content-Type:
       - application/json
       Date:
