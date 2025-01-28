@@ -32,6 +32,7 @@ include = [
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",
+    "src/openforms/contrib/referentielijsten/",
     # Emails
     "src/openforms/emails/templatetags/cosign_information.py",
     # Logging

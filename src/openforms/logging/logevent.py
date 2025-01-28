@@ -626,6 +626,19 @@ def stuf_bg_response(service: StufService, url):
 # - - -
 
 
+def referentielijsten_failure_response(
+    form: Form, component: JSONObject, error_message: str
+):
+    _create_log(
+        form,
+        "referentielijsten_failure_response",
+        extra_data={"component": component, "error": error_message},
+    )
+
+
+# - - -
+
+
 def hijack_started(hijacker, hijacked):
     _create_log(
         hijacked,
