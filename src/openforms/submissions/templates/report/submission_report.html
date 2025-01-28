@@ -39,8 +39,14 @@
             <header class="header {% if theme.logo %}header--has-logo{% endif %}">
                 <span
                     class="header__logo"
-                    {% if theme.logo %}role="img" aria-label="{{ logo_alt }}"{% endif %}
-                ></span>
+                    {% if theme.logo %}role="img"{% endif %}
+                >
+                    {% if theme.logo %}
+                        <span class="sr-only">
+                            {{ logo_alt }}
+                        </span>
+                    {% endif %}
+                </span>
             </header>
 
             <h1 class="title">{{ report.form.name }}</h1>
