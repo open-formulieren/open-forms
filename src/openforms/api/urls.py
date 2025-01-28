@@ -10,6 +10,9 @@ from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.config.api.viewsets import ThemeViewSet
+from openforms.contrib.referentielijsten.api.viewsets import (
+    ReferentielijstenTabellenViewSet,
+)
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
 from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
@@ -59,6 +62,13 @@ router.register("products", ProductViewSet)
 
 # services
 router.register("services", ServiceViewSet)
+
+# referentielijsten
+router.register(
+    "referentielijst-tabellen",
+    ReferentielijstenTabellenViewSet,
+    basename="referentielijst-tabellen",
+)
 
 # service fetch configurations
 router.register("service-fetch-configurations", ServiceFetchConfigurationViewSet)
