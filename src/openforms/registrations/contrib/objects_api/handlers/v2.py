@@ -5,12 +5,14 @@ Implementation details for the v2 registration handler.
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import cast
+from typing import assert_never, cast
 
 from glom import Assign, Path, glom
 
 from openforms.api.utils import underscore_to_camel
-from openforms.formio.typing import Component
+from openforms.formio.service import FormioData
+from openforms.formio.typing import Component, EditGridComponent
+from openforms.formio.typing.vanilla import FileComponent
 from openforms.typing import JSONObject, JSONValue
 
 from ..typing import ObjecttypeVariableMapping
@@ -81,7 +83,7 @@ def process_mapped_variable(
       which value needs to be written to which "object path" for the record data, for
       possible deep assignments.
     """
-
+    variable_key = mapping["variable_key"]
     target_path = Path(*bits) if (bits := mapping.get("target_path")) else None
 
     # normalize non-primitive date/datetime values so that they're ready for JSON
@@ -120,27 +122,99 @@ def process_mapped_variable(
                 assert target_path is not None
                 return AssignmentSpec(destination=target_path, value=value)
 
-        case {"type": "file", **rest}:
+        case {"type": "file"}:
             assert attachment_urls is not None
-            multiple = rest.get("multiple", False)
-            upload_urls = attachment_urls[mapping["variable_key"]]
-
-            transformed_value = str | list[str]
-
-            # for multiple uploads, replace the Formio file dicts with our upload URLs
-            if multiple:
-                transformed_value = upload_urls
-            # single file - return only one element *if* there are uploads
-            else:
-                transformed_value = upload_urls[0] if upload_urls else ""
-            value = cast(JSONValue, transformed_value)
+            value = _transform_file_value(
+                cast(FileComponent, component), attachment_urls
+            )
 
         case {"type": "map"}:
             assert isinstance(value, dict)
 
+        case {"type": "editgrid"} if attachment_urls is not None:
+            assert isinstance(value, list)
+            value = _transform_editgrid_value(
+                cast(EditGridComponent, component),
+                cast(list[JSONObject], value),
+                attachment_urls=attachment_urls,
+                key_prefix=variable_key,
+            )
         # not a component or standard behaviour where no transformation is necessary
         case None | _:
             pass
 
     assert target_path is not None
     return AssignmentSpec(destination=target_path, value=value)
+
+
+def _transform_file_value(
+    component: FileComponent,
+    attachment_urls: dict[str, list[str]],
+    key_prefix: str = "",
+) -> str | list[str]:
+    """
+    Transform a single file component value according to the component configuration.
+    """
+    key = component["key"]
+    multiple = component.get("multiple", False)
+
+    # it's possible keys are missing because there are no uploads at all for the
+    # component.
+    data_path = f"{key_prefix}.{key}" if key_prefix else key
+    upload_urls = attachment_urls.get(data_path, [])
+
+    match upload_urls:
+        # if there are no uploads and it's a single component -> normalize to empty string
+        case [] if not multiple:
+            return ""
+
+        # if there's an upload and it's a single component -> return the single URL string
+        case list() if upload_urls and not multiple:
+            return upload_urls[0]
+
+        # otherwise just return the list of upload URLs
+        case list():
+            assert multiple
+            return upload_urls
+
+        case _:
+            assert_never(upload_urls)
+
+
+def _transform_editgrid_value(
+    component: EditGridComponent,
+    value: list[JSONObject],
+    attachment_urls: dict[str, list[str]],
+    key_prefix: str,
+) -> list[JSONObject]:
+    nested_components = component["components"]
+
+    items: list[JSONObject] = []
+
+    # process file uploads inside (nested) repeating groups
+    for index, item in enumerate(value):
+        item_values = FormioData(item)
+
+        for nested_component in nested_components:
+            key = nested_component["key"]
+
+            match nested_component:
+                case {"type": "file"}:
+                    item_values[key] = _transform_file_value(
+                        cast(FileComponent, nested_component),
+                        attachment_urls=attachment_urls,
+                        key_prefix=f"{key_prefix}.{index}",
+                    )
+                case {"type": "editgrid"}:
+                    nested_items = item_values[key]
+                    assert isinstance(nested_items, list)
+                    item_values[key] = _transform_editgrid_value(
+                        cast(EditGridComponent, nested_component),
+                        value=cast(list[JSONObject], nested_items),
+                        attachment_urls=attachment_urls,
+                        key_prefix=f"{key_prefix}.{index}.{key}",
+                    )
+
+        items.append(item_values.data)
+
+    return items

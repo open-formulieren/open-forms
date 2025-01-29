@@ -412,24 +412,35 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "label": "Repeating group",
                     "components": [
                         {
-                            "key": "email",
-                            "type": "email",
-                            "label": "Email",
-                        },
-                        {
-                            "key": "file",
-                            "type": "file",
-                            "multiple": False,
-                        },
+                            "key": "nestedRepeatingGroup",
+                            "type": "editgrid",
+                            "label": "Yeah this is madness",
+                            "components": [
+                                {
+                                    "key": "email",
+                                    "type": "email",
+                                    "label": "Email",
+                                },
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "multiple": False,
+                                },
+                            ],
+                        }
                     ],
                 },
             ],
             submitted_data={
                 "repeatingGroup": [
                     {
-                        "email": "info@example.com",
-                        "file": formio_upload,
-                    }
+                        "nestedRepeatingGroup": [
+                            {
+                                "email": "info@example.com",
+                                "file": formio_upload,
+                            }
+                        ],
+                    },
                 ],
             },
             completed=True,
@@ -440,8 +451,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             form_key="repeatingGroup",
             file_name=formio_upload["originalName"],
             original_name=formio_upload["originalName"],
-            _component_configuration_path="components.0.components.1",
-            _component_data_path="repeatingGroup.0.file",
+            _component_configuration_path="components.0.components.0.components.1",
+            _component_data_path="repeatingGroup.0.nestedRepeatingGroup.0.file",
         )
 
         v2_options: RegistrationOptionsV2 = {
@@ -479,8 +490,12 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         expected = {
             "repeatingGroup": [
                 {
-                    "email": "info@example.com",
-                    "file": objects_api_attachment.document_url,
+                    "nestedRepeatingGroup": [
+                        {
+                            "email": "info@example.com",
+                            "file": objects_api_attachment.document_url,
+                        }
+                    ],
                 }
             ],
         }
