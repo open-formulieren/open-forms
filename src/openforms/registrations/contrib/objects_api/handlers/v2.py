@@ -5,6 +5,7 @@ Implementation details for the v2 registration handler.
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import cast
 
 from glom import Assign, Path, glom
 
@@ -56,7 +57,31 @@ def process_mapped_variable(
         JSONValue | date | datetime
     ),  # can't narrow it down yet, as the type depends on the component type
     component: Component | None = None,
+    attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
+    """
+    Apply post-processing to a mapped variable.
+
+    A mapped variable may have additional options that specify the behaviour of how the
+    values are translated before they end up in the Objects API record. Often, these
+    transformations are dependent on the component type being processed.
+
+    :arg mapping: The mapping of form variable to destination path, including possible
+      component-specific configuration options that influence the mapping behaviour.
+    :arg value: The raw value of the form variable for the submission being processed.
+      The type/shape of the value depends on the variable/component data type being
+      processed and even the component configuration (such as multiple True/False).
+    :arg component: If the variable corresponds to a Formio component, the component
+      definition is provided, otherwise ``None``.
+    :arg attachment_urls: The registration plugin uploads attachments to a Documents API
+      and provides the API resource URL for each attachment. Keys are the data paths in
+      the (Formio) submission data, e.g. `myAttachment` or ``repeatingGroups.2.file``.
+
+    :returns: A single assignment spec or collection of assignment specs that specify
+      which value needs to be written to which "object path" for the record data, for
+      possible deep assignments.
+    """
+
     target_path = Path(*bits) if (bits := mapping.get("target_path")) else None
 
     # normalize non-primitive date/datetime values so that they're ready for JSON
@@ -95,14 +120,20 @@ def process_mapped_variable(
                 assert target_path is not None
                 return AssignmentSpec(destination=target_path, value=value)
 
-        # multiple files - return an array
-        case {"type": "file", "multiple": True}:
-            assert isinstance(value, list)
+        case {"type": "file", **rest}:
+            assert attachment_urls is not None
+            multiple = rest.get("multiple", False)
+            upload_urls = attachment_urls[mapping["variable_key"]]
 
-        # single file - return only one element
-        case {"type": "file"}:
-            assert isinstance(value, list)
-            value = value[0] if value else ""
+            transformed_value = str | list[str]
+
+            # for multiple uploads, replace the Formio file dicts with our upload URLs
+            if multiple:
+                transformed_value = upload_urls
+            # single file - return only one element *if* there are uploads
+            else:
+                transformed_value = upload_urls[0] if upload_urls else ""
+            value = cast(JSONValue, transformed_value)
 
         case {"type": "map"}:
             assert isinstance(value, dict)
