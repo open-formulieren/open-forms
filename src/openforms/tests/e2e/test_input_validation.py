@@ -1028,7 +1028,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                 "houseLetter": "",
                 "houseNumberAddition": "",
             },
-            expected_ui_error="Het verplichte veld Required AddressNL is niet ingevuld.",
+            expected_ui_error="Dit veld mag niet leeg zijn.",
         )
 
     def test_regex_failure(self):
