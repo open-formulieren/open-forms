@@ -22,6 +22,29 @@ class FileComponent(Component):
     maxNumberOfFiles: NotRequired[int]
 
 
+class FileData(TypedDict):
+    url: str
+    form: Literal[""]
+    name: str
+    size: int
+    baseUrl: str
+    project: Literal[""]
+
+
+class SingleFileValue(TypedDict):
+    # Source of truth: https://github.com/open-formulieren/types/blob/main/src/formio/components/file.ts
+    name: str
+    originalName: str
+    size: int
+    storage: Literal["url"]
+    type: str
+    url: str
+    data: FileData
+
+
+type FileValue = list[SingleFileValue]
+
+
 class SelectData(TypedDict, total=False):
     values: list[OptionDict]
 
