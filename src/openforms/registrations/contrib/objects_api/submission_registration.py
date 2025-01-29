@@ -15,7 +15,9 @@ from typing import (
     override,
 )
 
-from django.db.models import F
+from django.db import models
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce, NullIf
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import (
@@ -488,11 +490,19 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         attachments = ObjectsAPISubmissionAttachment.objects.filter(
             submission_file_attachment__submission_variable__submission=submission
         ).annotate(
-            variable_key=F("submission_file_attachment__submission_variable__key")
+            data_path=Coalesce(
+                NullIf(
+                    F("submission_file_attachment___component_data_path"),
+                    Value(""),
+                ),
+                # fall back to variable/component key if no explicit data path is set
+                F("submission_file_attachment__submission_variable__key"),
+                output_field=models.TextField(),
+            ),
         )
         for attachment_meta in attachments:
             key: str = (
-                attachment_meta.variable_key  # pyright: ignore[reportAttributeAccessIssue]
+                attachment_meta.data_path  # pyright: ignore[reportAttributeAccessIssue]
             )
             urls_map[key].append(attachment_meta.document_url)
         return urls_map
@@ -538,28 +548,21 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 variable = None
 
             value: JSONValue | date | datetime
-            # special casing documents - we transform the formio file upload data into
-            # the api resource URLs for the uploaded documents in the Documens API.
-            # Normalizing to string/array of strings is done later via
-            # process_mapped_variable which receives the component configuration.
-            if key in urls_map:
-                value = urls_map[key]  # pyright: ignore[reportAssignmentType]
-            else:
-                try:
-                    value = all_values[key]
-                except KeyError:
-                    logger.info(
-                        "Expected key %s to be present in the submission (%s) variables, "
-                        "but it wasn't. Ignoring it.",
-                        key,
-                        submission.uuid,
-                        extra={
-                            "submission": submission.uuid,
-                            "key": key,
-                            "mapping_config": mapping,
-                        },
-                    )
-                    continue
+            try:
+                value = all_values[key]
+            except KeyError:
+                logger.info(
+                    "Expected key %s to be present in the submission (%s) variables, "
+                    "but it wasn't. Ignoring it.",
+                    key,
+                    submission.uuid,
+                    extra={
+                        "submission": submission.uuid,
+                        "key": key,
+                        "mapping_config": mapping,
+                    },
+                )
+                continue
 
             # Look up if the key points to a form component that provides additional
             # context for how to process the value.
@@ -572,7 +575,10 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
             # process the value so that we can assign it to the record data as requested
             assignment_spec = process_mapped_variable(
-                mapping=mapping, value=value, component=component
+                mapping=mapping,
+                value=value,
+                component=component,
+                attachment_urls=urls_map,
             )
             if isinstance(assignment_spec, AssignmentSpec):
                 assignment_specs.append(assignment_spec)
