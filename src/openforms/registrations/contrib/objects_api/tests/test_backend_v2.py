@@ -10,6 +10,7 @@ from freezegun import freeze_time
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.constants import PostSubmissionEvents
@@ -399,6 +400,91 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
         self.assertEqual(len(result["record"]["data"]["multiple_files"]), 2)
+
+    @tag("gh-4689")
+    def test_submission_with_editgrid_with_nested_files(self):
+        formio_upload = SubmittedFileFactory.build()
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "label": "Repeating group",
+                    "components": [
+                        {
+                            "key": "email",
+                            "type": "email",
+                            "label": "Email",
+                        },
+                        {
+                            "key": "file",
+                            "type": "file",
+                            "multiple": False,
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "repeatingGroup": [
+                    {
+                        "email": "info@example.com",
+                        "file": formio_upload,
+                    }
+                ],
+            },
+            completed=True,
+        )
+        submission_step = submission.steps[0]
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            form_key="repeatingGroup",
+            file_name=formio_upload["originalName"],
+            original_name=formio_upload["originalName"],
+            _component_configuration_path="components.0.components.1",
+            _component_data_path="repeatingGroup.0.file",
+        )
+
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                {
+                    "variable_key": "repeatingGroup",
+                    "target_path": ["repeatingGroup"],
+                },
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+        assert result is not None
+
+        objects_api_attachment = (
+            attachment.objectsapisubmissionattachment_set.get()  # pyright: ignore[reportAttributeAccessIssue]
+        )
+        record_data = result["record"]["data"]
+        expected = {
+            "repeatingGroup": [
+                {
+                    "email": "info@example.com",
+                    "file": objects_api_attachment.document_url,
+                }
+            ],
+        }
+        self.assertEqual(record_data, expected)
 
     def test_submission_with_empty_optional_file(self):
         submission = SubmissionFactory.from_components(
