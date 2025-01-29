@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.8.4 (2025-01-31)
+==================
+
+Regular bugfix release
+
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+
 2.8.3 (2025-01-09)
 ==================
 
@@ -37,7 +47,7 @@ Regular bugfix release
 Regular bugfix release
 
 .. warning:: Manual intervention required
-    
+
     We fixed a bug that would mess with the default values of selectboxes components.
     A script is included to fix the forms that are affected - you need to run this
     after deploying the patch release.
@@ -61,7 +71,7 @@ Regular bugfix release
   filename.
 * [:backend:`4727`] Fixed crash when a user defined variable was changed to an array
   datatype.
-* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission 
+* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission
   still requires cosigning.
 
 2.8.1 (2024-10-29)
