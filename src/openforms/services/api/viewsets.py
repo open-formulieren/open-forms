@@ -5,6 +5,7 @@ from rest_framework import authentication, permissions, viewsets
 from zgw_consumers.models import Service
 
 from openforms.api.utils import mark_experimental
+from openforms.config.models import GlobalConfiguration
 
 from . import serializers
 
@@ -30,3 +31,10 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ServiceSerializer
 
     queryset = Service.objects.all()
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.query_params.get("type") == "referentielijsten":
+            config = GlobalConfiguration.get_solo()
+            return config.referentielijsten_services
+        return qs
