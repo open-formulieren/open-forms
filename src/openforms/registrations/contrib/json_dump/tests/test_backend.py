@@ -5,10 +5,12 @@ from pathlib import Path
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 
+from freezegun import freeze_time
 from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.constants import DataSrcOptions
+from openforms.forms.tests.factories import FormVersionFactory
 from openforms.submissions.tests.factories import (
     FormVariableFactory,
     SubmissionFactory,
@@ -70,58 +72,61 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["firstName", "file", "auth_bsn"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
-        expected_response = {
+        expected_values = {
             # Note that `lastName` is not included here as it wasn't specified in the variables
-            "data": {
-                "values": {
-                    "auth_bsn": "123456789",
-                    "firstName": "We Are",
-                    "file": {
-                        "file_name": "test_file.txt",
-                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
-                    },
+            "auth_bsn": "123456789",
+            "firstName": "We Are",
+            "file": {
+                "file_name": "test_file.txt",
+                "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
+            },
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "auth_bsn": {
+                    "title": "BSN",
+                    "description": (
+                        "Uniquely identifies the authenticated person. This "
+                        "value follows the rules for Dutch social security "
+                        "numbers."
+                    ),
+                    "type": "string",
+                    "pattern": "^\\d{9}$",
+                    "format": "nl-bsn",
                 },
-                "schema": {
-                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "firstName": {"title": "Firstname", "type": "string"},
+                "file": {
+                    "title": "File",
                     "type": "object",
                     "properties": {
-                        "auth_bsn": {
-                            "title": "BSN",
-                            "description": (
-                                "Uniquely identifies the authenticated person. This "
-                                "value follows the rules for Dutch social security "
-                                "numbers."
-                            ),
-                            "type": "string",
-                            "pattern": "^\\d{9}$",
-                            "format": "nl-bsn",
-                        },
-                        "firstName": {"title": "Firstname", "type": "string"},
-                        "file": {
-                            "title": "File",
-                            "type": "object",
-                            "properties": {
-                                "file_name": {"type": "string"},
-                                "content": {"type": "string", "format": "base64"},
-                            },
-                            "required": ["file_name", "content"],
-                            "additionalProperties": False,
-                        },
+                        "file_name": {"type": "string"},
+                        "content": {"type": "string", "format": "base64"},
                     },
-                    "required": ["firstName", "file", "auth_bsn"],
+                    "required": ["file_name", "content"],
                     "additionalProperties": False,
                 },
             },
-            "message": "Data received",
+            "required": ["firstName", "file", "auth_bsn"],
+            "additionalProperties": False,
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(result["api_response"], expected_response)
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
         with self.subTest("attachment content encoded"):
             decoded_content = b64decode(
@@ -145,6 +150,8 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "fake_endpoint",
             "variables": ["firstName", "auth_bsn"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -200,49 +207,55 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["file"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
-        expected_data = {
-            "values": {
-                "file": [
-                    {
-                        "file_name": "file1.txt",
-                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
-                    },
-                    {
-                        "file_name": "file2.txt",
-                        "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
-                    },
-                ],
-            },
-            "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                    "file": {
-                        "title": "File",
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "file_name": {"type": "string"},
-                                "content": {"type": "string", "format": "base64"},
-                            },
-                            "required": ["file_name", "content"],
-                            "additionalProperties": False,
-                        },
-                    }
+        expected_values = {
+            "file": [
+                {
+                    "file_name": "file1.txt",
+                    "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
                 },
-                "additionalProperties": False,
-                "required": ["file"],
+                {
+                    "file_name": "file2.txt",
+                    "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu",  # Content example is this.
+                },
+            ],
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "title": "File",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file_name", "content"],
+                        "additionalProperties": False,
+                    },
+                }
             },
+            "additionalProperties": False,
+            "required": ["file"],
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(result["api_response"]["data"], expected_data)
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
     def test_one_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(
@@ -276,45 +289,51 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["file"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        expected_data = {
-            "values": {
-                "file": [
-                    {
-                        "file_name": "file1.txt",
-                        "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
-                    },
-                ],
-            },
-            "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                    "file": {
-                        "title": "File",
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "file_name": {"type": "string"},
-                                "content": {"type": "string", "format": "base64"},
-                            },
-                            "required": ["file_name", "content"],
-                            "additionalProperties": False,
-                        },
-                    }
+        expected_values = {
+            "file": [
+                {
+                    "file_name": "file1.txt",
+                    "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",  # This is example content.
                 },
-                "additionalProperties": False,
-                "required": ["file"],
+            ],
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "title": "File",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
+                        },
+                        "required": ["file_name", "content"],
+                        "additionalProperties": False,
+                    },
+                }
             },
+            "additionalProperties": False,
+            "required": ["file"],
         }
 
-        self.assertEqual(result["api_response"]["data"], expected_data)
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
     def test_no_file_upload_for_single_file_component(self):
         submission = SubmissionFactory.from_components(
@@ -330,29 +349,35 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["file"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        expected_data = {
-            "values": {"file": None},
-            "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                    "file": {
-                        "title": "File",
-                        "type": "null",
-                    },
+        expected_values = {"file": None}
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "title": "File",
+                    "type": "null",
                 },
-                "additionalProperties": False,
-                "required": ["file"],
             },
+            "additionalProperties": False,
+            "required": ["file"],
         }
 
-        self.assertEqual(result["api_response"]["data"], expected_data)
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
     def test_no_file_upload_for_multiple_files_component(self):
         submission = SubmissionFactory.from_components(
@@ -368,38 +393,44 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["file"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        expected_data = {
-            "values": {"file": []},
-            "schema": {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "type": "object",
-                "properties": {
-                    "file": {
-                        "title": "File",
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "file_name": {"type": "string"},
-                                "content": {"type": "string", "format": "base64"},
-                            },
-                            "required": [],
-                            "additionalProperties": False,
+        expected_values = {"file": []}
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "title": "File",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "file_name": {"type": "string"},
+                            "content": {"type": "string", "format": "base64"},
                         },
-                    }
-                },
-                "required": ["file"],
-                "additionalProperties": False,
+                        "required": [],
+                        "additionalProperties": False,
+                    },
+                }
             },
+            "required": ["file"],
+            "additionalProperties": False,
         }
 
-        self.assertEqual(result["api_response"]["data"], expected_data)
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
     def test_path_traversal_attack(self):
         submission = SubmissionFactory.from_components(
@@ -420,6 +451,8 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "..",
             "variables": ["firstName", "file", "auth_bsn"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -451,14 +484,16 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["selectboxes"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["selectboxes"][
-                "required"
-            ],
+            result["api_response"]["data"]["values_schema"]["properties"][
+                "selectboxes"
+            ]["required"],
             [],
         )
 
@@ -494,15 +529,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["select"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["select"]["items"][
-                "enum"
-            ],
+            result["api_response"]["data"]["values_schema"]["properties"]["select"][
+                "items"
+            ]["enum"],
             ["a", "b", "c", ""],
         )
 
@@ -548,15 +585,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["select"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["select"]["items"][
-                "enum"
-            ],
+            result["api_response"]["data"]["values_schema"]["properties"]["select"][
+                "items"
+            ]["enum"],
             ["A", "B", "C", ""],
         )
 
@@ -596,6 +635,8 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["selectBoxes"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -614,7 +655,9 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         }
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["selectBoxes"],
+            result["api_response"]["data"]["values_schema"]["properties"][
+                "selectBoxes"
+            ],
             expected_schema,
         )
 
@@ -642,13 +685,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["radio"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["radio"]["enum"],
+            result["api_response"]["data"]["values_schema"]["properties"]["radio"][
+                "enum"
+            ],
             ["a", "b", "c", ""],
         )
 
@@ -687,13 +734,17 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["radio"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["radio"]["enum"],
+            result["api_response"]["data"]["values_schema"]["properties"]["radio"][
+                "enum"
+            ],
             ["A", "B", "C", ""],
         )
 
@@ -715,6 +766,8 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "service": self.service,
             "path": "json_plugin",
             "variables": ["foo.bar"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -722,6 +775,82 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         self.assertEqual(result["api_response"]["data"]["values"]["foo.bar"], "baz")
         self.assertEqual(
-            result["api_response"]["data"]["schema"]["properties"]["foo.bar"]["type"],
+            result["api_response"]["data"]["values_schema"]["properties"]["foo.bar"][
+                "type"
+            ],
             "string",
         )
+
+    @freeze_time("2025-01-30T13:05:00Z")
+    def test_metadata(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textfield"},
+                {"key": "lastName", "type": "textfield"},
+            ],
+            completed=True,
+            submitted_data={
+                "firstName": "We Are",
+                "lastName": "Checking",
+            },
+            bsn="123456789",
+            public_registration_reference="OF-ABC123",
+        )
+        FormVersionFactory.create(form=submission.form, description="Version 1.0")
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": [],
+            "fixed_metadata_variables": [
+                "form_version",
+                "public_reference",
+                "registration_timestamp",
+            ],
+            "additional_metadata_variables": ["auth_type"],
+        }
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        expected_metadata = {
+            "auth_type": "bsn",
+            "form_version": "Version 1.0",
+            "public_reference": "OF-ABC123",
+            "registration_timestamp": "2025-01-30T13:05:00Z",
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "auth_type": {
+                    "enum": ["bsn", "kvk", "pseudo", "employee_id", ""],
+                    "title": "Authentication " "type",
+                    "type": "string",
+                },
+                "form_version": {"title": "Form version", "type": "string"},
+                "public_reference": {"title": "Public " "reference", "type": "string"},
+                "registration_timestamp": {
+                    "format": "date-time",
+                    "title": "Registration " "timestamp",
+                    "type": "string",
+                },
+            },
+            "required": [
+                "form_version",
+                "public_reference",
+                "registration_timestamp",
+                "auth_type",
+            ],
+            "type": "object",
+        }
+
+        with self.subTest("metadata"):
+            self.assertEqual(
+                result["api_response"]["data"]["metadata"], expected_metadata
+            )
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["metadata_schema"], expected_schema
+            )

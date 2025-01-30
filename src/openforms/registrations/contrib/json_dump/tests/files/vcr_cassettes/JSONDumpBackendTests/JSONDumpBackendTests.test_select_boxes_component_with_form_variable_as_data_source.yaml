@@ -1,23 +1,25 @@
 interactions:
 - request:
     body: '"{\"values\": {\"selectBoxes\": {\"A\": true, \"B\": false, \"C\": true}},
-      \"schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
+      \"values_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
       \"type\": \"object\", \"properties\": {\"selectBoxes\": {\"title\": \"Select
       Boxes\", \"type\": \"object\", \"additionalProperties\": false, \"properties\":
       {\"A\": {\"type\": \"boolean\"}, \"B\": {\"type\": \"boolean\"}, \"C\": {\"type\":
       \"boolean\"}}, \"required\": [\"A\", \"B\", \"C\"]}}, \"required\": [\"selectBoxes\"],
-      \"additionalProperties\": false}}"'
+      \"additionalProperties\": false}, \"metadata\": {}, \"metadata_schema\": {\"$schema\":
+      \"https://json-schema.org/draft/2020-12/schema\", \"type\": \"object\", \"properties\":
+      {}, \"required\": [], \"additionalProperties\": false}}"'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3Mzc5NzkxODgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.1bWuAeZPvzPTeEVsggARdNYiy-X1V_uXIIdCICW2BVI
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3MzgyNTE5NDcsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.FBtZBbcuDA_g1oKd797st0yP32GXkZm-mLEkSArZ024
       Connection:
       - keep-alive
       Content-Length:
-      - '512'
+      - '716'
       Content-Type:
       - application/json
       User-Agent:
@@ -26,7 +28,12 @@ interactions:
     uri: http://localhost/json_plugin
   response:
     body:
-      string: "{\n  \"data\": {\n    \"schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"selectBoxes\": {\n        \"A\":
+        true,\n        \"B\": false,\n        \"C\": true\n      }\n    },\n    \"values_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
         \     \"additionalProperties\": false,\n      \"properties\": {\n        \"selectBoxes\":
         {\n          \"additionalProperties\": false,\n          \"properties\": {\n
         \           \"A\": {\n              \"type\": \"boolean\"\n            },\n
@@ -35,18 +42,17 @@ interactions:
         \         },\n          \"required\": [\n            \"A\",\n            \"B\",\n
         \           \"C\"\n          ],\n          \"title\": \"Select Boxes\",\n
         \         \"type\": \"object\"\n        }\n      },\n      \"required\": [\n
-        \       \"selectBoxes\"\n      ],\n      \"type\": \"object\"\n    },\n    \"values\":
-        {\n      \"selectBoxes\": {\n        \"A\": true,\n        \"B\": false,\n
-        \       \"C\": true\n      }\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+        \       \"selectBoxes\"\n      ],\n      \"type\": \"object\"\n    }\n  },\n
+        \ \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '851'
+      - '1081'
       Content-Type:
       - application/json
       Date:
-      - Mon, 27 Jan 2025 11:59:48 GMT
+      - Thu, 30 Jan 2025 15:45:47 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.8
     status:
