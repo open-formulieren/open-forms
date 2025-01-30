@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.conf import settings
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.utils.translation import gettext_lazy as _
 
 from factory.django import FileField
@@ -19,6 +19,7 @@ from openforms.accounts.tests.factories import (
 )
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
@@ -1120,3 +1121,199 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(expected_initial_value, response.json()[0]["initialValue"])
+
+    @tag("gh-5058", "gh-4824")
+    def test_form_variables_state_after_step_and_variables_submitted(self):
+        """
+        Test that form variables are left in a consistent state at the end.
+
+        Form variables for each step are managed by the step create/update endpoint.
+        After those have been submitted, the (user) defined variables are submitted,
+        and this call is used to bring everything in a resolved consistent state,
+        without any celery tasks as those lead to race conditions and deadlocks.
+
+        Step variables submitted to this endpoint must be ignored, obsolete step
+        variables must be removed and user defined variables must be created or
+        updated.
+        """
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user)
+        random_fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "floating",
+                        "type": "textfield",
+                        "label": "Floating",
+                    }
+                ]
+            }
+        )
+        # start with a form with a single step
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "toBeRemoved",
+                        "label": "To be removed",
+                    },
+                    {
+                        "type": "date",
+                        "key": "toBeUpdated",
+                        "label": "To be updated",
+                    },
+                ]
+            },
+        )
+        FormVariable.objects.create(
+            form=form,
+            source=FormVariableSources.component,
+            form_definition=random_fd,
+            key="floating",
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="staleUserDefined",
+        )
+        assert set(form.formvariable_set.values_list("key", flat=True)) == {
+            "toBeRemoved",
+            "toBeUpdated",
+            "floating",
+            "staleUserDefined",
+        }
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_endpoint = f"http://testserver{form_path}"
+        step_1 = form.formstep_set.get()
+        # new form definition for step 1
+        fd1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "toBeUpdated",
+                        "label": "To be updated",
+                    }
+                ]
+            }
+        )
+        fd1_detail_url = reverse("api:formdefinition-detail", kwargs={"uuid": fd1.uuid})
+        # new form definition for new second step
+        fd2 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "toBeCreated",
+                        "label": "To be created",
+                    }
+                ]
+            }
+        )
+        fd2_detail_url = reverse("api:formdefinition-detail", kwargs={"uuid": fd2.uuid})
+
+        # simulate the calls made by the frontend, and to humour the chaos of real
+        # networks, do them out of order.
+        create_step_endpoint = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid}
+        )
+        with self.subTest("create step 2"):
+            response_1 = self.client.post(
+                create_step_endpoint,
+                data={
+                    "formDefinition": f"http://testserver{fd2_detail_url}",
+                    "index": 1,
+                },
+            )
+            self.assertEqual(response_1.status_code, status.HTTP_201_CREATED)
+        with self.subTest("update step 1"):
+            endpoint_2 = reverse(
+                "api:form-steps-detail",
+                kwargs={
+                    "form_uuid_or_slug": form.uuid,
+                    "uuid": step_1.uuid,
+                },
+            )
+            self.client.delete(endpoint_2)
+            response_2 = self.client.post(
+                create_step_endpoint,
+                data={
+                    "formDefinition": f"http://testserver{fd1_detail_url}",
+                    "index": 1,
+                },
+            )
+            self.assertEqual(response_2.status_code, status.HTTP_201_CREATED)
+        with self.subTest("push form variables"):
+            variables = [
+                # step variables - must be ignored
+                {
+                    "form": form_endpoint,
+                    "form_definition": f"http://testserver{fd1_detail_url}",
+                    "key": "toBeUpdated",
+                    "name": "Ignore me",
+                    "data_type": FormVariableDataTypes.string,
+                    "source": FormVariableSources.component,
+                    "initial_value": "ignore me",
+                },
+                {
+                    "form": form_endpoint,
+                    "form_definition": f"http://testserver{fd2_detail_url}",
+                    "key": "toBeCreated",
+                    "name": "Ignore me",
+                    "data_type": FormVariableDataTypes.date,
+                    "source": FormVariableSources.component,
+                    "initial_value": "ignore me",
+                },
+                # user defined - must be created
+                {
+                    "form": form_endpoint,
+                    "form_definition": "",
+                    "key": "userDefined",
+                    "name": "User defined",
+                    "data_type": FormVariableDataTypes.array,
+                    "source": FormVariableSources.user_defined,
+                    "initial_value": ["foo"],
+                },
+            ]
+
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=variables,
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        with self.subTest("assert variables state"):
+            form_variables = {
+                variable.key: variable for variable in form.formvariable_set.all()
+            }
+            # one from step 1, one from step 2 and one user defined variable
+            self.assertEqual(len(form_variables), 1 + 1 + 1)
+
+            self.assertIn("toBeUpdated", form_variables)
+            to_be_updated = form_variables["toBeUpdated"]
+            self.assertEqual(to_be_updated.form_definition, fd1)
+            self.assertEqual(to_be_updated.name, "To be updated")
+            self.assertEqual(to_be_updated.data_type, FormVariableDataTypes.float)
+            self.assertNotEqual(to_be_updated.initial_value, "ignore me")
+
+            self.assertIn("toBeCreated", form_variables)
+            to_be_created = form_variables["toBeCreated"]
+            self.assertEqual(to_be_created.form_definition, fd2)
+            self.assertEqual(to_be_created.name, "To be created")
+            self.assertEqual(to_be_created.data_type, FormVariableDataTypes.string)
+            self.assertNotEqual(to_be_created.initial_value, "ignore me")
+
+            self.assertNotIn("toBeRemoved", form_variables)
+
+            self.assertIn("userDefined", form_variables)
+            user_defined = form_variables["userDefined"]
+            self.assertIsNone(user_defined.form_definition)
+            self.assertEqual(user_defined.name, "User defined")
+            self.assertEqual(user_defined.data_type, FormVariableDataTypes.array)
+            self.assertEqual(user_defined.initial_value, ["foo"])
