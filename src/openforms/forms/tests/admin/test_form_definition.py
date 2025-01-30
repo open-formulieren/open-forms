@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -5,7 +7,7 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.forms.models import FormDefinition
+from openforms.forms.models import FormDefinition, FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -149,3 +151,46 @@ class TestFormDefinitionAdmin(WebTest):
         ).format(key="invalidTemplate", path="components.0", field="label")
         self.assertEqual(errors["configuration"], [expected_error])
         self.assertContains(submit_response, expected_error.replace("'", "&#x27;"))
+
+    def test_updating_formio_configuration_fixes_form_variables(self):
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "original",
+                        "label": "Original",
+                    }
+                ]
+            },
+            is_reusable=True,
+        )
+        fs1, fs2 = FormStepFactory.create_batch(2, form_definition=fd)
+        assert fs1.form != fs2.form
+        assert fs1.form.formvariable_set.get().key == "original"
+        assert fs2.form.formvariable_set.get().key == "original"
+        change_page = self.app.get(
+            reverse("admin:forms_formdefinition_change", kwargs={"object_id": fd.pk}),
+        )
+        form = change_page.forms["formdefinition_form"]
+        form["configuration"] = json.dumps(
+            {
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "updated",
+                        "label": "Updated",
+                    }
+                ]
+            }
+        )
+
+        form.submit()
+
+        form_vars = FormVariable.objects.filter(form__in=(fs1.form, fs2.form))
+        self.assertQuerySetEqual(
+            form_vars,
+            ["updated", "updated"],
+            transform=lambda variable: variable.key,  # type: ignore
+            ordered=False,
+        )

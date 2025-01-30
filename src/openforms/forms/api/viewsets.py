@@ -472,6 +472,7 @@ class FormViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def variables_bulk_update(self, request, *args, **kwargs):
         form = self.get_object()
+
         form_variables = form.formvariable_set.all()
         # We expect that all the variables that should be associated with a form come in the request.
         # So we can delete any existing variables because they will be replaced.
