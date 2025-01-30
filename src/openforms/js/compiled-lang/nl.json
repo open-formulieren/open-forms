@@ -2872,6 +2872,20 @@
       "value": "Registratie"
     }
   ],
+  "OMg1lm": [
+    {
+      "type": 0,
+      "value": "Which additional variables to include in the metadata (the following are already included by default: "
+    },
+    {
+      "type": 1,
+      "value": "alreadyIncluded"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -2884,6 +2898,12 @@
     {
       "type": 0,
       "value": ". Verleng uw sessie indien u wenst door te gaan."
+    }
+  ],
+  "Od+jm6": [
+    {
+      "type": 0,
+      "value": "Values:"
     }
   ],
   "Oi+DV0": [
@@ -3792,6 +3812,12 @@
       "value": "Actief"
     }
   ],
+  "X+NeMd": [
+    {
+      "type": 0,
+      "value": "Include variable in metadata"
+    }
+  ],
   "X18/UP": [
     {
       "type": 0,
@@ -3874,6 +3900,12 @@
     {
       "type": 0,
       "value": "Verwijderen"
+    }
+  ],
+  "Xpw7Gk": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the metadata to be sent."
     }
   ],
   "XyDeaD": [
@@ -4109,6 +4141,12 @@
     {
       "type": 0,
       "value": "Elke instelling in deze groep overschrijft de eventuele overeenkomstige standaardinstelling van de geselecteerde API-groep."
+    }
+  ],
+  "Zz/g+g": [
+    {
+      "type": 0,
+      "value": "Additional metadata variables"
     }
   ],
   "ZzjFxE": [
@@ -5725,6 +5763,12 @@
     {
       "type": 0,
       "value": "Indien aangevinkt, dan worden gegevens van kinderen opgehaald en ingesloten."
+    }
+  ],
+  "nEg4dr": [
+    {
+      "type": 0,
+      "value": "Metadata:"
     }
   ],
   "nFXYHB": [
