@@ -1,5 +1,3 @@
-from functools import partial
-
 from django.db import transaction
 from django.db.models import Q
 
@@ -12,8 +10,7 @@ from openforms.translations.api.serializers import (
     ModelTranslationsSerializer,
 )
 
-from ...models import FormDefinition, FormStep
-from ...tasks import on_formstep_save_event
+from ...models import FormDefinition, FormStep, FormVariable
 from ...validators import validate_no_duplicate_keys_across_steps
 from ..validators import FormStepIsApplicableIfFirstValidator
 from .button_text import ButtonTextSerializer
@@ -181,12 +178,11 @@ class FormStepSerializer(
         Bandaid fix for #4824
 
         Ensure that the FormVariables are in line with the state of the FormDefinitions
-        after saving
+        after saving.
         """
         instance = super().save(**kwargs)
 
-        transaction.on_commit(
-            partial(on_formstep_save_event, instance.form.id, countdown=60)
-        )
+        # call this synchronously so that it's part of the same DB transaction.
+        FormVariable.objects.synchronize_for(instance.form_definition)
 
         return instance
