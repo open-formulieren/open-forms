@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
@@ -69,6 +71,7 @@ class ValidationErrorSerializer(ExceptionSerializer):
 
 class ListWithChildSerializer(serializers.ListSerializer):
     child_serializer_class = None  # class or dotted import path
+    bulk_create_kwargs: dict[str, Any] | None = None
 
     def __init__(self, *args, **kwargs):
         child_serializer_class = self.get_child_serializer_class()
@@ -94,7 +97,8 @@ class ListWithChildSerializer(serializers.ListSerializer):
             obj = model(**data_dict)
             objects_to_create.append(self.process_object(obj))
 
-        return model._default_manager.bulk_create(objects_to_create)
+        kwargs = self.bulk_create_kwargs or {}
+        return model._default_manager.bulk_create(objects_to_create, **kwargs)
 
 
 class PublicFieldsSerializerMixin:

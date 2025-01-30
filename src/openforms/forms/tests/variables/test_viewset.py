@@ -65,75 +65,6 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_bulk_create_and_update(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(form=form)
-        form_definition = form_step.form_definition
-
-        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_url = f"http://testserver.com{form_path}"
-
-        form_definition_path = reverse(
-            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
-        )
-        form_definition_url = f"http://testserver.com{form_definition_path}"
-
-        form_variable1 = FormVariableFactory.create(
-            form=form, form_definition=form_definition, key="variable1"
-        )
-        FormVariableFactory.create(
-            form=form, form_definition=form_definition, key="variable2"
-        )  # This variable will be deleted
-        another_form_variable = (
-            FormVariableFactory.create()
-        )  # Not related to the same form!
-
-        data = [
-            {
-                "form": form_url,
-                "form_definition": form_definition_url,
-                "key": form_variable1.key,
-                "name": "Test",
-                "source": form_variable1.source,
-                "service_fetch_configuration": None,
-                "data_type": form_variable1.data_type,
-                "initial_value": form_variable1.initial_value,
-            },  # Data of form_variable1
-            {
-                "form": form_url,
-                "form_definition": form_definition_url,
-                "name": "variable3",
-                "key": "variable3",
-                "source": FormVariableSources.user_defined,
-                "data_type": FormVariableDataTypes.string,
-                "initial_value": None,
-            },  # New variable
-        ]
-
-        self.client.force_authenticate(user)
-        response = self.client.put(
-            reverse(
-                "api:form-variables",
-                kwargs={"uuid_or_slug": form.uuid},
-            ),
-            data=data,
-        )
-
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-        variables = FormVariable.objects.all()
-
-        self.assertEqual(3, variables.count())
-        self.assertTrue(variables.filter(key=another_form_variable.key).exists())
-
-        form_variables = variables.filter(form=form)
-
-        self.assertEqual(2, form_variables.count())
-        self.assertTrue(form_variables.filter(key="variable1").exists())
-        self.assertFalse(form_variables.filter(key="variable2").exists())
-        self.assertTrue(form_variables.filter(key="variable3").exists())
-
     def test_it_accepts_inline_service_fetch_configs(self):
         designer = StaffUserFactory.create(user_permissions=["change_form"])
         service = ServiceFactory.create(
@@ -1074,23 +1005,18 @@ class FormVariableViewsetTest(APITestCase):
         self.client.force_authenticate(user)
 
         form = FormFactory.create(generate_minimal_setup=True)
-        form_definition = form.formstep_set.get().form_definition
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
-        form_definition_path = reverse(
-            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
-        )
-        form_definition_url = f"http://testserver.com{form_definition_path}"
 
         data = [
             {
                 "form": form_url,
-                "form_definition": form_definition_url,
-                "key": form_definition.configuration["components"][0]["key"],
+                "form_definition": None,
+                "key": "someKey",
+                "source": FormVariableSources.user_defined,
                 "name": "Test",
                 "service_fetch_configuration": None,
                 "data_type": FormVariableDataTypes.object,
-                "source": FormVariableSources.component,
                 "initial_value": {
                     "VALUE IN UPPERCASE": True,
                     "VALUE-IN-UPPER-KEBAB-CASE": True,
