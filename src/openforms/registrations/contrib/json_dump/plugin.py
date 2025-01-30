@@ -97,7 +97,9 @@ class JSONDumpRegistration(BasePlugin):
             result = client.post(path, json=data)
             result.raise_for_status()
 
-        return {"api_response": result.json()}
+        result_json = result.json() if result.content else ""
+
+        return {"api_response": result_json}
 
     def check_config(self) -> None:
         # Config checks are not really relevant for this plugin right now
