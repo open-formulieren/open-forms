@@ -1,5 +1,4 @@
 import inspect
-from functools import partial
 from uuid import UUID
 
 from django.conf import settings
@@ -28,7 +27,6 @@ from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
 from ..models import Form, FormDefinition, FormStep, FormVersion
-from ..tasks import on_variables_bulk_update_event
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
@@ -472,10 +470,6 @@ class FormViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def variables_bulk_update(self, request, *args, **kwargs):
         form = self.get_object()
-        form_variables = form.formvariable_set.all()
-        # We expect that all the variables that should be associated with a form come in the request.
-        # So we can delete any existing variables because they will be replaced.
-        form_variables.delete()
 
         serializer = FormVariableSerializer(
             data=request.data,
@@ -494,9 +488,20 @@ class FormViewSet(viewsets.ModelViewSet):
             },
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        variables = serializer.save()
 
-        transaction.on_commit(partial(on_variables_bulk_update_event, form.id))
+        # clean up the stale variables:
+        # 1. component variables that are no longer related to the form
+        stale_component_vars = form.formvariable_set.exclude(
+            form_definition__formstep__form=form
+        ).filter(source=FormVariableSources.component)
+        stale_component_vars.delete()
+        # 2. User defined variables not present in the submitted variables
+        keys_to_keep = [variable.key for variable in variables]
+        stale_user_defined = form.formvariable_set.filter(
+            source=FormVariableSources.user_defined
+        ).exclude(key__in=keys_to_keep)
+        stale_user_defined.delete()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -308,6 +308,11 @@ class SubmissionValueVariable(models.Model):
         help_text=_("The submission to which this variable value is related"),
         on_delete=models.CASCADE,
     )
+    # XXX DeprecationWarning - this foreign key field actually doesn't serve any purpose
+    # except for some details in the to_python method. Instead, the
+    # submission.load_submission_value_variables_state method takes care of populating the
+    # state and resolving the matching form variables based on the variable key. This field
+    # is scheduled for removal to avoid confusion.
     form_variable = models.ForeignKey(
         to=FormVariable,
         verbose_name=_("form variable"),
@@ -315,8 +320,6 @@ class SubmissionValueVariable(models.Model):
         on_delete=models.SET_NULL,  # In case form definitions are edited after a user has filled in a form.
         null=True,
     )
-    # Added for the case where a FormVariable has been deleted, but there is still a SubmissionValueValue.
-    # Having a key will help debug where the SubmissionValueValue came from
     key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable"),
@@ -362,10 +365,6 @@ class SubmissionValueVariable(models.Model):
         unique_together = [["submission", "key"], ["submission", "form_variable"]]
 
     def __str__(self):
-        if self.form_variable:
-            return _("Submission value variable {name}").format(
-                name=self.form_variable.name
-            )
         return _("Submission value variable {key}").format(key=self.key)
 
     def to_python(self) -> Any:
@@ -382,6 +381,9 @@ class SubmissionValueVariable(models.Model):
             return None
 
         # can't see any type information...
+        # FIXME: this may break when we remove the form_variable FK field. Instead, we'll
+        # need to look up the form variable from the related form based on the self.key
+        # value and resolve this in-memory.
         if not self.form_variable_id:
             return self.value
 
