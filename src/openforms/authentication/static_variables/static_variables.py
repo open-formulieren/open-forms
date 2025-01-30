@@ -92,7 +92,7 @@ class AuthType(BaseStaticVariable):
         return {
             "title": "Authentication type",
             "type": "string",
-            "enum": AuthAttribute.values,
+            "enum": [*AuthAttribute.values, ""],
         }
 
 
