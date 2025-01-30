@@ -284,6 +284,7 @@ export {
   getFormVariables,
   getComponentDatatype,
   checkForDuplicateKeys,
+  getVariableSource,
   getVariableSourceLabel,
   groupVariablesBySource,
   variableHasErrors,
