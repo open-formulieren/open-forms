@@ -17,15 +17,18 @@ from openforms.formio.typing import (
     SelectComponent,
 )
 from openforms.forms.json_schema import generate_json_schema
+from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
 from openforms.submissions.service import DataContainer
 from openforms.typing import JSONObject
 from openforms.utils.json_schema import to_multiple
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
 from .config import JSONDumpOptions, JSONDumpOptionsSerializer
+from .registration_variables import register as variables_registry
 
 
 @register("json_dump")
@@ -39,27 +42,53 @@ class JSONDumpRegistration(BasePlugin):
     ) -> dict:
         state = submission.load_submission_value_variables_state()
 
-        # Generate values
         # TODO: keys with a period (e.g. `foo.bar`) will currently not be added to the
         #  submission data. This will be fixed with issue 5041
+        # Get static values
+        static_values = state.get_static_data()
+        # Update static values with registration variables
+        static_values.update(state.get_static_data(other_registry=variables_registry))
+
         all_values: JSONObject = {
-            **state.get_static_data(),
+            **static_values,
             **state.get_data(),  # dynamic values from user input
         }
+
+        # Values
         values = {
             key: value
             for key, value in all_values.items()
             if key in options["variables"]
         }
+        values_schema = generate_json_schema(submission.form, options["variables"])
+        post_process(values, values_schema, submission)
 
-        # Generate schema
-        schema = generate_json_schema(submission.form, options["variables"])
-
-        # Post-processing
-        post_process(values, schema, submission)
+        # Metadata
+        # Note: as the metadata contains only static variables no post-processing is
+        # required.
+        metadata_variables = [
+            *options["fixed_metadata_variables"],
+            *options["additional_metadata_variables"],
+        ]
+        metadata = {
+            key: value for key, value in all_values.items() if key in metadata_variables
+        }
+        metadata_schema = generate_json_schema(
+            submission.form,
+            metadata_variables,
+            additional_variables_registry=variables_registry,
+        )
 
         # Send to the service
-        data = json.dumps({"values": values, "schema": schema}, cls=DjangoJSONEncoder)
+        data = json.dumps(
+            {
+                "values": values,
+                "values_schema": values_schema,
+                "metadata": metadata,
+                "metadata_schema": metadata_schema,
+            },
+            cls=DjangoJSONEncoder,
+        )
         service = options["service"]
         with build_client(service) as client:
             if ".." in (path := options["path"]):
@@ -73,6 +102,9 @@ class JSONDumpRegistration(BasePlugin):
     def check_config(self) -> None:
         # Config checks are not really relevant for this plugin right now
         pass
+
+    def get_variables(self) -> list[FormVariable]:  # pragma: no cover
+        return get_static_variables(variables_registry=variables_registry)
 
 
 def post_process(

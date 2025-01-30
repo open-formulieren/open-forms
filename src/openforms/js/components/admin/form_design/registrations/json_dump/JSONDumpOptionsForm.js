@@ -11,7 +11,7 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-import {Path, ServiceSelect, Variables} from './fields';
+import {MetadataVariables, Path, ServiceSelect, Variables} from './fields';
 
 const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -38,6 +38,8 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
         service: null,
         path: '',
         variables: [],
+        fixedMetadataVariables: [],
+        additionalMetadataVariables: [],
         ...formData,
       }}
       onSubmit={values => onChange({formData: values})}
@@ -48,6 +50,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
           <ServiceSelect options={serviceOptions} />
           <Path />
           <Variables />
+          <MetadataVariables />
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>
@@ -69,6 +72,8 @@ JSONDumpOptionsForm.propTypes = {
     service: PropTypes.number,
     path: PropTypes.string,
     variables: PropTypes.arrayOf(PropTypes.string),
+    fixedMetadataVariables: PropTypes.arrayOf(PropTypes.string),
+    additionalMetadataVariables: PropTypes.arrayOf(PropTypes.string),
   }),
   onChange: PropTypes.func.isRequired,
 };

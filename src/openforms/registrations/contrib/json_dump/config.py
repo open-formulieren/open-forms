@@ -47,6 +47,30 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         required=True,
         min_length=1,
     )
+    fixed_metadata_variables = serializers.ListField(
+        child=FormioVariableKeyField(),
+        default=[
+            "public_reference",
+            "form_name",
+            "form_version",
+            "form_id",
+            "registration_timestamp",
+            "auth_type",
+        ],
+        label=_("Fixed metadata variable key list"),
+        help_text=_(
+            "A list of required variables to use in the metadata. These include "
+            "the registration variables of the JSON dump plugin"
+        ),
+        required=False,
+    )
+    additional_metadata_variables = serializers.ListField(
+        child=FormioVariableKeyField(),
+        label=_("Additional metadata variable key list"),
+        help_text=_("A list of additional variables to use in the metadata"),
+        required=False,
+        default=list,
+    )
 
 
 class JSONDumpOptions(TypedDict):
@@ -60,3 +84,5 @@ class JSONDumpOptions(TypedDict):
     service: Service
     path: str
     variables: list[str]
+    fixed_metadata_variables: list[str]
+    additional_metadata_variables: list[str]
