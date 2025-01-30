@@ -298,9 +298,10 @@ class RegressionTests(HypothesisTestCase):
     )
     @tag("gh-3922")
     def test_copy_form_with_corrupt_prefill(self, component_type):
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
+        # bypass the factories since those enforce DB constraints
+        form = FormFactory.create()
+        fd = FormDefinitionFactory.create(
+            configuration={
                 "components": [
                     {
                         "type": component_type,
@@ -313,8 +314,9 @@ class RegressionTests(HypothesisTestCase):
                         },
                     }
                 ]
-            },
+            }
         )
+        FormStep.objects.create(form=form, form_definition=fd, order=0)
 
         form.copy()
 

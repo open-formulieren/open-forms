@@ -7,8 +7,7 @@ from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
-from attr import attributes
-from glom import Path, glom
+from glom import glom
 
 from openforms.formio.utils import (
     component_in_editgrid,
@@ -31,7 +30,6 @@ from .form_definition import FormDefinition
 
 if TYPE_CHECKING:
     from .form import Form
-    from .form_step import FormStep
 
 
 EMPTY_PREFILL_PLUGIN = Q(prefill_plugin="")
@@ -49,66 +47,6 @@ class FormVariableManager(models.Manager["FormVariable"]):
 
         for form_step in form_steps:
             self.synchronize_for(form_step.form_definition)
-
-    def create_for_formstep(self, form_step: FormStep) -> list[FormVariable]:
-        form_definition_configuration = form_step.form_definition.configuration
-        component_keys = [
-            component["key"]
-            for component in iter_components(
-                configuration=form_definition_configuration, recursive=True
-            )
-        ]
-        existing_form_variables_keys = form_step.form.formvariable_set.filter(
-            key__in=component_keys,
-            form_definition=form_step.form_definition,
-        ).values_list("key", flat=True)
-
-        form_variables = []
-        for component in iter_components(
-            configuration=form_definition_configuration, recursive=True
-        ):
-            if (
-                is_layout_component(component)
-                or component["type"] in ("content", "softRequiredErrors")
-                or component["key"] in existing_form_variables_keys
-                or component_in_editgrid(form_definition_configuration, component)
-            ):
-                continue
-
-            form_variables.append(
-                self.model(
-                    form=form_step.form,
-                    form_definition=form_step.form_definition,
-                    prefill_plugin=glom(
-                        component,
-                        Path("prefill", "plugin"),
-                        default="",
-                        skip_exc=KeyError,
-                    )
-                    or "",
-                    prefill_attribute=glom(
-                        component,
-                        Path("prefill", "attribute"),
-                        default="",
-                        skip_exc=KeyError,
-                    )
-                    or "",
-                    prefill_identifier_role=glom(
-                        component,
-                        Path("prefill", "identifierRole"),
-                        default=IdentifierRoles.main,
-                        skip_exc=KeyError,
-                    ),
-                    key=component["key"],
-                    name=component.get("label") or component["key"],
-                    is_sensitive_data=component.get("isSensitiveData", False),
-                    source=FormVariableSources.component,
-                    data_type=get_component_datatype(component),
-                    initial_value=get_component_default_value(component),
-                )
-            )
-
-        return self.bulk_create(form_variables)
 
     @transaction.atomic
     def synchronize_for(self, form_definition: FormDefinition):
