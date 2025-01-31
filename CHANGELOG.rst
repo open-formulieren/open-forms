@@ -2,6 +2,35 @@
 Changelog
 =========
 
+.. note::
+
+    The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
+
+3.0.2 (2025-01-31)
+==================
+
+Regular bugfix release.
+
+* [:backend:`4689`] Fixed file uploads in repeating groups not being processed correctly.
+* [:backend:`5034`] Fixed Objects API registration plugin crashing when
+  "update existing object" is not enabled.
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+* [:backend:`5021`] Fixed Objects API registration plugin not being shown in the
+  variables tab when it has just been added.
+
+2.8.4 (2025-01-31)
+==================
+
+Regular bugfix release
+
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+
 2.8.3 (2025-01-09)
 ==================
 
@@ -56,10 +85,6 @@ Final bugfix release in the ``2.7.x`` series.
 * Bumped packages to their latest (security) releases.
 * [:backend:`4862`] Fixed unintended hashing of identifying attributes when the cosigner
   logs out.
-
-.. note::
-    
-    The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 3.0.1 (2025-01-10)
 ==================
