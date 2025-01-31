@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import decimal
 import uuid
-from typing import TYPE_CHECKING, Any, NewType, Protocol
+from typing import TYPE_CHECKING, Any, NewType, Protocol, Sequence
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
@@ -18,7 +18,7 @@ else:
 
 type JSONPrimitive = str | int | float | bool | None
 
-type JSONValue = JSONPrimitive | JSONObject | list[JSONValue]
+type JSONValue = JSONPrimitive | JSONObject | Sequence[JSONValue]
 
 type JSONObject = dict[str, JSONValue]
 
