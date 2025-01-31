@@ -1,6 +1,6 @@
 import logging
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -9,6 +9,9 @@ from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 from testfixtures import LogCapture
 
+from openforms.forms.tests.factories import FormLogicFactory
+
+from ..form_logic import evaluate_form_logic
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
@@ -105,6 +108,45 @@ class SubmissionReportGenerationTests(TestCase):
         self.assertNotIn("Input 1", html)
         # step has no visible children -> also not visible
         self.assertNotIn(step_title, html)
+
+    @tag("gh-5037")
+    def test_date_object_is_converted_to_str_when_it_comes_from_logic_rule(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "date",
+                    "key": "date1",
+                },
+                {
+                    "type": "date",
+                    "key": "updatedDate",
+                },
+            ],
+            submitted_data={"date1": "2025-01-01"},
+            completed=True,
+            with_report=True,
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "date1"}, "2025-01-01"]},
+            actions=[
+                {
+                    "variable": "updatedDate",
+                    "action": {
+                        "type": "variable",
+                        "value": {"+": [{"var": "date1"}, {"duration": "P1M"}]},
+                    },
+                },
+            ],
+        )
+        evaluate_form_logic(
+            submission, submission.submissionstep_set.get(), submission.data
+        )
+
+        html = submission.report.generate_submission_report_pdf()
+
+        self.assertIn("31 januari 2025", html)
 
     def test_visible_output_included(self):
         """
