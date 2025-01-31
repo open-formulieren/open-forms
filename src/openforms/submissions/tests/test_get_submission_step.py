@@ -27,6 +27,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -585,11 +586,15 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         SubmissionStepFactory.create(
             form_step=step, submission=submission, data={"date1": "2022-09-13"}
         )
+        FormVariableFactory.create(
+            form=form,
+            key="userDefinedDate",
+            user_defined=True,
+            data_type=FormVariableDataTypes.date,
+        )
         SubmissionValueVariableFactory.create(
             submission=submission,
             key="userDefinedDate",
-            form_variable__user_defined=True,
-            form_variable__data_type=FormVariableDataTypes.date,
             value="2022-12-31",
         )
         endpoint = reverse(

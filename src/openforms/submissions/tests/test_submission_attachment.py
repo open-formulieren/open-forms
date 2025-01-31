@@ -11,7 +11,7 @@ from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.api.exceptions import RequestEntityTooLarge
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
 
 from ..attachments import (
     append_file_num_postfix,
@@ -569,9 +569,9 @@ class SubmissionAttachmentTest(TestCase):
             form_step=form_step, submission=submission, data=data
         )
         # TODO: remove once #2728 is fixed
+        FormVariableFactory.create(form=form_step.form, key="attachment")
         SubmissionValueVariableFactory.create(
             key="attachment",
-            form_variable__form=form_step.form,
             submission=submission,
             value=data["attachment"],
         )

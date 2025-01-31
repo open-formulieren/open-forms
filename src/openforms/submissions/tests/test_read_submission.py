@@ -275,12 +275,16 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             },
             form__price_logic__price_value=20,
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="userDefinedVar",
+            data_type=FormVariableDataTypes.int,
+        )
         SubmissionValueVariableFactory.create(
             key="userDefinedVar",
-            form_variable__form=submission.form,
             submission=submission,
             source=FormVariableSources.user_defined,
-            form_variable__data_type=FormVariableDataTypes.int,
             value=0,
         )
         FormLogicFactory.create(

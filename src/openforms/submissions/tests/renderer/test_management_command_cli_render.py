@@ -7,7 +7,7 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from openforms.variables.constants import FormVariableSources
+from openforms.forms.tests.factories import FormVariableFactory
 
 from ..factories import SubmissionFactory, SubmissionValueVariableFactory
 
@@ -81,19 +81,23 @@ class CLIRendererIntegrationTests(TestCase):
             form__name="public name",
             form__internal_name="internal name",
         )
-        SubmissionValueVariableFactory.create(
+        FormVariableFactory.create(
+            form=submission.form,
             key="ud1",
-            form_variable__name="User defined var 1",
-            value="Some data 1",
-            submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            user_defined=True,
+            name="User defined var 1",
         )
         SubmissionValueVariableFactory.create(
+            key="ud1", value="Some data 1", submission=submission
+        )
+        FormVariableFactory.create(
+            form=submission.form,
             key="ud2",
-            form_variable__name="User defined var 2",
-            value="Some data 2",
-            submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            user_defined=True,
+            name="User defined var 2",
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud2", value="Some data 2", submission=submission
         )
 
         form_definition = submission.steps[0].form_step.form_definition
@@ -145,19 +149,27 @@ Submission {submission.id} - public name
             form__name="public name",
             form__internal_name="internal name",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud1",
+            user_defined=True,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
             key="ud1",
-            form_variable__name="User defined var 1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud2",
+            user_defined=True,
+            name="User defined var 2",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
-            form_variable__name="User defined var 2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
         )
 
         form_definition = submission.steps[0].form_step.form_definition

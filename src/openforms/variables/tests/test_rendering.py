@@ -1,5 +1,6 @@
 from django.test import TestCase, override_settings
 
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.submissions.exports import iter_submission_data_nodes
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
@@ -7,7 +8,6 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from openforms.variables.constants import FormVariableSources
 
 
 @override_settings(LANGUAGE_CODE="nl")
@@ -30,11 +30,12 @@ class VariablesNodeTests(TestCase):
         submission = SubmissionFactory.from_components(
             components_list=config["components"], submitted_data=data
         )
-        SubmissionValueVariableFactory.create(
+        FormVariableFactory.create(
+            form=submission.form,
             key="ud1",
-            submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            user_defined=True,
         )
+        SubmissionValueVariableFactory.create(key="ud1", submission=submission)
 
         nodelist = list(iter_submission_data_nodes(submission))
         labels = [node.label for node in nodelist]
@@ -64,19 +65,27 @@ class VariablesNodeTests(TestCase):
             },
             data={"someField": "Some test data"},
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud1",
+            user_defined=True,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
             key="ud1",
-            form_variable__name="User defined var 1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud2",
+            user_defined=True,
+            name="User defined var 2",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
-            form_variable__name="User defined var 2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
         )
 
         with self.subTest(action="Mode: export"):

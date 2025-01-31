@@ -162,7 +162,7 @@ class SubmissionLogInline(GenericTabularInline):
 class SubmissionValueVariableAdminForm(forms.ModelForm):
     class Meta:
         model = SubmissionValueVariable
-        fields = ("form_variable", "key", "value", "source")
+        fields = ("key", "value", "source")
         widgets = {
             "value": forms.Textarea(attrs={"cols": 40, "rows": 1}),
         }
@@ -171,8 +171,8 @@ class SubmissionValueVariableAdminForm(forms.ModelForm):
 class SubmissionValueVariableInline(admin.TabularInline):
     model = SubmissionValueVariable
 
-    fields = ("form_variable", "key", "value", "source")
-    readonly_fields = ("form_variable", "key", "source")
+    fields = ("key", "value", "source")
+    readonly_fields = ("key", "source")
     extra = 0
     form = SubmissionValueVariableAdminForm
 

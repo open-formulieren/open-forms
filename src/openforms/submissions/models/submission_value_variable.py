@@ -169,11 +169,11 @@ class SubmissionValueVariablesState:
             # TODO Fill source field
             unsaved_submission_var = SubmissionValueVariable(
                 submission=self.submission,
-                form_variable=form_variable,
                 key=variable_key,
                 value=form_variable.get_initial_value(),
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
             )
+            unsaved_submission_var.form_variable = form_variable
             all_submission_variables[variable_key] = unsaved_submission_var
 
         return all_submission_variables
@@ -313,13 +313,13 @@ class SubmissionValueVariable(models.Model):
     # submission.load_submission_value_variables_state method takes care of populating the
     # state and resolving the matching form variables based on the variable key. This field
     # is scheduled for removal to avoid confusion.
-    form_variable = models.ForeignKey(
-        to=FormVariable,
-        verbose_name=_("form variable"),
-        help_text=_("The form variable to which this value is related"),
-        on_delete=models.SET_NULL,  # In case form definitions are edited after a user has filled in a form.
-        null=True,
-    )
+    # form_variable = models.ForeignKey(
+    #     to=FormVariable,
+    #     verbose_name=_("form variable"),
+    #     help_text=_("The form variable to which this value is related"),
+    #     on_delete=models.SET_NULL,  # In case form definitions are edited after a user has filled in a form.
+    #     null=True,
+    # )
     key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable"),
@@ -359,10 +359,12 @@ class SubmissionValueVariable(models.Model):
 
     objects = SubmissionValueVariableManager()
 
+    form_variable: FormVariable | None = None
+
     class Meta:
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
-        unique_together = [["submission", "key"], ["submission", "form_variable"]]
+        unique_together = (("submission", "key"),)
 
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
@@ -384,8 +386,13 @@ class SubmissionValueVariable(models.Model):
         # FIXME: this may break when we remove the form_variable FK field. Instead, we'll
         # need to look up the form variable from the related form based on the self.key
         # value and resolve this in-memory.
-        if not self.form_variable_id:
-            return self.value
+        assert self.form_variable is not None, (
+            "You must prepare/set the form_variable attribute, ideally by using the "
+            "SubmissionValueVariablesState via the "
+            "`submission.load_submission_value_variables_state` method."
+        )
+        # if not self.form_variable:
+        #     return self.value
 
         # we expect JSON types to have been properly stored (and thus not as string!)
         data_type = self.form_variable.data_type

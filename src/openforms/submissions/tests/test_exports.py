@@ -7,7 +7,11 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.formio.tests.factories import SubmittedFileFactory
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 from openforms.variables.constants import FormVariableSources
 
 from ..exports import create_submission_export
@@ -146,12 +150,15 @@ class ExportTests(TestCase):
             completed=True,
             completed_on=timezone.now(),
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            key="ud1",
+        )
         SubmissionValueVariableFactory.create(
             key="ud1",
             value="Some value",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__form=submission.form,
         )
 
         dataset = create_submission_export(Submission.objects.all())
