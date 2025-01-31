@@ -62,6 +62,10 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     def verify_initial_data_ownership(
         self, submission: Submission, options: RegistrationOptions
     ) -> None:
+        # Object's ownership validation makes sense if we want to update an object
+        if not options["update_existing_object"]:
+            return
+
         assert submission.initial_data_reference
         api_group = options["objects_api_group"]
         assert api_group, "Can't do anything useful without an API group"

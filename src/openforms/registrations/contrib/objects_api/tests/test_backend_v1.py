@@ -11,6 +11,8 @@ from openforms.contrib.objects_api.clients import get_documents_client
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.submissions.constants import PostSubmissionEvents
+from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -1028,6 +1030,29 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         )
 
         self.assertEqual(result["record"]["data"]["auth"], None)
+
+    @tag("gh-5034")
+    def test_object_ownership_not_validated_if_new_object(self):
+        submission = SubmissionFactory.from_components(
+            [{"key": "textfield", "type": "textfield"}],
+            completed_not_preregistered=True,
+            form__registration_backend=PLUGIN_IDENTIFIER,
+            form__registration_backend_options={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 1,
+                "objecttype": "8faed0fa-7864-4409-aa6d-533a37616a9e",
+                "objecttype_version": 1,
+                "update_existing_object": False,
+                "auth_attribute_path": [],
+            },
+            submitted_data={"textfield": "test"},
+            initial_data_reference="some ref",
+        )
+
+        try:
+            pre_registration(submission.pk, PostSubmissionEvents.on_retry)
+        except AssertionError:
+            self.fail("Assertion should have passed.")
 
 
 class V1HandlerTests(TestCase):
