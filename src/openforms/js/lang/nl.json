@@ -1410,10 +1410,20 @@
     "description": "Form registration options tab title",
     "originalDefault": "Registration"
   },
+  "OMg1lm": {
+    "defaultMessage": "Which additional variables to include in the metadata (the following are already included by default: {alreadyIncluded})",
+    "description": "JSON registration options 'additionalMetadataVariables' helpText",
+    "originalDefault": "Which additional variables to include in the metadata (the following are already included by default: {alreadyIncluded})"
+  },
   "OX8wxE": {
     "defaultMessage": "Uw sessie vervalt {delta}. Verleng uw sessie indien u wenst door te gaan.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
+  },
+  "Od+jm6": {
+    "defaultMessage": "Values:",
+    "description": "Label indicating the 'values' part of the data",
+    "originalDefault": "Values:"
   },
   "Oi+DV0": {
     "defaultMessage": "<code>{attr}</code> uit <code>{plugin}</code> (van de {role})",
@@ -1812,6 +1822,11 @@
     "description": "Form list 'active' column header",
     "originalDefault": "Active"
   },
+  "X+NeMd": {
+    "defaultMessage": "Include variable in metadata",
+    "description": "'Include variable in metadata' checkbox label",
+    "originalDefault": "Include variable in metadata"
+  },
   "X18/UP": {
     "defaultMessage": "Identificatie-attribuut",
     "description": "Objects API registration: authAttributePath label",
@@ -1861,6 +1876,11 @@
     "defaultMessage": "Bestemmingspad huisnummer",
     "description": "Objects registration variable mapping, addressNL component: 'options.houseNumber schema target' label",
     "originalDefault": "House number Schema target"
+  },
+  "Xpw7Gk": {
+    "defaultMessage": "Whether to include this variable in the metadata to be sent.",
+    "description": "'Include variable in metadata' checkbox help text",
+    "originalDefault": "Whether to include this variable in the metadata to be sent."
   },
   "XyDeaD": {
     "defaultMessage": "Variables",
@@ -1956,6 +1976,11 @@
     "defaultMessage": "Elke instelling in deze groep overschrijft de eventuele overeenkomstige standaardinstelling van de geselecteerde API-groep.",
     "description": "ZGW APIs defaults override informative message",
     "originalDefault": "Any configuration option specified here overrides the matching option of the selected API group."
+  },
+  "Zz/g+g": {
+    "defaultMessage": "Additional metadata variables",
+    "description": "JSON registration options 'additionalMetadataVariables' label",
+    "originalDefault": "Additional metadata variables"
   },
   "ZzjFxE": {
     "defaultMessage": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?",
@@ -2669,6 +2694,11 @@
     "defaultMessage": "Versie",
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
+  },
+  "nEg4dr": {
+    "defaultMessage": "Metadata:",
+    "description": "Label indicating the 'metadata' part of the data",
+    "originalDefault": "Metadata:"
   },
   "nFXYHB": {
     "defaultMessage": "Datum en tijdstip waarop het formulier gedeactiveerd moet worden.",

@@ -2855,6 +2855,20 @@
       "value": "Registration"
     }
   ],
+  "OMg1lm": [
+    {
+      "type": 0,
+      "value": "Which additional variables to include in the metadata (the following are already included by default: "
+    },
+    {
+      "type": 1,
+      "value": "alreadyIncluded"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "OX8wxE": [
     {
       "type": 0,
@@ -2867,6 +2881,12 @@
     {
       "type": 0,
       "value": ". Extend your session if you wish to continue."
+    }
+  ],
+  "Od+jm6": [
+    {
+      "type": 0,
+      "value": "Values:"
     }
   ],
   "Oi+DV0": [
@@ -3779,6 +3799,12 @@
       "value": "Active"
     }
   ],
+  "X+NeMd": [
+    {
+      "type": 0,
+      "value": "Include variable in metadata"
+    }
+  ],
   "X18/UP": [
     {
       "type": 0,
@@ -3861,6 +3887,12 @@
     {
       "type": 0,
       "value": "Remove"
+    }
+  ],
+  "Xpw7Gk": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the metadata to be sent."
     }
   ],
   "XyDeaD": [
@@ -4095,6 +4127,12 @@
     {
       "type": 0,
       "value": "Any configuration option specified here overrides the matching option of the selected API group."
+    }
+  ],
+  "Zz/g+g": [
+    {
+      "type": 0,
+      "value": "Additional metadata variables"
     }
   ],
   "ZzjFxE": [
@@ -5707,6 +5745,12 @@
     {
       "type": 0,
       "value": "Whether to add children information to the component."
+    }
+  ],
+  "nEg4dr": [
+    {
+      "type": 0,
+      "value": "Metadata:"
     }
   ],
   "nFXYHB": [
