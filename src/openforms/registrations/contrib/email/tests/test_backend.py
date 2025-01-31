@@ -19,6 +19,7 @@ from openforms.emails.constants import (
     EmailContentTypeChoices,
     EmailEventChoices,
 )
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
@@ -236,9 +237,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submitted_data={"foo": "bar"},
             form__registration_backend="email",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
             value="foo@example.com",
@@ -269,9 +273,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submitted_data={"foo": "bar"},
             form__registration_backend="email",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
             value=["foo@example.com", "bar@example.com"],
@@ -324,9 +331,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submitted_data={"foo": "bar"},
             form__registration_backend="email",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
             value="foo.com",  # invalid email value
@@ -595,9 +605,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             registration_success=True,
             public_registration_reference="XYZ",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
             value="foo@example.com",
@@ -628,9 +641,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             registration_success=True,
             public_registration_reference="XYZ",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="email_recipient_variable",
             value="foo@example.com",
@@ -1067,16 +1083,22 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             components_list=[],
             form__registration_backend="email",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
             key="user_defined_var1",
             value="test1",
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            source=FormVariableSources.user_defined,
+            name="User defined var 2",
+        )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 2",
             submission=submission,
             key="user_defined_var2",
             value="test2",

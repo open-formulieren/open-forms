@@ -307,7 +307,6 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
                 submission=submission_step.submission,
                 key=variable.key,
                 value=value,
-                form_variable=variable,
             )
 
         if hasattr(submission_step.submission, "_variables_state"):
@@ -389,7 +388,6 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
             submission_variable = SubmissionValueVariableFactory.create(
                 submission=submission,
                 key=form_key,
-                form_variable=form_variable,
             )
 
         file_attachment.submission_variable = submission_variable
@@ -398,26 +396,26 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         return file_attachment
 
 
+def _lookup_form_variable(submission_value_var: SubmissionValueVariable):
+    form_vars = submission_value_var.submission.form.formvariable_set
+    return form_vars.filter(key=submission_value_var.key).first()
+
+
 class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    form_variable = factory.SubFactory(
-        FormVariableFactory,
-        form=factory.SelfAttribute("..submission.form"),
-        key=factory.SelfAttribute("..key"),
-    )
     key = factory.Faker("word")
     source = SubmissionValueVariableSources.user_input
     is_initially_prefilled = factory.LazyAttribute(
         lambda submission_value_var: (
-            submission_value_var.form_variable.prefill_plugin != ""
-            if submission_value_var.form_variable
+            form_var.prefill_plugin != ""
+            if (form_var := _lookup_form_variable(submission_value_var))
             else False
         )
     )
 
     class Meta:
         model = SubmissionValueVariable
-        django_get_or_create = ("submission", "form_variable")
+        django_get_or_create = ("submission", "key")
 
 
 class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):

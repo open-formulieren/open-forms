@@ -4,6 +4,7 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.submissions.form_logic import evaluate_form_logic
 from openforms.submissions.tests.factories import (
@@ -11,7 +12,6 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from openforms.variables.constants import FormVariableSources
 
 from ...models.submission_value_variable import (
     SubmissionValueVariable,
@@ -394,19 +394,27 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form_step=form_step2,
             data={"var3": "test3", "var4": "test4"},
         )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud1",
+            user_defined=True,
+            name="User defined var 1",
+        )
         SubmissionValueVariableFactory.create(
             key="ud1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 2",
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            key="ud2",
+            user_defined=True,
+            name="User defined var 2",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 2",
         )
 
         renderer = Renderer(submission=submission, mode=RenderModes.pdf, as_html=True)

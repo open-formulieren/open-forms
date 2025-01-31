@@ -2981,7 +2981,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             completed=True,
         )
 
-        user_var_string = FormVariableFactory.create(
+        FormVariableFactory.create(
             form=submission.form,
             key="userDefinedVarString",
             source=FormVariableSources.user_defined,
@@ -2989,10 +2989,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
         SubmissionValueVariableFactory.create(
             key="userDefinedVarString",
             submission=submission,
-            form_variable=user_var_string,
             value="value",
         )
-        user_var_json = FormVariableFactory.create(
+        FormVariableFactory.create(
             form=submission.form,
             key="userDefinedVarJson",
             source=FormVariableSources.user_defined,
@@ -3001,10 +3000,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
         SubmissionValueVariableFactory.create(
             key="userDefinedVarJson",
             submission=submission,
-            form_variable=user_var_json,
             value={"key1": "value1", "key2": ["value2"]},
         )
-        user_var_array = FormVariableFactory.create(
+        FormVariableFactory.create(
             form=submission.form,
             key="userDefinedVarArray",
             source=FormVariableSources.user_defined,
@@ -3013,7 +3011,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         SubmissionValueVariableFactory.create(
             key="userDefinedVarArray",
             submission=submission,
-            form_variable=user_var_array,
             value=["value1", {"key1": "value2"}],
         )
 
