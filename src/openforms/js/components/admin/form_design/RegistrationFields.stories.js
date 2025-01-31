@@ -1085,7 +1085,7 @@ export const JSONDump = {
         options: {
           service: 1,
           path: 'example/endpoint',
-          variables: [],
+          variables: ['firstName', 'lastName', 'foo'],
           fixedMetadataVariables: ['form_name', 'form_version', 'public_reference'],
           additionalMetadataVariables: ['auth_bsn'],
         },
@@ -1097,7 +1097,7 @@ export const JSONDump = {
         formDefinition: null,
         name: 'First name',
         key: 'firstName',
-        source: 'user_defined',
+        source: 'component',
         prefillPlugin: '',
         prefillAttribute: '',
         prefillIdentifierRole: '',
@@ -1113,7 +1113,7 @@ export const JSONDump = {
         formDefinition: null,
         name: 'Last name',
         key: 'lastName',
-        source: 'user_defined',
+        source: 'component',
         prefillPlugin: '',
         prefillAttribute: '',
         prefillIdentifierRole: '',
@@ -1129,7 +1129,7 @@ export const JSONDump = {
         formDefinition: null,
         name: 'Attachment',
         key: 'attachment',
-        source: 'user_defined',
+        source: 'component',
         prefillPlugin: '',
         prefillAttribute: '',
         prefillIdentifierRole: '',
@@ -1139,6 +1139,22 @@ export const JSONDump = {
         isSensitiveData: false,
         serviceFetchConfiguration: undefined,
         initialValue: '',
+      },
+      {
+        form: null,
+        formDefinition: null,
+        name: 'Foo',
+        key: 'foo',
+        source: 'user_defined',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: '',
+        prefillOptions: {},
+        dataType: 'string',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: 'Bar',
       },
     ],
     availableStaticVariables: [
@@ -1177,9 +1193,28 @@ export const JSONDump = {
     ],
   },
 
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+
+    const modalForm = await screen.findByTestId('modal-form');
+    await expect(modalForm).toBeVisible();
+    const modal = within(modalForm);
+
+    await step('Add form variables', async () => {
+      await expect(...modal.queryAllByText('Attachment')).toBeFalsy(); // Ensure component variable 'Attachment' IS NOT selected
+      await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS selected
+
+      await userEvent.click(modal.getByRole('button', {name: 'Add all form variables'}));
+      await expect(modal.getByText('Attachment')).toBeVisible(); // Ensure 'Attachment' IS selected
+      await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS STILL selected
+
+      // Close modal
+      await userEvent.click(modal.getByRole('button', {name: 'Opslaan'}));
+    });
+
+    // Re-open modal for visual regression testing
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
   },
 };
