@@ -1,4 +1,5 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
+from datetime import date
 from typing import NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
@@ -13,8 +14,10 @@ from .base import FormatterBase
 
 
 class DateFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_date(parse_date(value))
+    def format(self, component: Component, value: str | date | None) -> str:
+        if isinstance(value, str):
+            value = parse_date(value)
+        return fmt_date(value)
 
 
 class DateTimeFormatter(FormatterBase):
