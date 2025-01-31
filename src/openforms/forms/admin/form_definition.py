@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from django.contrib.admin.actions import delete_selected as _delete_selected
 from django.db.models import Prefetch
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
@@ -9,7 +10,7 @@ from modeltranslation.admin import TranslationAdmin
 
 from ...utils.expressions import FirstNotBlank
 from ..forms import FormDefinitionForm
-from ..models import FormDefinition, FormStep
+from ..models import FormDefinition, FormStep, FormVariable
 from .mixins import FormioConfigMixin
 
 
@@ -100,3 +101,7 @@ class FormDefinitionAdmin(FormioConfigMixin, TranslationAdmin):
         return format_html("<ul>{}</ul>", ret)
 
     used_in_forms.short_description = _("used in")
+
+    def save_model(self, request: HttpRequest, obj: FormDefinition, form, change):
+        super().save_model(request=request, obj=obj, form=form, change=change)
+        FormVariable.objects.synchronize_for(obj)

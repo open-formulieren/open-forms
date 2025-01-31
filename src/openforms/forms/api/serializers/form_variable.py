@@ -17,21 +17,48 @@ from openforms.variables.service import get_static_variables
 from ...models import Form, FormDefinition, FormVariable
 
 
+def save_fetch_config(data):
+    if config := data.get("service_fetch_configuration"):
+        config.save()
+        data["service_fetch_configuration"] = config.instance
+    return data
+
+
 class FormVariableListSerializer(ListWithChildSerializer):
+    bulk_create_kwargs = {
+        "update_conflicts": True,
+        "update_fields": (
+            "name",
+            "key",
+            "source",
+            "service_fetch_configuration",
+            "prefill_plugin",
+            "prefill_attribute",
+            "prefill_identifier_role",
+            "prefill_options",
+            "data_type",
+            "data_format",
+            "is_sensitive_data",
+            "initial_value",
+        ),
+        "unique_fields": ("form", "key"),
+    }
+
     def get_child_serializer_class(self):
         return FormVariableSerializer
 
-    def process_object(self, variable: FormVariable):
-        variable.check_data_type_and_initial_value()
-        return variable
+    def process_object(self, obj: FormVariable):
+        obj.check_data_type_and_initial_value()
+        return obj
 
     def preprocess_validated_data(self, validated_data):
-        def save_fetch_config(data):
-            if config := data.get("service_fetch_configuration"):
-                config.save()
-                data["service_fetch_configuration"] = config.instance
-            return data
-
+        # only process not-component variables, as those are managed via the form
+        # step endpoint
+        validated_data = [
+            item
+            for item in validated_data
+            if (item["source"] != FormVariableSources.component)
+        ]
         return map(save_fetch_config, validated_data)
 
     def validate(self, attrs):
