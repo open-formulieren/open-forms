@@ -275,7 +275,7 @@ const ObjectsAPIFields = () => {
           />
         }
       >
-        <FormRow>
+        <FormRow preventErrorsModifier>
           <VariableMapping
             name="options.variablesMapping"
             loading={loading}
