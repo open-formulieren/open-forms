@@ -15,6 +15,7 @@ from openforms.accounts.tests.factories import (
     TokenFactory,
     UserFactory,
 )
+from openforms.forms.models.form_variable import FormVariable
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..models import FormStep
@@ -856,14 +857,8 @@ class FormsStepsAPITests(APITestCase):
         slugs = {form_step.slug for form_step in form_steps}
         self.assertEqual(len(slugs), 2)  # we expect two unique slugs
 
-    @patch(
-        "openforms.forms.api.serializers.form_step.on_formstep_save_event",
-        autospec=True,
-    )
     @tag("gh-4824")
-    def test_create_form_step_schedules_task_chain_to_fix_form_variables(
-        self, mock_on_formstep_save_event
-    ):
+    def test_create_form_step_synchronizes_form_variables(self):
         """
         Regression test for https://github.com/open-formulieren/open-forms/issues/4824
         """
@@ -891,31 +886,35 @@ class FormsStepsAPITests(APITestCase):
             "index": 0,
         }
         self.client.force_login(user=self.user)
+        assert not FormVariable.objects.filter(form=form).exists()
 
-        with self.captureOnCommitCallbacks(execute=True):
-            response = self.client.post(url, data=data)
-
-        mock_on_formstep_save_event.assert_called_once_with(form.id, 60)
+        response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=form_definition).count(),
-            1,
-        )
+        # we expect the form variables to be populated now
+        variables = FormVariable.objects.filter(form=form)
+        self.assertEqual(len(variables), 1)
+        variable = variables[0]
+        self.assertEqual(variable.key, "lastName")
+        self.assertEqual(variable.form_definition, form_definition)
 
-    @patch(
-        "openforms.forms.api.serializers.form_step.on_formstep_save_event",
-        autospec=True,
-    )
     @tag("gh-4824")
-    def test_update_form_step_schedules_task_chain_to_fix_form_variables(
-        self, mock_on_formstep_save_event
-    ):
+    def test_update_form_step_synchronizes_form_variables(self):
         """
         Regression test for https://github.com/open-formulieren/open-forms/issues/4824
         """
         assign_change_form_permissions(self.user)
-        form_step = FormStepFactory.create()
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "originalComponent",
+                        "type": "textfield",
+                        "label": "Original component",
+                    }
+                ]
+            }
+        )
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -941,17 +940,82 @@ class FormsStepsAPITests(APITestCase):
             "index": 0,
         }
         self.client.force_login(user=self.user)
+        # there's one existing variable from the FormStepFactory
+        assert FormVariable.objects.filter(form=form_step.form).count() == 1
 
-        with self.captureOnCommitCallbacks(execute=True):
-            response = self.client.put(url, data=data)
+        response = self.client.put(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # we expect the form variables to be populated now
+        variables = {
+            fv.key: fv for fv in FormVariable.objects.filter(form=form_step.form)
+        }
+        self.assertEqual(len(variables), 2)
+        self.assertIn("lastName", variables)
+        variable = variables["lastName"]
+        self.assertEqual(variable.key, "lastName")
+        self.assertEqual(variable.form_definition, form_definition)
 
-        mock_on_formstep_save_event.assert_called_once_with(form_step.form.id, 60)
+    @tag("gh-4824")
+    def test_form_step_save_fixes_broken_form_variables_state(self):
+        assign_change_form_permissions(self.user)
+        form = FormFactory.create()
+        other_form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "firstName",
+                        "type": "textfield",
+                        "label": "First Name",
+                    },
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                    },
+                ],
+            },
+            is_reusable=True,
+        )
+        form_step1 = FormStepFactory.create(form=form, form_definition=form_definition)
+        FormStepFactory.create(form=other_form, form_definition=form_definition)
+        # Bring the form in a broken state: no FormVariable exists for `lastName`
+        # Simulating the scenario where `lastName` was added but no variable was created
+        # because there are errors in the variables tab
+        FormVariable.objects.filter(form=form, key="lastName").delete()
+        FormVariable.objects.filter(form=other_form, key="lastName").delete()
+        self.client.force_login(user=self.user)
+        # updating to form 1 should also fix the other form
+        endpoint = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form_step1.form.uuid, "uuid": form_step1.uuid},
+        )
+        data = self.client.get(endpoint).json()
+
+        response = self.client.put(endpoint, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            FormStep.objects.filter(form_definition=form_definition).count(),
-            1,
-        )
+
+        with self.subTest("Form has appropriate FormVariables"):
+            self.assertEqual(FormVariable.objects.filter(form=form).count(), 2)
+            first_name_var1, last_name_var1 = FormVariable.objects.filter(
+                form=form
+            ).order_by("pk")
+            self.assertEqual(first_name_var1.key, "firstName")
+            self.assertEqual(last_name_var1.key, "lastName")
+
+        with self.subTest(
+            "other Form that reuses this FormDefinition has appropriate FormVariables"
+        ):
+            self.assertEqual(FormVariable.objects.filter(form=other_form).count(), 2)
+
+            first_name_var2, last_name_var2 = FormVariable.objects.filter(
+                form=other_form
+            ).order_by("pk")
+
+            self.assertEqual(first_name_var2.key, "firstName")
+            self.assertEqual(last_name_var2.key, "lastName")
 
 
 class FormStepsAPITranslationTests(APITestCase):

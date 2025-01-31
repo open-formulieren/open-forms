@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
-from glom import Path, glom
+from glom import glom
 
 from openforms.formio.utils import (
     component_in_editgrid,
@@ -28,7 +30,6 @@ from .form_definition import FormDefinition
 
 if TYPE_CHECKING:
     from .form import Form
-    from .form_step import FormStep
 
 
 EMPTY_PREFILL_PLUGIN = Q(prefill_plugin="")
@@ -37,7 +38,7 @@ EMPTY_PREFILL_OPTIONS = Q(prefill_options={})
 USER_DEFINED = Q(source=FormVariableSources.user_defined)
 
 
-class FormVariableManager(models.Manager):
+class FormVariableManager(models.Manager["FormVariable"]):
     use_in_migrations = True
 
     @transaction.atomic
@@ -45,58 +46,54 @@ class FormVariableManager(models.Manager):
         form_steps = form.formstep_set.select_related("form_definition")
 
         for form_step in form_steps:
-            self.create_for_formstep(form_step)
+            self.synchronize_for(form_step.form_definition)
 
-    def create_for_formstep(self, form_step: "FormStep") -> list["FormVariable"]:
-        form_definition_configuration = form_step.form_definition.configuration
-        component_keys = [
-            component["key"]
-            for component in iter_components(
-                configuration=form_definition_configuration, recursive=True
-            )
-        ]
-        existing_form_variables_keys = form_step.form.formvariable_set.filter(
-            key__in=component_keys,
-            form_definition=form_step.form_definition,
-        ).values_list("key", flat=True)
+    @transaction.atomic
+    def synchronize_for(self, form_definition: FormDefinition):
+        """
+        Synchronize the form variables for a given form definition.
 
-        form_variables = []
-        for component in iter_components(
-            configuration=form_definition_configuration, recursive=True
-        ):
-            if (
-                is_layout_component(component)
-                or component["type"] in ("content", "softRequiredErrors")
-                or component["key"] in existing_form_variables_keys
-                or component_in_editgrid(form_definition_configuration, component)
-            ):
+        This creates, updates and/or removes form variables related to the provided
+        :class:`FormDefinition` instance. It needs to be called whenever the Formio
+        configuration of a form definition is changed so that our form variables in each
+        form making use of the form definition accurately reflect the configuration.
+
+        Note that we *don't* remove variables related to other form definitions, as
+        multiple isolated transactions for different form definitions can happen at the
+        same time.
+        """
+        # Build the desired state
+        desired_variables: list[FormVariable] = []
+        # XXX: looping over the configuration_wrapper is not (yet) viable because it
+        # also yields the components nested inside edit grids, which we need to ignore.
+        # So, we stick to iter_components. Performance wise this should be okay since we
+        # only need to do one pass.
+        configuration = form_definition.configuration
+        for component in iter_components(configuration=configuration, recursive=True):
+            # we need to ignore components that don't actually hold any values - there's
+            # no point to create variables for those.
+            if is_layout_component(component):
+                continue
+            if component["type"] in ("content", "softRequiredErrors"):
+                continue
+            if component_in_editgrid(configuration, component):
                 continue
 
-            form_variables.append(
+            # extract options from the component
+            prefill_plugin = glom(component, "prefill.plugin", default="") or ""
+            prefill_attribute = glom(component, "prefill.attribute", default="") or ""
+            prefill_identifier_role = glom(
+                component, "prefill.identifierRole", default=IdentifierRoles.main
+            )
+
+            desired_variables.append(
                 self.model(
-                    form=form_step.form,
-                    form_definition=form_step.form_definition,
-                    prefill_plugin=glom(
-                        component,
-                        Path("prefill", "plugin"),
-                        default="",
-                        skip_exc=KeyError,
-                    )
-                    or "",
-                    prefill_attribute=glom(
-                        component,
-                        Path("prefill", "attribute"),
-                        default="",
-                        skip_exc=KeyError,
-                    )
-                    or "",
-                    prefill_identifier_role=glom(
-                        component,
-                        Path("prefill", "identifierRole"),
-                        default=IdentifierRoles.main,
-                        skip_exc=KeyError,
-                    ),
+                    form=None,  # will be set later when visiting all affected forms
                     key=component["key"],
+                    form_definition=form_definition,
+                    prefill_plugin=prefill_plugin,
+                    prefill_attribute=prefill_attribute,
+                    prefill_identifier_role=prefill_identifier_role,
                     name=component.get("label") or component["key"],
                     is_sensitive_data=component.get("isSensitiveData", False),
                     source=FormVariableSources.component,
@@ -105,7 +102,54 @@ class FormVariableManager(models.Manager):
                 )
             )
 
-        return self.bulk_create(form_variables)
+        desired_keys = [variable.key for variable in desired_variables]
+
+        # if the Formio configuration of the form definition itself is updated and
+        # components have been removed or their keys have changed, we know for certain
+        # we can discard those old form variables - it doesn't matter which form they
+        # belong to.
+        stale_variables = self.filter(form_definition=form_definition).exclude(
+            key__in=desired_keys
+        )
+        stale_variables.delete()
+
+        # check which form (steps) are affected and patch them up. It is irrelevant whether
+        # the form definition is re-usable or not, though semantically at most one form step
+        # should be found for single-use form definitions.
+        # fmt: off
+        affected_form_steps = (
+            form_definition
+            .formstep_set # pyright: ignore[reportAttributeAccessIssue]
+            .select_related("form")
+        )
+        # fmt: on
+
+        # Finally, collect all the instances and efficiently upsert them - creating missing
+        # variables and updating existing variables in a single query.
+        to_upsert: list[FormVariable] = []
+        for step in affected_form_steps:
+            for variable in desired_variables:
+                form_specific_variable = deepcopy(variable)
+                form_specific_variable.form = step.form
+                to_upsert.append(form_specific_variable)
+
+        self.bulk_create(
+            to_upsert,
+            # enables UPSERT behaviour so that existing records get updated and missing
+            # records inserted
+            update_conflicts=True,
+            update_fields=(
+                "prefill_plugin",
+                "prefill_attribute",
+                "prefill_identifier_role",
+                "name",
+                "is_sensitive_data",
+                "source",
+                "data_type",
+                "initial_value",
+            ),
+            unique_fields=("form", "key"),
+        )
 
 
 class FormVariable(models.Model):
@@ -206,7 +250,9 @@ class FormVariable(models.Model):
 
     _json_schema = None
 
-    objects = FormVariableManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        FormVariableManager
+    ] = FormVariableManager()
 
     class Meta:
         verbose_name = _("Form variable")
