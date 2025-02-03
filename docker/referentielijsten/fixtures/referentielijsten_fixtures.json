@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$600000$DCgCQRA6R57PicaatiWGHU$S65r6Yedgkfv/exr8gFZogpyuCgortmrloq7+LBdnyY=",
-        "last_login": "2025-01-07T14:17:06.242Z",
+        "last_login": "2025-02-03T08:48:13.944Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",
@@ -31,6 +31,32 @@
     }
 },
 {
+    "model": "api.tabel",
+    "pk": 2,
+    "fields": {
+        "code": "tabel-with-many-items",
+        "naam": "Tabel with many items",
+        "einddatum_geldigheid": null,
+        "beheerder_naam": "",
+        "beheerder_email": "",
+        "beheerder_afdeling": "",
+        "beheerder_organisatie": ""
+    }
+},
+{
+    "model": "api.tabel",
+    "pk": 3,
+    "fields": {
+        "code": "not-geldig-anymore",
+        "naam": "Tabel that is not geldig anymore",
+        "einddatum_geldigheid": "2020-02-03T08:48:49Z",
+        "beheerder_naam": "",
+        "beheerder_email": "",
+        "beheerder_afdeling": "",
+        "beheerder_organisatie": ""
+    }
+},
+{
     "model": "api.item",
     "pk": 1,
     "fields": {
@@ -50,6 +76,1218 @@
         "code": "option2",
         "naam": "Option 2",
         "begindatum_geldigheid": "2025-01-07T14:17:59Z",
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 3,
+    "fields": {
+        "tabel": 2,
+        "code": "0",
+        "naam": "0",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 4,
+    "fields": {
+        "tabel": 2,
+        "code": "1",
+        "naam": "1",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 5,
+    "fields": {
+        "tabel": 2,
+        "code": "2",
+        "naam": "2",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 6,
+    "fields": {
+        "tabel": 2,
+        "code": "3",
+        "naam": "3",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 7,
+    "fields": {
+        "tabel": 2,
+        "code": "4",
+        "naam": "4",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 8,
+    "fields": {
+        "tabel": 2,
+        "code": "5",
+        "naam": "5",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 9,
+    "fields": {
+        "tabel": 2,
+        "code": "6",
+        "naam": "6",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 10,
+    "fields": {
+        "tabel": 2,
+        "code": "7",
+        "naam": "7",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 11,
+    "fields": {
+        "tabel": 2,
+        "code": "8",
+        "naam": "8",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 12,
+    "fields": {
+        "tabel": 2,
+        "code": "9",
+        "naam": "9",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 13,
+    "fields": {
+        "tabel": 2,
+        "code": "10",
+        "naam": "10",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 14,
+    "fields": {
+        "tabel": 2,
+        "code": "11",
+        "naam": "11",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 15,
+    "fields": {
+        "tabel": 2,
+        "code": "12",
+        "naam": "12",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 16,
+    "fields": {
+        "tabel": 2,
+        "code": "13",
+        "naam": "13",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 17,
+    "fields": {
+        "tabel": 2,
+        "code": "14",
+        "naam": "14",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 18,
+    "fields": {
+        "tabel": 2,
+        "code": "15",
+        "naam": "15",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 19,
+    "fields": {
+        "tabel": 2,
+        "code": "16",
+        "naam": "16",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 20,
+    "fields": {
+        "tabel": 2,
+        "code": "17",
+        "naam": "17",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 21,
+    "fields": {
+        "tabel": 2,
+        "code": "18",
+        "naam": "18",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 22,
+    "fields": {
+        "tabel": 2,
+        "code": "19",
+        "naam": "19",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 23,
+    "fields": {
+        "tabel": 2,
+        "code": "20",
+        "naam": "20",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 24,
+    "fields": {
+        "tabel": 2,
+        "code": "21",
+        "naam": "21",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 25,
+    "fields": {
+        "tabel": 2,
+        "code": "22",
+        "naam": "22",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 26,
+    "fields": {
+        "tabel": 2,
+        "code": "23",
+        "naam": "23",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 27,
+    "fields": {
+        "tabel": 2,
+        "code": "24",
+        "naam": "24",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 28,
+    "fields": {
+        "tabel": 2,
+        "code": "25",
+        "naam": "25",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 29,
+    "fields": {
+        "tabel": 2,
+        "code": "26",
+        "naam": "26",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 30,
+    "fields": {
+        "tabel": 2,
+        "code": "27",
+        "naam": "27",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 31,
+    "fields": {
+        "tabel": 2,
+        "code": "28",
+        "naam": "28",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 32,
+    "fields": {
+        "tabel": 2,
+        "code": "29",
+        "naam": "29",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 33,
+    "fields": {
+        "tabel": 2,
+        "code": "30",
+        "naam": "30",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 34,
+    "fields": {
+        "tabel": 2,
+        "code": "31",
+        "naam": "31",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 35,
+    "fields": {
+        "tabel": 2,
+        "code": "32",
+        "naam": "32",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 36,
+    "fields": {
+        "tabel": 2,
+        "code": "33",
+        "naam": "33",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 37,
+    "fields": {
+        "tabel": 2,
+        "code": "34",
+        "naam": "34",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 38,
+    "fields": {
+        "tabel": 2,
+        "code": "35",
+        "naam": "35",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 39,
+    "fields": {
+        "tabel": 2,
+        "code": "36",
+        "naam": "36",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 40,
+    "fields": {
+        "tabel": 2,
+        "code": "37",
+        "naam": "37",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 41,
+    "fields": {
+        "tabel": 2,
+        "code": "38",
+        "naam": "38",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 42,
+    "fields": {
+        "tabel": 2,
+        "code": "39",
+        "naam": "39",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 43,
+    "fields": {
+        "tabel": 2,
+        "code": "40",
+        "naam": "40",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 44,
+    "fields": {
+        "tabel": 2,
+        "code": "41",
+        "naam": "41",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 45,
+    "fields": {
+        "tabel": 2,
+        "code": "42",
+        "naam": "42",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 46,
+    "fields": {
+        "tabel": 2,
+        "code": "43",
+        "naam": "43",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 47,
+    "fields": {
+        "tabel": 2,
+        "code": "44",
+        "naam": "44",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 48,
+    "fields": {
+        "tabel": 2,
+        "code": "45",
+        "naam": "45",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 49,
+    "fields": {
+        "tabel": 2,
+        "code": "46",
+        "naam": "46",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 50,
+    "fields": {
+        "tabel": 2,
+        "code": "47",
+        "naam": "47",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 51,
+    "fields": {
+        "tabel": 2,
+        "code": "48",
+        "naam": "48",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 52,
+    "fields": {
+        "tabel": 2,
+        "code": "49",
+        "naam": "49",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 53,
+    "fields": {
+        "tabel": 2,
+        "code": "50",
+        "naam": "50",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 54,
+    "fields": {
+        "tabel": 2,
+        "code": "51",
+        "naam": "51",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 55,
+    "fields": {
+        "tabel": 2,
+        "code": "52",
+        "naam": "52",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 56,
+    "fields": {
+        "tabel": 2,
+        "code": "53",
+        "naam": "53",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 57,
+    "fields": {
+        "tabel": 2,
+        "code": "54",
+        "naam": "54",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 58,
+    "fields": {
+        "tabel": 2,
+        "code": "55",
+        "naam": "55",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 59,
+    "fields": {
+        "tabel": 2,
+        "code": "56",
+        "naam": "56",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 60,
+    "fields": {
+        "tabel": 2,
+        "code": "57",
+        "naam": "57",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 61,
+    "fields": {
+        "tabel": 2,
+        "code": "58",
+        "naam": "58",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 62,
+    "fields": {
+        "tabel": 2,
+        "code": "59",
+        "naam": "59",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 63,
+    "fields": {
+        "tabel": 2,
+        "code": "60",
+        "naam": "60",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 64,
+    "fields": {
+        "tabel": 2,
+        "code": "61",
+        "naam": "61",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 65,
+    "fields": {
+        "tabel": 2,
+        "code": "62",
+        "naam": "62",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 66,
+    "fields": {
+        "tabel": 2,
+        "code": "63",
+        "naam": "63",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 67,
+    "fields": {
+        "tabel": 2,
+        "code": "64",
+        "naam": "64",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 68,
+    "fields": {
+        "tabel": 2,
+        "code": "65",
+        "naam": "65",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 69,
+    "fields": {
+        "tabel": 2,
+        "code": "66",
+        "naam": "66",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 70,
+    "fields": {
+        "tabel": 2,
+        "code": "67",
+        "naam": "67",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 71,
+    "fields": {
+        "tabel": 2,
+        "code": "68",
+        "naam": "68",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 72,
+    "fields": {
+        "tabel": 2,
+        "code": "69",
+        "naam": "69",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 73,
+    "fields": {
+        "tabel": 2,
+        "code": "70",
+        "naam": "70",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 74,
+    "fields": {
+        "tabel": 2,
+        "code": "71",
+        "naam": "71",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 75,
+    "fields": {
+        "tabel": 2,
+        "code": "72",
+        "naam": "72",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 76,
+    "fields": {
+        "tabel": 2,
+        "code": "73",
+        "naam": "73",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 77,
+    "fields": {
+        "tabel": 2,
+        "code": "74",
+        "naam": "74",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 78,
+    "fields": {
+        "tabel": 2,
+        "code": "75",
+        "naam": "75",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 79,
+    "fields": {
+        "tabel": 2,
+        "code": "76",
+        "naam": "76",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 80,
+    "fields": {
+        "tabel": 2,
+        "code": "77",
+        "naam": "77",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 81,
+    "fields": {
+        "tabel": 2,
+        "code": "78",
+        "naam": "78",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 82,
+    "fields": {
+        "tabel": 2,
+        "code": "79",
+        "naam": "79",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 83,
+    "fields": {
+        "tabel": 2,
+        "code": "80",
+        "naam": "80",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 84,
+    "fields": {
+        "tabel": 2,
+        "code": "81",
+        "naam": "81",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 85,
+    "fields": {
+        "tabel": 2,
+        "code": "82",
+        "naam": "82",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 86,
+    "fields": {
+        "tabel": 2,
+        "code": "83",
+        "naam": "83",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 87,
+    "fields": {
+        "tabel": 2,
+        "code": "84",
+        "naam": "84",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 88,
+    "fields": {
+        "tabel": 2,
+        "code": "85",
+        "naam": "85",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 89,
+    "fields": {
+        "tabel": 2,
+        "code": "86",
+        "naam": "86",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 90,
+    "fields": {
+        "tabel": 2,
+        "code": "87",
+        "naam": "87",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 91,
+    "fields": {
+        "tabel": 2,
+        "code": "88",
+        "naam": "88",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 92,
+    "fields": {
+        "tabel": 2,
+        "code": "89",
+        "naam": "89",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 93,
+    "fields": {
+        "tabel": 2,
+        "code": "90",
+        "naam": "90",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 94,
+    "fields": {
+        "tabel": 2,
+        "code": "91",
+        "naam": "91",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 95,
+    "fields": {
+        "tabel": 2,
+        "code": "92",
+        "naam": "92",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 96,
+    "fields": {
+        "tabel": 2,
+        "code": "93",
+        "naam": "93",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 97,
+    "fields": {
+        "tabel": 2,
+        "code": "94",
+        "naam": "94",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 98,
+    "fields": {
+        "tabel": 2,
+        "code": "95",
+        "naam": "95",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 99,
+    "fields": {
+        "tabel": 2,
+        "code": "96",
+        "naam": "96",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 100,
+    "fields": {
+        "tabel": 2,
+        "code": "97",
+        "naam": "97",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 101,
+    "fields": {
+        "tabel": 2,
+        "code": "98",
+        "naam": "98",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 102,
+    "fields": {
+        "tabel": 2,
+        "code": "99",
+        "naam": "99",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 103,
+    "fields": {
+        "tabel": 2,
+        "code": "100",
+        "naam": "100",
+        "begindatum_geldigheid": null,
         "einddatum_geldigheid": null,
         "aanvullende_gegevens": null
     }
