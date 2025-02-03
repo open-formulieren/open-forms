@@ -84,7 +84,7 @@ intersphinx_mapping = {
         None,
     ),
     "django-setup-configuration": (
-        "https://django-setup-configuration.readthedocs.io/en/stable/",
+        "https://django-setup-configuration.readthedocs.io/stable/",
         None,
     ),
 }
