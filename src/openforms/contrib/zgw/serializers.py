@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
-from openforms.utils.validators import RSINValidator, validate_uppercase
+from openforms.utils.validators import RSINValidator
 
 
 class CatalogueSerializer(serializers.Serializer):
@@ -29,7 +29,6 @@ class CatalogueSerializer(serializers.Serializer):
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
         default="",
-        validators=[validate_uppercase],
         allow_blank=True,
     )
     rsin = serializers.CharField(

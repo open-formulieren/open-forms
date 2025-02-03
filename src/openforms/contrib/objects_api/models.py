@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.constants import APITypes
 
-from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
+from openforms.utils.validators import RSINValidator, validate_rsin
 
 # no catalogus specified, requires both RSIN and domain to be unspecified
 _CATALOGUE_NOT_SET = models.Q(catalogue_domain="", catalogue_rsin="")
@@ -75,7 +75,6 @@ class ObjectsAPIGroupConfig(models.Model):
         help_text=_(
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
-        validators=[validate_uppercase],
     )
     catalogue_rsin = models.CharField(
         _("catalogus RSIN"),
