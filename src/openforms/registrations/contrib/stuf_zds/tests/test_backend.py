@@ -13,7 +13,6 @@ from requests import ConnectTimeout
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -25,7 +24,6 @@ from openforms.submissions.tests.factories import (
     SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from stuf.stuf_zds.client import PaymentStatus as StuFPaymentStatus
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
@@ -2981,39 +2979,22 @@ class StufZDSPluginTests(StUFZDSTestBase):
             completed=True,
         )
 
-        user_var_string = FormVariableFactory.create(
-            form=submission.form,
-            key="userDefinedVarString",
-            source=FormVariableSources.user_defined,
-        )
         SubmissionValueVariableFactory.create(
             key="userDefinedVarString",
             submission=submission,
-            form_variable=user_var_string,
+            form_variable__user_defined=True,
             value="value",
         )
-        user_var_json = FormVariableFactory.create(
-            form=submission.form,
-            key="userDefinedVarJson",
-            source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.object,
-        )
         SubmissionValueVariableFactory.create(
             key="userDefinedVarJson",
             submission=submission,
-            form_variable=user_var_json,
+            form_variable__user_defined=True,
             value={"key1": "value1", "key2": ["value2"]},
         )
-        user_var_array = FormVariableFactory.create(
-            form=submission.form,
-            key="userDefinedVarArray",
-            source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.array,
-        )
         SubmissionValueVariableFactory.create(
             key="userDefinedVarArray",
             submission=submission,
-            form_variable=user_var_array,
+            form_variable__user_defined=True,
             value=["value1", {"key1": "value2"}],
         )
 

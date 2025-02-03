@@ -11,7 +11,6 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from openforms.variables.constants import FormVariableSources
 
 from ...models.submission_value_variable import (
     SubmissionValueVariable,
@@ -398,14 +397,14 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             key="ud1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 2",
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
             form_variable__name="User defined var 2",
         )
 

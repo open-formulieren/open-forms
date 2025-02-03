@@ -25,14 +25,6 @@ class SubmissionValueVariableModelTests(TestCase):
                 submission=variable1.submission, key="var1"
             )
 
-    def test_unique_together_submission_form_variable(self):
-        variable1 = SubmissionValueVariableFactory.create()
-
-        with self.assertRaises(IntegrityError):
-            SubmissionValueVariable.objects.create(
-                submission=variable1.submission, form_variable=variable1.form_variable
-            )
-
     def test_can_create_instances(self):
         SubmissionValueVariableFactory.create()
         SubmissionValueVariableFactory.create()
@@ -70,12 +62,21 @@ class SubmissionValueVariableModelTests(TestCase):
         """
         Test that the serialized value can be converted to native python objects.
         """
+
+        def _assign_form_variable(submission_value_variable: SubmissionValueVariable):
+            key = submission_value_variable.key
+            form_var = submission_value_variable.submission.form.formvariable_set.get(
+                key=key
+            )
+            submission_value_variable.form_variable = form_var
+
         with self.subTest("string"):
             string_var = SubmissionValueVariableFactory.create(
-                form_variable__user_defined=True,
-                form_variable__data_type=FormVariableDataTypes.string,
                 value="a string",
+                form_variable__data_type=FormVariableDataTypes.string,
+                form_variable__user_defined=True,
             )
+            _assign_form_variable(string_var)
 
             string_value = string_var.to_python()
 
@@ -83,10 +84,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("boolean"):
             bool_var = SubmissionValueVariableFactory.create(
+                value=True,
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.boolean,
-                value=True,
             )
+            _assign_form_variable(bool_var)
 
             bool_value = bool_var.to_python()
 
@@ -94,10 +96,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("object"):
             object_var = SubmissionValueVariableFactory.create(
+                value={"foo": "bar"},
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.object,
-                value={"foo": "bar"},
             )
+            _assign_form_variable(object_var)
 
             object_value = object_var.to_python()
 
@@ -105,10 +108,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("array"):
             array_var = SubmissionValueVariableFactory.create(
+                value=[1, 2, "foo"],
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.array,
-                value=[1, 2, "foo"],
             )
+            _assign_form_variable(array_var)
 
             array_value = array_var.to_python()
 
@@ -116,10 +120,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("int"):
             int_var = SubmissionValueVariableFactory.create(
+                value=42,
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.int,
-                value=42,
             )
+            _assign_form_variable(int_var)
 
             int_value = int_var.to_python()
 
@@ -127,10 +132,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("float"):
             float_var = SubmissionValueVariableFactory.create(
+                value=4.20,
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.float,
-                value=4.20,
             )
+            _assign_form_variable(float_var)
 
             float_value = float_var.to_python()
 
@@ -140,10 +146,11 @@ class SubmissionValueVariableModelTests(TestCase):
         # User defined variables of type date also don't have the time part
         with self.subTest("date 1"):
             date_var1 = SubmissionValueVariableFactory.create(
+                value="2022-09-13",
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.date,
-                value="2022-09-13",
             )
+            _assign_form_variable(date_var1)
 
             date_value1 = date_var1.to_python()
 
@@ -156,7 +163,6 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("date 2"):
             date_var2 = SubmissionValueVariableFactory.create(
-                form_variable=None,
                 key="dateVar2",
                 value="2022-09-13",
             )
@@ -169,10 +175,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
         with self.subTest("datetime 1"):
             date_var3 = SubmissionValueVariableFactory.create(
+                value="2022-09-13T11:10:45+02:00",
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,
-                value="2022-09-13T11:10:45+02:00",
             )
+            _assign_form_variable(date_var3)
 
             date_value3 = date_var3.to_python()
 
@@ -183,26 +190,28 @@ class SubmissionValueVariableModelTests(TestCase):
             self.assertEqual(date_value3, expected)
 
         with self.subTest("datetime 2 (naive datetime)"):
-            date_var3 = SubmissionValueVariableFactory.create(
+            date_var4 = SubmissionValueVariableFactory.create(
+                value="2022-09-13T11:10:45",
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,
-                value="2022-09-13T11:10:45",
             )
+            _assign_form_variable(date_var4)
 
-            date_value3 = date_var3.to_python()
+            date_value4 = date_var4.to_python()
 
-            self.assertIsInstance(date_value3, datetime)
+            self.assertIsInstance(date_value4, datetime)
             # datetimes must be made aware in our local timezone
-            self.assertIsNotNone(date_value3.tzinfo)
+            self.assertIsNotNone(date_value4.tzinfo)
             expected = timezone.make_aware(datetime(2022, 9, 13, 11, 10, 45))
-            self.assertEqual(date_value3, expected)
+            self.assertEqual(date_value4, expected)
 
         with self.subTest("time"):
             time_var = SubmissionValueVariableFactory.create(
+                value="11:15",
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.time,
-                value="11:15",
             )
+            _assign_form_variable(time_var)
 
             time_value = time_var.to_python()
 
@@ -211,11 +220,13 @@ class SubmissionValueVariableModelTests(TestCase):
             self.assertEqual(time_value, time(11, 15))
 
         with self.subTest("Invalid time"):
+            # Issue 3647
             time_var = SubmissionValueVariableFactory.create(
+                value="Invalid date",
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.time,
-                value="Invalid date",  # Issue 3647
             )
+            _assign_form_variable(time_var)
 
             time_value = time_var.to_python()
 

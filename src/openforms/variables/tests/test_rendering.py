@@ -7,7 +7,6 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from openforms.variables.constants import FormVariableSources
 
 
 @override_settings(LANGUAGE_CODE="nl")
@@ -31,9 +30,7 @@ class VariablesNodeTests(TestCase):
             components_list=config["components"], submitted_data=data
         )
         SubmissionValueVariableFactory.create(
-            key="ud1",
-            submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            key="ud1", submission=submission, form_variable__user_defined=True
         )
 
         nodelist = list(iter_submission_data_nodes(submission))
@@ -66,17 +63,17 @@ class VariablesNodeTests(TestCase):
         )
         SubmissionValueVariableFactory.create(
             key="ud1",
-            form_variable__name="User defined var 1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
-            form_variable__name="User defined var 2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 2",
         )
 
         with self.subTest(action="Mode: export"):

@@ -18,7 +18,6 @@ from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
-    SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -509,13 +508,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "type": "file",
                 },
             ],
+            submitted_data={"single_file": []},
             completed=True,
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            form_variable=submission.form.formvariable_set.get(key="single_file"),
-            key="single_file",
-            value=[],
         )
         v2_options: RegistrationOptionsV2 = {
             "version": 2,

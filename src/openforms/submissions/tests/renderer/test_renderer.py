@@ -5,7 +5,6 @@ from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormStepFactory,
 )
-from openforms.variables.constants import FormVariableSources
 
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode
@@ -56,14 +55,14 @@ class FormNodeTests(TestCase):
             key="ud1",
             value="Some data 1",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
             form_variable__name="User defined var 1",
         )
         SubmissionValueVariableFactory.create(
             key="ud2",
             value="Some data 2",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
             form_variable__name="User defined var 2",
         )
 

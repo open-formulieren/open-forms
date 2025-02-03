@@ -571,7 +571,6 @@ class SubmissionAttachmentTest(TestCase):
         # TODO: remove once #2728 is fixed
         SubmissionValueVariableFactory.create(
             key="attachment",
-            form_variable__form=form_step.form,
             submission=submission,
             value=data["attachment"],
         )

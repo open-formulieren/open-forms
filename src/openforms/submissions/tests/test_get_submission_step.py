@@ -588,9 +588,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         SubmissionValueVariableFactory.create(
             submission=submission,
             key="userDefinedDate",
+            value="2022-12-31",
             form_variable__user_defined=True,
             form_variable__data_type=FormVariableDataTypes.date,
-            value="2022-12-31",
         )
         endpoint = reverse(
             "api:submission-steps-detail",

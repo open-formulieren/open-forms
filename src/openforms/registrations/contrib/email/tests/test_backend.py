@@ -33,7 +33,6 @@ from openforms.submissions.tests.factories import (
     TemporaryFileUploadFactory,
 )
 from openforms.utils.tests.html_assert import HTMLAssertMixin
-from openforms.variables.constants import FormVariableSources
 
 from ....tasks import pre_registration
 from ..constants import PLUGIN_ID, AttachmentFormat
@@ -237,9 +236,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
             key="email_recipient_variable",
             value="foo@example.com",
         )
@@ -270,9 +269,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
             key="email_recipient_variable",
             value=["foo@example.com", "bar@example.com"],
         )
@@ -325,9 +324,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
             key="email_recipient_variable",
             value="foo.com",  # invalid email value
         )
@@ -596,9 +595,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             public_registration_reference="XYZ",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
             key="email_recipient_variable",
             value="foo@example.com",
         )
@@ -629,9 +628,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             public_registration_reference="XYZ",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
             key="email_recipient_variable",
             value="foo@example.com",
         )
@@ -1068,16 +1066,16 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__registration_backend="email",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 1",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 1",
             key="user_defined_var1",
             value="test1",
         )
         SubmissionValueVariableFactory.create(
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__name="User defined var 2",
             submission=submission,
+            form_variable__user_defined=True,
+            form_variable__name="User defined var 2",
             key="user_defined_var2",
             value="test2",
         )
