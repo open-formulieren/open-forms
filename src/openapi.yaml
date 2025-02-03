@@ -3715,6 +3715,44 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/referentielijst-tabellen/{service_slug}:
+    get:
+      operationId: referentielijst_tabellen_list
+      description: |-
+        Return a list of available (JSON) tabellen in a given Referentielijsten service configured in the backend.
+
+        Note that this endpoint is **EXPERIMENTAL**.
+      summary: List tabellen for a Referentielijsten service
+      parameters:
+      - in: path
+        name: service_slug
+        schema:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        required: true
+      tags:
+      - referentielijst-tabellen
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferentielijstTabellen'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      x-experimental: true
   /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -9663,6 +9701,30 @@ components:
       required:
       - name
       - slug
+    ReferentielijstTabellen:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The unique code that identifies the table.
+        naam:
+          type: string
+          description: The name of the table.
+        einddatumGeldigheid:
+          type: string
+          format: date-time
+          writeOnly: true
+          description: The timestamp on which the tabel expires.
+        isGeldig:
+          type: boolean
+          readOnly: true
+          description: Indicates whether or not the table is expired.
+      required:
+      - code
+      - einddatumGeldigheid
+      - isGeldig
+      - naam
+      x-experimental: true
     RegistrationAttribute:
       type: object
       properties:
