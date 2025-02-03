@@ -147,7 +147,7 @@ class SubmissionReportGenerationTests(TestCase):
 
         html = submission.report.generate_submission_report_pdf()
 
-        self.assertIn("31 januari 2025", html)
+        self.assertIn("1 februari 2025", html)
 
     def test_visible_output_included(self):
         """
