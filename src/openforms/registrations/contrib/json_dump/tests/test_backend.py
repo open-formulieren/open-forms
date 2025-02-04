@@ -748,6 +748,119 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ["A", "B", "C", ""],
         )
 
+    def test_components_with_form_variable_as_data_source_in_edit_grid_component(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "repeatingGroup",
+                    "label": "Repeating Group",
+                    "type": "editgrid",
+                    "components": [
+                        {
+                            "label": "Radio",
+                            "key": "radio",
+                            "type": "radio",
+                            "openForms": {
+                                "dataSrc": "variable",
+                                "translations": {},
+                                "itemsExpression": {"var": "valuesForComponent"},
+                            },
+                            "values": [],
+                        },
+                        {
+                            "label": "Select",
+                            "key": "select",
+                            "type": "select",
+                            "multiple": False,
+                            "openForms": {
+                                "dataSrc": "variable",
+                                "itemsExpression": {"var": "valuesForComponent"},
+                            },
+                            "data": {
+                                "values": [],
+                                "json": "",
+                                "url": "",
+                                "resource": "",
+                                "custom": "",
+                            },
+                        },
+                        {
+                            "label": "Select Boxes",
+                            "key": "selectBoxes",
+                            "type": "selectboxes",
+                            "openForms": {
+                                "dataSrc": "variable",
+                                "translations": {},
+                                "itemsExpression": {"var": "valuesForComponent"},
+                            },
+                            "values": [],
+                        },
+                    ],
+                }
+            ],
+            completed=True,
+            submitted_data={
+                "repeatingGroup": [
+                    {
+                        "radio": "A",
+                        "select": "B",
+                        "selectBoxes": {"A": False, "B": False, "C": True},
+                    }
+                ]
+            },
+            with_public_registration_reference=True,
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for components",
+            key="valuesForComponent",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["repeatingGroup"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("radio"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"]["properties"][
+                    "repeatingGroup"
+                ]["items"]["properties"]["radio"]["enum"],
+                ["A", "B", "C", ""],
+            )
+
+        with self.subTest("select"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"]["properties"][
+                    "repeatingGroup"
+                ]["items"]["properties"]["select"]["enum"],
+                ["A", "B", "C", ""],
+            )
+
+        with self.subTest("selectBoxes"):
+            self.assertEqual(
+                list(
+                    result["api_response"]["data"]["values_schema"]["properties"][
+                        "repeatingGroup"
+                    ]["items"]["properties"]["selectBoxes"]["properties"].keys()
+                ),
+                ["A", "B", "C"],
+            )
+
     @unittest.expectedFailure
     def test_nested_component_key(self):
         # TODO: will be fixed with issue 5041
@@ -853,4 +966,196 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         with self.subTest("schema"):
             self.assertEqual(
                 result["api_response"]["data"]["metadata_schema"], expected_schema
+            )
+
+    def test_file_in_edit_grid_component(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "repeatingGroup",
+                    "label": "Repeating Group",
+                    "type": "editgrid",
+                    "components": [
+                        {
+                            "key": "fileUploadInRepeating",
+                            "label": "File upload",
+                            "type": "file",
+                            "multiple": True,
+                        },
+                    ],
+                }
+            ],
+            completed=True,
+            submitted_data={
+                "repeatingGroup": [
+                    {
+                        "fileUploadInRepeating": [
+                            {
+                                "url": "http://example.com/api/v2/submissions/files/1",
+                                "data": {
+                                    "url": "https://example.com/api/v2/submissions/files/1",
+                                    "form": "",
+                                    "name": "test_file.txt",
+                                    "size": 29,
+                                    "baseUrl": "http://example.com/api/v2/",
+                                    "project": "",
+                                },
+                                "name": "test_file.txt",
+                                "size": 29,
+                                "type": "text/plain",
+                                "storage": "url",
+                                "originalName": "test_file.txt",
+                            },
+                            {
+                                "url": "https://example.com/api/v2/submissions/files/2",
+                                "data": {
+                                    "url": "https://example.com/api/v2/submissions/files/2",
+                                    "form": "",
+                                    "name": "test_file_2.txt",
+                                    "size": 29,
+                                    "baseUrl": "http://example.com/api/v2/",
+                                    "project": "",
+                                },
+                                "name": "test_file_2.txt",
+                                "size": 29,
+                                "type": "text/plain",
+                                "storage": "url",
+                                "originalName": "test_file_2.txt",
+                            },
+                        ],
+                    },
+                    {
+                        "fileUploadInRepeating": [
+                            {
+                                "url": "https://example.com/api/v2/submissions/files/3",
+                                "data": {
+                                    "url": "https://example.com/api/v2/submissions/files/3",
+                                    "form": "",
+                                    "name": "test_file_3.txt",
+                                    "size": 29,
+                                    "baseUrl": "http://example.com/api/v2/",
+                                    "project": "",
+                                },
+                                "name": "test_file_3.txt",
+                                "size": 29,
+                                "type": "text/plain",
+                                "storage": "url",
+                                "originalName": "test_file_3.txt",
+                            }
+                        ],
+                    },
+                ]
+            },
+            bsn="123456789",
+            with_public_registration_reference=True,
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="repeatingGroup",
+            submission_step=submission.steps[0],
+            file_name="test_file.txt",
+            original_name="test_file.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_data_path="repeatingGroup.0.fileUploadInRepeating",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="repeatingGroup",
+            submission_step=submission.steps[0],
+            file_name="test_file_2.txt",
+            original_name="test_file_2.txt",
+            content_type="application/text",
+            content__data=b"This is example content 2.",
+            _component_data_path="repeatingGroup.0.fileUploadInRepeating",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="repeatingGroup",
+            submission_step=submission.steps[0],
+            file_name="test_file_3.txt",
+            original_name="test_file_3.txt",
+            content_type="application/text",
+            content__data=b"This is example content 3.",
+            _component_data_path="repeatingGroup.1.fileUploadInRepeating",
+        )
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["repeatingGroup"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        expected_values = {
+            "repeatingGroup": [
+                {
+                    "fileUploadInRepeating": [
+                        {
+                            "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
+                            "file_name": "test_file.txt",
+                        },
+                        {
+                            "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMi4=",
+                            "file_name": "test_file_2.txt",
+                        },
+                    ]
+                },
+                {
+                    "fileUploadInRepeating": [
+                        {
+                            "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMy4=",
+                            "file_name": "test_file_3.txt",
+                        },
+                    ]
+                },
+            ]
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "repeatingGroup": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "fileUploadInRepeating": {
+                                "items": {
+                                    "additionalProperties": False,
+                                    "properties": {
+                                        "content": {
+                                            "format": "base64",
+                                            "type": "string",
+                                        },
+                                        "file_name": {"type": "string"},
+                                    },
+                                    "required": ["file_name", "content"],
+                                    "type": "object",
+                                },
+                                "title": "File upload",
+                                "type": "array",
+                            }
+                        },
+                        "required": ["fileUploadInRepeating"],
+                        "type": "object",
+                    },
+                    "title": "Repeating Group",
+                    "type": "array",
+                }
+            },
+            "required": ["repeatingGroup"],
+            "type": "object",
+        }
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
             )
