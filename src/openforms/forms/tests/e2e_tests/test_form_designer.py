@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import Page, expect
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import (
     E2ETestCase,
@@ -110,7 +111,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                             "description": "Description 2",
                             "tooltip": "Tooltip 2",
                             "openForms": {
-                                "dataSrc": "manual",
+                                "dataSrc": DataSrcOptions.manual,
                             },
                             "data": {
                                 "values": [
@@ -1406,7 +1407,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "type": "radio",
                             "key": "radio",
                             "label": "Radio 1",
-                            "openForms": {"dataSrc": "manual"},
+                            "openForms": {"dataSrc": DataSrcOptions.manual},
                             "values": [
                                 {"value": "option", "label": "Option"},
                             ],
@@ -1415,7 +1416,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "type": "select",
                             "key": "select",
                             "label": "Select 1",
-                            "openForms": {"dataSrc": "manual"},
+                            "openForms": {"dataSrc": DataSrcOptions.manual},
                             "dataSrc": "values",
                             "data": {
                                 "values": [
@@ -1427,7 +1428,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "type": "selectboxes",
                             "key": "selectBoxes",
                             "label": "Select Boxes 1",
-                            "openForms": {"dataSrc": "manual"},
+                            "openForms": {"dataSrc": DataSrcOptions.manual},
                             "values": [
                                 {"value": "option", "label": "Option"},
                             ],

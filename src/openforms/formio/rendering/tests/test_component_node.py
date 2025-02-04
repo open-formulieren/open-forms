@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.test import TestCase, tag
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -637,7 +638,7 @@ class ComponentNodeTests(TestCase):
                     "label": "Select single",
                     "multiple": False,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [
@@ -652,7 +653,7 @@ class ComponentNodeTests(TestCase):
                     "label": "Select multiple",
                     "multiple": True,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [
@@ -846,7 +847,7 @@ class ComponentNodeTests(TestCase):
                     "label": "Select single",
                     "multiple": False,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [
@@ -861,7 +862,7 @@ class ComponentNodeTests(TestCase):
                     "label": "Select multiple",
                     "multiple": True,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [

@@ -7,6 +7,7 @@ from glom import assign, glom
 from json_logic import jsonLogic
 
 from openforms.api.exceptions import ServiceUnavailable
+from openforms.formio.constants import DataSrcOptions
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping, JSONValue
@@ -108,13 +109,13 @@ def add_options_to_config(
 ) -> None:
     data_src = glom(component, "openForms.dataSrc", default=None)
     match data_src:
-        case "referentielijsten":
+        case DataSrcOptions.referentielijsten:
             items_array = fetch_options_from_referentielijsten(component, submission)
             if not items_array:
                 raise ServiceUnavailable(
                     _("Could not retrieve options from Referentielijsten API."),
                 )
-        case "variable":
+        case DataSrcOptions.variable:
             items_array = get_options_from_variable(component, data, submission)
             if items_array is None:
                 return

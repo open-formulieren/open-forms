@@ -5,6 +5,7 @@ from pyquery import PyQuery as pq
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import rewrite_formio_components
 from openforms.forms.tests.factories import (
@@ -30,7 +31,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "A", "value": "a"},
                         {"label": "B", "value": "b"},
                     ],
-                    "dataSrc": "manual",
+                    "dataSrc": DataSrcOptions.manual,
                 },
                 {
                     "label": "Select",
@@ -40,7 +41,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "A", "value": "a"},
                             {"label": "B", "value": "b"},
                         ],
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                         "json": "",
                         "url": "",
                         "resource": "",
@@ -56,7 +57,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "A", "value": "a"},
                         {"label": "B", "value": "b"},
                     ],
-                    "dataSrc": "manual",
+                    "dataSrc": DataSrcOptions.manual,
                 },
             ]
         }
@@ -105,7 +106,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                         },
@@ -120,7 +121,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         ],
                     },
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                         },
@@ -138,7 +139,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                         },
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                     },
                 },
             ]
@@ -189,7 +190,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
+                    "dataSrc": DataSrcOptions.variable,
                     "data": {
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
@@ -203,7 +204,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "values": [
                             {"label": "", "value": ""},
                         ],
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                         },
@@ -217,7 +218,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
+                    "dataSrc": DataSrcOptions.variable,
                     "data": {
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
@@ -264,7 +265,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -277,7 +278,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         ],
                     },
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                     "type": "select",
@@ -290,7 +291,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -342,7 +343,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
+                    "dataSrc": DataSrcOptions.variable,
                     "data": {
                         "itemsExpression": {"var": "textField"},
                     },
@@ -354,7 +355,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "values": [
                             {"label": "", "value": ""},
                         ],
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                     "type": "select",
@@ -366,7 +367,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
+                    "dataSrc": DataSrcOptions.variable,
                     "data": {
                         "itemsExpression": {"var": "textField"},
                     },
@@ -411,7 +412,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "var": "repeatingGroup"
                         },  # No map operation to transform dict into str
@@ -426,7 +427,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         ],
                     },
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "var": "repeatingGroup"
                         },  # No map operation to transform dict into str
@@ -444,7 +445,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "itemsExpression": {
                             "var": "repeatingGroup"
                         },  # No map operation to transform dict into str
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                     },
                 },
             ]
@@ -506,7 +507,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -547,7 +548,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -593,7 +594,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -628,7 +629,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [{"var": "repeatingGroup"}, {"var": "name"}]
                         },
@@ -660,7 +661,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [{"var": "externalData"}, {"var": "id"}]
                         },
@@ -722,7 +723,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "map": [
                                 {"var": "repeatingGroup"},
@@ -781,7 +782,7 @@ class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
                     <div>
                         <style nonce="my-malicious-and-bad-nonce"></style>
                         <script>alert('xss')</script>
-                    </div> 
+                    </div>
                     """,
                 },
                 {

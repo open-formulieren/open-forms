@@ -10,6 +10,7 @@ from pyquery import PyQuery as pq
 from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import FormLogicFactory
 
 from ..form_logic import evaluate_form_logic
@@ -379,7 +380,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "label": "Select single",
                     "multiple": False,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [
@@ -394,7 +395,7 @@ class SubmissionReportGenerationTests(TestCase):
                     "label": "Select multiple",
                     "multiple": True,
                     "openForms": {
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                     "data": {
                         "values": [

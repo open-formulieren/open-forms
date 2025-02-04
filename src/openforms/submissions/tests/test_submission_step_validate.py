@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.tests.factories import (
     SubmittedFileFactory,
     TemporaryFileUploadFactory,
@@ -364,7 +365,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                         "maxSelectedCount": 3,
                     },
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {
                             "var": "items",
                         },

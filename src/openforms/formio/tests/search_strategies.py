@@ -20,6 +20,7 @@ from string import ascii_letters, digits
 
 from hypothesis import strategies as st
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.tests.search_strategies import jsonb_text
 
 
@@ -206,7 +207,13 @@ def option():
 
 
 def data_sources():
-    return st.sampled_from(["manual", "variable"])
+    return st.sampled_from(
+        [
+            DataSrcOptions.manual,
+            DataSrcOptions.variable,
+            DataSrcOptions.referentielijsten,
+        ]
+    )
 
 
 def select_component():

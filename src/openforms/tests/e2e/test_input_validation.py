@@ -17,6 +17,7 @@ from asgiref.sync import async_to_sync
 from furl import furl
 from playwright.async_api import Page, expect
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.formio.typing import (
     AddressNLComponent,
@@ -209,7 +210,7 @@ class RadioTests(ValidationsTestCase):
             "key": "requiredRadio",
             "label": "Required radio",
             "validate": {"required": True},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},

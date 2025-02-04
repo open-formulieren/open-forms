@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.service import rewrite_formio_components
 from openforms.formio.typing import (
     FileComponent,
@@ -136,13 +137,13 @@ def post_process(
                 values[key] = value
                 schema["properties"][key] = base_schema  # type: ignore
 
-            case {"type": "radio", "openForms": {"dataSrc": "variable"}}:
+            case {"type": "radio", "openForms": {"dataSrc": DataSrcOptions.variable}}:
                 component = cast(RadioComponent, component)
                 choices = [options["value"] for options in component["values"]]
                 choices.append("")  # Take into account an unfilled field
                 schema["properties"][key]["enum"] = choices  # type: ignore
 
-            case {"type": "select", "openForms": {"dataSrc": "variable"}}:
+            case {"type": "select", "openForms": {"dataSrc": DataSrcOptions.variable}}:
                 component = cast(SelectComponent, component)
                 choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
                 choices.append("")  # Take into account an unfilled field
@@ -156,7 +157,7 @@ def post_process(
                 component = cast(SelectBoxesComponent, component)
                 data_src = component.get("openForms", {}).get("dataSrc")
 
-                if data_src == "variable":
+                if data_src == DataSrcOptions.variable:
                     properties = {
                         options["value"]: {"type": "boolean"}
                         for options in component["values"]

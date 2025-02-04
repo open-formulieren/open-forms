@@ -29,6 +29,7 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
 from openforms.typing import DataMapping, JSONObject
@@ -700,7 +701,7 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         data_src = component.get("openForms", {}).get("dataSrc")
 
         base = {"title": label, "type": "object"}
-        if data_src != "variable":
+        if data_src != DataSrcOptions.variable:
             # Only add properties if the data source IS NOT another variable, because
             # component[values] is not updated when it IS. So it does not make sense to
             # add properties in that case.
@@ -775,7 +776,7 @@ class Select(BasePlugin[SelectComponent]):
         data_src = component.get("openForms", {}).get("dataSrc")
 
         base = {"type": "string"}
-        if data_src != "variable":
+        if data_src != DataSrcOptions.variable:
             # Only add properties if the data source IS NOT another variable, because
             # component[data][values] is not updated when it IS. So it does not make
             # sense to add properties in that case.
@@ -863,7 +864,7 @@ class Radio(BasePlugin[RadioComponent]):
         data_src = component.get("openForms", {}).get("dataSrc")
 
         base = {"title": label, "type": "string"}
-        if data_src != "variable":
+        if data_src != DataSrcOptions.variable:
             # Only add enum if the data source IS NOT another variable, because
             # component[values] is not updated when it IS. So it does not make sense to
             # add a list of choices to the enum in that case.

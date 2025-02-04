@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase, tag
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.typing import JSONObject
 
 from ...typing import RadioComponent
@@ -14,7 +15,7 @@ class RadioValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": True},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -42,7 +43,7 @@ class RadioValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": False},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
