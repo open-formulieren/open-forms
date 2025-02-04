@@ -4873,11 +4873,26 @@ paths:
         status endpoint that a retry is needed, the ID is added back to the session.
 
         ---
-        **Warning**
+        **Validation errors**
 
-        The schema of the validation errors response is currently marked as
-        experimental. See our versioning policy in the developer documentation for
-        what this means.
+        The validation errors are returned in the usual `invalidParams` structure. The
+        following errors can occur:
+
+        * name `privacyPolicyAccepted` - unchecked while accepting it is required
+        * name `statementOfTruthAccepted` - unchecked while accepting it is required
+        * name `steps[i].nonFieldErrors`:
+
+            * code `blocked` - a logic rule prevents the step from being submitted,
+              which blocks the submission as a whole from being completed.
+            * code `incomplete` - there is no or incomplete step data submitted for the
+              step at this index.
+
+        * name `steps[i].data.*` - validation errors related to the formio components
+          in the step data.
+
+        Additionally, if you try to complete a submission that doesn't allow this (due
+        to form-level configuration), you will get an HTTP 403 error.
+
         ---
       summary: Complete a submission
       parameters:
@@ -4898,14 +4913,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Submission'
+              $ref: '#/components/schemas/SubmissionCompletion'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Submission'
+              $ref: '#/components/schemas/SubmissionCompletion'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Submission'
-        required: true
+              $ref: '#/components/schemas/SubmissionCompletion'
       security:
       - cookieAuth: []
       responses:
@@ -4928,7 +4942,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompletionValidation'
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -6966,29 +6995,6 @@ components:
       - depth
       - name
       - url
-    CompletionValidation:
-      type: object
-      properties:
-        incompleteSteps:
-          type: array
-          items:
-            type: string
-          maxItems: 0
-        submissionAllowed:
-          $ref: '#/components/schemas/SubmissionAllowedEnum'
-        privacyPolicyAccepted:
-          type: boolean
-        statementOfTruthAccepted:
-          type: boolean
-        containsBlockedSteps:
-          type: boolean
-      required:
-      - containsBlockedSteps
-      - incompleteSteps
-      - privacyPolicyAccepted
-      - statementOfTruthAccepted
-      - submissionAllowed
-      x-experimental: true
     ComponentProperty:
       type: object
       properties:
@@ -9928,10 +9934,25 @@ components:
       - representation
     SubmissionCompletion:
       type: object
+      description: |-
+        Validate the submission completion.
+
+        The input validation requires the statement checkboxes to be provided before
+        completion can be considered. If that is fine, we run validation on the state of
+        the submission, which is a bit "weird" in the sense that we're double-checking
+        earlier user-input and not directly validating ``request.data`` items.
+
+        If all is well, we return the status URL to check the background processing,
+        otherwise the validation errors are raised for the frontend to handle.
       properties:
+        privacyPolicyAccepted:
+          type: boolean
+        statementOfTruthAccepted:
+          type: boolean
         statusUrl:
           type: string
           format: uri
+          readOnly: true
           title: status check endpoint
           description: The API endpoint where the background processing status can
             be checked. After calling the completion endpoint, this status URL should

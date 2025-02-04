@@ -2,10 +2,8 @@ from functools import reduce
 
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.fields import BooleanField, ChoiceField
+from rest_framework.fields import BooleanField
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
-
-from openforms.forms.constants import SubmissionAllowedChoices
 
 from .validators import CheckCheckboxAccepted
 
@@ -64,7 +62,7 @@ class URLRelatedField(NestedHyperlinkedRelatedField):
 
 class TruthDeclarationAcceptedField(BooleanField):
     default_validators = [
-        CheckCheckboxAccepted(
+        CheckCheckboxAccepted(  # pyright: ignore
             "ask_statement_of_truth",
             _("You must declare the form to be filled out truthfully."),
         )
@@ -73,23 +71,8 @@ class TruthDeclarationAcceptedField(BooleanField):
 
 class PrivacyPolicyAcceptedField(BooleanField):
     default_validators = [
-        CheckCheckboxAccepted(
+        CheckCheckboxAccepted(  # pyright: ignore
             "ask_privacy_consent",
             _("You must accept the privacy policy."),
         )
     ]
-
-
-# TODO: ideally this should be moved into a permission-check in the view rather than
-# input validation, as the end-user cannot correct this 'mistake'.
-class SubmissionAllowedField(ChoiceField):
-    default_error_messages = {"invalid": _("Submission of this form is not allowed.")}
-
-    def __init__(self, *args, **kwargs):
-        kwargs["choices"] = SubmissionAllowedChoices.choices
-        super().__init__(*args, **kwargs)
-
-    def to_internal_value(self, form_configuration_value: SubmissionAllowedChoices):
-        if form_configuration_value != SubmissionAllowedChoices.yes:
-            self.fail("invalid")
-        return form_configuration_value

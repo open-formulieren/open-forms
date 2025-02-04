@@ -22,6 +22,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.throttle_classes import PollingRateThrottle
 from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
 from openforms.formio.service import FormioData
+from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
 from openforms.prefill.service import prefill_variables
@@ -56,7 +57,6 @@ from .permissions import (
 from .serializers import (
     CosignValidationSerializer,
     FormDataSerializer,
-    SubmissionCompletionSerializer,
     SubmissionCoSignStatusSerializer,
     SubmissionProcessingStatusSerializer,
     SubmissionReportUrlSerializer,
@@ -67,10 +67,7 @@ from .serializers import (
     SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
 )
-from .validation import (
-    CompletionValidationSerializer,
-    get_submission_completion_serializer,
-)
+from .validation import SubmissionCompletionSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -265,9 +262,11 @@ class SubmissionViewSet(
 
     @extend_schema(
         summary=_("Complete a submission"),
+        request=SubmissionCompletionSerializer,
         responses={
             200: SubmissionCompletionSerializer,
-            400: CompletionValidationSerializer,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
@@ -297,25 +296,61 @@ class SubmissionViewSet(
         status endpoint that a retry is needed, the ID is added back to the session.
 
         ---
-        **Warning**
+        **Validation errors**
 
-        The schema of the validation errors response is currently marked as
-        experimental. See our versioning policy in the developer documentation for
-        what this means.
+        The validation errors are returned in the usual `invalidParams` structure. The
+        following errors can occur:
+
+        * name `privacyPolicyAccepted` - unchecked while accepting it is required
+        * name `statementOfTruthAccepted` - unchecked while accepting it is required
+        * name `steps[i].nonFieldErrors`:
+
+            * code `blocked` - a logic rule prevents the step from being submitted,
+              which blocks the submission as a whole from being completed.
+            * code `incomplete` - there is no or incomplete step data submitted for the
+              step at this index.
+
+        * name `steps[i].data.*` - validation errors related to the formio components
+          in the step data.
+
+        Additionally, if you try to complete a submission that doesn't allow this (due
+        to form-level configuration), you will get an HTTP 403 error.
+
         ---
         """
         submission = self.get_object()
+        if submission.form.submission_allowed != SubmissionAllowedChoices.yes:
+            raise PermissionDenied(
+                detail=_("Submission is not enabled for this form."),
+                code="submission-not-allowed",
+            )
 
-        serializer = get_submission_completion_serializer(submission, request=request)
+        # prepare the submission with evaluated logic so that its state can be validated
+        submission.load_execution_state()
+        check_submission_logic(submission)
+
+        # validate the input + submission state
+        serializer = SubmissionCompletionSerializer(
+            data={
+                # the statement checkboxes don't run validation if they're not provided as
+                # input data, but it's weird to require these fields to be sent in the body
+                # if configuration dictates that any of them is not required - it would be logical
+                # to not send that data in the first place. So, we default them to what that
+                # implies: there has not been an explicit acceptance of the statement
+                # checkbox.
+                "privacy_policy_accepted": False,
+                "statement_of_truth_accepted": False,
+                **request.data,
+            },
+            context={"request": self.request, "submission": submission},
+        )
         serializer.is_valid(raise_exception=True)
 
+        # all is fine, we can complete it
         status_url = self._complete_submission(submission)
-        serializer.save()
+        serializer.save(status_url=status_url)
 
-        out_serializer = SubmissionCompletionSerializer(
-            instance={"status_url": status_url}
-        )
-        return Response(out_serializer.data)
+        return Response(serializer.data)
 
     @extend_schema(
         summary=_("Get the submission processing status"),

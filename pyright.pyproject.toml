@@ -52,6 +52,7 @@ include = [
     "src/openforms/registrations/contrib/objects_api/typing.py",
     "src/openforms/registrations/contrib/zgw_apis/",
     # core submissions app
+    "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
     "src/openforms/submissions/report.py",
     # our own template app/package on top of Django
