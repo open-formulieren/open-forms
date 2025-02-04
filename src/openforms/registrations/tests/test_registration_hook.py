@@ -381,6 +381,112 @@ class RegistrationHookTests(TestCase):
         failed_payments = submission.payments.filter(status=PaymentStatus.failed)
         self.assertEqual(failed_payments.count(), 1)
 
+    def test_register_submission_transform_selectboxes_data(self):
+        register = Registry()
+
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "dataSrc": "manual",
+                        "translations": {},
+                        "transformData": True,
+                    },
+                    "values": [
+                        {"value": "foo", "label": "foo"},
+                        {"value": "bar", "label": "bar"},
+                        {"value": "baz", "label": "baz"},
+                    ],
+                }
+            ],
+            submitted_data={"selectboxes": {"foo": True, "bar": False, "baz": True}},
+            completed=True,
+            form__registration_backend="callback",
+            form__registration_backend_options={
+                "string": "some-option",
+                "service": self.service.id,
+            },
+        )
+
+        # register the callback, including the assertions
+        test_closure = self
+
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                state = submission.load_submission_value_variables_state()
+                data_to_submit = state.get_data()
+                test_closure.assertEqual(
+                    data_to_submit, {"selectboxes": ["baz", "foo"]}
+                )
+                return {"result": "ok"}
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = FormRegistrationBackend._meta.get_field("backend")
+        with patch_registry(model_field, register):
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result,
+            {"result": "ok"},
+        )
+
+    def test_register_submission_transform_data_function_undefined(self):
+        register = Registry()
+
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "textfield",
+                    "label": "Field that has no transform function defined",
+                    "type": "text",
+                    "openForms": {
+                        "translations": {},
+                        "transformData": True,
+                    },
+                }
+            ],
+            submitted_data={"textfield": "foo"},
+            completed=True,
+            form__registration_backend="callback",
+            form__registration_backend_options={
+                "string": "some-option",
+                "service": self.service.id,
+            },
+        )
+
+        # register the callback, including the assertions
+        test_closure = self
+
+        @register("callback")
+        class Plugin(BasePlugin):
+            verbose_name = "Assertion callback"
+            configuration_options = OptionsSerializer
+
+            def register_submission(self, submission, options):
+                state = submission.load_submission_value_variables_state()
+                data_to_submit = state.get_data()
+                test_closure.assertEqual(data_to_submit, {"textfield": "foo"})
+                return {"result": "ok"}
+
+        # call the hook for the submission, while patching the model field registry
+        model_field = FormRegistrationBackend._meta.get_field("backend")
+        with patch_registry(model_field, register):
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result,
+            {"result": "ok"},
+        )
+
 
 class NumRegistrationsTest(TestCase):
     @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
