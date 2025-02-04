@@ -11,7 +11,13 @@ import {
 } from 'components/admin/forms/ValidationErrors';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
-import {MetadataVariables, Path, ServiceSelect, Variables} from './fields';
+import {
+  AdditionalMetadataVariables,
+  FixedMetadataVariables,
+  Path,
+  ServiceSelect,
+  Variables,
+} from './fields';
 
 const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
@@ -50,7 +56,20 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
           <ServiceSelect options={serviceOptions} />
           <Path />
           <Variables />
-          <MetadataVariables />
+        </Fieldset>
+
+        <Fieldset
+          title={
+            <FormattedMessage
+              description="Metadata variables fieldset title"
+              defaultMessage="Metadata variables"
+            />
+          }
+          collapsible
+          initialCollapsed
+        >
+          <FixedMetadataVariables />
+          <AdditionalMetadataVariables />
         </Fieldset>
       </ValidationErrorsProvider>
     </ModalOptionsConfiguration>

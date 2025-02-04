@@ -1,10 +1,10 @@
 from typing import Iterator, Sequence
 
+from openforms.plugins.registry import BaseRegistry
 from openforms.typing import JSONObject
+from openforms.variables.base import BaseStaticVariable
 from openforms.variables.service import get_static_variables
 
-from ..plugins.registry import BaseRegistry
-from ..variables.base import BaseStaticVariable
 from .models import Form, FormVariable
 
 
