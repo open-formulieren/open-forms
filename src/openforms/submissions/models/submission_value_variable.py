@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from typing import TYPE_CHECKING, Any, Literal, overload
@@ -11,6 +12,8 @@ from django.utils.dateparse import parse_date
 from django.utils.functional import empty
 from django.utils.translation import gettext_lazy as _
 
+from glom import glom
+
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import DataMapping, JSONEncodable, JSONObject, JSONSerializable
@@ -19,10 +22,13 @@ from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import VariablesRegistry, get_static_variables
 
 from ..constants import SubmissionValueVariableSources
+from ..transform_data import TRANSFORM_DATA_MAPPING
 from .submission import Submission
 
 if TYPE_CHECKING:
     from .submission_step import SubmissionStep
+
+logger = logging.getLogger(__name__)
 
 
 class ValueEncoder(DjangoJSONEncoder):
@@ -94,6 +100,8 @@ class SubmissionValueVariablesState:
             )
 
         formio_data = FormioData()
+        configuration = self.submission.form.get_total_configuration()
+
         for variable_key, variable in submission_variables.items():
             if (
                 variable.value is None
@@ -104,7 +112,24 @@ class SubmissionValueVariablesState:
                 continue
 
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                formio_data[variable_key] = variable.value
+                component_configuration = configuration[variable.key]
+
+                if glom(
+                    component_configuration, "openForms.transformData", default=None
+                ):
+                    transform_function = TRANSFORM_DATA_MAPPING.get(
+                        component_configuration["type"]
+                    )
+                    if not transform_function:
+                        logger.warning(
+                            "Incorrect configuration, component of type `%s` has `openForms.transformData` "
+                            "set to true, but no transform function is defined in TRANSFORM_DATA_MAPPING",
+                            component_configuration["type"],
+                        )
+                        transform_function = lambda value: value
+                    formio_data[variable_key] = transform_function(variable.value)
+                else:
+                    formio_data[variable_key] = variable.value
         return formio_data if as_formio_data else formio_data.data
 
     def get_variables_in_submission_step(
