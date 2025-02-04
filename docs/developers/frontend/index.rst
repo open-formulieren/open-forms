@@ -145,3 +145,12 @@ This script can handle current and future NPM packages published in the
 .. _FormatJS: https://formatjs.github.io/
 .. _react-intl: https://formatjs.github.io/docs/getting-started/installation
 .. _react-intl storybook addon: https://storybook.js.org/addons/storybook-react-intl
+
+
+Topics
+======
+
+.. toctree::
+   :maxdepth: 1
+
+   admin-styling
