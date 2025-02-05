@@ -587,6 +587,12 @@
       "value": "De maximale toegestane lengte voor dit veld."
     }
   ],
+  "5EOSwM": [
+    {
+      "type": 0,
+      "value": "Additional"
+    }
+  ],
   "5JNnFB": [
     {
       "type": 0,
@@ -1381,6 +1387,12 @@
       "value": "Waar/vals (boolean)"
     }
   ],
+  "BiKRJT": [
+    {
+      "type": 0,
+      "value": "Key"
+    }
+  ],
   "Bin/vM": [
     {
       "type": 0,
@@ -1545,12 +1557,6 @@
       "value": "length"
     }
   ],
-  "CZ774U": [
-    {
-      "type": 0,
-      "value": "Which variables to include in the data to be sent"
-    }
-  ],
   "Cf5zSF": [
     {
       "type": 0,
@@ -1573,6 +1579,12 @@
     {
       "type": 0,
       "value": "Inzenden toegestaan"
+    }
+  ],
+  "Cz+O0n": [
+    {
+      "type": 0,
+      "value": "Source"
     }
   ],
   "D0hDzV": [
@@ -2296,12 +2308,6 @@
       "value": " is niet bekend. We kunnen enkel de JSON-definitie weergeven."
     }
   ],
-  "Ibejpf": [
-    {
-      "type": 0,
-      "value": "Path relative to the Service API root"
-    }
-  ],
   "Igt0Rc": [
     {
       "type": 0,
@@ -2448,6 +2454,12 @@
       "value": "Overschrijf het vereiste minimale betrouwbaarheidsniveau. Niet alle authenticatieplugins ondersteunen dit."
     }
   ],
+  "JfgATN": [
+    {
+      "type": 0,
+      "value": "Additional variables to include."
+    }
+  ],
   "JhdlEg": [
     {
       "type": 0,
@@ -2508,6 +2520,12 @@
     {
       "type": 0,
       "value": "Inhoud"
+    }
+  ],
+  "KMTsJc": [
+    {
+      "type": 0,
+      "value": "Static"
     }
   ],
   "KMbfsU": [
@@ -2884,6 +2902,12 @@
     {
       "type": 0,
       "value": ". Verleng uw sessie indien u wenst door te gaan."
+    }
+  ],
+  "Od+jm6": [
+    {
+      "type": 0,
+      "value": "Values:"
     }
   ],
   "Oi+DV0": [
@@ -3792,6 +3816,12 @@
       "value": "Actief"
     }
   ],
+  "X+NeMd": [
+    {
+      "type": 0,
+      "value": "Include variable in metadata"
+    }
+  ],
   "X18/UP": [
     {
       "type": 0,
@@ -3874,6 +3904,12 @@
     {
       "type": 0,
       "value": "Verwijderen"
+    }
+  ],
+  "Xpw7Gk": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the metadata to be sent."
     }
   ],
   "XyDeaD": [
@@ -4279,6 +4315,12 @@
     {
       "type": 0,
       "value": "Objecttype"
+    }
+  ],
+  "bmUuAH": [
+    {
+      "type": 0,
+      "value": "Fixed"
     }
   ],
   "bmlODS": [
@@ -5077,6 +5119,12 @@
       "value": "Bent u zeker dat u deze variabele wilt verwijderen?"
     }
   ],
+  "hfeO2r": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
   "hhoWxC": [
     {
       "type": 0,
@@ -5135,6 +5183,12 @@
     {
       "type": 0,
       "value": "Omschrijving"
+    }
+  ],
+  "iQblZd": [
+    {
+      "type": 0,
+      "value": "Variables that are already included."
     }
   ],
   "iX0YPY": [
@@ -5697,6 +5751,12 @@
       "value": "Huisnummer"
     }
   ],
+  "mfD7J5": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "mpzdoT": [
     {
       "type": 0,
@@ -5725,6 +5785,12 @@
     {
       "type": 0,
       "value": "Indien aangevinkt, dan worden gegevens van kinderen opgehaald en ingesloten."
+    }
+  ],
+  "nEg4dr": [
+    {
+      "type": 0,
+      "value": "Metadata:"
     }
   ],
   "nFXYHB": [
@@ -5887,6 +5953,12 @@
     {
       "type": 0,
       "value": "Het patroon van reguliere expressie waar de stad aan moet voldoen voor het formulier kan verstuurd worden."
+    }
+  ],
+  "ow5LZk": [
+    {
+      "type": 0,
+      "value": "Variables to include in the data to be sent."
     }
   ],
   "oxYXJX": [
@@ -6093,12 +6165,6 @@
       "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
     }
   ],
-  "qPiUic": [
-    {
-      "type": 0,
-      "value": "Which service to send the data to"
-    }
-  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -6265,6 +6331,12 @@
       "value": "(nog niet ingesteld)"
     }
   ],
+  "sAfROS": [
+    {
+      "type": 0,
+      "value": "Metadata variables"
+    }
+  ],
   "sCkGL9": [
     {
       "type": 0,
@@ -6309,6 +6381,12 @@
     {
       "type": 0,
       "value": " 3"
+    }
+  ],
+  "sokfvf": [
+    {
+      "type": 0,
+      "value": "The service to send the data to."
     }
   ],
   "sptpzv": [
@@ -6479,6 +6557,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "uUf7cu": [
+    {
+      "type": 0,
+      "value": "Path relative to the Service API root."
     }
   ],
   "uVVO4b": [

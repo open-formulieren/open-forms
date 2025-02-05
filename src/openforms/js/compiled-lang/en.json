@@ -587,6 +587,12 @@
       "value": "The maximum length requirement this field must meet."
     }
   ],
+  "5EOSwM": [
+    {
+      "type": 0,
+      "value": "Additional"
+    }
+  ],
   "5JNnFB": [
     {
       "type": 0,
@@ -1377,6 +1383,12 @@
       "value": "Boolean"
     }
   ],
+  "BiKRJT": [
+    {
+      "type": 0,
+      "value": "Key"
+    }
+  ],
   "Bin/vM": [
     {
       "type": 0,
@@ -1541,12 +1553,6 @@
       "value": "length"
     }
   ],
-  "CZ774U": [
-    {
-      "type": 0,
-      "value": "Which variables to include in the data to be sent"
-    }
-  ],
   "Cf5zSF": [
     {
       "type": 0,
@@ -1569,6 +1575,12 @@
     {
       "type": 0,
       "value": "Submission allowed"
+    }
+  ],
+  "Cz+O0n": [
+    {
+      "type": 0,
+      "value": "Source"
     }
   ],
   "D0hDzV": [
@@ -2275,12 +2287,6 @@
       "value": " is unknown. We can only display the JSON definition."
     }
   ],
-  "Ibejpf": [
-    {
-      "type": 0,
-      "value": "Path relative to the Service API root"
-    }
-  ],
   "Igt0Rc": [
     {
       "type": 0,
@@ -2431,6 +2437,12 @@
       "value": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
     }
   ],
+  "JfgATN": [
+    {
+      "type": 0,
+      "value": "Additional variables to include."
+    }
+  ],
   "JhdlEg": [
     {
       "type": 0,
@@ -2491,6 +2503,12 @@
     {
       "type": 0,
       "value": "Content"
+    }
+  ],
+  "KMTsJc": [
+    {
+      "type": 0,
+      "value": "Static"
     }
   ],
   "KMbfsU": [
@@ -2867,6 +2885,12 @@
     {
       "type": 0,
       "value": ". Extend your session if you wish to continue."
+    }
+  ],
+  "Od+jm6": [
+    {
+      "type": 0,
+      "value": "Values:"
     }
   ],
   "Oi+DV0": [
@@ -3779,6 +3803,12 @@
       "value": "Active"
     }
   ],
+  "X+NeMd": [
+    {
+      "type": 0,
+      "value": "Include variable in metadata"
+    }
+  ],
   "X18/UP": [
     {
       "type": 0,
@@ -3861,6 +3891,12 @@
     {
       "type": 0,
       "value": "Remove"
+    }
+  ],
+  "Xpw7Gk": [
+    {
+      "type": 0,
+      "value": "Whether to include this variable in the metadata to be sent."
     }
   ],
   "XyDeaD": [
@@ -4261,6 +4297,12 @@
     {
       "type": 0,
       "value": "Objecttype"
+    }
+  ],
+  "bmUuAH": [
+    {
+      "type": 0,
+      "value": "Fixed"
     }
   ],
   "bmlODS": [
@@ -5059,6 +5101,12 @@
       "value": "Are you sure you want to delete this variable?"
     }
   ],
+  "hfeO2r": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
   "hhoWxC": [
     {
       "type": 0,
@@ -5117,6 +5165,12 @@
     {
       "type": 0,
       "value": "Description"
+    }
+  ],
+  "iQblZd": [
+    {
+      "type": 0,
+      "value": "Variables that are already included."
     }
   ],
   "iX0YPY": [
@@ -5679,6 +5733,12 @@
       "value": "House number"
     }
   ],
+  "mfD7J5": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "mpzdoT": [
     {
       "type": 0,
@@ -5707,6 +5767,12 @@
     {
       "type": 0,
       "value": "Whether to add children information to the component."
+    }
+  ],
+  "nEg4dr": [
+    {
+      "type": 0,
+      "value": "Metadata:"
     }
   ],
   "nFXYHB": [
@@ -5869,6 +5935,12 @@
     {
       "type": 0,
       "value": "The regular expression pattern test that the city field value must pass before the form can be submitted."
+    }
+  ],
+  "ow5LZk": [
+    {
+      "type": 0,
+      "value": "Variables to include in the data to be sent."
     }
   ],
   "oxYXJX": [
@@ -6075,12 +6147,6 @@
       "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
     }
   ],
-  "qPiUic": [
-    {
-      "type": 0,
-      "value": "Which service to send the data to"
-    }
-  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -6247,6 +6313,12 @@
       "value": "(not configured yet)"
     }
   ],
+  "sAfROS": [
+    {
+      "type": 0,
+      "value": "Metadata variables"
+    }
+  ],
   "sCkGL9": [
     {
       "type": 0,
@@ -6291,6 +6363,12 @@
     {
       "type": 0,
       "value": " 3"
+    }
+  ],
+  "sokfvf": [
+    {
+      "type": 0,
+      "value": "The service to send the data to."
     }
   ],
   "sptpzv": [
@@ -6465,6 +6543,12 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "uUf7cu": [
+    {
+      "type": 0,
+      "value": "Path relative to the Service API root."
     }
   ],
   "uVVO4b": [
