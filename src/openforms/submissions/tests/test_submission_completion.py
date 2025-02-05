@@ -75,9 +75,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             response.json()["invalidParams"],
             [
                 {
-                    "name": "incompleteSteps",
-                    "code": "max_length",
-                    "reason": "Not all applicable steps have been completed: ['Personal Details']",
+                    "name": "steps.0.nonFieldErrors",
+                    "code": "incomplete",
+                    "reason": "Step 'Personal Details' is not yet completed.",
                 }
             ],
         )
@@ -139,6 +139,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("statusUrl", response.json())
 
         # assert that the async celery task execution is scheduled
         mock_on_post_submission_event.assert_called_once_with(
@@ -223,17 +224,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         response_data = response.json()
+        self.assertEqual(response_data["code"], "submission-not-allowed")
         self.assertEqual(
-            response_data["invalidParams"],
-            [
-                {
-                    "name": "submissionAllowed",
-                    "code": "invalid",
-                    "reason": "Submission of this form is not allowed.",
-                }
-            ],
+            response_data["detail"], "Submission is not enabled for this form."
         )
 
     @override_settings(LANGUAGE_CODE="en")
@@ -246,17 +241,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         response_data = response.json()
+        self.assertEqual(response_data["code"], "submission-not-allowed")
         self.assertEqual(
-            response_data["invalidParams"],
-            [
-                {
-                    "name": "submissionAllowed",
-                    "code": "invalid",
-                    "reason": "Submission of this form is not allowed.",
-                }
-            ],
+            response_data["detail"], "Submission is not enabled for this form."
         )
 
     def test_form_auth_cleaned_after_completion(self):
@@ -452,6 +441,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_complete_but_one_step_cant_be_submitted(self):
         form_step = FormStepFactory.create(
+            form_definition__name="Step 1",
             form_definition__configuration={
                 "components": [
                     {
@@ -499,9 +489,10 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         data = response.json()
 
+        self.assertEqual(data["invalidParams"][0]["name"], "steps.0.nonFieldErrors")
         self.assertEqual(
             data["invalidParams"][0]["reason"],
-            "Submission of this form is not allowed due to the answers submitted in a step.",
+            "Step 'Step 1' is blocked.",
         )
 
     @override_settings(LANGUAGE_CODE="en")

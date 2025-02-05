@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -64,16 +66,21 @@ class FormMaintenanceModeValidator:
             raise serializers.ValidationError(self.message, code=self.code)
 
 
+type StatementFieldName = Literal["ask_privacy_consent", "ask_statement_of_truth"]
+
+
 class CheckCheckboxAccepted:
     message = _("You must accept this statement.")
     requires_context = True
 
-    def __init__(self, ask_statement_field_name: str, message):
+    ask_statement_field_name: StatementFieldName
+
+    def __init__(self, ask_statement_field_name: StatementFieldName, message):
         self.ask_statement_field_name = ask_statement_field_name
         self.message = message or self.message
 
     def __call__(self, value: bool, field: serializers.BooleanField):
-        form = field.context["submission"].form
+        form: Form = field.context["submission"].form
         should_statement_be_accepted = form.get_statement_checkbox_required(
             self.ask_statement_field_name
         )
