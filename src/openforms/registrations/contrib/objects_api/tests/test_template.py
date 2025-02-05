@@ -438,3 +438,112 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 },
             },
         )
+
+    @tag("dh-673", "gh-4140")
+    @override_settings(DISABLE_SENDING_HIDDEN_FIELDS=True)
+    @requests_mock.Mocker()
+    def test_opt_out_of_sending_hidden_fields(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {"label": "1", "value": "1"},
+                        {"label": "2", "value": "2"},
+                    ],
+                    "defaultValue": None,
+                    "validate": {"required": True},
+                    "openForms": {"dataSrc": "manual"},
+                },
+                {
+                    "type": "textfield",
+                    "key": "tekstveld",
+                    "label": "Tekstveld",
+                    "hidden": True,
+                    "validate": {"required": True},
+                    "conditional": {"eq": "1", "show": True, "when": "radio"},
+                    "defaultValue": None,
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "currency",
+                    "currency": "EUR",
+                    "key": "bedrag",
+                    "label": "Bedrag",
+                    "hidden": True,
+                    "validate": {"required": True},
+                    "conditional": {"eq": "1", "show": True, "when": "radio"},
+                    "defaultValue": None,
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "fieldset",
+                    "key": "fieldsetNoVisibleChildren",
+                    "label": "A container without visible children",
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "input7",
+                            "label": "Input 7",
+                            "hidden": True,
+                        }
+                    ],
+                },
+            ],
+            with_report=True,
+            submitted_data={"radio": "2"},
+            form_definition_kwargs={"slug": "stepwithnulls"},
+        )
+        config = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.get_objects_client"
+            ) as mock_objects_client,
+        ):
+            _objects_client = mock_objects_client.return_value.__enter__.return_value
+            _objects_client.create_object.return_value = {"dummy": "response"}
+
+            plugin.register_submission(
+                submission,
+                {
+                    "objects_api_group": config,
+                    "version": 1,
+                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                    "objecttype_version": 300,
+                    # skip document uploads
+                    "informatieobjecttype_submission_report": "",
+                    "upload_submission_csv": False,
+                    "update_existing_object": False,
+                    "informatieobjecttype_attachment": "",
+                    "content_json": "{% json_summary %}",
+                },
+            )
+
+        _objects_client.create_object.mock_assert_called_once()
+        record_data = _objects_client.create_object.call_args[1]["record_data"]["data"]
+        # for missing values, the empty value (depending on component type) must be used
+        # Note that the input data was validated against the hidden/visible and
+        # clearOnHide state - absence of the data implies that the component was not
+        # visible and its data was cleared (otherwise the value *would* have been sent
+        # along and be present).
+        self.assertEqual(
+            record_data,
+            {
+                "stepwithnulls": {"radio": "2"},
+            },
+        )
