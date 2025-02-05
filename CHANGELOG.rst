@@ -6,6 +6,14 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.0.3 (2025-02-05)
+==================
+
+Bugfix release on request.
+
+* [:backend:`4375`] Reverted "Removed environment variable
+  ``DISABLE_SENDING_HIDDEN_FIELDS`` for Objects API."
+
 3.0.2 (2025-01-31)
 ==================
 
