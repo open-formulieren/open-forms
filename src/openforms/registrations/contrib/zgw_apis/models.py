@@ -7,7 +7,7 @@ from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
 from openforms.template.validators import DjangoTemplateValidator
-from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
+from openforms.utils.validators import RSINValidator, validate_rsin
 
 
 def get_content_text() -> str:
@@ -98,7 +98,6 @@ class ZGWApiGroupConfig(models.Model):
         help_text=_(
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
-        validators=[validate_uppercase],
     )
     catalogue_rsin = models.CharField(
         _("catalogus RSIN"),

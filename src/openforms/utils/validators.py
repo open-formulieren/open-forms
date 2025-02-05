@@ -13,13 +13,6 @@ validate_digits = RegexValidator(
 )
 
 
-validate_uppercase = RegexValidator(
-    r"^[A-Z]*$",
-    message=_("Value must be all uppercase letters."),
-    code="invalid",
-)
-
-
 class Proef11ValidatorBase:
     value_size = NotImplemented
     error_messages = {
