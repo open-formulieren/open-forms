@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 COMPONENT_DATATYPES = {
     "date": "date",
     "time": "time",
@@ -11,3 +13,9 @@ COMPONENT_DATATYPES = {
     "editgrid": "array",
     "datetime": "datetime",
 }
+
+
+class DataSrcOptions(StrEnum):
+    manual = "manual"
+    variable = "variable"
+    referentielijsten = "referentielijsten"

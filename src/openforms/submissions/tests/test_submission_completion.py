@@ -21,6 +21,7 @@ from rest_framework.test import APITestCase
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.constants import DataSrcOptions
 from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -594,7 +595,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                         "key": "someCondition",
                         "type": "radio",
                         "openForms": {
-                            "dataSrc": "variable",
+                            "dataSrc": DataSrcOptions.variable,
                             "itemsExpression": [
                                 ["a", "A"],
                             ],

@@ -10,6 +10,7 @@ import tablib
 from freezegun import freeze_time
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
+from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -351,7 +352,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                     ],
                     "defaultValue": None,
                     "validate": {"required": True},
-                    "openForms": {"dataSrc": "manual"},
+                    "openForms": {"dataSrc": DataSrcOptions.manual},
                 },
                 {
                     "type": "textfield",

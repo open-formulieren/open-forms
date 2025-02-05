@@ -8,6 +8,7 @@ from django.test import TestCase
 from requests import RequestException
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import (
     FormVariableFactory,
     SubmissionFactory,
@@ -515,7 +516,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     "type": "select",
                     "multiple": True,
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "itemsExpression": {"var": "valuesForSelect"},
                     },
                     "data": {
@@ -568,7 +569,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     "key": "selectBoxes",
                     "type": "selectboxes",
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "translations": {},
                         "itemsExpression": {"var": "valuesForSelectBoxes"},
                     },
@@ -659,7 +660,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     "key": "radio",
                     "type": "radio",
                     "openForms": {
-                        "dataSrc": "variable",
+                        "dataSrc": DataSrcOptions.variable,
                         "translations": {},
                         "itemsExpression": {"var": "valuesForRadio"},
                     },

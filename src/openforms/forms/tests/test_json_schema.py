@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -32,7 +33,7 @@ class GenerateJsonSchemaTests(TestCase):
                                 {"label": "A", "value": "a"},
                                 {"label": "B", "value": "b"},
                             ],
-                            "dataSrc": "manual",
+                            "dataSrc": DataSrcOptions.manual,
                             "json": "",
                             "url": "",
                             "resource": "",
@@ -57,7 +58,7 @@ class GenerateJsonSchemaTests(TestCase):
                             {"label": "A", "value": "a"},
                             {"label": "B", "value": "b"},
                         ],
-                        "dataSrc": "manual",
+                        "dataSrc": DataSrcOptions.manual,
                     },
                 ]
             }

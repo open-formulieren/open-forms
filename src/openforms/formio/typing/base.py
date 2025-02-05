@@ -8,6 +8,7 @@ from typing import Literal, NotRequired, TypeAlias, TypedDict
 
 from openforms.typing import JSONValue
 
+from ..constants import DataSrcOptions
 from .dates import DateConstraintConfiguration
 
 TranslationsDict: TypeAlias = dict[str, dict[str, str]]
@@ -44,7 +45,7 @@ class OpenFormsConfig(TypedDict):
     translations: NotRequired[TranslationsDict]
     components: NotRequired[AddressValidationComponents]
     requireVerification: NotRequired[bool]
-    dataSrc: NotRequired[Literal["manual", "variable", "referentielijsten"]]
+    dataSrc: NotRequired[DataSrcOptions]
     code: NotRequired[str]
     service: NotRequired[str]
 

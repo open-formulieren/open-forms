@@ -2,6 +2,7 @@ from django.test import SimpleTestCase
 
 from hypothesis import given, strategies as st
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.typing import JSONValue
 
 from ...typing import SelectBoxesComponent
@@ -16,7 +17,7 @@ class SelectboxesValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": True},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -51,7 +52,7 @@ class SelectboxesValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": False},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -81,7 +82,7 @@ class SelectboxesValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": required},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -101,7 +102,7 @@ class SelectboxesValidationTests(SimpleTestCase):
             "key": "foo",
             "label": "Test",
             "validate": {"required": False},
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -123,7 +124,7 @@ class SelectboxesValidationTests(SimpleTestCase):
                 "required": False,
                 "minSelectedCount": 2,
             },
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -147,7 +148,7 @@ class SelectboxesValidationTests(SimpleTestCase):
                 "required": False,
                 "maxSelectedCount": 1,
             },
-            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "openForms": {"dataSrc": DataSrcOptions.manual},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},

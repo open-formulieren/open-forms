@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, tag
 
 from rest_framework import serializers
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
 
@@ -245,7 +246,7 @@ class EditGridValidationTests(SimpleTestCase):
                 "key": "heeftUEenWerkgever",
                 "label": "Heeft u een werkgever?",
                 "validate": {"required": True},
-                "openForms": {"dataSrc": "manual"},
+                "openForms": {"dataSrc": DataSrcOptions.manual},
                 "values": [
                     {"label": "Ja", "value": "ja"},
                     {"label": "Nee", "value": "nee"},
@@ -282,7 +283,7 @@ class EditGridValidationTests(SimpleTestCase):
                                 "key": "periodeNettoLoon",
                                 "label": "Over welke periode ontvangt u dit loon?",
                                 "validate": {"required": True},
-                                "openForms": {"dataSrc": "manual"},
+                                "openForms": {"dataSrc": DataSrcOptions.manual},
                                 "values": [
                                     {"label": "Per week", "value": "week"},
                                     {"label": "Per 4 weken", "value": "vierWeken"},

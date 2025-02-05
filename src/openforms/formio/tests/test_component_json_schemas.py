@@ -2,6 +2,8 @@ from django.test import TestCase
 
 from jsonschema import Draft202012Validator
 
+from openforms.formio.constants import DataSrcOptions
+
 from ..service import as_json_schema
 from ..typing import (
     AddressNLComponent,
@@ -279,7 +281,7 @@ class RadioTests(TestCase):
             "values": [
                 {"label": "", "value": ""},
             ],
-            "openForms": {"dataSrc": "variable"},
+            "openForms": {"dataSrc": DataSrcOptions.variable},
             "type": "radio",
         }
 
@@ -331,7 +333,7 @@ class SelectTests(TestCase):
                     {"label": "", "value": ""},
                 ],
             },
-            "openForms": {"dataSrc": "variable"},
+            "openForms": {"dataSrc": DataSrcOptions.variable},
             "type": "select",
         }
 
@@ -383,7 +385,7 @@ class SelectBoxesTests(TestCase):
             "values": [
                 {"label": "", "value": ""},
             ],
-            "openForms": {"dataSrc": "variable"},
+            "openForms": {"dataSrc": DataSrcOptions.variable},
             "type": "selectboxes",
         }
 

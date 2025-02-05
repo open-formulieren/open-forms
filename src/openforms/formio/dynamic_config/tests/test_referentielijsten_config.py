@@ -12,6 +12,7 @@ from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.api.exceptions import ServiceUnavailable
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.registry import register
 from openforms.formio.typing import (
     RadioComponent,
@@ -60,7 +61,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -85,7 +86,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel-with-many-items",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -107,7 +108,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": "",
                 "translations": {},
             },
@@ -136,7 +137,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -165,7 +166,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -196,7 +197,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "non-existent",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -226,7 +227,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -285,7 +286,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -310,7 +311,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": "",
                 "translations": {},
             },
@@ -340,7 +341,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -370,7 +371,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -402,7 +403,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "non-existent",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -433,7 +434,7 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -493,7 +494,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -518,7 +519,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": "",
                 "translations": {},
             },
@@ -547,7 +548,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -576,7 +577,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -607,7 +608,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "non-existent",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -637,7 +638,7 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             "dataType": "string",
             "openForms": {
                 "code": "tabel1",
-                "dataSrc": "referentielijsten",
+                "dataSrc": DataSrcOptions.referentielijsten,
                 "service": self.service.slug,
                 "translations": {},
             },
@@ -682,7 +683,7 @@ class SubmissionStepDetailTest(SubmissionsMixin, APITestCase):
                         "dataType": "string",
                         "openForms": {
                             "code": "tabel1",
-                            "dataSrc": "referentielijsten",
+                            "dataSrc": DataSrcOptions.referentielijsten,
                             "service": "non-existent",
                             "translations": {},
                         },

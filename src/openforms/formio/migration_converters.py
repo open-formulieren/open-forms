@@ -11,6 +11,7 @@ from typing import Protocol, cast
 
 from glom import assign, glom
 
+from openforms.formio.constants import DataSrcOptions
 from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
@@ -81,7 +82,7 @@ def set_openforms_datasrc(component: Component) -> bool:
     # if a dataSrc is specified, there is nothing to do
     if glom(component, "openForms.dataSrc", default=None):
         return False
-    assign(component, "openForms.dataSrc", val="manual", missing=dict)
+    assign(component, "openForms.dataSrc", val=DataSrcOptions.manual, missing=dict)
     return True
 
 
