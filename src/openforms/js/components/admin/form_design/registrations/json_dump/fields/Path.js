@@ -21,7 +21,7 @@ const Path = () => {
         helpText={
           <FormattedMessage
             description="JSON registration options 'path' helpText"
-            defaultMessage="Path relative to the Service API root"
+            defaultMessage="Path relative to the Service API root."
           />
         }
       >

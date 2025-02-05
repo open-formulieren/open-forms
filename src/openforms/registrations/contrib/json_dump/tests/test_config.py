@@ -13,6 +13,8 @@ class JSONDumpConfigTests(TestCase):
             "service": service.pk,
             "path": "",
             "variables": ["now"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
         }
 
         # Ensuring that the options are valid in the first place

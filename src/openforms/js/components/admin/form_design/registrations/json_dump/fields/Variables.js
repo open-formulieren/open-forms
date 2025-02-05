@@ -22,7 +22,7 @@ const Variables = () => {
         helpText={
           <FormattedMessage
             description="JSON registration options 'variables' helpText"
-            defaultMessage="Which variables to include in the data to be sent"
+            defaultMessage="Variables to include in the data to be sent."
           />
         }
         required

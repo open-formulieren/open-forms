@@ -249,6 +249,11 @@
     "description": "Manage process vars component help text",
     "originalDefault": "The value of the selected field will be the process variable value."
   },
+  "5EOSwM": {
+    "defaultMessage": "Additional",
+    "description": "JSON registration options 'additionalMetadataVariables' label",
+    "originalDefault": "Additional"
+  },
   "5JNnFB": {
     "defaultMessage": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?",
     "description": "Objects API registration backend: v1 switch warning message",
@@ -599,6 +604,11 @@
     "description": "data type boolean",
     "originalDefault": "Boolean"
   },
+  "BiKRJT": {
+    "defaultMessage": "Key",
+    "description": "Fixed metadata table name key title",
+    "originalDefault": "Key"
+  },
   "Bin/vM": {
     "defaultMessage": "Save changes",
     "description": "Text on button in modal to save design token values",
@@ -659,11 +669,6 @@
     "description": "\"literal\" operand type",
     "originalDefault": "value"
   },
-  "CZ774U": {
-    "defaultMessage": "Which variables to include in the data to be sent",
-    "description": "JSON registration options 'variables' helpText",
-    "originalDefault": "Which variables to include in the data to be sent"
-  },
   "CiaAYL": {
     "defaultMessage": "Select the allowed authentication plugins to log in at the start of the form.",
     "description": "Auth plugin field help text",
@@ -678,6 +683,11 @@
     "defaultMessage": "Submission allowed",
     "description": "Form submissionAllowed field label",
     "originalDefault": "Submission allowed"
+  },
+  "Cz+O0n": {
+    "defaultMessage": "Source",
+    "description": "Fixed metadata table source title",
+    "originalDefault": "Source"
   },
   "D6NRQk": {
     "defaultMessage": "Detected problems in {count} logic rule(s).",
@@ -1059,11 +1069,6 @@
     "description": "Objects API prefill mappings fieldset title",
     "originalDefault": "Mappings"
   },
-  "Ibejpf": {
-    "defaultMessage": "Path relative to the Service API root",
-    "description": "JSON registration options 'path' helpText",
-    "originalDefault": "Path relative to the Service API root"
-  },
   "Igt0Rc": {
     "defaultMessage": "Skip ownership check",
     "description": "Objects API registration: skipOwnershipCheck label",
@@ -1139,6 +1144,11 @@
     "description": "Minimal LoA override help text",
     "originalDefault": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
   },
+  "JfgATN": {
+    "defaultMessage": "Additional variables to include.",
+    "description": "JSON registration options 'additionalMetadataVariables' helpText",
+    "originalDefault": "Additional variables to include."
+  },
   "JhdlEg": {
     "defaultMessage": "There are co-sign components inside repeating groups. This is not supported.",
     "description": "Cosign components in repeating group warning message",
@@ -1173,6 +1183,11 @@
     "defaultMessage": "Content",
     "description": "Confirmation Email Content label",
     "originalDefault": "Content"
+  },
+  "KMTsJc": {
+    "defaultMessage": "Static",
+    "description": "'Static' source label for fixed metadata variables table",
+    "originalDefault": "Static"
   },
   "KYTAJZ": {
     "defaultMessage": "(checked for every step)",
@@ -1403,6 +1418,11 @@
     "defaultMessage": "Your session is about to expire {delta}. Extend your session if you wish to continue.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
+  },
+  "Od+jm6": {
+    "defaultMessage": "Values:",
+    "description": "Label indicating the 'values' part of the data",
+    "originalDefault": "Values:"
   },
   "Oi+DV0": {
     "defaultMessage": "<code>{attr}</code> from <code>{plugin}</code> (of the {role})",
@@ -1794,6 +1814,11 @@
     "description": "Form list 'active' column header",
     "originalDefault": "Active"
   },
+  "X+NeMd": {
+    "defaultMessage": "Include variable in metadata",
+    "description": "'Include variable in metadata' checkbox label",
+    "originalDefault": "Include variable in metadata"
+  },
   "X18/UP": {
     "defaultMessage": "Owner identifier",
     "description": "Objects API registration: authAttributePath label",
@@ -1843,6 +1868,11 @@
     "defaultMessage": "House number Schema target",
     "description": "Objects registration variable mapping, addressNL component: 'options.houseNumber schema target' label",
     "originalDefault": "House number Schema target"
+  },
+  "Xpw7Gk": {
+    "defaultMessage": "Whether to include this variable in the metadata to be sent.",
+    "description": "'Include variable in metadata' checkbox help text",
+    "originalDefault": "Whether to include this variable in the metadata to be sent."
   },
   "XyDeaD": {
     "defaultMessage": "Variables",
@@ -2013,6 +2043,11 @@
     "defaultMessage": "Objecttype",
     "description": "Objects API registration options 'Objecttype' label",
     "originalDefault": "Objecttype"
+  },
+  "bmUuAH": {
+    "defaultMessage": "Fixed",
+    "description": "JSON registration options 'fixedMetadataVariables' label",
+    "originalDefault": "Fixed"
   },
   "bmlODS": {
     "defaultMessage": "Identifier role",
@@ -2384,6 +2419,11 @@
     "description": "User defined variable deletion confirm message",
     "originalDefault": "Are you sure you want to delete this variable?"
   },
+  "hfeO2r": {
+    "defaultMessage": "Registration",
+    "description": "'Registration' source label for fixed metadata variables table",
+    "originalDefault": "Registration"
+  },
   "hhoWxC": {
     "defaultMessage": "If left blank, then the most recent version is used.",
     "description": "DMN action: definition version field help text",
@@ -2418,6 +2458,11 @@
     "defaultMessage": "Attachment informatieobjecttype",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
     "originalDefault": "Attachment informatieobjecttype"
+  },
+  "iQblZd": {
+    "defaultMessage": "Variables that are already included.",
+    "description": "JSON registration options 'fixedMetadataVariables' helpText",
+    "originalDefault": "Variables that are already included."
   },
   "iXJKU7": {
     "defaultMessage": "Component variables",
@@ -2639,6 +2684,11 @@
     "description": "JSON variable type \"Form field\" representation",
     "originalDefault": "Form field"
   },
+  "mfD7J5": {
+    "defaultMessage": "Name",
+    "description": "Fixed metadata table name title",
+    "originalDefault": "Name"
+  },
   "myvtu0": {
     "defaultMessage": "Manage process variables",
     "description": "Open manage camunda process vars modal button",
@@ -2648,6 +2698,11 @@
     "defaultMessage": "Version",
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
+  },
+  "nEg4dr": {
+    "defaultMessage": "Metadata:",
+    "description": "Label indicating the 'metadata' part of the data",
+    "originalDefault": "Metadata:"
   },
   "nFXYHB": {
     "defaultMessage": "When the form should be deactivated.",
@@ -2734,6 +2789,11 @@
     "description": "Objects API prefill options 'Objecttype' helpText",
     "originalDefault": "The prefill values will be taken from an object of the selected type."
   },
+  "ow5LZk": {
+    "defaultMessage": "Variables to include in the data to be sent.",
+    "description": "JSON registration options 'variables' helpText",
+    "originalDefault": "Variables to include in the data to be sent."
+  },
   "oxYXJX": {
     "defaultMessage": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.",
     "description": "Successful Submissions Removal Method help text",
@@ -2813,11 +2873,6 @@
     "defaultMessage": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
-  },
-  "qPiUic": {
-    "defaultMessage": "Which service to send the data to",
-    "description": "JSON registration options 'serviceSelect' helpText",
-    "originalDefault": "Which service to send the data to"
   },
   "qUYLVg": {
     "defaultMessage": "Product & payment",
@@ -2914,6 +2969,11 @@
     "description": "DMN evaluation not configured yet message",
     "originalDefault": "(not configured yet)"
   },
+  "sAfROS": {
+    "defaultMessage": "Metadata variables",
+    "description": "Metadata variables fieldset title",
+    "originalDefault": "Metadata variables"
+  },
   "sCkGL9": {
     "defaultMessage": "invalid output mapping(s)",
     "description": "Warning message: DMN output mapping problems detected",
@@ -2928,6 +2988,11 @@
     "defaultMessage": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
+  },
+  "sokfvf": {
+    "defaultMessage": "The service to send the data to.",
+    "description": "JSON registration options 'serviceSelect' helpText",
+    "originalDefault": "The service to send the data to."
   },
   "sptpzv": {
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
@@ -3013,6 +3078,11 @@
     "defaultMessage": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "uUf7cu": {
+    "defaultMessage": "Path relative to the Service API root.",
+    "description": "JSON registration options 'path' helpText",
+    "originalDefault": "Path relative to the Service API root."
   },
   "uiliGe": {
     "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",

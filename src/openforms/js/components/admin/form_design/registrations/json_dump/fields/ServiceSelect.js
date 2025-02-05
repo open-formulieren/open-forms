@@ -20,7 +20,7 @@ const ServiceSelect = ({options}) => {
         helpText={
           <FormattedMessage
             description="JSON registration options 'serviceSelect' helpText"
-            defaultMessage="Which service to send the data to"
+            defaultMessage="The service to send the data to."
           />
         }
         required

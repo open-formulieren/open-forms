@@ -664,8 +664,33 @@ export const WithJSONDumpRegistrationBackend = {
         options: {
           service: 2,
           path: 'test',
-          variables: ['aSingleFile', 'now'],
+          variables: ['aSingleFile'],
+          fixedMetadataVariables: ['public_reference'],
+          additionalMetadataVariables: ['now'],
         },
+      },
+    ],
+    registrationPluginsVariables: [
+      {
+        pluginIdentifier: 'json_dump',
+        pluginVerboseName: 'JSON dump registration',
+        pluginVariables: [
+          {
+            form: null,
+            formDefinition: null,
+            name: 'Public reference',
+            key: 'public_reference',
+            source: '',
+            prefillPlugin: '',
+            prefillAttribute: '',
+            prefillIdentifierRole: 'main',
+            dataType: 'string',
+            dataFormat: '',
+            isSensitiveData: false,
+            serviceFetchConfiguration: undefined,
+            initialValue: '',
+          },
+        ],
       },
     ],
   },
@@ -675,36 +700,57 @@ export const WithJSONDumpRegistrationBackend = {
     const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
     await expect(editIcons).toHaveLength(3);
 
-    await step('formioComponent checkbox unchecked', async () => {
+    await step('formioComponent checkboxes unchecked', async () => {
       await userEvent.click(editIcons[0]);
 
-      const checkbox = await canvas.findByRole('checkbox');
-      await expect(checkbox).not.toBeChecked();
+      const checkboxes = await canvas.getAllByRole('checkbox');
+      await expect(checkboxes[0]).not.toBeChecked();
+      await expect(checkboxes[1]).not.toBeChecked();
+      await expect(checkboxes[1]).toBeDisabled();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
     });
 
-    await step('aSingleFile checkbox checked', async () => {
+    await step('aSingleFile values checkbox checked and metadata checkbox unchecked', async () => {
       await userEvent.click(editIcons[1]);
 
-      const checkbox = await canvas.findByRole('checkbox');
-      await expect(checkbox).toBeChecked();
+      const checkboxes = await canvas.findAllByRole('checkbox');
+      await expect(checkboxes[0]).toBeChecked();
+      await expect(checkboxes[1]).not.toBeChecked();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
     });
 
-    await step('now checkbox checked', async () => {
+    await step('now values checkbox unchecked and metadata checkbox checked', async () => {
       const staticVariables = canvas.getByRole('tab', {name: /Vaste variabelen/});
       await userEvent.click(staticVariables);
 
       const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
       await userEvent.click(editIcon);
 
-      const checkbox = await canvas.findByRole('checkbox');
-      await expect(checkbox).toBeChecked();
+      const checkboxes = await canvas.findAllByRole('checkbox');
+      await expect(checkboxes[0]).not.toBeChecked();
+      await expect(checkboxes[1]).toBeChecked();
+      await expect(checkboxes[1]).not.toBeDisabled();
     });
+
+    await step(
+      'public_registration values checkbox unchecked and metadata checkbox checked',
+      async () => {
+        const registrationVariables = canvas.getByRole('tab', {name: /Registratie/});
+        await userEvent.click(registrationVariables);
+
+        const editIcon = canvas.getByTitle('Registratie-instellingen bewerken');
+        await userEvent.click(editIcon);
+
+        const checkboxes = await canvas.findAllByRole('checkbox');
+        await expect(checkboxes[0]).not.toBeChecked();
+        await expect(checkboxes[1]).toBeChecked();
+        await expect(checkboxes[1]).toBeDisabled();
+      }
+    );
   },
 };
 
