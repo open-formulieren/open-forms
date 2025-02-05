@@ -148,14 +148,14 @@ class FormStepFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> FormStep:
         form_step = super().create(**kwargs)
-        FormVariable.objects.create_for_formstep(form_step)
+        FormVariable.objects.synchronize_for(form_step.form_definition)
         return form_step
 
     @classmethod
     def _create(cls, *args, **kwargs):
         # This method is called instead of create() from the FormFactory with `generte_minimal_setup`
         form_step = super()._create(*args, **kwargs)
-        FormVariable.objects.create_for_formstep(form_step)
+        FormVariable.objects.synchronize_for(form_step.form_definition)
         return form_step
 
 
