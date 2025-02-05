@@ -22,7 +22,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..utils import persist_user_defined_variables
 from .factories import (
@@ -277,9 +277,8 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         )
         SubmissionValueVariableFactory.create(
             key="userDefinedVar",
-            form_variable__form=submission.form,
             submission=submission,
-            source=FormVariableSources.user_defined,
+            form_variable__user_defined=True,
             form_variable__data_type=FormVariableDataTypes.int,
             value=0,
         )

@@ -34,7 +34,7 @@ from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.submissions.pricing import InvalidPrice
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
 from ..logic.actions import LogicActionTypes
@@ -428,12 +428,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             data={"testComponent": "test"},
         )
         SubmissionValueVariableFactory.create(
-            form_variable__key="userDefinedVar",
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__data_type=FormVariableDataTypes.int,
             submission=submission,
             key="userDefinedVar",
             value=0,
+            form_variable__user_defined=True,
+            form_variable__data_type=FormVariableDataTypes.int,
         )
 
         self._add_submission_to_session(submission)

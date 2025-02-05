@@ -8,7 +8,6 @@ from privates.test import temp_private_root
 
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.variables.constants import FormVariableSources
 
 from ..exports import create_submission_export
 from ..models import Submission
@@ -150,8 +149,7 @@ class ExportTests(TestCase):
             key="ud1",
             value="Some value",
             submission=submission,
-            form_variable__source=FormVariableSources.user_defined,
-            form_variable__form=submission.form,
+            form_variable__user_defined=True,
         )
 
         dataset = create_submission_export(Submission.objects.all())

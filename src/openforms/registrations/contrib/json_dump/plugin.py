@@ -104,6 +104,7 @@ def post_process(
         variable = state.variables.get(key)
         if (
             variable is None
+            or variable.form_variable is None
             or variable.form_variable.source == FormVariableSources.user_defined
         ):
             # None for static variables, and processing user defined variables is

@@ -307,7 +307,6 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
                 submission=submission_step.submission,
                 key=variable.key,
                 value=value,
-                form_variable=variable,
             )
 
         if hasattr(submission_step.submission, "_variables_state"):
@@ -389,7 +388,6 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
             submission_variable = SubmissionValueVariableFactory.create(
                 submission=submission,
                 key=form_key,
-                form_variable=form_variable,
             )
 
         file_attachment.submission_variable = submission_variable
@@ -398,26 +396,59 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         return file_attachment
 
 
+def _lookup_form_variable(submission_value_var: SubmissionValueVariable):
+    form_vars = submission_value_var.submission.form.formvariable_set
+    return form_vars.filter(key=submission_value_var.key).first()
+
+
 class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    form_variable = factory.SubFactory(
-        FormVariableFactory,
-        form=factory.SelfAttribute("..submission.form"),
-        key=factory.SelfAttribute("..key"),
-    )
     key = factory.Faker("word")
     source = SubmissionValueVariableSources.user_input
     is_initially_prefilled = factory.LazyAttribute(
         lambda submission_value_var: (
-            submission_value_var.form_variable.prefill_plugin != ""
-            if submission_value_var.form_variable
+            form_var.prefill_plugin != ""
+            if (form_var := _lookup_form_variable(submission_value_var))
             else False
         )
     )
 
     class Meta:
         model = SubmissionValueVariable
-        django_get_or_create = ("submission", "form_variable")
+        django_get_or_create = ("submission", "key")
+
+    @factory.post_generation
+    def form_variable(
+        obj: SubmissionValueVariable,  # pyright: ignore[reportGeneralTypeIssues]
+        create,
+        extracted,
+        **kwargs,
+    ) -> None:
+        """
+        Ensure the matching FormVariable record exists.
+
+        This deliberatey returns None to ensure the factory doesn't set the
+        form_variable attribute that must be populated via the submission variable
+        state loading.
+        """
+        assert not extracted, (
+            "You may not pass the form variable instance, instead pass the "
+            "necessary parameters via form_variable__FOO."
+        )
+        # Nothing to do - we only care about setting up DB state.
+        if not create:
+            return
+
+        # XXX there may be mismatches here with the **kwargs
+        if (form_var := _lookup_form_variable(obj)) is not None:
+            for kwarg, value in kwargs.items():
+                if getattr(form_var, kwarg) != value:
+                    raise ValueError(
+                        f"Existing variable has incorrect {kwarg} {value=}."
+                    )
+            return
+
+        FormVariableFactory.create(form=obj.submission.form, key=obj.key, **kwargs)
 
 
 class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):

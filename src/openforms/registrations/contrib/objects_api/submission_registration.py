@@ -467,6 +467,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
 
 def _lookup_component(variable: SubmissionValueVariable) -> Component:
+    assert variable.form_variable is not None
     config_wrapper = variable.form_variable.form_definition.configuration_wrapper
     component = config_wrapper.component_map[variable.key]
     return component
@@ -559,6 +560,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             component: Component | None = None
             if (
                 variable
+                and variable.form_variable is not None
                 and variable.form_variable.source == FormVariableSources.component
             ):
                 component = _lookup_component(variable)

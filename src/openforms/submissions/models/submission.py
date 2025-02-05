@@ -505,8 +505,11 @@ class Submission(models.Model):
         if self.is_authenticated:
             self.auth_info.clear_sensitive_data()
 
+        sensitive_variable_keys = self.form.formvariable_set.filter(
+            is_sensitive_data=True
+        ).values_list("key", flat=True)
         sensitive_variables = self.submissionvaluevariable_set.filter(
-            form_variable__is_sensitive_data=True
+            key__in=sensitive_variable_keys
         )
         sensitive_variables.update(
             value="", source=SubmissionValueVariableSources.sensitive_data_cleaner
@@ -514,7 +517,7 @@ class Submission(models.Model):
 
         SubmissionFileAttachment.objects.filter(
             submission_step__submission=self,
-            submission_variable__form_variable__is_sensitive_data=True,
+            submission_variable__key__in=sensitive_variable_keys,
         ).delete()
 
         self._is_cleaned = True
