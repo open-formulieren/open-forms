@@ -626,6 +626,7 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 )  # 1mb in bytes
 # Perform HTML escaping on user's data-input
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
+DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
 # TODO: convert to feature flags so that newly deployed instances get the new behaviour
 # while staying backwards compatible for existing instances
