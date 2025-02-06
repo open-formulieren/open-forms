@@ -1,9 +1,12 @@
 import base64
 import json
+from collections import defaultdict
 from typing import cast
 
 from django.core.exceptions import SuspiciousOperation
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import F, TextField, Value
+from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
@@ -11,6 +14,7 @@ from zgw_consumers.client import build_client
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.service import rewrite_formio_components
 from openforms.formio.typing import (
+    Component,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -114,26 +118,42 @@ def post_process(
 ) -> None:
     """Post-process the values and schema.
 
-    File components need special treatment, as we send the content of the file
-    encoded with base64, instead of the output from the serializer. Also, Radio,
-    Select, and SelectBoxes components need to be updated if their data source is
-    set to another form variable.
+    - Update the configuration wrapper. This is necessary to update the options for
+    Select, SelectBoxes, and Radio components that get their options from another form
+    variable.
+    - Get all attachments of this submission, and group them by the data path
+    - Process each component
 
-    :param values: JSONObject
-    :param schema: JSONObject
-    :param submission: Submission
+    :param values: Mapping from key to value of the data to be sent.
+    :param schema: JSON schema describing ``values``.
+    :param submission: The corresponding submission instance.
     """
     state = submission.load_submission_value_variables_state()
 
-    # Update config wrapper. This is necessary to update the options for Select,
-    # SelectBoxes, and Radio components that get their options from another form
-    # variable.
+    # Update config wrapper
     data = DataContainer(state=state)
     configuration_wrapper = rewrite_formio_components(
         submission.total_configuration_wrapper,
         submission=submission,
         data=data.data,
     )
+
+    # Create attachment mapping from key or component data path to attachment list
+    attachments = submission.attachments.annotate(
+        data_path=Coalesce(
+            NullIf(
+                F("_component_data_path"),
+                Value(""),
+            ),
+            # fall back to variable/component key if no explicit data path is set
+            F("submission_variable__key"),
+            output_field=TextField(),
+        )
+    )
+    attachments_dict = defaultdict(list)
+    for attachment in attachments:
+        key = attachment.data_path  # pyright: ignore[reportAttributeAccessIssue]
+        attachments_dict[key].append(attachment)
 
     for key in values.keys():
         variable = state.variables.get(key)
@@ -149,86 +169,154 @@ def post_process(
         component = configuration_wrapper[key]
         assert component is not None
 
-        match component:
-            case {"type": "file", "multiple": True}:
-                attachment_list, base_schema = get_attachments_and_base_schema(
-                    cast(FileComponent, component), submission
-                )
-                values[key] = attachment_list  # type: ignore
-                schema["properties"][key] = to_multiple(base_schema)  # type: ignore
+        process_component(
+            component, values, schema, attachments_dict, configuration_wrapper
+        )
 
-            case {"type": "file"}:  # multiple is False or missing
-                attachment_list, base_schema = get_attachments_and_base_schema(
-                    cast(FileComponent, component), submission
-                )
 
-                assert (n_attachments := len(attachment_list)) <= 1  # sanity check
-                if n_attachments == 0:
-                    value = None
-                    base_schema = {"title": component["label"], "type": "null"}
-                else:
-                    value = attachment_list[0]
-                values[key] = value
-                schema["properties"][key] = base_schema  # type: ignore
+def process_component(
+    component: Component,
+    values: JSONObject,
+    schema: JSONObject,
+    attachments: dict[str, list[SubmissionFileAttachment]],
+    configuration_wrapper,
+    key_prefix: str = "",
+) -> None:
+    """Process a component.
 
-            case {"type": "radio", "openForms": {"dataSrc": DataSrcOptions.variable}}:
-                component = cast(RadioComponent, component)
-                choices = [options["value"] for options in component["values"]]
-                choices.append("")  # Take into account an unfilled field
+    The following components need extra attention:
+    - File components: we send the content of the file encoded with base64, instead of
+      the output from the serializer.
+    - Radio, Select, and SelectBoxes components: need to be updated if their data source
+      is set to another form variable.
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param values: Mapping from key to value of the data to be sent.
+    :param schema: JSON schema describing ``values``.
+    :param attachments: Mapping from component submission data path to list of
+      attachments corresponding to that component.
+    :param configuration_wrapper: Updated total configuration wrapper. This is required
+      for edit grid components, which need to fetch their children from it.
+    :param key_prefix: If the component is part of an edit grid component, this key
+      prefix includes the parent key and the index of the component as it appears in the
+      submitted data list of that edit grid component.
+    """
+    key = component["key"]
+
+    match component:
+        case {"type": "file", "multiple": True}:
+            attachment_list, base_schema = get_attachments_and_base_schema(
+                cast(FileComponent, component), attachments, key_prefix
+            )
+            values[key] = attachment_list  # type: ignore
+            schema["properties"][key] = to_multiple(base_schema)  # type: ignore
+
+        case {"type": "file"}:  # multiple is False or missing
+            attachment_list, base_schema = get_attachments_and_base_schema(
+                cast(FileComponent, component), attachments, key_prefix
+            )
+
+            assert (n_attachments := len(attachment_list)) <= 1  # sanity check
+            if n_attachments == 0:
+                value = None
+                base_schema = {"title": component["label"], "type": "null"}
+            else:
+                value = attachment_list[0]
+            values[key] = value
+            schema["properties"][key] = base_schema  # type: ignore
+
+        case {"type": "radio", "openForms": {"dataSrc": DataSrcOptions.variable}}:
+            component = cast(RadioComponent, component)
+            choices = [options["value"] for options in component["values"]]
+            choices.append("")  # Take into account an unfilled field
+            schema["properties"][key]["enum"] = choices  # type: ignore
+
+        case {"type": "select", "openForms": {"dataSrc": DataSrcOptions.variable}}:
+            component = cast(SelectComponent, component)
+            choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
+            choices.append("")  # Take into account an unfilled field
+
+            if component.get("multiple", False):
+                schema["properties"][key]["items"]["enum"] = choices  # type: ignore
+            else:
                 schema["properties"][key]["enum"] = choices  # type: ignore
 
-            case {"type": "select", "openForms": {"dataSrc": DataSrcOptions.variable}}:
-                component = cast(SelectComponent, component)
-                choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
-                choices.append("")  # Take into account an unfilled field
+        case {"type": "selectboxes"}:
+            component = cast(SelectBoxesComponent, component)
+            data_src = component.get("openForms", {}).get("dataSrc")
 
-                if component.get("multiple", False):
-                    schema["properties"][key]["items"]["enum"] = choices  # type: ignore
-                else:
-                    schema["properties"][key]["enum"] = choices  # type: ignore
+            if data_src == DataSrcOptions.variable:
+                properties = {
+                    options["value"]: {"type": "boolean"}
+                    for options in component["values"]
+                }
+                base_schema = {
+                    "properties": properties,
+                    "required": list(properties.keys()),
+                    "additionalProperties": False,
+                }
+                schema["properties"][key].update(base_schema)  # type: ignore
 
-            case {"type": "selectboxes"}:
-                component = cast(SelectBoxesComponent, component)
-                data_src = component.get("openForms", {}).get("dataSrc")
+            # If the select boxes component was hidden, the submitted data of this
+            # component is an empty dict, so set the required to an empty list.
+            if not values[key]:
+                schema["properties"][key]["required"] = []  # type: ignore
 
-                if data_src == DataSrcOptions.variable:
-                    properties = {
-                        options["value"]: {"type": "boolean"}
-                        for options in component["values"]
-                    }
-                    base_schema = {
-                        "properties": properties,
-                        "required": list(properties.keys()),
-                        "additionalProperties": False,
-                    }
-                    schema["properties"][key].update(base_schema)  # type: ignore
+        case {"type": "editgrid"}:
+            # Note: the schema actually only needs to be processed once for each child
+            # component, but will be processed for each submitted repeating group entry
+            # for implementation simplicity.
+            edit_grid_schema: JSONObject = schema["properties"][key]["items"]  # type: ignore
 
-                # If the select boxes component was hidden, the submitted data of this
-                # component is an empty dict, so set the required to an empty list.
-                if not values[key]:
-                    schema["properties"][key]["required"] = []  # type: ignore
-            case _:
-                pass
+            for index, edit_grid_values in enumerate(
+                cast(list[JSONObject], values[key])
+            ):
+
+                for child_key in edit_grid_values.keys():
+                    process_component(
+                        component=configuration_wrapper[child_key],
+                        values=edit_grid_values,
+                        schema=edit_grid_schema,
+                        attachments=attachments,
+                        configuration_wrapper=configuration_wrapper,
+                        key_prefix=(
+                            f"{key_prefix}.{key}.{index}"
+                            if key_prefix
+                            else f"{key}.{index}"
+                        ),
+                    )
+
+        case _:
+            pass
 
 
 def get_attachments_and_base_schema(
-    component: FileComponent, submission: Submission
+    component: FileComponent,
+    attachments: dict[str, list[SubmissionFileAttachment]],
+    key_prefix: str = "",
 ) -> tuple[list[JSONObject], JSONObject]:
     """Return list of encoded attachments and the base schema.
 
     :param component: FileComponent
-    :param submission: Submission
+    :param attachments: Mapping from component submission data path to list of
+      attachments corresponding to that component.
+    :param key_prefix: If the file component is part of an edit grid component, this key
+      prefix includes the parent key and the index of the component as it appears in the
+      submitted data list of the edit grid component.
 
-    :return encoded_attachments: list[JSONObject]
-    :return base_schema: JSONObject
+    :return encoded_attachments: List of encoded attachments for this file component.
+    :return base_schema: JSON schema describing the entries of ``encoded_attachments``.
     """
+    key = f"{key_prefix}.{component['key']}" if key_prefix else component["key"]
+
     encoded_attachments: list[JSONObject] = [
         {
             "file_name": attachment.original_name,
             "content": encode_attachment(attachment),
         }
-        for attachment in submission.attachments
-        if attachment.form_key == component["key"]
+        for attachment in attachments.get(key, [])
     ]
 
     base_schema: JSONObject = {
@@ -251,10 +339,11 @@ def get_attachments_and_base_schema(
 
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
-    """Encode an attachment using base64
+    """Encode an attachment using base64.
 
-    :param attachment: Attachment to encode
-    :returns: Encoded base64 data as a string
+    :param attachment: Attachment to encode.
+
+    :returns: Encoded base64 data as a string.
     """
     with attachment.content.open("rb") as f:
         f.seek(0)
