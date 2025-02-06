@@ -409,7 +409,6 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.prefill_identifier_role, IdentifierRoles.main
                     )
-                    self.assertEqual(date_variable.prefill_options, {})
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.date
                     )
@@ -430,7 +429,6 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.prefill_identifier_role, IdentifierRoles.main
                     )
-                    self.assertEqual(date_variable.prefill_options, {})
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.object
                     )
@@ -497,7 +495,6 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.prefill_identifier_role, IdentifierRoles.main
                     )
-                    self.assertEqual(date_variable.prefill_options, {})
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.float
                     )
@@ -518,7 +515,6 @@ class FormVariableManagerTests(TestCase):
                     self.assertEqual(
                         date_variable.prefill_identifier_role, IdentifierRoles.main
                     )
-                    self.assertEqual(date_variable.prefill_options, {})
                     self.assertEqual(
                         date_variable.data_type, FormVariableDataTypes.array
                     )
