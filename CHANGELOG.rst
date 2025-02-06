@@ -6,6 +6,32 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.0.4 (2025-02-06)
+==================
+
+Hotfix release for performance problems in the admin.
+
+* [:backend:`5084`] Fixed the performance issues when saving form steps/definitions with
+  large numbers of components (30-100), especially if they are reusable form definitions
+  used in many (20+) forms. This was caused by an earlier patch for :backend:`5058`.
+
+2.8.5 (2025-02-06)
+==================
+
+Hotfix release for performance problems in the admin.
+
+* [:backend:`5084`] Fixed the performance issues when saving form steps/definitions with
+  large numbers of components (30-100), especially if they are reusable form definitions
+  used in many (20+) forms. This was caused by an earlier patch for :backend:`5058`.
+
+3.0.3 (2025-02-05)
+==================
+
+Bugfix release on request.
+
+* [:backend:`4375`] Reverted "Removed environment variable
+  ``DISABLE_SENDING_HIDDEN_FIELDS`` for Objects API."
+
 3.0.2 (2025-01-31)
 ==================
 
