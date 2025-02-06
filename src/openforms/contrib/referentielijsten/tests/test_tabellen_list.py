@@ -28,7 +28,7 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
 
     def test_tabellen_list_is_forbidden_for_normal_users(self):
         endpoint = reverse(
-            "api:referentielijst-tabellen-get",
+            "api:referentielijst-tabellen-list",
             kwargs={"service_slug": "referentielijsten"},
         )
         self.client.force_authenticate(user=self.user)
@@ -39,7 +39,7 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
 
     def test_returned_tabellen_have_the_right_properties(self):
         endpoint = reverse(
-            "api:referentielijst-tabellen-get",
+            "api:referentielijst-tabellen-list",
             kwargs={"service_slug": "referentielijsten"},
         )
         self.client.force_authenticate(user=self.admin_user)
@@ -69,7 +69,7 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
 
     def test_service_not_found(self):
         endpoint = reverse(
-            "api:referentielijst-tabellen-get", kwargs={"service_slug": "non-existent"}
+            "api:referentielijst-tabellen-list", kwargs={"service_slug": "non-existent"}
         )
         self.client.force_authenticate(user=self.admin_user)
 
@@ -82,7 +82,7 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
             slug="incorrect-api-root", api_root="http://localhost:8004/incorrect/"
         )
         endpoint = reverse(
-            "api:referentielijst-tabellen-get",
+            "api:referentielijst-tabellen-list",
             kwargs={"service_slug": "incorrect-api-root"},
         )
         self.client.force_authenticate(user=self.admin_user)

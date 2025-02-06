@@ -63,13 +63,6 @@ router.register("products", ProductViewSet)
 # services
 router.register("services", ServiceViewSet)
 
-# referentielijsten
-router.register(
-    "referentielijst-tabellen",
-    ReferentielijstenTabellenViewSet,
-    basename="referentielijst-tabellen",
-)
-
 # service fetch configurations
 router.register("service-fetch-configurations", ServiceFetchConfigurationViewSet)
 
@@ -130,6 +123,11 @@ urlpatterns = [
                 path("formio/", include("openforms.formio.api.urls")),
                 path("geo/", include("openforms.contrib.kadaster.api.urls")),
                 path("i18n/", include("openforms.translations.api.urls")),
+                path(
+                    "referentielijst-tabellen/<slug:service_slug>",
+                    ReferentielijstenTabellenViewSet.as_view(),
+                    name="referentielijst-tabellen-list",
+                ),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),

@@ -3719,7 +3719,7 @@ paths:
     get:
       operationId: referentielijst_tabellen_list
       description: |-
-        Return a list of available (JSON) tabellen in a given Referentielijsten service configured in the backend.
+        Return a list of available tabellen in a given Referentielijsten service configured in the backend.
 
         Note that this endpoint is **EXPERIMENTAL**.
       summary: List tabellen for a Referentielijsten service
@@ -3728,7 +3728,6 @@ paths:
         name: service_slug
         schema:
           type: string
-          pattern: ^[-a-zA-Z0-9_]+$
         required: true
       tags:
       - referentielijst-tabellen
@@ -4210,7 +4209,9 @@ paths:
         name: type
         schema:
           type: string
-        description: 'The type of Services to return, possible values: `referentielijsten`'
+          enum:
+          - referentielijsten
+        description: The type of Services to return.
       tags:
       - services
       security:
@@ -9710,18 +9711,12 @@ components:
         naam:
           type: string
           description: The name of the table.
-        einddatumGeldigheid:
-          type: string
-          format: date-time
-          writeOnly: true
-          description: The timestamp on which the tabel expires.
         isGeldig:
           type: boolean
           readOnly: true
           description: Indicates whether or not the table is expired.
       required:
       - code
-      - einddatumGeldigheid
       - isGeldig
       - naam
       x-experimental: true

@@ -13,10 +13,6 @@ class ReferentielijstTabellenSerializer(serializers.Serializer):
         help_text=_("The unique code that identifies the table.")
     )
     naam = serializers.CharField(help_text=_("The name of the table."))
-    einddatumGeldigheid = serializers.DateTimeField(
-        help_text=_("The timestamp on which the tabel expires."), write_only=True
-    )
-
     is_geldig = serializers.SerializerMethodField(
         help_text=_("Indicates whether or not the table is expired.")
     )

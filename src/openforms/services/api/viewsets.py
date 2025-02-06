@@ -23,10 +23,9 @@ from . import serializers
                 name="type",
                 type=str,
                 location=OpenApiParameter.QUERY,
-                description=_(
-                    "The type of Services to return, possible values: `referentielijsten`"
-                ),
+                description=_("The type of Services to return."),
                 required=False,
+                enum=["referentielijsten"],
             )
         ],
     ),

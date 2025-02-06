@@ -1,7 +1,7 @@
 import {get} from 'utils/fetch';
 
 export const getServices = async type => {
-  const resp = await get(`/api/v2/services?type=${encodeURIComponent(type)}`);
+  const resp = await get(`/api/v2/services`, {type: type});
   return resp.data;
 };
 
