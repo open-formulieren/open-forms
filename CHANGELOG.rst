@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.8.5 (2025-02-06)
+==================
+
+Hotfix release for performance problems in the admin.
+
+* [:backend:`5084`] Fixed the performance issues when saving form steps/definitions with
+  large numbers of components (30-100), especially if they are reusable form definitions
+  used in many (20+) forms. This was caused by an earlier patch for :backend:`5058`.
+
 2.8.4 (2025-01-31)
 ==================
 
