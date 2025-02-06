@@ -531,7 +531,7 @@ class FormViewSet(viewsets.ModelViewSet):
         form = self.get_object()
         filterset = FormVariableFilter(
             request.GET,
-            queryset=form.formvariable_set.select_related("form", "form_definition"),
+            queryset=form.formvariable_set.prefetch_related("form", "form_definition"),
         )
 
         serializer = FormVariableSerializer(
@@ -590,7 +590,10 @@ class FormViewSet(viewsets.ModelViewSet):
     @logic_rules_bulk_update.mapping.get
     def logic_rules_list(self, request, *args, **kwargs):
         form = self.get_object()
-        logic_rules = form.formlogic_set.all()
+
+        logic_rules = form.formlogic_set.prefetch_related(
+            "form", "trigger_from_step__form"
+        )
 
         serializer = FormLogicSerializer(
             instance=logic_rules,
