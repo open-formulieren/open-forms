@@ -26,7 +26,6 @@ from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
-    SubmissionValueVariableFactory,
     TemporaryFileUploadFactory,
 )
 
@@ -490,7 +489,34 @@ class SubmissionAttachmentTest(TestCase):
     def test_attach_uploads_to_submission_step_with_nested_fields_with_matching_keys(
         self, resize_mock
     ):
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "components": [
+                            {
+                                "type": "file",
+                                "key": "attachment",
+                                "registration": {
+                                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "key": "attachment",
+                        "type": "file",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                        },
+                    },
+                ]
+            },
+        )
+        form_step = submission.form.formstep_set.get()
         attachment_1 = TemporaryFileUploadFactory.create(
             submission=submission, file_name="attachmentInside.pdf"
         )
@@ -539,42 +565,10 @@ class SubmissionAttachmentTest(TestCase):
                 }
             ],
         }
-        components = [
-            {
-                "key": "repeatingGroup",
-                "type": "editgrid",
-                "components": [
-                    {
-                        "type": "file",
-                        "key": "attachment",
-                        "registration": {
-                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
-                        },
-                    }
-                ],
-            },
-            {
-                "key": "attachment",
-                "type": "file",
-                "registration": {
-                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
-                },
-            },
-        ]
-        form_step = FormStepFactory.create(
-            form=submission.form,
-            form_definition__configuration={"components": components},
-        )
         submission_step = SubmissionStepFactory.create(
             form_step=form_step, submission=submission, data=data
         )
-        # TODO: remove once #2728 is fixed
-        SubmissionValueVariableFactory.create(
-            key="attachment",
-            form_variable__form=form_step.form,
-            submission=submission,
-            value=data["attachment"],
-        )
+        assert submission.submissionvaluevariable_set.get(key="attachment").pk
 
         result = attach_uploads_to_submission_step(submission_step)
 

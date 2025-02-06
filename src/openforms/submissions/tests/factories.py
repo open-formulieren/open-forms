@@ -403,7 +403,7 @@ class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionValueVariable
-        django_get_or_create = ("submission", "form_variable")
+        django_get_or_create = ("submission", "key")
 
 
 class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):
