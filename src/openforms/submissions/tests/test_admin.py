@@ -195,7 +195,7 @@ class TestSubmissionAdmin(WebTest):
         self.assertEqual(failed_above_limit.registration_attempts, 0)
         self.assertEqual(failed_below_limit.registration_attempts, 0)
 
-    def test_change_view_displays_logs_if_not_avg(self):
+    def test_change_view_displays_logs_if_submission_lifecycle(self):
         # add regular submission log
         submission_start(self.submission_1)
 
