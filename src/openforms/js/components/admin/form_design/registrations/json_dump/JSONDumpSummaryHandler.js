@@ -5,10 +5,10 @@ import {FormattedMessage} from 'react-intl';
 import {IconNo, IconYes} from 'components/admin/BooleanIcons';
 
 const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
-  const isIncludedInVariables = backendOptions.variables.includes(variable.key);
+  const isIncludedInVariables = backendOptions.variables?.includes(variable.key);
   const isIncludedInMetadata =
-    backendOptions.fixedMetadataVariables.includes(variable.key) ||
-    backendOptions.additionalMetadataVariables.includes(variable.key);
+    backendOptions.fixedMetadataVariables?.includes(variable.key) ||
+    backendOptions.additionalMetadataVariables?.includes(variable.key);
 
   return (
     <>
