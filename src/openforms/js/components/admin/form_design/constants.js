@@ -4,6 +4,8 @@ export const REGISTRATION_BACKENDS_ENDPOINT = '/api/v2/registration/plugins';
 export const OBJECTS_API_OBJECTTYPES_ENDPOINT = '/api/v2/objects-api/object-types';
 export const REGISTRATION_OBJECTS_TARGET_PATHS =
   '/api/v2/registration/plugins/objects-api/target-paths';
+export const REGISTRATION_JSON_DUMP_FIXED_METADATA_VARIABLES =
+  '/api/v2/registration/plugins/json-dump/fixed-metadata-variables';
 export const AUTH_PLUGINS_ENDPOINT = '/api/v2/authentication/plugins';
 export const PREFILL_PLUGINS_ENDPOINT = '/api/v2/prefill/plugins';
 export const DMN_PLUGINS_ENDPOINT = '/api/v2/dmn/plugins';

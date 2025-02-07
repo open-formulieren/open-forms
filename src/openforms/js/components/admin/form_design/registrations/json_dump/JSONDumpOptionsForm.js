@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
+import {useAsync} from 'react-use';
 
+import {REGISTRATION_JSON_DUMP_FIXED_METADATA_VARIABLES} from 'components/admin/form_design/constants';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {
@@ -9,6 +11,7 @@ import {
   ValidationErrorsProvider,
   filterErrors,
 } from 'components/admin/forms/ValidationErrors';
+import {get} from 'utils/fetch';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
 import {
@@ -29,6 +32,15 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
     ([value, label]) => ({value, label})
   );
 
+  // Get fixed metadata variables
+  const {value: fixedMetadataVariables} = useAsync(async () => {
+    const response = await get(REGISTRATION_JSON_DUMP_FIXED_METADATA_VARIABLES);
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    return response.data;
+  }, []);
+
   return (
     <ModalOptionsConfiguration
       name={name}
@@ -44,7 +56,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
         service: null,
         path: '',
         variables: [],
-        fixedMetadataVariables: [],
+        fixedMetadataVariables: fixedMetadataVariables || [],
         additionalMetadataVariables: [],
         ...formData,
       }}
