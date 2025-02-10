@@ -67,6 +67,7 @@ const WrapperArrayInput = ({name, value, onChange}) => {
         checked={useRawJSON}
         onChange={() => setUseRawJSON(!useRawJSON)}
         disabled={anyItemNotString}
+        fullWidth
       />
       {actualInput}
     </>

@@ -200,7 +200,11 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
         </Field>
       </td>
       <td>
-        <Field name="initialValue" errors={variable.errors?.initialValue}>
+        <Field
+          name="initialValue"
+          errors={variable.errors?.initialValue}
+          extraModifiers={['flex-wrap']}
+        >
           <LiteralValueInput
             key={`initialValue-${index}`}
             name="initialValue"
