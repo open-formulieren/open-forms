@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -92,3 +94,43 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         }
 
         self.assertEqual(response.data["results"][0], expected)
+
+    def test_service_fetch_configuration_list_returns_data_using_correct_text_case(
+        self,
+    ):
+        config = ServiceFetchConfigurationFactory.create(
+            name="Service fetch configuration 1",
+            method=ServiceFetchMethods.post,
+            query_params={
+                "snake_case": ["snake_case_data"],
+                "camelCase": ["camelCaseData"],
+            },
+            body={"snake_case": "snake_case_data", "camelCase": "camelCaseData"},
+        )
+        endpoint = reverse("api:servicefetchconfiguration-list")
+        self.client.force_authenticate(user=self.admin_user)
+
+        response = self.client.get(endpoint, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+        content = json.loads(response.content)
+        expected = {
+            "id": config.pk,
+            "name": "Service fetch configuration 1",
+            "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': config.service.pk})}",
+            "path": "",
+            "method": ServiceFetchMethods.post.value,
+            "headers": {},
+            "queryParams": {
+                "snake_case": ["snake_case_data"],
+                "camelCase": ["camelCaseData"],
+            },
+            "body": {"snake_case": "snake_case_data", "camelCase": "camelCaseData"},
+            "dataMappingType": "",
+            "mappingExpression": None,
+            "cacheTimeout": None,
+        }
+
+        self.assertEqual(content["results"][0], expected)
