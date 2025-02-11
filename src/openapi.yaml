@@ -3800,6 +3800,34 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/json-dump/fixed-metadata-variables:
+    get:
+      operationId: registration_plugins_json_dump_fixed_metadata_variables_retrieve
+      description: Return a list of fixed metadata variables for the JSON dump registration
+        backend that are needed by the frontend as default options.
+      summary: Fixed metadata variables JSON dump registration backend
+      tags:
+      - registration
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FixedMetadataVariable'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins/objects-api/target-paths:
     post:
       operationId: registration_plugins_objects_api_target_paths_create
@@ -7477,6 +7505,27 @@ components:
       - code
       - name
       - reason
+    FixedMetadataVariable:
+      type: object
+      properties:
+        variables:
+          type: array
+          items:
+            type: string
+            pattern: ^(\w|\w[\w.\-]*\w)$
+          readOnly: true
+          default:
+          - public_reference
+          - form_name
+          - form_version
+          - form_id
+          - registration_timestamp
+          - auth_type
+          title: Fixed metadata variable key list
+          description: A list of fixed variables to use in the metadata. These include
+            the registration variables of the JSON dump plugin.
+      required:
+      - variables
     Form:
       type: object
       description: |-
