@@ -121,6 +121,8 @@ class SelectBoxesFormatter(FormatterBase):
             # For the html output, wrap the values in li tags and put it inside an ul tag.
             # The selectboxes formatter handles all values at the same time,
             # so handle the full html formatting here.
+            if not selected_labels:
+                return ""
             return format_html(
                 "<ul>{values}</ul>",
                 values=format_html_join(

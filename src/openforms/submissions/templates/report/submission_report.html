@@ -82,7 +82,11 @@
                                                 </span>
 
                                                 <div aria-labelledby="{{ node_path }}" class="submission-step-row__value{% if not component_node.display_value %} submission-step-row__value--empty{% endif %}">
-                                                    {{ component_node.display_value|default:"" }}
+                                                    {% if component_node.display_value %}
+                                                        {{ component_node.display_value }}
+                                                    {% elif not component_node.layout_modifier %}
+                                                        {% trans "No information provided" %}
+                                                    {% endif %}
                                                 </div>
                                             {% endwith %}
                                         {% endif %}
