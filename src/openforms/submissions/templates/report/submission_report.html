@@ -6,11 +6,13 @@
 <html lang="{{ LANG }}" class="{{ theme.get_classname }}">
     <head>
         <meta charset="utf-8">
-        <title>{% block title %}
-            {% blocktrans with form_name=report.form.name trimmed %}
-                {{ form_name }}: PDF report
-            {% endblocktrans %}
-        {% endblock %}</title>
+        <title>{% spaceless %}
+            {% block title %}
+                {% blocktrans with form_name=report.form.name trimmed %}
+                    {{ form_name }}: PDF report
+                {% endblocktrans %}
+            {% endblock %}
+        {% endspaceless %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
         {% block extra_css %}{% endblock %}
