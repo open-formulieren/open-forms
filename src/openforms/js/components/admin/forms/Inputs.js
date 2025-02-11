@@ -96,13 +96,20 @@ DateTimeInput.propTypes = {
   onChange: PropTypes.func,
 };
 
-const Checkbox = ({name, label, helpText, noVCheckbox = false, ...extraProps}) => {
+const Checkbox = ({
+  name,
+  label,
+  helpText,
+  noVCheckbox = false,
+  fullWidth = false,
+  ...extraProps
+}) => {
   const {disabled = false} = extraProps;
   const prefix = useContext(PrefixContext);
   name = prefix ? `${prefix}-${name}` : name;
   const idFor = disabled ? undefined : `id_${name}`;
   return (
-    <div className={classNames({'field--disabled': disabled})}>
+    <div className={classNames({'field--disabled': disabled, 'w-100': fullWidth})}>
       <div className="flex-container checkbox-row">
         <input type="checkbox" name={name} id={idFor} {...extraProps} />{' '}
         <label className={classNames('inline', {vCheckboxLabel: !noVCheckbox})} htmlFor={idFor}>
@@ -123,6 +130,7 @@ Checkbox.propTypes = {
   label: PropTypes.node.isRequired,
   helpText: PropTypes.node,
   noVCheckbox: PropTypes.bool,
+  fullWidth: PropTypes.bool,
 };
 
 const Radio = ({name, idFor, label, helpText, ...extraProps}) => {

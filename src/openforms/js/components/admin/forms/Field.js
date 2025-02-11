@@ -59,6 +59,7 @@ const Field = ({
   errorClassPrefix = '',
   errorClassModifier = '',
   noManageChildProps = false,
+  extraModifiers = [],
 }) => {
   const intl = useIntl();
   const originalName = name;
@@ -78,10 +79,14 @@ const Field = ({
   }
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
 
-  const fieldClassName = classNames('flex-container', {
-    fieldBox: fieldBox,
-    errors: hasErrors,
-  });
+  const fieldClassName = classNames(
+    'flex-container',
+    {
+      fieldBox: fieldBox,
+      errors: hasErrors,
+    },
+    ...extraModifiers
+  );
   const wrapperClassName = classNames({'field--disabled': disabled});
 
   const fieldInputMarkup = (
@@ -146,6 +151,7 @@ Field.propTypes = {
   ]),
   fieldBox: PropTypes.bool,
   disabled: PropTypes.bool,
+  extraModifiers: PropTypes.arrayOf(PropTypes.oneOf(['flex-wrap'])),
 };
 
 export default Field;
