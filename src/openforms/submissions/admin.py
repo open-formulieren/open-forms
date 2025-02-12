@@ -498,8 +498,16 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
         "submission__public_registration_reference",
     )
     raw_id_fields = ("submission",)
+    fields = (
+        "title",
+        "content",
+        "submission",
+        "last_accessed",
+        "task_id",
+    )
 
     private_media_fields = ("content",)
+    readonly_fields = ("content",)
 
     def has_add_permission(self, request, obj=None):
         return False
