@@ -500,6 +500,7 @@ class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
     raw_id_fields = ("submission",)
 
     private_media_fields = ("content",)
+    readonly_fields = ("content",)
 
     def has_add_permission(self, request, obj=None):
         return False
