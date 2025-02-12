@@ -30,11 +30,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 08:19:22 GMT
+      - Wed, 12 Feb 2025 15:21:51 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
@@ -52,7 +52,7 @@ interactions:
       "kvkNummer", "identifier": "90002768"}, "actingSubject": {"identifierType":
       "opaque", "identifier": "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018@2D8FF1EF10279BC2643F376D89835151"}},
       "mandate": {"role": "bewindvoerder", "services": [{"id": "urn:etoegang:DV:00000001002308836000:services:9113",
-      "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc"}]}}}, "startAt": "2024-12-19"}}'
+      "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc"}]}}}, "startAt": "2025-02-12"}}'
     headers:
       Accept:
       - '*/*'
@@ -74,7 +74,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/ca83e7f4-501c-4bea-845b-ccd633b0daf6","uuid":"ca83e7f4-501c-4bea-845b-ccd633b0daf6","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"auth":{"source":"eherkenning","levelOfAssurance":"urn:etoegang:core:assurance-class:loa3","representee":{"identifierType":"bsn","identifier":"999991607"},"authorizee":{"legalSubject":{"identifierType":"kvkNummer","identifier":"90002768"},"actingSubject":{"identifierType":"opaque","identifier":"4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018@2D8FF1EF10279BC2643F376D89835151"}},"mandate":{"role":"bewindvoerder","services":[{"id":"urn:etoegang:DV:00000001002308836000:services:9113","uuid":"34085d78-21aa-4481-a219-b28d7f3282fc"}]}}},"geometry":null,"startAt":"2024-12-19","endAt":null,"registrationAt":"2024-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/233d4710-5b34-4b45-82f1-692687e8eed5","uuid":"233d4710-5b34-4b45-82f1-692687e8eed5","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"auth":{"source":"eherkenning","levelOfAssurance":"urn:etoegang:core:assurance-class:loa3","representee":{"identifierType":"bsn","identifier":"999991607"},"authorizee":{"legalSubject":{"identifierType":"kvkNummer","identifier":"90002768"},"actingSubject":{"identifierType":"opaque","identifier":"4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018@2D8FF1EF10279BC2643F376D89835151"}},"mandate":{"role":"bewindvoerder","services":[{"id":"urn:etoegang:DV:00000001002308836000:services:9113","uuid":"34085d78-21aa-4481-a219-b28d7f3282fc"}]}}},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -89,13 +89,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 08:19:22 GMT
+      - Wed, 12 Feb 2025 15:21:51 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/ca83e7f4-501c-4bea-845b-ccd633b0daf6
+      - http://localhost:8002/api/v2/objects/233d4710-5b34-4b45-82f1-692687e8eed5
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
