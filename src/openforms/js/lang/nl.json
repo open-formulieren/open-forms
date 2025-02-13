@@ -1098,6 +1098,11 @@
     "description": "JSON editor: \"interpolate\" variable source label",
     "originalDefault": "Text with (embedded) form field(s)"
   },
+  "Is9K3/": {
+    "defaultMessage": "Add all form variables",
+    "description": "JSON registration options 'add all form variables' label",
+    "originalDefault": "Add all form variables"
+  },
   "ItH6EY": {
     "defaultMessage": "Tijd (time)",
     "description": "data type time",

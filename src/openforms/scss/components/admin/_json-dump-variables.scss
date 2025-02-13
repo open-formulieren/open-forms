@@ -1,0 +1,10 @@
+@use 'microscope-sass/lib/bem';
+
+.json-dump-variables {
+  display: flex;
+
+  @include bem.modifier('horizontal') {
+    align-items: center;
+    gap: 0.5em;
+  }
+}
