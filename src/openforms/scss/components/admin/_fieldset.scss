@@ -1,0 +1,8 @@
+/**
+ * The django admin `.collapsed` styling on fieldset elements sets `overflow: hidden;`.
+ * Seeing how we already hide the fieldset content in the javascript code,
+ * the `overflow: hidden;` only hides the fieldset toggle (which we want to keep visible)
+ */
+.openforms-fieldset.collapsed {
+  overflow: visible !important;
+}

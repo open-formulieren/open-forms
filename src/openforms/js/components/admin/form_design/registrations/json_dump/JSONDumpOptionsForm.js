@@ -65,6 +65,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
               defaultMessage="Metadata variables"
             />
           }
+          extraClassName="openforms-fieldset"
           collapsible
           initialCollapsed
         >
