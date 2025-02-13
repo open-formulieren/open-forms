@@ -590,7 +590,7 @@
   "5EOSwM": [
     {
       "type": 0,
-      "value": "Additional"
+      "value": "Aanvullend"
     }
   ],
   "5JNnFB": [
@@ -1256,7 +1256,7 @@
   "AkG8Zu": [
     {
       "type": 0,
-      "value": "Plugin configuration: JSON"
+      "value": "Plugin configuratie: JSON"
     }
   ],
   "AtBVAV": [
@@ -1390,7 +1390,7 @@
   "BiKRJT": [
     {
       "type": 0,
-      "value": "Key"
+      "value": "Sleutel"
     }
   ],
   "Bin/vM": [
@@ -1584,7 +1584,7 @@
   "Cz+O0n": [
     {
       "type": 0,
-      "value": "Source"
+      "value": "Bron"
     }
   ],
   "D0hDzV": [
@@ -2335,7 +2335,7 @@
   "Is9K3/": [
     {
       "type": 0,
-      "value": "Add all form variables"
+      "value": "Alle formuliervariabelen toevoegen"
     }
   ],
   "ItH6EY": [
@@ -2463,7 +2463,7 @@
   "JfgATN": [
     {
       "type": 0,
-      "value": "Additional variables to include."
+      "value": "Aanvullende variabelen om toe te voegen."
     }
   ],
   "JhdlEg": [
@@ -2531,7 +2531,7 @@
   "KMTsJc": [
     {
       "type": 0,
-      "value": "Static"
+      "value": "Vast"
     }
   ],
   "KMbfsU": [
@@ -2567,7 +2567,7 @@
   "Kl9yvd": [
     {
       "type": 0,
-      "value": "Path"
+      "value": "Pad"
     }
   ],
   "KrJ+rN": [
@@ -2913,7 +2913,7 @@
   "Od+jm6": [
     {
       "type": 0,
-      "value": "Values:"
+      "value": "Waarden:"
     }
   ],
   "Oi+DV0": [
@@ -2975,7 +2975,7 @@
   "OpkUgV": [
     {
       "type": 0,
-      "value": "Whether to include this variable in the data to be sent."
+      "value": "Geeft aan of deze variabele aan de gegevens wordt toegevoegd."
     }
   ],
   "Orf0vr": [
@@ -3825,7 +3825,7 @@
   "X+NeMd": [
     {
       "type": 0,
-      "value": "Include variable in metadata"
+      "value": "Variabele toevoegen aan metagegevens"
     }
   ],
   "X18/UP": [
@@ -3915,13 +3915,13 @@
   "Xpw7Gk": [
     {
       "type": 0,
-      "value": "Whether to include this variable in the metadata to be sent."
+      "value": "Geeft aan of deze variabele aan de metagegevens wordt toegevoegd."
     }
   ],
   "XyDeaD": [
     {
       "type": 0,
-      "value": "Variables"
+      "value": "Variabelen"
     }
   ],
   "Y4oNhH": [
@@ -4326,7 +4326,7 @@
   "bmUuAH": [
     {
       "type": 0,
-      "value": "Fixed"
+      "value": "Inbegrepen"
     }
   ],
   "bmlODS": [
@@ -5128,7 +5128,7 @@
   "hfeO2r": [
     {
       "type": 0,
-      "value": "Registration"
+      "value": "Registratie"
     }
   ],
   "hhoWxC": [
@@ -5194,7 +5194,7 @@
   "iQblZd": [
     {
       "type": 0,
-      "value": "Variables that are already included."
+      "value": "Variabelen die al zijn inbegrepen."
     }
   ],
   "iX0YPY": [
@@ -5760,7 +5760,7 @@
   "mfD7J5": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "mpzdoT": [
@@ -5796,7 +5796,7 @@
   "nEg4dr": [
     {
       "type": 0,
-      "value": "Metadata:"
+      "value": "Metagegevens:"
     }
   ],
   "nFXYHB": [
@@ -5838,7 +5838,7 @@
   "nZZkHx": [
     {
       "type": 0,
-      "value": "Include variable"
+      "value": "Variabele toevoegen"
     }
   ],
   "neCqv9": [
@@ -5964,7 +5964,7 @@
   "ow5LZk": [
     {
       "type": 0,
-      "value": "Variables to include in the data to be sent."
+      "value": "Variabelen die aan de gegevens worden toegevoegd."
     }
   ],
   "oxYXJX": [
@@ -6340,7 +6340,7 @@
   "sAfROS": [
     {
       "type": 0,
-      "value": "Metadata variables"
+      "value": "Metagegevensvariabelen"
     }
   ],
   "sCkGL9": [
@@ -6392,7 +6392,7 @@
   "sokfvf": [
     {
       "type": 0,
-      "value": "The service to send the data to."
+      "value": "De service waar de gegevens naartoe worden gestuurd."
     }
   ],
   "sptpzv": [
@@ -6568,7 +6568,7 @@
   "uUf7cu": [
     {
       "type": 0,
-      "value": "Path relative to the Service API root."
+      "value": "Pad relatief aan de Service API basisurl."
     }
   ],
   "uVVO4b": [

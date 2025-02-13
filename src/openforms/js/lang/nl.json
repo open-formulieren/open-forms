@@ -252,7 +252,7 @@
     "originalDefault": "The value of the selected field will be the process variable value."
   },
   "5EOSwM": {
-    "defaultMessage": "Additional",
+    "defaultMessage": "Aanvullend",
     "description": "JSON registration options 'additionalMetadataVariables' label",
     "originalDefault": "Additional"
   },
@@ -560,7 +560,7 @@
     "originalDefault": "Something went wrong while retrieving the available role types defined in the selected case. Please check that the services in the selected API group are configured correctly."
   },
   "AkG8Zu": {
-    "defaultMessage": "Plugin configuration: JSON",
+    "defaultMessage": "Plugin configuratie: JSON",
     "description": "JSON registration options modal title",
     "originalDefault": "Plugin configuration: JSON"
   },
@@ -610,7 +610,7 @@
     "originalDefault": "Boolean"
   },
   "BiKRJT": {
-    "defaultMessage": "Key",
+    "defaultMessage": "Sleutel",
     "description": "Fixed metadata table name key title",
     "originalDefault": "Key"
   },
@@ -691,7 +691,7 @@
     "originalDefault": "Submission allowed"
   },
   "Cz+O0n": {
-    "defaultMessage": "Source",
+    "defaultMessage": "Bron",
     "description": "Fixed metadata table source title",
     "originalDefault": "Source"
   },
@@ -1099,7 +1099,7 @@
     "originalDefault": "Text with (embedded) form field(s)"
   },
   "Is9K3/": {
-    "defaultMessage": "Add all form variables",
+    "defaultMessage": "Alle formuliervariabelen toevoegen",
     "description": "JSON registration options 'add all form variables' label",
     "originalDefault": "Add all form variables"
   },
@@ -1159,7 +1159,7 @@
     "originalDefault": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
   },
   "JfgATN": {
-    "defaultMessage": "Additional variables to include.",
+    "defaultMessage": "Aanvullende variabelen om toe te voegen.",
     "description": "JSON registration options 'additionalMetadataVariables' helpText",
     "originalDefault": "Additional variables to include."
   },
@@ -1199,7 +1199,7 @@
     "originalDefault": "Content"
   },
   "KMTsJc": {
-    "defaultMessage": "Static",
+    "defaultMessage": "Vast",
     "description": "'Static' source label for fixed metadata variables table",
     "originalDefault": "Static"
   },
@@ -1214,7 +1214,7 @@
     "originalDefault": "Manually defined"
   },
   "Kl9yvd": {
-    "defaultMessage": "Path",
+    "defaultMessage": "Pad",
     "description": "JSON registration options 'path' label",
     "originalDefault": "Path"
   },
@@ -1436,7 +1436,7 @@
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
   "Od+jm6": {
-    "defaultMessage": "Values:",
+    "defaultMessage": "Waarden:",
     "description": "Label indicating the 'values' part of the data",
     "originalDefault": "Values:"
   },
@@ -1457,7 +1457,7 @@
     "originalDefault": "Advanced"
   },
   "OpkUgV": {
-    "defaultMessage": "Whether to include this variable in the data to be sent.",
+    "defaultMessage": "Geeft aan of deze variabele aan de gegevens wordt toegevoegd.",
     "description": "'Include variable' checkbox help text",
     "originalDefault": "Whether to include this variable in the data to be sent."
   },
@@ -1838,7 +1838,7 @@
     "originalDefault": "Active"
   },
   "X+NeMd": {
-    "defaultMessage": "Include variable in metadata",
+    "defaultMessage": "Variabele toevoegen aan metagegevens",
     "description": "'Include variable in metadata' checkbox label",
     "originalDefault": "Include variable in metadata"
   },
@@ -1893,12 +1893,12 @@
     "originalDefault": "House number Schema target"
   },
   "Xpw7Gk": {
-    "defaultMessage": "Whether to include this variable in the metadata to be sent.",
+    "defaultMessage": "Geeft aan of deze variabele aan de metagegevens wordt toegevoegd.",
     "description": "'Include variable in metadata' checkbox help text",
     "originalDefault": "Whether to include this variable in the metadata to be sent."
   },
   "XyDeaD": {
-    "defaultMessage": "Variables",
+    "defaultMessage": "Variabelen",
     "description": "JSON registration options 'variables' label",
     "originalDefault": "Variables"
   },
@@ -2069,7 +2069,7 @@
     "originalDefault": "Objecttype"
   },
   "bmUuAH": {
-    "defaultMessage": "Fixed",
+    "defaultMessage": "Inbegrepen",
     "description": "JSON registration options 'fixedMetadataVariables' label",
     "originalDefault": "Fixed"
   },
@@ -2445,7 +2445,7 @@
     "originalDefault": "Are you sure you want to delete this variable?"
   },
   "hfeO2r": {
-    "defaultMessage": "Registration",
+    "defaultMessage": "Registratie",
     "description": "'Registration' source label for fixed metadata variables table",
     "originalDefault": "Registration"
   },
@@ -2486,7 +2486,7 @@
     "originalDefault": "Attachment informatieobjecttype"
   },
   "iQblZd": {
-    "defaultMessage": "Variables that are already included.",
+    "defaultMessage": "Variabelen die al zijn inbegrepen.",
     "description": "JSON registration options 'fixedMetadataVariables' helpText",
     "originalDefault": "Variables that are already included."
   },
@@ -2711,7 +2711,7 @@
     "originalDefault": "Form field"
   },
   "mfD7J5": {
-    "defaultMessage": "Name",
+    "defaultMessage": "Naam",
     "description": "Fixed metadata table name title",
     "originalDefault": "Name"
   },
@@ -2726,7 +2726,7 @@
     "originalDefault": "Version"
   },
   "nEg4dr": {
-    "defaultMessage": "Metadata:",
+    "defaultMessage": "Metagegevens:",
     "description": "Label indicating the 'metadata' part of the data",
     "originalDefault": "Metadata:"
   },
@@ -2751,7 +2751,7 @@
     "originalDefault": "Something went wrong while retrieving the available object type versions."
   },
   "nZZkHx": {
-    "defaultMessage": "Include variable",
+    "defaultMessage": "Variabele toevoegen",
     "description": "'Include variable' checkbox label",
     "originalDefault": "Include variable"
   },
@@ -2816,7 +2816,7 @@
     "originalDefault": "The prefill values will be taken from an object of the selected type."
   },
   "ow5LZk": {
-    "defaultMessage": "Variables to include in the data to be sent.",
+    "defaultMessage": "Variabelen die aan de gegevens worden toegevoegd.",
     "description": "JSON registration options 'variables' helpText",
     "originalDefault": "Variables to include in the data to be sent."
   },
@@ -2996,7 +2996,7 @@
     "originalDefault": "(not configured yet)"
   },
   "sAfROS": {
-    "defaultMessage": "Metadata variables",
+    "defaultMessage": "Metagegevensvariabelen",
     "description": "Metadata variables fieldset title",
     "originalDefault": "Metadata variables"
   },
@@ -3016,7 +3016,7 @@
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
   },
   "sokfvf": {
-    "defaultMessage": "The service to send the data to.",
+    "defaultMessage": "De service waar de gegevens naartoe worden gestuurd.",
     "description": "JSON registration options 'serviceSelect' helpText",
     "originalDefault": "The service to send the data to."
   },
@@ -3106,7 +3106,7 @@
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "uUf7cu": {
-    "defaultMessage": "Path relative to the Service API root.",
+    "defaultMessage": "Pad relatief aan de Service API basisurl.",
     "description": "JSON registration options 'path' helpText",
     "originalDefault": "Path relative to the Service API root."
   },
