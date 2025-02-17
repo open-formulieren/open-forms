@@ -34,8 +34,8 @@ interactions:
         augustus 1998"},"reden":{"code":"O","omschrijving":"overlijden"}},"overlijden":{"datum":{"type":"Datum","datum":"1998-08-15","langFormaat":"15
         augustus 1998"}},"verblijfplaats":{"type":"Adres","verblijfadres":{"korteStraatnaam":"Nieuwe
         Parklaan","huisnummer":58,"postcode":"2597LD"},"functieAdres":{"code":"W","omschrijving":"woonadres"},"datumVan":{"type":"Datum","datum":"1997-07-28","langFormaat":"28
-        juli 1997"}},"gemeenteVanInschrijving":{"code":"0518","omschrijving":"''s-Gravenhage"},"adressering":{"aanschrijfwijze":{"naam":"A.H.
-        Holthuizen"},"aanhef":"Geachte heer Holthuizen","gebruikInLopendeTekst":"de
+        juli 1997"}},"gemeenteVanInschrijving":{"code":"0518","omschrijving":"''s-Gravenhage"},"adressering":{"aanhef":"Geachte
+        heer Holthuizen","aanschrijfwijze":{"naam":"A.H. Holthuizen"},"gebruikInLopendeTekst":"de
         heer Holthuizen","adresregel1":"Nieuwe Parklaan 58","adresregel2":"2597 LD  ''S-GRAVENHAGE"},"partners":[{"naam":{"geslachtsnaam":"Wiegman"},"aangaanHuwelijkPartnerschap":{"datum":{"type":"Datum","datum":"1926-07-15","langFormaat":"15
         juli 1926"}}}]}]}'
     headers:
@@ -44,7 +44,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Dec 2024 07:01:14 GMT
+      - Mon, 17 Feb 2025 16:30:28 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:
