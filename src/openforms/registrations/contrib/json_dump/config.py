@@ -47,26 +47,19 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         required=True,
         min_length=1,
     )
-    # Note: this field cannot be updated in the frontend, and is used as read-only.
-    #  Adding a read_only=True argument to it, though, will make it not available in the
-    #  backend options of the plugin, as they are not added to the validated_data
-    #  property of the serializer.
+    # Note: the defaults for this field are listed in `FixedMetadataVariableSerializer`.
+    # They are in a separate API to make them available in the frontend as default fixed
+    # options.
+    # TODO: this list should be validated against the available FormVariable records
+    #  that exist for the form.
     fixed_metadata_variables = serializers.ListField(
         child=FormioVariableKeyField(),
-        default=[
-            "public_reference",
-            "form_name",
-            "form_version",
-            "form_id",
-            "registration_timestamp",
-            "auth_type",
-        ],
         label=_("Fixed metadata variable key list"),
         help_text=_(
             "A list of required variables to use in the metadata. These include "
             "the registration variables of the JSON dump plugin."
         ),
-        required=False,
+        required=True,
     )
     # TODO: this list should be validated against the available FormVariable records
     #  that exist for the form.
