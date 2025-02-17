@@ -6,6 +6,96 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.0-alpha.0 (2025-02-17)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade procedure
+-----------------
+
+⚠️ Ensure you upgrade to Open Forms 3.0.1 before upgrading to the 3.1.0 release series.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`5093`] Improved user experience when working with array values in the form
+  variables table.
+* [:backend:`5024`] Loosened validation on ZGW APIs and Objects API registration
+  backends. Allowing configured domains to contain lowercase characters.
+* [:backend:`4622`] Improved accessibility for logo used in submission report PDF.
+* [:backend:`4882`] Added documentation on how to use django-setup-configuration.
+* [:backend:`4993`] Retrieving select/selectboxes components values/options from
+  Referentielijsten API.
+* [:backend:`2177`] Changed the map component output to geoJson geometry. It's now
+  possible to place pins, lines and polygons in the map component.
+* Added the ability to configure ``AXES_FAILURE_LIMIT`` environment variable for defining
+  the number of login attempts.
+* [:backend:`4908`, :backend:`4980`, :backend:`5012`, :backend:`5066`] Added new
+  JSON Dump registration plugin. Allowing submitted form data to be sent as a
+  ``JSON object`` to a configured service.
+
+    - Added documentation on how to use the JSON Dump registration plugin.
+    - It's possible to quickly add all form variables to the data sent
+      to the configured service, using a button in the plugin configuration.
+    - You can include metadata when submitting data to a configured service.
+    - Added JSON schema definitions to be sent along the submitted data to the configured
+      service.
+* [:backend:`4931`] Upgraded the form submission statistics to reflect actual submissions
+  and added the ability to export the results based on various filters.
+* [:backend:`4991`] Added selection of Referentielijsten API services to global
+  configuration.
+* [:backend:`4785`] Updated the eHerkenning metadata generation to match the latest
+  standard version(s).
+
+**Bugfixes**
+
+* [:backend:`5077`] Fixed the performance issues when loading logic rules in the admin.
+* [:backend:`5084`] Fixed the performance issues when saving form steps/definitions with
+  large numbers of components (30-100), especially if they are reusable form definitions
+  used in many (20+) forms. This was caused by an earlier patch for :backend:`5058`.
+* [:backend:`4375`] Reverted "Removed environment variable
+  ``DISABLE_SENDING_HIDDEN_FIELDS`` for Objects API."
+* [:backend:`4510`] Fixed error messages not shown properly on the form summary page.
+* [:backend:`5037`] Fixed submission PDF not able to format date values.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+* [:backend:`4689`] Fixed file uploads in repeating groups not being processed correctly.
+* [:backend:`5034`] Fixed Objects API registration plugin crashing by validating object's
+  ownership only when the object should be updated.
+* Fixed a misconfiguration for AddressNL end-to-end testing in CI.
+* Fixed registration management command.
+* Fixed styling of clearable react-select component.
+* Fixed an upgrade check not blocking the database migrations from starting.
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* Fixed default version handling for Objects API registration.
+* [:backend:`4825`] Fixed prefill reporting false failures to daily digest when multiple
+  authentication flows are used.
+
+**Project maintenance**
+
+* [:sdk:`76`] Use ESM modules instead of UMD for the SDK, if the browser supports it.
+* Removed unused ``celery_worker.sh`` command line arguments.
+* Addressed proptype warnings in SubmissionLimitFields components.
+* [:backend:`4927`] Added system checking for missing configuration on non-required
+  serializer fields.
+* [:backend:`4654`] Cleaned up and squashed migrations where possible.
+* Added constraint for requiring 3.0.1 before upgrading to 3.1.0.
+* Updated bug report issue template according to new GitHub's types.
+* Removed 2.7.x from supported versions in Docker Hub description.
+* Added 3.0.x to Docker Hub description.
+* Updated backend dependencies
+
+    - Bumped playwright to 1.49.1.
+    - Bumped typing-extensions to 4.12.2.
+    - Bumped django to 4.2.18 patch release.
+* Updated frontend dependencies
+
+    - Bumped undici to 5.28.5.
+
 3.0.4 (2025-02-06)
 ==================
 
@@ -88,7 +178,7 @@ Regular bugfix release
 
 2.7.11 (2025-01-09)
 ===================
-	
+
 Final bugfix release in the ``2.7.x`` series.
 
 * [:backend:`4795`] Fixed not always being able to upload ``.msg`` files.
@@ -127,7 +217,7 @@ Open Forms 3.0.0 is a feature release.
 .. epigraph::
 
    Until the 19th century, the countryside of North and South Holland was divided into
-   hundreds of small legal-administrative units, the 'lordships' (Heerlijkheid). The current 
+   hundreds of small legal-administrative units, the 'lordships' (Heerlijkheid). The current
    municipalities can be considered as a kind of successors of the former lordships. The release
    name reflects the influence of various large and smaller municipalities on this release.
    This is also a "lordly" release with many features, improvements and clean-ups.
@@ -149,7 +239,7 @@ To upgrade to 3.0, please:
 * ⚠️ Please review the instructions in the documentation under **Installation** >
   **Upgrade details to Open Forms 3.0.0** before and during upgrading. You can find
   details for the deprecated code and how this might affect you.
-  
+
 Where possible, we have included upgrade checks that can you inform about detected problems before
 any database changes are made. We will add (some) of these checks to the next 2.8.x patch release
 to so you can run them to explore possible impact.
@@ -172,7 +262,7 @@ An example is defined in :ref:`Prefill examples <examples_objects_prefill>`.
 We now provide a much more intuitive user experience to have someone cosign a form submission - users need
 to click less and in general we removed a lot of friction for this process.
 
-On top of that, the new configuration options for cosign allow you to tweak the content of emails and screens 
+On top of that, the new configuration options for cosign allow you to tweak the content of emails and screens
 when cosigning is enabled in a form - from inviting someone to cosign to the confirmation page they get.
 
 **💳 More powerful price calculations**
@@ -241,7 +331,7 @@ Detailed changes
     - Moved the introduction page configuration to clarify the difference with the introduction text fields.
 * Registration plugins:
 
-    * [:backend:`4686`] All the registration plugin configuration options are now consistently managed in a 
+    * [:backend:`4686`] All the registration plugin configuration options are now consistently managed in a
       modal with better UX.
 
     * Email:
@@ -320,7 +410,7 @@ Detailed changes
     - Updated translations of improved texts.
 * [:backend:`4815`] The minimum submission removal limit is now 0 days, allowing submissions to be deleted on the
   same day they were created.
-* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents. 
+* [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents.
 * [:backend:`4719`] Improved accessibility in postcode fields.
 * [:backend:`4707`] You can now resize the Json-Logic widgets.
 * [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
@@ -362,7 +452,7 @@ Detailed changes
 * Fixed long words taking a lot of place and pushing icons.
 * Fixed markup of checkboxes with help text.
 * Fixed migration for update summary tag.
-* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission 
+* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission
   still requires cosigning.
 * Fixed variables mapping by applying fallback for missing form values.
 * [:backend:`4862`] Fixed unintended hashing of identifying attributes when the cosigner
@@ -504,7 +594,7 @@ Detailed changes
   (i.e. on the same day).
 * [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents.
 * [:backend:`4707`] You can now resize the Json-Logic widgets.
-* [:backend:`4686`} All the registration plugin configuration options are now consistently managed in a 
+* [:backend:`4686`} All the registration plugin configuration options are now consistently managed in a
   modal with better UX.
 * [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
 * [:backend:`4719`] Improved accessibility in postcode fields.
@@ -547,7 +637,7 @@ Detailed changes
 Regular bugfix release
 
 .. warning:: Manual intervention required
-    
+
     We fixed a bug that would mess with the default values of selectboxes components.
     A script is included to fix the forms that are affected - you need to run this
     after deploying the patch release.
@@ -571,7 +661,7 @@ Regular bugfix release
   filename.
 * [:backend:`4727`] Fixed crash when a user defined variable was changed to an array
   datatype.
-* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission 
+* [:backend:`4320`] Fixed ambiguous langugage in the summary PDF when the submission
   still requires cosigning.
 
 2.7.10 (2024-11-25)
@@ -580,7 +670,7 @@ Regular bugfix release
 Periodic bugfix release
 
 .. warning:: Manual intervention required
-    
+
     We fixed a bug that would mess with the default values of selectboxes components.
     A script is included to fix the forms that are affected - you need to run this
     after deploying the patch release.
@@ -589,7 +679,7 @@ Periodic bugfix release
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
-    
+
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
 
@@ -601,7 +691,7 @@ Periodic bugfix release
   in a step that's being skipped. See the instructions below on how to patch existing forms.
 * [:backend:`4823`] Fixed uploading files with leading or trailing whitespace in the
   filename.
-* [:backend:`4727`] Fixed a crash in the form designer UI when a user defined variable was 
+* [:backend:`4727`] Fixed a crash in the form designer UI when a user defined variable was
   changed to an array datatype.
 
 2.8.1 (2024-10-29)
