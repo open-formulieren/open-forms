@@ -29,7 +29,7 @@ interactions:
         alt=\"Open Gemeente Initiatief logo\" height=\"48\">\n          <p>\n          Developed
         by <a class=\"link\" href=\"https://www.maykinmedia.nl\">Maykin Media</a><br>\n
         \         within the <a class=\"link\" href=\"https://opengem.nl\">Open Gemeente
-        Initiatief</a> &copy; 2024<br>\n          commissioned by the <a class=\"link\"
+        Initiatief</a> &copy; 2025<br>\n          commissioned by the <a class=\"link\"
         href=\"https://www.utrecht.nl\">Municipality of Utrecht</a>\n          </p>\n
         \       </div>\n        <div class=\"footer__col\">\n          <h5 class=\"footer__header\">Objects
         API</h5>\n          <ul class=\"footer__list\">\n            <li><a class=\"link
@@ -58,11 +58,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 08:18:25 GMT
+      - Wed, 12 Feb 2025 16:14:11 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:

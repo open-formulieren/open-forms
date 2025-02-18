@@ -40,38 +40,40 @@ interactions:
         deze website&#63; Meld u dan aan in het backoffice van  om de details van
         de foutmelding te bekijken.\r\n\t\t</td>\r\n\t</tr>\r\n</table>\r\n<input
         type=\"hidden\" name=\"log\" value=\"\">\r\n<br>\r\n\r\n\t\t<script type=\"text/javascript\"
-        src=\"js/jquery.core/jquery-3.7.0.min.js\"></script>\r\n\t\t<script type=\"text/javascript\"
-        src=\"js/jquery.plugins/jquery-migrate-3.4.1.min.js\"></script>\r\n\t\r\n\t\t<script
-        type=\"text/javascript\">\r\n\t\t\tvar OGONE = {};\r\n\t\t\tOGONE.jQuery =
-        $.noConflict(true);\r\n\t\t</script>\r\n\t\r\n\t<script type=\"text/javascript\"
-        language=\"JavaScript\" src=\"js/fp/Fp_inc.1.2.js\"></script>\r\n\t<script
-        type=\"text/javascript\" language=\"JavaScript\" src=\"base64_inc.js\"></script>\r\n\t\r\n<!--
+        src=\"js/jquery.core/jquery-3.7.0.min.js\" integrity=\"sha384-GQ8AFQ0PaocgaoU/dMNx0/uJ5UaGMsz1dXhp7v12tf3z/tDFUsqH6JaB/AGVqSf+\"></script>\r\n\t\t<script
+        type=\"text/javascript\" src=\"js/jquery.plugins/jquery-migrate-3.4.1.min.js\"
+        integrity=\"sha384-3Sq96XaBZcyuE4VzAYBYQCu/HvsVBGcFXYnqOqDIHBeogALpMRGJkn2rpYqIHqUs\"></script>\r\n\t\r\n\t\t<script
+        type=\"text/javascript\" nonce=\"FB2D7ABCBD10869CCF652F98497DCF9E95796B5910A412673CD9F16BC2CDCE43\">\r\n\t\t\tvar
+        OGONE = {};\r\n\t\t\tOGONE.jQuery = $.noConflict(true);\r\n\t\t</script>\r\n\t\r\n\t<script
+        type=\"text/javascript\" language=\"JavaScript\" src=\"js/fp/Fp_inc.1.2.js\"
+        integrity=\"sha384-RY0LIIN5zluHL26QU1rgCWsyh0x+GPsJSELN/Bt0A9DQqOxh96gP/mZpclQ1aH8H\"></script>\r\n\t<script
+        type=\"text/javascript\" language=\"JavaScript\" src=\"base64_inc.js\" integrity=\"sha384-U2In9++bBc35Qz1Qh/+F7ZseLPZPNmX8kLfQa+BnZ/iy9xLCSlXQMyihKJQuedAT\"></script>\r\n\t\r\n<!--
         Further information / Cancel -->\r\n<h2 style=\"display: inline; position:
         absolute; left: -1000px; top: -1000px; width: 0px; height: 0px; overflow:
         hidden;\">Overige gegevens / Annuleren</h2>\r\n<table class=ncoltable3 border=\"0\"
         cellpadding=\"2\" cellspacing=\"0\" width=\"95%\" id=\"ie_cc\" style=\"behavior:url(#default#clientCaps)\">\r\n\t<tr><td
         class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"></td><td
-        class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=8&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=506753A51B4664AF374CEC369D23FB92B6E8F246&CSRFTS=20241219123326\"
+        class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=8&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=63B92F97F386B407EFDE83F20F9332C1EA34CA40&CSRFTS=20250217174209\"
         target=\"_blank\"><img border=\"0\" src=\"https&#58;//ogone.test.v-psp.com/images/pp_WorldLine8.png\"
         alt=\"Betaling verwerkt door Worldline\" title=\"Betaling verwerkt door Worldline\"
-        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=8&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=F432DEB8B26850C09890304D173C1D22CFA03C49&amp;CSRFTS=20241219123326\"
-        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=F54C9427DECC3F98F94314296FE2D09BB238DE15&amp;CSRFTS=20241219123326\"
-        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=ED0222B3B2B200A14E6DF7CAA76EE30330FC2217&amp;CSRFTS=20241219123326\"
+        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=8&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=44432B384537D6D5D42B066DD0628933A98FEE77&amp;CSRFTS=20250217174209\"
+        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=F706E7A7AC2F49E42F6EBEFE001369E2CF42D71F&amp;CSRFTS=20250217174209\"
+        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=8&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=F7B76065A4F5281E0846D7845A9AC0E9F4C672C5&amp;CSRFTS=20250217174209\"
         target=\"_blank\">Wettelijke informatie<!--Legal--></a></small></small></td><td
         class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\">&nbsp;</td></tr>\r\n\r\n</table>\r\n</font></html>"
     headers:
       cache-control:
       - private, max-age=0
       content-length:
-      - '4328'
+      - '4737'
       content-type:
       - text/html; Charset=utf-8
       date:
-      - Thu, 19 Dec 2024 11:33:25 GMT
+      - Mon, 17 Feb 2025 16:42:09 GMT
       expires:
-      - Thu, 19 Dec 2024 11:32:25 GMT
+      - Mon, 17 Feb 2025 16:41:08 GMT
       set-cookie:
-      - sessionTest=b8a3a5cc-7213-493e-b26c-d89d42faade2; path=/ncol/test/; Secure;
+      - sessionTest=72660835-d1df-4c99-ade7-2d34f7ab9a07; path=/ncol/test/; Secure;
         HttpOnly
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;

@@ -1,9 +1,9 @@
 interactions:
 - request:
     body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-      "bronorganisatie": "000000000", "creatiedatum": "2024-12-19", "titel": "Form
-      017", "auteur": "Aanvrager", "taal": "eng", "formaat": "application/pdf", "inhoud":
-      "", "status": "definitief", "bestandsnaam": "open-forms-Form 017.pdf", "ontvangstdatum":
+      "bronorganisatie": "000000000", "creatiedatum": "2025-02-12", "titel": "Form
+      018", "auteur": "Aanvrager", "taal": "eng", "formaat": "application/pdf", "inhoud":
+      "", "status": "definitief", "bestandsnaam": "open-forms-Form 018.pdf", "ontvangstdatum":
       null, "beschrijving": "Ingezonden formulier", "indicatieGebruiksrecht": false,
       "bestandsomvang": 0}'
     headers:
@@ -12,7 +12,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczNDU5NjM2NSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.MkNmZbUDo8igDkUBe7jJhMLKGOd3ezHxELdshE-tn_0
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczOTM3MzcxNCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.AmrAcXRdr5-g4uNEIztUDjEGB7kuzsnnhB_psd8CtRs
       Connection:
       - keep-alive
       Content-Length:
@@ -25,9 +25,9 @@ interactions:
     uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
   response:
     body:
-      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a85e9e34-fb97-4e86-a21f-53520be79581","identificatie":"DOCUMENT-2024-0000000017","bronorganisatie":"000000000","creatiedatum":"2024-12-19","titel":"Form
-        017","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2024-12-19T08:19:25.882775Z","bestandsnaam":"open-forms-Form
-        017.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a85e9e34-fb97-4e86-a21f-53520be79581/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9717ed62-5f81-4ea0-b769-285424129390","identificatie":"DOCUMENT-2025-0000000024","bronorganisatie":"000000000","creatiedatum":"2025-02-12","titel":"Form
+        018","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"eng","versie":1,"beginRegistratie":"2025-02-12T15:21:54.518313Z","bestandsnaam":"open-forms-Form
+        018.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9717ed62-5f81-4ea0-b769-285424129390/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
         formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
     headers:
       API-version:
@@ -41,7 +41,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/a85e9e34-fb97-4e86-a21f-53520be79581
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/9717ed62-5f81-4ea0-b769-285424129390
       Referrer-Policy:
       - same-origin
       Vary:
@@ -84,11 +84,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 08:19:25 GMT
+      - Wed, 12 Feb 2025 15:21:54 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
@@ -102,7 +102,7 @@ interactions:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"bron": {"naam": "Open Formulieren", "kenmerk":
       "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"}, "type": "terugbelnotitie", "aanvraaggegevens":
-      {"test-slug": {"voornaam": "Foo"}}, "taal": "en"}, "startAt": "2024-12-19"}}'
+      {"test-slug": {"voornaam": "Foo"}}, "taal": "en"}, "startAt": "2025-02-12"}}'
     headers:
       Accept:
       - '*/*'
@@ -124,8 +124,8 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/5375cc7c-5539-40bf-be91-13ca7fff0a7f","uuid":"5375cc7c-5539-40bf-be91-13ca7fff0a7f","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
-        Formulieren","kenmerk":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"},"type":"terugbelnotitie","aanvraaggegevens":{"test-slug":{"voornaam":"Foo"}},"taal":"en"},"geometry":null,"startAt":"2024-12-19","endAt":null,"registrationAt":"2024-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/d4f1b7c5-9b3a-44f2-af68-1e6abae87d9f","uuid":"d4f1b7c5-9b3a-44f2-af68-1e6abae87d9f","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bron":{"naam":"Open
+        Formulieren","kenmerk":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"},"type":"terugbelnotitie","aanvraaggegevens":{"test-slug":{"voornaam":"Foo"}},"taal":"en"},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -140,13 +140,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 08:19:26 GMT
+      - Wed, 12 Feb 2025 15:21:54 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/5375cc7c-5539-40bf-be91-13ca7fff0a7f
+      - http://localhost:8002/api/v2/objects/d4f1b7c5-9b3a-44f2-af68-1e6abae87d9f
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:

@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"nested": {"bsn": "111222333"}, "foo":
-      "bar"}, "startAt": "2024-12-19"}}'
+      "bar"}, "startAt": "2025-02-12"}}'
     headers:
       Accept:
       - '*/*'
@@ -24,7 +24,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/f3b8ef27-6d41-445a-a625-4a229b568cdf","uuid":"f3b8ef27-6d41-445a-a625-4a229b568cdf","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2024-12-19","endAt":null,"registrationAt":"2024-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/7c6c7bb4-12c0-4af8-980e-7762feed96fd","uuid":"7c6c7bb4-12c0-4af8-980e-7762feed96fd","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -39,13 +39,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 07:56:56 GMT
+      - Wed, 12 Feb 2025 14:48:39 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/f3b8ef27-6d41-445a-a625-4a229b568cdf
+      - http://localhost:8002/api/v2/objects/7c6c7bb4-12c0-4af8-980e-7762feed96fd
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
@@ -71,10 +71,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8002/api/v2/objects/f3b8ef27-6d41-445a-a625-4a229b568cdf
+    uri: http://localhost:8002/api/v2/objects/7c6c7bb4-12c0-4af8-980e-7762feed96fd
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/f3b8ef27-6d41-445a-a625-4a229b568cdf","uuid":"f3b8ef27-6d41-445a-a625-4a229b568cdf","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2024-12-19","endAt":null,"registrationAt":"2024-12-19","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/7c6c7bb4-12c0-4af8-980e-7762feed96fd","uuid":"7c6c7bb4-12c0-4af8-980e-7762feed96fd","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -89,11 +89,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 19 Dec 2024 07:56:56 GMT
+      - Wed, 12 Feb 2025 14:48:39 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.0
+      - nginx/1.27.3
       Vary:
       - origin
       X-Content-Type-Options:
