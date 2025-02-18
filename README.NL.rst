@@ -2,7 +2,7 @@
 Open Formulieren
 ================
 
-:Version: 3.0.0
+:Version: 3.1.0-alpha.0
 :Source: https://github.com/open-formulieren/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
 
@@ -16,19 +16,19 @@ Ontwikkeld door `Maykin Media B.V.`_ in opdracht van `Dimpact`_.
 Introductie
 ===========
 
-Met Open Formulieren kunnen beheerders snel slimme formulieren realiseren die 
-ontsloten worden middels een API. Met de Open Formulieren JavaScript `SDK`_ 
-kunnen gepersonaliseerde formulieren opgehaald en getoond worden aan de 
-gebruiker, in de stijl van de gemeente. Hierbij zijn velden vooringevuld indien 
-mogelijk en zijn er keuzes beschikbaar afhankelijk van de gebruiker, mits deze 
+Met Open Formulieren kunnen beheerders snel slimme formulieren realiseren die
+ontsloten worden middels een API. Met de Open Formulieren JavaScript `SDK`_
+kunnen gepersonaliseerde formulieren opgehaald en getoond worden aan de
+gebruiker, in de stijl van de gemeente. Hierbij zijn velden vooringevuld indien
+mogelijk en zijn er keuzes beschikbaar afhankelijk van de gebruiker, mits deze
 is geauthenticeerd.
 
 Door gebruik te maken van een plugin-architectuur kan Open Formulieren flexibel
-worden ingericht met submission backends (bijv. `Open Zaak`_), authenticatie 
+worden ingericht met submission backends (bijv. `Open Zaak`_), authenticatie
 middelen, betaalproviders, kalender applicaties en pre-fill services.
 
 Open Formulieren is ontwikkeld volgens de `Common Ground`_ principes, met veel
-plugins voor overheidsgebruik en met focus op gebruiksgemak voor zowel 
+plugins voor overheidsgebruik en met focus op gebruiksgemak voor zowel
 eindgebruikers als beheerders.
 
 .. image:: docs/introduction/_assets/open-forms-from-designer-to-form.png

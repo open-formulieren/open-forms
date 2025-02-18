@@ -1206,7 +1206,9 @@ export const JSONDump = {
       await expect(...modal.queryAllByText('Attachment')).toBeFalsy(); // Ensure component variable 'Attachment' IS NOT selected
       await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS selected
 
-      await userEvent.click(modal.getByRole('button', {name: 'Add all form variables'}));
+      await userEvent.click(
+        modal.getByRole('button', {name: 'Alle formuliervariabelen toevoegen'})
+      );
       await expect(modal.getByText('Attachment')).toBeVisible(); // Ensure 'Attachment' IS selected
       await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS STILL selected
 
