@@ -121,13 +121,17 @@ class SelectBoxesFormatter(FormatterBase):
             # For the html output, wrap the values in li tags and put it inside an ul tag.
             # The selectboxes formatter handles all values at the same time,
             # so handle the full html formatting here.
-            return format_html(
-                "<ul>{values}</ul>",
-                values=format_html_join(
-                    "",
-                    "<li>{}</li>",
-                    ((selected_label,) for selected_label in selected_labels),
-                ),
+            return (
+                format_html(
+                    "<ul>{values}</ul>",
+                    values=format_html_join(
+                        "",
+                        "<li>{}</li>",
+                        ((selected_label,) for selected_label in selected_labels),
+                    ),
+                )
+                if len(selected_labels) > 0
+                else ""
             )
         return self.multiple_separator.join(selected_labels)
 
