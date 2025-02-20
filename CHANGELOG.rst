@@ -6,6 +6,15 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.0-alpha.1 (2025-02-20)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Hotfix release for a build issue in the previous sdk version.
+
+* Fixed build issue in the sdk, causing errors when used with the backend.
+
 3.1.0-alpha.0 (2025-02-17)
 ==========================
 
