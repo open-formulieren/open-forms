@@ -8,6 +8,7 @@ from openforms.api.utils import mark_experimental
 from openforms.forms.api.permissions import FormAPIPermissions
 
 from ..models import ServiceFetchConfiguration
+from .renderers import ServiceFetchConfigurationRenderer
 from .serializers import ServiceFetchConfigurationSerializer
 
 
@@ -26,6 +27,7 @@ class ServiceFetchConfigurationViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (FormAPIPermissions,)
     serializer_class = ServiceFetchConfigurationSerializer
+    renderer_classes = (ServiceFetchConfigurationRenderer,)
 
     queryset = ServiceFetchConfiguration.objects.order_by("service", "-pk")
     pagination_class = pagination.PageNumberPagination
