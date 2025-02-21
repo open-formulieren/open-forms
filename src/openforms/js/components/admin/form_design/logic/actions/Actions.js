@@ -246,9 +246,28 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
     ...(action?.action?.config || {}),
   };
 
+  const getRelevantErrors = errors => {
+    const relevantErrors = errors.action?.value ? [errors.action.value] : [];
+    if (!errors.action?.config) {
+      return relevantErrors;
+    }
+
+    // Global errors about the config should be shown at the top level.
+    // Otherwise, there are some errors in the config, that should be announced.
+    relevantErrors.push(
+      typeof errors.action.config === 'string'
+        ? errors.action.config
+        : intl.formatMessage({
+            description: 'DMN evaluation configuration errors message',
+            defaultMessage: 'There are errors in the DMN configuration.',
+          })
+    );
+    return relevantErrors;
+  };
+
   return (
     <>
-      <DSLEditorNode errors={errors.action?.value}>
+      <DSLEditorNode errors={getRelevantErrors(errors)}>
         <label className="required" htmlFor="dmn_config_button">
           <FormattedMessage
             description="Configuration button DMN label"
@@ -287,7 +306,11 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
         }
         contentModifiers={['with-form', 'large']}
       >
-        <DMNActionConfig initialValues={config} onSave={onConfigSave} />
+        <DMNActionConfig
+          initialValues={config}
+          onSave={onConfigSave}
+          errors={errors.action?.config}
+        />
       </Modal>
     </>
   );

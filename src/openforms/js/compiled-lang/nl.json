@@ -4215,6 +4215,12 @@
       "value": "Het veranderen van het datatype vereist een verandering aan de beginwaarde. Dit zal de beginwaarde terugbrengen naar de standaardwaarde. Weet je zeker dat je dit wilt doen?"
     }
   ],
+  "ag/AZx": [
+    {
+      "type": 0,
+      "value": "De DMN-instellingen zijn niet geldig."
+    }
+  ],
   "aqYeqv": [
     {
       "type": 0,
