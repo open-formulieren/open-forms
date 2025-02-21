@@ -371,7 +371,7 @@ export const WithObjectsAPIRegistrationBackends = {
     const pdfUrl = canvas.getByRole('cell', {name: 'pdf_url'});
     expect(pdfUrl).toBeVisible();
 
-    // With a single backend, the heading shouldn't display:
+    // With all backends of the same type, the heading shouldn't display
     const objectsApiTitle = canvas.queryByRole('heading', {name: 'Objects API registration'});
     expect(objectsApiTitle).toBeNull();
   },
@@ -462,6 +462,23 @@ export const FilesMappingAndObjectAPIRegistration = {
       {
         pluginIdentifier: 'objects_api',
         pluginVerboseName: 'Objects API registration',
+        pluginVariables: [
+          {
+            form: null,
+            formDefinition: null,
+            name: 'PDF Url',
+            key: 'pdf_url',
+            source: '',
+            prefillPlugin: '',
+            prefillAttribute: '',
+            prefillIdentifierRole: 'main',
+            dataType: 'string',
+            dataFormat: '',
+            isSensitiveData: false,
+            serviceFetchConfiguration: undefined,
+            initialValue: '',
+          },
+        ],
       },
     ],
   },
@@ -651,6 +668,21 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         }),
       ],
     },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const registrationTab = canvas.getByRole('tab', {name: 'Registratie'});
+    await userEvent.click(registrationTab);
+
+    // With multiple backends configured, and two of them introduce registration variables,
+    // the plugin headings should be visible.
+    expect(canvas.getByRole('heading', {name: 'Objects API registration'})).toBeVisible();
+    expect(canvas.getByRole('heading', {name: 'Test plugin'})).toBeVisible();
+
+    // Navigate back to component tab for visual regression testing
+    const componentTab = canvas.getByRole('tab', {name: /Component/});
+    await componentTab.click(componentTab);
   },
 };
 
@@ -1324,5 +1356,57 @@ export const AddressNLMappingSpecificTargetsDeriveAddress = {
     const streetNameSelect = await canvas.findByLabelText('Bestemmingspad straatnaam');
     expect(streetNameSelect).toBeVisible();
     expect(streetNameSelect).not.toBeDisabled();
+  },
+};
+
+export const TwoBackendsWhereOnlyOneIntroducesRegistrationVariables = {
+  args: {
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {},
+      },
+      {
+        backend: 'testPlugin',
+        key: 'test_backend',
+        name: 'Example test registration',
+        options: {},
+      },
+    ],
+    registrationPluginsVariables: [
+      {
+        pluginIdentifier: 'objects_api',
+        pluginVerboseName: 'Objects API registration',
+        pluginVariables: [
+          {
+            form: null,
+            formDefinition: null,
+            name: 'PDF Url',
+            key: 'pdf_url',
+            source: '',
+            prefillPlugin: '',
+            prefillAttribute: '',
+            prefillIdentifierRole: 'main',
+            dataType: 'string',
+            dataFormat: '',
+            isSensitiveData: false,
+            serviceFetchConfiguration: undefined,
+            initialValue: '',
+          },
+        ],
+      },
+    ],
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const registrationTab = canvas.getByRole('tab', {name: 'Registratie'});
+    await userEvent.click(registrationTab);
+
+    // With multiple backends configured, but only one of them introduces registration variables,
+    // the plugin heading should be visible.
+    expect(canvas.getByRole('heading', {name: 'Objects API registration'})).toBeVisible();
   },
 };

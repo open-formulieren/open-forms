@@ -45,6 +45,12 @@ const RegistrationVariables = ({onFieldChange}) => {
       plugin.pluginVariables.length
   );
 
+  // A plugin fieldset will not be included if there is only one registration backend configured,
+  // or if all configured backends are the same type
+  const hidePluginFieldset =
+    registrationBackends.length === 1 ||
+    new Set(registrationBackends.map(b => b.backend)).size === 1;
+
   const headColumns = (
     <>
       <HeadColumn content="" />
@@ -85,7 +91,7 @@ const RegistrationVariables = ({onFieldChange}) => {
           />
         );
 
-        if (registrationPluginsVariables.length === 1) return pluginVariables;
+        if (hidePluginFieldset) return pluginVariables;
 
         return (
           <Fieldset title={registrationPlugin.pluginVerboseName} key={index}>
