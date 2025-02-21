@@ -17,7 +17,28 @@ class TabelItem(TypedDict):
     aanvullendeGegevens: Any
 
 
+class Beheerder(TypedDict):
+    naam: str
+    email: str
+    afdeling: str
+    organisatie: str
+
+
+class Tabel(TypedDict):
+    code: str
+    naam: str
+    beheerder: Beheerder
+    einddatumGeldigheid: str | None  # ISO 8601 datetime string
+
+
 class ReferentielijstenClient(APIClient):
+    def get_tabellen(self) -> list[Tabel]:
+        response = self.get("tabellen", timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        all_data = list(pagination_helper(self, data))
+        return all_data
+
     def get_items_for_tabel(self, code: str) -> list[TabelItem]:
         response = self.get("items", params={"tabel__code": code}, timeout=10)
         response.raise_for_status()

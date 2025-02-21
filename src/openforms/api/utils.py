@@ -1,6 +1,6 @@
 import re
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, TypeVar
 
 from django.db import models
 
@@ -46,7 +46,12 @@ def get_model_serializer_instance(serializer: ModelSerializer) -> models.Model:
     return serializer.Meta.model()
 
 
-def mark_experimental(func_or_class):
+T = TypeVar(
+    "T", bound=type
+)  # ensure `mark_experimental` does not change the type signature
+
+
+def mark_experimental(func_or_class: T) -> T:
     if issubclass(func_or_class, Serializer):
         extend_fn = extend_schema_serializer
     elif issubclass(func_or_class, APIView):
