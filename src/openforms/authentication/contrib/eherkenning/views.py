@@ -17,6 +17,7 @@ from ..digid.mixins import AssertionConsumerServiceMixin
 from .constants import (
     EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS,
     EHERKENNING_AUTH_SESSION_KEY,
+    EHERKENNING_BRANCH_NUMBERS_SESSION_KEY,
     EIDAS_AUTH_SESSION_KEY,
 )
 
@@ -125,6 +126,17 @@ class eHerkenningAssertionConsumerServiceView(
             request.session[EIDAS_AUTH_SESSION_KEY] = qualifiers[
                 "urn:etoegang:1.9:EntityConcernedID:Pseudo"
             ]
+
+        # Extract the branch number service restriction(s) - this is all super vague and
+        # we don't seem to have proper test accounts for this...
+        # See https://afsprakenstelsel.etoegang.nl/Startpagina/v2/interface-specifications-dv-hm,
+        # section "AttributeStatement" for an example response.
+        # This translates to a list of strings (12 chars, all digits)
+        if branch_numbers := attributes.get(
+            "urn:etoegang:1.9:ServiceRestriction:Vestigingsnr"
+        ):
+            logger.info("Got branch numbers: %r", branch_numbers)
+            request.session[EHERKENNING_BRANCH_NUMBERS_SESSION_KEY] = branch_numbers
 
         # store the authn contexts so the plugin can check persmission when
         # accessing/creating an object
