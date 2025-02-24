@@ -937,6 +937,51 @@ export const Email = {
   },
 };
 
+export const EmailValidationNonFieldErrors = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend3',
+        name: 'Email',
+        backend: 'email',
+        options: {
+          toEmails: ['example@example.nl'],
+          attachmentFormats: [],
+          paymentEmails: [],
+          attachFilesToEmail: false,
+          email_subject: '',
+          email_payment_subject: '',
+          email_content_template_html: '',
+          email_content_template_text: '',
+        },
+      },
+    ],
+    validationErrors: [
+      [
+        'form.registrationBackends.0.options.nonFieldErrors',
+        'Both email_content_template_html and email_content_template_text are required',
+      ],
+      ['form.registrationBackends.0.options.email_content_template_text', 'Specific field error'],
+    ],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+
+    const modalForm = await screen.findByTestId('modal-form');
+    await expect(modalForm).toBeVisible();
+    const modal = within(modalForm);
+
+    await expect(
+      modal.getByText(
+        'Both email_content_template_html and email_content_template_text are required'
+      )
+    ).toBeVisible();
+  },
+};
+
 export const STUFZDS = {
   name: 'StUF ZDS',
   args: {

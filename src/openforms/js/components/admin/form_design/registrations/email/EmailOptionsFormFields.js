@@ -8,6 +8,7 @@ import {
   ValidationErrorsProvider,
   filterErrors,
 } from 'components/admin/forms/ValidationErrors';
+import ErrorMessage from 'components/errors/ErrorMessage';
 import {getChoicesFromSchema} from 'utils/json-schema';
 
 import EmailAttachmentFormatsSelect from './fields/EmailAttachmentFormatsSelect';
@@ -34,8 +35,17 @@ const EmailOptionsFormFields = ({name, schema}) => {
   ).map(([value, label]) => ({value, label}));
 
   const relevantErrors = filterErrors(name, validationErrors);
+  const nonFieldErrors = relevantErrors.filter(([field]) => field === 'nonFieldErrors');
+
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
+      {nonFieldErrors && (
+        <>
+          {nonFieldErrors.map(([field, message], index) => (
+            <ErrorMessage key={`${field}-${index}`}>{message}</ErrorMessage>
+          ))}
+        </>
+      )}
       <Fieldset
         title={
           <FormattedMessage
