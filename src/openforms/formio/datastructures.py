@@ -179,7 +179,10 @@ class FormioData(UserDict):
             raise KeyError(f"Key '{key}' is not present in the data") from exc
 
     def __setitem__(self, key: str, value: JSONValue):
-        assign(self.data, key, value, missing=dict)
+        if "." not in key:
+            self.data[key] = value
+        else:
+            assign(self.data, key, value, missing=dict)
         self._keys.add(key)
 
     def __contains__(self, key: object) -> bool:
