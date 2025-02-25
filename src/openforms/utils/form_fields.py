@@ -9,6 +9,8 @@ from django.core.validators import (
 from django.db import models
 from django.forms import CheckboxSelectMultiple, ImageField, MultipleChoiceField
 
+from .sanitizer import sanitize_svg_file
+
 image_or_svg_extension_validator = FileExtensionValidator(
     allowed_extensions=["svg"] + list(get_available_image_extensions())
 )
@@ -44,10 +46,10 @@ class SVGOrImageField(ImageField):
         # get the extension
         extension = get_extension(data)
 
-        # SVG's are not regular "images", so they get different treatment. Note that
-        # we're not doing extended sanitization *yet* here, so be careful when using
-        # this field.
+        # SVG's are not regular "images", so they get different treatment.
         if extension == "svg":
+            data = sanitize_svg_file(data)
+
             # we call the parent of the original ImageField instead of calling to_python
             # of ImageField (the direct superclass), as that one tries to validate the
             # image with PIL
