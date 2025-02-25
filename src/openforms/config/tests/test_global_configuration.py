@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 import clamd
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
-from webtest import Form as WebTestForm
+from webtest import Form as WebTestForm, Upload
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.tests.utils import NOOP_CACHES
@@ -164,6 +164,56 @@ class AdminTests(WebTest):
             list(list_errors.children)[0].text,
             "Cannot connect to ClamAV: Cannot connect!",
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_svg_sanitation_favicon(self):
+        bad_svg_content = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="25" fill="green" onclick="alert(\'forget about me?\')" />
+            <script>//<![CDATA[
+                alert("I am malicious >:)")
+            //]]></script>
+            <g>
+                <rect class="btn" x="0" y="0" width="10" height="10" fill="red" onload="alert(\'click!\')" />
+            </g>
+        </svg>
+        """
+        sanitized_svg_content = b"""
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="25" fill="green"></circle>
+            //
+                alert("I am malicious &gt;:)")
+            //
+            <g>
+                <rect x="0" y="0" width="10" height="10" fill="red"></rect>
+            </g>
+        </svg>
+        """
+
+        config = GlobalConfiguration.get_solo()
+
+        with self.subTest(part="admin config"):
+            url = reverse("admin:config_globalconfiguration_change", args=(1,))
+            change_page = self.app.get(url)
+
+            upload = Upload(
+                "bad_svg.svg", bad_svg_content.encode("utf-8"), "image/svg+xml"
+            )
+
+            form = change_page.forms["globalconfiguration_form"]
+            form["favicon"] = upload
+            _ensure_arrayfields(form, config=config)
+            response = form.submit()
+
+            self.assertEqual(response.status_code, 302)
+            config.refresh_from_db()
+            self.assertEqual(config.favicon, "logo/bad_svg.svg")
+
+        with self.subTest(part="assert favicon sanitized"):
+            with config.favicon.file.open("r") as favicon_file:
+                # Assert that the logo is completely sanitized
+                decoded_logo = favicon_file.read()
+                self.assertEqual(decoded_logo, sanitized_svg_content)
 
 
 class GlobalConfirmationEmailTests(TestCase):
