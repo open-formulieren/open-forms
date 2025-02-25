@@ -77,6 +77,54 @@ class AdminTests(WebTest):
                 style_tag.text(),
             )
 
+    def test_upload_malicious_svg(self):
+        bad_svg_content = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="25" fill="green" onclick="alert('forget about me?')" />
+            <script>//<![CDATA[
+                alert("I am malicious >:)")
+            //]]></script>
+            <g>
+                <rect class="btn" x="0" y="0" width="10" height="10" fill="red" onload="alert('click!')" />
+            </g>
+        </svg>
+        """
+        sanitized_svg_content = b"""
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="25" fill="green"></circle>
+            //
+                alert("I am malicious &gt;:)")
+            //
+            <g>
+                <rect x="0" y="0" width="10" height="10" fill="red"></rect>
+            </g>
+        </svg>
+        """
+        theme = ThemeFactory.create()
+
+        with self.subTest(part="admin config"):
+            url = reverse("admin:config_theme_change", args=(theme.pk,))
+
+            change_page = self.app.get(url)
+
+            upload = Upload(
+                "bad_svg.svg", bad_svg_content.encode("utf-8"), "image/svg+xml"
+            )
+
+            form = change_page.forms["theme_form"]
+            form["logo"] = upload
+            response = form.submit()
+
+            self.assertEqual(response.status_code, 302)
+            theme.refresh_from_db()
+            self.assertEqual(theme.logo, "logo/bad_svg.svg")
+
+        with self.subTest(part="assert logo sanitized"):
+            with theme.logo.file.open("r") as logo_file:
+                # Assert that the logo is completely sanitized
+                decoded_logo = logo_file.read()
+                self.assertEqual(decoded_logo, sanitized_svg_content)
+
     def test_upload_png(self):
         logo = Path(settings.DJANGO_PROJECT_DIR) / "static" / "img" / "digid.png"
         theme = ThemeFactory.create()

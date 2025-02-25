@@ -14,9 +14,8 @@ class StringUUIDField(models.UUIDField):
 
 
 class SVGOrImageField(models.ImageField):
-    # SVG's are not regular "images", so they get different treatment. Note that
-    # we're not doing extended sanitization *yet* here, so be careful when using
-    # this field.
+    # SVG's are not regular "images", so they get different treatment. Sanitization is
+    # done in the form_class, form_fields.SVGOrImageField.
     def formfield(self, **kwargs):
         return super().formfield(
             **{
