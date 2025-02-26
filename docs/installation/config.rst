@@ -83,6 +83,8 @@ Email settings
 * ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
   to ``openforms@example.com``.
 
+* ``EMAIL_TIMEOUT``: How long to wait for blocking operations like the connection attempt, in seconds. Defaults to ``10``.
+
 .. _installation_config_cors:
 
 Cross-Origin Resource Sharing (CORS) settings
