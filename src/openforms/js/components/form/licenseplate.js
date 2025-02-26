@@ -9,6 +9,7 @@ class LicensePlate extends TextField {
   static schema(...extend) {
     const schema = TextField.schema(
       {
+        defaultValue: '',
         type: 'licenseplate',
         label: 'License plate',
         key: 'licenseplate',
