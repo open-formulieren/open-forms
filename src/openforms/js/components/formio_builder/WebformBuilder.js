@@ -387,6 +387,11 @@ const _mayNeverBeRequired = component => {
     return true;
   }
 
+  // Issue #5090 - Soft required components shouldn't be marked as required, since they take no input.
+  if (component.type === 'softRequiredErrors') {
+    return true;
+  }
+
   // Special case for #2548 - an editgrid ('repeating group') itself _can_ be marked
   // required.
   if (component.type === 'editgrid') {
