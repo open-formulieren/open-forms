@@ -83,7 +83,7 @@ Email settings
 * ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
   to ``openforms@example.com``.
 
-* ``EMAIL_TIMEOUT``: in seconds this variable is setting the maximum amount of time the email backend will wait when trying to connect to the email server. If the connection exceeds the time specified a timout error will be raised. The default value is set to ``10 seconds``, and in general it is not recommended to use a very high number. This setting ensures that any email-sending operation will fail quickly if the server doesn't respond within the given timeframe.
+* ``EMAIL_TIMEOUT``: How long to wait for blocking operations like the connection attempt, in seconds. Defaults to ``10``.
 
 .. _installation_config_cors:
 
