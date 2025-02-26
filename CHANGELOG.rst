@@ -50,7 +50,7 @@ Detailed changes
 * [:backend:`4785`] Updated the eHerkenning metadata generation to match the latest
   standard version(s).
 * Added the ability to configure ``EMAIL_TIMEOUT`` environment variable which will configure 
-the time after which the email service will timeout.  
+the time after which the email service will timeout.
 
 **Bugfixes**
 
