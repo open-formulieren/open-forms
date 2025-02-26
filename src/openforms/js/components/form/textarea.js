@@ -9,7 +9,9 @@ const FormioTextarea = Formio.Components.components.textarea;
 
 class TextArea extends FormioTextarea {
   static schema(...extend) {
-    return localiseSchema(FormioTextarea.schema({validate: {maxLength: 10000}}, ...extend));
+    return localiseSchema(
+      FormioTextarea.schema({defaultValue: '', validate: {maxLength: 10000}}, ...extend)
+    );
   }
 
   static get builderInfo() {

@@ -8,6 +8,7 @@ class IbanField extends TextField {
   static schema(...extend) {
     return TextField.schema(
       {
+        defaultValue: '',
         type: 'iban',
         label: 'IBAN',
         key: 'iban',

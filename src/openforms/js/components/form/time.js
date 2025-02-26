@@ -20,6 +20,7 @@ class TimeField extends Time {
           minTime: null,
           maxTime: null,
         },
+        defaultValue: '',
       },
       ...extend
     );

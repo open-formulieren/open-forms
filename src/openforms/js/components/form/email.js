@@ -9,6 +9,7 @@ class EmailField extends FormioEmail {
   static schema(...extend) {
     const schema = FormioEmail.schema(
       {
+        defaultValue: '',
         validateOn: 'blur',
       },
       ...extend
@@ -31,6 +32,10 @@ class EmailField extends FormioEmail {
     super(...args);
 
     patchValidateDefaults(this);
+  }
+
+  get defaultSchema() {
+    return EmailField.schema();
   }
 }
 

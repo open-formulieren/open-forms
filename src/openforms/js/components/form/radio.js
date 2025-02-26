@@ -38,6 +38,10 @@ class RadioField extends RadioFormio {
 
     return super.setSelectedClasses();
   }
+
+  get defaultSchema() {
+    return RadioField.schema();
+  }
 }
 
 export default RadioField;

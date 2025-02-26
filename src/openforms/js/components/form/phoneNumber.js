@@ -9,6 +9,7 @@ class PhoneNumberField extends PhoneNumber {
   static schema(...extend) {
     const schema = PhoneNumber.schema(
       {
+        defaultValue: '',
         inputMask: null,
       },
       ...extend

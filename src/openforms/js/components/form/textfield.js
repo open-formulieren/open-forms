@@ -30,7 +30,7 @@ export const patchValidateDefaults = instance => {
 
 class TextField extends FormioTextField {
   static schema(...extend) {
-    return localiseSchema(FormioTextField.schema(...extend));
+    return localiseSchema(FormioTextField.schema({defaultValue: ''}, ...extend));
   }
 
   static get builderInfo() {
@@ -44,6 +44,10 @@ class TextField extends FormioTextField {
     super(...args);
 
     patchValidateDefaults(this);
+  }
+
+  get defaultSchema() {
+    return TextField.schema();
   }
 }
 

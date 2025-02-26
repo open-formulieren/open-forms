@@ -415,6 +415,188 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             key_input = page.get_by_label("Property Name")
             await expect(key_input).to_have_value("textField1")
 
+    async def test_textfields_default_value_empty_string(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Test textfields default value empty string",
+                name_nl="Test textfields default value empty string",
+                generate_minimal_setup=False,
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Populate and save form"):
+                await add_new_step(page)
+                step_name_input = page.get_by_role(
+                    "textbox", name="Step name", exact=True
+                )
+                await step_name_input.click()
+                await step_name_input.fill("Step 1")
+
+                basic_components = [
+                    "Tekstveld",
+                    "E-mail",
+                    "Tijd",
+                    "Telefoonnummer",
+                    "Tekstvlak",
+                ]
+                for component in basic_components:
+                    await drag_and_drop_component(page, component, "group-panel-custom")
+                    await close_modal(page, "Save", exact=True)
+
+                basic_components_with_multiple = [
+                    "Tekstveld",
+                    "E-mail",
+                    "Tijd",
+                    "Telefoonnummer",
+                    "Tekstvlak",
+                ]
+                for component in basic_components_with_multiple:
+                    await drag_and_drop_component(page, component, "group-panel-custom")
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    await close_modal(page, "Save", exact=True)
+
+                # Open the special fields list
+                await page.get_by_role(
+                    "button", name="Speciale velden", exact=True
+                ).click()
+
+                special_components = ["IBAN", "Kenteken", "Mede-ondertekenen"]
+                for component in special_components:
+                    await drag_and_drop_component(page, component)
+                    await close_modal(page, "Save", exact=True)
+
+                special_components_with_multiple = ["IBAN", "Kenteken"]
+                for component in special_components_with_multiple:
+                    await drag_and_drop_component(page, component)
+                    await page.get_by_label("Multiple values", exact=True).check()
+                    await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role(
+                    "button", name="Save and continue editing", exact=True
+                ).click()
+                await page.wait_for_url(admin_url)
+
+            with phase("Validate default values"):
+
+                @sync_to_async
+                def assertFormValues():
+                    for component in form.iter_components():
+                        expected = [""] if component.get("multiple", False) else ""
+
+                        self.assertEqual(
+                            component["defaultValue"],
+                            expected,
+                            msg=f"Test failed for component {component['key']} with multiple set to {component.get('multiple', False)}",
+                        )
+
+                await assertFormValues()
+
+    @tag("dh-5104")
+    async def test_radio_component_default_value_empty_string(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create()
+            FormStepFactory.create(
+                form=form, form_definition__configuration={"components": []}
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Populate and save form"):
+                await page.get_by_role("tab", name="Steps and fields").click()
+
+                await drag_and_drop_component(page, "Radio", "group-panel-custom")
+                await page.get_by_test_id("input-label").fill("Custom Radio")
+                await page.get_by_test_id("input-values[0].label").fill("Label")
+                await page.get_by_test_id("input-values[0].value").fill("Value")
+                await close_modal(page, "Save")
+
+                # Save form
+                await page.get_by_role(
+                    "button", name="Save and continue editing"
+                ).click()
+                await page.wait_for_url(admin_url)
+
+            with phase("Validate default value after create"):
+
+                @sync_to_async
+                def assertFormValues():
+                    configuration = (
+                        form.formstep_set.get().form_definition.configuration
+                    )
+                    radio_component = configuration["components"][0]
+                    self.assertEqual(
+                        radio_component["defaultValue"],
+                        "",
+                    )
+
+                await assertFormValues()
+
+            # When creating a radio component, the defaultValue is set correctly in the
+            # database.
+            #
+            # This bug appears in the json view, where the `defaultValue` will show as
+            # `null` after `Save and continue editing`.
+            # The json view is a conditionally rendered html list of divs
+            # (only elements that are directly shown are targetable in the dom)
+            #
+            # So to test if this bug happens, we just save it again, and then check the
+            # database.
+            with phase("Edit the form"):
+                await page.get_by_role("tab", name="Steps and fields").click()
+
+                # The defaultValue in the bug is set to `null`.
+                # If we open the component, and immediately save it, the defaultValue
+                # will change from `""` (in the db) to `null` (set by bug)
+                await open_component_options_modal(page, "Custom Radio", exact=True)
+                await close_modal(page, "Save", exact=True)
+
+                # Save form
+                await page.get_by_role(
+                    "button", name="Save and continue editing"
+                ).click()
+                await page.wait_for_url(admin_url)
+
+            with phase("Validate default value after editing"):
+
+                @sync_to_async
+                def assertFormValues():
+                    configuration = (
+                        form.formstep_set.get().form_definition.configuration
+                    )
+                    radio_component = configuration["components"][0]
+
+                    self.assertEqual(
+                        radio_component["defaultValue"],
+                        "",
+                    )
+
+                await assertFormValues()
+
     @tag("gh-2805")
     async def test_enable_translations_and_create_new_step(self):
         await create_superuser()
