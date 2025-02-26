@@ -511,6 +511,55 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
                 await assertFormValues()
 
+    @tag("dh-5104")
+    async def test_radio_component_default_value_empty_string(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create()
+            FormStepFactory.create(form=form)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Populate and save form"):
+                await page.get_by_role("tab", name="Steps and fields").click()
+
+                await drag_and_drop_component(page, "Radio", "group-panel-custom")
+                await page.get_by_test_id("input-values[0].label").fill("Label")
+                await page.get_by_test_id("input-values[0].value").fill("Value")
+                await close_modal(page, "Save")
+
+                # Save form
+                await page.get_by_role(
+                    "button", name="Save and continue editing"
+                ).click()
+                await page.wait_for_url(admin_url)
+
+            with phase("Validate default value"):
+
+                @sync_to_async
+                def assertFormValues():
+                    configuration = (
+                        form.formstep_set.get().form_definition.configuration
+                    )
+                    radio_component = configuration["components"][0]
+
+                    self.assertEqual(
+                        radio_component["defaultValue"],
+                        "",
+                    )
+
+                await assertFormValues()
+
     @tag("gh-2805")
     async def test_enable_translations_and_create_new_step(self):
         await create_superuser()
