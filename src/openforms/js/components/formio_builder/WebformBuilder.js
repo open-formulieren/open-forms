@@ -96,7 +96,7 @@ class WebformBuilder extends WebformBuilderFormio {
     // using only produce seems to affect component itself, which crashes the preview
     // rebuild of formio...
     // const componentCopy = produce(component, draft => draft);
-    const componentCopy = FormioUtils.fastCloneDeep(component);
+    const componentCopy = {...(original || {}), ...FormioUtils.fastCloneDeep(component)};
     const ComponentClass = Components.components[componentCopy.type];
 
     // takes care of setting the defaults from the schema etc., since `component` itself
