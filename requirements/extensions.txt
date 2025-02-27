@@ -125,7 +125,7 @@ click-repl==0.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -691,7 +691,7 @@ pyjwt==2.6.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-pyopenssl==24.2.1
+pyopenssl==25.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -904,6 +904,7 @@ typing-extensions==4.12.2
     #   psycopg
     #   pydantic
     #   pydantic-core
+    #   pyopenssl
     #   qrcode
     #   zgw-consumers
 tzdata==2023.3

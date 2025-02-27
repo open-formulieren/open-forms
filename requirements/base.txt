@@ -68,7 +68,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   django-digid-eherkenning
     #   django-simple-certmanager
@@ -392,7 +392,7 @@ pydyf==0.8.0
     # via weasyprint
 pyjwt==2.6.0
     # via zgw-consumers
-pyopenssl==24.2.1
+pyopenssl==25.0.0
     # via
     #   josepy
     #   webauthn
@@ -525,6 +525,7 @@ typing-extensions==4.12.2
     #   psycopg
     #   pydantic
     #   pydantic-core
+    #   pyopenssl
     #   qrcode
     #   zgw-consumers
 tzdata==2023.3
