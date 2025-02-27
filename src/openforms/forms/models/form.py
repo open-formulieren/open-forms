@@ -25,6 +25,7 @@ from openforms.authentication.fields import AuthenticationBackendMultiSelectFiel
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
@@ -608,6 +609,17 @@ class Form(models.Model):
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
+
+    def get_total_configuration(self) -> FormioConfigurationWrapper:
+        """
+        Return the total joined FormIO configuration of all FormSteps belonging to this Form
+        """
+        raw_configs = self.formstep_set.select_related("form_definition").values_list(
+            "form_definition__configuration", flat=True
+        )
+        configs = [FormioConfigurationWrapper(config) for config in raw_configs]
+        configuration = sum(configs, FormioConfigurationWrapper({"components": []}))
+        return configuration
 
     @transaction.atomic
     def restore_old_version(
