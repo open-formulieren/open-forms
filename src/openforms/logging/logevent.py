@@ -111,14 +111,22 @@ def disabling_analytics_tool(
 
 
 def submission_start(submission: Submission):
-    _create_log(submission, "submission_start")
+    _create_log(
+        submission,
+        "submission_start",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def submission_auth(
     submission: Submission, delegated: bool = False, user: User | None = None
 ):
     _create_log(
-        submission, "submission_auth", user=user, extra_data={"delegated": delegated}
+        submission,
+        "submission_auth",
+        user=user,
+        extra_data={"delegated": delegated},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -133,6 +141,7 @@ def submission_step_fill(step: SubmissionStep):
             "step": str(step.form_step.form_definition.name),
             "step_id": step.pk,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -155,6 +164,7 @@ def form_submit_success(submission: Submission):
         submission,
         FORM_SUBMIT_SUCCESS_EVENT,
         extra_data=_snapshot_submission_statistics(submission),
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -162,7 +172,11 @@ def form_submit_success(submission: Submission):
 
 
 def pdf_generation_start(submission: Submission):
-    _create_log(submission, "pdf_generation_start")
+    _create_log(
+        submission,
+        "pdf_generation_start",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def pdf_generation_success(submission: Submission, submission_report):
@@ -172,6 +186,7 @@ def pdf_generation_success(submission: Submission, submission_report):
         extra_data={
             "report_id": submission_report.id,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -181,6 +196,7 @@ def pdf_generation_failure(submission: Submission, submission_report, error: Exc
         "pdf_generation_failure",
         error=error,
         extra_data={"report_id": submission_report.id},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -189,6 +205,7 @@ def pdf_generation_skip(submission: Submission, submission_report):
         submission,
         "pdf_generation_skip",
         extra_data={"report_id": submission_report.id},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -201,7 +218,7 @@ def prefill_retrieve_success(submission: Submission, plugin, prefill_fields):
         "prefill_retrieve_success",
         extra_data={"prefill_fields": prefill_fields},
         plugin=plugin,
-        tags=[TimelineLogTags.AVG],
+        tags=[TimelineLogTags.AVG, TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -211,7 +228,7 @@ def prefill_retrieve_empty(submission: Submission, plugin, prefill_fields):
         "prefill_retrieve_empty",
         extra_data={"prefill_fields": prefill_fields},
         plugin=plugin,
-        tags=[TimelineLogTags.AVG],
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -221,6 +238,7 @@ def prefill_retrieve_failure(submission: Submission, plugin, error: Exception):
         "prefill_retrieve_failure",
         plugin=plugin,
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -228,10 +246,18 @@ def prefill_retrieve_failure(submission: Submission, plugin, error: Exception):
 
 
 def registration_start(submission: Submission):
-    _create_log(submission, "registration_start")
+    _create_log(
+        submission,
+        "registration_start",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
-registration_debug = partial(_create_log, event="registration_debug")
+registration_debug = partial(
+    _create_log,
+    event="registration_debug",
+    tags=[TimelineLogTags.submission_lifecycle],
+)
 registration_debug.__doc__ = (
     """Log debugging info. `model` parameter ought to be the submission."""
 )
@@ -246,6 +272,7 @@ def registration_success(submission: Submission, plugin):
         REGISTRATION_SUCCESS_EVENT,
         extra_data=_snapshot_submission_statistics(submission),
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -255,6 +282,7 @@ def registration_failure(submission: Submission, error: Exception, plugin=None):
         "registration_failure",
         plugin=plugin,
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -262,6 +290,7 @@ def registration_skip(submission: Submission):
     _create_log(
         submission,
         "registration_skip",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -269,6 +298,7 @@ def registration_attempts_limited(submission: Submission):
     _create_log(
         submission,
         "registration_attempts_limited",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -277,6 +307,7 @@ def object_ownership_check_failure(submission: Submission, plugin=None):
         submission,
         "object_ownership_check_failure",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -285,6 +316,7 @@ def object_ownership_check_success(submission: Submission, plugin=None):
         submission,
         "object_ownership_check_success",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -293,6 +325,7 @@ def object_ownership_check_anonymous_user(submission: Submission, plugin=None):
         submission,
         "object_ownership_check_anonymous_user",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -300,27 +333,49 @@ def object_ownership_check_anonymous_user(submission: Submission, plugin=None):
 
 
 def registration_payment_update_start(submission: Submission, plugin):
-    _create_log(submission, "registration_payment_update_start", plugin=plugin)
+    _create_log(
+        submission,
+        "registration_payment_update_start",
+        plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def registration_payment_update_success(submission: Submission, plugin):
-    _create_log(submission, "registration_payment_update_success", plugin=plugin)
+    _create_log(
+        submission,
+        "registration_payment_update_success",
+        plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def registration_payment_update_failure(
     submission: Submission, error: Exception, plugin=None
 ):
     _create_log(
-        submission, "registration_payment_update_failure", plugin=plugin, error=error
+        submission,
+        "registration_payment_update_failure",
+        plugin=plugin,
+        error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
 def registration_payment_update_skip(submission: Submission):
-    _create_log(submission, "registration_payment_update_skip")
+    _create_log(
+        submission,
+        "registration_payment_update_skip",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def registration_skipped_not_yet_paid(submission: Submission):
-    _create_log(submission, "registration_skipped_not_yet_paid")
+    _create_log(
+        submission,
+        "registration_skipped_not_yet_paid",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 # - - -
@@ -330,16 +385,27 @@ def confirmation_email_scheduled(
     submission: Submission, scheduling_options: dict
 ) -> None:
     _create_log(
-        submission, "confirmation_email_scheduled", extra_data=scheduling_options
+        submission,
+        "confirmation_email_scheduled",
+        extra_data=scheduling_options,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
 def confirmation_email_start(submission: Submission):
-    _create_log(submission, "confirmation_email_start")
+    _create_log(
+        submission,
+        "confirmation_email_start",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def confirmation_email_success(submission: Submission):
-    _create_log(submission, "confirmation_email_success")
+    _create_log(
+        submission,
+        "confirmation_email_success",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 def confirmation_email_failure(submission: Submission, error: Exception):
@@ -347,11 +413,16 @@ def confirmation_email_failure(submission: Submission, error: Exception):
         submission,
         "confirmation_email_failure",
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
 def confirmation_email_skip(submission: Submission):
-    _create_log(submission, "confirmation_email_skip")
+    _create_log(
+        submission,
+        "confirmation_email_skip",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
 
 
 # - - -
@@ -368,6 +439,7 @@ def price_calculation_variable_error(
         "price_calculation_variable_error",
         extra_data={"variable": variable, "value": value},
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -381,6 +453,7 @@ def payment_flow_start(payment: SubmissionPayment, plugin, from_email: bool = Fa
             "payment_id": payment.id,
             "from_email": from_email,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -394,6 +467,7 @@ def payment_flow_failure(payment: SubmissionPayment, plugin, error: Exception):
             "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -408,6 +482,7 @@ def payment_flow_return(payment: SubmissionPayment, plugin):
             "payment_status": payment.status,
             "payment_status_label": PaymentStatus.get_label(payment.status),
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -422,6 +497,7 @@ def payment_flow_webhook(payment: SubmissionPayment, plugin):
             "payment_status": payment.status,
             "payment_status_label": PaymentStatus.get_label(payment.status),
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -437,6 +513,7 @@ def payment_register_success(payment: SubmissionPayment, plugin):
             "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -450,6 +527,7 @@ def payment_register_failure(payment: SubmissionPayment, plugin, error: Exceptio
             "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -461,6 +539,7 @@ def appointment_register_start(submission: Submission, plugin):
         submission,
         "appointment_register_start",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -469,6 +548,7 @@ def appointment_register_success(appointment: AppointmentInfo, plugin):
         appointment.submission,
         "appointment_register_success",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -478,38 +558,15 @@ def appointment_register_failure(appointment: AppointmentInfo, plugin, error):
         "appointment_register_failure",
         plugin=plugin,
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
 def appointment_register_skip(submission: Submission):
-    _create_log(submission, "appointment_register_skip")
-
-
-# - - -
-
-
-def appointment_update_start(appointment: AppointmentInfo, plugin):
     _create_log(
-        appointment.submission,
-        "appointment_update_start",
-        plugin=plugin,
-    )
-
-
-def appointment_update_success(appointment: AppointmentInfo, plugin):
-    _create_log(
-        appointment.submission,
-        "appointment_update_success",
-        plugin=plugin,
-    )
-
-
-def appointment_update_failure(appointment: AppointmentInfo, plugin, error):
-    _create_log(
-        appointment.submission,
-        "appointment_update_failure",
-        plugin=plugin,
-        error=error,
+        submission,
+        "appointment_register_skip",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -521,6 +578,7 @@ def appointment_cancel_start(appointment: AppointmentInfo, plugin):
         appointment.submission,
         "appointment_cancel_start",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -529,6 +587,7 @@ def appointment_cancel_success(appointment: AppointmentInfo, plugin):
         appointment.submission,
         "appointment_cancel_success",
         plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -538,7 +597,11 @@ def appointment_cancel_failure(appointment: AppointmentInfo, plugin, error):
         "appointment_cancel_failure",
         plugin=plugin,
         error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
     )
+
+
+# - - -
 
 
 def submission_details_view_admin(submission: Submission, user: User):
@@ -588,6 +651,7 @@ def stuf_zds_request(service: StufService, url):
         service,
         "stuf_zds_request",
         extra_data={"url": url},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -596,6 +660,7 @@ def stuf_zds_success_response(service: StufService, url):
         service,
         "stuf_zds_success_response",
         extra_data={"url": url},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -604,6 +669,7 @@ def stuf_zds_failure_response(service: StufService, url):
         service,
         "stuf_zds_failure_response",
         extra_data={"url": url},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -612,6 +678,7 @@ def stuf_bg_request(service: StufService, url):
         service,
         "stuf_bg_request",
         extra_data={"url": url},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -620,6 +687,7 @@ def stuf_bg_response(service: StufService, url):
         service,
         "stuf_bg_response",
         extra_data={"url": url},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -633,6 +701,7 @@ def referentielijsten_failure_response(
         form,
         "referentielijsten_failure_response",
         extra_data={"component": component, "error": error_message},
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -708,6 +777,7 @@ def cosigner_email_queuing_failure(submission: Submission):
     _create_log(
         submission,
         "cosigner_email_queuing_failure",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -715,6 +785,7 @@ def cosigner_email_queuing_success(submission: Submission):
     _create_log(
         submission,
         "cosigner_email_queuing_success",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -722,6 +793,7 @@ def skipped_registration_cosign_required(submission: Submission):
     _create_log(
         submission,
         "skipped_registration_cosign_required",
+        tags=[TimelineLogTags.submission_lifecycle],
     )
 
 
@@ -753,4 +825,5 @@ def email_status_change(
             "status_label": status_label,
             "include_in_daily_digest": include_in_daily_digest,
         },
+        tags=[TimelineLogTags.submission_lifecycle],
     )

@@ -160,6 +160,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status_label": "Queued",
                 "log_event": "email_status_change",
                 "include_in_daily_digest": True,
+                "submission_lifecycle": True,
             },
         )
         self.assertEqual(
@@ -170,6 +171,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status_label": "In process",
                 "log_event": "email_status_change",
                 "include_in_daily_digest": True,
+                "submission_lifecycle": True,
             },
         )
         self.assertEqual(
@@ -180,6 +182,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status_label": "Failed",
                 "log_event": "email_status_change",
                 "include_in_daily_digest": True,
+                "submission_lifecycle": True,
             },
         )
 
