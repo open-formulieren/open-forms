@@ -1,12 +1,13 @@
 import {FieldArray, useFormikContext} from 'formik';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
@@ -47,6 +48,7 @@ const VariableMappingRow = ({
   includeStaticVariables = false,
   alreadyMapped = [],
   rowCheck = undefined,
+  errors = undefined,
 }) => {
   const intl = useIntl();
   const {getFieldProps, setFieldValue} = useFormikContext();
@@ -63,12 +65,14 @@ const VariableMappingRow = ({
   );
 
   const mapping = getFieldProps(prefix).value;
-  const errors = rowCheck?.(intl, mapping).join(', ') ?? '';
+  const rowErrors = rowCheck?.(intl, mapping).join(', ') ?? '';
+  const variableError = errors?.[variableName];
+  const propertyError = errors?.[propertyName];
 
   return (
     <tr>
       <td>
-        <Field name={fullVariableName}>
+        <Field name={fullVariableName} errors={variableError}>
           <VariableSelection
             includeStaticVariables={includeStaticVariables}
             {...getFieldProps(fullVariableName)}
@@ -83,7 +87,7 @@ const VariableMappingRow = ({
       {directionIcon && <td className="mapping-table__direction-icon">{directionIcon}</td>}
 
       <td>
-        <Field name={fullPropertyName}>
+        <Field name={fullPropertyName} errors={propertyError}>
           <Select
             allowBlank
             disabled={loading}
@@ -112,7 +116,7 @@ const VariableMappingRow = ({
             defaultMessage: 'Are you sure that you want to remove this mapping?',
           })}
         />
-        {errors && <WarningIcon text={errors} />}
+        {rowErrors && <WarningIcon text={rowErrors} />}
       </td>
     </tr>
   );
@@ -181,6 +185,11 @@ VariableMappingRow.propTypes = {
    * of error messages, where `intl` is the context from react-intl's `useIntl()` hook.
    */
   rowCheck: PropTypes.func,
+
+  /**
+   * Validation errors from context
+   */
+  errors: PropTypes.objectOf(PropTypes.string),
 };
 
 /**
@@ -210,6 +219,9 @@ const VariableMapping = ({
 
   // grab the already mapped properties from the formik state
   const alreadyMapped = mappings.map(row => serializeValue(row[propertyName]));
+
+  const errors = Object.fromEntries(useContext(ValidationErrorContext));
+  const relatedErrors = errors?.[name];
   return (
     <FieldArray
       name={name}
@@ -245,6 +257,7 @@ const VariableMapping = ({
                   propertySelectLabel={propertySelectLabel}
                   alreadyMapped={alreadyMapped}
                   rowCheck={rowCheck}
+                  errors={relatedErrors?.[index]}
                 />
               ))}
             </tbody>

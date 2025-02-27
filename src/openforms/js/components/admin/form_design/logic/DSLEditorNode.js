@@ -5,7 +5,7 @@ import React from 'react';
 import ErrorList from 'components/admin/forms/ErrorList';
 
 const DSLEditorNode = ({errors, children}) => (
-  <div className={classNames('dsl-editor__node', {'dsl-editor__node--errors': !!errors})}>
+  <div className={classNames('dsl-editor__node', {'dsl-editor__node--errors': !!errors?.length})}>
     <ErrorList classNamePrefix="logic-action">{errors}</ErrorList>
     {children}
   </div>

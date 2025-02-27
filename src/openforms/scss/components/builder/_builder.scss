@@ -213,4 +213,8 @@ div.flatpickr-calendar.open {
   @include bem.modifier('no-bottom-line') {
     border-bottom: 0;
   }
+
+  @include bem.modifier('display-block') {
+    display: block;
+  }
 }
