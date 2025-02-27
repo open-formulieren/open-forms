@@ -3715,6 +3715,40 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/referentielijst-tabellen/{service_slug}:
+    get:
+      operationId: referentielijst_tabellen_list
+      description: Return a list of available tabellen in a given Referentielijsten
+        service configured in the backend.
+      summary: List tabellen for a Referentielijsten service
+      parameters:
+      - in: path
+        name: service_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - referentielijst-tabellen
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferentielijstTabellen'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -4195,6 +4229,14 @@ paths:
 
         Note that this endpoint is **EXPERIMENTAL**.
       summary: List available services
+      parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - referentielijsten
+        description: The type of Services to return.
       tags:
       - services
       security:
@@ -9706,6 +9748,23 @@ components:
       required:
       - name
       - slug
+    ReferentielijstTabellen:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The unique code that identifies the table.
+        naam:
+          type: string
+          description: The name of the table.
+        isGeldig:
+          type: boolean
+          readOnly: true
+          description: Indicates whether or not the table is expired.
+      required:
+      - code
+      - isGeldig
+      - naam
     RegistrationAttribute:
       type: object
       properties:
@@ -9778,6 +9837,13 @@ components:
           type: string
           format: uri
           readOnly: true
+        slug:
+          type: string
+          title: Service slug
+          description: A unique, human-friendly slug to identify this service. Primarily
+            useful for cross-instance import/export.
+          maxLength: 255
+          pattern: ^[-a-zA-Z0-9_]+$
         label:
           type: string
           maxLength: 100
@@ -9795,6 +9861,7 @@ components:
       - apiRoot
       - apiType
       - label
+      - slug
       - url
       x-experimental: true
     ServiceFetchConfiguration:

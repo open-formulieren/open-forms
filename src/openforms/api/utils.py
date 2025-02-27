@@ -46,7 +46,7 @@ def get_model_serializer_instance(serializer: ModelSerializer) -> models.Model:
     return serializer.Meta.model()
 
 
-def mark_experimental(func_or_class):
+def mark_experimental[T: type](func_or_class: T) -> T:
     if issubclass(func_or_class, Serializer):
         extend_fn = extend_schema_serializer
     elif issubclass(func_or_class, APIView):

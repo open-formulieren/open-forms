@@ -20,7 +20,7 @@ services:
       - open-forms-dev
 
   referentielijsten-web.local:
-    image: maykinmedia/referentielijsten-api:${REFERENTIELIJSTEN_VERSION:-0.2.0}
+    image: maykinmedia/referentielijsten-api:${REFERENTIELIJSTEN_VERSION:-latest}
     environment: &referentielijsten_web_env
       - DJANGO_SETTINGS_MODULE=referentielijsten.conf.docker
       - SECRET_KEY=${SECRET_KEY:-7&3f^bo1(-5($bre4iv-!nt%1xr!b54b&y7+97j5f&ndm_e=lz}

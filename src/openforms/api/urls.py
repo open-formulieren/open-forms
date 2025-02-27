@@ -10,6 +10,9 @@ from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.config.api.viewsets import ThemeViewSet
+from openforms.contrib.referentielijsten.api.views import (
+    ReferentielijstenTabellenViewSet,
+)
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
 from openforms.forms.api.viewsets import (
     FormDefinitionViewSet,
@@ -120,6 +123,11 @@ urlpatterns = [
                 path("formio/", include("openforms.formio.api.urls")),
                 path("geo/", include("openforms.contrib.kadaster.api.urls")),
                 path("i18n/", include("openforms.translations.api.urls")),
+                path(
+                    "referentielijst-tabellen/<slug:service_slug>",
+                    ReferentielijstenTabellenViewSet.as_view(),
+                    name="referentielijst-tabellen-list",
+                ),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
