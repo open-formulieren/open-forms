@@ -6,6 +6,19 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.0.5 (2025-02-27)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5086`, :backend:`5090`] Fixed soft-required errors being shown for hidden
+  upload fields and blocking going to the next form step.
+* [:backend:`5039`] Fixed some error messages not shown properly in the Email
+  Registration plugin.
+* Fixed performance issues causing long loading times for citizens when using forms.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
 3.0.4 (2025-02-06)
 ==================
 
