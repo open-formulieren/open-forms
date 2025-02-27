@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.8.6 (2025-02-27)
+==================
+
+Regular bugfix release.
+
+* Fixed performance issues causing long loading times for citizens when using forms.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
 2.8.5 (2025-02-06)
 ==================
 
