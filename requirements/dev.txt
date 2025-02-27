@@ -150,7 +150,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -857,7 +857,7 @@ pyjwt==2.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   zgw-consumers
-pyopenssl==24.2.1
+pyopenssl==25.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1173,6 +1173,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   pyee
+    #   pyopenssl
     #   qrcode
     #   zgw-consumers
 tzdata==2023.3
