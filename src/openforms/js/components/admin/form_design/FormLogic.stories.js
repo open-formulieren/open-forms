@@ -161,6 +161,8 @@ export const FullFunctionality = {
               value: '',
             },
 
+            uuid: '',
+            _generatedId: '0',
             component: '',
             formStepUuid: null,
             variable: 'bar',
@@ -197,6 +199,8 @@ export const FullFunctionality = {
               },
             },
 
+            uuid: '',
+            _generatedId: '0',
             component: '',
             formStepUuid: null,
             variable: '',
@@ -237,6 +241,8 @@ export const DeletingOneOfMultipleActionsInSameTrigger = {
 
         actions: [
           {
+            uuid: '',
+            _generatedId: '0',
             component: '',
             variable: 'foo',
             formStepUuid: null,
@@ -246,6 +252,8 @@ export const DeletingOneOfMultipleActionsInSameTrigger = {
             },
           },
           {
+            uuid: '',
+            _generatedId: '1',
             component: '',
             variable: 'bar',
             formStepUuid: null,
