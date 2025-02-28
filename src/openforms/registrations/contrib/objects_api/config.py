@@ -256,6 +256,14 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         allow_blank=True,
     )
+    transform_data = serializers.BooleanField(
+        label=_("transform data"),
+        help_text=_(
+            "Indicates whether or not the data of the component will be transformed "
+            "to another data type."
+        ),
+        default=False,
+    )
 
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
         v1_only_fields = {

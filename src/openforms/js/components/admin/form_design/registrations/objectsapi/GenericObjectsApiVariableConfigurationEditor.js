@@ -6,7 +6,6 @@ import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
 import {APIContext} from 'components/admin/form_design/Context';
-import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
@@ -15,6 +14,7 @@ import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
 
 import {asJsonSchema} from './utils';
+import {SCHEMA_TYPES_WITH_TRANSFORMATION, fetchTargetPaths} from './utils';
 
 /**
  * Hack-ish way to manage the variablesMapping state for one particular entry.
@@ -83,6 +83,7 @@ export const GenericEditor = ({
   components,
   namePrefix,
   isGeometry,
+  transformData,
   index,
   mappedVariable,
   objecttype,
@@ -93,27 +94,31 @@ export const GenericEditor = ({
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
   const {setFieldValue} = useFormikContext();
 
+  const componentType = components[variable?.key]?.type;
+
+  // Load all the possible target paths in parallel
   const {
     loading,
-    value: targetPaths,
+    value: targetPaths = [],
     error,
-  } = useAsync(
-    async () => {
-      const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
-        objectsApiGroup,
-        objecttype,
-        objecttypeVersion,
-        variableJsonSchema: asJsonSchema(variable, components),
-      });
-      if (!response.ok) {
-        throw new Error('Error when loading target paths');
-      }
+  } = useAsync(async () => {
+    const promises = transformData
+      ? SCHEMA_TYPES_WITH_TRANSFORMATION[componentType].map(type =>
+          fetchTargetPaths(csrftoken, objectsApiGroup, objecttype, objecttypeVersion, type)
+        )
+      : [
+          fetchTargetPaths(
+            csrftoken,
+            objectsApiGroup,
+            objecttype,
+            objecttypeVersion,
+            asJsonSchema(variable, components)
+          ),
+        ];
 
-      return response.data;
-    },
-    // Load only once:
-    []
-  );
+    const results = await Promise.all(promises);
+    return results.flat(1);
+  }, [transformData]);
 
   const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
@@ -153,6 +158,31 @@ export const GenericEditor = ({
           />
         </Field>
       </FormRow>
+      {componentType in SCHEMA_TYPES_WITH_TRANSFORMATION && (
+        <FormRow>
+          <Field name="transformData">
+            <Checkbox
+              name="transformDataCheckbox"
+              label={
+                <FormattedMessage
+                  defaultMessage="Transform data"
+                  description="'Transform data' checkbox label"
+                />
+              }
+              helpText={
+                <FormattedMessage
+                  description="'Transform data' checkbox help text"
+                  defaultMessage="Whether to transform the data of the component to another data type or not (depends on the component)"
+                />
+              }
+              checked={transformData}
+              onChange={event => {
+                setFieldValue('transformData', event.target.checked);
+              }}
+            />
+          </Field>
+        </FormRow>
+      )}
       <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}

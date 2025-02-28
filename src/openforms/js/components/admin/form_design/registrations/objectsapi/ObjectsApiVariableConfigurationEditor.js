@@ -45,6 +45,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
     objecttype,
     objecttypeVersion,
     geometryVariableKey,
+    transformData,
     variablesMapping,
     version,
   } = backendOptions;
@@ -99,6 +100,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           components={components}
           namePrefix={namePrefix}
           isGeometry={isGeometry}
+          transformData={transformData}
           index={index}
           mappedVariable={mappedVariable}
           objecttype={objecttype}
