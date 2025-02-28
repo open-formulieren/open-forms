@@ -571,6 +571,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 value=value,
                 component=component,
                 attachment_urls=urls_map,
+                options=options,
             )
             if isinstance(assignment_spec, AssignmentSpec):
                 assignment_specs.append(assignment_spec)

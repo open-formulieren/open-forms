@@ -15,7 +15,7 @@ from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent
 from openforms.typing import JSONObject, JSONValue
 
-from ..typing import ObjecttypeVariableMapping
+from ..typing import ObjecttypeVariableMapping, RegistrationOptionsV2
 
 
 @dataclass
@@ -58,6 +58,7 @@ def process_mapped_variable(
     value: (
         JSONValue | date | datetime
     ),  # can't narrow it down yet, as the type depends on the component type
+    options: RegistrationOptionsV2 | None = None,
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
@@ -73,6 +74,8 @@ def process_mapped_variable(
     :arg value: The raw value of the form variable for the submission being processed.
       The type/shape of the value depends on the variable/component data type being
       processed and even the component configuration (such as multiple True/False).
+    :arg options: The registration options. They are needed when additional information
+      is needed for processing the variable.
     :arg component: If the variable corresponds to a Formio component, the component
       definition is provided, otherwise ``None``.
     :arg attachment_urls: The registration plugin uploads attachments to a Documents API
@@ -139,6 +142,12 @@ def process_mapped_variable(
                 attachment_urls=attachment_urls,
                 key_prefix=variable_key,
             )
+        case {"type": "selectboxes"}:
+            assert options
+            assert isinstance(value, dict)
+            if options["transform_data"]:
+                value = [option for option, is_selected in value.items() if is_selected]
+
         # not a component or standard behaviour where no transformation is necessary
         case None | _:
             pass
