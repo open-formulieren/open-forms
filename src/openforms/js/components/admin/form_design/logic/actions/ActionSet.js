@@ -6,7 +6,6 @@ import {useImmerReducer} from 'use-immer';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import useOnChanged from 'hooks/useOnChanged';
-import {getUniqueRandomString} from 'utils/random';
 
 import Action from './Action';
 import {ActionError} from './types';
@@ -95,7 +94,7 @@ const ActionSet = ({name, actions, errors = [], onChange}) => {
     <>
       {state.actions.map((action, index) => (
         <Action
-          key={getUniqueRandomString()}
+          key={index}
           prefixText={index === 0 ? firstActionPrefix : extraActionPrefix}
           action={action}
           errors={errors[index] || {}}
