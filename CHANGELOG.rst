@@ -11,6 +11,23 @@ Changelog
 
 Regular bugfix release.
 
+.. warning:: Manual intervention required
+
+    We fixed a bug that would mess with the validation of the soft-required components.
+    A script is included to fix the forms that are affected - you need to run this
+    after deploying the patch release.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_softrequired_component_required_validation.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. Simply edit the soft-required components by opening the ``JSON`` view
+    and within the ``validate`` key change ``required: true`` to ``required: false``.
+
+**Bugfixes**
+
 * [:backend:`5086`, :backend:`5090`] Fixed soft-required errors being shown for hidden
   upload fields and blocking going to the next form step.
 * [:backend:`5039`] Fixed some error messages not shown properly in the Email
