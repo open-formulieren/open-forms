@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.8.6 (2025-03-03)
+==================
+
+Regular bugfix release.
+
+* Worked around some performance issues while evaluating form logic.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
 2.8.5 (2025-02-06)
 ==================
 
