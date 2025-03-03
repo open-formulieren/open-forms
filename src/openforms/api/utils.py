@@ -23,6 +23,13 @@ def underscore_to_camel(input_: str | int) -> str:
     return re.sub(camelize_re, _underscore_to_camel, input_)
 
 
+def camel_to_underscore(input: str) -> str:
+    """
+    Convert a string from camelCase to snake_case
+    """
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", input).lower()
+
+
 def get_from_serializer_data_or_instance(
     field: str, data: Mapping, serializer: Serializer
 ) -> Any:

@@ -256,6 +256,15 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         allow_blank=True,
     )
+    transform_to_list = JSONFieldWithSchema(
+        label=_("transform to list"),
+        default=dict,
+        required=False,
+        help_text=_(
+            "The components which need special handling concerning the shape of the data "
+            "and need to be transformed to list."
+        ),
+    )
 
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
         v1_only_fields = {
