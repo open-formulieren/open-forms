@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 from django.utils.translation import gettext_lazy as _
@@ -133,6 +134,11 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
 @extend_schema_serializer(deprecate_fields=["form_step"])
 class LogicComponentActionSerializer(serializers.Serializer):
     # TODO: validate that the component is present on the form
+    uuid = serializers.UUIDField(
+        read_only=True,
+        default=uuid.uuid4,
+        label=_("UUID"),
+    )
     component = serializers.CharField(
         required=False,  # validated against the action.type
         allow_blank=True,
