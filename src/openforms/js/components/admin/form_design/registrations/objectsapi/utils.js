@@ -1,3 +1,6 @@
+import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
+import {post} from 'utils/fetch';
+
 const VARIABLE_TYPE_MAP = {
   boolean: 'boolean',
   int: 'integer',
@@ -12,6 +15,8 @@ const FORMAT_TYPE_MAP = {
   time: 'time',
   date: 'date',
 };
+
+const CUSTOM_COMPONENTS_SCHEMA = {selectboxes: [{type: 'array'}]};
 
 /**
  * Return a JSON Schema definition matching the provided variable.
@@ -57,4 +62,25 @@ const asJsonSchema = (variable, components) => {
   };
 };
 
-export {asJsonSchema};
+const fetchTargetPaths = async (
+  csrftoken,
+  objectsApiGroup,
+  objecttype,
+  objecttypeVersion,
+  schemaType
+) => {
+  const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
+    objectsApiGroup,
+    objecttype,
+    objecttypeVersion,
+    variableJsonSchema: schemaType,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error when loading target paths for type: ${schemaType}`);
+  }
+
+  return response.data;
+};
+
+export {asJsonSchema, fetchTargetPaths, CUSTOM_COMPONENTS_SCHEMA};
