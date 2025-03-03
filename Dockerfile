@@ -95,6 +95,7 @@ COPY \
     ./bin/check_temporary_uploads.py \
     ./bin/check_api_groups_null.py \
     ./bin/fix_selectboxes_component_default_values.py \
+    ./bin/fix_softrequired_component_required_validation.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
