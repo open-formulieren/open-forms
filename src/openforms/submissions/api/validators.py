@@ -31,6 +31,11 @@ class ValidatePrefillData:
             if not (component_key := component.get("key")):
                 continue
 
+            # in case the component or its parent component is hidden the key will not be
+            # part of the data.
+            if component_key not in data:
+                continue
+
             original_prefill_value = prefill_data.get(component_key)
             if original_prefill_value is None:
                 # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This

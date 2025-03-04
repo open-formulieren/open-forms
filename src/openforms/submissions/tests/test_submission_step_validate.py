@@ -156,6 +156,140 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
+    def test_prefill_data_with_hidden_component(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                        "label": "Name",
+                        "prefill": {"plugin": "test-prefill", "attribute": "name"},
+                        "disabled": True,
+                        "defaultValue": "",
+                        "hidden": False,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
+                        "defaultValue": "",
+                        "hidden": True,
+                    },
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"surname": "test"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(endpoint, {"data": {"surname": "test"}})
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    def test_prefill_data_with_hidden_parent_component(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "name",
+                                "label": "Name",
+                                "prefill": {
+                                    "plugin": "test-prefill",
+                                    "attribute": "name",
+                                },
+                                "disabled": True,
+                                "defaultValue": "",
+                                "hidden": False,
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form, prefill_data={"name": "test"})
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(endpoint, {"data": {}})
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    def test_prefill_data_is_persisted_when_submission_data_omitted(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                        "label": "Name",
+                        "prefill": {"plugin": "test-prefill", "attribute": "name"},
+                        "disabled": True,
+                        "defaultValue": "",
+                        "hidden": False,
+                    },
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form, prefill_data={"name": "test"})
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        with self.subTest("empty data field"):
+            response = self.client.post(endpoint, {"data": {}})
+
+            submission.refresh_from_db()
+            variable = submission.submissionvaluevariable_set.get()
+
+            self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+            self.assertEqual(variable.value, "test")
+
+        with self.subTest("data field not present"):
+            response = self.client.post(endpoint, {})
+
+            submission.refresh_from_db()
+            variable = submission.submissionvaluevariable_set.get()
+
+            self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+            self.assertEqual(variable.value, "test")
+
     def test_prefilled_data_normalised(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
