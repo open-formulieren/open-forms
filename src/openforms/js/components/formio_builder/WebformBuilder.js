@@ -16,6 +16,7 @@ import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getAvailableDocumentTypes} from 'components/form/file';
 import {getComponentEmptyValue} from 'components/utils';
 import jsonScriptToVar from 'utils/json-script';
+import {sanitizeHTML} from 'utils/sanitize';
 import {currentTheme} from 'utils/theme';
 
 import {
@@ -202,6 +203,22 @@ class WebformBuilder extends WebformBuilderFormio {
     })();
   }
 
+  sanitizeComponentData(componentData) {
+    ['label', 'tooltip', 'description'].forEach(property => {
+      if (!componentData[property]) return;
+      componentData[property] = sanitizeHTML(componentData[property]);
+    });
+
+    // not-so-elegant input sanitation that formio does... FIXME: can't we just escape
+    // this with \" instead?
+    ['label', 'tooltip', 'placeholder'].forEach(property => {
+      if (!componentData[property]) return;
+      componentData[property] = componentData[property].replace(/"/g, "'");
+    });
+
+    return componentData;
+  }
+
   /**
    * saveComponent method when triggered from React events/formio builder.
    *
@@ -224,13 +241,9 @@ class WebformBuilder extends WebformBuilderFormio {
       return NativePromise.resolve();
     }
 
-    // not-so-elegant input sanitation that formio does... FIXME: can't we just escape
-    // this with \" instead?
     if (componentData) {
-      ['label', 'tooltip', 'placeholder'].forEach(property => {
-        if (!componentData[property]) return;
-        componentData[property] = componentData[property].replace(/"/g, "'");
-      });
+      // Perform some basic component data sanitizing
+      componentData = this.sanitizeComponentData(componentData);
     }
 
     // look up the component instance with the parent

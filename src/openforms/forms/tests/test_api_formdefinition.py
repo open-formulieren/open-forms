@@ -197,6 +197,148 @@ class FormDefinitionsAPITests(APITestCase):
             ),
         )
 
+    def test_update_html_sanitizing_allowed_content_remains(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            login_required=False,
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "somekey", "type": "textfield", "label": "Existing field"}
+                ],
+            },
+        )
+
+        allowed_content = (
+            "Naked text",
+            "Naked text with cool stuff {% if true %}{{ variable }}{% endif %}",
+            "<p>Regular</p>",
+            "<b>Bold</b>",
+            "<strong>Strong</strong>",
+            "<u>Underlined</u>",
+            "<i>Italic</i>",
+            "<sup>Superscript</sup>",
+            "<s>Strike through</s>",
+            "<em>Emphasis</em>",
+            "<br>",
+            '<a href="mailto:example@mail.com" data-fr-linked="true">Hello</a>',
+            '<a href="https://www.example.com" target="_blank" rel="noopener noreferrer">hello</a>',
+            "<ul><li>Un-ordered list</li></ul>",
+            "<ol><li>Ordered list</li></ol>",
+            "<h1>H1</h1>",
+            "<h2>H2</h2>",
+            "<h3>H3</h3>",
+            "<h4>H4</h4>",
+            "<h5>H5</h5>",
+            "<h6>H6</h6>",
+            "<p><i><b>Nested</b></i><br><u>stuff</u></p>",
+            "<p><i><b>Nested variables {% if variable %}{{ variable }}{% endif %}</b></i><br></p>",
+        )
+
+        for content in allowed_content:
+            with self.subTest(label=content):
+                url = reverse(
+                    "api:formdefinition-detail", kwargs={"uuid": definition.uuid}
+                )
+                response = self.client.patch(
+                    url,
+                    data={
+                        "name": "Updated name",
+                        "slug": "updated-slug",
+                        "configuration": {
+                            "display": "form",
+                            "components": [
+                                {
+                                    "key": "somekey",
+                                    "type": "textfield",
+                                    "label": content,
+                                    "description": content,
+                                    "tooltip": content,
+                                },
+                            ],
+                        },
+                    },
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+                definition.refresh_from_db()
+
+                config = definition.configuration
+                textfield = config["components"][0]
+
+                self.assertIn("label", textfield)
+                self.assertIn("description", textfield)
+                self.assertIn("tooltip", textfield)
+                self.assertEqual(textfield["label"], content)
+                self.assertEqual(textfield["description"], content)
+                self.assertEqual(textfield["tooltip"], content)
+
+    def test_update_html_sanitizing_disallowed_content_sanitized(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        definition = FormDefinitionFactory.create(
+            name="test form definition",
+            slug="test-form-definition",
+            login_required=False,
+            configuration={
+                "display": "form",
+                "components": [
+                    {"key": "somekey", "type": "textfield", "label": "Existing field"}
+                ],
+            },
+        )
+
+        disallowed_content_expected_map = (
+            ("<img src=x onerror=alert('123') />", ""),
+            ("<a href=x onerror=alert('123')>foo</a>", '<a href="x">foo</a>'),
+            ("<div>foo bar</div>", "foo bar"),
+        )
+
+        for disallowed_content, expected in disallowed_content_expected_map:
+            with self.subTest(label=disallowed_content):
+                url = reverse(
+                    "api:formdefinition-detail", kwargs={"uuid": definition.uuid}
+                )
+                response = self.client.patch(
+                    url,
+                    data={
+                        "name": "Updated name",
+                        "slug": "updated-slug",
+                        "configuration": {
+                            "display": "form",
+                            "components": [
+                                {
+                                    "key": "somekey",
+                                    "type": "textfield",
+                                    "label": disallowed_content,
+                                    "description": disallowed_content,
+                                    "tooltip": disallowed_content,
+                                },
+                            ],
+                        },
+                    },
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+                definition.refresh_from_db()
+
+                config = definition.configuration
+                textfield = config["components"][0]
+
+                self.assertIn("label", textfield)
+                self.assertIn("description", textfield)
+                self.assertIn("tooltip", textfield)
+                self.assertEqual(textfield["label"], expected)
+                self.assertEqual(textfield["description"], expected)
+                self.assertEqual(textfield["tooltip"], expected)
+
     def test_create(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
@@ -292,6 +434,121 @@ class FormDefinitionsAPITests(APITestCase):
         date_component = response.json()["configuration"]["components"][0]
 
         self.assertIn("time_24hr", date_component["widget"])
+
+    def test_create_html_sanitizing_allowed_content_remains(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        allowed_content = (
+            "Naked text",
+            "Naked text with cool stuff {% if true %}{{ variable }}{% endif %}",
+            "<p>Regular</p>",
+            "<b>Bold</b>",
+            "<strong>Strong</strong>",
+            "<u>Underlined</u>",
+            "<i>Italic</i>",
+            "<sup>Superscript</sup>",
+            "<s>Strike through</s>",
+            "<em>Emphasis</em>",
+            "<br>",
+            '<a href="mailto:example@mail.com" data-fr-linked="true">Hello</a>',
+            '<a href="https://www.example.com" target="_blank" rel="noopener noreferrer">hello</a>',
+            "<ul><li>Un-ordered list</li></ul>",
+            "<ol><li>Ordered list</li></ol>",
+            "<h1>H1</h1>",
+            "<h2>H2</h2>",
+            "<h3>H3</h3>",
+            "<h4>H4</h4>",
+            "<h5>H5</h5>",
+            "<h6>H6</h6>",
+            "<p><i><b>Nested</b></i><br><u>stuff</u></p>",
+            "<p><i><b>Nested variables {% if variable %}{{ variable }}{% endif %}</b></i><br></p>",
+        )
+
+        for content in allowed_content:
+            with self.subTest(label=content):
+                url = reverse("api:formdefinition-list")
+                response = self.client.post(
+                    url,
+                    data={
+                        "name": "Name",
+                        "slug": "a-slug",
+                        "configuration": {
+                            "display": "form",
+                            "components": [
+                                {
+                                    "key": "somekey",
+                                    "type": "textfield",
+                                    "label": content,
+                                    "description": content,
+                                    "tooltip": content,
+                                }
+                            ],
+                        },
+                    },
+                )
+
+                self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+                config = FormDefinition.objects.get().configuration
+
+                textfield = config["components"][0]
+                self.assertIn("label", textfield)
+                self.assertIn("description", textfield)
+                self.assertIn("tooltip", textfield)
+                self.assertEqual(textfield["label"], content)
+                self.assertEqual(textfield["description"], content)
+                self.assertEqual(textfield["tooltip"], content)
+
+                # Remove form definition, to create a clean instance for the next content to test
+                FormDefinition.objects.get().delete()
+
+    def test_create_html_sanitizing_disallowed_content_sanitized(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        disallowed_content_expected_map = (
+            ("<img src=x onerror=alert('123') />", ""),
+            ("<a href=x onerror=alert('123')>foo</a>", '<a href="x">foo</a>'),
+            ("<div>foo bar</div>", "foo bar"),
+        )
+
+        for disallowed_content, expected in disallowed_content_expected_map:
+            with self.subTest(label=disallowed_content):
+                url = reverse("api:formdefinition-list")
+                response = self.client.post(
+                    url,
+                    data={
+                        "name": "Name",
+                        "slug": "a-slug",
+                        "configuration": {
+                            "display": "form",
+                            "components": [
+                                {
+                                    "key": "somekey",
+                                    "type": "textfield",
+                                    "label": disallowed_content,
+                                    "description": disallowed_content,
+                                    "tooltip": disallowed_content,
+                                }
+                            ],
+                        },
+                    },
+                )
+
+                self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+                config = FormDefinition.objects.get().configuration
+
+                textfield = config["components"][0]
+
+                self.assertIn("label", textfield)
+                self.assertIn("description", textfield)
+                self.assertIn("tooltip", textfield)
+                self.assertEqual(textfield["label"], expected)
+                self.assertEqual(textfield["description"], expected)
+                self.assertEqual(textfield["tooltip"], expected)
+
+                # Remove form definition, to create a clean instance for the next content to test
+                FormDefinition.objects.get().delete()
 
     def test_delete(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])

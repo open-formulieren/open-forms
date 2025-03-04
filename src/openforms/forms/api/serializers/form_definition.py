@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.formio.service import rewrite_formio_components_for_request
+from openforms.formio.utils import iter_components
 from openforms.translations.api.serializers import (
     ComponentTranslationsSerializer,
     ModelTranslationsSerializer,
@@ -16,6 +17,7 @@ from openforms.translations.api.serializers import (
 
 from ...fd_translations_converter import process_component_tree
 from ...models import Form, FormDefinition
+from ...sanitizer import sanitize_component
 from ...validators import (
     validate_form_definition_is_reusable,
     validate_no_duplicate_keys,
@@ -142,13 +144,26 @@ class FormDefinitionSerializer(
 
         return representation
 
+    def create(self, validated_data):
+        if configuration := validated_data.get("configuration"):
+            for component in iter_components(configuration):
+                sanitize_component(component)
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if configuration := validated_data.get("configuration"):
+            for component in iter_components(configuration):
+                sanitize_component(component)
+
+        return super().update(instance, validated_data)
+
     def validate(self, attrs):
         attrs = super().validate(attrs)
         if self.instance:
             validate_form_definition_is_reusable(
                 self.instance, new_value=attrs.get("is_reusable")
             )
-
         # during import, process legacy format component translations
         if self.context.get("is_import", False) and (
             translations_store := attrs.get("component_translations")
