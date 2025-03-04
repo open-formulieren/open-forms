@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
+import re
 import sys
 from collections.abc import Sequence
 from pathlib import Path
@@ -68,7 +69,29 @@ def check_component(component: Component) -> str | None:
                     return "defaultValue has a translation"
 
 
-def report_problems(component_types: Sequence[str]) -> bool:
+def check_component_html_usage(component: Component) -> [str]:
+    messages = []
+    label = component.get("label")
+    description = component.get("description", "")
+    tooltip = component.get("tooltip", "")
+
+    # Check for anything that looks like a html tag (so '<' followed by a character)
+    simple_html_pattern = r"<\w"
+    label_contains_html = bool(re.search(simple_html_pattern, label))
+    description_contains_html = bool(re.search(simple_html_pattern, description))
+    tooltip_contains_html = bool(re.search(simple_html_pattern, tooltip))
+
+    if label_contains_html:
+        messages.append(f"Label contains html: '{label}'.")
+    if description_contains_html:
+        messages.append(f"Description contains html: '{description}'.")
+    if tooltip_contains_html:
+        messages.append(f"Tooltip contains html: '{tooltip}'.")
+
+    return messages
+
+
+def report_problems(component_types: Sequence[str], check_html_usage: bool) -> bool:
     from openforms.forms.models import FormDefinition
 
     problems = []
@@ -79,8 +102,17 @@ def report_problems(component_types: Sequence[str]) -> bool:
             if component_types and component["type"] not in component_types:
                 continue
 
-            message = check_component(component)
-            if message is None:
+            messages = []
+            if check_component_message := check_component(component):
+                messages.append(check_component_message)
+            if (
+                check_html_usage
+                and len(check_component_html_messages := check_component_html_usage(component))
+                > 0
+            ):
+                messages.extend(check_component_html_messages)
+
+            if len(messages) == 0:
                 continue
 
             problems.append(
@@ -88,7 +120,7 @@ def report_problems(component_types: Sequence[str]) -> bool:
                     form_definition.admin_name,
                     component.get("label") or component["key"],
                     component["type"],
-                    message,
+                    "\n".join(messages),
                 ]
             )
 
@@ -120,9 +152,16 @@ def main(skip_setup=False, **kwargs) -> bool:
 
 @click.command()
 @click.option("--component-type", multiple=True, help="Limit check to component type.")
-def cli(component_type: Sequence[str]):
+@click.option(
+    "--include-html-checking",
+    is_flag=True,
+    default=False,
+    help="Include checks for html usage in tooltips, descriptions and labels.",
+)
+def cli(component_type: Sequence[str], include_html_checking: bool):
     return main(
         component_types=component_type,
+        check_html_usage=include_html_checking,
     )
 
 

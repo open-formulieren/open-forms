@@ -10,6 +10,7 @@ from openforms.formio.service import rewrite_formio_components_for_request
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import Form, FormDefinition
+from ...sanitize import sanitize_form_component
 from ...validators import (
     validate_form_definition_is_reusable,
     validate_no_duplicate_keys,
@@ -130,6 +131,18 @@ class FormDefinitionSerializer(
         representation["configuration"] = instance.configuration_wrapper.configuration
 
         return representation
+
+    def create(self, validated_data):
+        for component in validated_data["configuration"].get("components", []):
+            sanitize_form_component(component)
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        for component in validated_data["configuration"].get("components", []):
+            sanitize_form_component(component)
+
+        return super().update(instance, validated_data)
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
