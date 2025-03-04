@@ -8,6 +8,7 @@ from rest_framework import serializers
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.formio.service import rewrite_formio_components_for_request
 from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.utils.sanitizer import sanitize_component
 
 from ...models import Form, FormDefinition
 from ...validators import (
@@ -130,6 +131,20 @@ class FormDefinitionSerializer(
         representation["configuration"] = instance.configuration_wrapper.configuration
 
         return representation
+
+    def create(self, validated_data):
+        if configuration := validated_data.get("configuration"):
+            for component in configuration.get("components", []):
+                sanitize_component(component)
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if configuration := validated_data.get("configuration"):
+            for component in configuration.get("components", []):
+                sanitize_component(component)
+
+        return super().update(instance, validated_data)
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
