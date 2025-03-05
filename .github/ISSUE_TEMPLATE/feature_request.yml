@@ -1,7 +1,7 @@
 name: Verzoek tot verbetering / Feature request
 description: Stel een idee voor om het project beter te maken / Suggest an idea for this project
-title: "Title here"
-labels: ["enhancement", "triage"]
+type: "Enhancement"
+labels: ["triage"]
 assignees: []
 body:
   - type: dropdown
