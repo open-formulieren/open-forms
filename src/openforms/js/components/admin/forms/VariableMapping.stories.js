@@ -1,7 +1,11 @@
 import {expect, fn, userEvent, within} from '@storybook/test';
 import selectEvent from 'react-select-event';
 
-import {FormDecorator, FormikDecorator} from 'components/admin/form_design/story-decorators';
+import {
+  FormDecorator,
+  FormikDecorator,
+  ValidationErrorsDecorator,
+} from 'components/admin/form_design/story-decorators';
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import {findReactSelectMenu} from 'utils/storybookTestHelpers';
 
@@ -10,7 +14,7 @@ import VariableMapping, {serializeValue} from './VariableMapping';
 export default {
   title: 'Form design/VariableMapping',
   component: VariableMapping,
-  decorators: [FormikDecorator, FormDecorator],
+  decorators: [FormikDecorator, ValidationErrorsDecorator, FormDecorator],
 
   parameters: {
     formik: {
@@ -222,5 +226,40 @@ export const OmitAlreadyMappedValues = {
       const option2 = within(secondDropdown).queryByRole('option', {name: 'Option 2'});
       expect(option2).toBeNull();
     });
+  },
+};
+
+export const WithValidationErrors = {
+  render: args => (
+    <>
+      <VariableMapping {...args} />
+      <button type="submit">Submit</button>
+    </>
+  ),
+
+  args: {
+    propertyChoices: [
+      [['nested', 'property'], 'Nested > property'],
+      [['otherProperty'], 'Other property'],
+    ],
+  },
+
+  parameters: {
+    formik: {
+      initialValues: {
+        mapping: [{formVariable: 'key2'}, {formVariable: 'key2', property: ['otherProperty']}, {}],
+      },
+      onSubmit: fn(),
+    },
+    validationErrors: [
+      [
+        'mapping',
+        [
+          {property: 'This field may not be blank.'},
+          undefined,
+          {formVariable: 'This field may not be blank.', property: 'This field may not be blank.'},
+        ],
+      ],
+    ],
   },
 };

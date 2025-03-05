@@ -2009,6 +2009,11 @@
     "description": "Changing user variable data type and transforming initial value confirmation message",
     "originalDefault": "Changing the data type requires the initial value to be changed. This will reset the initial value back to the empty value. Are you sure that you want to do this?"
   },
+  "ag/AZx": {
+    "defaultMessage": "There are errors in the DMN configuration.",
+    "description": "DMN evaluation configuration errors message",
+    "originalDefault": "There are errors in the DMN configuration."
+  },
   "auZOcD": {
     "defaultMessage": "Mapping expression",
     "description": "Service fetch configuration modal form mapping expression field label",
