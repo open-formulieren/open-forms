@@ -526,6 +526,139 @@ class SubmissionReportGenerationTests(TestCase):
         )
         self.assertInHTML(expected, html, count=1)
 
+    def test_components_with_no_content(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                },
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Selectboxes",
+                    "values": [
+                        {
+                            "value": "option1",
+                            "label": "Selectbox Option 1",
+                        },
+                        {
+                            "value": "option2",
+                            "label": "Selectbox Option 2",
+                        },
+                        {
+                            "value": "option3",
+                            "label": "Selectbox Option 3",
+                        },
+                    ],
+                },
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {
+                            "value": "firstradiooption",
+                            "label": "First radio option",
+                        },
+                        {
+                            "value": "secondradiooption",
+                            "label": "Second radio option",
+                        },
+                    ],
+                },
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "label": "Fieldset",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield1",
+                            "label": "Textfield 1",
+                        },
+                    ],
+                },
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "label": "Repeating Group",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield2",
+                            "label": "Textfield 2",
+                        },
+                    ],
+                },
+            ],
+            submitted_data={"repeatingGroup": [{"textfield2": None}]},
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+
+        expected = format_html(
+            """
+            <div class="submission-step-row">
+                <span id="components.0.textfield" class="submission-step-row__label">Textfield</span>
+                <div aria-labelledby="components.0.textfield" class="submission-step-row__value submission-step-row__value--empty">
+                     No information provided
+                </div>
+            </div>
+
+            <div class="submission-step-row">
+                <span id="components.1.selectboxes" class="submission-step-row__label">Selectboxes</span>
+                <div aria-labelledby="components.1.selectboxes" class="submission-step-row__value submission-step-row__value--empty">
+                     No information provided
+                </div>
+            </div>
+
+            <div class="submission-step-row">
+                <span id="components.2.radio" class="submission-step-row__label">Radio</span>
+                <div aria-labelledby="components.2.radio" class="submission-step-row__value submission-step-row__value--empty">
+                     No information provided
+                </div>
+            </div>
+
+            <div class="submission-step-row submission-step-row--fieldset">
+                <span class="submission-step-row__fieldset-label">Fieldset</span>
+            </div>
+            <div class="submission-step-row">
+                <span id="components.3.components.0.textfield1" class="submission-step-row__label">
+                    Textfield 1
+                </span>
+                <div aria-labelledby="components.3.components.0.textfield1" class="submission-step-row__value submission-step-row__value--empty">
+                    No information provided
+                </div>
+            </div>
+
+            <div class="submission-step-row submission-step-row--editgrid">
+                <span id="components.4.repeatingGroup" class="submission-step-row__label">
+                    Repeating Group
+                </span>
+                <div aria-labelledby="components.4.repeatingGroup" class="submission-step-row__value submission-step-row__value--empty">
+                </div>
+            </div>
+            <div class="submission-step-row submission-step-row--editgrid-group">
+                <span id="components.4.components.repeatingGroup" class="submission-step-row__label">
+                    Item 1
+                </span>
+                <div aria-labelledby="components.4.components.repeatingGroup" class="submission-step-row__value submission-step-row__value--empty">
+                </div>
+            </div>
+            <div class="submission-step-row">
+                <span id="components.4.components.0.textfield2" class="submission-step-row__label">
+                    Textfield 2
+                </span>
+                <div aria-labelledby="components.4.components.0.textfield2" class="submission-step-row__value submission-step-row__value--empty">
+                    No information provided
+                </div>
+            </div>
+            """,
+        )
+        self.assertInHTML(expected, html, count=1)
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
