@@ -1,6 +1,5 @@
 name: Probleem melden / Bug report
 description: Meldt een probleem om ons te helpen verbeteren  / Create a report to help us improve
-title: "Title here"
 type: "Bug"
 labels: ["triage"]
 assignees: []
