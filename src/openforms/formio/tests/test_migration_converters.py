@@ -716,3 +716,41 @@ class MapTests(SimpleTestCase):
             component["interactions"],
             {"marker": True, "polygon": False, "polyline": False},
         )
+
+
+class RadioTests(SimpleTestCase):
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_empty_string_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
