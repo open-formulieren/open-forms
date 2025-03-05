@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -7,8 +7,9 @@ from rest_framework import serializers
 from zgw_consumers.constants import APITypes
 from zgw_consumers.models import Service
 
-from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import JSONFieldWithSchema, PrimaryKeyRelatedAsChoicesField
 from openforms.formio.api.fields import FormioVariableKeyField
+from openforms.typing import JSONObject
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
@@ -70,6 +71,15 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         required=False,
         default=list,
     )
+    transform_to_list = JSONFieldWithSchema(
+        label=_("transform to list"),
+        default=dict,
+        required=False,
+        help_text=_(
+            "The components which need special handling concerning the shape of the data "
+            "and need to be transformed to a list."
+        ),
+    )
 
 
 class JSONDumpOptions(TypedDict):
@@ -85,3 +95,4 @@ class JSONDumpOptions(TypedDict):
     variables: list[str]
     fixed_metadata_variables: list[str]
     additional_metadata_variables: list[str]
+    transform_to_list: NotRequired[JSONObject]

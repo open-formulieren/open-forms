@@ -16,8 +16,6 @@ const FORMAT_TYPE_MAP = {
   date: 'date',
 };
 
-const CUSTOM_COMPONENTS_SCHEMA = {selectboxes: [{type: 'array'}]};
-
 /**
  * Return a JSON Schema definition matching the provided variable.
  * @param {Object} variable - The current variable
@@ -83,4 +81,4 @@ const fetchTargetPaths = async (
   return response.data;
 };
 
-export {asJsonSchema, fetchTargetPaths, CUSTOM_COMPONENTS_SCHEMA};
+export {asJsonSchema, fetchTargetPaths};

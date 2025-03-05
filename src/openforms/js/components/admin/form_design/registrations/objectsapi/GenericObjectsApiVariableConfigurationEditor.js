@@ -12,8 +12,9 @@ import {Checkbox} from 'components/admin/forms/Inputs';
 import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
+import {CUSTOM_COMPONENTS_SCHEMA} from '../utils';
 import {asJsonSchema} from './utils';
-import {CUSTOM_COMPONENTS_SCHEMA, fetchTargetPaths} from './utils';
+import {fetchTargetPaths} from './utils';
 
 /**
  * Hack-ish way to manage the variablesMapping state for one particular entry.
