@@ -356,14 +356,14 @@ class SubmissionReportGenerationTests(TestCase):
         expected = format_html(
             """
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Textfield single</div>
-                <div class="submission-step-row__value">
+                <span id="components.0.textfield-single" class="submission-step-row__label">Textfield single</span>
+                <div aria-labelledby="components.0.textfield-single" class="submission-step-row__value">
                     foo
                 </div>
             </div>
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Textfield multiple</div>
-                <div class="submission-step-row__value">
+                <span id="components.1.textfield-multiple" class="submission-step-row__label">Textfield multiple</span>
+                <div aria-labelledby="components.1.textfield-multiple" class="submission-step-row__value">
                     <ul><li>foo</li><li>bar</li></ul>
                 </div>
             </div>
@@ -426,14 +426,14 @@ class SubmissionReportGenerationTests(TestCase):
         expected = format_html(
             """
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Select single</div>
-                <div class="submission-step-row__value">
+                <span id="components.0.select-single" class="submission-step-row__label">Select single</span>
+                <div aria-labelledby="components.0.select-single" class="submission-step-row__value">
                     Single select Option 1
                 </div>
             </div>
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Select multiple</div>
-                <div class="submission-step-row__value">
+                <span id="components.1.select-multiple" class="submission-step-row__label">Select multiple</span>
+                <div aria-labelledby="components.1.select-multiple" class="submission-step-row__value">
                     <ul><li>Multiple select Option 1</li><li>Multiple select Option 3</li></ul>
                 </div>
             </div>
@@ -477,8 +477,10 @@ class SubmissionReportGenerationTests(TestCase):
         expected = format_html(
             """
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Selectboxes</div>
-                <div class="submission-step-row__value">
+                <span id="components.0.selectboxes" class="submission-step-row__label">
+                    Selectboxes
+                </span>
+                <div aria-labelledby="components.0.selectboxes" class="submission-step-row__value">
                     <ul><li>Selectbox Option 1</li><li>Selectbox Option 3</li></ul>
                 </div>
             </div>
@@ -515,8 +517,8 @@ class SubmissionReportGenerationTests(TestCase):
         expected = format_html(
             """
             <div class="submission-step-row">
-                <div class="submission-step-row__label">Radio</div>
-                <div class="submission-step-row__value">
+                <span id="components.0.radio" class="submission-step-row__label">Radio</span>
+                <div aria-labelledby="components.0.radio" class="submission-step-row__value">
                     Second radio option
                 </div>
             </div>
