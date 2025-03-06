@@ -1,7 +1,6 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
-import {patchValidateDefaults} from './textfield';
 
 const Time = Formio.Components.components.time;
 
@@ -11,16 +10,6 @@ const Time = Formio.Components.components.time;
  * us to enter times in 24h notation.
  */
 class TimeField extends Time {
-  constructor(...args) {
-    super(...args);
-
-    // somewhere the default emptyValue/defaultValue does not seem to be used and it forces
-    // component.defaultValue to be null, which causes issues with multiples #4659
-    if (this.component.defaultValue === null) {
-      this.component.defaultValue = '';
-    }
-  }
-
   static schema(...extend) {
     const schema = Time.schema(
       {
