@@ -96,7 +96,7 @@
     "@storybook/react-webpack5": "^8.6.0",
     "@storybook/test": "^8.6.0",
     "@storybook/test-runner": "^0.21.3",
-    "@utrecht/components": "^1.0.0-alpha.378",
+    "@utrecht/components": "^7.4.0",
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
     "babel-plugin-formatjs": "^10.5.1",
