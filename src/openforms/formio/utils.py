@@ -447,6 +447,7 @@ def recursive_apply(
     JSON serialization unless transform_leaf flag is set to True where func is
     applied to the nested value as well.
     """
+    from openforms.formio.datastructures import FormioData
     match input:
         # string primitive - we can throw it into the template engine
         case str():
@@ -460,7 +461,7 @@ def recursive_apply(
             ]
 
         # mapping - map every key/value pair recursively
-        case dict():
+        case dict() | FormioData():
             return {
                 key: recursive_apply(nested_bit, func, transform_leaf, *args, **kwargs)
                 for key, nested_bit in input.items()

@@ -162,12 +162,14 @@ class FormioData(UserDict):
 
     data: dict[str, JSONValue]
     _keys: set[str]
+    updates: dict[str, JSONValue]
     """
     A collection of flattened key names, for quicker __contains__ access
     """
 
     def __init__(self, *args, **kwargs):
         self._keys = set()
+        self.updates = {}
         super().__init__(*args, **kwargs)
 
     def __getitem__(self, key: str):
@@ -206,3 +208,6 @@ class FormioData(UserDict):
             return True
         except KeyError:
             return False
+
+    def track_updates(self, m: dict[str, JSONValue]) -> None:
+        self.updates.update(m)
