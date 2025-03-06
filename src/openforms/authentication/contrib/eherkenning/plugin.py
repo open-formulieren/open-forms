@@ -35,19 +35,25 @@ def loa_order(loa: str) -> int:
     return -1 if loa not in _LOA_ORDER else _LOA_ORDER.index(loa)
 
 
-class AuthenticationBasePlugin(BasePlugin):
+class AuthenticationBasePlugin(BasePlugin[EherkenningConfiguration]):
     session_key: str
+    config_class = EherkenningConfiguration
 
-    def _get_attr_consuming_service_index(self) -> str:
-        config = EherkenningConfiguration.get_solo()
+    def _get_attr_consuming_service_index(
+        self, options: EherkenningConfiguration
+    ) -> str:
         indices = {
-            "eherkenning": config.eh_attribute_consuming_service_index,
-            "eidas": config.eidas_attribute_consuming_service_index,
+            "eherkenning": options.eh_attribute_consuming_service_index,
+            "eidas": options.eidas_attribute_consuming_service_index,
         }
         return indices[self.identifier]
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self,
+        request: HttpRequest,
+        form: Form,
+        form_url: str,
+        options: EherkenningConfiguration,
     ) -> HttpResponseRedirect:
         """
         Redirect to the /eherkenning/login endpoint to start the authentication.
@@ -72,7 +78,9 @@ class AuthenticationBasePlugin(BasePlugin):
         redirect_url = furl(login_url).set(
             {
                 "next": str(return_url),
-                "attr_consuming_service_index": self._get_attr_consuming_service_index(),
+                "attr_consuming_service_index": self._get_attr_consuming_service_index(
+                    options
+                ),
             }
         )
         return HttpResponseRedirect(str(redirect_url))
@@ -89,7 +97,9 @@ class AuthenticationBasePlugin(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request: HttpRequest, form: Form):
+    def handle_return(
+        self, request: HttpRequest, form: Form, options: EherkenningConfiguration
+    ):
         """
         Redirect (back) to form URL.
         """
