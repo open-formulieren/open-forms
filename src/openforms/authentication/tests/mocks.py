@@ -12,10 +12,10 @@ class Plugin(BasePlugin):
     verbose_name = "some human readable label"
     provides_auth = AuthAttribute.bsn
 
-    def start_login(self, request, form, form_url):
+    def start_login(self, request, form, form_url, options):
         return HttpResponse("start")
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         return HttpResponseRedirect(request.GET.get("next"))
 
     def handle_co_sign(self, request, form):
@@ -30,11 +30,12 @@ class Plugin(BasePlugin):
 
 class FailingPlugin(BasePlugin):
     verbose_name = "some human readable label"
+    config_class = None
 
-    def start_login(self, request, form, form_url):
+    def start_login(self, request, form, form_url, options):
         raise Exception("start")
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         raise Exception("return")
 
 
@@ -42,11 +43,12 @@ class RequiresAdminPlugin(BasePlugin):
     verbose_name = "plugin requiring staff user session"
     provides_auth = AuthAttribute.bsn
     is_demo_plugin = True
+    config_class = None
 
-    def start_login(self, request, form, form_url):
+    def start_login(self, request, form, form_url, options):
         return HttpResponse("start")
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         return HttpResponseRedirect(request.GET.get("next"))
 
     def handle_co_sign(self, request, form):

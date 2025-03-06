@@ -38,16 +38,19 @@ def loa_order(loa: str) -> int:
 class AuthenticationBasePlugin(BasePlugin):
     session_key: str
 
-    def _get_attr_consuming_service_index(self) -> str:
-        config = EherkenningConfiguration.get_solo()
+    def _get_attr_consuming_service_index(self, options) -> str:
         indices = {
-            "eherkenning": config.eh_attribute_consuming_service_index,
-            "eidas": config.eidas_attribute_consuming_service_index,
+            "eherkenning": options.eh_attribute_consuming_service_index,
+            "eidas": options.eidas_attribute_consuming_service_index,
         }
         return indices[self.identifier]
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self,
+        request: HttpRequest,
+        form: Form,
+        form_url: str,
+        options,
     ) -> HttpResponseRedirect:
         """
         Redirect to the /eherkenning/login endpoint to start the authentication.
@@ -72,7 +75,9 @@ class AuthenticationBasePlugin(BasePlugin):
         redirect_url = furl(login_url).set(
             {
                 "next": str(return_url),
-                "attr_consuming_service_index": self._get_attr_consuming_service_index(),
+                "attr_consuming_service_index": self._get_attr_consuming_service_index(
+                    options
+                ),
             }
         )
         return HttpResponseRedirect(str(redirect_url))
@@ -89,7 +94,9 @@ class AuthenticationBasePlugin(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request: HttpRequest, form: Form):
+    def handle_return(
+        self, request: HttpRequest, form: Form, options: EherkenningConfiguration
+    ):
         """
         Redirect (back) to form URL.
         """

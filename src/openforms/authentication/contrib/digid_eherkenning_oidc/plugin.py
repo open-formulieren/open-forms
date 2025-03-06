@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, NotRequired, Protocol, TypedDict, TypeVar
+from typing import Any, ClassVar, NotRequired, Protocol, TypedDict
 
 from django.http import (
     HttpRequest,
@@ -29,6 +29,7 @@ from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
+from .config import DigiDOIDCOptions
 from .models import (
     OFDigiDConfig,
     OFDigiDMachtigenConfig,
@@ -62,19 +63,24 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
-# can't bind it to JSONObject because TypedDict and dict[str, ...] are not considered
-# assignable... :(
-T = TypeVar("T")
+class T(TypedDict):
+    pass
 
 
-class OIDCAuthentication(Generic[T], BasePlugin[TypedDict]):
+class OptionsT(TypedDict):
+    pass
+
+
+class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
     config_class: ClassVar[type[BaseConfig]]
     init_view: ClassVar[AuthInit]
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
+    ):
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -111,7 +117,7 @@ class OIDCAuthentication(Generic[T], BasePlugin[TypedDict]):
     def transform_claims(self, normalized_claims: T) -> FormAuth:
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
-    def handle_return(self, request: HttpRequest, form: Form):
+    def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
         """
         Redirect to form URL.
         """
@@ -157,7 +163,7 @@ class DigiDClaims(TypedDict):
 
 
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims]):
+class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, DigiDOIDCOptions]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_oidc:bsn"
@@ -197,7 +203,7 @@ class EHClaims(TypedDict):
 
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
@@ -258,7 +264,9 @@ class DigiDmachtigenClaims(TypedDict):
 
 
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims]):
+class DigiDMachtigenOIDCAuthentication(
+    OIDCAuthentication[DigiDmachtigenClaims, OptionsT]
+):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
@@ -319,7 +327,7 @@ _EH_IDENTIFIER_TYPE_MAP = {
 
 @register("eherkenning_bewindvoering_oidc")
 class EHerkenningBewindvoeringOIDCAuthentication(
-    OIDCAuthentication[EHBewindvoeringClaims]
+    OIDCAuthentication[EHBewindvoeringClaims, OptionsT]
 ):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been

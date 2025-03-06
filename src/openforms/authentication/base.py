@@ -51,11 +51,15 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
 
     # override
 
-    def start_login(self, request: Request, form: Form, form_url: str) -> HttpResponse:
+    def start_login(
+        self, request: Request, form: Form, form_url: str, options: OptionsT
+    ) -> HttpResponse:
         # redirect/go to auth service (like digid)
         raise NotImplementedError()  # noqa
 
-    def handle_return(self, request: Request, form: Form) -> HttpResponse:
+    def handle_return(
+        self, request: Request, form: Form, options: OptionsT
+    ) -> HttpResponse:
         # process and validate return information, store bsn in session
         raise NotImplementedError()  # noqa
 
@@ -127,7 +131,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
         ]
 
-    def check_requirements(self, request: AnyRequest, options: OptionsT | None) -> bool:
+    def check_requirements(self, request: AnyRequest, options: OptionsT) -> bool:
         "Check if the request meets requirements"
         return True
 

@@ -24,7 +24,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
-from openforms.forms.models import Form
+from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
@@ -197,7 +197,17 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
         self._validate_co_sign_submission(plugin)
 
         try:
-            response = plugin.start_login(request, form, form_url)
+            authentication_backend = FormAuthenticationBackend.objects.get(
+                form=form, backend=plugin.identifier
+            )
+            response = plugin.start_login(
+                request,
+                form,
+                form_url,
+                authentication_backend.options or {},
+            )
+        except FormAuthenticationBackend.DoesNotExist:
+            return HttpResponseBadRequest("unknown authentication backend")
         except Exception as e:
             logger.exception(
                 "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
@@ -324,7 +334,17 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             return HttpResponseBadRequest("plugin returned invalid data")
         except InvalidCoSignData as exc:
             return HttpResponseBadRequest(exc.args[0])
-        response = plugin.handle_return(request, form)
+        try:
+            authentication_backend = FormAuthenticationBackend.objects.get(
+                form=form, backend=plugin.identifier
+            )
+            response = plugin.handle_return(
+                request,
+                form,
+                authentication_backend.options or {},
+            )
+        except FormAuthenticationBackend.DoesNotExist:
+            return HttpResponseBadRequest("plugin returned invalid data")
 
         if response.status_code in (301, 302):
             location = response.get("Location", "")

@@ -6,16 +6,16 @@ from openforms.authentication.config import LoAOptions, LoAOptionsSerializer
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 
-class DigidOptions(LoAOptions, TypedDict):
+class DigiDOIDCOptions(LoAOptions, TypedDict):
     """
-    Shape of the DigiD authentication plugin options.
+    Shape of the DigiD OIDC authentication plugin options.
 
-    This describes the shape of :attr:`DigidOptionsSerializer.validated_data`, after
+    This describes the shape of :attr:`DigiDOIDCOptionsSerializer.validated_data`, after
     the input data has been cleaned/validated.
     """
 
 
-class DigidOptionsSerializer(
+class DigiDOIDCOptionsSerializer(
     LoAOptionsSerializer, JsonSchemaSerializerMixin, serializers.Serializer
 ):
     pass
