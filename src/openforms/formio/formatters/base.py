@@ -70,9 +70,14 @@ class FormatterBase(Generic[ComponentT]):
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 
-        formatted_values = (
+        formatted_values = list(
             force_str(self.format(component, value)) for value in values
         )
+
+        # Check if formatted_values isn't empty
+        if len(formatted_values) == 0:
+            return self.process_result(component, "")
+
         # logically we'd want a .filter_formatted_values() step here
         return self.process_result(
             component, self.join_formatted_values(component, formatted_values)
