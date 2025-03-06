@@ -385,7 +385,10 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
-    "radio": {"set_openforms_datasrc": set_openforms_datasrc},
+    "radio": {
+        "set_openforms_datasrc": set_openforms_datasrc,
+        "fix_empty_default_value": fix_empty_default_value,
+    },
     # Special components
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
