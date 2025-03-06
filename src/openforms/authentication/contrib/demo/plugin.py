@@ -47,12 +47,13 @@ class KVKForm(DemoBaseForm):
 class DemoBaseAuthentication(BasePlugin):
     verbose_name = _("Demo")
     return_method = "POST"
+    config_class = None
     form_class: type = NotImplemented
     provides_auth: str = NotImplemented
     is_demo_plugin = True
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self, request: HttpRequest, form: Form, form_url: str, options
     ) -> str | HttpResponse:
         context = {
             "form_action": self.get_return_url(request, form),
@@ -76,7 +77,9 @@ class DemoBaseAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request: HttpRequest, form: Form) -> str | HttpResponse:
+    def handle_return(
+        self, request: HttpRequest, form: Form, options
+    ) -> str | HttpResponse:
         submitted = self.form_class(request.POST)
         if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")

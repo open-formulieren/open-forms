@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, TypedDict
+from typing import Any, Generic, TypedDict, TypeVar
 
 from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
@@ -38,7 +38,14 @@ class Choice(TypedDict):
     label: str
 
 
-class BasePlugin(AbstractBasePlugin):
+class Options(TypedDict):
+    pass
+
+
+OptionsT = TypeVar("OptionsT", bound=Options)
+
+
+class BasePlugin(Generic[OptionsT], AbstractBasePlugin):
     provides_auth: AuthAttribute
     supports_loa_override = False
     assurance_levels: type[TextChoices] = TextChoices
@@ -47,11 +54,15 @@ class BasePlugin(AbstractBasePlugin):
 
     # override
 
-    def start_login(self, request: Request, form: Form, form_url: str) -> HttpResponse:
+    def start_login(
+        self, request: Request, form: Form, form_url: str, options: OptionsT
+    ) -> HttpResponse:
         # redirect/go to auth service (like digid)
         raise NotImplementedError()  # noqa
 
-    def handle_return(self, request: Request, form: Form) -> HttpResponse:
+    def handle_return(
+        self, request: Request, form: Form, options: OptionsT
+    ) -> HttpResponse:
         # process and validate return information, store bsn in session
         raise NotImplementedError()  # noqa
 

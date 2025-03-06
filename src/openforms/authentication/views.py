@@ -197,7 +197,12 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
         self._validate_co_sign_submission(plugin)
 
         try:
-            response = plugin.start_login(request, form, form_url)
+            response = plugin.start_login(
+                request,
+                form,
+                form_url,
+                plugin.config_class.get_solo() if plugin.config_class else None,
+            )
         except Exception as e:
             logger.exception(
                 "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
@@ -324,7 +329,11 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             return HttpResponseBadRequest("plugin returned invalid data")
         except InvalidCoSignData as exc:
             return HttpResponseBadRequest(exc.args[0])
-        response = plugin.handle_return(request, form)
+        response = plugin.handle_return(
+            request,
+            form,
+            plugin.config_class.get_solo() if plugin.config_class else None,
+        )
 
         if response.status_code in (301, 302):
             location = response.get("Location", "")
