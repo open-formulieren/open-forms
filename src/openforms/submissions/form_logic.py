@@ -132,13 +132,9 @@ def evaluate_form_logic(
     # TODO: refactor this to rely on variables state
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
-        # context is expected to contain request, as it's the default behaviour with
-        # DRF view(set)s and serializers.
-        # TODO: check if we can use context["request"] rather than .get - None is not
-        # expected, but that currently breaks a lot of tests...
-        request=context.get("request"),
+        request=None,
         submission=submission,
-        data=data_container.data,
+        data=data_for_evaluation,
     )
 
     # 7.1 Apply the component mutation operations
