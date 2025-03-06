@@ -127,7 +127,7 @@ def evaluate_form_logic(
         # expected, but that currently breaks a lot of tests...
         request=context.get("request"),
         submission=submission,
-        data=data_container.data,
+        data=FormioData(data_container.data_without_to_python),
     )
 
     # 7.1 Apply the component mutation operations
