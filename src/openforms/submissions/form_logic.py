@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
 
+# TODO-5139: replace `data` type with `FormioData`?
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: "Submission",
@@ -84,7 +85,8 @@ def evaluate_form_logic(
     submission_variables_state.set_values(data)
 
     rules = get_rules_to_evaluate(submission, step)
-    data_container = DataContainer(state=submission_variables_state)
+    initial_data = submission_variables_state.to_python()
+    data_for_evaluation = submission_variables_state.to_python()
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
@@ -97,16 +99,30 @@ def evaluate_form_logic(
     ):
         for operation in iter_evaluate_rules(
             rules,
-            data_container,
+            data_for_evaluation,
             submission=submission,
         ):
             mutation_operations.append(operation)
+
+    submission_variables_state.set_values(data_for_evaluation.updates)
 
     # 6. The variable state is now completely resolved - we can start processing the
     # dynamic configuration and side effects.
 
     # Calculate which data has changed from the initial, for the step.
-    updated_step_data = data_container.get_updated_step_data(step)
+    # TODO-5139: this should ideally be built up from mutation returns inside
+    #  iter_evaluate_rules
+    relevant_variables = submission_variables_state.get_variables_in_submission_step(
+        step, include_unsaved=True
+    )
+
+    updated_step_data = FormioData()
+    for key, variable in relevant_variables.items():
+        if (
+            not variable.form_variable
+            or variable.value != variable.form_variable.initial_value
+        ):
+            updated_step_data[key] = variable.value
     step.data = DirtyData(updated_step_data.data)
 
     # 7. finally, apply the dynamic configuration
@@ -128,8 +144,6 @@ def evaluate_form_logic(
     # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
-
-    initial_data = FormioData(data_container.initial_data)
 
     # XXX: See #2340 and #2409 - we need to clear the values of components that are
     # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
@@ -155,11 +169,11 @@ def evaluate_form_logic(
             continue
 
         # clear the value
-        data_container.update({key: empty_value})
+        data_for_evaluation.update({key: empty_value})
         data_diff[key] = empty_value
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_container.data)
+    inject_variables(config_wrapper, data_for_evaluation.data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
@@ -206,11 +220,13 @@ def check_submission_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
     if unsaved_data:
         submission_variables_state.set_values(unsaved_data)
-    data_container = DataContainer(state=submission_variables_state)
+    data_for_evaluation = submission_variables_state.to_python()
 
     mutation_operations: list[ActionOperation] = []
-    for operation in iter_evaluate_rules(rules, data_container, submission):
+    for operation in iter_evaluate_rules(rules, data_for_evaluation, submission):
         mutation_operations.append(operation)
+
+    submission_variables_state.set_values(data_for_evaluation.updates)
 
     # we loop over all steps because we have validations that ensure unique component
     # keys across multiple steps for the whole form.

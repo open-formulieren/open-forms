@@ -37,8 +37,19 @@ class DataContainer:
         :return: A datamapping (key: variable key, value: variable value) ready for
           (template context) evaluation.
         """
+        # TODO: this .to_python is needed for conversion of date/datetimes. Not sure yet
+        #  if logic evaluation uses this in any way, though. Maybe we can get rid of it.
         dynamic_values = {
             key: variable.to_python() for key, variable in self.state.variables.items()
+        }
+        static_values = self.state.static_data()
+        nested_data = FormioData({**dynamic_values, **static_values})
+        return nested_data.data
+
+    @property
+    def data_without_to_python(self):
+        dynamic_values = {
+            key: variable.value for key, variable in self.state.variables.items()
         }
         static_values = self.state.static_data()
         nested_data = FormioData({**dynamic_values, **static_values})
