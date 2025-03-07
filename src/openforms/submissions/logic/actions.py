@@ -32,6 +32,7 @@ class ActionDetails(TypedDict):
 
 
 class ActionDict(TypedDict):
+    uuid: str
     component: str
     variable: str
     form_step: str

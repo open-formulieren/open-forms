@@ -1,4 +1,4 @@
-import {fn} from '@storybook/test';
+import {expect, fn, userEvent, within} from '@storybook/test';
 
 import {
   FeatureFlagsDecorator,
@@ -161,6 +161,8 @@ export const FullFunctionality = {
               value: '',
             },
 
+            uuid: '',
+            _generatedId: '0',
             component: '',
             formStepUuid: null,
             variable: 'bar',
@@ -197,6 +199,8 @@ export const FullFunctionality = {
               },
             },
 
+            uuid: '',
+            _generatedId: '0',
             component: '',
             formStepUuid: null,
             variable: '',
@@ -207,5 +211,80 @@ export const FullFunctionality = {
 
     availableFormVariables: AVAILABLE_FORM_VARIABLES,
     availableFormSteps: AVAILABLE_FORM_STEPS,
+  },
+};
+
+export const DeletingOneOfMultipleActionsInSameTrigger = {
+  name: 'Deleting one of multiple actions in the same trigger',
+
+  args: {
+    logicRules: [
+      {
+        uuid: 'foo',
+        _generatedId: 'foo', // consumers should generate this, as it's used for the React key prop if no uuid exists
+        _logicType: 'simple',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'Sample rule',
+        _mayGenerateDescription: false,
+        order: 1,
+
+        jsonLogicTrigger: {
+          '==': [
+            {
+              var: 'foo',
+            },
+            'bar',
+          ],
+        },
+
+        isAdvanced: false,
+
+        actions: [
+          {
+            uuid: '',
+            _generatedId: '0',
+            component: '',
+            variable: 'foo',
+            formStepUuid: null,
+            action: {
+              type: 'variable',
+              value: 'First action',
+            },
+          },
+          {
+            uuid: '',
+            _generatedId: '1',
+            component: '',
+            variable: 'bar',
+            formStepUuid: null,
+            action: {
+              type: 'variable',
+              value: 'Second action',
+            },
+          },
+        ],
+      },
+    ],
+
+    availableFormVariables: AVAILABLE_FORM_VARIABLES,
+    availableFormSteps: AVAILABLE_FORM_STEPS,
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    // Both actions should be present
+    expect(await canvas.findByText(/First action/)).toBeInTheDocument();
+    expect(await canvas.findByText(/Second action/)).toBeInTheDocument();
+
+    // Delete the first action
+    const deleteIcons = await canvas.findAllByTitle('Verwijderen');
+    expect(deleteIcons).toHaveLength(3);
+    await userEvent.click(deleteIcons[1]); // deleteIcons[0] is the delete icon for the entire rule
+    await userEvent.click(await canvas.findByRole('button', {name: 'Accepteren'}));
+
+    // First action should be removed, and the second should still be present
+    expect(canvas.queryByText(/First action/)).not.toBeInTheDocument();
+    expect(await canvas.findByText(/Second action/)).toBeInTheDocument();
   },
 };
