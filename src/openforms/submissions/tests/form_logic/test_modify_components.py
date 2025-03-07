@@ -1,3 +1,5 @@
+import unittest
+
 from django.test import TestCase, tag
 
 from openforms.forms.constants import LogicActionTypes
@@ -866,6 +868,43 @@ class ComponentModificationTests(TestCase):
             submission=submission,
             form_step=form_step,
             data={"radio": "yes", "textField": "Some data that must not be cleared!"},
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        self.assertEqual(
+            "Some data that must not be cleared!", submission_step.data["textField"]
+        )
+
+    # TODO-5139: this is a bug which currently exists on master as well, and is not
+    #  fixed with the data-structure changes, yet.
+    @unittest.expectedFailure
+    def test_component_visible_with_date(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "hidden": True,
+                        "conditional": {"eq": "2025-01-01", "show": True, "when": "date"},
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"date": "2025-01-01", "textField": "Some data that must not be cleared!"},
         )
 
         evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
