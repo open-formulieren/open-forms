@@ -146,7 +146,7 @@ def evaluate_form_logic(
     data_diff = FormioData()
     for component in config_wrapper:
         key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(key, data_container.data)
+        is_visible = config_wrapper.is_visible_in_frontend(key, FormioData(data_container.data_without_to_python))
         if is_visible:
             continue
 
