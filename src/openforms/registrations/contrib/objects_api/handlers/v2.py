@@ -7,9 +7,10 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import assert_never, cast
 
+from djangorestframework_camel_case.util import camel_to_underscore
 from glom import Assign, Path, glom
 
-from openforms.api.utils import camel_to_underscore, underscore_to_camel
+from openforms.api.utils import underscore_to_camel
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent

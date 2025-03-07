@@ -9,9 +9,9 @@ from django.db.models import F, TextField, Value
 from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
 
+from djangorestframework_camel_case.util import camel_to_underscore
 from zgw_consumers.client import build_client
 
-from openforms.api.utils import camel_to_underscore
 from openforms.formio.constants import DataSrcOptions
 from openforms.formio.service import rewrite_formio_components
 from openforms.formio.typing import (
