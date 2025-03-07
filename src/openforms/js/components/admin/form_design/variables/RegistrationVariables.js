@@ -19,7 +19,9 @@ const PluginVariables = ({
         <tr className={`row${(index % 2) + 1}`} key={variable.key}>
           <td />
           <td>{variable.name}</td>
-          <td>{variable.key}</td>
+          <td>
+            <code>{variable.key}</code>
+          </td>
           <td>
             <RegistrationSummaryList
               variable={variable}

@@ -46,7 +46,9 @@ const StaticData = ({onFieldChange}) => {
             <tr className={`row${(index % 2) + 1}`} key={item.key}>
               <td />
               <td>{item.name}</td>
-              <td>{item.key}</td>
+              <td>
+                <code>{item.key}</code>
+              </td>
               <td>
                 <RegistrationSummaryList variable={item} onFieldChange={onFieldChange} />
               </td>

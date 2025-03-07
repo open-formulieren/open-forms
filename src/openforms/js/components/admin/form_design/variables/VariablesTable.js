@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import groupBy from 'lodash/groupBy';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -35,11 +36,10 @@ const SensitiveData = ({isSensitive}) => {
   );
 };
 
-const Td = ({variable, fieldName}) => {
+const KeyDisplay = ({variable}) => {
   const intl = useIntl();
 
-  const field = variable[fieldName];
-  let fieldErrors = variable?.errors?.[fieldName] ?? [];
+  let fieldErrors = variable?.errors?.key ?? [];
 
   if (!Array.isArray(fieldErrors)) fieldErrors = [fieldErrors];
 
@@ -51,32 +51,18 @@ const Td = ({variable, fieldName}) => {
   });
 
   return (
-    <td>
-      <Field name={fieldName} errors={fieldErrors}>
-        <div>{field}</div>
-      </Field>
-    </td>
+    <Field name="key" errors={fieldErrors}>
+      <code>{variable.key}</code>
+    </Field>
   );
 };
 
-Td.propTypes = {
+KeyDisplay.propTypes = {
   variable: Variable.isRequired,
-  fieldName: PropTypes.string.isRequired,
 };
 
-const VariableRow = ({index, variable, onFieldChange}) => {
-  const formContext = useContext(FormContext);
-  const formSteps = formContext.formSteps;
-
-  const getFormDefinitionName = formDefinition => {
-    for (const step of formSteps) {
-      if (step.formDefinition === formDefinition || step._generatedId === formDefinition)
-        return step.name;
-    }
-    return '';
-  };
-
-  const rowClassnames = classNames(`row${(index % 2) + 1}`, 'variables-table__row', {
+const VariableRow = ({variable, onFieldChange}) => {
+  const rowClassnames = classNames('variables-table__row', {
     'variables-table__row--errors': variableHasErrors(variable),
   });
 
@@ -84,8 +70,9 @@ const VariableRow = ({index, variable, onFieldChange}) => {
     <tr className={rowClassnames}>
       <td />
       <td>{variable.name}</td>
-      <Td variable={variable} fieldName="key" />
-      <td>{getFormDefinitionName(variable.formDefinition)}</td>
+      <td>
+        <KeyDisplay variable={variable} fieldName="key" />
+      </td>
       <td>
         <PrefillSummary
           plugin={variable.prefillPlugin}
@@ -131,7 +118,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
 
   return (
     <tr
-      className={classNames('variables-table__row', `row${(index % 2) + 1}`, {
+      className={classNames('variables-table__row', {
         'variables-table__row--errors': variableHasErrors(variable),
       })}
     >
@@ -219,6 +206,8 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
 };
 
 const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}) => {
+  const {formSteps} = useContext(FormContext);
+
   const headColumns = (
     <>
       <HeadColumn content="" />
@@ -228,16 +217,6 @@ const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}
       <HeadColumn
         content={<FormattedMessage defaultMessage="Key" description="Variable table key title" />}
       />
-      {!editable && (
-        <HeadColumn
-          content={
-            <FormattedMessage
-              defaultMessage="Form definition"
-              description="Variable table form definition title"
-            />
-          }
-        />
-      )}
       <HeadColumn
         content={
           <FormattedMessage defaultMessage="Prefill" description="Variable table prefill title" />
@@ -278,27 +257,62 @@ const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}
     </>
   );
 
+  // first, sort the variables alphabetically
+  const sortedVariables = variables.toSorted((var1, var2) => var1.name.localeCompare(var2.name));
+  // then, group the variables by their step so that we display them grouped in the table,
+  // which cuts down on the number of columns to display
+  const variablesGroupedByFormStep = groupBy(
+    sortedVariables,
+    variable => variable.formDefinition ?? ''
+  );
+
+  // convert back to an ordered array, in order of steps, as Objects don't have a
+  // guaranteed insert order
+  const variableGroups = formSteps.map(step => {
+    const key = step.formDefinition || step._generatedId;
+    return [step, variablesGroupedByFormStep?.[key]];
+  });
+  // and add the variables not attached to a step (the user defined vars)
+  const varsNotRelatedToStep = variablesGroupedByFormStep[''];
+  if (varsNotRelatedToStep) {
+    variableGroups.push([{name: '', _generatedId: 'userDefined'}, varsNotRelatedToStep]);
+  }
+
   return (
     <div className="variables-table">
       <ChangelistTableWrapper headColumns={headColumns} extraModifiers={['fixed']}>
-        {variables.map((variable, index) =>
-          editable ? (
-            <EditableVariableRow
-              key={`${variable.key}-${index}`}
-              index={index}
-              variable={variable}
-              onDelete={onDelete}
-              onChange={onChange}
-              onFieldChange={onFieldChange}
-            />
-          ) : (
-            <VariableRow
-              key={`${variable.key}-${index}`}
-              index={index}
-              variable={variable}
-              onFieldChange={onFieldChange}
-            />
-          )
+        {variableGroups.map(
+          ([step, stepVariables]) =>
+            stepVariables && (
+              <React.Fragment key={step.uuid || step._generatedId}>
+                {step.name && (
+                  <tr>
+                    <td />
+                    <th colSpan={7} className="variables-table__step-name">
+                      {step.name}
+                    </th>
+                  </tr>
+                )}
+                {stepVariables.map((variable, index) =>
+                  editable ? (
+                    <EditableVariableRow
+                      key={`${variable.key}-${index}`}
+                      index={index}
+                      variable={variable}
+                      onDelete={onDelete}
+                      onChange={onChange}
+                      onFieldChange={onFieldChange}
+                    />
+                  ) : (
+                    <VariableRow
+                      key={`${variable.key}-${index}`}
+                      variable={variable}
+                      onFieldChange={onFieldChange}
+                    />
+                  )
+                )}
+              </React.Fragment>
+            )
         )}
       </ChangelistTableWrapper>
     </div>
