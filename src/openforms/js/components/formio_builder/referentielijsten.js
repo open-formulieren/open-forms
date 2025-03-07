@@ -9,3 +9,8 @@ export const getReferentielijstenTabellen = async service => {
   const resp = await get(`/api/v2/referentielijst-tabellen/${service}`);
   return resp.data;
 };
+
+export const getReferentielijstenTabelItems = async (service, tabelCode) => {
+  const resp = await get(`/api/v2/referentielijst-tabellen/${service}/${tabelCode}/tabel-items`);
+  return resp.data;
+};

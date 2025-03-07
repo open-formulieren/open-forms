@@ -54,6 +54,11 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
             tabellen,
             [
                 {
+                    "code": "item-not-geldig-anymore",
+                    "naam": "Tabel that contains item not geldig anymore",
+                    "isGeldig": False,
+                },
+                {
                     "code": "not-geldig-anymore",
                     "naam": "Tabel that is not geldig anymore",
                     "isGeldig": False,

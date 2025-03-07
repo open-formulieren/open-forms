@@ -3749,6 +3749,44 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/referentielijst-tabellen/{service_slug}/{tabel_code}/tabel-items:
+    get:
+      operationId: referentielijst_tabellen_tabel_items_list
+      description: Return a list of available items in a given Referentielijsten tabel.
+      summary: List items for a Referentielijsten tabel
+      parameters:
+      - in: path
+        name: service_slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: tabel_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - referentielijst-tabellen
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferentielijstTabelItems'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -9753,6 +9791,23 @@ components:
       required:
       - name
       - slug
+    ReferentielijstTabelItems:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The unique code that identifies the item.
+        naam:
+          type: string
+          description: The name of the item.
+        isGeldig:
+          type: boolean
+          readOnly: true
+          description: Indicates whether or not the item is expired.
+      required:
+      - code
+      - isGeldig
+      - naam
     ReferentielijstTabellen:
       type: object
       properties:

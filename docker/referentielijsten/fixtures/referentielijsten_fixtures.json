@@ -57,6 +57,19 @@
     }
 },
 {
+    "model": "api.tabel",
+    "pk": 4,
+    "fields": {
+        "code": "item-not-geldig-anymore",
+        "naam": "Tabel that contains item not geldig anymore",
+        "einddatum_geldigheid": "2020-02-03T08:48:49Z",
+        "beheerder_naam": "",
+        "beheerder_email": "",
+        "beheerder_afdeling": "",
+        "beheerder_organisatie": ""
+    }
+},
+{
     "model": "api.item",
     "pk": 1,
     "fields": {
@@ -80,6 +93,18 @@
         "aanvullende_gegevens": null
     }
 },
+{
+    "model": "api.item",
+    "pk": 104,
+    "fields": {
+      "tabel": 4,
+      "code": "not_geldig_option",
+      "naam": "Not geldig option",
+      "begindatum_geldigheid": "2025-01-07T14:17:59Z",
+      "einddatum_geldigheid": "2025-02-07T14:17:59Z",
+      "aanvullende_gegevens": null
+    }
+  },
 {
     "model": "api.item",
     "pk": 3,

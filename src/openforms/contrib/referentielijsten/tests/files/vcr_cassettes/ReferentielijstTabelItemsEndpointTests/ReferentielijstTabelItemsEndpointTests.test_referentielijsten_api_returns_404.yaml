@@ -7,13 +7,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDE2OTgyMzksImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.mQ4ruujjMG_KTDYGyoPWRWvWvdDIQplvvmOxSyYCpNE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDE2OTgyMzcsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.PWGYDeNvCLV4RAmJdo3R1CLxHl0XRI4UIdECuUkC_9Y
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8004/incorrect/tabellen
+    uri: http://localhost:8004/incorrect/items?tabel__code=tabel1
   response:
     body:
       string: "<!DOCTYPE html>\n<html lang=\"en\" class=\"view view---\">\n    <head>\n

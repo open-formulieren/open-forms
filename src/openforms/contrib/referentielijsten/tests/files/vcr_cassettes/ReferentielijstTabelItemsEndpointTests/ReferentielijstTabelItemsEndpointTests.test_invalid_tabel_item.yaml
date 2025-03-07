@@ -7,25 +7,22 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDE2OTgyMzksImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.mQ4ruujjMG_KTDYGyoPWRWvWvdDIQplvvmOxSyYCpNE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDE2OTgyMzcsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.PWGYDeNvCLV4RAmJdo3R1CLxHl0XRI4UIdECuUkC_9Y
       Connection:
       - keep-alive
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8004/api/v1/tabellen
+    uri: http://localhost:8004/api/v1/items?tabel__code=item-not-geldig-anymore
   response:
     body:
-      string: '{"count":4,"next":null,"previous":null,"results":[{"code":"item-not-geldig-anymore","naam":"Tabel
-        that contains item not geldig anymore","beheerder":{"naam":"","email":"","afdeling":"","organisatie":""},"einddatumGeldigheid":"2020-02-03T08:48:49Z"},{"code":"not-geldig-anymore","naam":"Tabel
-        that is not geldig anymore","beheerder":{"naam":"","email":"","afdeling":"","organisatie":""},"einddatumGeldigheid":"2020-02-03T08:48:49Z"},{"code":"tabel-with-many-items","naam":"Tabel
-        with many items","beheerder":{"naam":"","email":"","afdeling":"","organisatie":""},"einddatumGeldigheid":null},{"code":"tabel1","naam":"Tabel1","beheerder":{"naam":"John
-        Doe","email":"john@doe.nl","afdeling":"","organisatie":""},"einddatumGeldigheid":null}]}'
+      string: '{"count":1,"next":null,"previous":null,"results":[{"code":"not_geldig_option","naam":"Not
+        geldig option","begindatumGeldigheid":"2025-01-07T14:17:59Z","einddatumGeldigheid":"2025-02-07T14:17:59Z","aanvullendeGegevens":null}]}'
     headers:
       Allow:
       - GET, HEAD, OPTIONS
       Content-Length:
-      - '736'
+      - '225'
       Content-Security-Policy:
       - 'worker-src ''self'' blob:; object-src ''none''; frame-src ''self''; style-src
         ''self'' ''unsafe-inline'' fonts.googleapis.com; frame-ancestors ''none'';
