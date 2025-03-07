@@ -2,6 +2,8 @@ from django.core.files import File
 
 import bleach
 
+from openforms.formio.typing import Component
+
 ALLOWED_SVG_TAGS = (
     "circle",
     "clipPath",
@@ -150,6 +152,32 @@ ALLOWED_SVG_ATTRIBUTES = {
     "svg": ["xmlns", "viewBox"],
 }
 
+ALLOWED_HTML_TAGS = (
+    # Basic text tags
+    "a",
+    "b",
+    "br",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "i",
+    "p",
+    "s",
+    "strong",
+    "sup",
+    "u",
+    # Lists
+    "li",
+    "ol",
+    "ul",
+)
+
+ALLOWED_HTML_ATTRIBUTES = {"a": ("href", "target", "rel", "data-fr-linked")}
+
 
 def sanitize_svg_file(data: File) -> File:
     """
@@ -192,5 +220,40 @@ def sanitize_svg_content(svg_content: str) -> str:
         svg_content,
         tags=ALLOWED_SVG_TAGS,
         attributes=ALLOWED_SVG_ATTRIBUTES,
+        strip=True,
+    )
+
+
+def sanitize_component(component: Component):
+    """
+    Sanitize content of any form component.
+
+    The tooltip, description and label content will be replaced with a sanitized version.
+    All tags and attributes that aren't explicitly allowed, are removed from the
+    component content.
+
+    :arg component: the component data.
+    """
+    if "tooltip" in component:
+        component["tooltip"] = sanitize_html_content(component["tooltip"])
+    if "description" in component:
+        component["description"] = sanitize_html_content(component["description"])
+    if "label" in component:
+        component["label"] = sanitize_html_content(component["label"])
+
+
+def sanitize_html_content(html_content: str) -> str:
+    """
+    Defuse html string.
+
+    The provided string is replaced by a html sanitized version. All tags and attributes
+    that aren't explicitly allowed, are removed from the SVG content.
+
+    :arg html_content: the html string to sanitize.
+    """
+    return bleach.clean(
+        html_content,
+        tags=ALLOWED_HTML_TAGS,
+        attributes=ALLOWED_HTML_ATTRIBUTES,
         strip=True,
     )
