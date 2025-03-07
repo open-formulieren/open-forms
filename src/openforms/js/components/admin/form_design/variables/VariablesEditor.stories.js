@@ -23,6 +23,31 @@ BACKEND_OPTIONS_FORMS.testPlugin = {
   variableConfigurationEditor: () => 'placeholder',
 };
 
+const AVAILABLE_FORM_STEPS = [
+  {
+    formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+    configuration: {display: 'form', components: []},
+    slug: 'step-1',
+    name: 'Step 1',
+    url: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+    uuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+    _generatedId: '',
+    isNew: false,
+    validationErrors: [],
+  },
+  {
+    formDefinition: 'http://localhost:8000/api/v2/form-definitions/fe599c97',
+    configuration: {display: 'form', components: []},
+    slug: 'step-2',
+    name: 'Step 2',
+    url: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/fe599c97',
+    uuid: 'fe599c97',
+    _generatedId: '',
+    isNew: false,
+    validationErrors: [],
+  },
+];
+
 const VARIABLES = [
   {
     form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -56,7 +81,7 @@ const VARIABLES = [
   },
   {
     form: 'http://localhost:8000/api/v2/forms/36612390',
-    formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+    formDefinition: 'http://localhost:8000/api/v2/form-definitions/fe599c97',
     name: 'Multiple File',
     key: 'aMultipleFile',
     source: 'component',
@@ -116,6 +141,7 @@ export default {
         initialValue: '2024-02-27T16:44:22.170405Z',
       },
     ],
+    availableFormSteps: AVAILABLE_FORM_STEPS,
     availableComponents: {
       aSingleFile: {
         type: 'file',
