@@ -10,8 +10,11 @@ from zgw_consumers.models import Service
 
 from openforms.api.views import ListMixin
 
-from ..client import ReferentielijstenClient, Tabel
-from .serializers import ReferentielijstTabellenSerializer
+from ..client import ReferentielijstenClient, Tabel, TabelItem
+from .serializers import (
+    ReferentielijstTabelItemsSerializer,
+    ReferentielijstTabellenSerializer,
+)
 
 
 @extend_schema(
@@ -34,6 +37,32 @@ class ReferentielijstenTabellenViewSet(ListMixin, APIView):
                 service, client_factory=ReferentielijstenClient
             ) as client:
                 result = client.get_tabellen()
+        except RequestException:
+            result = []
+
+        return result
+
+
+@extend_schema(
+    summary=_("List items for a Referentielijsten tabel"),
+)
+class ReferentielijstenTabelItemsViewSet(ListMixin, APIView):
+    """
+    Return a list of available items in a given Referentielijsten tabel.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = ReferentielijstTabelItemsSerializer
+
+    def get_objects(self) -> list[TabelItem]:
+        service = get_object_or_404(Service, slug=self.kwargs["service_slug"])
+
+        try:
+            with build_client(
+                service, client_factory=ReferentielijstenClient
+            ) as client:
+                result = client.get_items_for_tabel(self.kwargs["tabel_code"])
         except RequestException:
             result = []
 
