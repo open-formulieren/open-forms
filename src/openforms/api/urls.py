@@ -11,6 +11,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.config.api.viewsets import ThemeViewSet
 from openforms.contrib.referentielijsten.api.views import (
+    ReferentielijstenTabelItemsViewSet,
     ReferentielijstenTabellenViewSet,
 )
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
@@ -127,6 +128,11 @@ urlpatterns = [
                     "referentielijst-tabellen/<slug:service_slug>",
                     ReferentielijstenTabellenViewSet.as_view(),
                     name="referentielijst-tabellen-list",
+                ),
+                path(
+                    "referentielijst-tabellen/<slug:service_slug>/<str:tabel_code>/tabel-items",
+                    ReferentielijstenTabelItemsViewSet.as_view(),
+                    name="referentielijst-tabel-items-list",
                 ),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
