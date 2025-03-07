@@ -114,7 +114,7 @@ def calculate_delta(
 ) -> datetime | None:
     assert config["mode"] == "relativeToVariable"
 
-    base_value = glom(data, config["variable"], default=None)
+    base_value = data.get(config["variable"])
     if not base_value:
         return
 

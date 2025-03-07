@@ -92,15 +92,20 @@ def evaluate_form_logic(
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
     # to execute while we're looping through the rules.
+    # TODO-5139: just a simple test by wrapping the data property of the container with
+    #  a FormioData instance
+    data_for_logic = FormioData(data_container.data_without_to_python)
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):
         for operation in iter_evaluate_rules(
             rules,
-            data_container,
+            data_for_logic,
             submission=submission,
         ):
             mutation_operations.append(operation)
+
+    submission_variables_state.set_values(data_for_logic.updates)
 
     # 6. The variable state is now completely resolved - we can start processing the
     # dynamic configuration and side effects.
@@ -122,7 +127,7 @@ def evaluate_form_logic(
         # expected, but that currently breaks a lot of tests...
         request=context.get("request"),
         submission=submission,
-        data=data_container.data,
+        data=FormioData(data_container.data_without_to_python),
     )
 
     # 7.1 Apply the component mutation operations
@@ -141,7 +146,7 @@ def evaluate_form_logic(
     data_diff = FormioData()
     for component in config_wrapper:
         key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(key, data_container.data)
+        is_visible = config_wrapper.is_visible_in_frontend(key, FormioData(data_container.data_without_to_python))
         if is_visible:
             continue
 
@@ -209,8 +214,11 @@ def check_submission_logic(
     data_container = DataContainer(state=submission_variables_state)
 
     mutation_operations: list[ActionOperation] = []
-    for operation in iter_evaluate_rules(rules, data_container, submission):
+    data_for_logic = FormioData(data_container.data_without_to_python)
+    for operation in iter_evaluate_rules(rules, data_for_logic, submission):
         mutation_operations.append(operation)
+
+    submission_variables_state.set_values(data_for_logic.updates)
 
     # we loop over all steps because we have validations that ensure unique component
     # keys across multiple steps for the whole form.
