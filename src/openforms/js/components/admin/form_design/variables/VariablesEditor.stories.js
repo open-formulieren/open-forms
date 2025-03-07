@@ -36,14 +36,14 @@ const AVAILABLE_FORM_STEPS = [
     validationErrors: [],
   },
   {
-    formDefinition: 'http://localhost:8000/api/v2/form-definitions/fe599c97',
+    formDefinition: '',
     configuration: {display: 'form', components: []},
     slug: 'step-2',
     name: 'Step 2',
     url: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5/steps/fe599c97',
     uuid: 'fe599c97',
-    _generatedId: '',
-    isNew: false,
+    _generatedId: 'unsaved-step',
+    isNew: true,
     validationErrors: [],
   },
 ];
@@ -81,7 +81,7 @@ const VARIABLES = [
   },
   {
     form: 'http://localhost:8000/api/v2/forms/36612390',
-    formDefinition: 'http://localhost:8000/api/v2/form-definitions/fe599c97',
+    formDefinition: 'unsaved-step',
     name: 'Multiple File',
     key: 'aMultipleFile',
     source: 'component',
