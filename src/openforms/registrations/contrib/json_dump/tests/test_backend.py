@@ -516,7 +516,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["selectBoxes1", "selectBoxes2"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
-            "transform_to_list": {"select_boxes1": True},
+            "transform_to_list": {"select_boxes_1": True},
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 

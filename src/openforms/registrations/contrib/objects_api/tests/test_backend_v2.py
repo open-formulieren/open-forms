@@ -1469,7 +1469,7 @@ class V2HandlerTests(TestCase):
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
-            "transform_to_list": {"select_boxes1": True},
+            "transform_to_list": {"select_boxes_1": True},
         }
         handler = ObjectsAPIV2Handler()
 
