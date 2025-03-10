@@ -6,11 +6,14 @@ import {useImmerReducer} from 'use-immer';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import useOnChanged from 'hooks/useOnChanged';
+import {getUniqueRandomString} from 'utils/random';
 
 import Action from './Action';
 import {ActionError} from './types';
 
 const EMPTY_ACTION = {
+  uuid: '',
+  _generatedId: '', // consumers should generate this, as it's used for the React key prop when uuid does not exist
   component: '',
   formStep: '',
   config: {},
@@ -52,7 +55,8 @@ const reducer = (draft, action) => {
       break;
     }
     case 'ACTION_ADDED': {
-      draft.actions.push(EMPTY_ACTION);
+      const newAction = {...EMPTY_ACTION, _generatedId: getUniqueRandomString()};
+      draft.actions.push(newAction);
       break;
     }
     case 'ACTION_DELETED': {
@@ -94,7 +98,7 @@ const ActionSet = ({name, actions, errors = [], onChange}) => {
     <>
       {state.actions.map((action, index) => (
         <Action
-          key={index}
+          key={action.uuid || action._generatedId}
           prefixText={index === 0 ? firstActionPrefix : extraActionPrefix}
           action={action}
           errors={errors[index] || {}}

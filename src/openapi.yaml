@@ -8821,6 +8821,10 @@ components:
     LogicComponentAction:
       type: object
       properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
         component:
           type: string
           title: Form.io component
@@ -8843,6 +8847,7 @@ components:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
       - action
+      - uuid
     LogicDescription:
       type: object
       properties:
