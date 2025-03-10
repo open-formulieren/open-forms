@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import DataMapping, JSONEncodable, JSONObject, JSONSerializable
+from openforms.typing import DataMapping, JSONEncodable, JSONObject, JSONSerializable, JSONValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import VariablesRegistry, get_static_variables
@@ -253,6 +253,22 @@ class SubmissionValueVariablesState:
                 continue
             variable.value = new_value
 
+    # TODO-5139: can this be combined with SubmissionValueVariablesState.get_data?
+    def to_python(self) -> FormioData:
+        """
+        Collect the total picture of data/variable values.
+
+        The dynamic values are augmented with the static variables.
+
+        :return: A datamapping (key: variable key, value: native python object for the
+            value) ready for (template context) evaluation.
+        """
+        dynamic_values = {
+            key: variable.to_python() for key, variable in self.variables.items()
+        }
+        static_values = self.static_data()
+        return FormioData({**dynamic_values, **static_values})
+
 
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
@@ -361,7 +377,7 @@ class SubmissionValueVariable(models.Model):
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
 
-    def to_python(self) -> Any:
+    def to_python(self, value: JSONValue = None) -> Any:
         """
         Deserialize the value into the appropriate python type.
 
@@ -371,7 +387,10 @@ class SubmissionValueVariable(models.Model):
         to correctly interpret the data. For the time being, this is not needed yet
         as we focus on NL first.
         """
-        if self.value is None:
+        if value is None:
+            value = self.value
+
+        if value is None:
             return None
 
         # it's possible a submission value variable exists without the form variable
@@ -390,7 +409,7 @@ class SubmissionValueVariable(models.Model):
                     "submission_id": self.submission_id,
                 },
             )
-            return self.value
+            return value
 
         # we expect JSON types to have been properly stored (and thus not as string!)
         data_type = self.form_variable.data_type
@@ -402,18 +421,18 @@ class SubmissionValueVariable(models.Model):
             FormVariableDataTypes.float,
             FormVariableDataTypes.array,
         ):
-            return self.value
+            return value
 
-        if self.value and data_type == FormVariableDataTypes.date:
-            if isinstance(self.value, date):
-                return self.value
-            formatted_date = format_date_value(self.value)
+        if value and data_type == FormVariableDataTypes.date:
+            if isinstance(value, date):
+                return value
+            formatted_date = format_date_value(value)
             naive_date = parse_date(formatted_date)
             if naive_date is not None:
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
                 return aware_date.date()
 
-            maybe_naive_datetime = parse_datetime(self.value)
+            maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
                 return
 
@@ -421,10 +440,10 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime.date()
             return timezone.make_aware(maybe_naive_datetime).date()
 
-        if self.value and data_type == FormVariableDataTypes.datetime:
-            if isinstance(self.value, datetime):
-                return self.value
-            maybe_naive_datetime = parse_datetime(self.value)
+        if value and data_type == FormVariableDataTypes.datetime:
+            if isinstance(value, datetime):
+                return value
+            maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
                 return
 
@@ -432,7 +451,7 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime
             return timezone.make_aware(maybe_naive_datetime)
 
-        if self.value and data_type == FormVariableDataTypes.time:
-            return parse_time(self.value)
+        if value and data_type == FormVariableDataTypes.time:
+            return parse_time(value)
 
-        return self.value
+        return value
