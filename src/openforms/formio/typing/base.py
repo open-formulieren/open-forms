@@ -87,6 +87,8 @@ class Component(TypedDict):
     key: str
     label: str
     multiple: NotRequired[bool]
+    tooltip: NotRequired[str]
+    description: NotRequired[str]
     hidden: NotRequired[bool]
     defaultValue: NotRequired[JSONValue]
     validate: NotRequired[Validate]
