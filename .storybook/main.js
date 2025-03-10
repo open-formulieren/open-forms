@@ -7,6 +7,7 @@ const config = {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
   },
+
   stories: ['../src/openforms/js/**/*.mdx', '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)'],
 
   staticDirs: [
@@ -28,6 +29,7 @@ const config = {
     'storybook-react-intl',
     '@storybook/addon-webpack5-compiler-babel',
   ],
+
   features: {
     interactionsDebugger: true,
     buildStoriesJson: true,
@@ -104,7 +106,13 @@ const config = {
     return config;
   },
 
-  docs: {},
+  docs: {
+    autodocs: false,
+  },
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+  },
 };
 
 export default config;
