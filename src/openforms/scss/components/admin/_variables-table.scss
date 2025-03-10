@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '../../../ui/static/ui/scss/settings';
 
 .variables-table {
@@ -19,8 +21,15 @@
     padding-left: 0 !important;
   }
 
-  &__row {
-    &--errors {
+  @include bem.element('step-name') {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 0.5px;
+  }
+
+  @include bem.element('row') {
+    @include bem.modifier('errors') {
       td {
         vertical-align: bottom !important;
       }
@@ -28,6 +37,10 @@
 
     .checkbox-row {
       padding: $grid-margin-1; // Same padding as the icon
+    }
+
+    code {
+      font-size: 100%;
     }
   }
 }
