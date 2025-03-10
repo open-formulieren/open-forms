@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import assert_never, cast
 
+from djangorestframework_camel_case.util import camel_to_underscore
 from glom import Assign, Path, glom
 
 from openforms.api.utils import underscore_to_camel
@@ -58,6 +59,7 @@ def process_mapped_variable(
     value: (
         JSONValue | date | datetime
     ),  # can't narrow it down yet, as the type depends on the component type
+    transform_to_list: JSONObject | None = None,
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
@@ -73,6 +75,8 @@ def process_mapped_variable(
     :arg value: The raw value of the form variable for the submission being processed.
       The type/shape of the value depends on the variable/component data type being
       processed and even the component configuration (such as multiple True/False).
+    :arg transform_to_list: The component's transforma data options. Some of the components
+      need special handling concerning the shape of the data.
     :arg component: If the variable corresponds to a Formio component, the component
       definition is provided, otherwise ``None``.
     :arg attachment_urls: The registration plugin uploads attachments to a Documents API
@@ -139,6 +143,16 @@ def process_mapped_variable(
                 attachment_urls=attachment_urls,
                 key_prefix=variable_key,
             )
+        case {"type": "selectboxes"}:
+            assert isinstance(value, dict)
+            if (
+                transform_to_list
+                and (key := camel_to_underscore(variable_key)) in transform_to_list
+                and transform_to_list[key]
+            ):
+
+                value = [option for option, is_selected in value.items() if is_selected]
+
         # not a component or standard behaviour where no transformation is necessary
         case None | _:
             pass

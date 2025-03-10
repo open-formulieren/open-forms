@@ -2604,6 +2604,11 @@
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
   },
+  "kR7QKb": {
+    "defaultMessage": "Whether to transform the data of the component to a list or not (depends on the component type)",
+    "description": "'Transform to list' checkbox help text",
+    "originalDefault": "Whether to transform the data of the component to a list or not (depends on the component type)"
+  },
   "kWAxhF": {
     "defaultMessage": "Subject of the email sent to the registration backend to notify a change in the payment status.",
     "description": "Email registration options 'emailPaymentSubject' helpText",
@@ -2653,6 +2658,11 @@
     "defaultMessage": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+  },
+  "m/NVtu": {
+    "defaultMessage": "Transform to list",
+    "description": "'Transform to list' checkbox label",
+    "originalDefault": "Transform to list"
   },
   "m83ECr": {
     "defaultMessage": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?",

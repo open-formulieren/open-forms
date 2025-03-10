@@ -9,6 +9,7 @@ from django.db.models import F, TextField, Value
 from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
 
+from djangorestframework_camel_case.util import camel_to_underscore
 from zgw_consumers.client import build_client
 
 from openforms.formio.constants import DataSrcOptions
@@ -65,7 +66,8 @@ class JSONDumpRegistration(BasePlugin):
             if key in options["variables"]
         }
         values_schema = generate_json_schema(submission.form, options["variables"])
-        post_process(values, values_schema, submission)
+        transform_to_list = options.get("transform_to_list")
+        post_process(values, values_schema, submission, transform_to_list)
 
         # Metadata
         # Note: as the metadata contains only static variables no post-processing is
@@ -114,7 +116,10 @@ class JSONDumpRegistration(BasePlugin):
 
 
 def post_process(
-    values: JSONObject, schema: JSONObject, submission: Submission
+    values: JSONObject,
+    schema: JSONObject,
+    submission: Submission,
+    transform_to_list: JSONObject | None = None,
 ) -> None:
     """Post-process the values and schema.
 
@@ -170,7 +175,12 @@ def post_process(
         assert component is not None
 
         process_component(
-            component, values, schema, attachments_dict, configuration_wrapper
+            component,
+            values,
+            schema,
+            attachments_dict,
+            configuration_wrapper,
+            transform_to_list=transform_to_list,
         )
 
 
@@ -181,6 +191,7 @@ def process_component(
     attachments: dict[str, list[SubmissionFileAttachment]],
     configuration_wrapper,
     key_prefix: str = "",
+    transform_to_list: JSONObject | None = None,
 ) -> None:
     """Process a component.
 
@@ -263,6 +274,18 @@ def process_component(
             # component is an empty dict, so set the required to an empty list.
             if not values[key]:
                 schema["properties"][key]["required"] = []  # type: ignore
+
+            if (
+                transform_to_list
+                and (key_to_transform := camel_to_underscore(key)) in transform_to_list
+                and transform_to_list[key_to_transform]
+                and values[key]
+            ):
+                schema["properties"][key]["type"] = "array"  # type: ignore
+
+                values[key] = [
+                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
+                ]
 
         case {"type": "editgrid"}:
             # Note: the schema actually only needs to be processed once for each child

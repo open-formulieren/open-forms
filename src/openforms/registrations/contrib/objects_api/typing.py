@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
 from uuid import UUID
 
+from openforms.typing import JSONObject
+
 if TYPE_CHECKING:
     from .models import ObjectsAPIGroupConfig
 
@@ -70,6 +72,7 @@ class RegistrationOptionsV2(_BaseRegistrationOptions, total=False):
     version: Required[Literal[2]]
     variables_mapping: Required[list[ObjecttypeVariableMapping]]
     geometry_variable_key: str
+    transform_to_list: NotRequired[JSONObject]
 
 
 type RegistrationOptions = RegistrationOptionsV1 | RegistrationOptionsV2
