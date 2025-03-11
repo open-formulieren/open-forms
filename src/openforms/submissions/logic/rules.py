@@ -1,6 +1,7 @@
 from typing import Iterable, Iterator
 
 import elasticapm
+from glom import mutation
 from json_logic import jsonLogic
 
 from openforms.formio.datastructures import FormioData
@@ -110,7 +111,7 @@ def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data_container: FormioData,
     submission: Submission,
-) -> Iterator[ActionOperation]:
+) -> Iterator[tuple[ActionOperation, dict]]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations.
 
@@ -128,6 +129,7 @@ def iter_evaluate_rules(
       sole argument. Useful to gather metadata about rule evaluation.
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
+    state = submission.load_submission_value_variables_state()
     for rule in rules:
         with elasticapm.capture_span(
             "evaluate_rule",
@@ -147,8 +149,12 @@ def iter_evaluate_rules(
                 if mutations := operation.eval(
                     data_container, submission=submission
                 ):
-                    # TODO-5139: not sure if FormioData should track the changes, seems
-                    #  like a task for iter_evaluate_rules itself.
-                    data_container.update(mutations)
-                    data_container.track_updates(mutations)
-                yield operation
+                    mutations_python = {
+                        key: state.variables[key].to_python(value)
+                        for key, value in mutations.items()
+                    }
+                    data_container.update(mutations_python)
+                else:
+                    mutations_python = {}
+
+                yield operation, mutations_python

@@ -61,6 +61,7 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     return register.normalize(component, value)
 
 
+# TODO-5139: remove request as an argument from this
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,

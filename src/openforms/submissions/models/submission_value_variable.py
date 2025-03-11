@@ -233,7 +233,7 @@ class SubmissionValueVariablesState:
 
         SubmissionValueVariable.objects.bulk_create(variables_to_create)
 
-    def set_values(self, data: DataMapping) -> None:
+    def set_values(self, data: FormioData | DataMapping) -> None:
         """
         Apply the values from ``data`` to the current state of the variables.
 
@@ -246,7 +246,7 @@ class SubmissionValueVariablesState:
         .. todo:: apply variable.datatype/format to obtain python objects? This also
            needs to properly serialize back to JSON though!
         """
-        formio_data = FormioData(data)
+        formio_data = data if isinstance(data, FormioData) else FormioData(data)
         for key, variable in self.variables.items():
             new_value = formio_data.get(key, default=empty)
             if new_value is empty:
@@ -377,7 +377,7 @@ class SubmissionValueVariable(models.Model):
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
 
-    def to_python(self, value: JSONValue = None) -> Any:
+    def to_python(self, value: JSONValue = empty) -> Any:
         """
         Deserialize the value into the appropriate python type.
 
@@ -387,7 +387,7 @@ class SubmissionValueVariable(models.Model):
         to correctly interpret the data. For the time being, this is not needed yet
         as we focus on NL first.
         """
-        if value is None:
+        if value is empty:
             value = self.value
 
         if value is None:

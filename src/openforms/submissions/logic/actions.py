@@ -175,12 +175,8 @@ class VariableAction(ActionOperation):
         context: DataMapping,
         submission: Submission,
     ) -> DataMapping:
-        state = submission.load_submission_value_variables_state()
-        value_variable = state.variables[self.variable]
         with log_errors(self.value, self.rule):
-            result = jsonLogic(self.value, context)
-            value_variable.to_python(result)
-            return {self.variable: value_variable.to_python(result)}
+            return {self.variable: jsonLogic(self.value, context)}
 
 
 @dataclass
