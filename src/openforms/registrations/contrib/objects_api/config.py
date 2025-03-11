@@ -256,7 +256,18 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         allow_blank=True,
     )
 
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        if attrs["version"] == VersionChoices.V2:
+            # Make sure `variables_mapping` has a valid value
+            if "variables_mapping" not in self.initial_data:
+                attrs["variables_mapping"] = []
+
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
+        self._handle_import(attrs)
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",
