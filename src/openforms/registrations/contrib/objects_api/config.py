@@ -261,10 +261,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     # XXX: fix typehint of attrs, it's a wider version of RegistrationOptions where
     # the UUID is still a string...
     def _handle_import(self, attrs) -> None:
-        if (
-            self.context.get("is_import", False)
-            and attrs.get("objects_api_group") is None
-        ):
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        if attrs["version"] == VersionChoices.V2:
+            # Make sure `variables_mapping` has a valid value
+            if "variables_mapping" not in self.initial_data:
+                attrs["variables_mapping"] = []
+
+        if attrs.get("objects_api_group") is None:
             existing_groups = (
                 ObjectsAPIGroupConfig.objects.order_by("pk")
                 .exclude(
