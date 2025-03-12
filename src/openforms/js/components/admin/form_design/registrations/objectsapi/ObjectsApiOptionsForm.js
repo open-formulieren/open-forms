@@ -15,6 +15,9 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
   const numErrors = filterErrors(name, validationErrors).length;
   const defaultGroup = apiGroupChoices.length === 1 ? apiGroupChoices[0][0] : undefined;
 
+  // default to version 2, existing form data can override this
+  const version = formData?.version ?? 2;
+
   return (
     <ModalOptionsConfiguration
       name={name}
@@ -27,8 +30,9 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
         />
       }
       initialFormData={{
-        version: 2, // default to version 2, existing form data can override this
-        variablesMapping: [],
+        version,
+        // Only for version 2 we set the `variablesMapping`
+        variablesMapping: version === 2 ? [] : undefined,
         ...formData,
         // Ensure that if there's only one option, it is automatically selected.
         objectsApiGroup: formData.objectsApiGroup ?? defaultGroup,
