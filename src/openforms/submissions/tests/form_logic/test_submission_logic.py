@@ -1121,6 +1121,57 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         new_value = response.json()["step"]["data"]["date"]
         self.assertEqual(new_value, "2024-03-18")
 
+    def test_date_field_not_present_in_step_data_when_assigned_same_value(self):
+        """
+        Assert that the 'date' field is not present in the step data when a logic action
+        sets it to the same value. This illustrates the problem that occurs when setting
+        python objects directly to SubmissionValueVariable.value.
+        """
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                        "defaultValue": "2025-01-01"
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "date",
+                    "action": {
+                        "type": "variable",
+                        "value": "2025-01-01",
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+        response = self.client.post(logic_check_endpoint, {"data": {}})
+
+        data = response.json()
+
+        # The date hasn't changed, so it should not be present in the step data
+        self.assertNotIn("date", data["step"]["data"])
+
 
 def is_valid_expression(expr: dict):
     try:

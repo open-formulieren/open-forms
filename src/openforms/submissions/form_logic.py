@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
 
+# TODO-5139: replace `data` type with `FormioData`?
+# TODO-5139: replace all DataContainer type hints with FormioData
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: "Submission",
@@ -79,12 +81,14 @@ def evaluate_form_logic(
 
     # 3. Load the (variables) state
     submission_variables_state = submission.load_submission_value_variables_state()
+    actual_initial_data = submission_variables_state.to_python()
 
     # 4. Apply the (dirty) data to the variable state.
     submission_variables_state.set_values(data)
 
     rules = get_rules_to_evaluate(submission, step)
-    data_container = DataContainer(state=submission_variables_state)
+    initial_data = submission_variables_state.to_python()
+    data_for_evaluation = submission_variables_state.to_python()
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
@@ -92,60 +96,56 @@ def evaluate_form_logic(
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
     # to execute while we're looping through the rules.
+    # TODO-5139: I first put this tracking of data difference inside FormioData, but
+    #  that doesn't seem like it should be its responsibility. Then yielded a complete
+    #  difference in iter_evaluate_rules, but that fails when there is no rules to be
+    #  applied: `data_diff` would be undefined. So decided to track the difference
+    #  outside iter_evaluate_rules, as we also track the mutation operations here.
+    #  Still not sure about it, though
+    data_diff_total = FormioData()
     with elasticapm.capture_span(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):
-        for operation in iter_evaluate_rules(
+        for operation, mutations in iter_evaluate_rules(
             rules,
-            data_container,
+            data_for_evaluation,
             submission=submission,
         ):
             mutation_operations.append(operation)
-
-    # 6. The variable state is now completely resolved - we can start processing the
-    # dynamic configuration and side effects.
-
-    # Calculate which data has changed from the initial, for the step.
-    updated_step_data = data_container.get_updated_step_data(step)
-    step.data = DirtyData(updated_step_data.data)
+            if mutations:
+                data_diff_total.update(mutations)
 
     # 7. finally, apply the dynamic configuration
 
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
-    # TODO: refactor this to rely on variables state
+    # TODO-5139: rewrite `get_dynamic_configuration` and its callees to work with
+    #  FormioData instance
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
-        # context is expected to contain request, as it's the default behaviour with
-        # DRF view(set)s and serializers.
-        # TODO: check if we can use context["request"] rather than .get - None is not
-        # expected, but that currently breaks a lot of tests...
-        request=context.get("request"),
+        request=None,
         submission=submission,
-        data=data_container.data,
+        data=data_for_evaluation.data,
     )
 
     # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
 
-    initial_data = FormioData(data_container.initial_data)
-
     # XXX: See #2340 and #2409 - we need to clear the values of components that are
     # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
     # fix, as the (stale) data has potentially been input for other logic rules.
     # Note that only the dirty data logic check acts on these differences.
-
-    # only keep the changes in the data, so that old values do not overwrite otherwise
-    # debounced client-side data changes
-    data_diff = FormioData()
     for component in config_wrapper:
         key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(key, data_container.data)
+        # TODO-5139: rewrite `is_visible_in_frontend` and its callees to work with
+        #  FormioData instance
+        is_visible = config_wrapper.is_visible_in_frontend(key, data_for_evaluation.data)
         if is_visible:
             continue
 
-        # Reset the value of any field that may have become hidden again after evaluating the logic
+        # Reset the value of any field that may have become hidden again after
+        # evaluating the logic
         original_value = initial_data.get(key, empty)
         empty_value = get_component_empty_value(component)
         if original_value is empty or original_value == empty_value:
@@ -155,32 +155,75 @@ def evaluate_form_logic(
             continue
 
         # clear the value
-        data_container.update({key: empty_value})
-        data_diff[key] = empty_value
+        data_for_evaluation[key] = empty_value
+        data_diff_total[key] = empty_value
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_container.data)
+    # TODO-5139: rewrite `inject_variables` and its callees to work with FormioData
+    #  instance
+    inject_variables(config_wrapper, data_for_evaluation.data)
 
-    # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
-    # :func:`get_dynamic_configuration` so that it can use variables.
+
+    # ---------------------------------------------------------------------------------------
+
+
+    # 8. All the processing is now complete, so we can update the state.
+    # TODO-5139: when setting a value to SubmissionValueVariable.value, it doesn't
+    #  automatically get encoded to JSON with the encoder. Probably only happens when
+    #  saving the model. This means we have to do it manually here or in
+    #  SubmissionValueVariablesState.set_values. Or do we want to always convert to
+    #  python objects, like already suggested in
+    #  SubmissionValueVariableState.set_values? Issue 2324 is related to this
+    submission_variables_state.set_values(data_diff_total)
+
+    # 8.1 build a difference in data for the step. It is important that we only keep the
+    # changes in the data, so that old values do not overwrite otherwise debounced
+    # client-side data changes
+
+    # Calculate which data has changed from the initial, for the step.
+    relevant_variables = submission_variables_state.get_variables_in_submission_step(
+        step, include_unsaved=True
+    )
+
+    # TODO-5139: the problem is that currently `variable.value` can be a json or python
+    #  object, as `iter_evaluate_rules` now returns python objects. This means that a
+    #  comparison with `initial_value` will fail, because it's a json value. We could
+    #  perform this comparison in the python-type domain, but that would mean that
+    #  invalid data will not be in step.data. Is this a bad thing?
+    updated_step_data = FormioData()
+    for key, variable in relevant_variables.items():
+        if (
+            not variable.form_variable
+            or variable.value != variable.form_variable.initial_value
+        ):
+            updated_step_data[key] = variable.value
+    step.data = DirtyData(updated_step_data.data)
 
     # process the output for logic checks with dirty data
     if dirty:
-        # Iterate over all components instead of `step.data`, to take hidden fields into account (See: #1755)
+        data_diff_dirty = FormioData()
+        # Iterate over all components instead of `step.data`, to take hidden fields into
+        # account (See: #1755)
         for component in config_wrapper:
             key = component["key"]
             # already processed, don't process it again
-            if data_diff.get(key, default=empty) is not empty:
+            if data_diff_dirty.get(key, default=empty) is not empty:
                 continue
 
+            # TODO-5139: currently, this might return a python object (because we pass
+            #  python objects to the SubmissionValueVariables.set_values) whereas
+            #  previously it would return a json value. Not sure if this breaks
+            #  anything...
             new_value = updated_step_data.get(key, default=empty)
+            # TODO-5139: previously these were python objects, and they still are, so
+            #  that's ok. Or is it?
             original_value = initial_data.get(key, default=empty)
             if new_value is empty or new_value == original_value:
                 continue
-            data_diff[key] = new_value
+            data_diff_dirty[key] = new_value
 
         # only return the 'overrides'
-        step.data = DirtyData(data_diff.data)
+        step.data = DirtyData(data_diff_dirty.data)
 
     step._form_logic_evaluated = True
 
@@ -206,11 +249,16 @@ def check_submission_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
     if unsaved_data:
         submission_variables_state.set_values(unsaved_data)
-    data_container = DataContainer(state=submission_variables_state)
+    data_for_evaluation = submission_variables_state.to_python()
 
     mutation_operations: list[ActionOperation] = []
-    for operation in iter_evaluate_rules(rules, data_container, submission):
+    data_diff = FormioData({})
+    for operation, mutations in iter_evaluate_rules(rules, data_for_evaluation, submission):
         mutation_operations.append(operation)
+        if mutations:
+            data_diff.update(mutations)
+
+    submission_variables_state.set_values(data_diff)
 
     # we loop over all steps because we have validations that ensure unique component
     # keys across multiple steps for the whole form.
