@@ -1004,7 +1004,7 @@ class FormVariableViewsetTest(APITestCase):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user)
 
-        form = FormFactory.create(generate_minimal_setup=True)
+        form = FormFactory.create()
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
 
@@ -1243,3 +1243,92 @@ class FormVariableViewsetTest(APITestCase):
             self.assertEqual(user_defined.name, "User defined")
             self.assertEqual(user_defined.data_type, FormVariableDataTypes.array)
             self.assertEqual(user_defined.initial_value, ["foo"])
+
+    @tag("gh-5142")
+    def test_api_call_returns_all_variables(self):
+        """
+        Assert that the api endpoint returns list of all variables.
+
+        This bug was introduced with the fix for GH-5058 (commit d86a1bbd), where
+        FormVariableListSerializer no longer processes component variables. This means
+        that after saving the serializer, `serializer.data` only contains user-defined
+        variables, and we have to ensure it returns all form variables with another
+        serializer.
+        """
+        user = SuperUserFactory.create()
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                    },
+                    {
+                        "type": "date",
+                        "key": "date",
+                    },
+                ]
+            },
+        )
+        form_definition = form_step.form_definition
+
+        FormVariableFactory.create(
+            form=form,
+            name="User defined",
+            key="userDefined",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "textfield",
+                "name": "textfield",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+                "service_fetch_configuration": None,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "date",
+                "name": "date",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+                "service_fetch_configuration": None,
+            },
+            {
+                "form": form_url,
+                "form_definition": "",
+                "key": "userDefined",
+                "name": "User defined",
+                "data_type": FormVariableDataTypes.array,
+                "source": FormVariableSources.user_defined,
+                "initial_value": ["foo"],
+            },
+        ]
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
