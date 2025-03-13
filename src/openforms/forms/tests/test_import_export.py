@@ -1396,6 +1396,207 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         )
 
+    def test_import_form_with_objects_registration_backend_no_version_and_no_variables_mapping(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+
+        # By default, a new Objects API registration is set to version 2.
+        # If a v2 Objects API registrations doesn't provide a `variables_mapping` it's
+        # set to empty array.
+        self.assertEqual(registration_backend.options["version"], 2)
+        self.assertEqual(registration_backend.options["variables_mapping"], [])
+
+    def test_import_form_with_objects_registration_backend_without_variables_mapping(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend-v1",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
+                                "version": 1,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        },
+                        {
+                            "key": "test-backend-v2",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        },
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend_v1 = FormRegistrationBackend.objects.get(
+            key="test-backend-v1"
+        )
+        registration_backend_v2 = FormRegistrationBackend.objects.get(
+            key="test-backend-v2"
+        )
+
+        # Only when a Objects API registration is v2, has the `variables_mapping` a
+        # default value.
+        self.assertEqual(registration_backend_v1.options["version"], 1)
+        self.assertNotIn("variables_mapping", registration_backend_v1.options)
+
+        self.assertEqual(registration_backend_v2.options["version"], 2)
+        self.assertIn("variables_mapping", registration_backend_v2.options)
+        self.assertEqual(registration_backend_v2.options["variables_mapping"], [])
+
+    def test_import_form_with_objects_registration_backend_with_valid_variables_mapping(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                                "variables_mapping": [
+                                    {"variable_key": "data", "options": {}}
+                                ],
+                            },
+                        },
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend_valid_mapping = FormRegistrationBackend.objects.get(
+            key="test-backend"
+        )
+
+        # The valid variables_mapping is left as is
+        self.assertIn("variables_mapping", registration_backend_valid_mapping.options)
+        self.assertEqual(
+            registration_backend_valid_mapping.options["variables_mapping"],
+            [{"variable_key": "data", "options": {}}],
+        )
+
+    def test_import_form_with_objects_registration_backend_with_invalid_variables_mapping(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
+                                "version": 2,
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                                "variables_mapping": {},
+                            },
+                        },
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["variables_mapping"]["non_field_errors"][0]
+        self.assertEqual(error_detail.code, "not_a_list")
+
 
 class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Open Zaak Docker Compose to be running.
