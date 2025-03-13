@@ -1,5 +1,7 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
+import base64
 from datetime import date, datetime
+from io import BytesIO
 from typing import NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
@@ -7,6 +9,15 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeometry
+from openforms.config.models import MapTileLayer
+from openforms.utils.map.wmts_draw import (
+    draw_geojson_rd,
+    find_best_zoom,
+    geojson_to_rd,
+    get_bounds_rd,
+    get_center,
+)
+from openforms.utils.map.wmts_map_generator import WMTSMapGenerator
 
 from ..typing import AddressNLComponent, Component, MapComponent
 from .base import FormatterBase
@@ -27,6 +38,43 @@ type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
 
 class MapFormatter(FormatterBase):
     def format(self, component: MapComponent, value: MapValue) -> str:
+        if self.as_html:
+            tile_layer = MapTileLayer.objects.get(
+                identifier=component["tileLayerIdentifier"]
+            )
+
+            geojson_rd = geojson_to_rd(value)
+            bounds = get_bounds_rd(geojson_rd)
+            x_rd, y_rd = get_center(geojson_rd)
+
+            image_size_px = (718, 500)
+
+            zoom = find_best_zoom(bounds, image_size_px=image_size_px)
+
+            map_img = WMTSMapGenerator.make_map_rd(
+                url_template=tile_layer.url,
+                x_rd=x_rd,
+                y_rd=y_rd,
+                zoom=zoom,
+                img_size=image_size_px,
+            )
+
+            draw_geojson_rd(
+                map_img,
+                geojson_rd,
+                zoom=zoom,
+                img_size=image_size_px,
+                center_x_rd=x_rd,
+                center_y_rd=y_rd,
+            )
+
+            png_array = BytesIO()
+            map_img.save(png_array, format="png")
+            encoded = base64.b64encode(png_array.getvalue()).decode()
+            img_data_uri = f"data:image/png;base64,{encoded}"
+
+            return format_html("<img src='{}'>", img_data_uri)
+
         # use a comma here since its a single data element
         if coordinates := value.get("coordinates"):
             return ", ".join(str(x) for x in coordinates)

@@ -63,3 +63,6 @@ class LineStringGeometry(TypedDict):
 class PolygonGeometry(TypedDict):
     type: Literal["Polygon"]
     coordinates: list[list[Coordinates]]
+
+
+type Geometry = PointGeometry | LineStringGeometry | PolygonGeometry
