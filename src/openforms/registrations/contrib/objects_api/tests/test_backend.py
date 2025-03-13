@@ -532,6 +532,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "Attachment Informatieobjecttype",
+            "transform_to_list": [],
         }
 
         result = plugin.register_submission(submission, options)
@@ -596,6 +597,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "Unpublished",
+            "transform_to_list": [],
         }
 
         result = plugin.register_submission(submission, options)

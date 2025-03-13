@@ -15,6 +15,7 @@ class JSONDumpConfigTests(TestCase):
             "variables": ["now"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         # Ensuring that the options are valid in the first place

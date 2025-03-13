@@ -164,6 +164,11 @@
     "description": "Camunda complex process var 'type' label",
     "originalDefault": "Type"
   },
+  "2arYfH": {
+    "defaultMessage": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option.",
+    "description": "'Transform to list' checkbox help text",
+    "originalDefault": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+  },
   "2boL55": {
     "defaultMessage": "Query parameters",
     "description": "Service fetch configuration modal form query parameters field label",
@@ -2654,6 +2659,11 @@
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
+  "m/NVtu": {
+    "defaultMessage": "Transform to list",
+    "description": "'Transform to list' checkbox label",
+    "originalDefault": "Transform to list"
+  },
   "m83ECr": {
     "defaultMessage": "Copying the configuration from the registration backend will clear the existing configuration. Are you sure you want to continue?",
     "description": "Objects API prefill configuration: warning message when copying the config from registration backend",
@@ -2863,11 +2873,6 @@
     "defaultMessage": "Step name",
     "description": "Form step name label",
     "originalDefault": "Step name"
-  },
-  "pown36": {
-    "defaultMessage": "Form definition",
-    "description": "Variable table form definition title",
-    "originalDefault": "Form definition"
   },
   "pqCru3": {
     "defaultMessage": "Fetch configuration:",

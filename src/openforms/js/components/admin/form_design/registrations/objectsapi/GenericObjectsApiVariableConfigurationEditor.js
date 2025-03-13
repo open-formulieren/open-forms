@@ -6,15 +6,14 @@ import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
 import {APIContext} from 'components/admin/form_design/Context';
-import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
-import {post} from 'utils/fetch';
 
 import {asJsonSchema} from './utils';
+import {fetchTargetPaths} from './utils';
 
 /**
  * Hack-ish way to manage the variablesMapping state for one particular entry.
@@ -83,6 +82,7 @@ export const GenericEditor = ({
   components,
   namePrefix,
   isGeometry,
+  transformToList,
   index,
   mappedVariable,
   objecttype,
@@ -93,27 +93,26 @@ export const GenericEditor = ({
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
   const {setFieldValue} = useFormikContext();
 
+  const componentType = components[variable?.key]?.type;
+  const transformationNeeded = transformToList?.includes(variable.key);
+
+  // Load all the possible target paths in parallel depending on if the data should be
+  // transformed or not
   const {
     loading,
     value: targetPaths,
     error,
-  } = useAsync(
-    async () => {
-      const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
-        objectsApiGroup,
-        objecttype,
-        objecttypeVersion,
-        variableJsonSchema: asJsonSchema(variable, components),
-      });
-      if (!response.ok) {
-        throw new Error('Error when loading target paths');
-      }
+  } = useAsync(async () => {
+    const results = fetchTargetPaths(
+      csrftoken,
+      objectsApiGroup,
+      objecttype,
+      objecttypeVersion,
+      asJsonSchema(variable, components, transformToList)
+    );
 
-      return response.data;
-    },
-    // Load only once:
-    []
-  );
+    return results;
+  }, [transformationNeeded]);
 
   const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
@@ -153,6 +152,35 @@ export const GenericEditor = ({
           />
         </Field>
       </FormRow>
+      {componentType === 'selectboxes' && (
+        <FormRow>
+          <Field name="transformToList">
+            <Checkbox
+              name="transformToListCheckbox"
+              label={
+                <FormattedMessage
+                  defaultMessage="Transform to list"
+                  description="'Transform to list' checkbox label"
+                />
+              }
+              helpText={
+                <FormattedMessage
+                  description="'Transform to list' checkbox help text"
+                  defaultMessage="If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+                />
+              }
+              checked={transformToList.includes(variable.key) || false}
+              onChange={event => {
+                const shouldBeTransformed = event.target.checked;
+                const newTransformToList = shouldBeTransformed
+                  ? [...transformToList, variable.key]
+                  : transformToList.filter(key => key !== variable.key);
+                setFieldValue('transformToList', newTransformToList);
+              }}
+            />
+          </Field>
+        </FormRow>
+      )}
       <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}

@@ -256,6 +256,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         allow_blank=True,
     )
+    transform_to_list = serializers.ListField(
+        child=FormioVariableKeyField(),
+        label=_("transform to list"),
+        required=False,
+        default=list,
+        help_text=_(
+            "The components which need special handling concerning the shape of the data "
+            "and need to be transformed to a list."
+        ),
+    )
 
     def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
         v1_only_fields = {

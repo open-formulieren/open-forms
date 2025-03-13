@@ -521,6 +521,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         urls_map = self.get_attachment_urls_by_key(submission)
 
         variables_mapping = options["variables_mapping"]
+        transform_to_list = options["transform_to_list"]
 
         # collect all the assignments to be done to the object
         assignment_specs: list[AssignmentSpec] = []
@@ -571,6 +572,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 value=value,
                 component=component,
                 attachment_urls=urls_map,
+                transform_to_list=transform_to_list,
             )
             if isinstance(assignment_spec, AssignmentSpec):
                 assignment_specs.append(assignment_spec)

@@ -363,6 +363,12 @@
       "value": "."
     }
   ],
+  "2arYfH": [
+    {
+      "type": 0,
+      "value": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+    }
+  ],
   "2boL55": [
     {
       "type": 0,
@@ -5655,6 +5661,12 @@
       "value": "Partner 1"
     }
   ],
+  "m/NVtu": [
+    {
+      "type": 0,
+      "value": "Transform to list"
+    }
+  ],
   "m20av3": [
     {
       "type": 0,
@@ -6127,12 +6139,6 @@
     {
       "type": 0,
       "value": "Step name"
-    }
-  ],
-  "pown36": [
-    {
-      "type": 0,
-      "value": "Form definition"
     }
   ],
   "pq7q6N": [

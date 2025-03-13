@@ -1,8 +1,9 @@
 import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import {getVariableSource} from 'components/admin/form_design/variables/utils';
 import Field from 'components/admin/forms/Field';
@@ -11,12 +12,20 @@ import {Checkbox} from 'components/admin/forms/Inputs';
 
 const JSONDumpVariableConfigurationEditor = ({variable}) => {
   const {
-    values: {variables = [], additionalMetadataVariables = [], fixedMetadataVariables = []},
+    values: {
+      variables = [],
+      additionalMetadataVariables = [],
+      fixedMetadataVariables = [],
+      transformToList = [],
+    },
     setFieldValue,
   } = useFormikContext();
+  const {components} = useContext(FormContext);
   const isIncluded = variables.includes(variable.key);
   const isRequiredInMetadata = fixedMetadataVariables.includes(variable.key);
   const isInAdditionalMetadata = additionalMetadataVariables.includes(variable.key);
+  const componentType = components[variable.key]?.type;
+  const transformationNeeded = transformToList.includes(variable.key);
 
   return (
     <>
@@ -78,6 +87,36 @@ const JSONDumpVariableConfigurationEditor = ({variable}) => {
           />
         </Field>
       </FormRow>
+
+      {componentType === 'selectboxes' && (
+        <FormRow>
+          <Field name="transformToList">
+            <Checkbox
+              name="transformToListCheckbox"
+              label={
+                <FormattedMessage
+                  defaultMessage="Transform to list"
+                  description="'Transform to list' checkbox label"
+                />
+              }
+              helpText={
+                <FormattedMessage
+                  description="'Transform to list' checkbox help text"
+                  defaultMessage="If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+                />
+              }
+              checked={transformationNeeded || false}
+              onChange={event => {
+                const shouldBeTransformed = event.target.checked;
+                const newTransformToList = shouldBeTransformed
+                  ? [...transformToList, variable.key]
+                  : transformToList.filter(key => key !== variable.key);
+                setFieldValue('transformToList', newTransformToList);
+              }}
+            />
+          </Field>
+        </FormRow>
+      )}
     </>
   );
 };

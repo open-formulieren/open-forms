@@ -65,7 +65,8 @@ class JSONDumpRegistration(BasePlugin):
             if key in options["variables"]
         }
         values_schema = generate_json_schema(submission.form, options["variables"])
-        post_process(values, values_schema, submission)
+        transform_to_list = options["transform_to_list"]
+        post_process(values, values_schema, submission, transform_to_list)
 
         # Metadata
         # Note: as the metadata contains only static variables no post-processing is
@@ -114,7 +115,10 @@ class JSONDumpRegistration(BasePlugin):
 
 
 def post_process(
-    values: JSONObject, schema: JSONObject, submission: Submission
+    values: JSONObject,
+    schema: JSONObject,
+    submission: Submission,
+    transform_to_list: list[str] = [],
 ) -> None:
     """Post-process the values and schema.
 
@@ -127,6 +131,8 @@ def post_process(
     :param values: Mapping from key to value of the data to be sent.
     :param schema: JSON schema describing ``values``.
     :param submission: The corresponding submission instance.
+    :param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
+      object-shape for selectboxes components.
     """
     state = submission.load_submission_value_variables_state()
 
@@ -170,7 +176,12 @@ def post_process(
         assert component is not None
 
         process_component(
-            component, values, schema, attachments_dict, configuration_wrapper
+            component,
+            values,
+            schema,
+            attachments_dict,
+            configuration_wrapper,
+            transform_to_list=transform_to_list,
         )
 
 
@@ -181,6 +192,7 @@ def process_component(
     attachments: dict[str, list[SubmissionFileAttachment]],
     configuration_wrapper,
     key_prefix: str = "",
+    transform_to_list: list[str] = [],
 ) -> None:
     """Process a component.
 
@@ -202,6 +214,8 @@ def process_component(
     :param key_prefix: If the component is part of an edit grid component, this key
       prefix includes the parent key and the index of the component as it appears in the
       submitted data list of that edit grid component.
+    ::param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
+      object-shape for selectboxes components.
     """
     key = component["key"]
 
@@ -263,6 +277,12 @@ def process_component(
             # component is an empty dict, so set the required to an empty list.
             if not values[key]:
                 schema["properties"][key]["required"] = []  # type: ignore
+
+            if transform_to_list and key in transform_to_list and values[key]:
+                schema["properties"][key]["type"] = "array"  # type: ignore
+                values[key] = [
+                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
+                ]
 
         case {"type": "editgrid"}:
             # Note: the schema actually only needs to be processed once for each child
