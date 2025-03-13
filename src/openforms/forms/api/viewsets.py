@@ -503,7 +503,12 @@ class FormViewSet(viewsets.ModelViewSet):
         ).exclude(key__in=keys_to_keep)
         stale_user_defined.delete()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Create return data
+        var_keys = [variable["key"] for variable in serializer.initial_data]
+        return_data = serializer.to_representation(
+            form.formvariable_set.filter(key__in=var_keys)
+        )
+        return Response(return_data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary=_("List form variables"),
