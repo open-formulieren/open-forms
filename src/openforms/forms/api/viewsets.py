@@ -524,7 +524,13 @@ class FormViewSet(viewsets.ModelViewSet):
         ).exclude(key__in=keys_to_keep)
         stale_user_defined.delete()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Create return data
+        out_serializer = FormVariableSerializer(
+            instance=form.formvariable_set.prefetch_related("form", "form_definition"),
+            many=True,
+            context={"request": request, "form": form},
+        )
+        return Response(out_serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary=_("List form variables"),
