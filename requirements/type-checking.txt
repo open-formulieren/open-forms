@@ -75,6 +75,10 @@ brotli==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   fonttools
+cartopy==0.24.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 cbor2==5.6.2
     # via
     #   -c requirements/ci.txt
@@ -96,6 +100,7 @@ certifi==2024.7.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   elastic-apm
+    #   pyproj
     #   requests
     #   self-certifi
     #   sentry-sdk
@@ -143,6 +148,11 @@ click-repl==0.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
+contourpy==1.3.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   matplotlib
 coverage==7.4.0
     # via
     #   -c requirements/ci.txt
@@ -168,6 +178,11 @@ cssselect2==0.7.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
+cycler==0.12.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   matplotlib
 defusedxml==0.7.1
     # via
     #   -c requirements/ci.txt
@@ -492,6 +507,7 @@ fonttools==4.45.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   matplotlib
     #   weasyprint
 freezegun==1.5.1
     # via
@@ -597,6 +613,11 @@ jsonschema-specifications==2023.7.1
     #   -r requirements/ci.txt
     #   jsonschema
     #   openapi-schema-validator
+kiwisolver==1.4.8
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   matplotlib
 kombu==5.3.7
     # via
     #   -c requirements/ci.txt
@@ -616,6 +637,7 @@ lxml==5.2.2
     #   lxml-html-clean
     #   mail-cleaner
     #   maykin-python3-saml
+    #   owslib
     #   pyquery
     #   xmlsec
     #   zeep
@@ -642,6 +664,11 @@ markupsafe==2.1.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jinja2
+matplotlib==3.10.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cartopy
 maykin-2fa==1.0.0
     # via
     #   -c requirements/ci.txt
@@ -679,6 +706,14 @@ mypy-extensions==0.4.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
+numpy==2.2.3
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cartopy
+    #   contourpy
+    #   matplotlib
+    #   shapely
 o365==2.0.31
     # via
     #   -c requirements/ci.txt
@@ -717,11 +752,17 @@ orderedmultidict==1.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   furl
+owslib==0.32.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 packaging==23.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
+    #   cartopy
+    #   matplotlib
     #   prance
     #   pytest
     #   sphinx
@@ -749,6 +790,7 @@ pillow==10.3.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-colorfield
+    #   matplotlib
     #   weasyprint
 platformdirs==2.2.0
     # via
@@ -851,6 +893,11 @@ pyopenssl==25.0.0
     #   -r requirements/ci.txt
     #   josepy
     #   webauthn
+pyparsing==3.2.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   matplotlib
 pyphen==0.14.0
     # via
     #   -c requirements/ci.txt
@@ -861,10 +908,20 @@ pypng==0.20220715.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   qrcode
+pyproj==3.7.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cartopy
 pyquery==1.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+pyshp==2.3.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cartopy
 pytest==7.4.0
     # via
     #   -c requirements/ci.txt
@@ -878,7 +935,9 @@ python-dateutil==2.9.0.post0
     #   django-relativedelta
     #   faker
     #   freezegun
+    #   matplotlib
     #   o365
+    #   owslib
 python-decouple==3.8
     # via
     #   -c requirements/ci.txt
@@ -911,6 +970,7 @@ pyyaml==6.0.1
     #   -r requirements/ci.txt
     #   drf-spectacular
     #   jsonschema-spec
+    #   owslib
     #   pydantic-settings
     #   tablib
     #   vcrpy
@@ -944,6 +1004,7 @@ requests==2.32.2
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   owslib
     #   prance
     #   requests-file
     #   requests-mock
@@ -1014,6 +1075,11 @@ sentry-sdk==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+shapely==2.0.7
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   cartopy
 simplejson==3.19.3
     # via
     #   -c requirements/ci.txt

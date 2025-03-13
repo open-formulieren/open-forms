@@ -58,6 +58,10 @@ brotli==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   fonttools
+cartopy==0.24.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 cbor2==5.6.2
     # via
     #   -c requirements/base.txt
@@ -79,6 +83,7 @@ certifi==2024.7.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   elastic-apm
+    #   pyproj
     #   requests
     #   self-certifi
     #   sentry-sdk
@@ -125,6 +130,11 @@ click-repl==0.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
+contourpy==1.3.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   matplotlib
 cryptography==44.0.1
     # via
     #   -c requirements/base.txt
@@ -141,6 +151,11 @@ cssselect2==0.7.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
+cycler==0.12.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   matplotlib
 defusedxml==0.7.1
     # via
     #   -c requirements/base.txt
@@ -430,6 +445,7 @@ fonttools==4.45.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   matplotlib
     #   weasyprint
 frozendict==2.3.4
     # via
@@ -503,6 +519,11 @@ jsonschema-specifications==2023.7.1
     #   -r requirements/base.txt
     #   jsonschema
     #   openapi-schema-validator
+kiwisolver==1.4.8
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   matplotlib
 kombu==5.3.7
     # via
     #   -c requirements/base.txt
@@ -522,6 +543,7 @@ lxml==5.2.2
     #   lxml-html-clean
     #   mail-cleaner
     #   maykin-python3-saml
+    #   owslib
     #   xmlsec
     #   zeep
 lxml-html-clean==0.4.1
@@ -542,6 +564,11 @@ markuppy==1.14
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+matplotlib==3.10.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   cartopy
 maykin-2fa==1.0.0
     # via
     #   -c requirements/base.txt
@@ -564,6 +591,14 @@ mozilla-django-oidc-db==0.22.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+numpy==2.2.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   cartopy
+    #   contourpy
+    #   matplotlib
+    #   shapely
 o365==2.0.31
     # via
     #   -c requirements/base.txt
@@ -606,10 +641,16 @@ orderedmultidict==1.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   furl
+owslib==0.32.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 packaging==23.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   cartopy
+    #   matplotlib
     #   prance
 pathable==0.4.3
     # via
@@ -626,6 +667,7 @@ pillow==10.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-colorfield
+    #   matplotlib
     #   weasyprint
 platformdirs==2.2.0
     # via
@@ -697,6 +739,11 @@ pyopenssl==25.0.0
     #   -r requirements/base.txt
     #   josepy
     #   webauthn
+pyparsing==3.2.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   matplotlib
 pyphen==0.14.0
     # via
     #   -c requirements/base.txt
@@ -707,6 +754,16 @@ pypng==0.20220715.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   qrcode
+pyproj==3.7.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   cartopy
+pyshp==2.3.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   cartopy
 python-dateutil==2.9.0.post0
     # via
     #   -c requirements/base.txt
@@ -714,7 +771,9 @@ python-dateutil==2.9.0.post0
     #   celery
     #   django-camunda
     #   django-relativedelta
+    #   matplotlib
     #   o365
+    #   owslib
 python-decouple==3.8
     # via
     #   -c requirements/base.txt
@@ -746,6 +805,7 @@ pyyaml==6.0.1
     #   -r requirements/base.txt
     #   drf-spectacular
     #   jsonschema-spec
+    #   owslib
     #   pydantic-settings
     #   tablib
 qrcode==7.4.2
@@ -777,6 +837,7 @@ requests==2.32.2
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   owslib
     #   prance
     #   requests-file
     #   requests-oauthlib
@@ -841,6 +902,11 @@ sentry-sdk==2.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+shapely==2.0.7
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   cartopy
 simplejson==3.19.3
     # via
     #   -c requirements/base.txt
