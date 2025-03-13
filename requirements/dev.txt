@@ -284,7 +284,7 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-digid-eherkenning==0.19.2
+django-digid-eherkenning==0.20.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -616,7 +616,7 @@ lazy-object-proxy==1.9.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-spec-validator
-lxml==5.2.2
+lxml==5.3.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1275,6 +1275,7 @@ xmlsec==1.3.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-digid-eherkenning
     #   maykin-python3-saml
 xmltodict==0.12.0
     # via
