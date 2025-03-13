@@ -91,3 +91,10 @@ zgw-consumers[setup-configuration]
 
 # Anti virus scan
 clamd
+
+# Rendering static maps
+matplotlib # Plotting on map
+OWSLib
+cartopy # Generating static maps
+# @TODO maybe pyproj is needed for maps, not sure yet
+# pyproj # Geo projection and coordinates transformations
