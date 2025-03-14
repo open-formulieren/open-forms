@@ -692,29 +692,29 @@ Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
 sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
 sjabloon, dan wordt deze niet getoond.
 
-======================================= ===========================================================================
-Variabele                               Beschrijving
-======================================= ===========================================================================
-``{{ productaanvraag_type }}``          Het productaanvraag type.
-``{{ submission.public_reference }}``   De publieke referentie van de inzending.
-``{{ submission.kenmerk }}``            Het interne ID van de inzending (UUID).
-``{{ submission.language_code }}``      De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
-``{{ submission.pdf_url }}``            De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
-``{{ submission.csv_url }}``            De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
-``{% json_summary %}``                  JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
-``{% uploaded_attachment_urls %}``      Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs
-                                        verwijzen naar het geregistreerde document in de Documenten API.
-``{% as_geo_json variables.map %}``     Sluit de gerefereerde variabele (`variables.map`) in als JSON.
-``{{ payment.completed }}``             Indicatie of de betaling voltooid is.
-``{{ payment.amount }}``                Bedrag dat betaald moet worden.
-``{{ payment.public_order_ids }}``      Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
-``{{ cosign_data.date }}``              De datum waarop de inzending mede is ondertekend.
-``{{ cosign_data.bsn }}``               Het BSN van de medeondertekenaar, indien beschikbaar.
-``{{ cosign_data.kvk }}``               Het KvK van de medeondertekenaar, indien beschikbaar.
-``{{ cosign_data.pseudo }}``            Het pseudo van de medeondertekenaar, indien beschikbaar.
-``{% as_json auth_context %}``          De meta-informatie over de formulierauthenticatie. Dit is een complexe
-                                        structuur, zie :ref:`objecten_api_registratie_auth_context`.
-======================================= ===========================================================================
+=================================================== ===========================================================================
+Variabele                                           Beschrijving
+=================================================== ===========================================================================
+``{{ productaanvraag_type }}``                      Het productaanvraag type.
+``{{ submission.public_registration_reference }}``  De publieke referentie van de inzending.
+``{{ submission.kenmerk }}``                        Het interne ID van de inzending (UUID).
+``{{ submission.language_code }}``                  De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
+``{{ submission.pdf_url }}``                        De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
+``{{ submission.csv_url }}``                        De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
+``{% json_summary %}``                              JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
+``{% uploaded_attachment_urls %}``                  Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs
+                                                    verwijzen naar het geregistreerde document in de Documenten API.
+``{% as_geo_json variables.map %}``                 Sluit de gerefereerde variabele (`variables.map`) in als JSON.
+``{{ payment.completed }}``                         Indicatie of de betaling voltooid is.
+``{{ payment.amount }}``                            Bedrag dat betaald moet worden.
+``{{ payment.public_order_ids }}``                  Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
+``{{ cosign_data.date }}``                          De datum waarop de inzending mede is ondertekend.
+``{{ cosign_data.bsn }}``                           Het BSN van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.kvk }}``                           Het KvK van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.pseudo }}``                        Het pseudo van de medeondertekenaar, indien beschikbaar.
+``{% as_json auth_context %}``                      De meta-informatie over de formulierauthenticatie. Dit is een complexe
+                                                    structuur, zie :ref:`objecten_api_registratie_auth_context`.
+=================================================== ===========================================================================
 
 
 Voorbeeld
@@ -734,7 +734,7 @@ Voorbeeld
            "attachments": {% uploaded_attachment_urls %},
            "submission_id": "{{ submission.kenmerk }}",
            "language_code": "{{ submission.language_code }}",
-           "public_reference": "{{ submission.public_reference }}",
+           "public_reference": "{{ submission.public_registration_reference }}",
            {% if cosign_data %}
            "cosign_date": "{{ cosign_data.date.isoformat }}",
            "cosign_bsn": "{{ cosign_data.bsn }}"
