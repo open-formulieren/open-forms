@@ -2885,11 +2885,6 @@
     "description": "Form step name label",
     "originalDefault": "Step name"
   },
-  "pown36": {
-    "defaultMessage": "Formulierdefinitie",
-    "description": "Variable table form definition title",
-    "originalDefault": "Form definition"
-  },
   "pqCru3": {
     "defaultMessage": "Servicebevraging:",
     "description": "Currently selected service fetch configuration label",
