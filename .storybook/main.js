@@ -106,9 +106,7 @@ const config = {
     return config;
   },
 
-  docs: {
-    autodocs: false,
-  },
+  docs: {},
 
   typescript: {
     reactDocgen: 'react-docgen-typescript',
