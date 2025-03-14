@@ -70,6 +70,7 @@ class RegistrationOptionsV2(_BaseRegistrationOptions, total=False):
     version: Required[Literal[2]]
     variables_mapping: Required[list[ObjecttypeVariableMapping]]
     geometry_variable_key: str
+    transform_to_list: Required[list[str]]
 
 
 type RegistrationOptions = RegistrationOptionsV1 | RegistrationOptionsV2

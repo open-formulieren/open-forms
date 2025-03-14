@@ -256,6 +256,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         allow_blank=True,
     )
+    transform_to_list = serializers.ListField(
+        child=FormioVariableKeyField(),
+        label=_("transform to list"),
+        required=False,
+        default=list,
+        help_text=_(
+            "The components which need special handling concerning the shape of the data "
+            "and need to be transformed to a list."
+        ),
+    )
 
     def _handle_import(self, attrs) -> None:
         # we're not importing, nothing to do

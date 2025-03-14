@@ -138,6 +138,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: on
             ],
             "geometry_variable_key": "location",
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -218,6 +219,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "target_path": ["submission_provider_payment_ids"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -315,6 +317,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
                 # fmt: on
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -386,6 +389,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "target_path": ["multiple_files"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -471,6 +475,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "target_path": ["repeatingGroup"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -530,6 +535,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
                 # fmt: on
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -689,6 +695,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["pointCoordinates"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -737,6 +744,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["textfield"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -781,6 +789,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["textfield"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -813,6 +822,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["of_nummer"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -872,6 +882,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_kvk"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -931,6 +942,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_pseudo"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -979,6 +991,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["cosign_date"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1051,6 +1064,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["authn", "soort_actor"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1163,6 +1177,7 @@ class V2HandlerTests(TestCase):
                     "target_path": ["authn", "soort_actor"],
                 },
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1299,6 +1314,7 @@ class V2HandlerTests(TestCase):
                     },
                 }
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1366,6 +1382,7 @@ class V2HandlerTests(TestCase):
                     },
                 }
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1418,6 +1435,7 @@ class V2HandlerTests(TestCase):
             "variables_mapping": [
                 {"variable_key": "addressNl", "target_path": ["addressNL"]}
             ],
+            "transform_to_list": [],
             "iot_attachment": "",
             "iot_submission_csv": "",
             "iot_submission_report": "",
@@ -1441,3 +1459,40 @@ class V2HandlerTests(TestCase):
                 }
             },
         )
+
+    def test_selectboxes_with_transform_to_list(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "selectBoxes1", "type": "selectboxes"},
+                {"key": "selectBoxes2", "type": "selectboxes"},
+            ],
+            completed=True,
+            submitted_data={
+                "selectBoxes1": {"option1": True},
+                "selectBoxes2": {"option2": True},
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {"variable_key": "selectBoxes1", "target_path": ["path1"]},
+                {"variable_key": "selectBoxes2", "target_path": ["path2"]},
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "transform_to_list": ["selectBoxes1"],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(data, {"path1": ["option1"], "path2": {"option2": True}})

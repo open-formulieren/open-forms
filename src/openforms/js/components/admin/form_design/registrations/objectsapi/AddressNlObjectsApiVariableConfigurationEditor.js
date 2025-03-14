@@ -5,16 +5,15 @@ import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
 import {APIContext} from 'components/admin/form_design/Context';
-import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 import {TargetPathSelect} from 'components/admin/forms/objects_api';
 import ErrorMessage from 'components/errors/ErrorMessage';
-import {post} from 'utils/fetch';
 
 import {MappedVariableTargetPathSelect} from './GenericObjectsApiVariableConfigurationEditor';
+import {fetchTargetPaths} from './utils';
 
 const ADDRESSNL_NESTED_PROPERTIES = {
   postcode: {type: 'string'},
@@ -23,27 +22,6 @@ const ADDRESSNL_NESTED_PROPERTIES = {
   houseNumberAddition: {type: 'string'},
   city: {type: 'string'},
   streetName: {type: 'string'},
-};
-
-const fetchTargetPaths = async (
-  csrftoken,
-  objectsApiGroup,
-  objecttype,
-  objecttypeVersion,
-  schemaType
-) => {
-  const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
-    objectsApiGroup,
-    objecttype,
-    objecttypeVersion,
-    variableJsonSchema: schemaType,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error when loading target paths for type: ${schemaType}`);
-  }
-
-  return response.data;
 };
 
 export const AddressNlEditor = ({
