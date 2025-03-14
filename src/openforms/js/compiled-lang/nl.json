@@ -1295,6 +1295,12 @@
       "value": "Onderwerp betaalstatusmail"
     }
   ],
+  "BFq6vL": [
+    {
+      "type": 0,
+      "value": "Opties ophalen..."
+    }
+  ],
   "BGZD6J": [
     {
       "type": 0,
@@ -3930,6 +3936,12 @@
       "value": "Maximale breedte"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -3952,6 +3964,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "YObTjL": [
+    {
+      "type": 0,
+      "value": "Code van de tabel waaruit de opties opgehaald worden"
     }
   ],
   "YQ/Vx0": [
@@ -4415,6 +4433,12 @@
     {
       "type": 0,
       "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
+    }
+  ],
+  "cLzsxn": [
+    {
+      "type": 0,
+      "value": "Tabelcode"
     }
   ],
   "cQvPLh": [
@@ -4963,6 +4987,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "gSSyoc": [
+    {
+      "type": 0,
+      "value": "Service"
     }
   ],
   "gUl3mu": [
@@ -5541,22 +5571,6 @@
       "value": "Toon aantal karakters"
     }
   ],
-  "kw2jNc": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    }
-  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -6104,7 +6118,7 @@
   "paY2Oa": [
     {
       "type": 0,
-      "value": "Waarden via de expressie: "
+      "value": "Opties uit de expressie: "
     },
     {
       "children": [
@@ -6145,12 +6159,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "pown36": [
-    {
-      "type": 0,
-      "value": "Formulierdefinitie"
     }
   ],
   "pq7q6N": [
@@ -6553,6 +6561,12 @@
       "value": "Voettekst"
     }
   ],
+  "u5fu3R": [
+    {
+      "type": 0,
+      "value": "De (externe) service die de tabellen/referentielijsten ontsluit."
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6581,6 +6595,30 @@
     {
       "type": 0,
       "value": "Fout"
+    }
+  ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6793,22 +6831,6 @@
     {
       "type": 1,
       "value": "number"
-    }
-  ],
-  "wVoT0I": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
     }
   ],
   "wZ99FU": [

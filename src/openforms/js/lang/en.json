@@ -2864,11 +2864,6 @@
     "description": "Form step name label",
     "originalDefault": "Step name"
   },
-  "pown36": {
-    "defaultMessage": "Form definition",
-    "description": "Variable table form definition title",
-    "originalDefault": "Form definition"
-  },
   "pqCru3": {
     "defaultMessage": "Fetch configuration:",
     "description": "Currently selected service fetch configuration label",

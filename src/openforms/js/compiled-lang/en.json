@@ -1291,6 +1291,12 @@
       "value": "Email payment subject"
     }
   ],
+  "BFq6vL": [
+    {
+      "type": 0,
+      "value": "Loading values..."
+    }
+  ],
   "BGZD6J": [
     {
       "type": 0,
@@ -3917,6 +3923,12 @@
       "value": "Maximum width"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -3939,6 +3951,12 @@
     {
       "type": 0,
       "value": "Advanced"
+    }
+  ],
+  "YObTjL": [
+    {
+      "type": 0,
+      "value": "The code of the table from which the options will be retrieved."
     }
   ],
   "YQ/Vx0": [
@@ -4397,6 +4415,12 @@
     {
       "type": 0,
       "value": "Something went wrong when fetching the available target paths"
+    }
+  ],
+  "cLzsxn": [
+    {
+      "type": 0,
+      "value": "Reference lists table code"
     }
   ],
   "cQvPLh": [
@@ -4945,6 +4969,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "gSSyoc": [
+    {
+      "type": 0,
+      "value": "Reference lists service"
     }
   ],
   "gUl3mu": [
@@ -5521,22 +5551,6 @@
     {
       "type": 0,
       "value": "Show character counter"
-    }
-  ],
-  "kw2jNc": [
-    {
-      "type": 0,
-      "value": "Options from expression: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
     }
   ],
   "l1fi1t": [
@@ -6129,12 +6143,6 @@
       "value": "Step name"
     }
   ],
-  "pown36": [
-    {
-      "type": 0,
-      "value": "Form definition"
-    }
-  ],
   "pq7q6N": [
     {
       "type": 0,
@@ -6539,6 +6547,12 @@
       "value": "Footer"
     }
   ],
+  "u5fu3R": [
+    {
+      "type": 0,
+      "value": "The identifier of the reference lists service from which the options will be retrieved."
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6567,6 +6581,30 @@
     {
       "type": 0,
       "value": "Error"
+    }
+  ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6779,22 +6817,6 @@
     {
       "type": 1,
       "value": "number"
-    }
-  ],
-  "wVoT0I": [
-    {
-      "type": 0,
-      "value": "Options from expression: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
     }
   ],
   "wZ99FU": [

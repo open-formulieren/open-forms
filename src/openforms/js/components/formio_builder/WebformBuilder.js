@@ -25,11 +25,7 @@ import {
   getRegistrationAttributes,
   getValidatorPlugins,
 } from './plugins';
-import {
-  getReferentielijstenTabelItems,
-  getReferentielijstenTabellen,
-  getServices,
-} from './referentielijsten';
+import {getReferenceListsTableItems, getReferenceListsTables, getServices} from './referenceLists';
 
 let _supportedLanguages = undefined;
 const getSupportedLanguages = () => {
@@ -174,8 +170,8 @@ class WebformBuilder extends WebformBuilderFormio {
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
             getServices={getServices}
-            getReferentielijstenTabellen={getReferentielijstenTabellen}
-            getReferentielijstenTabelItems={getReferentielijstenTabelItems}
+            getReferenceListsTables={getReferenceListsTables}
+            getReferenceListsTableItems={getReferenceListsTableItems}
             getPrefillPlugins={getPrefillPlugins}
             getPrefillAttributes={getPrefillAttributes}
             getFileTypes={async () => FILE_TYPES}
