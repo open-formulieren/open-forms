@@ -49,9 +49,9 @@ class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ],
         help_text=_(
             "Optional custom template for the title displayed on the payment page. "
-            "You can use all form variables (using their keys) and the "
-            "`public_reference` template variable. If unspecified, a default "
-            "description is used."
+            "You can include all form variables (using their keys) and the "
+            "'public_reference' variable (using expression '{{ public_reference }}'). "
+            "If unspecified, a default description is used."
         ),
     )
     com_template = serializers.CharField(
@@ -65,10 +65,11 @@ class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_(
             "Optional custom template for the description, included in the payment "
             "overviews for the backoffice. Use this to link the payment back to a "
-            "particular process or form. You can use all form variables (using their "
-            "keys) and the `public_reference` template variable. If unspecified, a "
-            "default description is used. Note that the length of the result is capped "
-            "to 100 characters and only alpha-numeric characters are allowed."
+            "particular process or form. You can include all form variables (using "
+            "their keys) and the 'public_reference' variable (using expression "
+            "'{{ public_reference }}'). If unspecified, a default description is used. "
+            "Note that the length of the result is capped to 100 characters and only "
+            "alpha-numeric characters are allowed."
         ),
     )
 
