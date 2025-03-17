@@ -196,27 +196,27 @@ export const Empty = {
     await step('Selecting plugin, decision definition and version.', async () => {
       await userEvent.selectOptions(pluginDropdown, 'Camunda 7');
 
-      await expect(pluginDropdown).toHaveValue('camunda7');
+      expect(pluginDropdown).toHaveValue('camunda7');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
 
-        await expect(renderedOptions.length).toBe(4);
+        expect(renderedOptions.length).toBe(4);
       });
 
       await userEvent.selectOptions(decisionDefDropdown, 'Approve payment');
 
-      await expect(decisionDefDropdown).toHaveValue('approve-payment');
+      expect(decisionDefDropdown).toHaveValue('approve-payment');
 
       await waitFor(async () => {
         const renderedOptions = within(decisionDefVersionDropdown).getAllByRole('option');
 
-        await expect(renderedOptions.length).toBe(3);
+        expect(renderedOptions.length).toBe(3);
       });
 
       await userEvent.selectOptions(decisionDefVersionDropdown, 'v2 (version tag: n/a)');
 
-      await expect(decisionDefVersionDropdown).toHaveValue('2');
+      expect(decisionDefVersionDropdown).toHaveValue('2');
     });
 
     await step('Adding input mappings', async () => {
@@ -257,10 +257,10 @@ export const Empty = {
           document.querySelector('.logic-dmn__mapping-config')
         ).getAllByRole('combobox');
 
-        await expect(renderedOptions.length).toBe(2);
-        await expect(decisionDefDropdown).toHaveValue('');
-        await expect(decisionDefVersionDropdown).toHaveValue('');
-        await expect(dmnVarsDropdown).toHaveValue('');
+        expect(renderedOptions.length).toBe(2);
+        expect(decisionDefDropdown).toHaveValue('');
+        expect(decisionDefVersionDropdown).toHaveValue('');
+        expect(dmnVarsDropdown).toHaveValue('');
       });
     });
 
@@ -282,8 +282,8 @@ export const Empty = {
         'textbox'
       );
 
-      await expect(varsDropdowns.length).toBe(0);
-      await expect(textInput.length).toBe(0);
+      expect(varsDropdowns.length).toBe(0);
+      expect(textInput.length).toBe(0);
     });
   },
 };
@@ -346,9 +346,9 @@ export const withInitialValues = {
       const dmnVariableDropdowns = await canvas.findAllByLabelText('DMN-variabele');
 
       await waitFor(async () => {
-        await expect(dmnVariableDropdowns[0]).toHaveValue(serializeValue('camundaVar'));
-        await expect(dmnVariableDropdowns[1]).toHaveValue(serializeValue('port'));
-        await expect(dmnVariableDropdowns[2]).toHaveValue(serializeValue('reason'));
+        expect(dmnVariableDropdowns[0]).toHaveValue(serializeValue('camundaVar'));
+        expect(dmnVariableDropdowns[1]).toHaveValue(serializeValue('port'));
+        expect(dmnVariableDropdowns[2]).toHaveValue(serializeValue('reason'));
       });
     });
   },
@@ -375,7 +375,7 @@ export const InvalidEmptyFields = {
 
       const errorMessages = canvas.getAllByRole('listitem');
 
-      await expect(errorMessages.length).toBe(2);
+      expect(errorMessages.length).toBe(2);
     });
   },
 };
@@ -396,7 +396,7 @@ export const OnePluginAvailable = {
 
     const pluginDropdown = canvas.getByLabelText('Plugin');
 
-    await expect(pluginDropdown).toHaveValue('camunda7');
+    expect(pluginDropdown).toHaveValue('camunda7');
   },
 };
 
