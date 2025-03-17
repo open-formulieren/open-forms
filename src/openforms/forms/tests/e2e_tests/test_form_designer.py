@@ -40,8 +40,12 @@ async def add_new_step(page: Page):
     await page.get_by_role("button", name="Create a new form definition").click()
 
 
-async def drag_and_drop_component(page: Page, component: str):
-    await page.get_by_text(component, exact=True).hover()
+async def drag_and_drop_component(
+    page: Page, component: str, parent_ref: str = "sidebar-groups"
+):
+    await page.locator(f'css=[ref="{parent_ref}"]').get_by_text(
+        component, exact=True
+    ).hover()
     await page.mouse.down()
     # This is added to make it work for when there is already a component in the container.
     # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
@@ -1321,7 +1325,9 @@ class FormDesignerRegressionTests(E2ETestCase):
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
             await page.keyboard.press("ArrowDown")
-            await expect(page.get_by_text("Field 1 (field1)")).to_be_visible()
+            await expect(
+                page.get_by_text("Field 1 (field1)", exact=True)
+            ).to_be_visible()
 
     @tag("gh-4061")
     async def test_column_components_are_visible_in_component_select_dropdown(self):
@@ -1386,7 +1392,9 @@ class FormDesignerRegressionTests(E2ETestCase):
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
             await page.keyboard.press("ArrowDown")
-            await expect(page.get_by_text("Field 2 (field2)")).to_be_visible()
+            await expect(
+                page.get_by_text("Field 2 (field2)", exact=True)
+            ).to_be_visible()
 
 
 class FormDesignerTooltipTests(E2ETestCase):

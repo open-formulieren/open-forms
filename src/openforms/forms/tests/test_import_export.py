@@ -1597,7 +1597,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         )
 
-    def test_import_form_with_objects_registration_backend_no_version_and_no_variables_mapping(
+    def test_import_form_with_objects_registration_backend_no_version(
         self,
     ):
         resources = {
@@ -1634,11 +1634,8 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
 
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
 
-        # By default, a new Objects API registration is set to version 2.
-        # If a v2 Objects API registrations doesn't provide a `variables_mapping` it's
-        # set to empty array.
-        self.assertEqual(registration_backend.options["version"], 2)
-        self.assertEqual(registration_backend.options["variables_mapping"], [])
+        # By default, a new Objects API registration is set to version 1.
+        self.assertEqual(registration_backend.options["version"], 1)
 
     def test_import_form_with_objects_registration_backend_without_variables_mapping(
         self,
@@ -1729,7 +1726,10 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                                 "variables_mapping": [
-                                    {"variable_key": "data", "options": {}}
+                                    {
+                                        "variable_key": "data",
+                                        "target_path": [],
+                                    }
                                 ],
                             },
                         },
@@ -1752,7 +1752,7 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         self.assertIn("variables_mapping", registration_backend_valid_mapping.options)
         self.assertEqual(
             registration_backend_valid_mapping.options["variables_mapping"],
-            [{"variable_key": "data", "options": {}}],
+            [{"variable_key": "data", "target_path": []}],
         )
 
     def test_import_form_with_objects_registration_backend_with_invalid_variables_mapping(
