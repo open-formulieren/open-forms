@@ -558,7 +558,7 @@ export const FilesMappingAndObjectAPIRegistration = {
       await userEvent.click(editIcons[1]);
 
       const targetSchemaDropdown = await canvas.findByRole('combobox', {name: 'Bestemmingspad'});
-      await expect(targetSchemaDropdown).toBeVisible();
+      expect(targetSchemaDropdown).toBeVisible();
       selectEvent.openMenu(targetSchemaDropdown);
 
       // Only the targets of type string should appear
@@ -566,7 +566,7 @@ export const FilesMappingAndObjectAPIRegistration = {
       expect(
         await targetSelectMenu.findByRole('option', {name: 'path > to.the > target (verplicht)'})
       ).toBeVisible();
-      await expect(
+      expect(
         await targetSelectMenu.findByRole('option', {name: 'path > to > uri (verplicht)'})
       ).toBeVisible();
 
@@ -579,7 +579,7 @@ export const FilesMappingAndObjectAPIRegistration = {
       await userEvent.click(editIcons[2]);
 
       const targetSchemaDropdown = await canvas.findByRole('combobox', {name: 'Bestemmingspad'});
-      await expect(targetSchemaDropdown).toBeVisible();
+      expect(targetSchemaDropdown).toBeVisible();
       selectEvent.openMenu(targetSchemaDropdown);
 
       // Only the targets of type array should appear
@@ -756,15 +756,15 @@ export const WithJSONDumpRegistrationBackend = {
     const canvas = within(canvasElement);
 
     const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
-    await expect(editIcons).toHaveLength(3);
+    expect(editIcons).toHaveLength(3);
 
     await step('formioComponent checkboxes unchecked', async () => {
       await userEvent.click(editIcons[0]);
 
       const checkboxes = await canvas.getAllByRole('checkbox');
-      await expect(checkboxes[0]).not.toBeChecked();
-      await expect(checkboxes[1]).not.toBeChecked();
-      await expect(checkboxes[1]).toBeDisabled();
+      expect(checkboxes[0]).not.toBeChecked();
+      expect(checkboxes[1]).not.toBeChecked();
+      expect(checkboxes[1]).toBeDisabled();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
@@ -774,8 +774,8 @@ export const WithJSONDumpRegistrationBackend = {
       await userEvent.click(editIcons[1]);
 
       const checkboxes = await canvas.findAllByRole('checkbox');
-      await expect(checkboxes[0]).toBeChecked();
-      await expect(checkboxes[1]).not.toBeChecked();
+      expect(checkboxes[0]).toBeChecked();
+      expect(checkboxes[1]).not.toBeChecked();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
       await userEvent.click(saveButton);
@@ -789,9 +789,9 @@ export const WithJSONDumpRegistrationBackend = {
       await userEvent.click(editIcon);
 
       const checkboxes = await canvas.findAllByRole('checkbox');
-      await expect(checkboxes[0]).not.toBeChecked();
-      await expect(checkboxes[1]).toBeChecked();
-      await expect(checkboxes[1]).not.toBeDisabled();
+      expect(checkboxes[0]).not.toBeChecked();
+      expect(checkboxes[1]).toBeChecked();
+      expect(checkboxes[1]).not.toBeDisabled();
     });
 
     await step(
@@ -804,9 +804,9 @@ export const WithJSONDumpRegistrationBackend = {
         await userEvent.click(editIcon);
 
         const checkboxes = await canvas.findAllByRole('checkbox');
-        await expect(checkboxes[0]).not.toBeChecked();
-        await expect(checkboxes[1]).toBeChecked();
-        await expect(checkboxes[1]).toBeDisabled();
+        expect(checkboxes[0]).not.toBeChecked();
+        expect(checkboxes[1]).toBeChecked();
+        expect(checkboxes[1]).toBeDisabled();
       }
     );
   },

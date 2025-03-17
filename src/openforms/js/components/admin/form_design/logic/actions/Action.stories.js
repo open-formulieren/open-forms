@@ -284,9 +284,9 @@ export const EvaluateDMNWithInitialErrors = {
       await userEvent.tab();
 
       await waitFor(async () => {
-        const errorMessages = await dialog.getAllByRole('listitem');
+        const errorMessages = dialog.getAllByRole('listitem');
 
-        await expect(errorMessages.length).toBe(2);
+        expect(errorMessages.length).toBe(2);
       });
     });
   },

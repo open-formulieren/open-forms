@@ -60,11 +60,11 @@ export const Default = {
 
     const fieldLabel = canvas.queryByText('Minimale betrouwbaarheidsniveaus');
 
-    await expect(fieldLabel).toBeVisible();
+    expect(fieldLabel).toBeVisible();
 
     const dropdowns = canvas.getAllByRole('combobox');
 
-    await expect(dropdowns.length).toEqual(1);
+    expect(dropdowns.length).toEqual(1);
   },
 };
 
@@ -114,10 +114,10 @@ export const NoDigiDSelected = {
 
     const fieldLabel = canvas.queryByText('Minimale betrouwbaarheidsniveaus');
 
-    await expect(fieldLabel).toBeNull();
+    expect(fieldLabel).toBeNull();
 
     const dropdowns = canvas.queryAllByRole('combobox');
 
-    await expect(dropdowns.length).toEqual(0);
+    expect(dropdowns.length).toEqual(0);
   },
 };

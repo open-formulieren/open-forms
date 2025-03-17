@@ -1064,10 +1064,10 @@ export const EmailValidationNonFieldErrors = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 
     const modalForm = await screen.findByTestId('modal-form');
-    await expect(modalForm).toBeVisible();
+    expect(modalForm).toBeVisible();
     const modal = within(modalForm);
 
-    await expect(
+    expect(
       modal.getByText(
         'Both email_content_template_html and email_content_template_text are required'
       )
@@ -1244,18 +1244,18 @@ export const JSONDump = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 
     const modalForm = await screen.findByTestId('modal-form');
-    await expect(modalForm).toBeVisible();
+    expect(modalForm).toBeVisible();
     const modal = within(modalForm);
 
     await step('Add form variables', async () => {
-      await expect(...modal.queryAllByText('Attachment')).toBeFalsy(); // Ensure component variable 'Attachment' IS NOT selected
-      await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS selected
+      expect(...modal.queryAllByText('Attachment')).toBeFalsy(); // Ensure component variable 'Attachment' IS NOT selected
+      expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS selected
 
       await userEvent.click(
         modal.getByRole('button', {name: 'Alle formuliervariabelen toevoegen'})
       );
-      await expect(modal.getByText('Attachment')).toBeVisible(); // Ensure 'Attachment' IS selected
-      await expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS STILL selected
+      expect(modal.getByText('Attachment')).toBeVisible(); // Ensure 'Attachment' IS selected
+      expect(modal.getByText('Foo')).toBeVisible(); // Ensure user-defined variable 'Foo' IS STILL selected
 
       // Close modal
       await userEvent.click(modal.getByRole('button', {name: 'Opslaan'}));
