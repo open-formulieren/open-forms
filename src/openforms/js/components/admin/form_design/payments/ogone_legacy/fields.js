@@ -55,8 +55,9 @@ export const TitleTemplate = () => {
           <FormattedMessage
             description="Ogone legacy payment options 'titleTemplate' help text"
             defaultMessage={`Optional custom template for the title displayed on the payment page.<br></br>
-            You can use all form variables (using their keys) and the <code>public_reference</code>
-            template variable. If unspecified, a default description is used.`}
+            You can include all form variables (using their keys) and the public-reference variable
+            (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default
+            description is used.`}
             values={{
               br: () => <br />,
               code: chunks => <code>{chunks}</code>,
@@ -87,11 +88,12 @@ export const ComTemplate = () => {
         helpText={
           <FormattedMessage
             description="Ogone legacy payment options 'comTemplate' help text"
-            defaultMessage={`Optional custom template for the the description, included in the
+            defaultMessage={`Optional custom template for the description, included in the
             payment overviews for the backoffice. Use this to link the payment back to a particular
             process or form.<br></br>
-            You can use all form variables (using their keys) and the <code>public_reference</code>
-            template variable. If unspecified, a default description is used.<br></br>
+            You can include form variables (using their keys) and the public-reference variable
+            (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default
+            description is used.<br></br>
             <strong>Note</strong>: the length of the result is capped to 100 characters.`}
             values={{
               br: () => <br />,

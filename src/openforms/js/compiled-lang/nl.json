@@ -675,6 +675,36 @@
       "value": "Gebruikersvariabelen"
     }
   ],
+  "5qR3fN": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the title displayed on the payment page."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can include all form variables (using their keys) and the public-reference variable (using expression "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). If unspecified, a default description is used."
+    }
+  ],
   "5rj0a+": [
     {
       "type": 0,
@@ -1299,12 +1329,6 @@
     {
       "type": 0,
       "value": "Onderwerp betaalstatusmail"
-    }
-  ],
-  "BFq6vL": [
-    {
-      "type": 0,
-      "value": "Opties ophalen..."
     }
   ],
   "BGZD6J": [
@@ -2384,56 +2408,6 @@
     {
       "type": 0,
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
-    }
-  ],
-  "JHQfjZ": [
-    {
-      "type": 0,
-      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": "Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "public_reference"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " sjabloonvariabele. Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "Opmerking"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ": het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan."
     }
   ],
   "JKq3TC": [
@@ -3942,12 +3916,6 @@
       "value": "Maximale breedte"
     }
   ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
-    }
-  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -3970,12 +3938,6 @@
     {
       "type": 0,
       "value": "Geavanceerd"
-    }
-  ],
-  "YObTjL": [
-    {
-      "type": 0,
-      "value": "Code van de tabel waaruit de opties opgehaald worden"
     }
   ],
   "YQ/Vx0": [
@@ -4441,12 +4403,6 @@
       "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
     }
   ],
-  "cLzsxn": [
-    {
-      "type": 0,
-      "value": "Tabelcode"
-    }
-  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -4733,6 +4689,60 @@
       "value": "Geavanceerde opties"
     }
   ],
+  "eLIclD": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can include form variables (using their keys) and the public-reference variable (using expression "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). If unspecified, a default description is used."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Note"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ": the length of the result is capped to 100 characters."
+    }
+  ],
   "eNSJ0f": [
     {
       "type": 0,
@@ -4993,12 +5003,6 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
-    }
-  ],
-  "gSSyoc": [
-    {
-      "type": 0,
-      "value": "Service"
     }
   ],
   "gUl3mu": [
@@ -5577,6 +5581,22 @@
       "value": "Toon aantal karakters"
     }
   ],
+  "kw2jNc": [
+    {
+      "type": 0,
+      "value": "Opties via de expressie: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -6130,7 +6150,7 @@
   "paY2Oa": [
     {
       "type": 0,
-      "value": "Opties uit de expressie: "
+      "value": "Waarden via de expressie: "
     },
     {
       "children": [
@@ -6573,12 +6593,6 @@
       "value": "Voettekst"
     }
   ],
-  "u5fu3R": [
-    {
-      "type": 0,
-      "value": "De (externe) service die de tabellen/referentielijsten ontsluit."
-    }
-  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6607,30 +6621,6 @@
     {
       "type": 0,
       "value": "Fout"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6717,36 +6707,6 @@
     {
       "type": 0,
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
-    }
-  ],
-  "vikURf": [
-    {
-      "type": 0,
-      "value": "Sjabloon voor de titel die op de betaalpagina getoond wordt. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "public_reference"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " sjabloonvariabele."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": "Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
     }
   ],
   "vlY36U": [
@@ -6843,6 +6803,22 @@
     {
       "type": 1,
       "value": "number"
+    }
+  ],
+  "wVoT0I": [
+    {
+      "type": 0,
+      "value": "Opties via de expressie: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
     }
   ],
   "wZ99FU": [

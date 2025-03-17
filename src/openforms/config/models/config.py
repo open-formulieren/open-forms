@@ -67,9 +67,10 @@ class GlobalConfiguration(SingletonModel):
         _("submission confirmation title"),
         max_length=200,
         help_text=_(
-            "The content of the confirmation page title. You can (and should) use the "
-            "'public_reference' variable so the users have a reference in case they "
-            "need to contact the customer service."
+            "The content of the confirmation page title. You can (and should) include "
+            "the 'public_reference' variable (using expression '{{ public_reference }}') "
+            "so the users have a reference in case they need to contact the customer "
+            "service."
         ),
         default=runtime_gettext(_("Confirmation: {{ public_reference }}")),
         validators=[DjangoTemplateValidator()],
@@ -104,8 +105,10 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "The content of the submission confirmation page for submissions requiring "
             "cosigning. The variables 'public_reference' and 'cosigner_email' are "
-            "available. We strongly advise you to include the 'public_reference' in "
-            "case users need to contact the customer service."
+            "available (using expressions '{{ public_reference }}' and "
+            "'{{ cosigner_email }}', respectively). We strongly advise you to include "
+            "the 'public_reference' in case users need to contact the customer "
+            "service."
         ),
         default=partial(_render, "config/default_cosign_submission_confirmation.html"),
         validators=[
