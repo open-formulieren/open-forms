@@ -2,6 +2,7 @@ from functools import partial
 from typing import Any, TypedDict
 
 from django.core.cache import cache
+from django.utils.translation import get_language
 
 from ape_pie import APIClient
 from zgw_consumers.service import pagination_helper
@@ -33,23 +34,28 @@ class Tabel(TypedDict):
 
 class ReferentielijstenClient(APIClient):
     def get_tabellen(self) -> list[Tabel]:
-        response = self.get("tabellen", timeout=10)
+        response = self.get("tabellen")
         response.raise_for_status()
         data = response.json()
         all_data = list(pagination_helper(self, data))
         return all_data
 
-    def get_items_for_tabel(self, code: str) -> list[TabelItem]:
-        response = self.get("items", params={"tabel__code": code}, timeout=10)
+    def get_items_for_tabel(self, code: str, current_language: str) -> list[TabelItem]:
+        response = self.get(
+            "items",
+            params={"tabel__code": code},
+            headers={"Accept-Language": current_language},
+        )
         response.raise_for_status()
         data = response.json()
         all_data = list(pagination_helper(self, data))
         return all_data
 
     def get_items_for_tabel_cached(self, code: str) -> list[TabelItem]:
+        current_language = get_language()
         result = cache.get_or_set(
-            key=f"referentielijsten|get_items_for_tabel|code:{code}",
-            default=partial(self.get_items_for_tabel, code),
+            key=f"referentielijsten|get_items_for_tabel|code:{code}|language:{current_language}",
+            default=partial(self.get_items_for_tabel, code, current_language),
             timeout=REFERENTIELIJSTEN_LOOKUP_CACHE_TIMEOUT,
         )
         assert result is not None

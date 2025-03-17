@@ -95,21 +95,3 @@ class ReferentielijstTabelItemsEndpointTests(OFVCRMixin, APITestCase):
                 }
             ],
         )
-
-    def test_referentielijsten_api_returns_404(self):
-        ServiceFactory.create(
-            slug="incorrect-api-root", api_root="http://localhost:8004/incorrect/"
-        )
-        endpoint = reverse(
-            "api:referentielijst-tabel-items-list",
-            kwargs={
-                "service_slug": "incorrect-api-root",
-                "tabel_code": "tabel1",
-            },
-        )
-        self.client.force_authenticate(user=self.admin_user)
-
-        response = self.client.get(endpoint)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), [])

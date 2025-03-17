@@ -62,7 +62,7 @@ class ReferentielijstenTabelItemsViewSet(ListMixin, APIView):
             with build_client(
                 service, client_factory=ReferentielijstenClient
             ) as client:
-                result = client.get_items_for_tabel(self.kwargs["tabel_code"])
+                result = client.get_items_for_tabel_cached(self.kwargs["tabel_code"])
         except RequestException:
             result = []
 

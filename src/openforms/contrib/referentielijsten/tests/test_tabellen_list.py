@@ -82,7 +82,7 @@ class ReferentielijstTabellenEndpointTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_referentielijsten_api_returns_404(self):
+    def test_invalid_url(self):
         ServiceFactory.create(
             slug="incorrect-api-root", api_root="http://localhost:8004/incorrect/"
         )
