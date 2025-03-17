@@ -43,10 +43,10 @@ class CatalogiClientTests(TestCase):
             headers={"Wrong-Header": "1.2.3"},
         )
 
-        with self.assertRaisesMessage(
-            StandardViolation, "API-version is a required response header."
-        ):
-            client.api_version
+        # This *should* raise StandardViolation, but external vendors can not comply
+        # with this in time so we patch on our end, even though our strict rejection *is*
+        # correct behaviour.
+        self.assertEqual(client.api_version, (1, 0, 0))
 
     @requests_mock.Mocker()
     def test_version_is_not_semver(self, m: requests_mock.Mocker):
@@ -58,10 +58,10 @@ class CatalogiClientTests(TestCase):
             headers={"API-version": "latest"},
         )
 
-        with self.assertRaisesMessage(
-            StandardViolation, "API-version must follow semver format."
-        ):
-            client.api_version
+        # This *should* raise StandardViolation, but external vendors can not comply
+        # with this in time so we patch on our end, even though our strict rejection *is*
+        # correct behaviour.
+        self.assertEqual(client.api_version, (1, 0, 0))
 
     @requests_mock.Mocker()
     def test_returns_too_many_catalogues(self, m: requests_mock.Mocker):
