@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 from functools import cached_property
 from operator import itemgetter
@@ -10,6 +11,8 @@ from zgw_consumers.nlx import NLXClient
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
 
 from ..exceptions import StandardViolation
+
+logger = logging.getLogger(__name__)
 
 
 def noop_matcher(roltypen: list) -> list:
@@ -119,13 +122,15 @@ class CatalogiClient(NLXClient):
         try:
             version = response.headers["API-version"]
         except KeyError as exc:
-            raise StandardViolation(
-                "API-version is a required response header."
-            ) from exc
+            logger.error("API-version is a required response header.", exc_info=exc)
+            return (1, 0, 0)
         try:
             major, minor, patch = [int(bit) for bit in version.split(".")]
         except ValueError as exc:
-            raise StandardViolation("API-version must follow semver format.") from exc
+            logger.error(
+                "API-version must follow semver format, got %s.", version, exc_info=exc
+            )
+            return (1, 0, 0)
         return (major, minor, patch)
 
     @cached_property
