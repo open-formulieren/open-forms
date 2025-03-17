@@ -1004,7 +1004,7 @@ class FormVariableViewsetTest(APITestCase):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user)
 
-        form = FormFactory.create(generate_minimal_setup=True)
+        form = FormFactory.create()
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
 
