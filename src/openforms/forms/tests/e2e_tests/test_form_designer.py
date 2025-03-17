@@ -437,6 +437,9 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             furl(self.live_server_url)
             / reverse("admin:forms_form_change", args=(form.pk,))
         )
+        admin_changelist_url = str(
+            furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+        )
 
         async with browser_page() as page:
             await self._admin_login(page)
@@ -490,10 +493,8 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                     await close_modal(page, "Save", exact=True)
 
                 # Save form
-                await page.get_by_role(
-                    "button", name="Save and continue editing", exact=True
-                ).click()
-                await page.wait_for_url(admin_url)
+                await page.get_by_role("button", name="Save", exact=True).click()
+                await page.wait_for_url(admin_changelist_url)
 
             with phase("Validate default values"):
 
@@ -526,12 +527,15 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             furl(self.live_server_url)
             / reverse("admin:forms_form_change", args=(form.pk,))
         )
+        admin_changelist_url = str(
+            furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+        )
 
         async with browser_page() as page:
             await self._admin_login(page)
-            await page.goto(str(admin_url))
 
             with phase("Populate and save form"):
+                await page.goto(str(admin_url))
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await drag_and_drop_component(page, "Radio", "group-panel-custom")
@@ -541,10 +545,8 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 await close_modal(page, "Save")
 
                 # Save form
-                await page.get_by_role(
-                    "button", name="Save and continue editing"
-                ).click()
-                await page.wait_for_url(admin_url)
+                await page.get_by_role("button", name="Save", exact=True).click()
+                await page.wait_for_url(admin_changelist_url)
 
             with phase("Validate default value after create"):
 
@@ -572,6 +574,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # So to test if this bug happens, we just save it again, and then check the
             # database.
             with phase("Edit the form"):
+                await page.goto(str(admin_url))
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 # The defaultValue in the bug is set to `null`.
@@ -581,10 +584,8 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 await close_modal(page, "Save", exact=True)
 
                 # Save form
-                await page.get_by_role(
-                    "button", name="Save and continue editing"
-                ).click()
-                await page.wait_for_url(admin_url)
+                await page.get_by_role("button", name="Save", exact=True).click()
+                await page.wait_for_url(admin_changelist_url)
 
             with phase("Validate default value after editing"):
 
