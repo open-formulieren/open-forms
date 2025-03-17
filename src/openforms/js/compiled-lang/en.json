@@ -669,6 +669,36 @@
       "value": "User defined"
     }
   ],
+  "5qR3fN": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the title displayed on the payment page."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can include all form variables (using their keys) and the public-reference variable (using expression "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). If unspecified, a default description is used."
+    }
+  ],
   "5rj0a+": [
     {
       "type": 0,
@@ -1289,12 +1319,6 @@
     {
       "type": 0,
       "value": "Email payment subject"
-    }
-  ],
-  "BFq6vL": [
-    {
-      "type": 0,
-      "value": "Loading values..."
     }
   ],
   "BGZD6J": [
@@ -2357,60 +2381,6 @@
     {
       "type": 0,
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
-    }
-  ],
-  "JHQfjZ": [
-    {
-      "type": 0,
-      "value": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " You can use all form variables (using their keys) and the "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "public_reference"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " template variable. If unspecified, a default description is used."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "Note"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ": the length of the result is capped to 100 characters."
     }
   ],
   "JKq3TC": [
@@ -3923,12 +3893,6 @@
       "value": "Maximum width"
     }
   ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
-    }
-  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -3951,12 +3915,6 @@
     {
       "type": 0,
       "value": "Advanced"
-    }
-  ],
-  "YObTjL": [
-    {
-      "type": 0,
-      "value": "The code of the table from which the options will be retrieved."
     }
   ],
   "YQ/Vx0": [
@@ -4417,12 +4375,6 @@
       "value": "Something went wrong when fetching the available target paths"
     }
   ],
-  "cLzsxn": [
-    {
-      "type": 0,
-      "value": "Reference lists table code"
-    }
-  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -4709,6 +4661,60 @@
       "value": "Advanced options"
     }
   ],
+  "eLIclD": [
+    {
+      "type": 0,
+      "value": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " You can include form variables (using their keys) and the public-reference variable (using expression "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ public_reference }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": "). If unspecified, a default description is used."
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "br"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Note"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ": the length of the result is capped to 100 characters."
+    }
+  ],
   "eNSJ0f": [
     {
       "type": 0,
@@ -4969,12 +4975,6 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
-    }
-  ],
-  "gSSyoc": [
-    {
-      "type": 0,
-      "value": "Reference lists service"
     }
   ],
   "gUl3mu": [
@@ -5551,6 +5551,22 @@
     {
       "type": 0,
       "value": "Show character counter"
+    }
+  ],
+  "kw2jNc": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
     }
   ],
   "l1fi1t": [
@@ -6547,12 +6563,6 @@
       "value": "Footer"
     }
   ],
-  "u5fu3R": [
-    {
-      "type": 0,
-      "value": "The identifier of the reference lists service from which the options will be retrieved."
-    }
-  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6581,30 +6591,6 @@
     {
       "type": 0,
       "value": "Error"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6691,36 +6677,6 @@
     {
       "type": 0,
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-    }
-  ],
-  "vikURf": [
-    {
-      "type": 0,
-      "value": "Optional custom template for the title displayed on the payment page."
-    },
-    {
-      "children": [
-      ],
-      "type": 8,
-      "value": "br"
-    },
-    {
-      "type": 0,
-      "value": " You can use all form variables (using their keys) and the "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "public_reference"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    },
-    {
-      "type": 0,
-      "value": " template variable. If unspecified, a default description is used."
     }
   ],
   "vlY36U": [
@@ -6817,6 +6773,22 @@
     {
       "type": 1,
       "value": "number"
+    }
+  ],
+  "wVoT0I": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
     }
   ],
   "wZ99FU": [

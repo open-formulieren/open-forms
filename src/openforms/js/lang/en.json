@@ -279,6 +279,11 @@
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
   },
+  "5qR3fN": {
+    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.",
+    "description": "Ogone legacy payment options 'titleTemplate' help text",
+    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used."
+  },
   "5rj0a+": {
     "defaultMessage": "Service",
     "description": "JSON registration options 'serviceSelect' label",
@@ -1118,11 +1123,6 @@
     "defaultMessage": "Authentication failure",
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
-  },
-  "JHQfjZ": {
-    "defaultMessage": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
-    "description": "Ogone legacy payment options 'comTemplate' help text",
-    "originalDefault": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
   },
   "JKq3TC": {
     "defaultMessage": "Medewerker roltype",
@@ -2214,6 +2214,11 @@
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
+  "eLIclD": {
+    "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
+    "description": "Ogone legacy payment options 'comTemplate' help text",
+    "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
+  },
   "eNSJ0f": {
     "defaultMessage": "Features",
     "description": "Form feature fields fieldset title",
@@ -3133,11 +3138,6 @@
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-  },
-  "vikURf": {
-    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.",
-    "description": "Ogone legacy payment options 'titleTemplate' help text",
-    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used."
   },
   "vng/5K": {
     "defaultMessage": "Set a key name before you can configure this variable",

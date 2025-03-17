@@ -281,6 +281,11 @@
     "description": "Variable source group label for user defined variables",
     "originalDefault": "User defined"
   },
+  "5qR3fN": {
+    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.",
+    "description": "Ogone legacy payment options 'titleTemplate' help text",
+    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used."
+  },
   "5rj0a+": {
     "defaultMessage": "Service",
     "description": "JSON registration options 'serviceSelect' label",
@@ -1127,11 +1132,6 @@
     "defaultMessage": "Authenticatiefout",
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
-  },
-  "JHQfjZ": {
-    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen.<br></br>Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de <code>public_reference</code> sjabloonvariabele. Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.<br></br><strong>Opmerking</strong>: het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan.",
-    "description": "Ogone legacy payment options 'comTemplate' help text",
-    "originalDefault": "Optional custom template for the the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
   },
   "JKq3TC": {
     "defaultMessage": "Medewerkerroltype",
@@ -2234,6 +2234,11 @@
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
+  "eLIclD": {
+    "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
+    "description": "Ogone legacy payment options 'comTemplate' help text",
+    "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
+  },
   "eNSJ0f": {
     "defaultMessage": "Functionaliteiten",
     "description": "Form feature fields fieldset title",
@@ -3154,11 +3159,6 @@
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-  },
-  "vikURf": {
-    "defaultMessage": "Sjabloon voor de titel die op de betaalpagina getoond wordt. Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de <code>public_reference</code> sjabloonvariabele.<br></br>Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.",
-    "description": "Ogone legacy payment options 'titleTemplate' help text",
-    "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can use all form variables (using their keys) and the <code>public_reference</code> template variable. If unspecified, a default description is used."
   },
   "vng/5K": {
     "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
