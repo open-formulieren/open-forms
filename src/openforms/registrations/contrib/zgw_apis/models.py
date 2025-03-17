@@ -2,7 +2,6 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from solo.models import SingletonModel
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
@@ -12,34 +11,6 @@ from openforms.utils.validators import RSINValidator, validate_rsin
 
 def get_content_text() -> str:
     return render_to_string("registrations/contrib/zgw_apis/content_json.txt").strip()
-
-
-# Remove this model when migrations get squashed:
-class ZgwConfig(SingletonModel):
-    """
-    global configuration and defaults
-    """
-
-    BLOCK_USAGE: bool = True
-
-    def __init__(self, *args, **kwargs) -> None:  # pragma: nocover
-        if self.BLOCK_USAGE:
-            raise RuntimeError(
-                f"{self.__class__.__name__} is scheduled for removal and shouldn't "
-                "be instantiated."
-            )
-        super().__init__(*args, **kwargs)
-
-    default_zgw_api_group = models.ForeignKey(
-        to="ZGWApiGroupConfig",
-        on_delete=models.PROTECT,
-        verbose_name=_("default ZGW API set."),
-        help_text=_("Which set of ZGW APIs should be used as default."),
-        null=True,
-    )
-
-    class Meta:  # type: ignore
-        verbose_name = _("ZGW API's configuration")
 
 
 # no catalogus specified, requires both RSIN and domain to be unspecified
