@@ -58,6 +58,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
         variables: [],
         fixedMetadataVariables: fixedMetadataVariables || [],
         additionalMetadataVariables: [],
+        transformToList: [],
         ...formData,
       }}
       onSubmit={values => onChange({formData: values})}

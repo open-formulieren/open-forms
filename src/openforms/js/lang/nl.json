@@ -166,6 +166,11 @@
     "isTranslated": true,
     "originalDefault": "Type"
   },
+  "2arYfH": {
+    "defaultMessage": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option.",
+    "description": "'Transform to list' checkbox help text",
+    "originalDefault": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+  },
   "2boL55": {
     "defaultMessage": "Query-parameters",
     "description": "Service fetch configuration modal form query parameters field label",
@@ -2674,6 +2679,11 @@
     "defaultMessage": "Objecttyperesource-URL in de Objecttypen-API. Wanneer dit ingesteld is, dan wordt een object van dit type aangemaakt en aan de zaak gerelateerd.",
     "description": "ZGW APIs registration options 'objecttype' help text",
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
+  },
+  "m/NVtu": {
+    "defaultMessage": "Transform to list",
+    "description": "'Transform to list' checkbox label",
+    "originalDefault": "Transform to list"
   },
   "m83ECr": {
     "defaultMessage": "Wanneer je de instellingen van een registratiepluginoptie overneemt, dan worden alle bestaande instellingen overschreven. Ben je zeker dat je door wil gaan?",

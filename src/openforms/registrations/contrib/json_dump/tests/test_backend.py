@@ -74,6 +74,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["firstName", "file", "auth_bsn"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -152,6 +153,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["firstName", "auth_bsn"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -209,6 +211,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["file"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -291,6 +294,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["file"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -351,6 +355,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["file"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -395,6 +400,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["file"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -453,6 +459,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["firstName", "file", "auth_bsn"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
@@ -486,6 +493,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["selectboxes"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         result = json_plugin.register_submission(submission, options)
         assert result is not None
@@ -496,6 +504,55 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             ]["required"],
             [],
         )
+
+    def test_list_transformation_in_selectboxes(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "selectBoxes1", "type": "selectboxes"},
+                {"key": "selectBoxes2", "type": "selectboxes"},
+            ],
+            completed=True,
+            submitted_data={
+                "selectBoxes1": {"option1": True},
+                "selectBoxes2": {"option2": True},
+            },
+        )
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["selectBoxes1", "selectBoxes2"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": ["selectBoxes1"],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        expected_values = {
+            "selectBoxes1": ["option1"],
+            "selectBoxes2": {"option2": True},
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "selectBoxes1": {"type": "array", "title": "Selectboxes1"},
+                "selectBoxes2": {"type": "object", "title": "Selectboxes2"},
+            },
+            "required": ["selectBoxes1", "selectBoxes2"],
+            "additionalProperties": False,
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
 
     def test_select_component_with_manual_data_source(self):
         submission = SubmissionFactory.from_components(
@@ -531,6 +588,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["select"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -587,6 +645,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["select"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -637,6 +696,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["selectBoxes"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -687,6 +747,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["radio"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -736,6 +797,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["radio"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -830,6 +892,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["repeatingGroup"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -881,6 +944,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["foo.bar"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -922,6 +986,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 "registration_timestamp",
             ],
             "additional_metadata_variables": ["auth_type"],
+            "transform_to_list": [],
         }
         result = json_plugin.register_submission(submission, options)
         assert result is not None
@@ -1086,6 +1151,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "variables": ["repeatingGroup"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
+            "transform_to_list": [],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
