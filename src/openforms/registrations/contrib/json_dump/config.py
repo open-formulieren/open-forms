@@ -70,6 +70,16 @@ class JSONDumpOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serialize
         required=False,
         default=list,
     )
+    transform_to_list = serializers.ListField(
+        child=FormioVariableKeyField(),
+        label=_("Transform to list"),
+        required=False,
+        default=list,
+        help_text=_(
+            "Component keys in this list will be sent as an array of values rather than "
+            "the default object-shape for selectboxes components."
+        ),
+    )
 
 
 class JSONDumpOptions(TypedDict):
@@ -85,3 +95,4 @@ class JSONDumpOptions(TypedDict):
     variables: list[str]
     fixed_metadata_variables: list[str]
     additional_metadata_variables: list[str]
+    transform_to_list: list[str]

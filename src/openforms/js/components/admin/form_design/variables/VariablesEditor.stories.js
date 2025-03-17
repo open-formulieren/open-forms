@@ -403,6 +403,154 @@ export const WithObjectsAPIRegistrationBackends = {
   },
 };
 
+export const WithObjectsAPIRegistrationBackendsTransformToList = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Form.io component',
+        key: 'formioComponent',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Select boxes list',
+        key: 'selectBoxesList',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Select boxes object',
+        key: 'selectBoxesObj',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+    ],
+    availableComponents: {
+      formioComponent: {
+        key: 'formioComponent',
+        type: 'textfield',
+      },
+      selectBoxesList: {
+        type: 'selectboxes',
+        multiple: false,
+        key: 'selectBoxesList',
+      },
+      selectBoxesObj: {
+        type: 'selectboxes',
+        multiple: false,
+        key: 'selectBoxesObj',
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [],
+          transformToList: ['selectBoxesList'],
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            object: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: false,
+                jsonSchema: {type: 'object'},
+              },
+            ],
+            array: [
+              {
+                targetPath: ['other', 'path'],
+                isRequired: false,
+                jsonSchema: {type: 'array'},
+              },
+            ],
+            string: [
+              {
+                targetPath: ['path'],
+                isRequired: false,
+                jsonSchema: {type: 'string'},
+              },
+            ],
+          }),
+        ],
+      },
+    },
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+
+    expect(editIcons).toHaveLength(3);
+
+    await step('Simple component', async () => {
+      await userEvent.click(editIcons[0]);
+
+      const transformToListCheckbox = canvas.queryByLabelText('Transform to list');
+      expect(transformToListCheckbox).toBeNull();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+
+    await step('Select boxes with transform to list', async () => {
+      await userEvent.click(editIcons[1]);
+
+      const transformToListCheckbox = await canvas.findByLabelText('Transform to list');
+      expect(transformToListCheckbox).toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+
+    await step('Select boxes without transform to list (default behaviour -> object)', async () => {
+      await userEvent.click(editIcons[2]);
+
+      const transformToListCheckbox = await canvas.findByLabelText('Transform to list');
+      expect(transformToListCheckbox).not.toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+  },
+};
+
 // gh-4978 regression for geometry field on empty variable
 export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
   args: {
@@ -809,6 +957,133 @@ export const WithJSONDumpRegistrationBackend = {
         expect(checkboxes[1]).toBeDisabled();
       }
     );
+  },
+};
+
+export const WithJSONDumpRegistrationBackendTransformToList = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Form.io component',
+        key: 'formioComponent',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Select boxes list',
+        key: 'selectBoxesList',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Select boxes object',
+        key: 'selectBoxesObj',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+    ],
+    availableComponents: {
+      formioComponent: {
+        key: 'formioComponent',
+        type: 'textfield',
+      },
+      selectBoxesList: {
+        type: 'selectboxes',
+        multiple: false,
+        key: 'selectBoxesList',
+      },
+      selectBoxesObj: {
+        type: 'selectboxes',
+        multiple: false,
+        key: 'selectBoxesObj',
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'json_dump',
+        key: 'test_json_dump_backend',
+        name: 'JSON dump registration',
+        options: {
+          service: 2,
+          path: 'test',
+          variables: ['formioComponent', 'selectBoxesList', 'selectBoxesObj'],
+          fixedMetadataVariables: ['public_reference'],
+          additionalMetadataVariables: ['now'],
+          transformToList: ['selectBoxesList'],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+
+    expect(editIcons).toHaveLength(3);
+
+    await step('Simple component', async () => {
+      await userEvent.click(editIcons[0]);
+
+      const checkboxes = await canvas.findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(2);
+
+      expect(checkboxes[0]).toBeChecked();
+      expect(checkboxes[1]).toBeDisabled();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+
+    await step('Select boxes with transform to list', async () => {
+      await userEvent.click(editIcons[1]);
+
+      const checkboxes = await canvas.findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+
+      expect(checkboxes[0]).toBeChecked();
+      expect(checkboxes[1]).not.toBeChecked();
+      expect(checkboxes[2]).toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+
+    await step('Select boxes without transform to list (default behaviour -> object)', async () => {
+      await userEvent.click(editIcons[2]);
+
+      const checkboxes = await canvas.findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+      expect(checkboxes[0]).toBeChecked();
+      expect(checkboxes[1]).not.toBeChecked();
+      expect(checkboxes[2]).not.toBeChecked();
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
   },
 };
 
