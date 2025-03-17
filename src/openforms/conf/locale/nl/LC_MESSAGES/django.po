@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-27 16:23+0100\n"
+"POT-Creation-Date: 2025-03-17 13:59+0100\n"
 "PO-Revision-Date: 2024-12-31 09:52+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4310,7 +4310,7 @@ msgid "You must select or set up a catalogi service to use."
 msgstr "Je moet een Catalogi API service selecteren of instellen."
 
 #: openforms/contrib/zgw/validators.py:37
-#: openforms/registrations/contrib/objects_api/config.py:361
+#: openforms/registrations/contrib/objects_api/config.py:372
 #: openforms/registrations/contrib/zgw_apis/options.py:426
 msgid ""
 "The specified catalogue does not exist. Maybe you made a typo in the domain "
@@ -10291,27 +10291,27 @@ msgstr ""
 "De sleutel van de formuliervariabele die aan het geometrieveld "
 "'record.geometry' gekoppeld wordt."
 
-#: openforms/registrations/contrib/objects_api/config.py:276
+#: openforms/registrations/contrib/objects_api/config.py:287
 #, python-brace-format
 msgid "{field_name} shouldn't be provided when version is 1"
 msgstr "{field_name} is niet van toepassing in v1"
 
-#: openforms/registrations/contrib/objects_api/config.py:287
+#: openforms/registrations/contrib/objects_api/config.py:298
 #, python-brace-format
 msgid "{field_name} shouldn't be provided when version is 2"
 msgstr "{field_name} is niet van toepassing in v2"
 
-#: openforms/registrations/contrib/objects_api/config.py:294
+#: openforms/registrations/contrib/objects_api/config.py:305
 #, python-brace-format
 msgid "Unknown version: {version}"
 msgstr "Onbekende versie: {version}"
 
-#: openforms/registrations/contrib/objects_api/config.py:301
+#: openforms/registrations/contrib/objects_api/config.py:312
 msgid "This field is required if \"Update existing object\" is checked"
 msgstr ""
 "Dit veld is verplicht wanneer \"Bestaand object bijwerken\" ingeschakeld is."
 
-#: openforms/registrations/contrib/objects_api/config.py:390
+#: openforms/registrations/contrib/objects_api/config.py:401
 msgid ""
 "To look up document types by their description, a catalogue reference is "
 "required. Either specify one on the API group or in the plugin options."
@@ -10320,27 +10320,27 @@ msgstr ""
 "catalogus ingesteld zijn. Je kan de catalogus instellen in de API-groep of "
 "in de registratie-opties onder \"Documenttypen\"."
 
-#: openforms/registrations/contrib/objects_api/config.py:403
+#: openforms/registrations/contrib/objects_api/config.py:414
 #, python-brace-format
 msgid "No document type with description '{description}' found."
 msgstr "Kon documenttype met omschrijving '{description}' niet vinden."
 
-#: openforms/registrations/contrib/objects_api/config.py:426
+#: openforms/registrations/contrib/objects_api/config.py:437
 #, python-brace-format
 msgid "The provided {field} does not exist in the Catalogi API."
 msgstr "Het opgegeven {field} bestaat niet in de ingestelde Catalogi API."
 
-#: openforms/registrations/contrib/objects_api/config.py:428
+#: openforms/registrations/contrib/objects_api/config.py:439
 #, python-brace-format
 msgid "The provided {field} does not exist in the selected catalogue."
 msgstr "Het opgegeven {field} bestaat niet in de geselecteerde catalogus."
 
-#: openforms/registrations/contrib/objects_api/config.py:477
+#: openforms/registrations/contrib/objects_api/config.py:488
 msgid "The provided objecttype does not exist in the Objecttypes API."
 msgstr ""
 "Het opgegeven objecttype is niet gevonden in de ingestelde Objecttypen API."
 
-#: openforms/registrations/contrib/objects_api/config.py:494
+#: openforms/registrations/contrib/objects_api/config.py:505
 msgid "The provided objecttype version does not exist in the Objecttypes API."
 msgstr ""
 "De opgegeven objecttypeversie is niet gevonden in de ingestelde Objecttypen "
@@ -11346,7 +11346,7 @@ msgstr ""
 msgid "The prefill data may not be altered."
 msgstr "Je mag de prefill-gegevens niet wijzigen."
 
-#: openforms/submissions/api/validators.py:68
+#: openforms/submissions/api/validators.py:73
 msgid "You must accept this statement."
 msgstr "U moet deze verklaring accepteren."
 
