@@ -9,7 +9,7 @@ COMPONENT_DATATYPES = {
     "checkbox": "boolean",
     "selectboxes": "object",
     "npFamilyMembers": "object",
-    "map": "array",
+    "map": "object",
     "editgrid": "array",
     "datetime": "datetime",
 }
