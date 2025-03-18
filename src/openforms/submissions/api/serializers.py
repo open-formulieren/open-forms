@@ -282,8 +282,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         return data
 
     def _run_formio_validation(self, data: dict) -> None:
-        from ..form_logic import evaluate_form_logic
-
         submission = self.instance.submission
         # evaluate dynamic configuration
         configuration = evaluate_form_logic(submission, step=self.instance, data=data)
