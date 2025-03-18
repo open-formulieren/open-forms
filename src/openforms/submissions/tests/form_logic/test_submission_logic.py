@@ -489,6 +489,45 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             data["step"]["formStep"]["configuration"]["components"][0]["hidden"],
         )
 
+    @tag("gh-5151")
+    def test_check_logic_hide_map_component(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "textfield",
+                    },
+                    {
+                        "key": "map",
+                        "type": "map",
+                        "label": "map",
+                        "hidden": True,
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+
+        response = self.client.post(logic_check_endpoint, {"data": {"textfield": ""}})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Even though 'map' is missing in the data, the logic check shouldn't return an
+        # empty value for it. Ticket #5151
+        new_value = response.json()["step"]["data"]
+        self.assertEqual(new_value, {})
+
     def test_response_contains_submission(self):
         form = FormFactory.create()
         form_step1 = FormStepFactory.create(
