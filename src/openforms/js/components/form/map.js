@@ -50,7 +50,7 @@ export default class Map extends TextFieldComponent {
   }
 
   get emptyValue() {
-    return '';
+    return undefined;
   }
 
   renderElement(value, index) {
