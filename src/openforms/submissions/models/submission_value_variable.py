@@ -239,7 +239,7 @@ class SubmissionValueVariablesState:
 
         SubmissionValueVariable.objects.bulk_create(variables_to_create)
 
-    def set_values(self, data: DataMapping) -> None:
+    def set_values(self, data: FormioData) -> None:
         """
         Apply the values from ``data`` to the current state of the variables.
 
@@ -252,9 +252,8 @@ class SubmissionValueVariablesState:
         .. todo:: apply variable.datatype/format to obtain python objects? This also
            needs to properly serialize back to JSON though!
         """
-        formio_data = FormioData(data)
         for key, variable in self.variables.items():
-            new_value = formio_data.get(key, default=empty)
+            new_value = data.get(key, default=empty)
             if new_value is empty:
                 continue
             variable.value = new_value
