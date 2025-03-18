@@ -253,6 +253,22 @@ class SubmissionValueVariablesState:
                 continue
             variable.value = new_value
 
+    def to_python(self) -> FormioData:
+        """
+        Collect the total picture of variable values converted to the appropriate Python
+        types.
+
+        The dynamic values are augmented with the static variables.
+
+        :return: A data mapping (key: variable key, value: native python object for the
+            value) ready for (template context) evaluation.
+        """
+        dynamic_values = {
+            key: variable.to_python() for key, variable in self.variables.items()
+        }
+        static_values = self.static_data()
+        return FormioData({**dynamic_values, **static_values})
+
 
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
