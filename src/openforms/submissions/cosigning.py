@@ -88,7 +88,6 @@ class CosignState:
         Discover the Formio cosign component in the submission/form.
         """
         from .form_logic import check_submission_logic
-        from .logic.datastructures import DataContainer
 
         check_submission_logic(self.submission)
 
@@ -102,12 +101,9 @@ class CosignState:
                 # we can't just blindly return the component, as it may be conditionally
                 # displayed, which is equivalent to "cosign not relevant". See
                 # https://github.com/open-formulieren/open-forms/issues/3901
-                container = DataContainer(
-                    self.submission.load_submission_value_variables_state()
-                )
+                state = self.submission.load_submission_value_variables_state()
                 visible = configuration_wrapper.is_visible_in_frontend(
-                    component["key"],
-                    values=container.data,
+                    component["key"], values=state.to_python().data
                 )
                 if not visible:
                     return None
