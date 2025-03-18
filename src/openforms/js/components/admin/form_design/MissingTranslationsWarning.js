@@ -124,7 +124,7 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
         description="Form confirmation options tab title"
       />,
       undefined,
-      ['subject', 'content']
+      ['subject', 'content', 'cosignSubject', 'cosignContent']
     ),
     formStepTranslations
   );
