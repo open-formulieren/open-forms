@@ -23,7 +23,6 @@ from openforms.formio.typing import (
 from openforms.forms.json_schema import generate_json_schema
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
-from openforms.submissions.service import DataContainer
 from openforms.typing import JSONObject
 from openforms.utils.json_schema import to_multiple
 from openforms.variables.constants import FormVariableSources
@@ -137,11 +136,10 @@ def post_process(
     state = submission.load_submission_value_variables_state()
 
     # Update config wrapper
-    data = DataContainer(state=state)
     configuration_wrapper = rewrite_formio_components(
         submission.total_configuration_wrapper,
         submission=submission,
-        data=data.data,
+        data=state.to_python().data,
     )
 
     # Create attachment mapping from key or component data path to attachment list
