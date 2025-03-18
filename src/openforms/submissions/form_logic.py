@@ -88,7 +88,7 @@ def evaluate_form_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
-    submission_variables_state.set_values(data)
+    submission_variables_state.set_values(FormioData(data))
     initial_data = submission_variables_state.to_python()
     data_for_evaluation = submission_variables_state.to_python()
 
@@ -208,7 +208,7 @@ def check_submission_logic(
     # load the data state and all variables
     submission_variables_state = submission.load_submission_value_variables_state()
     if unsaved_data:
-        submission_variables_state.set_values(unsaved_data)
+        submission_variables_state.set_values(FormioData(unsaved_data))
     data_for_evaluation = submission_variables_state.to_python()
 
     mutation_operations: list[ActionOperation] = []
