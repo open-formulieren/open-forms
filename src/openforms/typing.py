@@ -9,6 +9,7 @@ from django.http import HttpRequest
 from django.http.response import HttpResponseBase
 from django.utils.functional import Promise
 
+from dateutil.relativedelta import relativedelta
 from rest_framework.request import Request
 
 if TYPE_CHECKING:
@@ -54,3 +55,7 @@ class JSONSerializable(Protocol):
 
 
 type JSONEncodable = DjangoJSONEncodable | JSONSerializable
+
+type VariableValue = (
+    JSONValue | datetime.date | datetime.time | datetime.datetime | relativedelta
+)

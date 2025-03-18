@@ -3,11 +3,11 @@ from typing import Iterable, Iterator
 import elasticapm
 from json_logic import jsonLogic
 
+from openforms.formio.datastructures import FormioData
 from openforms.forms.models import FormLogic, FormStep
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
-from .datastructures import DataContainer
 from .log_utils import log_errors
 
 
@@ -108,11 +108,12 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
-    data_container: DataContainer,
+    data: FormioData,
     submission: Submission,
-) -> Iterator[ActionOperation]:
+) -> Iterator[tuple[ActionOperation, dict]]:
     """
-    Iterate over the rules and evaluate the trigger, yielding action operations.
+    Iterate over the rules and evaluate the trigger, yielding action operations and
+    mutations.
 
     Every rule trigger is checked, and if the trigger evaluates to be truthy, all
     actions in the rule are compiled, yielding action operations for each of them. Any
@@ -120,14 +121,14 @@ def iter_evaluate_rules(
     responsible for processing (all other) actions accordingly.
 
     :arg rules: An iterable of form logic rules to evaluate.
-    :arg data_container: The :class:`DataContainer` instance wrapping the
-      submission/step data and everything contained within. Note that the internal state
-      can and should be mutated while processing the action operations (e.g. when updating
-      variable values).
-    :arg on_rule_check: Optional callable taking a :class:`EvaluatedRule` instance as
-      sole argument. Useful to gather metadata about rule evaluation.
-    :returns: An iterator yielding :class:`ActionOperation` instances.
+    :arg data: Mapping from variable key to variable value (native Python types), for
+      all variables present in the :class:`SubmissionValueVariableState`. This data
+      structure is updated after every mutation.
+    :arg submission: Submission instance.
+    :returns: An iterator yielding :class:`ActionOperation` instances and the performed
+      mutations as native Python objects.
     """
+    state = submission.load_submission_value_variables_state()
     for rule in rules:
         with elasticapm.capture_span(
             "evaluate_rule",
@@ -136,16 +137,19 @@ def iter_evaluate_rules(
         ):
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
-                triggered = bool(
-                    jsonLogic(rule.json_logic_trigger, data_container.data)
-                )
+                triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
 
             if not triggered:
                 continue
 
             for operation in rule.action_operations:
-                if mutations := operation.eval(
-                    data_container.data, submission=submission
-                ):
-                    data_container.update(mutations)
-                yield operation
+                if mutations := operation.eval(data.data, submission=submission):
+                    mutations_python = {
+                        key: state.variables[key].to_python(value)
+                        for key, value in mutations.items()
+                    }
+                    data.update(mutations_python)
+                else:
+                    mutations_python = {}
+
+                yield operation, mutations_python
