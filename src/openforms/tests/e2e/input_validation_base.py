@@ -90,7 +90,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
 
         with self.subTest("backend validation"):
             api_value = kwargs.pop("api_value", ui_input)
-            self._assertBackendValidation(form, component["key"], api_value)
+            self._assertBackendValidation(
+                form, component["key"], component["type"], api_value
+            )
 
     def _locate_input(self, page: Page, label: str):
         return page.get_by_label(label, exact=True)
@@ -121,7 +123,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
 
             await expect(page.get_by_text(expected_ui_error)).to_be_visible()
 
-    def _assertBackendValidation(self, form: Form, key: str, value: JSONValue):
+    def _assertBackendValidation(
+        self, form: Form, key: str, type: str, value: JSONValue
+    ):
         submission = SubmissionFactory.create(form=form)
         step = form.formstep_set.get()
         self._add_submission_to_session(submission)
@@ -133,7 +137,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
                 "step_uuid": step.uuid,
             },
         )
-        body = {"data": {key: value}}
+        body = (
+            {"data": {}} if type == "map" and value is None else {"data": {key: value}}
+        )
         response = self.client.put(step_endpoint, body, content_type="application/json")
 
         # step data validation is run *if* a value is provided - it ignores empty data
