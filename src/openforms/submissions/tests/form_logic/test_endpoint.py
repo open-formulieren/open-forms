@@ -354,11 +354,8 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(data["step"]["data"]["result"], "All the variables were None")
-        self.assertEqual(data["step"]["data"]["time"], "Invalid")
-        self.assertEqual(data["step"]["data"]["date"], "2020-13-46")
-        self.assertEqual(data["step"]["data"]["datetime"], "2022-13-46T00:00:00+02:00")
-        self.assertNotIn("resultDate", data["step"]["data"])
-        self.assertNotIn("resultDatetime", data["step"]["data"])
+        for key in ("time", "date", "datetime", "resultDate", "resultDatetime"):
+            self.assertNotIn(key, data["step"]["data"])
 
     @tag("gh-3975")
     @requests_mock.Mocker()
