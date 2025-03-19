@@ -4,16 +4,11 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.variables.constants import FormVariableDataTypes
 
-from ...logic.datastructures import DataContainer
 from ...models import SubmissionValueVariable
-from ..factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-    SubmissionValueVariableFactory,
-)
+from ..factories import SubmissionStepFactory, SubmissionValueVariableFactory
 
 
 class SubmissionValueVariableModelTests(TestCase):
@@ -28,35 +23,6 @@ class SubmissionValueVariableModelTests(TestCase):
     def test_can_create_instances(self):
         SubmissionValueVariableFactory.create()
         SubmissionValueVariableFactory.create()
-
-    def test_get_submission_step_data(self):
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {"type": "textfield", "key": "test1"},
-                    {"type": "textfield", "key": "test2"},
-                ]
-            },
-        )
-        form_step = form.formstep_set.first()
-        submission = SubmissionFactory.create(form=form)
-
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={"test1": "some data 1", "test2": "some data 1"},
-        )
-
-        form.formvariable_set.all().delete()
-
-        submission_variables_state = submission.load_submission_value_variables_state()
-
-        data_container = DataContainer(state=submission_variables_state)
-
-        data = data_container.get_updated_step_data(submission_step)
-
-        self.assertEqual(data, {"test1": "some data 1", "test2": "some data 1"})
 
     def test_to_python(self):
         """
@@ -231,6 +197,17 @@ class SubmissionValueVariableModelTests(TestCase):
             time_value = time_var.to_python()
 
             self.assertIsNone(time_value)
+
+        with self.subTest("Native time object"):
+            time_var = SubmissionValueVariableFactory.create(
+                value="11:15",
+                form_variable__user_defined=True,
+                form_variable__data_type=FormVariableDataTypes.time,
+            )
+            _assign_form_variable(time_var)
+
+            time_value = time_var.to_python(time(9, 41))
+            self.assertEqual(time_value, time(9, 41))
 
     def test_is_initially_prefilled_is_set(self):
         config = {

@@ -165,7 +165,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 "step_uuid": step2.uuid,
             },
         )
-        body = {"data": {"modified": "data"}}
+        body = {"data": {"modified": "data", "foo": "bar"}}
 
         response = self.client.put(endpoint, body)
 
@@ -184,24 +184,20 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         ]
                     },
                 },
-                "data": {
-                    "foo": "bar",
-                    "modified": "data",
-                },
+                "data": {"modified": "data", "foo": "bar"},
                 "isApplicable": True,
                 "completed": True,
                 "canSubmit": True,
             },
         )
         submission_step.refresh_from_db()
-        self.assertEqual(submission_step.data, {"modified": "data"})
+        self.assertEqual(submission_step.data, {"modified": "data", "foo": "bar"})
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
         )
 
-        # The submission variable for 'foo' has been deleted
-        self.assertEqual(1, submission_variables.count())
+        self.assertEqual(2, submission_variables.count())
 
         submission_variable = submission_variables.get(key="modified")
 

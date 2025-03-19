@@ -1105,7 +1105,9 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
 
         with freeze_time("2024-03-18T08:31:08+01:00"):
-            response = self.client.post(logic_check_endpoint, {"data": {}})
+            response = self.client.post(
+                logic_check_endpoint, {"data": {"datetime": ""}}
+            )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -1153,12 +1155,66 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
 
         with freeze_time("2024-03-18T08:31:08+01:00"):
-            response = self.client.post(logic_check_endpoint, {"data": {}})
+            response = self.client.post(logic_check_endpoint, {"data": {"date": ""}})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         new_value = response.json()["step"]["data"]["date"]
         self.assertEqual(new_value, "2024-03-18")
+
+    def test_date_field_not_present_in_step_data_when_assigned_same_value(self):
+        """
+        Assert that the 'date' field is not present in the step data when a logic action
+        sets it to the same value. This shows that we can't rely on the mutations
+        returned by `iter_evaluate_rules`, and we need to build up this data diff
+        manually after all form logic is evaluated, comparing initial data to final
+        data.
+        """
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date",
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "date",
+                    "action": {
+                        "type": "variable",
+                        "value": "2025-01-01",
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+        response = self.client.post(
+            logic_check_endpoint, {"data": {"date": "2025-01-01"}}
+        )
+
+        data = response.json()
+
+        # The date hasn't changed, so it should not be present in the step data
+        self.assertNotIn("date", data["step"]["data"])
 
 
 def is_valid_expression(expr: dict):

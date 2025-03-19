@@ -13,7 +13,6 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import FormLogicFactory
 
-from ..form_logic import evaluate_form_logic
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
@@ -141,9 +140,6 @@ class SubmissionReportGenerationTests(TestCase):
                     },
                 },
             ],
-        )
-        evaluate_form_logic(
-            submission, submission.submissionstep_set.get(), submission.data
         )
 
         html = submission.report.generate_submission_report_pdf()
