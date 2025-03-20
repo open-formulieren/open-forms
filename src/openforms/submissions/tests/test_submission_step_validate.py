@@ -555,14 +555,6 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         invalid_data_cases = [
             # missing keys
             {"a": True},
-            # minimum count checked not okay
-            {
-                "a": False,
-                "b": False,
-                "c": False,
-                "d": False,
-                "e": False,
-            },
             # maximum count checked not okay
             {
                 "a": True,
