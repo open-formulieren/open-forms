@@ -42,17 +42,19 @@ class Person:
 
 
 class BRPClient(PreRequestMixin, ABC, APIClient):
+
     def __init__(
         self,
         *args,
-        origin_oin: str = "",
+        oin_header_name: str = "",
+        oin_header_value: str = "",
         doelbinding: str = "",
         verwerking: str = "",
         gebruiker: str = "",
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.headers["x-origin-oin"] = origin_oin
+        self.headers[oin_header_name] = oin_header_value
         self.headers["x-doelbinding"] = doelbinding
         self.headers["x-verwerking"] = verwerking
         self.headers["x-gebruiker"] = gebruiker

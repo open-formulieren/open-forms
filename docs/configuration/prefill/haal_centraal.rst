@@ -88,7 +88,8 @@ You can also define global defaults that will be used if no values are configure
 Origin OIN
 ----------
 
-This value corresponds to the ``x-origin-oin`` header.
+This value corresponds to the header name that is configured in the HaalCentraal configuration.
+The default name for the header is ``x-origin-oin``.
 
 1. Navigate to **Configuration** > **General configuration**.
 2. In the **Organization configuration**, fill in the value for the **Organization OIN**.
@@ -99,6 +100,11 @@ This value corresponds to the ``x-origin-oin`` header.
    An extra header ``x-gebruiker`` will automatically be set. If the form is being filled in by
    an authenticated employee, the employee ID will be used. Otherwise, a default value of ``BurgerZelf``
    will be used.
+
+.. note::
+
+   The default name of the OIN header can be changed in the **Miscellaneous** > 
+   **HaalCentraal configuration** (for example ``x-afnemer-oin``).
 
 
 Technical

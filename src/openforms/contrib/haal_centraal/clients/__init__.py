@@ -43,7 +43,12 @@ def get_brp_client(submission: Submission | None = None, **kwargs: Any) -> BRPCl
         gebruiker = DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER
         request_options = BRPPersonenRequestOptions()
 
-    origin_oin = global_config.organization_oin
+    # See #5137
+    # Not sure about the difference of x-origin-oin and x-afnemer-oin headers so we grab
+    # the header name from the HaalCentraalConfig (default is x-origin-oin )
+    oin_header_name = config.brp_personen_oin_header_name
+    oin_header_value = global_config.organization_oin
+
     doelbinding = (
         request_options.brp_personen_purpose_limitation_header_value
         or config.default_brp_personen_purpose_limitation_header_value
@@ -70,7 +75,8 @@ def get_brp_client(submission: Submission | None = None, **kwargs: Any) -> BRPCl
     return build_client(
         service,
         client_factory=ClientCls,
-        origin_oin=origin_oin,
+        oin_header_name=oin_header_name,
+        oin_header_value=oin_header_value,
         doelbinding=doelbinding,
         verwerking=verwerking,
         gebruiker=gebruiker,
