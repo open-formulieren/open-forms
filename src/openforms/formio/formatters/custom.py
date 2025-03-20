@@ -11,6 +11,11 @@ from openforms.api.geojson import LineStringGeometry, PointGeometry, PolygonGeom
 
 from ..typing import AddressNLComponent, Component, MapComponent
 from .base import FormatterBase
+# from ...utils.map import generate_cartopy_map
+import base64
+import datetime
+from io import BytesIO
+from ...utils.wmts_map_generator import WMTSMapGenerator
 
 
 class DateFormatter(FormatterBase):
@@ -31,6 +36,30 @@ type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
 
 class MapFormatter(FormatterBase):
     def format(self, component: MapComponent, value: MapValue) -> str:
+        if self.as_html:
+            start_time = datetime.datetime.now()
+            map_img = WMTSMapGenerator.make_map(
+                url_template="https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:28992/{z}/{x}/{y}.png", # noqa
+                # lat=52.0870974,
+                lat=52.3628026,
+                lon=4.9075201,
+                zoom=17,
+                img_size=[648, 250]
+            )
+            # cartopy_map = generate_cartopy_map(
+            #     value, component.get("tileLayerIdentifier")
+            # )
+
+            png_array = BytesIO()
+            print(map_img)
+            map_img.save(png_array, format='png')
+            encoded = base64.b64encode(png_array.getvalue()).decode("utf-8")
+            img_data_uri = 'data:image/png;base64,{}'.format(encoded)
+            end_time = datetime.datetime.now()
+            print(end_time - start_time)
+
+            return format_html("<img src='{}'>", img_data_uri)
+
         # use a comma here since its a single data element
         if coordinates := value.get("coordinates"):
             return ", ".join((str(x) for x in coordinates))
