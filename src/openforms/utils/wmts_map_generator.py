@@ -47,22 +47,17 @@ class WMTSMapGenerator:
         # same as above but for top, bottom
         ytiles = top + bottom + 1
 
-        print(xtiles, ytiles)
-
         img = Image.new("RGBA", (xtiles * TILE_SIZE, ytiles * TILE_SIZE), 0)
         try:
             for i in range(-left, right + 1, 1):
                 for j in range(-top, bottom + 1, 1):
                     url = url_template.format(z=zoom, x=x + i, y=y + j)
-                    print("j", j, url)
                     with urllib.request.urlopen(url) as response:
-                        print(response.read())
                         offset = ((i + left) * TILE_SIZE, (j + top) * TILE_SIZE)
                         img.paste(Image.open(io.BytesIO(response.read())), offset)
         except Exception:
             pass  # use empty image in case of errors
 
-        img.show()
         return img
 
     @staticmethod
@@ -76,8 +71,6 @@ class WMTSMapGenerator:
         tiles_top = WMTSMapGenerator.calc_tiles_in_pixels(yp, H / 2)
         tiles_right = WMTSMapGenerator.calc_tiles_in_pixels(TILE_SIZE - xp, W / 2)
         tiles_bottom = WMTSMapGenerator.calc_tiles_in_pixels(TILE_SIZE - yp, H / 2)
-
-        print(tiles_left, tiles_top, tiles_right, tiles_bottom)
 
         img = WMTSMapGenerator.load_image(
             url_template, zoom, xt, yt, tiles_left, tiles_top, tiles_right, tiles_bottom
