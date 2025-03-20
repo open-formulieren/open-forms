@@ -563,6 +563,9 @@ class SelectboxesField(serializers.Serializer):
         validated_data: dict[str, bool] = super().to_internal_value(data)
         num_checked = len([value for value in validated_data.values() if value is True])
 
+        if not self.required and num_checked == 0:
+            return validated_data
+
         # min_selected_count trumps required checks
         if self.min_selected_count is not None:
             if num_checked < self.min_selected_count:
