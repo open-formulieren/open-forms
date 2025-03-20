@@ -561,6 +561,7 @@ class SingleMapTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="",
+            api_value=None,
             expected_ui_error="Het verplichte veld Required map is niet ingevuld.",
         )
 
@@ -808,7 +809,9 @@ class SingleFileTests(ValidationsTestCase):
             self._assertFileFrontendValidation(form, ui_files, expected_ui_error)
 
         with self.subTest("backend validation"):
-            self._assertBackendValidation(form, component["key"], api_value)
+            self._assertBackendValidation(
+                form, component["key"], component["type"], api_value
+            )
 
     @async_to_sync
     async def _assertFileFrontendValidation(
@@ -989,7 +992,9 @@ class SingleAddressNLTests(ValidationsTestCase):
             self._assertAddressNLFrontendValidation(form, ui_inputs, expected_ui_error)
 
         with self.subTest("backend validation"):
-            self._assertBackendValidation(form, component["key"], api_value)
+            self._assertBackendValidation(
+                form, component["key"], component["type"], api_value
+            )
 
     @async_to_sync
     async def _assertAddressNLFrontendValidation(
