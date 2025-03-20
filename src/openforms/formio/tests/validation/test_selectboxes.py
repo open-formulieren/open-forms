@@ -115,13 +115,59 @@ class SelectboxesValidationTests(SimpleTestCase):
 
         self.assertTrue(is_valid)
 
-    def test_validate_min_checked(self):
+    def test_validate_min_checked_optional(self):
         component: SelectBoxesComponent = {
             "type": "selectboxes",
             "key": "foo",
             "label": "Test",
             "validate": {
                 "required": False,
+                "minSelectedCount": 2,
+            },
+            "openForms": {"dataSrc": DataSrcOptions.manual},
+            "values": [
+                {"value": "a", "label": "A"},
+                {"value": "b", "label": "B"},
+            ],
+        }
+
+        data: JSONValue = {"foo": {"a": True, "b": False}}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors, "foo")
+        self.assertEqual(error.code, "min_selected_count")
+
+    def test_validate_min_checked_optional_no_values(self):
+        component: SelectBoxesComponent = {
+            "type": "selectboxes",
+            "key": "foo",
+            "label": "Test",
+            "validate": {
+                "required": False,
+                "minSelectedCount": 2,
+            },
+            "openForms": {"dataSrc": DataSrcOptions.manual},
+            "values": [
+                {"value": "a", "label": "A"},
+                {"value": "b", "label": "B"},
+            ],
+        }
+
+        data: JSONValue = {"foo": {"a": False, "b": False}}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+
+    def test_validate_min_checked_required(self):
+        component: SelectBoxesComponent = {
+            "type": "selectboxes",
+            "key": "foo",
+            "label": "Test",
+            "validate": {
+                "required": True,
                 "minSelectedCount": 2,
             },
             "openForms": {"dataSrc": DataSrcOptions.manual},
