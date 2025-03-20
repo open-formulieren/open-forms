@@ -61,6 +61,15 @@ class HaalCentraalConfig(SingletonModel):
             "If a more specific value is configured on a form, that value is used instead."
         ),
     )
+    brp_personen_oin_header_name = models.CharField(
+        _("header name for OIN value"),
+        max_length=100,
+        default="x-origin-oin",
+        help_text=_(
+            "The header name that will be used to pass the organization identification "
+            "number (OIN)."
+        ),
+    )
 
     objects = HaalCentraalConfigManager()
 

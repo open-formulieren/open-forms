@@ -17,6 +17,7 @@ class HaalCentraalConfigAdmin(SingletonModelAdmin):
                     "brp_personen_version",
                     "default_brp_personen_purpose_limitation_header_value",
                     "default_brp_personen_processing_header_value",
+                    "brp_personen_oin_header_name",
                 )
             },
         ),
