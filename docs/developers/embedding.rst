@@ -105,8 +105,10 @@ Available options
     content and changes the active language of the form. When using ``onLanguageChange``,
     your function will be executed on language change, instead of the default logic.
 
-    The new active language will be passed as an argument to the ``onLanguageChange``
-    function as a two-letter identifier.
+    Two parameters are passed as arguments to the ``onLanguageChange`` function:
+
+        1. The new active language as a two-letter identifier
+        2. The initial data reference (if applicable)
 
 ``sentryDSN``:
     Optional `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.

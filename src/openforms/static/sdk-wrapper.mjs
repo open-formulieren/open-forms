@@ -27,6 +27,15 @@ const initializeSDK = async node => {
     formId,
     basePath,
     CSPNonce: cspNonce,
+    onLanguageChange: (newLanguageCode, initialDataReference) => {
+        if (initialDataReference) {
+            const url = basePath + '?initial_data_reference=' + initialDataReference;
+            window.location.replace(url);
+        }
+        else {
+            window.location.reload();
+        }
+    },
   };
   if (sentryDsn) options.sentryDSN = sentryDsn;
   if (sentryEnv) options.sentryEnv = sentryEnv;
