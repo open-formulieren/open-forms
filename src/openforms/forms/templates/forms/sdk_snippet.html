@@ -39,7 +39,15 @@
             {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
             {% if sdk_sentry_env %}sentryEnv,{% endif %}
             languageSelectorTarget: '#react-portal--language-selection',
-            onlanguagechange: () => window.location.reload(),
+            onLanguageChange: (newLanguageCode, initialDataReference) => {
+                if (initialDataReference) {
+                    const url = baseUrl + '?initial_data_reference=' + initialDataReference;
+                    window.location.replace(url);
+                }
+                else {
+                    window.location.reload();
+                }
+            },
         }
     );
     form.init();
