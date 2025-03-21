@@ -147,7 +147,7 @@ class SelectboxesValidationTests(SimpleTestCase):
                 "required": False,
                 "minSelectedCount": 2,
             },
-            "openForms": {"dataSrc": DataSrcOptions.manual},
+            "openForms": {"dataSrc": "manual"},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
@@ -169,7 +169,7 @@ class SelectboxesValidationTests(SimpleTestCase):
                 "required": True,
                 "minSelectedCount": 2,
             },
-            "openForms": {"dataSrc": DataSrcOptions.manual},
+            "openForms": {"dataSrc": "manual"},
             "values": [
                 {"value": "a", "label": "A"},
                 {"value": "b", "label": "B"},
