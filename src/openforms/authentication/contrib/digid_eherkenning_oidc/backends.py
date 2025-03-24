@@ -112,5 +112,6 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         assert self.config_class and self.config_class in config_to_plugin
         session_key = config_to_plugin[self.config_class].session_key
         procssed_claims = self._process_claims(claims)
+
         assert self.request
         self.request.session[session_key] = procssed_claims
