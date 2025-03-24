@@ -9,6 +9,261 @@ Changelog (NL)
     This is the Dutch version of the changelog. The English version can be
     found :ref:`here <changelog>`.
 
+3.1.0 "Lente" (31 maart 2025)
+=============================
+
+Open Formulieren 3.1.0 is een feature release.
+
+.. epigraph::
+
+    In deze release hebben we wat zaadjes geplant die wat tijd nodig hebben om volledig
+    te ontbloeien en daarna kunnen we hiervan de vruchten plukken. Hier en daar kan je
+    wel al wat bloemetjes van verbeteringen zien!
+
+    De lente is typisch een periode in het jaar die weer meer licht en geluk brengt, en
+    we hopen dat deze nieuwe versie dat ook doet.
+
+Deze release bevat de wijzigingen uit de alpha-versie en de fixes die zijn toegepast tot
+de stabiele versie. VOORDAT je update naar 3.1.0, lees de release-opmerkingen
+zorgvuldig door en volg onderstaande instructies.
+
+Update-procedure
+----------------
+
+Om naar 3.1.0 te upgraden, let dan op:
+
+* ⚠️ Zorg dat je minimaal op versie 3.0.1 zit. We raden altijd de meest recente patch
+  release aan, op het moment van schrijven is dit 3.0.6.
+
+* We raden aan om de scripts ``bin/report_component_problems.py`` en
+  ``bin/report_form_registration_problems.py`` uit te voeren om bestaande problemen in
+  formulieren te detecteren. Deze worden automatisch verholpen tijdens de upgrade, maar
+  het is verstandig om een beeld te hebben van welke formulieren/formulierdefinities
+  aangepakt gaan worden zodat je deze achteraf kan controleren. Deze scripts zijn ook
+  beschikbaar in de laatste 3.0.x patch release, dus je kan ze uitvoeren vóór je gaat
+  updaten.
+
+* We hebben wat UX-aanpassingen gedaan in de SDK (op basis van NL Design System).
+  Hierdoor moet je mogelijks extra waarden van design-tokens opvoeren als je een eigen
+  thema gebruikt.
+
+* We hebben nooit bewust ondersteuning voor HTML in veldlabels en tooltips toegevoegd.
+  Doordat er wat extra HTML-escaping toepepast wordt kan het zijn dat sommige HTML nu
+  geëscaped wordt. Ons advies blijft om **GEEN** HTML te gebruiken op plaatsen waar geen
+  WYSIWYG-editor gebruikt wordt.
+
+Waar mogelijk hebben we automatische upgrade-checks toegevoegd die problemen detecteren
+vóór er database-wijzigingen doorgevoerd worden.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**📒 Referentielijsten-API-integratie**
+
+Je kan nu gebruik maken van de `Referentielijsten-API`_. In deze API kan je centraal
+(vaste) lijsten beheren zoals wijken, communicatiekanalen, de weekdagen en meer!
+
+In Open Formulieren kan je deze lijsten gebruiken als bron voor de keuzeopties bij de
+"Keuzelijst"-, "Selectievakjes"- en "Radio"-componenten zodat je deze niet steeds hoeft
+per-formulier bij te houden.
+
+**📦 JSON-dump-registratieplugin**
+
+We hebben een nieuwe registratieplugin toegevoegd waarbij je eenvoudig een setje
+variablen en hun waarde in JSON-formaat naar een externe API kan opsturen.
+Formulierbouwers kunnen instellen welke variabelen ingestuurd moeten worden en naar
+welke service, en vervolgens worden de waarden, wat metadata en een schema die de
+gegevens beschrijft opgestuurd zodat deze eenvoudig verwerkt kunnen worden.
+
+Deze plugin werkt goed samen met ESB's die de gegevens (verder) transformeren en kan
+een eerste stap zijn richting strikte contracten via de Objecten-registratie.
+
+**🗺 Kaartmateriaal**
+
+We zijn de functionaliteiten van het kaartcomponent aan het uitbreiden zodat deze
+breder inzetbaar wordt.
+
+Meest opvallend is dat er nu extra geometrieën beschikbaar zijn naast de "marker" (die
+eenvoudig latitude en longitude registreert), namelijk *lijn* en *veelhoek*, wat toelaat
+om complexere situaties goed te beschrijven.
+
+Formulierbouwers kunnen nu ook alternatieve achtergrondlagen instellen - standaard wordt
+de BRT-laag van het Kadaster gebruikt, maar nu kan je ook luchtfoto's (bijvoorbeeld)
+gebruiken, én je kan je eigen achtergrondlagen instellen.
+
+.. note:: Er wordt nog gewerkt aan verdere kaartverbeteringen voor de gebruiker.
+
+**♿️ Toegankelijkheid**
+
+Toegankelijkheid borgen is een continu verbeterproces, maar in deze release konden we hier
+weer wat extra aandacht aan geven. De inzendings-PDF is nu een stuk toegenkelijker en
+informatiever. Daarnaast is de formuliernavigatie voor eindgebruikers bijgewerkt - op
+basis van onderzoek en gebruikerstesten uitgevoerd door andere organisaties. Met name de
+gebruikerservaring op breedbeeldschermen is hiermee verbeterd.
+
+Ook voor de formulierbouwers zijn er een aantal (kleine) UX-verbeteringen waardoor het
+eenvoudiger wordt om formuliervariabelen te beheren en er meer overzicht moet komen.
+
+.. _Referentielijsten-API: https://referentielijsten-api.readthedocs.io/en/latest/
+
+**Nieuwe functies**
+
+* [:backend:`5137`] Je kan nu de naam instellen van de request header die bij "Haal
+  Centraal Personen bevragen" voor het ``OIN`` gebruikt wordt.
+* [:backend:`5122`] De beschrijvingen voor de Ogone legacy ``TITLE``- en ``COM``-parameters
+  zijn duidelijker gemaakt.
+* [:backend:`5074`] Je kan nu de geselecteerde waarden van een "Selectievakjes"-component
+  als lijst van waarden opsturen in de Objecten-API- en JSON-dump-registratieplugins,
+  in plaats van sleutel-waarde object.
+* UX: de formuliervariabelen zijn nu per stap gegroepeerd.
+
+* [:backend:`5047`] De inzendings-PDF is nu toegankelijker:
+
+    - Er is nu een tekstalternatief voor het logo.
+    - Er is nu een semantische relatie tussen het label van het formulierveld en de
+      opgegeven waarde.
+    - De PDF toont nu "Geen informatie ingevuld" bij velden die niet ingevuld zijn door
+      de gebruiker.
+
+* [:backend:`4991`, :backend:`4993`, :backend:`5016`, :backend:`5107`, :backend:`5106`,
+  :backend:`5178`] Je kan nu gebruik maken van de Referentielijsten-API. De tabellen
+  worden gebruikt voor de keuzeopties in de "Keuzelijst"-, "Selectievakjes"- en "Radio"-
+  componenten.
+
+    - Je kan nu referentielijsten als "keuzeopties" gebruiken, waarbij je een service en
+      tabel moet aanduiden.
+    - Er is al support voor de toekomstige meertaligheid.
+    - Beheerders worden geattendeerd op (binnenkort) vervallen tabellen en/of items.
+
+* [:backend:`4518`] Prefill-acties zijn nu inzichtelijk in de inzendingslogs.
+* Performance bij het ophalen en verwerken van formuliergegevens is verbeterd.
+* [:backend:`4990`] Registratievariabelen tonen nu altijd bij welke registratieplugin ze
+  horen.
+* [:backend:`5093`, :backend:`5184`] Het beheren van lijst/object-variabelen is nu wat
+  gebruiksvriendelijker.
+* [:backend:`5024`] De configuratievalidatie op de ZGW-API's en Objecten-API is iets
+  minder strikt gemaakt zodat Open Formulieren met een grotere groep leveranciers
+  gebruikt kan worden.
+* [:backend:`2177`] De kaartcomponenten hebben nu ``GeoJSON`` als waarde in plaats van
+  ``[latitude, longitude]``-coordinaten, zodat we lijnen en veelhoeken kunnen
+  ondersteunen.
+* [:backend:`4908`, :backend:`4980`, :backend:`5012`, :backend:`5066`] De
+  JSON-dump-registratieplugin is nieuw.
+
+    - Formulierbouwers kiezen welke variabelen verstuurd worden.
+    - De formulier- en componentinstellingen zorgen ervoor dat het schema van elke
+      variabele automatisch gedocumenteerd wordt.
+    - Er is een groep van vaste metadatagegevens en extra variabelen kunnen als metadata
+      opgenomen worden.
+
+* [:backend:`4931`] De inzendingsstatistieken zijn bijgewerkt en de datumfilters werken
+  nu zoals verwacht. Je kan nu ook bepalen welke soort gegevens geëxporteerd worden.
+* [:backend:`4785`] De eHerkenning-metadatageneratie is bijgewerkt conform de laatste
+  versie van de standaard.
+* [:backend:`4510`] De overzichtspagina toont nu de validatiefouten van de backend.
+
+**Kleine security-verbeteringen**
+
+Deze verbeteringen zijn gericht op impact-beperking indien een malafide medewerker
+probeert misbruik te maken van hun beheerdersrechten.
+
+* Beheerders kunnen niet langer de inzendings-PDF vervangen door een ander bestand in
+  de beheerinterface.
+* SVG-afbeeldingen die in de beheerinterface geüpload worden (bijvoorbeeld voor logo's
+  en favicons), worden nu geschoond van schadelijke elementen.
+* De formuliervoorvertoning in de beheeromgeving past nu extra client-side HTML-escaping
+  toe. Dit gebeurde al door de backend en er is nooit een probleem geweest in de
+  publieke UI.
+
+**Bugfixes**
+
+* [:backend:`5186`, :backend:`5188`] Problemen opgelost waarbij soms te veel auditlogs
+  aangemaakt werden of prefillgegevens ontbraken in de logs.
+* [:backend:`5155`] Probleem opgelost waarbij de ``initial_data_reference``-parameter
+  niet behouden werd bij het veranderen van de taal in een gestart formulier.
+* [:backend:`5151`] Verborgen kaartcomponenten verzoorzaken nu geen validatiefouten meer.
+* [:backend:`4662`, :backend:`5147`] Fouten opgelost in "Selectievakjes"-component waarbij
+  "Minimum aantal aangevinkte opties" ingesteld is:
+
+    - Er is nu geen validatiefout meer als geen opties aangevinkt zijn in een
+      niet-verplicht component.
+    - Het pauzeren van een formulier is nu mogelijk als er geen opties aangevinkt zijn.
+
+* [:backend:`5157`] Probleem opgelost waarbij onterecht een waarschuwing over
+  mede-ondertekenenvertalingen getoond werd.
+* [:backend:`5158`] Probleem opgelost waardoor het verwijderen van een ZGW-API-groep niet
+  mogelijk was.
+* [:backend:`5142`] Probleem opgelost waarbij het leek also een logicaregel onklaar
+  gemaakt werd wanneer een (selectievakjes-)component verwijderd werd.
+* [:backend:`5105`] Klein styling probleem opgelost in de beheeromgeving waarbij de
+  asterisk voor verplichte velden bovenop dropdowns zichtbaar was.
+* [:backend:`5124`] Probleem opgelost waarbij verborgen en alleen-lezen prefill-velden
+  validatiefouten veroorzaakten.
+* [:backend:`5031`] Probleem opgelost waarbij sommige configuratieopties ontbraken in de
+  Objecten-API configuratie voor variabelekoppelingen.
+* [:backend:`5136`] Probleem opgelost waarbij de Dienstcatalogus met oude certificaten
+  gengenereerd werd.
+* [:backend:`5040`] Probleem opgelost in de formulierlogica waar bij het verwijderen van
+  de eerste actie het erop leek dat een andere actie verwijderd werd.
+* [:backend:`5104`] Probleem opgelost waarbij "Radio"-componenten ``null`` kregen als
+  ``defaultValue``.
+* [:backend:`4871`] Probleem opgelost in de beheerinterface waarbij sommige
+  validatiefouten (variabelekoppelingen in Objecten-API en DMN-mapping) niet getoond
+  werden.
+* [:backend:`5039`] Probleem opgelost waarbij sommige validatiefouten niet getoond
+  werden in de e-mailregistratieplugin.
+* [:backend:`5090`] Probleem opgelost waarbij het "Foutmeldingen aangeraden velden"-
+  component doorgaan naar de volgende stap blokkeerde.
+* [:backend:`5089`] Probleem opgelost waarbij de query parameters van de service-fetch
+  operatie onbedoeld omgezet werden van ``snake_case`` naar ``camelCase``.
+* [:backend:`5077`, :backend:`5084`] Performanceproblemen opgelost bij het laden van
+  logicaregels in de admin en het opslaan van formulierstappen en -definities met een
+  groot aantal componenten.
+* [:backend:`5037`] Probleem opgelost waarbij datums niet correct geformatteerd werden
+  in de inzendings-PDF.
+* [:backend:`5058`] Race-conditie en oorzaak van database-errors opgelost bij het
+  bewerken van formulieren, oorspronkelijk veroorzaakt door :backend:`4900`.
+* [:backend:`4689`] Probleem met verwerking van bijlagen in herhalende groepen opgelost.
+* [:backend:`5034`] Crash opgelost bij het proberen valideren van "object ownership" in
+  de Objecten-API-registratieplugin.
+* Foute configuratie voor het end-to-end testen van de AddressNL-component opgelost.
+* Fouten in het ``registration`` management command opgelost.
+* Styling-probleem opgelost in dropdowns die gereset kunnen worden.
+* Probleem opgelost waarbij een upgrade check niet correct de upgrade blokkeerde.
+* [:backend:`5035`] Probleem opgelost waarbij dubbele waarden in de sjabloon-versie van
+  de Objecten-API-registratieplugin verstuurd werden.
+* [:backend:`4825`] Probleem opgelost waarbij de digest-email onterecht prefill-fouten
+  rapporteerde.
+
+**Projectonderhoud**
+
+* "Flakiness" van tests verminderd.
+* Oude upgrade checks zijn verwijderd.
+* Een aantal instellingen kunnen nu met environment variabelen gedaan worden:
+  ``AXES_FAILURE_LIMIT`` en ``EMAIL_TIMEOUT``.
+* [:sdk:`76`] Het inladen van frontend gebeurt nu met ESM modules wanneer de browser
+  dit ondersteunt.
+* [:backend:`4927`] System check toegevoegd voor ontbrekende configuratie op
+  niet-verplichte serializer-velden.
+* [:backend:`4882`] Documentatie voor het gebruik van django-setup-configuration toegevoegd.
+* [:backend:`4654`] De squashed migrations zijn opgeschoond.
+* Backend dependencies bijgewerkt:
+
+    - playwright naar 1.49.1.
+    - typing-extensions naar 4.12.2.
+    - django naar 4.2.18.
+    - django-digid-eherkenning naar 0.21.0.
+    - kombu naar 5.5.
+    - jinja2 naar 3.1.6.
+    - tzdata naar 2025.1.
+
+* Frontend dependencies bijgewerkt:
+
+    - undici naar 5.28.5.
+    - @utrecht/components naar 7.4.0.
+    - @open-formulieren/design-tokens naar 0.57.0.
+    - storybook naar 8.6.4.
+
 3.0.0 "Heerlijkheid" (9 januari 2025)
 =====================================
 
