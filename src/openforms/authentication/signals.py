@@ -129,6 +129,7 @@ def set_auth_attribute_on_session(
             store_auth_details(instance, auth_save)
             store_registrator_details(instance, registrator_save)
     else:
+        print(form_auth, user)
         store_auth_details(instance, form_auth)
 
     # After the authentication details have been attached to the submission, the session

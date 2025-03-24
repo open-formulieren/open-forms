@@ -157,6 +157,7 @@ class DigiDClaims(TypedDict):
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]
+    extra_claims: NotRequired[dict]
 
 
 @register("digid_oidc")
@@ -174,11 +175,13 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OFDigiDConfig]):
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
     def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
+        print("Digid, transform_claims", normalized_claims)
         return {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
             "value": normalized_claims["bsn_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
+            "extra_claims": normalized_claims.get("extra_claims", {}),
         }
 
 

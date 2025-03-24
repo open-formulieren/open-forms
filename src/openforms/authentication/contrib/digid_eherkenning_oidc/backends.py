@@ -80,6 +80,8 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         obfuscated_claims = obfuscate_claims(claims, self.OIDCDB_SENSITIVE_CLAIMS)
         logger.debug("OIDC claims received: %s", obfuscated_claims)
 
+        print("DigiDEHerkenningOIDCBackend verify_claims", claims, obfuscated_claims)
+
         # process_claims in strict mode raises ValueError if *required* claims are
         # missing
         try:
@@ -112,5 +114,13 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         assert self.config_class and self.config_class in config_to_plugin
         session_key = config_to_plugin[self.config_class].session_key
         procssed_claims = self._process_claims(claims)
+
+        extra_claims = {
+            "name": claims.get("name"),
+            "middle_name": claims.get("middle_name"),
+        }
+        procssed_claims["extra_claims"] = extra_claims
+
         assert self.request
+        print(self.request.session.values())
         self.request.session[session_key] = procssed_claims
