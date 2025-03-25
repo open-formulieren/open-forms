@@ -69,9 +69,9 @@ def fetch_prefill_values_from_attribute(
             values = {}
         else:
             if values:
-                logevent.prefill_retrieve_success(submission, plugin, fields)
+                logevent.prefill_retrieve_success(submission, plugin, attributes)
             else:
-                logevent.prefill_retrieve_empty(submission, plugin, fields)
+                logevent.prefill_retrieve_empty(submission, plugin, attributes)
         return fields, values
 
     invoke_plugin_args = []
