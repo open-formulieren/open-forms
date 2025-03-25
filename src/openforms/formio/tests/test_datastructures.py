@@ -1,3 +1,5 @@
+import timeit
+from textwrap import dedent
 from unittest import TestCase
 
 from openforms.formio.typing import Component, EditGridComponent
@@ -66,6 +68,9 @@ class FormioDataTests(TestCase):
         with self.subTest("nested absent"):
             self.assertFalse("container.absent" in formio_data)
 
+        with self.subTest("nested absent on string"):
+            self.assertFalse("top.absent" in formio_data)
+
     def test_initializing_with_dotted_paths_expands(self):
         formio_data = FormioData(
             {
@@ -116,6 +121,68 @@ class FormioDataTests(TestCase):
                 self.assertRaises(KeyError),
             ):
                 formio_data[key]
+
+    def test_performance(self):
+        NUMBER = 100_000
+
+        setups = {
+            "Current": dedent(
+                """
+                from openforms.formio.datastructures import FormioData
+
+                data = FormioData({"foo": {"bar": "baz"}})
+                """
+            ),
+            "Full glom": dedent(
+                """
+                from openforms.formio.datastructures import FormioDataWithFullGlom
+
+                data = FormioDataWithFullGlom({"foo": {"bar": "baz"}})
+                """
+            ),
+            "Custom": dedent(
+                """
+                from openforms.formio.datastructures import FormioDataCustom
+
+                data = FormioDataCustom({"foo": {"bar": "baz"}})
+                """
+            ),
+            "Control": """data = {"foo.bar": "baz", "foo": "bar"}""",
+        }
+
+        def print_result(test, value):
+            print(
+                f"{test}: \t {NUMBER} loops, best of {1}: {value / NUMBER * 1e6:.3f} µsec per loop")
+
+        print("\nGet item (non nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("data['foo']", setup=setup, number=NUMBER)
+            print_result(test, res)
+
+        print("\nSet item (non nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("data['foo'] = 'value'", setup=setup, number=NUMBER)
+            print_result(test, res)
+
+        print("\nContains key (non nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("'foo' in data", setup=setup, number=NUMBER)
+            print_result(test, res)
+
+        print("\nGet item (nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("data['foo.bar']", setup=setup, number=NUMBER)
+            print_result(test, res)
+
+        print("\nSet item (nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("data['foo.bar'] = 'value'", setup=setup, number=NUMBER)
+            print_result(test, res)
+
+        print("\nContains key (nested)")
+        for test, setup in setups.items():
+            res = timeit.timeit("'foo.bar' in data", setup=setup, number=NUMBER)
+            print_result(test, res)
 
 
 class FormioConfigurationWrapperTests(TestCase):
