@@ -231,6 +231,14 @@ class PrefillHookTests(TransactionTestCase):
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
 
+        with self.subTest("Log event display (gh-5188)"):
+            log_events = TimelineLogProxy.objects.filter_event(
+                "prefill_retrieve_success"
+            )
+            self.assertEqual(len(log_events), 1)
+            log = log_events[0]
+            self.assertIn("Voornamen (random_string)", log.get_message())
+
     def test_complex_components(self):
         def config_factory():
             components = deepcopy(CONFIGURATION["components"])
