@@ -9,7 +9,7 @@ class FormioDataTests(TestCase):
     def test_mimicks_dict_interface(self):
         formio_data = FormioData({"foo": "bar"})
 
-        self.assertEqual(formio_data, {"foo": "bar"})
+        self.assertEqual(formio_data.data, {"foo": "bar"})
         self.assertEqual(formio_data["foo"], "bar")
         self.assertIsNone(formio_data.get("okay"))
 
@@ -23,7 +23,9 @@ class FormioDataTests(TestCase):
             FormioData(123)  # type: ignore
 
     def test_translate_dotted_lookup_paths(self):
-        formio_data = FormioData({"foo": {"bar": "baz"}})
+        formio_data = FormioData(
+            {"foo": {"bar": "baz"}, "key": "value", "list": [{"foo": "bar"}]}
+        )
 
         with self.subTest("top-level key lookup"):
             self.assertEqual(formio_data["foo"], {"bar": "baz"})
@@ -34,12 +36,24 @@ class FormioDataTests(TestCase):
             self.assertEqual(formio_data.get("foo.bar"), "baz")
             self.assertEqual(formio_data.get("foo.baz", "a default"), "a default")
 
+        with self.subTest("nested absent on top level"), self.assertRaises(KeyError):
+            formio_data["key.absent"]
+
+        with self.subTest("list access"):
+            self.assertEqual(formio_data["list.0.foo"], "bar")
+
+        with self.subTest("list access out of range"), self.assertRaises(KeyError):
+            formio_data["list.1.foo"]
+
+        with self.subTest("list access on string"), self.assertRaises(KeyError):
+            formio_data["list.string_index"]
+
     def test_translate_dotted_setter_paths(self):
         formio_data = FormioData({})
 
         formio_data["foo.bar"] = "baz"
 
-        self.assertEqual(formio_data, {"foo": {"bar": "baz"}})
+        self.assertEqual(formio_data.data, {"foo": {"bar": "baz"}})
 
     def test_containment(self):
         formio_data = FormioData(
@@ -48,6 +62,7 @@ class FormioDataTests(TestCase):
                 "container": {
                     "nested": "leaf",
                 },
+                "list": [{"foo": "bar"}],
             }
         )
 
@@ -65,6 +80,15 @@ class FormioDataTests(TestCase):
 
         with self.subTest("nested absent"):
             self.assertFalse("container.absent" in formio_data)
+
+        with self.subTest("nested absent on top level"):
+            self.assertFalse("top.absent" in formio_data)
+
+        with self.subTest("nested list"):
+            self.assertTrue("list.0.foo" in formio_data)
+
+        with self.subTest("nested list absent"):
+            self.assertFalse("list.4.foo" in formio_data)
 
     def test_initializing_with_dotted_paths_expands(self):
         formio_data = FormioData(
@@ -87,7 +111,7 @@ class FormioDataTests(TestCase):
             "topLevel": True,
         }
 
-        self.assertEqual(formio_data, expected)
+        self.assertEqual(formio_data.data, expected)
 
     def test_key_access_must_be_string(self):
         formio_data = FormioData({"foo": "bar"})
@@ -100,7 +124,7 @@ class FormioDataTests(TestCase):
         )
 
         for key in bad_keys:
-            with self.assertRaises(TypeError):
+            with self.assertRaises(AssertionError):
                 key in formio_data  # type: ignore
 
     def test_keyerror_for_absent_keys(self):
