@@ -38,11 +38,12 @@ def fetch_prefill_values_from_attribute(
     )
 
     for variable in submission_variables:
-        plugin_id = variable.form_variable.prefill_plugin
+        assert variable.form_variable is not None
+        plugin_id: str = variable.form_variable.prefill_plugin
         identifier_role = IdentifierRoles(
             variable.form_variable.prefill_identifier_role
         )
-        attribute_name = variable.form_variable.prefill_attribute
+        attribute_name: str = variable.form_variable.prefill_attribute
 
         grouped_fields[plugin_id][identifier_role].append(
             {attribute_name: variable.form_variable.key}

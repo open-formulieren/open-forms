@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from functools import partial
 from typing import TYPE_CHECKING
 
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
     from log_outgoing_requests.models import OutgoingRequestsLog
 
     from openforms.payments.models import SubmissionPayment
+    from openforms.prefill.base import BasePlugin as PrefillPlugin
     from openforms.submissions.models import Submission, SubmissionStep
     from stuf.models import StufService
 
@@ -212,7 +214,11 @@ def pdf_generation_skip(submission: Submission, submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: Submission, plugin, prefill_fields):
+def prefill_retrieve_success(
+    submission: Submission,
+    plugin: PrefillPlugin,
+    prefill_fields: Sequence[str],
+):
     _create_log(
         submission,
         "prefill_retrieve_success",
@@ -222,7 +228,11 @@ def prefill_retrieve_success(submission: Submission, plugin, prefill_fields):
     )
 
 
-def prefill_retrieve_empty(submission: Submission, plugin, prefill_fields):
+def prefill_retrieve_empty(
+    submission: Submission,
+    plugin: PrefillPlugin,
+    prefill_fields: Sequence[str],
+):
     _create_log(
         submission,
         "prefill_retrieve_empty",
