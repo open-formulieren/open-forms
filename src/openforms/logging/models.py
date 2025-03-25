@@ -1,3 +1,5 @@
+from collections.abc import Iterator, Sequence
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import capfirst
@@ -8,9 +10,11 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from timeline_logger.models import TimelineLog
 
+from openforms.formio.typing import Component
 from openforms.forms.models import Form
-from openforms.logging.constants import TimelineLogTags
 from openforms.submissions.models import Submission
+
+from .constants import TimelineLogTags
 
 
 class TimelineLogProxyQueryset(models.QuerySet):
@@ -95,17 +99,25 @@ class TimelineLogProxy(TimelineLog):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
 
-    def get_formatted_prefill_fields(self, fields) -> list:
-        formatted_fields = []
-        components = self.content_object.form.iter_components(recursive=True)
+    def get_formatted_prefill_fields(
+        self,
+        fields: Sequence[str],
+    ) -> list[str]:
+        formatted_fields: list[str] = []
+        assert self.content_object is not None
+        components: Iterator[Component] = self.content_object.form.iter_components(
+            recursive=True
+        )
 
         for component in components:
             for field in fields:
-                try:
-                    if component["prefill"]["attribute"] == field:
-                        formatted_fields.append(f"{component['label']} ({field})")
-                except KeyError:
-                    pass
+                if (
+                    "prefill" not in component
+                    or "attribute" not in component["prefill"]
+                ):
+                    continue
+                if component["prefill"]["attribute"] == field:
+                    formatted_fields.append(f"{component['label']} ({field})")
 
         return formatted_fields
 
