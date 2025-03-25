@@ -522,7 +522,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
     await step('Simple component', async () => {
       await userEvent.click(editIcons[0]);
 
-      const transformToListCheckbox = canvas.queryByLabelText('Transform to list');
+      const transformToListCheckbox = canvas.queryByLabelText('Verstuur als lijst');
       expect(transformToListCheckbox).toBeNull();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
@@ -532,7 +532,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
     await step('Select boxes with transform to list', async () => {
       await userEvent.click(editIcons[1]);
 
-      const transformToListCheckbox = await canvas.findByLabelText('Transform to list');
+      const transformToListCheckbox = await canvas.findByLabelText('Verstuur als lijst');
       expect(transformToListCheckbox).toBeChecked();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
@@ -542,7 +542,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
     await step('Select boxes without transform to list (default behaviour -> object)', async () => {
       await userEvent.click(editIcons[2]);
 
-      const transformToListCheckbox = await canvas.findByLabelText('Transform to list');
+      const transformToListCheckbox = await canvas.findByLabelText('Verstuur als lijst');
       expect(transformToListCheckbox).not.toBeChecked();
 
       const saveButton = canvas.getByRole('button', {name: 'Opslaan'});

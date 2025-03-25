@@ -167,7 +167,7 @@
     "originalDefault": "Type"
   },
   "2arYfH": {
-    "defaultMessage": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option.",
+    "defaultMessage": "Geeft aan of de geselecteerde waarden als een lijst worden verstuurd in plaats van als een object.",
     "description": "'Transform to list' checkbox help text",
     "originalDefault": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
   },
@@ -287,13 +287,14 @@
     "originalDefault": "User defined"
   },
   "5qR3fN": {
-    "defaultMessage": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.",
+    "defaultMessage": "Sjabloon voor de titel die op de betaalpagina getoond wordt.<br></br> Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.",
     "description": "Ogone legacy payment options 'titleTemplate' help text",
     "originalDefault": "Optional custom template for the title displayed on the payment page.<br></br> You can include all form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used."
   },
   "5rj0a+": {
     "defaultMessage": "Service",
     "description": "JSON registration options 'serviceSelect' label",
+    "isTranslated": true,
     "originalDefault": "Service"
   },
   "5uaKBM": {
@@ -483,6 +484,11 @@
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variabele ingesteld)} other {({varCount} variabelen ingesteld)} }",
     "description": "Managed complex Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
+  },
+  "9UR5jt": {
+    "defaultMessage": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient.",
+    "description": "Form askStatementOfTruth field help text",
+    "originalDefault": "If enabled, the user will have to agree that they filled out the form truthfully before submitting it."
   },
   "9WZkZg": {
     "defaultMessage": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?",
@@ -1339,7 +1345,7 @@
     "originalDefault": "Component"
   },
   "MIrPon": {
-    "defaultMessage": "Component \"{label}\" uses a prefill that requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute.",
+    "defaultMessage": "De component \"{label}\" gebruikt een prefill die één van de \"{requiredAuthAttribute}\" attributen nodig heeft. Gebruik een of meerdere authenticatiemethode die dit attribuut aanbieden.",
     "description": "Prefill plugin requires unavailable auth attribute warning",
     "originalDefault": "Component \"{label}\" uses a prefill that requires one of the \"{requiredAuthAttribute}\" attributes. Please select one or more authentication plugins that provide such an attribute."
   },
@@ -2240,7 +2246,7 @@
     "originalDefault": "Advanced options"
   },
   "eLIclD": {
-    "defaultMessage": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters.",
+    "defaultMessage": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen.<br></br> Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie <code>'{{' public_reference '}}'</code>). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt.<br></br> <strong>Belangrijk</strong>: het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan.",
     "description": "Ogone legacy payment options 'comTemplate' help text",
     "originalDefault": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form.<br></br> You can include form variables (using their keys) and the public-reference variable (using expression <code>'{{' public_reference '}}'</code>). If unspecified, a default description is used.<br></br> <strong>Note</strong>: the length of the result is capped to 100 characters."
   },
@@ -2323,11 +2329,6 @@
     "defaultMessage": "Soort mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression language field label",
     "originalDefault": "Mapping expression language"
-  },
-  "fqGKJu": {
-    "defaultMessage": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient.",
-    "description": "Form askStatementOfTruth field help text",
-    "originalDefault": "If enabled, the user will have to agree that they filled out the form ruthfully before submitting it."
   },
   "ftzF/n": {
     "defaultMessage": "Als",
@@ -2686,7 +2687,7 @@
     "originalDefault": "URL to the object type in the objecttypes API. If provided, an object will be created and a case object relation will be added to the case."
   },
   "m/NVtu": {
-    "defaultMessage": "Transform to list",
+    "defaultMessage": "Verstuur als lijst",
     "description": "'Transform to list' checkbox label",
     "originalDefault": "Transform to list"
   },
