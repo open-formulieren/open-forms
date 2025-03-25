@@ -21,6 +21,8 @@ from openforms.typing import JSONValue
 
 from .base import E2ETestCase, browser_page
 
+omit = object()
+
 
 def create_form(component: Component) -> Form:
     _test_name = f"{component['type']} - {component['label']}"[:50]
@@ -90,7 +92,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
 
         with self.subTest("backend validation"):
             api_value = kwargs.pop("api_value", ui_input)
-            self._assertBackendValidation(form, component["key"], api_value)
+            self._assertBackendValidation(
+                form, component["key"], component["type"], api_value
+            )
 
     def _locate_input(self, page: Page, label: str):
         return page.get_by_label(label, exact=True)
@@ -121,7 +125,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
 
             await expect(page.get_by_text(expected_ui_error)).to_be_visible()
 
-    def _assertBackendValidation(self, form: Form, key: str, value: JSONValue):
+    def _assertBackendValidation(
+        self, form: Form, key: str, type: str, value: JSONValue
+    ):
         submission = SubmissionFactory.create(form=form)
         step = form.formstep_set.get()
         self._add_submission_to_session(submission)
@@ -133,7 +139,8 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
                 "step_uuid": step.uuid,
             },
         )
-        body = {"data": {key: value}}
+        body_data = {} if value is omit else {key: value}
+        body = {"data": body_data}
         response = self.client.put(step_endpoint, body, content_type="application/json")
 
         # step data validation is run *if* a value is provided - it ignores empty data

@@ -20,6 +20,9 @@ sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
 def check_component(component: Component) -> str | None:
+    from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
+    from rest_framework.exceptions import ValidationError
+
     match component:
         case {"type": "file", "defaultValue": list() as default_value}:
             if None in default_value:
@@ -68,6 +71,26 @@ def check_component(component: Component) -> str | None:
                 if bool(translation_dict.get("defaultValue")):
                     return "defaultValue has a translation"
 
+        case {"type": "map"}:
+            default_value = component.get("defaultValue")
+            if default_value is None:
+                # No defaultValue is a-okay
+                return None
+
+            try:
+                if isinstance(
+                    default_value, dict
+                ) and GeoJsonGeometryPolymorphicSerializer(data=default_value).is_valid(
+                    raise_exception=True
+                ):
+                    # This object has a valid Geometry shape
+                    return None
+            except ValidationError as error:
+                return f"Default value '{default_value}' is not valid.\nError: {error.detail}"
+
+            # Any other value is automatically invalid
+            return f"Default value '{default_value}' is not valid."
+
 
 def check_component_html_usage(component: Component) -> list[str]:
     messages = []
@@ -80,7 +103,9 @@ def check_component_html_usage(component: Component) -> list[str]:
         property_value = component[property_name]
         property_contains_html = bool(re.search(r"<\w", property_value))
         if property_contains_html:
-            messages.append(f"Component {property_name} contains html: '{property_value}'.")
+            messages.append(
+                f"Component {property_name} contains html: '{property_value}'."
+            )
 
     return messages
 

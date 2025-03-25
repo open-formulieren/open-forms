@@ -193,6 +193,13 @@ def get_component_empty_value(component):
         # However, the empty value is with all the options not selected (ex. {"a": False, "b": False})
         return component.get("defaultValue", {})
 
+    if component["type"] == "map":
+        # Issue 5151
+        # Component map is of 'object' type, which would return a {} for an empty component.
+        # However, an empty object would fail validation, as the required properties
+        # `type` and `coordinates` would be missing.
+        return component.get("defaultValue", None)
+
     return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
