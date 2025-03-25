@@ -810,7 +810,7 @@ class Submission(models.Model):
                 registration_debug(
                     self,
                     extra_data={
-                        "message": _("No registration backends defined on form")
+                        "message": _("No registration backends defined on form.")
                     },
                 )
                 return None
@@ -819,7 +819,7 @@ class Submission(models.Model):
                 registration_debug(
                     self,
                     extra_data={
-                        "message": _("Multiple backends defined on form"),
+                        "message": _("Multiple backends defined on form."),
                         "backend": {"key": default.key, "name": default.name},
                     },
                 )
