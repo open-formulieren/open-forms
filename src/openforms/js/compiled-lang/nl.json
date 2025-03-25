@@ -366,7 +366,7 @@
   "2arYfH": [
     {
       "type": 0,
-      "value": "If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+      "value": "Geeft aan of de geselecteerde waarden als een lijst worden verstuurd in plaats van als een object."
     }
   ],
   "2boL55": [
@@ -678,7 +678,7 @@
   "5qR3fN": [
     {
       "type": 0,
-      "value": "Optional custom template for the title displayed on the payment page."
+      "value": "Sjabloon voor de titel die op de betaalpagina getoond wordt."
     },
     {
       "children": [
@@ -688,7 +688,7 @@
     },
     {
       "type": 0,
-      "value": " You can include all form variables (using their keys) and the public-reference variable (using expression "
+      "value": " Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie "
     },
     {
       "children": [
@@ -702,7 +702,7 @@
     },
     {
       "type": 0,
-      "value": "). If unspecified, a default description is used."
+      "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
     }
   ],
   "5rj0a+": [
@@ -1127,6 +1127,12 @@
       "value": "varCount"
     }
   ],
+  "9UR5jt": [
+    {
+      "type": 0,
+      "value": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient."
+    }
+  ],
   "9WZkZg": [
     {
       "type": 0,
@@ -1329,6 +1335,12 @@
     {
       "type": 0,
       "value": "Onderwerp betaalstatusmail"
+    }
+  ],
+  "BFq6vL": [
+    {
+      "type": 0,
+      "value": "Opties ophalen..."
     }
   ],
   "BGZD6J": [
@@ -2721,7 +2733,7 @@
   "MIrPon": [
     {
       "type": 0,
-      "value": "Component \""
+      "value": "De component \""
     },
     {
       "type": 1,
@@ -2729,7 +2741,7 @@
     },
     {
       "type": 0,
-      "value": "\" uses a prefill that requires one of the \""
+      "value": "\" gebruikt een prefill die één van de \""
     },
     {
       "type": 1,
@@ -2737,7 +2749,7 @@
     },
     {
       "type": 0,
-      "value": "\" attributes. Please select one or more authentication plugins that provide such an attribute."
+      "value": "\" attributen nodig heeft. Gebruik een of meerdere authenticatiemethode die dit attribuut aanbieden."
     }
   ],
   "MTdKuN": [
@@ -3916,6 +3928,12 @@
       "value": "Maximale breedte"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -3938,6 +3956,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "YObTjL": [
+    {
+      "type": 0,
+      "value": "Code van de tabel waaruit de opties opgehaald worden"
     }
   ],
   "YQ/Vx0": [
@@ -4403,6 +4427,12 @@
       "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
     }
   ],
+  "cLzsxn": [
+    {
+      "type": 0,
+      "value": "Tabelcode"
+    }
+  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -4692,7 +4722,7 @@
   "eLIclD": [
     {
       "type": 0,
-      "value": "Optional custom template for the description, included in the payment overviews for the backoffice. Use this to link the payment back to a particular process or form."
+      "value": "Sjabloon voor de omschrijving van de betaling in de afschriften die je bij Ogone kan ophalen. Gebruik dit om betalingen aan processen/afdelingen te koppelen."
     },
     {
       "children": [
@@ -4702,7 +4732,7 @@
     },
     {
       "type": 0,
-      "value": " You can include form variables (using their keys) and the public-reference variable (using expression "
+      "value": " Je kan alle formuliervariabelen gebruiken (gebruik de variabelesleutel als naam) en de `public_reference` sjabloonvariabele (gebruik de expressie "
     },
     {
       "children": [
@@ -4716,7 +4746,7 @@
     },
     {
       "type": 0,
-      "value": "). If unspecified, a default description is used."
+      "value": "). Indien geen sjabloon opgegeven is, dan wordt een standaardomschrijving gebruikt."
     },
     {
       "children": [
@@ -4732,7 +4762,7 @@
       "children": [
         {
           "type": 0,
-          "value": "Note"
+          "value": "Belangrijk"
         }
       ],
       "type": 8,
@@ -4740,7 +4770,7 @@
     },
     {
       "type": 0,
-      "value": ": the length of the result is capped to 100 characters."
+      "value": ": het resultaat wordt op 100 karakters afgekapt en enkel alfanumerieke tekens zijn toegestaan."
     }
   ],
   "eNSJ0f": [
@@ -4951,12 +4981,6 @@
       "value": "Soort mappingexpressie"
     }
   ],
-  "fqGKJu": [
-    {
-      "type": 0,
-      "value": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient."
-    }
-  ],
   "ftzF/n": [
     {
       "type": 0,
@@ -5003,6 +5027,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "gSSyoc": [
+    {
+      "type": 0,
+      "value": "Service"
     }
   ],
   "gUl3mu": [
@@ -5581,22 +5611,6 @@
       "value": "Toon aantal karakters"
     }
   ],
-  "kw2jNc": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    }
-  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -5716,7 +5730,7 @@
   "m/NVtu": [
     {
       "type": 0,
-      "value": "Transform to list"
+      "value": "Verstuur als lijst"
     }
   ],
   "m20av3": [
@@ -6150,7 +6164,7 @@
   "paY2Oa": [
     {
       "type": 0,
-      "value": "Waarden via de expressie: "
+      "value": "Opties uit de expressie: "
     },
     {
       "children": [
@@ -6593,6 +6607,12 @@
       "value": "Voettekst"
     }
   ],
+  "u5fu3R": [
+    {
+      "type": 0,
+      "value": "De (externe) service die de tabellen/referentielijsten ontsluit."
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6621,6 +6641,30 @@
     {
       "type": 0,
       "value": "Fout"
+    }
+  ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6803,22 +6847,6 @@
     {
       "type": 1,
       "value": "number"
-    }
-  ],
-  "wVoT0I": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
     }
   ],
   "wZ99FU": [
