@@ -526,6 +526,7 @@ class SubmissionReportGenerationTests(TestCase):
         )
         self.assertInHTML(expected, html, count=1)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_components_with_no_content(self):
         submission = SubmissionFactory.from_components(
             [

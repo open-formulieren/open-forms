@@ -831,6 +831,12 @@
       "value": "Formulieren die als 'verwijderd' gemarkeerd zijn worden op termijn uit de database verwijderd."
     }
   ],
+  "7HlMn7": [
+    {
+      "type": 0,
+      "value": "Je moet een service selecteren."
+    }
+  ],
   "7JMcZW": [
     {
       "type": 0,
@@ -5235,6 +5241,12 @@
     {
       "type": 0,
       "value": "Interne naam"
+    }
+  ],
+  "i/P7yw": [
+    {
+      "type": 0,
+      "value": "Je moet een tabel selecteren."
     }
   ],
   "i7HknI": [

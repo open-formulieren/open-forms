@@ -472,8 +472,8 @@ class SubmissionAdmin(admin.ModelAdmin):
         messages.success(
             request,
             ngettext(
-                "Retrying processing flow for {count} {verbose_name}",
-                "Retrying processing flow for {count} {verbose_name_plural}",
+                "Retrying processing flow for {count} {verbose_name} object",
+                "Retrying processing flow for {count} {verbose_name} objects",
                 submissions.count(),
             ).format(
                 count=submissions.count(),

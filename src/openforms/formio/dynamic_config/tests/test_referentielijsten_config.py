@@ -270,8 +270,8 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             log.extra_data["error"],
             _(
-                "Exception occurred while fetching from Referentielijsten API: something went wrong."
-            ),
+                "Exception occurred while fetching from Referentielijsten API: {exception}."
+            ).format(exception="something went wrong"),
         )
 
 
@@ -497,8 +497,8 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             log.extra_data["error"],
             _(
-                "Exception occurred while fetching from Referentielijsten API: something went wrong."
-            ),
+                "Exception occurred while fetching from Referentielijsten API: {exception}."
+            ).format(exception="something went wrong"),
         )
 
 
@@ -719,8 +719,8 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             log.extra_data["error"],
             _(
-                "Exception occurred while fetching from Referentielijsten API: something went wrong."
-            ),
+                "Exception occurred while fetching from Referentielijsten API: {exception}."
+            ).format(exception="something went wrong"),
         )
 
 
