@@ -2,7 +2,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 
@@ -72,6 +72,22 @@ class TestSubmissionAdmin(WebTest):
             ).count(),
             1,
         )
+
+    @tag("gh-5186")
+    def test_viewing_submission_details_in_admin_does_not_create_registration_debug_log(
+        self,
+    ):
+        self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        logs = TimelineLogProxy.objects.filter_event(  # pyright: ignore[reportAttributeAccessIssue]
+            "registration_debug"
+        )
+        self.assertFalse(logs.exists())
 
     @patch("openforms.submissions.admin.on_post_submission_event")
     def test_retry_processing_submissions_only_resends_failed_submissions(
@@ -208,18 +224,13 @@ class TestSubmissionAdmin(WebTest):
             user=self.user,
         )
 
-        start_log, avg_log, registration_backend_log = (
-            TimelineLogProxy.objects.order_by("pk")
-        )
+        start_log, avg_log = TimelineLogProxy.objects.order_by("pk")
 
         # regular log visible
         self.assertContains(response, start_log.get_message())
 
         # avg log not visible
         self.assertNotContains(response, avg_log.get_message())
-
-        # registration backend log not visible
-        self.assertNotContains(response, registration_backend_log.get_message())
 
     def test_search(self):
         list_url = furl(reverse("admin:submissions_submission_changelist"))

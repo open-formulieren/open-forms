@@ -1,4 +1,9 @@
-{% load i18n %}
-{% blocktrans trimmed with data=log.debug_data lead=log.fmt_lead %}
-   {{ lead }}: Registration debug data: {{ data }}
+{% load i18n capture_tags %}
+
+{% capture as resolved_backend silent %}{% if log.extra_data.backend %}
+{% blocktrans with key=log.extra_data.backend.key name=log.extra_data.backend.name|default:_('name unknown') %}Backend '{{ key }}' ({{ name }}){% endblocktrans %}
+{% endif %}{% endcapture %}
+
+{% blocktrans trimmed with message=log.extra_data.message lead=log.fmt_lead  %}
+   {{ lead }}: Registration debug: {{ message }}{{ resolved_backend }}
 {% endblocktrans %}

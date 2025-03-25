@@ -800,33 +800,37 @@ class Submission(models.Model):
     def cosign_state(self) -> CosignState:
         return CosignState(submission=self)
 
-    @property
-    def default_registration_backend_key(self) -> RegistrationBackendKey | None:
+    def resolve_default_registration_backend_key(
+        self, enable_log: bool = False
+    ) -> RegistrationBackendKey | None:
         backends = list(self.form.registration_backends.order_by("id"))
         match len(backends):  # sanity check
             case 1:
                 return backends[0].key
             case 0:
-                registration_debug(
-                    self,
-                    extra_data={
-                        "message": _("No registration backends defined on form")
-                    },
-                )
+                if enable_log:
+                    registration_debug(
+                        self,
+                        extra_data={
+                            "message": _("No registration backends defined on form.")
+                        },
+                    )
                 return None
             case _:
                 default = backends[0]
-                registration_debug(
-                    self,
-                    extra_data={
-                        "message": _("Multiple backends defined on form"),
-                        "backend": {"key": default.key, "name": default.name},
-                    },
-                )
+                if enable_log:
+                    registration_debug(
+                        self,
+                        extra_data={
+                            "message": _("Multiple backends defined on form."),
+                            "backend": {"key": default.key, "name": default.name},
+                        },
+                    )
                 return default.key
 
-    @property
-    def registration_backend(self) -> FormRegistrationBackend | None:
+    def resolve_registration_backend(
+        self, enable_log: bool = False
+    ) -> FormRegistrationBackend | None:
         if self.finalised_registration_backend_key:
             try:
                 return self.form.registration_backends.get(
@@ -847,9 +851,17 @@ class Submission(models.Model):
         # not/faulty set by logic; fallback to default
         return (
             self.form.registration_backends.get(key=default_key)
-            if (default_key := self.default_registration_backend_key)
+            if (
+                default_key := self.resolve_default_registration_backend_key(
+                    enable_log=enable_log
+                )
+            )
             else None
         )
+
+    @property
+    def registration_backend(self) -> FormRegistrationBackend | None:
+        return self.resolve_registration_backend(enable_log=True)
 
     @property
     def post_completion_task_ids(self) -> list[str]:

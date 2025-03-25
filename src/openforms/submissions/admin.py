@@ -359,8 +359,8 @@ class SubmissionAdmin(admin.ModelAdmin):
         return not obj.needs_on_completion_retry
 
     @admin.display(description=_("Registration backend"))
-    def get_registration_backend(self, obj):
-        return obj.registration_backend or "-"
+    def get_registration_backend(self, obj: Submission):
+        return obj.resolve_registration_backend(enable_log=False) or "-"
 
     @admin.display(description=_("Appointment status"))
     def get_appointment_status(self, obj):
