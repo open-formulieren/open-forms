@@ -206,3 +206,162 @@ class FormioData(UserDict):
             return True
         except KeyError:
             return False
+
+
+class FormioDataWithFullGlom(UserDict):
+    """
+    Handle formio (submission) data transparently.
+
+    Form.io supports component keys in the format 'topLevel.nested' which get converted
+    to deep-setting of object properties (using ``lodash.set`` internally). This
+    datastructure mimicks that interface in Python so we can more naturally perform
+    operations like:
+
+    .. code-block:: python
+
+        data = FormioData()
+        for component in iter_components(...):
+            data[component["key"]] = ...
+
+    without having to worry about potential deep assignments or leak implementation
+    details (such as using ``glom`` for this).
+    """
+
+    data: dict[str, JSONValue]
+    _keys: set[str]
+    """
+    A collection of flattened key names, for quicker __contains__ access
+    """
+
+    def __init__(self, *args, **kwargs):
+        self._keys = set()
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key: str):
+        try:
+            return cast(JSONValue, glom(self.data, key))
+        except PathAccessError as exc:
+            raise KeyError(f"Key '{key}' is not present in the data") from exc
+
+    def __setitem__(self, key: str, value: JSONValue):
+        assign(self.data, key, value, missing=dict)
+
+    def __contains__(self, key: object) -> bool:
+        if not isinstance(key, str):
+            raise TypeError("Only string keys are supported")
+
+        try:
+            self[key]
+            return True
+        except KeyError:
+            return False
+
+
+# TODO-5179: on the advantage of inheriting from UserDict instead of dict: a `.update()`
+#  call will call `__setitem__`, see https://stackoverflow.com/a/64646485
+class FormioDataCustom(UserDict):
+    """
+    Handle formio (submission) data transparently.
+
+    Form.io supports component keys in the format 'topLevel.nested' which get converted
+    to deep-setting of object properties (using ``lodash.set`` internally). This
+    datastructure mimicks that interface in Python so we can more naturally perform
+    operations like:
+
+    .. code-block:: python
+
+        data = FormioData()
+        for component in iter_components(...):
+            data[component["key"]] = ...
+
+    without having to worry about potential deep assignments or leak implementation
+    details (such as using ``glom`` for this).
+    """
+
+    data: dict[str, JSONValue]
+    _keys: set[str]
+    """
+    A collection of flattened key names, for quicker __contains__ access
+    """
+
+    def __init__(self, *args, **kwargs):
+        self._keys = set()
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key: str):
+        # TODO-5179: do we want to check the key here as well?
+        # self._check_key(key)
+
+        value = self.data
+        for k in key.split("."):
+            if not isinstance(value, dict):
+                raise KeyError(f"Key '{key}' is not present in the data")
+            try:
+                value = value[k]
+            except KeyError:
+                raise KeyError(f"Key '{key}' is not present in the data")
+
+        return value
+
+    def _setitem_recursion(self, data, key, value):
+        key_list = key.split(".", 1)
+
+        if len(key_list) == 1:
+            data[key] = value
+            return
+
+        # The list being longer than 1 guarantees that we are still not at the final
+        # key yet, and we need to add a dict for the parent key (if not already
+        # present).
+        child = data.get(key_list[0], None)
+        if not isinstance(child, dict):
+            data[key_list[0]] = child = {}
+        self._setitem_recursion(child, key_list[1], value)
+
+    def _setitem_for_loop(self, data, key, value):
+        data_ = data
+
+        key_list = key.split(".")
+        for k in key_list[:-1]:
+            child = data_.get(k, None)
+            if not isinstance(child, dict):
+                data_[k] = {}
+
+            data_ = data_[k]
+
+        data_[key_list[-1]] = value
+
+    def __setitem__(self, key: str, value: JSONValue):
+        # TODO-5179: do we want to check the key here as well?
+        # self._check_key(key)
+
+        self._setitem_for_loop(self.data, key, value)
+        # self._keys.add(key)
+
+    def __contains__(self, key: object) -> bool:
+        """
+        Check if the key is present in the data container.
+
+        This gets called via ``formio_data.get(...)`` to check if the default needs to
+        be returned or not. Keys are expected to be strings taken from ``variable.key``
+        fields.
+        """
+        self._check_key(key)
+
+        value = self.data
+        for k in key.split("."):
+            if not isinstance(value, dict):
+                return False
+
+            try:
+                value = value[k]
+            except KeyError:
+                return False
+
+        return True
+
+    @staticmethod
+    def _check_key(key):
+        # TODO-5179: I'm assuming we won't support anything other than strings as keys
+        if not isinstance(key, str):
+            raise TypeError("Only string keys are supported")
