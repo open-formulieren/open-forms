@@ -27,6 +27,16 @@ const initializeSDK = async node => {
     formId,
     basePath,
     CSPNonce: cspNonce,
+    onLanguageChange: (newLanguageCode, initialDataReference) => {
+        // URL handling in JS requires a proper base since you can't just feed `foo` or `/foo`
+        // to the constructor. We only extract the pathname + query string again at the end.
+        const base = window.location.origin;
+        const url = new URL(basePath, base);
+        if (initialDataReference) {
+            url.searchParams.set('initial_data_reference', initialDataReference);
+        }
+        window.location.replace(`${url.pathname}${url.search}`);
+    },
   };
   if (sentryDsn) options.sentryDSN = sentryDsn;
   if (sentryEnv) options.sentryEnv = sentryEnv;
