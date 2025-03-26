@@ -1938,192 +1938,6 @@ class ZGWBackendTests(TestCase):
             },
         )
 
-    def test_submission_with_multiple_eigenschappen_creation(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "textField1",
-                    "type": "textfield",
-                },
-                {
-                    "key": "textField2",
-                    "type": "textfield",
-                },
-            ],
-            submitted_data={
-                "textField1": "some data",
-                "textField2": "more data",
-            },
-            language_code="en",
-            form_definition_kwargs={"slug": "test-eigenschappen"},
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "property_mappings": [
-                {"component_key": "textField1", "eigenschap": "a property name"},
-                {"component_key": "textField2", "eigenschap": "second property"},
-            ],
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        m.get(
-            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
-            status_code=200,
-            json={
-                "count": 2,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
-            [
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                        uuid=1,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        waarde="some data",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                        uuid=2,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        waarde="more data",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-            ],
-        )
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["zaakeigenschappen"]["1"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                "uuid": 1,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                "naam": "a property name",
-                "waarde": "some data",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-        self.assertEqual(
-            result["zaakeigenschappen"]["2"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                "uuid": 2,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                "naam": "second property",
-                "waarde": "more data",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-
     def test_submission_with_nested_component_columns_and_eigenschap(self, m):
         submission = SubmissionFactory.from_components(
             [
@@ -2733,3 +2547,68 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                             "http://localhost:8003/catalogi/api/v1/"
                             "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         )
+
+    def test_submission_with_multiple_eigenschappen_creation(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textField1",
+                    "type": "textfield",
+                },
+                {
+                    "key": "textField2",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textField1": "some data",
+                "textField2": "more data",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version (2024-10-31)
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "property_mappings": [
+                {"component_key": "textField1", "eigenschap": "a property name"},
+                {"component_key": "textField2", "eigenschap": "second property"},
+            ],
+            "objects_api_group": None,
+        }
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["zaakeigenschappen"]), 2)
+        # verify the created properties
+        zaak_url = result["zaak"]["url"]
+        zaakeigenschappen = {
+            zaak_eigenschap["naam"]: zaak_eigenschap["waarde"]
+            for zaak_eigenschap in client.get(f"{zaak_url}/zaakeigenschappen").json()
+        }
+        self.assertEqual(
+            zaakeigenschappen,
+            {
+                "a property name": "some data",
+                "second property": "more data",
+            },
+        )
