@@ -5,6 +5,7 @@ from typing import Any
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.config.data import Action
 from openforms.submissions.models import Submission
 
@@ -23,6 +24,12 @@ CALLBACKS = {
 class DemoPrefill(BasePlugin):
     verbose_name = _("Demo")
     is_demo_plugin = True
+    requires_auth = (
+        AuthAttribute.bsn,
+        AuthAttribute.kvk,
+        AuthAttribute.pseudo,
+        AuthAttribute.employee_id,
+    )
 
     @staticmethod
     def get_available_attributes():
