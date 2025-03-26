@@ -12,6 +12,7 @@ from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
 from simple_certmanager.test.factories import CertificateFactory
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
@@ -48,18 +49,27 @@ class InvalidBackend(BasePlugin):
         raise InvalidPluginConfiguration("Invalid")
 
 
-@patch(
-    "openforms.emails.tasks.GlobalConfiguration.get_solo",
-    return_value=GlobalConfiguration(
-        recipients_email_digest=["tralala@test.nl", "trblblb@test.nl"]
-    ),
-)
 @override_settings(LANGUAGE_CODE="en")
 class EmailDigestTaskIntegrationTests(TestCase):
 
-    def test_that_repeated_failures_are_not_mentioned_multiple_times(
-        self, mock_global_config
-    ):
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.config = GlobalConfiguration.get_solo()
+        self.config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        self.config.save()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+        # The service is relative to the docker compose instance that we have in the
+        # docker directory (docker-compose.referentielijsten.yml)
+        referentielijsten_service = ServiceFactory.create(
+            api_root="http://localhost:8004/api/v1/",
+            slug="referentielijsten",
+            auth_type=AuthTypes.no_auth,
+        )
+        self.config.referentielijsten_services.add(referentielijsten_service)
+
+    def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -93,15 +103,10 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
         self.assertEqual(submission_occurencies, 1)
 
-    def test_no_email_sent_if_no_logs(self, mock_global_config):
-        send_email_digest()
+    def test_no_email_sent_if_no_recipients(self):
+        self.config.recipients_email_digest = []
+        self.config.save()
 
-        self.assertEqual(0, len(mail.outbox))
-
-    def test_no_email_sent_if_no_recipients(self, mock_global_config):
-        mock_global_config.return_value = GlobalConfiguration(
-            recipients_email_digest=[]
-        )
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -125,9 +130,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
     @freeze_time("2023-01-03T01:00:00+01:00")
     @override_settings(BASE_URL="http://testserver")
     @requests_mock.Mocker()
-    def test_email_sent_when_there_are_failures(
-        self, mock_global_config, brk_config, m
-    ):
+    def test_email_sent_when_there_are_failures(self, brk_config, m):
         """Integration test for all the possible failures
 
         - failed emails
@@ -137,6 +140,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         - invalid certificates
         - invalid registration backends
         - invalid logic rules
+        - expiring (or expired) referentielijsten data
         """
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -209,6 +213,64 @@ class EmailDigestTaskIntegrationTests(TestCase):
             m.get(
                 "https://api.brk.kadaster.nl/invalid/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
                 status_code=400,
+            )
+            m.get(
+                "http://localhost:8004/api/v1/tabellen",
+                json={
+                    "results": [
+                        {
+                            "code": "tabel-valid",
+                            "naam": "Tabel valid",
+                            "einddatumGeldigheid": None,
+                        },
+                        {
+                            "code": "tabel-expired-past",
+                            "naam": "Tabel expired in the past",
+                            "einddatumGeldigheid": "2022-01-07T08:48:49Z",
+                        },
+                        {
+                            "code": "tabel-expires-future",
+                            "naam": "Tabel expires in the future",
+                            "einddatumGeldigheid": "2023-01-04T12:30:00+01:00",
+                        },
+                    ]
+                },
+            )
+            m.get(
+                "http://localhost:8004/api/v1/items?tabel__code=tabel-valid",
+                json={
+                    "results": [
+                        {
+                            "code": "item-valid",
+                            "naam": "Item valid",
+                            "einddatumGeldigheid": None,
+                        },
+                    ]
+                },
+            )
+            m.get(
+                "http://localhost:8004/api/v1/items?tabel__code=tabel-expired-past",
+                json={
+                    "results": [
+                        {
+                            "code": "item-expired-past",
+                            "naam": "Item expired in the past",
+                            "einddatumGeldigheid": "2022-01-07T08:48:49Z",
+                        },
+                    ]
+                },
+            )
+            m.get(
+                "http://localhost:8004/api/v1/items?tabel__code=tabel-expires-future",
+                json={
+                    "results": [
+                        {
+                            "code": "item-expires-future",
+                            "naam": "Item expires in the future",
+                            "einddatumGeldigheid": "2023-01-04T12:30:00+01:00",
+                        },
+                    ]
+                },
             )
 
         # send the email digest
@@ -294,5 +356,23 @@ class EmailDigestTaskIntegrationTests(TestCase):
             )
             self.assertIn(
                 f"Logic rule for variable 'foo' is invalid in form '{form.admin_name}'.",
+                sent_email.body,
+            )
+
+        with self.subTest("expired referentielijsten data"):
+            self.assertIn(
+                "Table 'Tabel expired in the past' expired 11 months, 3 weeks ago.",
+                sent_email.body,
+            )
+            self.assertIn(
+                "Table 'Tabel expires in the future' will expire in 1 day, 11 hours.",
+                sent_email.body,
+            )
+            self.assertIn(
+                "Item 'Item expired in the past' expired 11 months, 3 weeks ago.",
+                sent_email.body,
+            )
+            self.assertIn(
+                "Item 'Item expires in the future' will expire in 1 day, 11 hours.",
                 sent_email.body,
             )

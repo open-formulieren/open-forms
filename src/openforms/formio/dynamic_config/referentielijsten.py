@@ -6,14 +6,14 @@ from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
 
 from openforms.contrib.referentielijsten.client import ReferentielijstenClient
+from openforms.contrib.referentielijsten.helpers import check_expired_or_near_expiry
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
-
-from ..typing import Component
+from openforms.typing import JSONObject
 
 
 def fetch_options_from_referentielijsten(
-    component: Component, submission: Submission
+    component: JSONObject, submission: Submission
 ) -> list[tuple[str, str]] | None:
     service_slug = glom(component, "openForms.service", default=None)
     code = glom(component, "openForms.code", default=None)
@@ -68,4 +68,14 @@ def fetch_options_from_referentielijsten(
                 component,
                 _("No results found from Referentielijsten API."),
             )
-        return [[item["code"], item["naam"]] for item in result]
+            return
+
+        valid_items = []
+        for item in result:
+            if (
+                einddatum := item.get("einddatumGeldigheid")
+            ) and check_expired_or_near_expiry(einddatum):
+                continue
+
+            valid_items.append(item)
+        return [(item["code"], item["naam"]) for item in valid_items]

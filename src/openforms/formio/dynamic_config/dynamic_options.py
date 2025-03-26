@@ -111,7 +111,7 @@ def add_options_to_config(
     match data_src:
         case DataSrcOptions.referentielijsten:
             items_array = fetch_options_from_referentielijsten(component, submission)
-            if not items_array:
+            if items_array is None:
                 raise ServiceUnavailable(
                     _("Could not retrieve options from Referentielijsten API."),
                 )
