@@ -247,6 +247,7 @@ const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}
         }
       />
       <HeadColumn
+        className="variables-table__value"
         content={
           <FormattedMessage
             defaultMessage="Initial value"
