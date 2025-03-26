@@ -6,6 +6,262 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.0 "TODO" (2025-03-31)
+=========================
+
+Open Forms 3.1.0 is a feature release.
+
+This contains the changes from the alpha and fixes applied until the stable version.
+BEFORE upgrading to 3.1.0, please read the release notes carefully and review the
+following instructions.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.1, please:
+
+* ⚠️ Ensure you upgrade to Open Forms 3.0.1 before upgrading to the 3.1 release series.
+
+* We recommend running the ``bin/report_component_problems.py`` and
+  ``bin/report_form_registration_problems.py`` scripts to diagnose any problems in
+  existing form definitions. These will be patched up during the upgrade, but it's good
+  to know which form definitions will be touched in case something looks odd.
+
+Where possible, we have included upgrade checks that can you inform about detected problems before
+any database changes are made.
+
+Major features
+--------------
+
+**📒 Referentielijsten API intergration**
+
+We integrated the Maykin Referentielijsten API into Open Forms. The Referentielijsten
+API can be used to populate select and selectboxes components, providing a centralized
+collection of options that can be used across multiple forms and components.
+
+When configuring the Referentielijsten API as a data source for a select or selectboxes
+component, you can specify which Referentielijsten service and which table within that
+service to use. This allows you to customize the Referentielijsten API for each component
+individually.
+
+To properly support the expiry statuses of Referentielijsten API items and tables, we
+notify the admin when a selected table or all items in a selected table are expired.
+This ensures that you can confidently use the Referentielijsten API without having to
+manually check expiry statuses.
+
+**📦 JSON Dump registration**
+
+We added a new registration plugin that allows for the 'simple' transfer of form
+variables and metadata in JSON format to a configured service.
+
+In the registration configuration, and in the form variables tab, you can specify which
+variables should or shouldn't be sent to the configured service.
+
+Along with the JSON data, we also send schema definitions, providing information about
+data types and ensuring that the data is interpreted and handled correctly.
+
+**🗺 Map component rework**
+
+The map component has undergone a major rework to support a wider range of use cases.
+
+The most notable change is the expanded range of possible interactions users can have
+with the map component. Previously, only pin placement was supported. This has now been
+extended to include drawing multi-point lines and polygons.
+
+Additionally, it is now possible to define custom WMTS layers and configure them per map
+component, allowing the use of custom map backgrounds, such as aerial imagery.
+
+.. note:: The ``map`` component is not yet fully worked out and some improvements are
+   needed to optimize the user experience.
+
+**🚸 User Experience improvements**
+
+We spent quite some time improving the user experience when working with Open Forms,
+focusing on making submission summary PDFs more accessible and informative, enhancing
+variable management in the admin interface, and streamlining form action buttons.
+
+The submission summary PDF has received several improvements to better support
+accessibility tools. The municipality logo now includes a textual alternative, and we
+have improved the semantic relationship between form field labels and user-provided
+information. Additionally, when a user hasn’t provided a value for a form field, we now
+display a 'No information provided' message.
+
+The form variables tab has also received extra attention, making it easier to work with
+variables that contain list or object values.
+
+To enhance accessibility and usability, we adjusted the order and placement of the form
+action buttons. We also updated the button styling to reduce potential confusion. Using
+design tokens and form configuration, the buttons can now be further customized to better
+support specific scenarios.
+
+**New features**
+
+* [:backend:`5137`] Made the request-header for ``OIN`` data configurable. By default
+  the header ``x-origin-oin`` is used, this can be changed in the
+  ``HaalCentraal configuration`` in the admin interface.
+* [:backend:`5122`] Clarified the help-text for the Ogone legacy ``TITLE`` and ``COM``
+  parameters.
+* [:backend:`5074`] Added an option to send the data from the selectboxes component as
+  a list to the Objects API and JSON Dump registrations.
+* Grouping variables by form step in the variables tab.
+* [:backend:`5047`] Accessibility improvements to the submission summary PDF.
+
+    - Added an textual alternative to the logo.
+    - Provided an semantica relationship between the form field label and user provided
+      value.
+    - The PDF displayes "No information provided" for form fields that haven't been
+      filled in by the user.
+
+* [:backend:`4991`, :backend:`4993`, :backend:`5016`, :backend:`5107`, :backend:`5106`,
+  :backend:`5178`] Added Referentielijsten API intergration. Allowing Referentielijsten
+  APIs to be configured in Open Forms and to be used as data-sources for select and
+  selectboxes components.
+
+    - Added selection of Referentielijsten API services to global configuration.
+    - Added ``Referentielijsten`` as ``data source`` on select and selectboxes
+      components.
+    - Retreiving select/selectboxes components values/options from configured
+      Referentielijsten API, and displaying them in the end-user form and form builder.
+    - First step at multi-language support. Some changes to the Referentielijsten API are
+      required before multi-language can be fully supported.
+    - Notifing admins via mail when all items or the table of a selected
+      Referentielijsten API are expired.
+
+* [:backend:`4518`] Added prefill attempts to the submission log entries.
+* Performance improvements regarding fetching and processing form data.
+* [:backend:`4990`] Registration variables in the form variables tab now show from which
+  registration backend they originate.
+* [:backend:`5093`, :backend:`5184`] Improved user experience when working with array or
+  object values in the form variables table.
+* [:backend:`5024`] Loosened validation on ZGW APIs and Objects API registration
+  backends. Allowing configured domains to contain lowercase characters.
+* [:backend:`2177`] Changed the map component output to GeoJSON geometry, allowing lines
+  and polygons to be drawn on map components in addition to point markers.
+* [:backend:`4908`, :backend:`4980`, :backend:`5012`, :backend:`5066`] Added new
+  JSON Dump registration plugin. Allowing submitted form data to be sent as a
+  ``JSON object`` to a configured service.
+
+    - Added documentation on how to use the JSON Dump registration plugin.
+    - It's possible to quickly add all form variables to the data sent
+      to the configured service, using a button in the plugin configuration.
+    - You can include metadata when submitting data to a configured service.
+    - Added JSON schema definitions to be sent along the submitted data to the configured
+      service.
+
+* [:backend:`4931`] Upgraded the form submission statistics to reflect actual submissions
+  and added the ability to export the results based on various filters.
+* [:backend:`4785`] Updated the eHerkenning metadata generation to match the latest
+  standard version(s).
+
+**Minor security improvements**
+
+We addressed some minor security concerns.
+
+* Administrators are no-longer able to change the submission summary PDF through the
+  admin interface.
+* SVGs uploaded through the admin interface, used for logos and favicons, are now
+  automatically sanitized.
+* HTML used in form component labels, tooltips and descriptions is now automatically
+  sanitized. The allowed HTML in these places has also been limited.
+
+**Bugfixes**
+
+* [:backend:`5186`, :backend:`5188`] Fixed bugs regarding logs being incorrectly created
+  or not containing all expected information.
+* [:backend:`5155`] Fixed the url parameter "initial_data_reference" being lost after
+  switching the form language.
+* [:backend:`5151`] Fixed map components causing validation errors when they are hidden.
+* [:backend:`4662`, :backend:`5147`] Fixed bugs regarding the validation of selectboxes
+  when ``Minimum selected checkboxes`` is configured:
+
+    - Fixed validation for non-required selectboxes with ``Minimum selected checkboxes``,
+      allowing them to be left unchecked.
+    - Fixed being unable to be temporary save a form, when it contains a selectboxes
+      component with ``Minimum selected checkboxes``.
+
+* [:backend:`5157`] Fixed warning being shown about missing co-sign translations when
+  all translations are provided.
+* [:backend:`5158`] Fixed a bug which caused errors when removing a ZGW API set.
+* [:backend:`5142`] Fixed logic triggers being deleted when a selectboxes component is
+  deleted.
+* [:backend:`5105`] Fixed a minor styling bug in the admin that caused the asterisk icons
+  for required fields to appear on top of dropdown menus.
+* [:backend:`5124`] Fixed prefill fields causing validation errors when they are hidden
+  and read-only.
+* [:backend:`5031`] Fixed missing configuration in Objects API registration v2.
+* [:backend:`5136`] Fixed eHerkenning "Dienstcatalogus" being generated using old
+  certificates.
+* [:backend:`5040`] Fixed a bug in the JSON-logic where, when multiple logic actions were
+  configured on the same trigger, deleting the first logic action caused its JSON-logic
+  to be assigned to the next logic action within the same trigger.
+* [:backend:`5104`] Fixed ``null`` default value for radio fields.
+* [:backend:`4871`] Fixed error messages not being shown in the variable mapping of the
+  Objects API prefill and the JSON-logic DMN configuration.
+* [:backend:`5039`] Fixed error messages not being shown in the Email registration
+  plugin.
+* [:backend:`5090`] Fixed soft-required component blocking going to the next form step.
+* [:backend:`5089`] Fixed service fetch automatically changing the configured query
+  parameters from `snake_case` into `camelCase`.
+* [:backend:`5077`, :backend:`5084`] Fixed some performance issues regarding loading
+  logic rules in the admin, and saving form steps/definitions with large numbers of
+  components.
+* [:backend:`4510`] Fixed error messages not shown properly on the form summary page.
+* [:backend:`5037`] Fixed submission PDF not able to format date values.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+* [:backend:`4689`] Fixed file uploads in repeating groups not being processed correctly.
+* [:backend:`5034`] Fixed Objects API registration plugin crashing by validating object's
+  ownership only when the object should be updated.
+* Fixed a misconfiguration for AddressNL end-to-end testing in CI.
+* Fixed registration management command.
+* Fixed styling of clearable react-select component.
+* Fixed an upgrade check not blocking the database migrations from starting.
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* [:backend:`4825`] Fixed prefill reporting false failures to daily digest when multiple
+  authentication flows are used.
+
+**Project maintenance**
+
+* Reduced flakyness in the tests.
+* Removing old upgrade checks, which won't be needed when upgrading from 3.0.x to 3.1.x.
+* Added some configurable environment variables.
+
+    - Returned the environment variable ``DISABLE_SENDING_HIDDEN_FIELDS`` for Objects API
+      registration.
+    - The ``AXES_FAILURE_LIMIT`` environment variable limits the number of allowed
+      login attempts.
+    - The ``EMAIL_TIMEOUT`` environment variable limits how long Open Forms waits until
+      a mailing timeouts.
+
+* [:sdk:`76`] Use ESM modules instead of UMD for the SDK, if the browser supports it.
+* [:backend:`4927`] Added system checking for missing configuration on non-required
+  serializer fields.
+* [:backend:`4882`] Added documentation on how to use django-setup-configuration.
+* [:backend:`4654`] Cleaned up and squashed migrations where possible.
+* Added constraint for requiring 3.0.1 before upgrading to 3.1.0.
+* Removed 2.7.x from supported versions in Docker Hub description.
+* Added 3.0.x to Docker Hub description.
+* Updated backend dependencies
+
+    - Bumped playwright to 1.49.1.
+    - Bumped typing-extensions to 4.12.2.
+    - Bumped django to 4.2.18.
+    - Bumped django-digid-eherkenning to 0.21.0.
+
+* Updated frontend dependencies
+
+    - Bumped undici to 5.28.5.
+    - Bumped @utrecht/components to 7.4.0.
+    - Bumped @open-formulieren/design-tokens to 0.57.0.
+    - Bumped storybook to 8.6.4.
+
+* Updated CI dependencies
+
+    - Bumped jinja2 to 3.1.6.
+    - Bumped kombu to 5.5.
+    - Bumped tzdata to 2025.1.
+
 3.1.0-alpha.1 (2025-02-20)
 ==========================
 
