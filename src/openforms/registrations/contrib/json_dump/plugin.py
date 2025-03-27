@@ -64,7 +64,7 @@ class JSONDumpRegistration(BasePlugin):
             for key, value in all_values.items()
             if key in options["variables"]
         }
-        values_schema = generate_json_schema(submission.form, options["variables"])
+        values_schema = generate_json_schema(submission.form, list(values.keys()))
         transform_to_list = options["transform_to_list"]
         post_process(values, values_schema, submission, transform_to_list)
 

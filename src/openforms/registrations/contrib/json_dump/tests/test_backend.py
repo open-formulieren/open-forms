@@ -3,7 +3,7 @@ from base64 import b64decode
 from pathlib import Path
 
 from django.core.exceptions import SuspiciousOperation
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from freezegun import freeze_time
 from requests import RequestException
@@ -1217,6 +1217,51 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "required": ["repeatingGroup"],
             "type": "object",
         }
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    @tag("gh-5205")
+    def test_hidden_field_not_in_schema(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textfield"},
+                {"key": "lastName", "type": "textfield", "hidden": True},
+            ],
+            completed=True,
+            submitted_data={"firstName": "Oscar"},
+            bsn="123456789",
+            with_public_registration_reference=True,
+        )
+
+        options: JSONDumpOptions = {
+            "service": self.service,
+            "path": "json_plugin",
+            "variables": ["firstName", "lastName"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        expected_values = {"firstName": "Oscar"}
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "firstName": {"title": "Firstname", "type": "string"},
+            },
+            "required": ["firstName"],
+            "additionalProperties": False,
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
 
         with self.subTest("values"):
             self.assertEqual(result["api_response"]["data"]["values"], expected_values)
