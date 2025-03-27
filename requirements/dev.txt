@@ -447,7 +447,7 @@ drf-nested-routers==0.93.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-drf-polymorphic==1.0.0
+drf-polymorphic==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
