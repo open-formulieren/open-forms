@@ -35,6 +35,15 @@ def export_registration_statistics(
     :arg limit_to_forms: A queryset of forms to limit the export to. If not provided or
       ``None`` is given, all forms are included.
     """
+    title_mappings = {
+        logevent.REGISTRATION_SUCCESS_EVENT: _(
+            "Successfully registered submissions between {start} and {end}"
+        ),
+        logevent.FORM_SUBMIT_SUCCESS_EVENT: _(
+            "Successfully completed submissions between {start} and {end}"
+        ),
+    }
+
     dataset = Dataset(
         headers=(
             _("Public reference"),
@@ -43,7 +52,7 @@ def export_registration_statistics(
             _("Submitted on"),
             _("Registered on"),
         ),
-        title=_("Successfully registered submissions between {start} and {end}").format(
+        title=title_mappings[event].format(
             start=start_date.isoformat(),
             end=end_date.isoformat(),
         ),
