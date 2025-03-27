@@ -59,7 +59,7 @@ def generate_json_schema(
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": requested_variables_schema,
-        "required": limit_to_variables,
+        "required": list(requested_variables_schema.keys()),
         "additionalProperties": False,
     }
 
