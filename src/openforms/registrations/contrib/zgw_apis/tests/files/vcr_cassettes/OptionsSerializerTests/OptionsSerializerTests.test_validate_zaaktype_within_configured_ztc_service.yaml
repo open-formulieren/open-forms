@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczOTM3NjA0OCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.tCT2TMTryKRFRkbQVxNqZ_ZNVYWMJYql3M25lBnJcIg
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0MzA4MTI0NiwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.csxoRJYPJxmiZq58eBPt7FrfaZuN4X38HHQJChzGQio
       Connection:
       - keep-alive
       User-Agent:
@@ -17,7 +17,7 @@ interactions:
   response:
     body:
       string: '{"type":"http://localhost:8003/ref/fouten/NotFound/","code":"not_found","title":"Niet
-        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:d554bd66-2f05-4911-946a-b116d75d7f44"}'
+        gevonden.","status":404,"detail":"Niet gevonden.","instance":"urn:uuid:4adea27d-29d9-45a1-989f-fe34f3c93856"}'
     headers:
       API-version:
       - 1.3.1
@@ -48,7 +48,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTczOTM3NjA0OCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.tCT2TMTryKRFRkbQVxNqZ_ZNVYWMJYql3M25lBnJcIg
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0MzA4MTI0NiwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.csxoRJYPJxmiZq58eBPt7FrfaZuN4X38HHQJChzGQio
       Connection:
       - keep-alive
       User-Agent:
