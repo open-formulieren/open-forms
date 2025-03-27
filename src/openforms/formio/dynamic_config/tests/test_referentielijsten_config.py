@@ -72,8 +72,8 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             component["data"].get("values"),
             [
-                {"label": "Option 1", "value": "option1"},
                 {"label": "Option 2", "value": "option2"},
+                {"label": "Option 1", "value": "option1"},
             ],
         )
 
@@ -94,6 +94,7 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
 
         register.update_config(component, submission=self.submission, data={})
 
+        component["data"].get("values").reverse()
         self.assertEqual(
             component["data"].get("values"),
             [{"label": str(i), "value": str(i)} for i in range(101)],
@@ -316,8 +317,8 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             component["values"],
             [
-                {"label": "Option 1", "value": "option1"},
                 {"label": "Option 2", "value": "option2"},
+                {"label": "Option 1", "value": "option1"},
             ],
         )
 
@@ -543,8 +544,8 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
         self.assertEqual(
             component["values"],
             [
-                {"label": "Option 1", "value": "option1"},
                 {"label": "Option 2", "value": "option2"},
+                {"label": "Option 1", "value": "option1"},
             ],
         )
 
