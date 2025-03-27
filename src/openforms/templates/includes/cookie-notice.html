@@ -20,23 +20,14 @@
                 You can <a class="utrecht-link utrecht-link--openforms" href="{{ manage_url }}">manage your preferences</a>.
                 {% endblocktrans %}
             </span>
-
-            <div class="openforms-toolbar">
-                <ul class="openforms-toolbar__list">
-                    <li class="openforms-toolbar__list-item">
-                        <button
-                            type="submit"
-                            class="utrecht-button utrecht-button--primary-action cookie-notice__accept"
-                        >{% trans "Accept all" %}</button>
-                    </li>
-                    <li class="openforms-toolbar__list-item">
-                        <button
-                            type="submit"
-                            class="utrecht-button utrecht-button--primary-action cookie-notice__decline"
-                        >{% trans "Decline all" %}</button>
-                    </li>
-                </ul>
-            </div>
+            <p role="group" class="utrecht-button-group utrecht-button-group--column utrecht-button-group--distanced">
+                <button class="utrecht-button utrecht-button--submit utrecht-button--primary-action cookie-notice__accept" type="submit">
+                    {% trans "Accept all" %}
+                </button>
+                <button class="utrecht-button utrecht-button--submit utrecht-button--primary-action cookie-notice__decline" type="submit">
+                    {% trans "Decline all" %}
+                </button>
+            </p>
         </section>
     </template>
 {% endif %}

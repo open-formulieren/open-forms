@@ -37,8 +37,4 @@
   @include bem.element('form') {
     width: 100%;
   }
-
-  .openforms-toolbar__list:last-child .openforms-toolbar__list-item:last-child {
-    padding-bottom: 0;
-  }
 }

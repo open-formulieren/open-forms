@@ -17,15 +17,17 @@
 
                         {% include "includes/forms/field_wrapper.html" with field=form.code type='text' only %}
 
-                        <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
-                            <button class="utrecht-button utrecht-button--primary-action" type="submit">
+                        <p role="group" class="utrecht-button-group utrecht-button-group--column utrecht-button-group--distanced">
+                            <button class="utrecht-button utrecht-button--submit utrecht-button--primary-action openforms-button-with-icon" type="submit">
                                 {% trans "Submit" %}
+                                <i class="fa fas fa-icon fa-arrow-right-long" aria-hidden="true"></i>
                             </button>
-                        </div>
+                        </p>
                     </form>
                     <form method="post" action="{% url "authentication:logout" %}">{% csrf_token %}
-                        <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
-                            <button class="utrecht-button utrecht-button--primary-action utrecht-button--danger" type="submit">
+                        <p role="group" class="utrecht-button-group utrecht-button-group--column utrecht-button-group--distanced">
+                            <button class="utrecht-link-button utrecht-link-button--html-button utrecht-link-button--openforms" type="submit" name="abort">
+                                <i class="fa fas fa-icon fa-xmark" aria-hidden="true"></i>
                                 {% trans "Log out" %}
                             </button>
                         </div>
