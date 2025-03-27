@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"nested": {"bsn": "111222333"}, "foo":
-      "bar"}, "startAt": "2025-02-12"}}'
+      "bar"}, "startAt": "2025-03-27"}}'
     headers:
       Accept:
       - '*/*'
@@ -24,7 +24,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820","uuid":"9f0baed6-ff1b-4374-9b60-1698542e6820","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","uuid":"3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2025-03-27","endAt":null,"registrationAt":"2025-03-27","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -39,9 +39,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 12 Feb 2025 14:48:38 GMT
+      - Thu, 27 Mar 2025 12:54:14 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820
+      - http://localhost:8002/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e
       Referrer-Policy:
       - same-origin
       Server:
@@ -71,10 +71,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8002/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820
+    uri: http://localhost:8002/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820","uuid":"9f0baed6-ff1b-4374-9b60-1698542e6820","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","uuid":"3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-03-27","endAt":null,"registrationAt":"2025-03-27","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -89,7 +89,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 12 Feb 2025 14:48:38 GMT
+      - Thu, 27 Mar 2025 12:54:15 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -119,10 +119,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8002/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820
+    uri: http://localhost:8002/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/9f0baed6-ff1b-4374-9b60-1698542e6820","uuid":"9f0baed6-ff1b-4374-9b60-1698542e6820","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-02-12","endAt":null,"registrationAt":"2025-02-12","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","uuid":"3d395d3d-8370-44cf-ab8a-2dbaa7a3250e","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-03-27","endAt":null,"registrationAt":"2025-03-27","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -137,7 +137,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 12 Feb 2025 14:48:38 GMT
+      - Thu, 27 Mar 2025 12:54:15 GMT
       Referrer-Policy:
       - same-origin
       Server:
