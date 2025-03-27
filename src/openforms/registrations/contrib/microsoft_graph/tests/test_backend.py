@@ -177,8 +177,9 @@ class MSGraphRegistrationBackendTests(TestCase):
             submission, status=PaymentStatus.completed
         )
 
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with (
+            patch.object(Account, "is_authenticated", True),
+            patch.object(Drive, "get_root_folder", return_value=MockFolder()),
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
             graph_submission.update_payment_status(submission, self.options)
@@ -246,8 +247,9 @@ class MSGraphRegistrationOptionsTests(TestCase):
 
         set_submission_reference(submission)
 
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with (
+            patch.object(Account, "is_authenticated", True),
+            patch.object(Drive, "get_root_folder", return_value=MockFolder()),
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
             graph_submission.register_submission(submission, registration_options)
@@ -296,8 +298,9 @@ class MSGraphRegistrationOptionsTests(TestCase):
         set_submission_reference(submission)
 
         with freeze_time("2021-07-16"):
-            with patch.object(Account, "is_authenticated", True), patch.object(
-                Drive, "get_root_folder", return_value=MockFolder()
+            with (
+                patch.object(Account, "is_authenticated", True),
+                patch.object(Drive, "get_root_folder", return_value=MockFolder()),
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
                 graph_submission.register_submission(submission, registration_options)
@@ -336,8 +339,9 @@ class MSGraphRegistrationBackendFailureTests(TestCase):
         SubmissionReportFactory.create(submission=submission)
 
         with self.assertRaises(RegistrationFailed):
-            with patch.object(Account, "is_authenticated", True), patch.object(
-                Drive, "get_root_folder", return_value=MockFolder()
+            with (
+                patch.object(Account, "is_authenticated", True),
+                patch.object(Drive, "get_root_folder", return_value=MockFolder()),
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
                 graph_submission.register_submission(submission, {})

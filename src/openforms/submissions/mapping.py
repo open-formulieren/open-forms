@@ -38,9 +38,7 @@ class FieldConf:
 type MappingConfig = Mapping[str, str | FieldConf]
 
 
-def apply_data_mapping[
-    T: MutableMapping[str, Any]
-](
+def apply_data_mapping[T: MutableMapping[str, Any]](
     submission: Submission,
     mapping_config: MappingConfig,
     component_attribute: str,

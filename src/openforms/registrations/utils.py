@@ -7,9 +7,7 @@ from openforms.submissions.models import Submission
 unset = object()
 
 
-def execute_unless_result_exists[
-    R
-](
+def execute_unless_result_exists[R](
     callback: Callable[[], R],
     submission: Submission,
     spec: str,

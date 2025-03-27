@@ -118,9 +118,10 @@ class CamundaDMNTests(TestCase):
             )
             self.assertRegex(capture.records[1].msg, r"^Camunda error information: .*")
 
-        with self.subTest(
-            "Mocked 500 without JSON response body"
-        ), requests_mock.Mocker() as m:
+        with (
+            self.subTest("Mocked 500 without JSON response body"),
+            requests_mock.Mocker() as m,
+        ):
             m.get(
                 f"{self.camunda_client.root_url}decision-definition",
                 json=[{"id": "mocked-id"}],

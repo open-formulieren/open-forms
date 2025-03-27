@@ -84,9 +84,12 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        with freeze_time("2020-02-02"), patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
+        with (
+            freeze_time("2020-02-02"),
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
         ):
             result = plugin.update_payment_status(
                 submission,
@@ -136,9 +139,12 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        with freeze_time("2020-02-02"), patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
+        with (
+            freeze_time("2020-02-02"),
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
         ):
             result = plugin.update_payment_status(
                 submission,
@@ -198,9 +204,12 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        with freeze_time("2020-02-02"), patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
+        with (
+            freeze_time("2020-02-02"),
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
         ):
             result = plugin.update_payment_status(
                 submission,

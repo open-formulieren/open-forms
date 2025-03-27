@@ -17,7 +17,7 @@ def evaluate_dmn(
     definition_id: str,
     *,
     version: str = "",
-    input_values: VariablesMapping
+    input_values: VariablesMapping,
 ) -> VariablesMapping:
     """
     Evaluate the decision definition using the spefified plugin.

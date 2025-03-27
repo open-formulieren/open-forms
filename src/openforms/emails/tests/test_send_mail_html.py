@@ -131,9 +131,12 @@ class HTMLEmailLoggingTest(TestCase):
     def test_logging_email_status(self):
         submission = SubmissionFactory.create()
 
-        with patch.object(
-            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
-        ), self.captureOnCommitCallbacks(execute=True):
+        with (
+            patch.object(
+                EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+            ),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
             send_mail_html(
                 "My Subject",
                 "<p>My Message</p>",
