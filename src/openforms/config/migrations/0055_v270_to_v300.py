@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the email verification email message.",
                 validators=[
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the email verification email message.",
                 null=True,
@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the email verification email message.",
                 null=True,
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the email verification email.",
                 max_length=1000,
@@ -147,7 +147,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the email verification email.",
                 max_length=1000,
@@ -163,7 +163,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/email_verification/subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the email verification email.",
                 max_length=1000,
@@ -219,7 +219,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Request not complete yet",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title for submissions requiring cosigning.",
                 max_length=200,
@@ -234,7 +234,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Request not complete yet",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title for submissions requiring cosigning.",
                 max_length=200,
@@ -250,7 +250,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Request not complete yet",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title for submissions requiring cosigning.",
                 max_length=200,
@@ -266,7 +266,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Confirmation: {{ public_reference }}",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title. You can (and should) use the 'public_reference' variable so the users have a reference in case they need to contact the customer service.",
                 max_length=200,
@@ -281,7 +281,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Confirmation: {{ public_reference }}",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title. You can (and should) use the 'public_reference' variable so the users have a reference in case they need to contact the customer service.",
                 max_length=200,
@@ -297,7 +297,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.utils.translations.get_default,
                     *("Confirmation: {{ public_reference }}",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the confirmation page title. You can (and should) use the 'public_reference' variable so the users have a reference in case they need to contact the customer service.",
                 max_length=200,
@@ -313,7 +313,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("config/default_cosign_submission_confirmation.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the submission confirmation page for submissions requiring cosigning. The variables 'public_reference' and 'cosigner_email' are available. We strongly advise you to include the 'public_reference' in case users need to contact the customer service.",
                 validators=[
@@ -331,7 +331,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("config/default_cosign_submission_confirmation.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the submission confirmation page for submissions requiring cosigning. The variables 'public_reference' and 'cosigner_email' are available. We strongly advise you to include the 'public_reference' in case users need to contact the customer service.",
                 null=True,
@@ -350,7 +350,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("config/default_cosign_submission_confirmation.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="The content of the submission confirmation page for submissions requiring cosigning. The variables 'public_reference' and 'cosigner_email' are available. We strongly advise you to include the 'public_reference' in case users need to contact the customer service.",
                 null=True,
@@ -369,7 +369,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 validators=[
@@ -392,7 +392,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 null=True,
@@ -416,7 +416,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 null=True,
@@ -440,7 +440,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 max_length=1000,
@@ -455,7 +455,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 max_length=1000,
@@ -471,7 +471,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/cosign_subject.txt",),
-                    **{}
+                    **{},
                 ),
                 help_text="Subject of the confirmation email message when the form requires cosigning. Can be overridden on the form level.",
                 max_length=1000,
@@ -487,7 +487,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 validators=[
@@ -510,7 +510,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 null=True,
@@ -534,7 +534,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 null=True,
@@ -558,7 +558,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'submission_date', 'form_url' and 'code'.",
                 validators=[
@@ -577,7 +577,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'submission_date', 'form_url' and 'code'.",
                 null=True,
@@ -597,7 +597,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'submission_date', 'form_url' and 'code'.",
                 null=True,

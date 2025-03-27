@@ -608,12 +608,15 @@ class ClientFactoryInvalidVersionTests(SimpleTestCase):
         )
         assert config.brp_personen_version not in BRPVersions.values
 
-        with patch(
-            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
-            return_value=config,
-        ), patch(
-            "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(),
+        with (
+            patch(
+                "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+                return_value=config,
+            ),
+            patch(
+                "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(),
+            ),
         ):
             with self.assertRaises(RuntimeError):
                 get_brp_client(SubmissionFactory.build())

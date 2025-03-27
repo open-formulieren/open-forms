@@ -18,7 +18,7 @@ class FrontendRedirectMixin:
         frontend_base_url: str,
         action: SDKAction,
         action_params: dict[str, str] | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         """Assert that a response redirected to a specific frontend URL.
 
