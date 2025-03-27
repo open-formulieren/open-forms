@@ -108,35 +108,41 @@ point for the changelog entry:
 
 **Bumping the version**
 
-Use the ``bin/bumpversion.sh`` script, which is a wrapper around ``bump2version``. It
-ensures that the ``package-lock.json`` file is also updated.
+Use ``bump-my-version`` on the command line to manage the version number. It manages
+all files containing the version number.
+
+You can always see which options are available with:
+
+.. code-block:: bash
+
+    bump-my-version show-bump
 
 Examples:
 
 .. code-block:: bash
     :caption: Bugfix release
 
-    ./bin/bumpversion.sh patch
+    bump-my-version bump patch
 
 .. code-block:: bash
     :caption: Backwards compatible feature release
 
-    ./bin/bumpversion.sh minor
+    bump-my-version bump minor
 
 .. code-block:: bash
     :caption: Backwards incompatible release
 
-    ./bin/bumpversion.sh major
+    bump-my-version bump major
 
 .. code-block:: bash
     :caption: Bump alpha -> beta -> release candidate
 
-    ./bin/bumpversion.sh pre
+    bump-my-version bump pre_l
 
 .. code-block:: bash
     :caption: Bump build (alpha/beta/rc only)
 
-    ./bin/bumpversion.sh build
+    bump-my-version bump pre_n
 
 After bumping the version, verify and commit the changes:
 

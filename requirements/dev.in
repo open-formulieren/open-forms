@@ -2,7 +2,7 @@
 -r ci.txt
 
 # Helpers
-bump2version
+bump-my-version
 gitpython
 
 # Translations
