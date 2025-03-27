@@ -2013,6 +2013,149 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             organisatie_rsin="000000000",
         )
 
+    def test_create_zaak_with_natuurlijk_persoon_initiator_and_legacy_config(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+            # language_code="en",
+            completed=True,
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        with self.subTest("check recorded result"):
+            zaken_root = self.zgw_group.zrc_service.api_root
+            documenten_root = self.zgw_group.drc_service.api_root
+            self.assertTrue(result["zaak"]["url"].startswith(f"{zaken_root}/zaken/"))
+            self.assertTrue(
+                result["document"]["url"].startswith(
+                    f"{documenten_root}/enkelvoudiginformatieobjecten/"
+                )
+            )
+            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}/rollen/"))
+            self.assertTrue(
+                result["status"]["url"].startswith(f"{zaken_root}/statussen/")
+            )
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("verify zaak"):
+            zaak_data = client.get(result["zaak"]["url"], headers=CRS_HEADERS).json()
+
+            self.assertEqual(zaak_data["kenmerken"], [])
+            self.assertEqual(zaak_data["bronorganisatie"], "000000000")
+            self.assertEqual(zaak_data["verantwoordelijkeOrganisatie"], "000000000")
+            self.assertEqual(zaak_data["vertrouwelijkheidaanduiding"], "openbaar")
+            self.assertEqual(
+                zaak_data["zaaktype"],
+                f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            )
+            self.assertEqual(zaak_data["betalingsindicatie"], "nvt")
+            self.assertEqual(
+                zaak_data["zaakgeometrie"],
+                {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+            )
+
     def test_create_zaak_with_case_identification_reference(self):
         submission = SubmissionFactory.from_components(
             [
