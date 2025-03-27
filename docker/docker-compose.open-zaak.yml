@@ -35,6 +35,7 @@ services:
       - OPENZAAK_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=admin
       - OPENZAAK_SUPERUSER_EMAIL=admin@localhost
+      - DISABLE_2FA=yes
       - CELERY_BROKER_URL=redis://openzaak-redis:6379/1
       - CELERY_RESULT_BACKEND=redis://openzaak-redis:6379/1
       - NOTIFICATIONS_DISABLED=true
