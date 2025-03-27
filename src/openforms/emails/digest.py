@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import groupby
@@ -18,12 +19,14 @@ from requests.exceptions import RequestException
 from rest_framework import serializers
 from simple_certmanager.models import Certificate
 from zgw_consumers.client import build_client
+from zgw_consumers.service import pagination_helper
 
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
 from openforms.contrib.referentielijsten.client import ReferentielijstenClient
 from openforms.contrib.referentielijsten.helpers import check_expired_or_near_expiry
+from openforms.formio.constants import DataSrcOptions
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form
 from openforms.forms.models.form_registration_backend import FormRegistrationBackend
@@ -528,124 +531,90 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
 def collect_expired_or_near_expiry_referentielijsten_data():
     config = GlobalConfiguration.get_solo()
 
-    service_tabels_items_mapping = {}
-    for referentielijsten_service in config.referentielijsten_services.all():
-        with build_client(
-            referentielijsten_service, client_factory=ReferentielijstenClient
-        ) as client:
-            try:
-                tabels = client.get_tabellen()
-            except RequestException:
-                tabels = []
+    service_tables_items_mapping = defaultdict(lambda: {"tables": [], "items": []})
+    live_forms = Form.objects.live()
 
-            service_label = referentielijsten_service.label
+    # check only the services that are used by active forms and by specific components
+    for form in live_forms:
+        components = form.iter_components()
 
-            # expired or near expiry tabels
-            for tabel in tabels:
-                if (
-                    tabel_eindatum := tabel.get("einddatumGeldigheid")
-                ) and check_expired_or_near_expiry(tabel_eindatum):
-                    if service_label in service_tabels_items_mapping:
-                        service_tabels_items_mapping[service_label]["tabels"].append(
-                            ExpiredOrNearExpiryReferentielijstenTabel(
-                                naam=tabel["naam"],
-                                eindatum=datetime.fromisoformat(tabel_eindatum),
-                                expired=datetime.fromisoformat(tabel_eindatum)
-                                <= timezone.now(),
+        for component in components:
+            if component["type"] in ["selectboxes", "radio", "select"] and (
+                component.get("openForms", {}).get("dataSrc")
+                == DataSrcOptions.referentielijsten
+            ):
+                service = config.referentielijsten_services.filter(
+                    slug=component["openForms"]["service"]
+                ).first()
+
+                if service:
+                    with build_client(
+                        service, client_factory=ReferentielijstenClient
+                    ) as client:
+                        try:
+                            response = client.get(
+                                "tabellen",
+                                params={"code": component["openForms"]["code"]},
                             )
-                        )
-                    else:
-                        service_tabels_items_mapping.update(
-                            {
-                                service_label: {
-                                    "tabels": [
-                                        ExpiredOrNearExpiryReferentielijstenTabel(
-                                            naam=tabel["naam"],
-                                            eindatum=datetime.fromisoformat(
-                                                tabel_eindatum
-                                            ),
-                                            expired=datetime.fromisoformat(
-                                                tabel_eindatum
-                                            )
-                                            <= timezone.now(),
-                                        )
-                                    ]
-                                }
-                            }
-                        )
+                        except RequestException:
+                            response = []
 
-                # expired or near expiry items
-                try:
-                    items = client.get_items_for_tabel_cached(code=tabel["code"])
-                except RequestException:
-                    items = []
+                        service_label = service.label
+                        tables = list(pagination_helper(client, response.json()))
 
-                for item in items:
-                    if (
-                        item_eindatum := item.get("einddatumGeldigheid")
-                    ) and check_expired_or_near_expiry(item_eindatum):
-                        if service_label in service_tabels_items_mapping:
+                        # expired or near expiry tabels
+                        for table in tables:
                             if (
-                                "items"
-                                not in service_tabels_items_mapping[service_label]
-                            ):
-                                service_tabels_items_mapping[service_label].update(
-                                    {
-                                        "items": [
-                                            ExpiredOrNearExpiryReferentielijstenItem(
-                                                naam=item["naam"],
-                                                eindatum=datetime.fromisoformat(
-                                                    item_eindatum
-                                                ),
-                                                expired=datetime.fromisoformat(
-                                                    item_eindatum
-                                                )
-                                                <= timezone.now(),
-                                            )
-                                        ]
-                                    }
-                                )
-                            else:
-                                service_tabels_items_mapping[service_label][
-                                    "items"
+                                tabel_eindatum := table.get("einddatumGeldigheid")
+                            ) and check_expired_or_near_expiry(tabel_eindatum):
+                                service_tables_items_mapping[service_label][
+                                    "tables"
                                 ].append(
-                                    ExpiredOrNearExpiryReferentielijstenItem(
-                                        naam=item["naam"],
-                                        eindatum=datetime.fromisoformat(item_eindatum),
-                                        expired=datetime.fromisoformat(item_eindatum)
+                                    ExpiredOrNearExpiryReferentielijstenTabel(
+                                        naam=table["naam"],
+                                        eindatum=datetime.fromisoformat(tabel_eindatum),
+                                        expired=datetime.fromisoformat(tabel_eindatum)
                                         <= timezone.now(),
                                     )
                                 )
-                        else:
-                            service_tabels_items_mapping.update(
-                                {
-                                    service_label: {
-                                        "items": [
-                                            ExpiredOrNearExpiryReferentielijstenItem(
-                                                naam=item["naam"],
-                                                eindatum=datetime.fromisoformat(
-                                                    item_eindatum
-                                                ),
-                                                expired=datetime.fromisoformat(
-                                                    item_eindatum
-                                                )
-                                                <= timezone.now(),
-                                            )
-                                        ]
-                                    }
-                                }
-                            )
 
-    if not service_tabels_items_mapping:
+                            # expired or near expiry items
+                            try:
+                                items = client.get_items_for_tabel_cached(
+                                    code=table["code"]
+                                )
+                            except RequestException:
+                                items = []
+
+                            for item in items:
+                                if (
+                                    item_eindatum := item.get("einddatumGeldigheid")
+                                ) and check_expired_or_near_expiry(item_eindatum):
+                                    service_tables_items_mapping[service_label][
+                                        "items"
+                                    ].append(
+                                        ExpiredOrNearExpiryReferentielijstenItem(
+                                            naam=item["naam"],
+                                            eindatum=datetime.fromisoformat(
+                                                item_eindatum
+                                            ),
+                                            expired=datetime.fromisoformat(
+                                                item_eindatum
+                                            )
+                                            <= timezone.now(),
+                                        )
+                                    )
+
+    if not service_tables_items_mapping:
         return []
 
     data_to_report = []
-    for service, data in service_tabels_items_mapping.items():
+    for service, data in service_tables_items_mapping.items():
         data_to_report.append(
             ExpiringReferentielijstenService(
                 service=service,
-                tabels=data.get("tabels") or [],
-                items=data.get("items") or [],
+                tabels=data["tables"],
+                items=data["items"],
             )
         )
 
