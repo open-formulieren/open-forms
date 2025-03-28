@@ -831,6 +831,12 @@
       "value": "Whether the form is (soft) deleted"
     }
   ],
+  "7HlMn7": [
+    {
+      "type": 0,
+      "value": "You must select a service."
+    }
+  ],
   "7JMcZW": [
     {
       "type": 0,
@@ -5213,6 +5219,12 @@
     {
       "type": 0,
       "value": "Internal name"
+    }
+  ],
+  "i/P7yw": [
+    {
+      "type": 0,
+      "value": "You must select a table."
     }
   ],
   "i7HknI": [
