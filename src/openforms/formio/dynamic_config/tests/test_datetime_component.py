@@ -6,15 +6,12 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from freezegun import freeze_time
-from rest_framework.test import APIRequestFactory
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
 
 from ...service import FormioConfigurationWrapper, get_dynamic_configuration
 from ...typing import DatetimeComponent
-
-request_factory = APIRequestFactory()
 
 
 @override_settings(TIME_ZONE="Europe/Amsterdam")
@@ -24,12 +21,11 @@ class DynamicDatetimeConfigurationTests(TestCase):
         component: DatetimeComponent, variables: dict[str, Any]
     ) -> DatetimeComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
-        request = request_factory.get("/irrelevant")
         submission = SubmissionFactory.create()
         static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
         config_wrapper = get_dynamic_configuration(
-            config_wrapper, request=request, submission=submission, data=variables
+            config_wrapper, submission=submission, data=variables
         )
         new_configuration = config_wrapper.configuration
         return new_configuration["components"][0]

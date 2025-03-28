@@ -60,7 +60,7 @@ def evaluate_form_logic(
     7. Update relevant data structures
 
        1. Update the variables state
-    2. Create a data difference between before and after applying form logic
+       2. Create a data difference between before and after applying form logic
 
     :param submission: Submission instance.
     :param step: Submission-step instance.
@@ -119,7 +119,6 @@ def evaluate_form_logic(
     # mutations based on logic, which is then in turn passed to the serializer(s)
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
-        request=None,
         submission=submission,
         data=data_for_evaluation.data,
     )
