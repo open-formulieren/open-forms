@@ -43,12 +43,9 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    =========== =================== ===================
    SDK version minimum API version maximum API version
    =========== =================== ===================
-   2.1.0       2.4.0               n/a
-   2.2.0       2.4.0               2.6.x
-   2.3.0       2.7.0               n/a
-   2.4.0       2.8.0               n/a
-   3.0.0       3.0.0               n/a
    3.1.0       3.1.0               n/a
+   3.0.0       3.0.0               n/a
+   2.4.0       2.8.0               2.8.x
    =========== =================== ===================
 
 End-of-life versions are not listed in this table.
@@ -154,7 +151,6 @@ backend version.
    3.1.x           3.1.y
    3.0.x           3.0.y
    2.8.x           2.8.y
-   2.7.x           2.7.y
-   2.6.x           2.6.y
-   2.5.x           2.5.y
    =============== ===========
+
+End-of-life versions are not listed in this table.
