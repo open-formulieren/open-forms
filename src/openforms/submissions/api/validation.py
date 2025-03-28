@@ -115,7 +115,6 @@ class SubmissionCompletionSerializer(serializers.Serializer):
                 # on purpose to avoid duplicate logic evaluation
                 configuration = get_dynamic_configuration(
                     form_definition.configuration_wrapper,
-                    self.context["request"],
                     submission=submission,
                     data=data,
                 ).configuration

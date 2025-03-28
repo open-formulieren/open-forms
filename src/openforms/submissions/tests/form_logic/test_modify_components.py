@@ -1,3 +1,5 @@
+import unittest
+
 from django.test import TestCase, tag
 
 from openforms.forms.constants import LogicActionTypes
@@ -874,6 +876,55 @@ class ComponentModificationTests(TestCase):
             "Some data that must not be cleared!", submission_step.data["textField"]
         )
 
+    @tag("gh-2324")
+    @unittest.expectedFailure
+    def test_component_visible_with_date(self):
+        """
+        Assert that the textfield is not cleared, as the conditional cause it to be
+        visible. This currently fails because the value is not converted to a date
+        object, whereas the submitted data for the date field is. Comparing a plain
+        string with a date object will always fail.
+        """
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "hidden": True,
+                        "conditional": {
+                            "eq": "2025-01-01",
+                            "show": True,
+                            "when": "date",
+                        },
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "date": "2025-01-01",
+                "textField": "Some data that must not be cleared!",
+            },
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        self.assertEqual(
+            "Some data that must not be cleared!", submission_step.data["textField"]
+        )
+
     @tag("gh-1183")
     def test_component_incomplete_frontend_logic(self):
         form = FormFactory.create()
@@ -914,7 +965,7 @@ class ComponentModificationTests(TestCase):
         )
 
         # Does not raise exception
-        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+        evaluate_form_logic(submission, submission_step, submission.data)
 
     @tag("gh-2781")
     def test_hiding_nested_field(self):
@@ -972,7 +1023,7 @@ class ComponentModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+        evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertEqual(submission_step.data["nested"]["component"], "")
 
@@ -1007,7 +1058,7 @@ class ComponentModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+        evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertNotIn("selectboxes", submission_step.data)
 

@@ -714,3 +714,52 @@ class VariableModificationTests(TestCase):
         variables_state = submission.load_submission_value_variables_state()
 
         self.assertTrue(variables_state.variables["canApply"].value)
+
+    def test_two_actions_on_the_same_variable(self):
+        """
+        Assert that it is possible to execute two consecutive actions on the same
+        variable. It ensures that the returns from jsonLogic calls are converted to
+        the Python-type domain (date object in this case).
+        """
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {"type": "date", "key": "date"},
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"date": ""},
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "date",
+                    "action": {
+                        "type": "variable",
+                        "value": "2025-06-06",
+                    },
+                },
+                {
+                    "variable": "date",
+                    "action": {
+                        "type": "variable",
+                        "value": {"+": [{"var": "date"}, {"duration": "P1M"}]},
+                    },
+                },
+            ],
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(str(variables_state.variables["date"].value), "2025-07-06")

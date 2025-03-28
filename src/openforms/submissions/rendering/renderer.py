@@ -74,7 +74,6 @@ class Renderer:
                 submission=self.submission,
                 step=step,
                 data=submission_data,
-                dirty=False,
                 request=self.dummy_request,
             )
             # update the configuration for introspection - note that we are mutating
