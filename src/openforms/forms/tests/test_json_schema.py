@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
@@ -188,21 +188,39 @@ class GenerateJsonSchemaTests(TestCase):
                 },
                 "foo": {"type": "array", "title": "Foo"},
             },
-            "required": (
+            "required": [
+                "today",
+                "auth_bsn",
                 "firstName",
                 "lastName",
                 "select",
                 "selectboxes",
                 "radio",
                 "file",
-                "auth_bsn",
-                "today",
                 "foo",
-            ),
+            ],
             "additionalProperties": False,
         }
 
         self.assertEqual(schema, expected_schema)
+
+    @tag("gh-5205")
+    def test_non_existing_variable_not_in_required(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "firstName", "type": "textfield", "label": "First Name"},
+                    {"key": "lastName", "type": "textfield", "label": "Last Name"},
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        vars_to_include = ("firstName", "lastName", "nonExistingVariable")
+        schema = generate_json_schema(form, vars_to_include)
+
+        self.assertEqual(schema["required"], ["firstName", "lastName"])
 
 
 class FormVariableAsJsonSchemaTests(TestCase):
