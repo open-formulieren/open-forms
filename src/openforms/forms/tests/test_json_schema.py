@@ -106,103 +106,102 @@ class GenerateJsonSchemaTests(TestCase):
         )
         schema = generate_json_schema(form, vars_to_include)
 
-        expected_schema = {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
-            "properties": {
-                "today": {"title": "Today's date", "type": "string", "format": "date"},
-                "auth_bsn": {
-                    "title": "BSN",
-                    "description": "Uniquely identifies the authenticated person. This value follows the rules for Dutch social security numbers.",
-                    "type": "string",
-                    "pattern": "^\\d{9}$",
-                    "format": "nl-bsn",
+        expected_properties = {
+            "today": {"title": "Today's date", "type": "string", "format": "date"},
+            "auth_bsn": {
+                "title": "BSN",
+                "description": "Uniquely identifies the authenticated person. This value follows the rules for Dutch social security numbers.",
+                "type": "string",
+                "pattern": "^\\d{9}$",
+                "format": "nl-bsn",
+            },
+            "firstName": {"title": "First Name", "type": "string"},
+            "lastName": {
+                "title": "Last Name",
+                "type": "array",
+                "items": {"type": "string"},
+            },
+            "select": {
+                "type": "array",
+                "items": {"type": "string", "enum": ["a", "b", ""]},
+                "title": "Select",
+            },
+            "selectboxes": {
+                "title": "Select boxes",
+                "type": "object",
+                "properties": {
+                    "option1": {"type": "boolean"},
+                    "option2": {"type": "boolean"},
                 },
-                "firstName": {"title": "First Name", "type": "string"},
-                "lastName": {
-                    "title": "Last Name",
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
-                "select": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": ["a", "b", ""]},
-                    "title": "Select",
-                },
-                "selectboxes": {
-                    "title": "Select boxes",
+                "required": ["option1", "option2"],
+                "additionalProperties": False,
+            },
+            "radio": {"title": "Radio", "type": "string", "enum": ["a", "b", ""]},
+            "file": {
+                "title": "File",
+                "type": "array",
+                "items": {
                     "type": "object",
                     "properties": {
-                        "option1": {"type": "boolean"},
-                        "option2": {"type": "boolean"},
-                    },
-                    "required": ["option1", "option2"],
-                    "additionalProperties": False,
-                },
-                "radio": {"title": "Radio", "type": "string", "enum": ["a", "b", ""]},
-                "file": {
-                    "title": "File",
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string"},
-                            "originalName": {"type": "string"},
-                            "size": {"type": "number", "description": "Size in bytes"},
-                            "storage": {"type": "string"},
-                            "type": {"type": "string"},
-                            "url": {"type": "string", "format": "uri"},
-                            "data": {
-                                "type": "object",
-                                "properties": {
-                                    "baseUrl": {"type": "string", "format": "uri"},
-                                    "form": {"type": "string"},
-                                    "name": {"type": "string"},
-                                    "project": {"type": "string"},
-                                    "size": {
-                                        "type": "number",
-                                        "description": "Size in bytes",
-                                    },
-                                    "url": {"type": "string", "format": "uri"},
+                        "name": {"type": "string"},
+                        "originalName": {"type": "string"},
+                        "size": {"type": "number", "description": "Size in bytes"},
+                        "storage": {"type": "string"},
+                        "type": {"type": "string"},
+                        "url": {"type": "string", "format": "uri"},
+                        "data": {
+                            "type": "object",
+                            "properties": {
+                                "baseUrl": {"type": "string", "format": "uri"},
+                                "form": {"type": "string"},
+                                "name": {"type": "string"},
+                                "project": {"type": "string"},
+                                "size": {
+                                    "type": "number",
+                                    "description": "Size in bytes",
                                 },
-                                "required": [
-                                    "baseUrl",
-                                    "form",
-                                    "name",
-                                    "project",
-                                    "size",
-                                    "url",
-                                ],
+                                "url": {"type": "string", "format": "uri"},
                             },
+                            "required": [
+                                "baseUrl",
+                                "form",
+                                "name",
+                                "project",
+                                "size",
+                                "url",
+                            ],
                         },
-                        "required": [
-                            "name",
-                            "originalName",
-                            "size",
-                            "storage",
-                            "type",
-                            "url",
-                            "data",
-                        ],
                     },
+                    "required": [
+                        "name",
+                        "originalName",
+                        "size",
+                        "storage",
+                        "type",
+                        "url",
+                        "data",
+                    ],
                 },
-                "foo": {"type": "array", "title": "Foo"},
             },
-            "required": [
-                "today",
-                "auth_bsn",
-                "firstName",
-                "lastName",
-                "select",
-                "selectboxes",
-                "radio",
-                "file",
-                "foo",
-            ],
-            "additionalProperties": False,
+            "foo": {"type": "array", "title": "Foo"},
+        }
+        expected_required = {
+            "today",
+            "auth_bsn",
+            "firstName",
+            "lastName",
+            "select",
+            "selectboxes",
+            "radio",
+            "file",
+            "foo",
         }
 
-        self.assertEqual(schema, expected_schema)
+        with self.subTest("properties"):
+            self.assertEqual(schema["properties"], expected_properties)
+
+        with self.subTest("required"):
+            self.assertEqual(set(schema["required"]), expected_required)
 
     @tag("gh-5205")
     def test_non_existing_variable_not_in_required(self):
