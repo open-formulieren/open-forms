@@ -154,3 +154,56 @@
         {% endfor %}
     </ul>
 {% endif %}
+
+{% if expired_or_near_expiry_referentielijsten_data %}
+    <h4>{% trans "Referentielijsten (tabels-items expired or near expiry)" %}</h4>
+    <ul>
+        {% for service in expired_or_near_expiry_referentielijsten_data %}
+            {% blocktranslate with service_label=service.service %}
+                <h4>Service: {{ service_label }}</h4>
+            {% endblocktranslate %}
+            
+            <!-- Expiring tables -->
+            {% if service.tabels %}
+                <h4>{% trans "Tabels" %}</h4>
+                {% for tabel in service.tabels %}
+                    <li>
+                        <p>
+                            {% if tabel.expired %}
+                                {% blocktranslate with tabel_naam=tabel.naam time_passed=tabel.eindatum|timesince trimmed %}
+                                    Table '{{ tabel_naam }}' expired {{ time_passed }} ago.
+                                {% endblocktranslate %}
+                            {% else %}
+                                {% blocktranslate with tabel_naam=tabel.naam time_left=tabel.eindatum|timeuntil trimmed %}
+                                    Table '{{ tabel_naam }}' will expire in {{ time_left }}.
+                                {% endblocktranslate %}
+                            {% endif %}                           
+                        </p>
+                    </li>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Expiring items -->
+            {% if service.items %}
+                <h4>{% trans "Items" %}</h4>
+                {% for item in service.items %}
+                    <li>
+                        <p>
+                            {% if item.expired %}
+                                {% blocktranslate with item_naam=item.naam time_passed=item.eindatum|timesince trimmed %}
+                                    Item '{{ item_naam }}' expired {{ time_passed }} ago.
+                                {% endblocktranslate %}
+                            {% else %}
+                                {% blocktranslate with item_naam=item.naam time_left=item.eindatum|timeuntil trimmed %}
+                                    Item '{{ item_naam }}' will expire in {{ time_left }}.
+                                {% endblocktranslate %}
+                            {% endif %} 
+                        </p>
+                    </li>
+                {% endfor %}
+            {% endif %}
+            <p><a href="{{ service.general_config_admin_link }}">{% trans "View general configuration for the service mentioned above" %}</a></p>
+        {% endfor %}
+    </ul>
+{% endif %}
+

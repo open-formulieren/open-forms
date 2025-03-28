@@ -217,6 +217,25 @@ class SelectReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             _("No results found from Referentielijsten API."),
         )
 
+    def test_items_expired(self):
+        component: SelectComponent = {
+            "key": "select",
+            "type": "select",
+            "label": "Select",
+            "data": {},
+            "dataType": "string",
+            "openForms": {
+                "code": "item-not-geldig-anymore",
+                "dataSrc": DataSrcOptions.referentielijsten,
+                "service": self.service.slug,
+                "translations": {},
+            },
+        }
+
+        register.update_config(component, submission=self.submission, data={})
+
+        self.assertEqual(component["data"].get("values"), [])
+
     @requests_mock.Mocker()
     def test_request_exception(self, m):
         component: SelectComponent = {
@@ -424,6 +443,25 @@ class SelectboxesReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             _("No results found from Referentielijsten API."),
         )
 
+    def test_items_expired(self):
+        component: SelectBoxesComponent = {
+            "key": "selectboxes",
+            "type": "selectboxes",
+            "label": "Selectboxes",
+            "values": [],
+            "dataType": "string",
+            "openForms": {
+                "code": "item-not-geldig-anymore",
+                "dataSrc": DataSrcOptions.referentielijsten,
+                "service": self.service.slug,
+                "translations": {},
+            },
+        }
+
+        register.update_config(component, submission=self.submission, data={})
+
+        self.assertEqual(component.get("values"), [])
+
     @requests_mock.Mocker()
     def test_request_exception(self, m):
         component: SelectBoxesComponent = {
@@ -627,6 +665,25 @@ class RadioReferentielijstenOptionsTests(OFVCRMixin, TestCase):
             log.extra_data["error"],
             _("No results found from Referentielijsten API."),
         )
+
+    def test_items_expired(self):
+        component: RadioComponent = {
+            "key": "radio",
+            "type": "radio",
+            "label": "Radio",
+            "values": [],
+            "dataType": "string",
+            "openForms": {
+                "code": "item-not-geldig-anymore",
+                "dataSrc": DataSrcOptions.referentielijsten,
+                "service": self.service.slug,
+                "translations": {},
+            },
+        }
+
+        register.update_config(component, submission=self.submission, data={})
+
+        self.assertEqual(component.get("values"), [])
 
     @requests_mock.Mocker()
     def test_request_exception(self, m):

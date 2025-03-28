@@ -38,6 +38,7 @@ from stuf.stuf_bg.client import NoServiceConfigured
 from ..digest import (
     InvalidLogicRule,
     collect_broken_configurations,
+    collect_expired_or_near_expiry_referentielijsten_data,
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
@@ -1021,3 +1022,38 @@ class InvalidLogicRulesTests(TestCase):
             ),
             invalid_logic_rules,
         )
+
+
+class ReferencelistExpiredDataTests(TestCase):
+
+    def test_inactive_form_does_not_trigger_checks(self):
+        FormFactory.create(active=False)
+
+        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+
+        self.assertEqual(len(expired_data), 0)
+
+    def test_soft_deleted_form_does_not_trigger_checks(self):
+        FormFactory.create(_is_deleted=True)
+
+        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+
+        self.assertEqual(len(expired_data), 0)
+
+    def test_form_with_different_component_does_not_trigger_checks(self):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textbox",
+                        "type": "textbox",
+                        "label": "Textbox",
+                    }
+                ],
+            },
+        )
+
+        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+
+        self.assertEqual(len(expired_data), 0)

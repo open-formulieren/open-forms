@@ -12,6 +12,7 @@ from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
 from simple_certmanager.test.factories import CertificateFactory
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
@@ -31,6 +32,7 @@ from openforms.registrations.registry import register as register_register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..tasks import send_email_digest
 
@@ -294,5 +296,105 @@ class EmailDigestTaskIntegrationTests(TestCase):
             )
             self.assertIn(
                 f"Logic rule for variable 'foo' is invalid in form '{form.admin_name}'.",
+                sent_email.body,
+            )
+
+
+@override_settings(LANGUAGE_CODE="en")
+class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        config = GlobalConfiguration.get_solo()
+        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        config.save()
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+        # The service is relative to the docker compose instance that we have in the
+        # docker directory (docker-compose.referentielijsten.yml)
+        self.referentielijsten_service = ServiceFactory.create(
+            api_root="http://localhost:8004/api/v1/",
+            slug="referentielijsten",
+            auth_type=AuthTypes.no_auth,
+        )
+        config.referentielijsten_services.add(self.referentielijsten_service)
+
+    def test_tables(self):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referentielijsten",
+                            "service": "referentielijsten",
+                            "code": "not-geldig-anymore	",
+                        },
+                    }
+                ],
+            },
+        )
+
+        # expiring
+        with freeze_time("2020-01-30T12:30:00+01:00"):
+            send_email_digest()
+            sent_email = mail.outbox[-1]
+
+            self.assertIn(
+                "Table 'Tabel that is not geldig anymore' will expire in 3 days, 21 hours.",
+                sent_email.body,
+            )
+
+        # expired
+        with freeze_time("2020-03-30T12:30:00+01:00"):
+            send_email_digest()
+            sent_email = mail.outbox[-1]
+
+            self.assertIn(
+                "Table 'Tabel that is not geldig anymore' expired 1 month, 3 weeks ago.",
+                sent_email.body,
+            )
+
+    def test_items(self):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referentielijsten",
+                            "service": "referentielijsten",
+                            "code": "item-not-geldig-anymore",
+                        },
+                    }
+                ],
+            },
+        )
+
+        # expiring
+        with freeze_time("2025-02-01T12:30:00+01:00"):
+            send_email_digest()
+            sent_email = mail.outbox[-1]
+
+            self.assertIn(
+                "Item 'Not geldig option' will expire in 6 days, 2 hours.",
+                sent_email.body,
+            )
+
+        # expired
+        with freeze_time("2025-03-01T12:30:00+01:00"):
+            send_email_digest()
+            sent_email = mail.outbox[-1]
+
+            self.assertIn(
+                "Item 'Not geldig option' expired 3 weeks ago.",
                 sent_email.body,
             )
