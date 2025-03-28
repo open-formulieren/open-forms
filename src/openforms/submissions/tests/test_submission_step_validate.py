@@ -14,6 +14,7 @@ from openforms.formio.tests.factories import (
 )
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -680,6 +681,75 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
                 },
             ),
             {"data": {"fieldset": [{"fileUpload1": [file]}]}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    @tag("gh-5191")
+    def test_validate_map_component_hidden_and_clear_on_hide(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "label": "Radio",
+                        "openForms": {"dataSrc": "manual"},
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                    {
+                        "type": "map",
+                        "key": "map",
+                        "label": "Map",
+                        "clearOnHide": True,
+                        "interactions": {
+                            "marker": True,
+                            "polygon": False,
+                            "polyline": False,
+                        },
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "toggle"}, "a"]},
+            actions=[
+                {
+                    "uuid": "981ebf58-4d2e-4b1f-bf6b-709a52104714",
+                    "component": "kaart",
+                    "formStepUuid": None,
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "hidden", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                "data": {
+                    "radio": "a",
+                    "map": None,
+                }
+            },
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
