@@ -188,17 +188,17 @@ class GenerateJsonSchemaTests(TestCase):
                 },
                 "foo": {"type": "array", "title": "Foo"},
             },
-            "required": (
+            "required": [
+                "today",
+                "auth_bsn",
                 "firstName",
                 "lastName",
                 "select",
                 "selectboxes",
                 "radio",
                 "file",
-                "auth_bsn",
-                "today",
                 "foo",
-            ),
+            ],
             "additionalProperties": False,
         }
 
