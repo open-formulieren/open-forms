@@ -60,7 +60,6 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         ):
             updated_config_wrapper = get_dynamic_configuration(
                 formio_wrapper,
-                request=None,
                 submission=submission,
             )
 
@@ -226,7 +225,6 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
 
         updated_config_wrapper = get_dynamic_configuration(
             formio_wrapper,
-            request=None,
             submission=submission,
         )
 
