@@ -28,7 +28,7 @@
     "model": "catalogi.catalogus",
     "pk": 1,
     "fields": {
-        "_etag": "6cecca4fea6af5d8acc582e1c52ce24b",
+        "_etag": "d5c24c2b7426c0f0f6f01616e3f562a2",
         "naam": "Test catalog",
         "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
         "domein": "TEST",
@@ -84,6 +84,17 @@
     }
 },
 {
+    "model": "catalogi.eigenschapspecificatie",
+    "pk": 2,
+    "fields": {
+        "groep": "",
+        "formaat": "tekst",
+        "lengte": "20",
+        "kardinaliteit": "1",
+        "waardenverzameling": "[]"
+    }
+},
+{
     "model": "catalogi.eigenschap",
     "pk": 1,
     "fields": {
@@ -126,6 +137,22 @@
         "eigenschapnaam": "a property name",
         "definitie": "a definition",
         "specificatie_van_eigenschap": 1,
+        "toelichting": "",
+        "zaaktype": 5,
+        "statustype": null
+    }
+},
+{
+    "model": "catalogi.eigenschap",
+    "pk": 5,
+    "fields": {
+        "_etag": "174c26545e6b3dd39151478452272532",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "f376c43d-97f6-423c-a25c-9264142db235",
+        "eigenschapnaam": "second property",
+        "definitie": "a definition",
+        "specificatie_van_eigenschap": 2,
         "toelichting": "",
         "zaaktype": 5,
         "statustype": null
@@ -177,7 +204,7 @@
     "model": "catalogi.informatieobjecttype",
     "pk": 3,
     "fields": {
-        "_etag": "6185cc7af26276b5562929eea87cb2cc",
+        "_etag": "cf97de635cb22b89d77afc05a431d990",
         "datum_begin_geldigheid": "2024-03-19",
         "datum_einde_geldigheid": "2024-07-10",
         "concept": false,
@@ -300,6 +327,27 @@
     }
 },
 {
+    "model": "catalogi.informatieobjecttype",
+    "pk": 10,
+    "fields": {
+        "_etag": "1855b6b7524a50057d12f707f7eab63c",
+        "datum_begin_geldigheid": "2024-07-10",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "7755ab0f-9e37-4834-8bbf-158f9f2da38e",
+        "omschrijving": "Attachment Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 1
+    }
+},
+{
     "model": "catalogi.zaaktypeinformatieobjecttype",
     "pk": 1,
     "fields": {
@@ -334,6 +382,19 @@
         "zaaktype": 5,
         "informatieobjecttype": 3,
         "volgnummer": 1,
+        "richting": "inkomend",
+        "statustype": null
+    }
+},
+{
+    "model": "catalogi.zaaktypeinformatieobjecttype",
+    "pk": 5,
+    "fields": {
+        "_etag": "c4681e513d283f766e4b117654c3ed13",
+        "uuid": "7194c151-fd08-4b7e-86ea-b3ca390f0b89",
+        "zaaktype": 5,
+        "informatieobjecttype": 10,
+        "volgnummer": 2,
         "richting": "inkomend",
         "statustype": null
     }
@@ -920,7 +981,7 @@
     "model": "catalogi.zaaktype",
     "pk": 3,
     "fields": {
-        "_etag": "357b3382dc34589c6b8281186b0c0c23",
+        "_etag": "a05d172ffff0c5de833e8edbc531d281",
         "datum_begin_geldigheid": "2023-01-01",
         "datum_einde_geldigheid": "2024-03-26",
         "concept": false,
@@ -966,7 +1027,7 @@
     "model": "catalogi.zaaktype",
     "pk": 5,
     "fields": {
-        "_etag": "fde03886a89d769c02e66a24fb47e991",
+        "_etag": "14cb0d757ba364562edbb66412778d30",
         "datum_begin_geldigheid": "2024-10-31",
         "datum_einde_geldigheid": null,
         "concept": false,
