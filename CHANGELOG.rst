@@ -262,6 +262,109 @@ We addressed some minor security concerns.
     - Bumped kombu to 5.5.
     - Bumped tzdata to 2025.1.
 
+3.0.6 (2025-03-17)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab. In this bugfix we added scripts to fix any forms
+    that still might be affected by this issue. You should run these scripts after
+    deploying the patch release, to make sure all Objects API registrations are correctly
+    configured.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. This would require you to remove the Objects API registrations, and
+    re-define them.
+
+**Bugfixes**
+
+* [:backend:`5158`] Fixed not being able to delete ZGW API groups.
+* [:backend:`5142`] Fixed logic tab crashing and incorrectly displaying 0 component
+  variables when removing fields from the form.
+* [:backend:`5124`] Fixed hidden prefill fields triggering validation.
+* [:backend:`5031`] Fixed missing ``variables_mapping`` in the Objects API registration
+  plugin.
+* [:backend:`5104`] Fixed ``null`` default values for radio fields.
+
+2.8.7 (2025-03-17)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab. In this bugfix we added scripts to fix any forms
+    that still might be affected by this issue. You should run these scripts after
+    deploying the patch release, to make sure all Objects API registrations are correctly
+    configured.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. This would require you to remove the Objects API registrations, and
+    re-define them.
+
+**Bugfixes**
+
+* [:backend:`5158`] Fixed not being able to delete ZGW API groups.
+* [:backend:`5142`] Fixed logic tab crashing and incorrectly displaying 0 component
+  variables when removing fields from the form.
+* [:backend:`5124`] Fixed hidden prefill fields triggering validation.
+* [:backend:`5031`] Fixed missing ``variables_mapping`` in the Objects API registration
+  plugin.
+* [:backend:`5104`] Fixed ``null`` default values for radio fields.
+
+3.0.5 (2025-03-03)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    We fixed a bug that would mess with the validation of the soft-required components.
+    A script is included to fix the forms that are affected - you need to run this
+    after deploying the patch release.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_softrequired_component_required_validation.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. Simply edit the soft-required components by opening the ``JSON`` view
+    and within the ``validate`` key change ``required: true`` to ``required: false``.
+
+**Bugfixes**
+
+* [:backend:`5086`, :backend:`5090`] Fixed soft-required errors being shown for hidden
+  upload fields and blocking going to the next form step.
+* [:backend:`5039`] Fixed some error messages not shown properly in the Email
+  Registration plugin.
+* Worked around some performance issues while evaluating form logic.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
+2.8.6 (2025-03-03)
+==================
+
+Regular bugfix release.
+
+* Worked around some performance issues while evaluating form logic.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
 3.1.0-alpha.1 (2025-02-20)
 ==========================
 
