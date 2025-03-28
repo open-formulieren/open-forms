@@ -30,7 +30,7 @@ interactions:
         src=\"https://external-assets.test.cdn.v-psp.com/t/92537cd607774b90a88cc73a76629f59/1716986701/logo.png\"
         crossorigin=\"anonymous\" integrity=\"sha384-fD6aXhSYV&#x2B;STX0QcQW7Po7ClyHgBzsjMCtZZUbkTQX2l/kORkd2OW3lMlFfOP7u7\"
         class=\"logo\">\r\n    </div>\r\n    <div id=\"payment-zone\">\r\n<script
-        language=\"javascript\" type=\"text/Javascript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\nvar
+        language=\"javascript\" type=\"text/Javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\nvar
         ncolwaitwindow;\r\nvar ncolwaitwindowopen = 0;\r\n\r\n<!--\r\ndocument.write('<div
         class=\"WaitMsgClass\" id=\"WaitMsgId\" style=\"display: none;background-color:
         #FFFFFF;border: solid #CCCCCC 4px;padding: 4px;color: #000000;font-family:
@@ -69,13 +69,13 @@ interactions:
         integrity=\"sha384-ofaZZV89F0Ifpfo/oxwTitdLxHYaNWCHjCTtbigxGqiYPAs73p+M+RNGnFl+L2UN\"></script>\r\n\t\t<script
         type=\"text/javascript\" src=\"js/jquery.plugins/jquery.jquery-encoder-0.1.0.min.js\"
         integrity=\"sha384-OvIz4RyGoBJh3KDcLCf+HV9lqHHsYYbtASTQ6rEzm46e9xmBuTaTPKTh8DzE5mYQ\"></script>\r\n\t\t<script
-        type=\"text/JavaScript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\t\t<!--\r\n\t\tfunction
+        type=\"text/JavaScript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\t\t<!--\r\n\t\tfunction
         trustHTML(sStr) {\r\n\t\t\treturn sStr;\r\n\t\t}\r\n\t\t//-->\r\n\t\t</script>\r\n\t\r\n\t\t<script
-        type=\"text/javascript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\t\t\tvar
+        type=\"text/javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\t\t\tvar
         OGONE = {};\r\n\t\t\tOGONE.jQuery = $.noConflict(true);\r\n\t\t</script>\r\n\t\r\n\r\n\t<script
         type=\"text/javascript\" language=\"javascript\" src=\"js/required_fields.js\"
         integrity=\"sha384-9PURNqrA6Ol/2IcFqn/dzZ4F80YsW6ZUGCPsxFmUdcjYNjQ5wERx6o2B4LDeYtWN\"></script>\r\n\t<script
-        type=\"text/javascript\" language=\"javascript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\t\tfunction
+        type=\"text/javascript\" language=\"javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\t\tfunction
         createHiddenInput(form, name, value)\r\n\t\t{\r\n\t\t\tvar input = document.createElement(\"input\");\r\n\t\t\tinput.setAttribute(\"type\",
         \"hidden\");\r\n            input.setAttribute(\"name\", name);\r\n            if
         (typeof value === \"undefined\") {\r\n                input.setAttribute(\"value\",
@@ -98,30 +98,30 @@ interactions:
         small;\r\n\t\tpadding : 3px;\r\n\t}\r\n\t.star {\r\n\t\tfont-size: 10px;\r\n\t}\r\n\t.note
         {\r\n\t\tfont-size: 10px;\r\n\t\tpadding : 3px;\r\n\t}\r\n\t.tc {\r\n\t\tfont-size:
         10px;\r\n\t\tpadding : 5px;\r\n\t}\r\n\t.justify {\r\n\t\ttext-align : justify;\r\n\t}\r\n</style>\r\n\r\n<script
-        type=\"text/javascript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tvar
+        type=\"text/javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tvar
         js_version = 1.0;\r\n</script>\r\n<script language=\"Javascript1.1\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.1;\r\n</script>\r\n<script language=\"Javascript1.2\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.2;\r\n</script>\r\n<script language=\"Javascript1.3\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.3;\r\n</script>\r\n<script language=\"Javascript1.4\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.4;\r\n</script>\r\n<script language=\"Javascript1.5\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.5;\r\n</script>\r\n<script language=\"Javascript1.6\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.6;\r\n</script>\r\n<script language=\"Javascript1.7\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.7;\r\n</script>\r\n<script language=\"Javascript1.8\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.8;\r\n</script>\r\n<script language=\"Javascript1.9\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.9;\r\n</script>\r\n<script language=\"Javascript1.10\" type=\"text/javascript\"
-        nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n\tjs_version
+        nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\tjs_version
         = 1.10;\r\n</script>\r\n\r\n<script type=\"text/javascript\" src=\"js/form_validation.js\"
         integrity=\"sha384-03sL58gEczlpFEmE3eoyAxaUIW/Tv41VOKfLblOgP9RAp1xtJm+EVReIPHepBdVn\"></script>\r\n\r\n<script
-        type=\"text/JavaScript\" nonce=\"4038D6E7B52A1D21090A51A96EDA775F3BE1002C4E0D233700DED48BCEE6831B\">\r\n<!--\r\n\r\n\tvar
+        type=\"text/JavaScript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n<!--\r\n\r\n\tvar
         AlertMSG_109 = \"Dit veld is verplicht\";\r\n\tvar AlertMSG_110 = \"U moet
         een keuze maken uit deze lijst\";\r\n\tvar AlertMSG_173 = \"U moet een nummer
         invoeren in het veld\";\r\n\tvar AlertMSG_1205 = \"De ingevoerde waarde is
@@ -129,17 +129,18 @@ interactions:
         AlertERR_907 = \"Dit veld is niet geldig\";\r\n\tvar AlertERR_95 = \"CVC is
         aanwezig maar reden waarom het niet aanwezig is eveneens.\";\r\n\tvar AlertERR_96
         = \"CVC is niet aanwezig en geen reden waarom.\";\r\n\r\n\r\n//-->\r\n\r\n\r\n</script>\r\n\r\n\t\t\t\t<form
-        name=\"IDEALOGFORM\" action=\"https&#58;//ogone.test.v-psp.com/ncol/test/orderstandard_UTF8.asp\"
-        method=\"POST\" onSubmit=\"return my_submitAndDisable(this,0);\">\r\n\t\t\t\t\t<input
-        type=\"hidden\" name=\"CSRFKEY\" value=\"F1B5E7D5311B9BB0A25818AD8846E1C13F515973\"
-        >\r\n<input type=\"hidden\" name=\"CSRFTS\" value=\"20250217174208\" >\r\n<input
+        name=\"IDEALOGFORM\" id=\"IDEALOGFORM\" action=\"https&#58;//ogone.test.v-psp.com/ncol/test/orderstandard_UTF8.asp\"
+        method=\"POST\">\r\n\t\t\t\t\t<script type=\"text/javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">\r\n\t\t\t\t\t\tdocument.getElementById(\"IDEALOGFORM\").addEventListener(\"submit\",
+        function(event) {\r\n\t\t\t\t\t\t\tif (! my_submitAndDisable(this,0)) {\r\n\t\t\t\t\t\t\t\tevent.preventDefault();\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t</script>\r\n\t\t\t\t\t<input
+        type=\"hidden\" name=\"CSRFKEY\" value=\"F66D26CB969212E3F2A916DBEBF11DA690B5586F\"
+        >\r\n<input type=\"hidden\" name=\"CSRFTS\" value=\"20250327145412\" >\r\n<input
         type=\"hidden\" name=\"CSRFSP\" value=\"/ncol/test/orderstandard_utf8.asp\"
         >\r\n\t\t\t\t\t<input type=\"hidden\" name=\"WIN3DS\" value=\"\">\r\n\t\t\t\t\t<input
         type=\"hidden\" name=\"PMListType\" value=\"2\">\r\n\t\t\t\t\t<input type=\"hidden\"
         name=\"branding\" value=\"OGONE\">\r\n\t\t\t\t\t<input type=\"hidden\" name=\"PM\"
-        value=\"\">\r\n\t\t\t\t\t<input type=\"hidden\" name=\"payid\" value=\"4302513507\">\r\n\t\t\t\t\t<input
-        type=\"hidden\" name=\"hash_param\" value=\"A0834F98307AE30D8B4D7171A56FEEF6DE940181\">\r\n
-        \                   <input type=\"hidden\" name=\"CorrelationID\" value=\"8A7D56E0-CAB1-4F80-B289-B5ABB1B20F7F\">\r\n\t\t\t\t\t\t\t\t<input
+        value=\"\">\r\n\t\t\t\t\t<input type=\"hidden\" name=\"payid\" value=\"4317772768\">\r\n\t\t\t\t\t<input
+        type=\"hidden\" name=\"hash_param\" value=\"8ED4ECA3A556E721737797D4E85F477EE0BB4C96\">\r\n
+        \                   <input type=\"hidden\" name=\"CorrelationID\" value=\"CA4B5206-8B8D-48B9-92AF-5B30CC2B887A\">\r\n\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"hash_post\" value=\"\">\r\n\t\t\t\t\t\t\t\t<input type=\"hidden\"
         name=\"allowcorrection\" value=\"\">\r\n\t\t\t\t\t<input type=\"hidden\" name=\"thisstep\"
         value=\"1\">\r\n\t\t\t\t\t<input type=\"hidden\" name=\"idealstep\" value=\"2\">\r\n\t\t\t\t\t<input
@@ -168,44 +169,51 @@ interactions:
         style=\"behavior:url(#default#clientCaps)\">\r\n\t<tr><td class=\"ncollogoc\"
         valign=\"middle\" align=\"center\" width=\"33%\"><img border=\"0\" src=\"https&#58;//ogone.test.v-psp.com/images/ING.gif\"
         hspace=\"5\" alt=\"ING\" title=\"ING\" id=\"NCOLACQ\"></td><td class=\"ncollogoc\"
-        valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=3&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=8E7678CBD1431CAE8CFF3968CE04959830F0A85B&CSRFTS=20250217174208\"
+        valign=\"middle\" align=\"center\" width=\"33%\"><a href=\"https&#58;//ogone.test.v-psp.com/ncol/PSPabout.asp?lang=3&pspid=maykinmedia&branding=OGONE&CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&CSRFKEY=9BF52AAD95BDCEC8630E257BB3F3B45FBD9FC42C&CSRFTS=20250327145412\"
         target=\"_blank\"><img border=\"0\" src=\"https&#58;//ogone.test.v-psp.com/images/pp_WorldLine3.png\"
         alt=\"Betaling verwerkt door Worldline\" title=\"Betaling verwerkt door Worldline\"
-        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=3&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=D0625E6D25EE3DB74641CDC616FDCD7F9235CABF&amp;CSRFTS=20250217174208\"
-        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=3&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=942EAFDB4163C7350916128929A4504515C83929&amp;CSRFTS=20250217174208\"
-        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=3&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=FD4A8F16EEDF994A7541E728E8A92E3405DF0450&amp;CSRFTS=20250217174208\"
+        vspace=\"2\" id=\"NCOLPP\"></a><br><small><small><a class=\"bottom\" href=\"https&#58;//worldline.com/&#63;lang=3&amp;pspid=maykinmedia&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=F910740236DD88F4382760DFD59C9B934AAB1BFF&amp;CSRFTS=20250327145412\"
+        target=\"_blank\">Over Worldline</a> |<a class=\"bottom\" href=\"https&#58;//ogone.test.v-psp.com/ncol/security.asp&#63;lang=3&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=793F9A33AB6B10A03918B430DA468741914AABF6&amp;CSRFTS=20250327145412\"
+        target=\"_blank\">Veiligheid<!--Security--></a>| <a class=\"bottom\" href=\"https&#58;//worldline.com/en/home/main-navigation/git/office-locations.html&#63;lang=3&amp;mode=STD&amp;branding=OGONE&amp;CSRFSP=%2Fncol%2Ftest%2Forderstandard%5Futf8%2Easp&amp;CSRFKEY=BD27E182B559A1EBC487AFAD53C9F572B64D8D10&amp;CSRFTS=20250327145412\"
         target=\"_blank\">Wettelijke informatie<!--Legal--></a></small></small></td><td
         class=\"ncollogoc\" valign=\"middle\" align=\"center\" width=\"33%\">&nbsp;</td></tr>\r\n\t\t<tr>\r\n\t\t\t\t<td
         class=ncollogoc align=\"center\" colspan=\"3\">\r\n\t\t\t\t\t\t<center>\r\n\t\t\t\t\t\t\t<table
         border=\"0\" cellpadding=\"0\" cellspacing=\"0\" >\r\n\t\t\t\t\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t<td
         class=ncollogoc align=\"center\" width=\"50%\">\r\n\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<form
         method=\"POST\" action=\"https&#58;//ogone.test.v-psp.com/ncol/test/Order_Cancel_UTF8.asp\"
-        id=form3 name=form3 onsubmit=\"return(window.confirm('Weet u zeker dat u deze
-        transactie wilt annuleren&#63;'))\"  style=\"margin-bottom:0px;\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<input
-        type=\"hidden\" name=\"CSRFKEY\" value=\"0A3659F6B5B81C0FCE2FD20D7B44E204F30F69C6\"
-        >\r\n<input type=\"hidden\" name=\"CSRFTS\" value=\"20250217174208\" >\r\n<input
+        id=\"form3\" name=\"form3\"  style=\"margin-bottom:0px;\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<input
+        type=\"hidden\" name=\"CSRFKEY\" value=\"C3BD173D9A997A443A01FBC5D0397894153B80A9\"
+        >\r\n<input type=\"hidden\" name=\"CSRFTS\" value=\"20250327145412\" >\r\n<input
         type=\"hidden\" name=\"CSRFSP\" value=\"/ncol/test/orderstandard_utf8.asp\"
-        >\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"payid\" value=\"4302513507\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
+        >\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"payid\" value=\"4317772768\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"ownerZIP\" value=\"\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"owneraddress\" value=\"\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"alias\" value=\"\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"aliasoperation\" value=\"\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
-        type=\"hidden\" name=\"hash_param\" value=\"A0834F98307AE30D8B4D7171A56FEEF6DE940181\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
+        type=\"hidden\" name=\"hash_param\" value=\"8ED4ECA3A556E721737797D4E85F477EE0BB4C96\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<input
         type=\"hidden\" name=\"branding\" value=\"OGONE\">\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<small><input
-        class=ncol ID=\"ncol_cancel\" type=\"submit\" name=\"cancel\" value=\"Annuleren\"></small><!--Cancel-->\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t</form>\r\n\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t</table>\r\n\t\t\t\t\t\t</center>\r\n\t\t\t\t</td>\r\n\r\n\t\t</tr>\r\n\t\t\r\n\r\n</table>\r\n</div>\r\n</div>\r\n</body>\r\n</html>"
+        class=ncol ID=\"ncol_cancel\" type=\"submit\" name=\"cancel\" value=\"Annuleren\"></small><!--Cancel-->\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t</form>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t<script
+        type=\"text/javascript\" nonce=\"70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3\">document.getElementById(\"form3\").addEventListener(\"submit\",
+        function(event) { if(!window.confirm('Weet u zeker dat u deze transactie wilt
+        annuleren?')) event.preventDefault(); });</script>\r\n\t\t\t\t\t\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t</table>\r\n\t\t\t\t\t\t</center>\r\n\t\t\t\t</td>\r\n\r\n\t\t</tr>\r\n\t\t\r\n\r\n</table>\r\n</div>\r\n</div>\r\n</body>\r\n</html>"
     headers:
       cache-control:
       - private, max-age=0
       content-length:
-      - '15899'
+      - '16392'
+      content-security-policy:
+      - script-src 'self' 'nonce-70FEDC1AB5F97C6B7DDEB92ADDF7D861688964EE671C26193F8625FE8E9692B3'
+        'unsafe-eval' https://static-eu.payments-amazon.com/cba/js/* https://images-na.ssl-images-amazon.com/images/G/*
+        https://external-assets.test.cdn.v-psp.com/t/ https://secure.ogone.com/Ncol/Test/
+        https://static-eu.payments-amazon.com/cba/js/ https://images-na.ssl-images-amazon.com/images/G/
       content-type:
       - text/html; Charset=utf-8
       date:
-      - Mon, 17 Feb 2025 16:42:08 GMT
+      - Thu, 27 Mar 2025 13:54:12 GMT
       expires:
-      - Mon, 17 Feb 2025 16:41:07 GMT
+      - Thu, 27 Mar 2025 13:53:11 GMT
       set-cookie:
-      - sessionTest=50c92601-3512-458a-a43f-dc8acb0b32f6; path=/ncol/test/; Secure;
+      - sessionTest=fe60d7ae-1ef4-4a42-8502-0e234a3877b9; path=/ncol/test/; Secure;
         HttpOnly
       strict-transport-security:
       - max-age=16000000; includeSubDomains; preload;
