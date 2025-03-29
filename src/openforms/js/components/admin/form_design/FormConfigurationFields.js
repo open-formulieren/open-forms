@@ -420,7 +420,7 @@ const SubmissionFields = ({
           }
           helpText={
             <FormattedMessage
-              defaultMessage="If enabled, the user will have to agree that they filled out the form ruthfully before submitting it."
+              defaultMessage="If enabled, the user will have to agree that they filled out the form truthfully before submitting it."
               description="Form askStatementOfTruth field help text"
             />
           }

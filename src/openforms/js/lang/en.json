@@ -479,6 +479,11 @@
     "description": "Managed complex Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
   },
+  "9UR5jt": {
+    "defaultMessage": "If enabled, the user will have to agree that they filled out the form truthfully before submitting it.",
+    "description": "Form askStatementOfTruth field help text",
+    "originalDefault": "If enabled, the user will have to agree that they filled out the form truthfully before submitting it."
+  },
   "9WZkZg": {
     "defaultMessage": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?",
     "description": "Objects API registration options: warning message when changing the object type",
@@ -2303,11 +2308,6 @@
     "defaultMessage": "Mapping expression language",
     "description": "Service fetch configuration modal form mapping expression language field label",
     "originalDefault": "Mapping expression language"
-  },
-  "fqGKJu": {
-    "defaultMessage": "If enabled, the user will have to agree that they filled out the form ruthfully before submitting it.",
-    "description": "Form askStatementOfTruth field help text",
-    "originalDefault": "If enabled, the user will have to agree that they filled out the form ruthfully before submitting it."
   },
   "ftzF/n": {
     "defaultMessage": "When",
