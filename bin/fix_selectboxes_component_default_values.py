@@ -47,13 +47,14 @@ def fix_selectboxes_default_values():
     FormVariable.objects.bulk_update(variables_to_update, fields=["initial_value"])
 
 
-def main(**kwargs):
+def main(skip_setup=False, **kwargs):
     from openforms.setup import setup_env
 
-    setup_env()
-    django.setup()
+    if not skip_setup:
+        setup_env()
+        django.setup()
 
-    return fix_selectboxes_default_values(**kwargs)
+    return fix_selectboxes_default_values()
 
 
 if __name__ == "__main__":
