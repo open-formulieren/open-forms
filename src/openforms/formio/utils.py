@@ -440,6 +440,7 @@ def iterate_data_with_components(
             )
 
 
+# TODO-5221: is this still within our 'code boundary'? Probably not.
 def recursive_apply(
     input: JSONValue, func: Callable, transform_leaf: bool = False, *args, **kwargs
 ):

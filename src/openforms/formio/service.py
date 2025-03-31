@@ -36,6 +36,7 @@ __all__ = [
     "inject_variables",
     "format_value",
     "rewrite_formio_components_for_request",
+    "FormioConfigurationWrapper",
     "FormioData",
     "iterate_data_with_components",
     "recursive_apply",

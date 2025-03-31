@@ -137,13 +137,15 @@ def iter_evaluate_rules(
         ):
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
+                # TODO-5221: we pass the internal dict here, as it crosses the boundary
+                #  to a third-party library
                 triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
 
             if not triggered:
                 continue
 
             for operation in rule.action_operations:
-                if mutations := operation.eval(data.data, submission=submission):
+                if mutations := operation.eval(data, submission=submission):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
