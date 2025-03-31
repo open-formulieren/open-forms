@@ -196,6 +196,9 @@ jobs:
 
   e2etests:
     runs-on: ubuntu-24.04
+
+    if: "${{ !( (github.event_name == 'push' && contains(github.event.head_commit.message, '[skip: e2e]')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '[skip: e2e]')) ) }}"
+
     strategy:
       fail-fast: false
       matrix:
