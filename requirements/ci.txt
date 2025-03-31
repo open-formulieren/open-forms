@@ -49,7 +49,7 @@ billiard==4.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-black==24.3.0
+black==25.1.0
     # via -r requirements/test-tools.in
 bleach==5.0.1
     # via
