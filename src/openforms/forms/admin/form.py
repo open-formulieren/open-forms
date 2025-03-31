@@ -340,13 +340,12 @@ class FormAdmin(
         messages.success(
             request,
             ngettext(
-                "Copied {count} {verbose_name}",
-                "Copied {count} {verbose_name_plural}",
+                "Copied {count} {verbose_name} object.",
+                "Copied {count} {verbose_name} objects.",
                 len(queryset),
             ).format(
                 count=len(queryset),
                 verbose_name=queryset.model._meta.verbose_name,
-                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 
@@ -358,13 +357,12 @@ class FormAdmin(
         messages.success(
             request,
             ngettext(
-                "Set {count} {verbose_name} to maintenance mode",
-                "Set {count} {verbose_name_plural} to maintenance mode",
+                "Set {count} {verbose_name} object to maintenance mode",
+                "Set {count} {verbose_name} objects to maintenance mode",
                 count,
             ).format(
                 count=count,
                 verbose_name=queryset.model._meta.verbose_name,
-                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 
@@ -374,13 +372,12 @@ class FormAdmin(
         messages.success(
             request,
             ngettext(
-                "Removed {count} {verbose_name} from maintenance mode",
-                "Removed {count} {verbose_name_plural} from maintenance mode",
+                "Removed {count} {verbose_name} object from maintenance mode",
+                "Removed {count} {verbose_name} objects from maintenance mode",
                 count,
             ).format(
                 count=count,
                 verbose_name=queryset.model._meta.verbose_name,
-                verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
 

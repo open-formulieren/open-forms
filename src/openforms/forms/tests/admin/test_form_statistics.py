@@ -117,7 +117,9 @@ class SubmissionStatisticsAdminTests(WebTest):
             logevent.form_submit_success(submission1)
 
         _changelist_page = self.app.get(self.admin_url, user=superuser)
-        filter_form = _changelist_page.forms["submitted-between-form"]
+        # this library translates the form ID from the label, wtf
+        form_id = f"{_('submitted between').replace(' ', '-')}-form"
+        filter_form = _changelist_page.forms[form_id]
 
         with self.subTest("filter 2024 submissions"):
             filter_form["timestamp__range__gte"] = "2024-01-01"

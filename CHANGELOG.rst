@@ -6,6 +6,341 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.0 "Lente" (2025-03-31)
+==========================
+
+Open Forms 3.1.0 is a feature release.
+
+.. epigraph::
+
+    "Lente" is Dutch for "Spring". We've planted some seeds that will take time to
+    bloom before their full potential is visible, but here and there you can already
+    spot some flowers. Spring is typically a time in the year that's lighter and brings
+    more joy, and we hope this release will do too.
+
+This contains the changes from the alpha and fixes applied until the stable version.
+BEFORE upgrading to 3.1.0, please read the release notes carefully and review the
+following instructions.
+
+Upgrade procedure
+-----------------
+
+To upgrade to 3.1, please:
+
+* ⚠️ Ensure you upgrade to Open Forms 3.0.1 before upgrading to the 3.1 release series.
+
+* We recommend running the ``bin/report_component_problems.py`` and
+  ``bin/report_form_registration_problems.py`` scripts to diagnose any problems in
+  existing form definitions. These will be patched up during the upgrade, but it's good
+  to know which form definitions will be touched in case something looks odd. The scripts
+  are also available in the latest 3.0.x patch release, so you can run them before
+  starting the upgrade process.
+
+* Due to some UX rework in the SDK, you may need to define additional design tokens if
+  you use a custom theme.
+
+* We never deliberately supported HTML in component labels/tooltips. Due to some
+  additional sanitation being added, some elements may now be escaped. We urge you to
+  **NOT** use HTML in places that don't have a rich text editor.
+
+Where possible, we have included upgrade checks that can you inform about detected problems before
+any database changes are made.
+
+Major features
+--------------
+
+**📒 Referentielijsten API integration**
+
+We added support for the Referentielijsten API to Open Forms. In that API, you can
+centrally manage (semi) fixed lists of data, such as districts, communication channels,
+days of the week...
+
+These reference lists can be used in Open Forms to populate the possible options in
+select, selectboxes and radio components, making it easier to re-use these across forms.
+
+**📦 JSON Dump registration**
+
+We added a new registration plugin that allows for the simple transfer of form
+variables and metadata in JSON format to a configured service. Form designers can select
+which variabels to send to this external API, and then the values and schema describing
+the structure of the variables is sent as JSON, making it easy to process the data.
+
+**🗺 Map component rework**
+
+The map component has undergone a major rework to support a wider range of use cases.
+
+The most notable change is the expanded range of possible interactions users can have
+with the map component. Previously, only pin placement was supported. This has now been
+extended to include drawing multi-point lines and polygons.
+
+You can now also use alternative background ("tile") layers (e.g. aerial imagery)
+instead of the default BRT layer from the Kadaster.
+
+.. note:: The ``map`` component rework is not complete yet and some more improvements
+   are needed to optimize the user experience.
+
+**♿️ Accessibility improvements**
+
+Improving accessibility is a continuous effort, but in this release in particular we
+could focus on it more. The submission summary PDFs have been made much more accessible
+and informative. The form navigation for end-users has had an overhaul - backed by
+proper research and user tests - particularly improving the experience on wide screen
+devices.
+
+The form designers should also see some (smaller) UX improvements, making it a bit
+easier to manage form variables and creating a better overview.
+
+**New features**
+
+* [:backend:`5137`] The request header name for the ``OIN`` sent in "Haal Centraal BRP
+  Personen bevragen" is now configurable.
+* [:backend:`5122`] Clarified the help-text for the Ogone legacy ``TITLE`` and ``COM``
+  parameters.
+* [:backend:`5074`] Added an option to send the data from the selectboxes component as
+  a list to the Objects API and JSON Dump registrations.
+* UX: variables are now grouped by form step in the variables tab.
+* [:backend:`5047`] Improved the accessibility of the submission summary PDF.
+
+    - Added a textual alternative to the logo.
+    - Provided an semantic relationship between the form field label and user provided
+      value.
+    - The PDF displays "No information provided" for form fields that haven't been
+      filled in by the user.
+
+* [:backend:`4991`, :backend:`4993`, :backend:`5016`, :backend:`5107`, :backend:`5106`,
+  :backend:`5178`] Added Referentielijsten API support. You can now use reference lists
+  as source for select, radio and selectboxes component options.
+
+    - Allow using the referentielijsten as data source, which requires selecting a service
+      and table to use.
+    - We're prepared for multi-language support already.
+    - Administrators get notified of expiring/expired tables and/or items.
+
+* [:backend:`4518`] Added prefill attempts to the submission log entries.
+* Performance improvements regarding fetching and processing form data.
+* [:backend:`4990`] Registration variables in the form variables tab now show from which
+  registration backend they originate.
+* [:backend:`5093`, :backend:`5184`] Improved user experience when working with array or
+  object values in the form variables table.
+* [:backend:`5024`] Loosened validation on ZGW APIs and Objects API registration
+  backends to support a broader range of vendors.
+* [:backend:`2177`] Changed the map component output to GeoJSON geometry, allowing lines
+  and polygons to be drawn on map components in addition to point markers.
+* [:backend:`4908`, :backend:`4980`, :backend:`5012`, :backend:`5066`] Added new
+  JSON Dump registration plugin.
+
+    - Form designers control which variables get sent to the configured service.
+    - The form/component information is used to automatically document the schema of
+      each variable.
+    - Includes fixed and configurable metadata of the form/submission.
+
+* [:backend:`4931`] Upgraded the form submission statistics to reflect actual submissions
+  and added the ability to export the results based on various filters.
+* [:backend:`4785`] Updated the eHerkenning metadata generation to match the latest
+  standard version(s).
+
+**Minor security improvements**
+
+We addressed some minor security concerns in case a rogue employee has access to the
+admin interface.
+
+* Administrators are no-longer able to change the submission summary PDF through the
+  admin interface.
+* SVGs uploaded through the admin interface, used for logos and favicons, are now
+  automatically sanitized.
+* The form preview seen by form designers in the admin now applies extra HTML sanitation
+  on the client side. The backend already properly escaped this and the public UI was
+  never affected.
+
+**Bugfixes**
+
+* [:backend:`5186`, :backend:`5188`] Fixed bugs regarding audit logs inadvertedly being
+  created or not containing all expected information.
+* [:backend:`5155`] Fixed the url parameter ``initial_data_reference`` being lost after
+  switching the form language.
+* [:backend:`5151`] Fixed hidden map components triggering validation errors.
+* [:backend:`4662`, :backend:`5147`] Fixed bugs regarding the validation of selectboxes
+  when "Minimum selected checkboxes" is configured:
+
+    - Fixed optional selectboxes not passing validation when a minimum number is
+      configured.
+    - Fixed being unable to pause a form when it contains a selectboxes component with
+      ``Minimum selected checkboxes >= 1``.
+
+* [:backend:`5157`] Fixed warning being shown about missing co-sign translations when
+  all translations are provided.
+* [:backend:`5158`] Fixed a bug preventing removal of a ZGW API group.
+* [:backend:`5142`] Fixed logic triggers being deleted when a selectboxes component is
+  deleted.
+* [:backend:`5105`] Fixed a minor styling bug in the admin that caused the asterisk icons
+  for required fields to appear on top of dropdown menus.
+* [:backend:`5124`] Fixed prefill fields causing validation errors when they are hidden
+  and read-only.
+* [:backend:`5031`] Fixed missing configuration in Objects API registration v2.
+* [:backend:`5136`] Fixed eHerkenning "Dienstcatalogus" being generated using old
+  certificates.
+* [:backend:`5040`] Fixed a bug in the JSON logic where, when multiple logic actions were
+  configured on the same trigger, deleting the first logic action caused its JSON logic
+  to be assigned to the next logic action within the same trigger.
+* [:backend:`5104`] Fixed ``null`` default value for radio fields.
+* [:backend:`4871`] Fixed error messages not being shown in the variable mapping of the
+  Objects API prefill and the JSON logic DMN configuration.
+* [:backend:`5039`] Fixed error messages not being shown in the Email registration
+  plugin.
+* [:backend:`5090`] Fixed soft-required component blocking going to the next form step.
+* [:backend:`5089`] Fixed service fetch automatically changing the configured query
+  parameters from ``snake_case`` into ``camelCase``.
+* [:backend:`5077`, :backend:`5084`] Fixed some performance issues regarding loading
+  logic rules in the admin, and saving form steps/definitions with large numbers of
+  components.
+* [:backend:`4510`] Fixed error messages not shown properly on the form summary page.
+* [:backend:`5037`] Fixed submission PDF not being able to format date values.
+* [:backend:`5058`] Fixed race conditions and database errors being caused when editing
+  forms, originally because of :backend:`4900`.
+* [:backend:`4689`] Fixed file uploads in repeating groups not being processed correctly.
+* [:backend:`5034`] Fixed Objects API registration plugin crashing by validating object's
+  ownership only when the object should be updated.
+* Fixed a misconfiguration for AddressNL end-to-end testing in CI.
+* Fixed registration management command.
+* Fixed styling of clearable react-select component.
+* Fixed an upgrade check not blocking the database migrations from starting.
+* [:backend:`5035`] Fixed duplicate values being sent by legacy Objects API registration
+  plugin.
+* [:backend:`4825`] Fixed prefill reporting false failures to daily digest when multiple
+  authentication flows are used.
+
+**Project maintenance**
+
+* Reduced flakyness in the tests.
+* Removing old upgrade checks, which won't be needed when upgrading from 3.0.x to 3.1.x.
+* Some settings can now be configured with environment variables: ``AXES_FAILURE_LIMIT``
+  and ``EMAIL_TIMEOUT``.
+* [:sdk:`76`] Use ESM modules instead of UMD for the SDK, if the browser supports it.
+* [:backend:`4927`] Added system check for missing configuration on non-required
+  serializer fields.
+* [:backend:`4882`] Added documentation on how to use django-setup-configuration.
+* [:backend:`4654`] Cleaned up and squashed migrations where possible.
+* Added constraint for requiring 3.0.1 before upgrading to 3.1.0.
+* Updated backend dependencies
+
+    - Bumped playwright to 1.49.1.
+    - Bumped typing-extensions to 4.12.2.
+    - Bumped django to 4.2.18.
+    - Bumped django-digid-eherkenning to 0.21.0.
+    - Bumped kombu to 5.5.
+    - Bumped jinja2 to 3.1.6.
+    - Bumped tzdata to 2025.1.
+
+* Updated frontend dependencies
+
+    - Bumped undici to 5.28.5.
+    - Bumped @utrecht/components to 7.4.0.
+    - Bumped @open-formulieren/design-tokens to 0.57.0.
+    - Bumped storybook to 8.6.4.
+
+3.0.6 (2025-03-17)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab. In this bugfix we added scripts to fix any forms
+    that still might be affected by this issue. You should run these scripts after
+    deploying the patch release, to make sure all Objects API registrations are correctly
+    configured.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. This would require you to remove the Objects API registrations, and
+    re-define them.
+
+**Bugfixes**
+
+* [:backend:`5158`] Fixed not being able to delete ZGW API groups.
+* [:backend:`5142`] Fixed logic tab crashing and incorrectly displaying 0 component
+  variables when removing fields from the form.
+* [:backend:`5124`] Fixed hidden prefill fields triggering validation.
+* [:backend:`5031`] Fixed missing ``variables_mapping`` in the Objects API registration
+  plugin.
+* [:backend:`5104`] Fixed ``null`` default values for radio fields.
+
+2.8.7 (2025-03-17)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab. In this bugfix we added scripts to fix any forms
+    that still might be affected by this issue. You should run these scripts after
+    deploying the patch release, to make sure all Objects API registrations are correctly
+    configured.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. This would require you to remove the Objects API registrations, and
+    re-define them.
+
+**Bugfixes**
+
+* [:backend:`5158`] Fixed not being able to delete ZGW API groups.
+* [:backend:`5142`] Fixed logic tab crashing and incorrectly displaying 0 component
+  variables when removing fields from the form.
+* [:backend:`5124`] Fixed hidden prefill fields triggering validation.
+* [:backend:`5031`] Fixed missing ``variables_mapping`` in the Objects API registration
+  plugin.
+* [:backend:`5104`] Fixed ``null`` default values for radio fields.
+
+3.0.5 (2025-03-03)
+==================
+
+Regular bugfix release.
+
+.. warning:: Manual intervention required
+
+    We fixed a bug that would mess with the validation of the soft-required components.
+    A script is included to fix the forms that are affected - you need to run this
+    after deploying the patch release.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/fix_softrequired_component_required_validation.py
+
+    Alternatively, you can also manually edit all the affected forms in the
+    admin interface. Simply edit the soft-required components by opening the ``JSON`` view
+    and within the ``validate`` key change ``required: true`` to ``required: false``.
+
+**Bugfixes**
+
+* [:backend:`5086`, :backend:`5090`] Fixed soft-required errors being shown for hidden
+  upload fields and blocking going to the next form step.
+* [:backend:`5039`] Fixed some error messages not shown properly in the Email
+  Registration plugin.
+* Worked around some performance issues while evaluating form logic.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
+2.8.6 (2025-03-03)
+==================
+
+Regular bugfix release.
+
+* Worked around some performance issues while evaluating form logic.
+* [:backend:`5089`] Fixed service fetch configuration automatically changing from
+  snake-case to camel-case.
+
 3.1.0-alpha.1 (2025-02-20)
 ==========================
 
@@ -421,7 +756,7 @@ Detailed changes
   same day they were created.
 * [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents.
 * [:backend:`4719`] Improved accessibility in postcode fields.
-* [:backend:`4707`] You can now resize the Json-Logic widgets.
+* [:backend:`4707`] You can now resize the Json Logic widgets.
 * [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.
 * [:backend:`4764`] Added the ability to set the submission price calculation to variable.
 * [:backend:`4716`] Added translations for form fields and associated error messages improvements.
@@ -602,7 +937,7 @@ Detailed changes
 * [:backend:`4815`] Changed submission removal limit to 0, allowing submissions to be deleted after 0 days
   (i.e. on the same day).
 * [:backend:`4717`] Improved accessibility for site logo, error message element and PDF documents.
-* [:backend:`4707`] You can now resize the Json-Logic widgets.
+* [:backend:`4707`] You can now resize the Json Logic widgets.
 * [:backend:`4686`} All the registration plugin configuration options are now consistently managed in a
   modal with better UX.
 * [:backend:`4720`] Improved accessibility for the skiplink and the PDF report.

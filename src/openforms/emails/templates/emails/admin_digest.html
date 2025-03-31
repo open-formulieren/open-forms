@@ -154,7 +154,7 @@
 {% endif %}
 
 {% if expired_or_near_expiry_referentielijsten_data %}
-    <h4>{% trans "Referentielijsten (tabels-items expired or near expiry)" %}</h4>
+    <h4>{% trans "Referentielijsten (tables and/or table items (near) expiry)" %}</h4>
     <ul>
         {% for service in expired_or_near_expiry_referentielijsten_data %}
             <li>
@@ -164,18 +164,18 @@
                 
                 <!-- Expiring tables -->
                 {% if service.tabels %}
-                    <h4>{% trans "Tabels" %}</h4>
+                    <h4>{% trans "Tables" %}</h4>
                     <ul>
-                        {% for tabel in service.tabels %}
+                        {% for table in service.tabels %}
                             <li>
                                 <p>
-                                    {% if tabel.expired %}
-                                        {% blocktranslate with tabel_naam=tabel.naam time_passed=tabel.eindatum|timesince trimmed %}
-                                            Table '{{ tabel_naam }}' expired {{ time_passed }} ago.
+                                    {% if table.expired %}
+                                        {% blocktranslate with table_name=table.naam time_passed=table.eindatum|timesince trimmed %}
+                                            Table '{{ table_name }}' expired {{ time_passed }} ago.
                                         {% endblocktranslate %}
                                     {% else %}
-                                        {% blocktranslate with tabel_naam=tabel.naam time_left=tabel.eindatum|timeuntil trimmed %}
-                                            Table '{{ tabel_naam }}' will expire in {{ time_left }}.
+                                        {% blocktranslate with table_name=table.naam time_left=table.eindatum|timeuntil trimmed %}
+                                            Table '{{ table_name }}' will expire in {{ time_left }}.
                                         {% endblocktranslate %}
                                     {% endif %}                           
                                 </p>

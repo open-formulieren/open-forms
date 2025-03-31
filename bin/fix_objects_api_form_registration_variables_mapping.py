@@ -58,13 +58,14 @@ def fix_objects_api_registration_variables_mapping():
     )
 
 
-def main(**kwargs):
+def main(skip_setup=False, **kwargs):
     from openforms.setup import setup_env
 
-    setup_env()
-    django.setup()
+    if not skip_setup:
+        setup_env()
+        django.setup()
 
-    return fix_objects_api_registration_variables_mapping(**kwargs)
+    return fix_objects_api_registration_variables_mapping()
 
 
 if __name__ == "__main__":
