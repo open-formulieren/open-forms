@@ -33,7 +33,7 @@ Basis
 Variabelen
 ~~~~~~~~~~
 
-U kunt :ref:`variabelen <manual_forms_variables>` gebruiken in het ontwerp van
+Je kan :ref:`variabelen <manual_forms_variables>` gebruiken in het ontwerp van
 formulieren, bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander
 formulierveld weer te geven. Hiervoor is de 
 :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
@@ -43,12 +43,12 @@ formulierveld weer te geven. Hiervoor is de
     Je kan hier de component-, vaste en/of gebruikersvariabelen gebruiken. Eventuele
     registratievariabelen zijn niet beschikbaar.
 
-Stel dat u een formulier hebt met de volgende velden:
+Stel dat je een formulier hebt met de volgende velden:
 
 * Voornaam partner (met eigenschapnaam ``partnerNaam``)
 * Achternaam partner (met eigenschapnaam ``partnerAchternaam``)
 
-Dan kunt u een veld toevoegen met:
+Dan kun je een veld toevoegen met:
 
 * **Eigenschapnaam**: ``partnerGeboortedatum``
 * **Label**: ``Geboortedatum {{ partnerNaam }}``
@@ -110,14 +110,14 @@ Validatie
 * **Verplicht**: Indien aangevinkt dan is dit veld verplicht voor de 
   eindgebruiker. Sommige velden ondersteunen :ref:`niet-blokkerende verplichting <manual_forms_soft_required_fields>`.
 
-* **Plugin**: U kunt gebruik maken van een externe plugin om een veld te 
+* **Plugin**: Je kan gebruik maken van een externe plugin om een veld te
   valideren. De waarde van het veld wordt naar de plugin gestuurd en 
   gevalideerd.
 
 **Foutmeldingen**
 
 Open Formulieren heeft standaardfoutmeldingen bij verschillende typen van
-validatiefouten (denk aan "verplicht", "maximale lengte"...). U kunt deze foutmeldingen
+validatiefouten (denk aan "verplicht", "maximale lengte"...). Je kan deze foutmeldingen
 per formulierveld gericht instellen per ondersteunde taal.
 
 In de foutmelding kunt refereren naar het formulierveld. Bijvoorbeeld voor een
@@ -127,9 +127,9 @@ In de foutmelding kunt refereren naar het formulierveld. Bijvoorbeeld voor een
 Registratie
 -----------
 
-* **Registration attribute**: Indien u de waarde van dit veld wilt doorzetten
-  naar het achterliggende registratie systeem, dan kunt u hier een attribuut
-  kiezen dat beschikbaar is in het achterliggende registratie systeem.
+* **Registration attribute**: Indien je de waarde van dit veld wil doorzetten
+  naar het achterliggende registratie systeem, dan kun je hier een attribuut
+  kiezen dat beschikbaar is in het achterliggende registratiesysteem.
 
 Prefill
 -------
@@ -151,13 +151,13 @@ Bij het aanmaken van een formulier zijn velden standaard "optioneel" (in tegenst
 tot "verplicht"), zie :ref:`manual_form_fields_validation`. Standaard worden verplichte
 velden weergegeven met een asterisk in de frontend.
 
-U kunt dit standaardgedrag aanpassen. Onder **Admin** > **Configuratie** >
-**Algemene configuratie** > *Standaardformulieropties* vindt u:
+Je kan dit standaardgedrag aanpassen. Onder **Admin** > **Configuratie** >
+**Algemene configuratie** > *Standaardformulieropties* vind je:
 
 * **Formulierenvelden zijn standaard 'verplicht'**
 
   Als dit checkbox is aangevinkt, zijn velden standaard verplicht. Om ze dan optioneel
-  te maken, moet u de checkbox 'verplicht' uitvinken.
+  te maken, moet je de checkbox 'verplicht' uitvinken.
 
 * **Markeer verplichte velden met een asterisk**
 
@@ -275,23 +275,56 @@ Validatie
 
 .. _regex101: https://regex101.com/
 
-Keuzelijst
-==========
+Keuzelijst, selectievakjes en radio
+===================================
 
-Met een *Keuzelijst* kunt u lijst van opties aanbieden, deze lijst kan voorgedefinieerd zijn of dynamisch (zie :ref:`Formulier met dynamische opties <example_logic_dynamic_options>`).
+Deze drie velden lijken wat op elkaar, maar zijn toch net verschillend. Veel van de
+instellingen zijn gelijkaardig.
+
+Varianten
+---------
+
+Keuzelijst
+  In een keuzelijst heeft de gebruiker een dropdown waar één of meerdere opties
+  geselecteerd kunnen worden. Er is een zoekveld om grote hoeveelheden opties te
+  filteren.
+
+Selectievakjes
+  Bij selectievakjes kan de gebruiker één of meerdere opties aanvinken. De volledige
+  lijst van opties wordt getoond.
+
+Radio
+  De gebruiker kan slechts één optie kiezen in de lijst van opties. De volledige lijst
+  wordt getoond.
 
 Basis
 -----
 
-* **Values**: Hier voert u de lijst van beschikbare opties op. De kolom ``Label`` dient
-  voor de weergave van de optie, en de kolom ``Value`` bevat de systeemwaarde. Indien u
-  dit veld verder verwerkt, dan moet u de systeemwaarde gebruiken voor vergelijkingen.
+* **Keuzeopties**: de formulierbouwer moet een lijst van opties opgeven waaruit de
+  gebruiker kan kiezen. Er zijn drie manieren om deze lijst te definiëren:
 
-  .. note:: Het is niet mogelijk om een lege systeemwaarde op te voeren. Indien u een
-     lege optie wil aanbieden in combinatie met een niet-lege standaardwaarde, dan
-     dient u een hiervoor expliciet een optie op te voeren. Als systeemwaarde kunt u
-     bijvoorbeeld ``-`` gebruiken. Als weergave kunt u bijvoorbeeld ``-------`` of
-     ``- geen keuze -`` gebruiken.
+  * "Handmatig opvoeren"
+
+    * **Waarden**: Hier voer je de lijst van beschikbare opties op. De kolom ``Label`` dient
+      voor de weergave van de optie, en de kolom ``Waarde`` bevat de systeemwaarde. Indien
+      je dit veld verder verwerkt, dan moet je de systeemwaarde gebruiken voor vergelijkingen.
+
+      .. note:: Het is niet mogelijk om een lege systeemwaarde op te voeren. Indien je een
+         lege optie wil aanbieden in combinatie met een niet-lege standaardwaarde, dan
+         dien je hiervoor expliciet een optie op te voeren. Als systeemwaarde kan je
+         bijvoorbeeld ``-`` gebruiken. Als weergave kan je bijvoorbeeld ``-------`` of
+         ``- geen keuze -`` gebruiken.
+
+  * "Gebruik variabele" (zie :ref:`Formulier met dynamische opties <example_logic_dynamic_options>`)
+  * "Referentielijsten-API"
+
+    * **Service**: een beheerder dient de :ref:`service <configuration_general_external_services>`
+      voor de `referentielijsten API <https://referentielijsten-api.readthedocs.io/>`_
+      beschikbaar te maken, en daarna kan je deze hier selecteren.
+
+    * **Tabelcode**: nadat een service geselecteerd is, zie je hier de beschikbare
+      tabellen. Selecteer een tabel, en de voorvertoning toont een live voorbeeld van
+      de resulterende opties.
 
 Gezinsleden
 ===========
@@ -303,10 +336,7 @@ De waarden die naar de registratie backend worden gestuurd zijn de BSNs.
 De gegevens voor de gezinsleden worden opgehaald van Haal Centraal BRP Personen Bevragen of StUF-BG. Dit kan in de Admin
 worden geconfigureerd onder **Miscellaneous** > **Familieleden typeconfiguratie**.
 
-In de component zelf kunt u kiezen of de informatie van de partners, de kinderen of allebei moeten opgehaald worden.
-
-
-
+In de component zelf kun je kiezen of de informatie van de partners, de kinderen of allebei moeten opgehaald worden.
 
 Herhalende Groepen
 ==================
