@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 from django.test import SimpleTestCase
 
 from hypothesis import given, strategies as st
-from rest_framework.test import APIRequestFactory
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -20,8 +19,6 @@ from ..formatters.tests.utils import load_json
 from ..registry import register
 from ..service import get_dynamic_configuration
 from ..typing import RadioComponent, SelectComponent
-
-rf = APIRequestFactory()
 
 
 def disable_prefill_injection():
@@ -122,12 +119,11 @@ class ConfigurationTranslationTests(SimpleTestCase):
     def test_translations_ignored_if_form_disables_translations(self):
         form = FormFactory.build(translation_enabled=False)
         submission = SubmissionFactory.build(form=form)
-        request = rf.get("/dummy")
         config_wrapper = FormioConfigurationWrapper(
             configuration=deepcopy(TEST_CONFIGURATION)
         )
 
-        configuration = get_dynamic_configuration(config_wrapper, request, submission)
+        configuration = get_dynamic_configuration(config_wrapper, submission)
 
         with self.subTest("textfield"):
             textfield = configuration["textfield"]
@@ -154,12 +150,11 @@ class ConfigurationTranslationTests(SimpleTestCase):
     def test_translations_applied_with_submission_language(self):
         form = FormFactory.build(translation_enabled=True)
         submission = SubmissionFactory.build(form=form, language_code="nl")
-        request = rf.get("/dummy")
         config_wrapper = FormioConfigurationWrapper(
             configuration=deepcopy(TEST_CONFIGURATION)
         )
 
-        configuration = get_dynamic_configuration(config_wrapper, request, submission)
+        configuration = get_dynamic_configuration(config_wrapper, submission)
 
         with self.subTest("textfield"):
             textfield = configuration["textfield"]
@@ -186,12 +181,11 @@ class ConfigurationTranslationTests(SimpleTestCase):
     def test_translations_applied_with_fallback(self):
         form = FormFactory.build(translation_enabled=True)
         submission = SubmissionFactory.build(form=form, language_code="en")
-        request = rf.get("/dummy")
         config_wrapper = FormioConfigurationWrapper(
             configuration=deepcopy(TEST_CONFIGURATION)
         )
 
-        configuration = get_dynamic_configuration(config_wrapper, request, submission)
+        configuration = get_dynamic_configuration(config_wrapper, submission)
 
         with self.subTest("textfield"):
             textfield = configuration["textfield"]
@@ -218,14 +212,13 @@ class ConfigurationTranslationTests(SimpleTestCase):
     def test_does_not_crash_on_kitchensink(self):
         configuration = load_json("kitchensink_components.json")
         config_wrapper = FormioConfigurationWrapper(configuration)
-        request = rf.get("/dummy")
 
         with self.subTest(translation_enabled=True):
             form = FormFactory.build(translation_enabled=True)
             submission = SubmissionFactory.build(form=form, language_code="en")
 
             try:
-                get_dynamic_configuration(config_wrapper, request, submission)
+                get_dynamic_configuration(config_wrapper, submission)
             except Exception as exc:
                 raise self.failureException("Unexpected crash") from exc
 
@@ -234,7 +227,7 @@ class ConfigurationTranslationTests(SimpleTestCase):
             submission = SubmissionFactory.build(form=form, language_code="en")
 
             try:
-                get_dynamic_configuration(config_wrapper, request, submission)
+                get_dynamic_configuration(config_wrapper, submission)
             except Exception as exc:
                 raise self.failureException("Unexpected crash") from exc
 

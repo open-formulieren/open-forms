@@ -14,7 +14,13 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import DataMapping, JSONEncodable, JSONObject, JSONSerializable
+from openforms.typing import (
+    DataMapping,
+    JSONEncodable,
+    JSONObject,
+    JSONSerializable,
+    VariableValue,
+)
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import VariablesRegistry, get_static_variables
@@ -233,7 +239,7 @@ class SubmissionValueVariablesState:
 
         SubmissionValueVariable.objects.bulk_create(variables_to_create)
 
-    def set_values(self, data: DataMapping) -> None:
+    def set_values(self, data: FormioData) -> None:
         """
         Apply the values from ``data`` to the current state of the variables.
 
@@ -246,12 +252,27 @@ class SubmissionValueVariablesState:
         .. todo:: apply variable.datatype/format to obtain python objects? This also
            needs to properly serialize back to JSON though!
         """
-        formio_data = FormioData(data)
         for key, variable in self.variables.items():
-            new_value = formio_data.get(key, default=empty)
+            new_value = data.get(key, default=empty)
             if new_value is empty:
                 continue
             variable.value = new_value
+
+    def to_python(self) -> FormioData:
+        """
+        Collect the total picture of variable values converted to the appropriate Python
+        types.
+
+        The dynamic values are augmented with the static variables.
+
+        :return: A data mapping (key: variable key, value: native python object for the
+            value) ready for (template context) evaluation.
+        """
+        dynamic_values = {
+            key: variable.to_python() for key, variable in self.variables.items()
+        }
+        static_values = self.static_data()
+        return FormioData({**dynamic_values, **static_values})
 
 
 class SubmissionValueVariableManager(models.Manager):
@@ -361,17 +382,23 @@ class SubmissionValueVariable(models.Model):
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
 
-    def to_python(self) -> Any:
+    def to_python(self, value: VariableValue | object = empty) -> VariableValue:
         """
-        Deserialize the value into the appropriate python type.
+        Deserialize a value into the appropriate python type, using the data type
+        information from the related form variable.
 
         TODO: for dates/datetimes, we rely on our django settings for timezone
         information, however - formio submission does send the user's configured
         timezone as metadata, which we can store on the submission/submission step
         to correctly interpret the data. For the time being, this is not needed yet
         as we focus on NL first.
+
+        :param value: JSON value to deserialize. If empty, ``self.value`` is used.
         """
-        if self.value is None:
+        if value is empty:
+            value = self.value
+
+        if value is None:
             return None
 
         # it's possible a submission value variable exists without the form variable
@@ -390,7 +417,7 @@ class SubmissionValueVariable(models.Model):
                     "submission_id": self.submission_id,
                 },
             )
-            return self.value
+            return value
 
         # we expect JSON types to have been properly stored (and thus not as string!)
         data_type = self.form_variable.data_type
@@ -402,18 +429,18 @@ class SubmissionValueVariable(models.Model):
             FormVariableDataTypes.float,
             FormVariableDataTypes.array,
         ):
-            return self.value
+            return value
 
-        if self.value and data_type == FormVariableDataTypes.date:
-            if isinstance(self.value, date):
-                return self.value
-            formatted_date = format_date_value(self.value)
+        if value and data_type == FormVariableDataTypes.date:
+            if isinstance(value, date):
+                return value
+            formatted_date = format_date_value(value)
             naive_date = parse_date(formatted_date)
             if naive_date is not None:
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
                 return aware_date.date()
 
-            maybe_naive_datetime = parse_datetime(self.value)
+            maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
                 return
 
@@ -421,10 +448,10 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime.date()
             return timezone.make_aware(maybe_naive_datetime).date()
 
-        if self.value and data_type == FormVariableDataTypes.datetime:
-            if isinstance(self.value, datetime):
-                return self.value
-            maybe_naive_datetime = parse_datetime(self.value)
+        if value and data_type == FormVariableDataTypes.datetime:
+            if isinstance(value, datetime):
+                return value
+            maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
                 return
 
@@ -432,7 +459,9 @@ class SubmissionValueVariable(models.Model):
                 return maybe_naive_datetime
             return timezone.make_aware(maybe_naive_datetime)
 
-        if self.value and data_type == FormVariableDataTypes.time:
-            return parse_time(self.value)
+        if value and data_type == FormVariableDataTypes.time:
+            if isinstance(value, time):
+                return value
+            return parse_time(value)
 
-        return self.value
+        return value

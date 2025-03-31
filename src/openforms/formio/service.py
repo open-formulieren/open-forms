@@ -12,7 +12,6 @@ apps/packages:
 from typing import Any
 
 import elasticapm
-from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping, JSONObject
@@ -64,7 +63,6 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
-    request: Request,
     submission: Submission,
     data: DataMapping | None = None,
 ) -> FormioConfigurationWrapper:

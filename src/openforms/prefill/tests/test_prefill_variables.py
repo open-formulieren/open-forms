@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
-from django.test import RequestFactory, TestCase, TransactionTestCase, tag
+from django.test import TestCase, TransactionTestCase, tag
 
 import requests_mock
 from rest_framework import serializers
@@ -174,13 +174,11 @@ class PrefillVariablesTests(TestCase):
 
         prefill_variables(submission=submission)
 
-        request = RequestFactory().get("/foo")
         config_wrapper1 = FormioConfigurationWrapper(
             submission_step1.form_step.form_definition.configuration
         )
         dynamic_config1 = get_dynamic_configuration(
             config_wrapper1,
-            request=request,
             submission=submission,
         )
         config_wrapper2 = FormioConfigurationWrapper(
@@ -188,7 +186,6 @@ class PrefillVariablesTests(TestCase):
         )
         dynamic_config2 = get_dynamic_configuration(
             config_wrapper2,
-            request=request,
             submission=submission,
         )
 
