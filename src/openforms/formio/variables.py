@@ -4,9 +4,9 @@ from typing import Iterator
 from django.template import TemplateSyntaxError
 
 from openforms.template import parse, render_from_string
-from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue
 
-from .datastructures import FormioConfigurationWrapper
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import flatten_by_path, recursive_apply
 
@@ -26,7 +26,7 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
     "tooltip",
 )
 
-
+# TODO-5221: is `context` a JSONObject?
 def render(formio_bit: JSONValue, context: dict) -> JSONValue:
     return recursive_apply(formio_bit, render_from_string, context=context)
 
@@ -66,7 +66,7 @@ def validate_configuration(configuration: JSONObject) -> dict[str, str]:
 
 
 def inject_variables(
-    configuration: FormioConfigurationWrapper, values: DataMapping
+    configuration: FormioConfigurationWrapper, values: FormioData
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
@@ -94,7 +94,7 @@ def inject_variables(
                     property_value = [s for s in property_value if isinstance(s, str)]
 
             try:
-                templated_value = render(property_value, values)
+                templated_value = render(property_value, values.data)
             except TemplateSyntaxError as exc:
                 logger.debug(
                     "Error during formio configuration 'template' rendering",

@@ -155,7 +155,7 @@ def evaluate_form_logic(
         data_diff[key] = empty_value
 
     # 6.3 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_for_evaluation.data)
+    inject_variables(config_wrapper, data_for_evaluation)
 
     # 6.4 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
