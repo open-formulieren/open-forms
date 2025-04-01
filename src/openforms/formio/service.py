@@ -14,7 +14,7 @@ from typing import Any
 import elasticapm
 
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -65,7 +65,7 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
     submission: Submission,
-    data: DataMapping | None = None,
+    data: FormioData | None = None,
 ) -> FormioConfigurationWrapper:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
@@ -76,6 +76,8 @@ def get_dynamic_configuration(
     # Avoid circular imports
     from openforms.prefill.service import inject_prefill
 
+    if data is not None:
+        data = data.data
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
 
     # Add to each component the custom errors in the current locale

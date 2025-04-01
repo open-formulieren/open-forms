@@ -120,7 +120,7 @@ def evaluate_form_logic(
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
         submission=submission,
-        data=data_for_evaluation.data,
+        data=data_for_evaluation,
     )
 
     # 6.1 Apply the component mutation operations
