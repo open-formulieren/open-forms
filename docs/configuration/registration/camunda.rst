@@ -6,6 +6,11 @@ Camunda
 
 Camunda_ is a process engine using BPM models. Open Forms supports Camunda 7.x
 
+.. deprecated:: 3.2.0
+
+   The Camunda registration backend will be removed in Open Forms 4.0. There is no
+   replacement scheduled - if you rely on this plugin, please get in touch.
+
 .. note::
 
     This service requires a connection to an external Camunda instance, offered

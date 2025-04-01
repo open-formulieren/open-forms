@@ -17,6 +17,7 @@ from django_camunda.api import get_process_definitions
 from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
 from django_camunda.utils import serialize_variables
+from typing_extensions import deprecated
 
 from openforms.submissions.models import Submission
 
@@ -70,6 +71,10 @@ def get_process_variables(
     return variables
 
 
+@deprecated(
+    "The camunda registration backend is scheduled for removal in Open Forms 4.0",
+    category=DeprecationWarning,
+)
 @register("camunda")
 class CamundaRegistration(BasePlugin):
     verbose_name = _("Camunda")
