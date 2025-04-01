@@ -6,12 +6,15 @@ from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...datastructures import FormioData
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
 from ..structured import render_json
 
 
+# TODO-5221: remove all the FormioData instances from these tests when (or if)
+#  SubmissionStep.data/Submission.data already return FormioData instances.
 class ComponentNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -259,7 +262,7 @@ class ComponentNodeTests(TestCase):
         assert component["key"] == "input1"
 
         component_node = ComponentNode.build_node(
-            step_data=self.step.data, component=component, renderer=renderer
+            step_data=FormioData(self.step.data), component=component, renderer=renderer
         )
 
         self.assertIsInstance(component_node, ComponentNode)
@@ -289,7 +292,7 @@ class ComponentNodeTests(TestCase):
 
         with patch("openforms.formio.rendering.registry.register", new=register):
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=FormioData(self.step.data), component=component, renderer=renderer
             )
 
         self.assertIsInstance(component_node, TextFieldNode)
@@ -306,7 +309,7 @@ class ComponentNodeTests(TestCase):
             assert component["hidden"]
 
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=FormioData(self.step.data), component=component, renderer=renderer
             )
 
             nodelist = list(component_node)
@@ -324,7 +327,7 @@ class ComponentNodeTests(TestCase):
 
             with patch("openforms.formio.rendering.registry.register", new=register):
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=fieldset, renderer=renderer
+                    step_data=FormioData(self.step.data), component=fieldset, renderer=renderer
                 )
 
                 nodelist = list(component_node)
@@ -346,7 +349,7 @@ class ComponentNodeTests(TestCase):
             assert component["hidden"]
 
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=FormioData(self.step.data), component=component, renderer=renderer
             )
 
             nodelist = list(component_node)
@@ -364,7 +367,7 @@ class ComponentNodeTests(TestCase):
 
             with patch("openforms.formio.rendering.registry.register", new=register):
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=fieldset, renderer=renderer
+                    step_data=FormioData(self.step.data), component=fieldset, renderer=renderer
                 )
 
                 nodelist = list(component_node)
@@ -414,7 +417,7 @@ class ComponentNodeTests(TestCase):
             "components"
         ]:
             component_node = ComponentNode.build_node(
-                step_data=self.step.data, component=component, renderer=renderer
+                step_data=FormioData(self.step.data), component=component, renderer=renderer
             )
             nodelist += list(component_node)
 
@@ -455,7 +458,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=FormioData(self.step.data), component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -488,7 +491,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=FormioData(self.step.data), component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -523,7 +526,7 @@ class ComponentNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step_data=self.step.data, component=component, renderer=renderer
+                    step_data=FormioData(self.step.data), component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -709,7 +712,7 @@ class ComponentNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             for component in step.form_step.form_definition.configuration["components"]:
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=FormioData(step.data), component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -918,7 +921,7 @@ class ComponentNodeTests(TestCase):
             renderer = Renderer(submission, mode=RenderModes.summary, as_html=False)
             for component in step.form_step.form_definition.configuration["components"]:
                 component_node = ComponentNode.build_node(
-                    step_data=step.data, component=component, renderer=renderer
+                    step_data=FormioData(step.data), component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 

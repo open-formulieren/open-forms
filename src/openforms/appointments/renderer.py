@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import SafeString
 
 from openforms.formio.rendering.nodes import ComponentNode
+from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
 from openforms.submissions.rendering import Renderer
 
@@ -21,7 +22,7 @@ class AppointmentRenderer(Renderer):
             return
 
         components: list[Component] = appointment.contact_details_meta
-        data = appointment.contact_details
+        data = FormioData(appointment.contact_details)
         for index, component in enumerate(components):
             child_node = ComponentNode.build_node(
                 step_data=data,

@@ -135,7 +135,7 @@ def evaluate_form_logic(
     for component in config_wrapper:
         key = component["key"]
         is_visible = config_wrapper.is_visible_in_frontend(
-            key, data_for_evaluation.data
+            key, data_for_evaluation
         )
         if is_visible:
             continue

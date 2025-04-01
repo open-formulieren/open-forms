@@ -1,17 +1,20 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Callable, Iterator, TypeAlias
+from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeAlias
 
 import elasticapm
 from glom import Coalesce, Path, glom
 from typing_extensions import TypeIs
 
-from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue
 from openforms.utils.glom import _glom_path_to_str
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from .constants import COMPONENT_DATATYPES
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
+
+if TYPE_CHECKING:
+    from .datastructures import FormioData
 
 logger = logging.getLogger(__name__)
 
@@ -316,7 +319,7 @@ def conform_to_mask(value: str, mask: str) -> str:
     return "".join(result)
 
 
-def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
+def is_visible_in_frontend(component: Component, data: "FormioData") -> bool:
     """Check if the component is visible because of frontend logic
 
     The rules in formio are expressed as:
@@ -341,7 +344,7 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     if not (trigger_component_key := conditional.get("when")):
         return not hidden
 
-    trigger_component_value = glom(data, trigger_component_key, default=None)
+    trigger_component_value = data.get(trigger_component_key, None)
     compare_value = conditional.get("eq")
 
     if (
