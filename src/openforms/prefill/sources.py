@@ -53,7 +53,7 @@ def fetch_prefill_values_from_attribute(
 
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
-        item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]]
+        item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]],
     ) -> tuple[list[dict[str, str]], dict[str, JSONEncodable]]:
         plugin, identifier_role, fields = item
 

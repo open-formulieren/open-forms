@@ -29,7 +29,7 @@ class OgoneClient:
         return_action_param: str,
         title: str = "",
         com: str = "",
-        **extra_params
+        **extra_params,
     ) -> PaymentInfo:
         # base params
         params = OgoneRequestParams(

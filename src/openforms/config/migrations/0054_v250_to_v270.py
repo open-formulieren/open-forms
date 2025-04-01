@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'form_url' and 'code'.",
                 validators=[
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'form_url' and 'code'.",
                 null=True,
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
                 default=functools.partial(
                     openforms.config.models.config._render,
                     *("emails/co_sign/request.html",),
-                    **{}
+                    **{},
                 ),
                 help_text="Content of the co-sign request email. The available template variables are: 'form_name', 'form_url' and 'code'.",
                 null=True,

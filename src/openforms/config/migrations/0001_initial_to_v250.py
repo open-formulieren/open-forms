@@ -358,7 +358,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Thank you for submitting this form.",),
-                            **{}
+                            **{},
                         ),
                         help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                         validators=[
@@ -381,7 +381,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Begin form",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed at the start of the form to indicate the user can begin to fill in the form",
                         max_length=50,
@@ -405,7 +405,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Confirm",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to confirm the form is filled in correctly",
                         max_length=50,
@@ -418,7 +418,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to go to the previous step",
                         max_length=50,
@@ -442,7 +442,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to go to the previous step",
                         max_length=50,
@@ -455,7 +455,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Save current information",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to save the current information",
                         max_length=50,
@@ -619,7 +619,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the confirmation email message. Can be overridden on the form level",
                         max_length=1000,
@@ -669,7 +669,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the save form email message.",
                         max_length=1000,
@@ -693,7 +693,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the confirmation email message. Can be overridden on the form level",
                         max_length=1000,
@@ -710,7 +710,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the confirmation email message. Can be overridden on the form level",
                         max_length=1000,
@@ -727,7 +727,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Begin form",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed at the start of the form to indicate the user can begin to fill in the form",
                         max_length=50,
@@ -741,7 +741,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Begin form",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed at the start of the form to indicate the user can begin to fill in the form",
                         max_length=50,
@@ -779,7 +779,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Confirm",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to confirm the form is filled in correctly",
                         max_length=50,
@@ -793,7 +793,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Confirm",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to confirm the form is filled in correctly",
                         max_length=50,
@@ -831,7 +831,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Save current information",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to save the current information",
                         max_length=50,
@@ -845,7 +845,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Save current information",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to save the current information",
                         max_length=50,
@@ -859,7 +859,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the save form email message.",
                         max_length=1000,
@@ -876,7 +876,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/subject.txt",),
-                            **{}
+                            **{},
                         ),
                         help_text="Subject of the save form email message.",
                         max_length=1000,
@@ -893,7 +893,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Thank you for submitting this form.",),
-                            **{}
+                            **{},
                         ),
                         help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                         null=True,
@@ -909,7 +909,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Thank you for submitting this form.",),
-                            **{}
+                            **{},
                         ),
                         help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                         null=True,
@@ -925,7 +925,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to go to the previous step",
                         max_length=50,
@@ -939,7 +939,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the overview page to go to the previous step",
                         max_length=50,
@@ -953,7 +953,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to go to the previous step",
                         max_length=50,
@@ -967,7 +967,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Previous page",),
-                            **{}
+                            **{},
                         ),
                         help_text="The text that will be displayed in the form step to go to the previous step",
                         max_length=50,
@@ -990,7 +990,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the save form email message.",
                         validators=[
@@ -1008,7 +1008,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the save form email message.",
                         null=True,
@@ -1027,7 +1027,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/save_form/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the save form email message.",
                         null=True,
@@ -1093,7 +1093,7 @@ class Migration(migrations.Migration):
                             *(
                                 "Yes, I have read the {% privacy_policy %} and explicitly agree to the processing of my submitted information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree to the privacy policy.",
                         validators=[
@@ -1114,7 +1114,7 @@ class Migration(migrations.Migration):
                             *(
                                 "Yes, I have read the {% privacy_policy %} and explicitly agree to the processing of my submitted information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree to the privacy policy.",
                         null=True,
@@ -1136,7 +1136,7 @@ class Migration(migrations.Migration):
                             *(
                                 "Yes, I have read the {% privacy_policy %} and explicitly agree to the processing of my submitted information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree to the privacy policy.",
                         null=True,
@@ -1218,7 +1218,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Download PDF",),
-                            **{}
+                            **{},
                         ),
                         help_text="The title of the link to download the report of a submission.",
                         max_length=128,
@@ -1231,7 +1231,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Download PDF",),
-                            **{}
+                            **{},
                         ),
                         help_text="The title of the link to download the report of a submission.",
                         max_length=128,
@@ -1245,7 +1245,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.utils.translations.get_default,
                             *("Download PDF",),
-                            **{}
+                            **{},
                         ),
                         help_text="The title of the link to download the report of a submission.",
                         max_length=128,
@@ -1259,7 +1259,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the confirmation email message. Can be overridden on the form level",
                         validators=[
@@ -1282,7 +1282,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the confirmation email message. Can be overridden on the form level",
                         null=True,
@@ -1306,7 +1306,7 @@ class Migration(migrations.Migration):
                         default=functools.partial(
                             openforms.config.models.config._render,
                             *("emails/confirmation/content.html",),
-                            **{}
+                            **{},
                         ),
                         help_text="Content of the confirmation email message. Can be overridden on the form level",
                         null=True,
@@ -1374,7 +1374,7 @@ class Migration(migrations.Migration):
                             *(
                                 "I declare that I have filled out the form truthfully and have not omitted any information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree that they filled out the form truthfully. Note that this field does not have templating support.",
                         verbose_name="statement of truth label",
@@ -1389,7 +1389,7 @@ class Migration(migrations.Migration):
                             *(
                                 "I declare that I have filled out the form truthfully and have not omitted any information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree that they filled out the form truthfully. Note that this field does not have templating support.",
                         null=True,
@@ -1405,7 +1405,7 @@ class Migration(migrations.Migration):
                             *(
                                 "I declare that I have filled out the form truthfully and have not omitted any information.",
                             ),
-                            **{}
+                            **{},
                         ),
                         help_text="The label of the checkbox that prompts the user to agree that they filled out the form truthfully. Note that this field does not have templating support.",
                         null=True,

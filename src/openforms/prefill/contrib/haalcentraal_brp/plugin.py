@@ -34,9 +34,9 @@ def get_attributes_cls():
     config = HaalCentraalConfig.get_solo()
 
     match config:
-        case HaalCentraalConfig(
-            brp_personen_version=version
-        ) if version in VERSION_TO_ATTRIBUTES_MAP:
+        case HaalCentraalConfig(brp_personen_version=version) if (
+            version in VERSION_TO_ATTRIBUTES_MAP
+        ):
             return VERSION_TO_ATTRIBUTES_MAP[version]
         case _:
             return AttributesV1

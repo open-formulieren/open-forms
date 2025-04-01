@@ -15,7 +15,7 @@ The package integrates with the form builder such that it's possible to:
 
 Plugins can be registered using a similar approach to the registrations package. Each plugin
 is responsible for exposing which attributes/data fragments are available, and for performing
-the actual look-up. Plugins receive the :class:`openforms.submissions.models.Submission` 
+the actual look-up. Plugins receive the :class:`openforms.submissions.models.Submission`
 instance that represents the current form session of an end-user.
 
 Prefill values are embedded as default values for form fields, dynamically for every

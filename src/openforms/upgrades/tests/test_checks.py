@@ -97,8 +97,9 @@ class UpgradeCheckTests(TestCase):
         }
         version_info = VersionInfo(current="68952f07ae778ae0f6879c9e1b290dc33f4b1aad")
 
-        with mock_upgrade_paths(UPGRADE_PATHS), mock_version_info(
-            return_value=version_info
+        with (
+            mock_upgrade_paths(UPGRADE_PATHS),
+            mock_version_info(return_value=version_info),
         ):
             errors_and_warnings = check_upgrade_possible(None)
 
