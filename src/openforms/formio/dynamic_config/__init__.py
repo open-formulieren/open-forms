@@ -31,7 +31,7 @@ def rewrite_formio_components(
     """
     data = data or FormioData()  # normalize
     for component in configuration_wrapper:
-        register.update_config(component, submission=submission, data=data.data)
+        register.update_config(component, submission=submission, data=data)
     return configuration_wrapper
 
 
