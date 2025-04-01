@@ -76,8 +76,6 @@ def get_dynamic_configuration(
     # Avoid circular imports
     from openforms.prefill.service import inject_prefill
 
-    if data is not None:
-        data = data.data
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
 
     # Add to each component the custom errors in the current locale

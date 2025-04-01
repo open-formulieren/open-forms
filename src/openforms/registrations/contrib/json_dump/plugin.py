@@ -139,7 +139,7 @@ def post_process(
     configuration_wrapper = rewrite_formio_components(
         submission.total_configuration_wrapper,
         submission=submission,
-        data=state.to_python().data,
+        data=state.to_python(),
     )
 
     # Create attachment mapping from key or component data path to attachment list
