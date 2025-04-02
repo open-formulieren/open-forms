@@ -2,7 +2,7 @@ import re
 from collections import UserDict
 from typing import Iterator, cast
 
-from glom import PathAccessError, assign, glom
+from glom import glom, PathAccessError, assign
 
 from openforms.typing import DataMapping, JSONValue
 
@@ -141,6 +141,7 @@ class FormioConfigurationWrapper:
         return all(is_visible_in_frontend(node, values) for node in nodes)
 
 
+# TODO-5179: remove this
 class FormioData(UserDict):
     """
     Handle formio (submission) data transparently.
@@ -206,3 +207,102 @@ class FormioData(UserDict):
             return True
         except KeyError:
             return False
+
+
+class FormioDataCustom(UserDict):
+    """
+    Handle formio (submission) data transparently.
+
+    Form.io supports component keys in the format 'topLevel.nested' which get converted
+    to deep-setting of object properties (using ``lodash.set`` internally). This
+    datastructure mimicks that interface in Python so we can more naturally perform
+    operations like:
+
+    .. code-block:: python
+
+        data = FormioData()
+        for component in iter_components(...):
+            data[component["key"]] = ...
+
+    without having to worry about potential deep assignments or leak implementation
+    details.
+    """
+
+    data: dict[str, JSONValue]
+
+    def __getitem__(self, key: str):
+        """
+        Get a value from the internal data dict.
+
+        Keys are expected to be strings and can indicate nested data, e.g.
+        ``variable.key``.
+        """
+        assert isinstance(key, str)
+
+        if "." not in key:
+            return self.data[key]
+
+        value = self.data
+        for k in key.split("."):
+            if not isinstance(value, dict):
+                raise KeyError(f"Key '{key}' is not present in the data")
+            try:
+                value = value[k]
+            except KeyError:
+                raise KeyError(f"Key '{key}' is not present in the data")
+
+        return value
+
+    def __setitem__(self, key: str, value: JSONValue):
+        """
+        Set a value to the internal data dict.
+
+        Keys are expected to be strings and can indicate nested data, e.g.
+        ``variable.key``.
+        """
+        assert isinstance(key, str)
+
+        if "." not in key:
+            self.data[key] = value
+            return
+
+        data = self.data
+        key_list = key.split(".")
+        for k in key_list[:-1]:
+            child = data.get(k, None)
+            if not isinstance(child, dict):
+                data[k] = {}
+
+            data = data[k]
+
+        data[key_list[-1]] = value
+
+    def __contains__(self, key: object) -> bool:
+        """
+        Check if the key is present in the data container.
+
+        This gets called via ``formio_data.get(...)`` to check if the default needs to
+        be returned or not. Keys are expected to be strings taken from ``variable.key``
+        fields.
+        """
+        assert isinstance(key, str)
+
+        if "." not in key:
+            return key in self.data
+
+        value = self.data
+        for k in key.split("."):
+            if not isinstance(value, dict):
+                return False
+
+            try:
+                value = value[k]
+            except KeyError:
+                return False
+
+        return True
+
+    def __iter__(self):
+        raise AttributeError(
+            "Iterating over the items of a 'FormioData' instance is not supported"
+        )

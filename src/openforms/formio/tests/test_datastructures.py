@@ -23,7 +23,7 @@ class FormioDataTests(TestCase):
             FormioData(123)  # type: ignore
 
     def test_translate_dotted_lookup_paths(self):
-        formio_data = FormioData({"foo": {"bar": "baz"}})
+        formio_data = FormioData({"foo": {"bar": "baz"}, "key": "value"})
 
         with self.subTest("top-level key lookup"):
             self.assertEqual(formio_data["foo"], {"bar": "baz"})
@@ -33,6 +33,9 @@ class FormioDataTests(TestCase):
             self.assertEqual(formio_data["foo.bar"], "baz")
             self.assertEqual(formio_data.get("foo.bar"), "baz")
             self.assertEqual(formio_data.get("foo.baz", "a default"), "a default")
+
+        with self.subTest("nested absent on top level"), self.assertRaises(KeyError):
+            formio_data["key.absent"]
 
     def test_translate_dotted_setter_paths(self):
         formio_data = FormioData({})
@@ -65,6 +68,9 @@ class FormioDataTests(TestCase):
 
         with self.subTest("nested absent"):
             self.assertFalse("container.absent" in formio_data)
+
+        with self.subTest("nested absent on top level"):
+            self.assertFalse("top.absent" in formio_data)
 
     def test_initializing_with_dotted_paths_expands(self):
         formio_data = FormioData(
