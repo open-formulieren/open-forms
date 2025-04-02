@@ -9,12 +9,11 @@ apps/packages:
   submodules and only their 'public' API should be imported and used.
 """
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import elasticapm
 
-from openforms.submissions.models import Submission
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -29,6 +28,9 @@ from .typing import Component
 from .utils import iter_components, iterate_data_with_components, recursive_apply
 from .variables import inject_variables
 
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
+
 __all__ = [
     "get_dynamic_configuration",
     "normalize_value_for_component",
@@ -36,6 +38,7 @@ __all__ = [
     "inject_variables",
     "format_value",
     "rewrite_formio_components_for_request",
+    "FormioConfigurationWrapper",
     "FormioData",
     "iterate_data_with_components",
     "recursive_apply",
@@ -63,8 +66,8 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
-    submission: Submission,
-    data: DataMapping | None = None,
+    submission: "Submission",
+    data: FormioData | None = None,
 ) -> FormioConfigurationWrapper:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.

@@ -13,10 +13,10 @@ from glom import Path
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.formio.typing import Component
 from openforms.submissions.rendering.constants import RenderModes
-from openforms.typing import DataMapping
 from openforms.utils.glom import _glom_path_to_str
 from openforms.utils.urls import build_absolute_uri
 
+from ..datastructures import FormioData
 from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
@@ -26,7 +26,7 @@ from .registry import register
 class ContainerMixin:
     is_layout = True
 
-    step_data: DataMapping
+    step_data: FormioData
     component: Component
     mode: RenderModes
 

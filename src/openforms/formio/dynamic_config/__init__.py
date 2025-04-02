@@ -1,22 +1,24 @@
 """
 Implement component-specific dynamic configuration based on (submission) state.
 """
+from typing import TYPE_CHECKING
 
 from rest_framework.request import Request
 
-from openforms.submissions.models import Submission
-from openforms.typing import DataMapping
-
-from ..datastructures import FormioConfigurationWrapper
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..registry import register
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import Submission
+
 
 __all__ = ["rewrite_formio_components", "rewrite_formio_components_for_request"]
 
 
 def rewrite_formio_components(
     configuration_wrapper: FormioConfigurationWrapper,
-    submission: Submission,
-    data: DataMapping | None = None,
+    submission: "Submission",
+    data: FormioData = None,
 ) -> FormioConfigurationWrapper:
     """
     Loop over the formio configuration and mutate components in place.
@@ -30,7 +32,7 @@ def rewrite_formio_components(
     :arg data: key-value mapping of variable name to variable value. If a submission
       context is available, the variables of the submission are included here.
     """
-    data = data or {}  # normalize
+    data = data or FormioData()  # normalize
     for component in configuration_wrapper:
         register.update_config(component, submission=submission, data=data)
     return configuration_wrapper
@@ -48,7 +50,7 @@ def rewrite_formio_components_for_request(
 
 
 def get_translated_custom_error_messages(
-    config_wrapper: FormioConfigurationWrapper, submission: Submission
+    config_wrapper: FormioConfigurationWrapper, submission: "Submission"
 ) -> FormioConfigurationWrapper:
     for component in config_wrapper:
         if (

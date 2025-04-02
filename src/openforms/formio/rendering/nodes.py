@@ -9,8 +9,8 @@ from glom import Path, assign, glom
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
-from openforms.typing import DataMapping
 
+from ..datastructures import FormioData
 from ..service import format_value
 from ..typing import Component
 from ..utils import (
@@ -42,7 +42,7 @@ class RenderConfiguration:
 @dataclass
 class ComponentNode(Node):
     component: Component
-    step_data: DataMapping  # XXX refactor to FormioData
+    step_data: FormioData
     depth: int = 0
     is_layout = False
     path: Path | None = None  # Path in the data (#TODO rename to data_path?)
@@ -56,7 +56,7 @@ class ComponentNode(Node):
 
     @staticmethod
     def build_node(
-        step_data: DataMapping,
+        step_data: FormioData,
         component: Component,
         renderer: "Renderer",
         path: Path | None = None,  # Path in the data
@@ -131,13 +131,15 @@ class ComponentNode(Node):
         if isinstance(self.parent_node, EditGridGroupNode):
             # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
             # the data for a specific iteration to figure out if a field within the iteration is visible
-            step_data = copy.deepcopy(self.step_data)
+            # TODO-5221: FormioData does not support list access, yet, so we have to use
+            #  glom for now
+            step_data = copy.deepcopy(self.step_data.data)
             current_iteration_data = glom(step_data, self.path, default=None)
             artificial_repeating_group_data = assign(
                 step_data, self.parent_node.path, current_iteration_data, missing=dict
             )
             if not is_visible_in_frontend(
-                self.component, artificial_repeating_group_data
+                self.component, FormioData(artificial_repeating_group_data)
             ):
                 return False
         elif not is_visible_in_frontend(self.component, self.step_data):
@@ -197,7 +199,10 @@ class ComponentNode(Node):
             if self.renderer.mode == RenderModes.registration
             else None
         )
-        value = glom(self.step_data, path, default=empty_value)
+
+        # TODO-5221: FormioData does not support list access, yet, so we have to use
+        #  glom for now
+        value = glom(self.step_data.data, path, default=empty_value)
         return value
 
     @property

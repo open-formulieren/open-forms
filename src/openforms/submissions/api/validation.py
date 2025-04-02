@@ -11,7 +11,10 @@ from rest_framework.exceptions import ErrorDetail
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 
-from openforms.formio.service import build_serializer, get_dynamic_configuration
+from openforms.formio.service import (
+    build_serializer,
+    get_dynamic_configuration,
+)
 from openforms.forms.models import FormDefinition, FormStep
 
 from ..models import Submission, SubmissionStep
@@ -120,7 +123,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
                 ).configuration
                 step_data_serializer = build_serializer(
                     configuration["components"],
-                    data=data,
+                    data=data.data,
                     context={"submission": submission},
                 )
                 if not step_data_serializer.is_valid():

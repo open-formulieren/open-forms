@@ -20,7 +20,7 @@ from PIL import Image
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
-from openforms.formio.service import iterate_data_with_components
+from openforms.formio.service import FormioData, iterate_data_with_components
 from openforms.formio.typing import Component
 from openforms.submissions.models import (
     Submission,
@@ -100,7 +100,7 @@ class UploadContext:
 
 
 def iter_step_uploads(
-    submission_step: SubmissionStep, data=None
+    submission_step: SubmissionStep, data: FormioData | None = None
 ) -> Iterator[UploadContext]:
     """
     Iterate over all the uploads for a given submission step.
@@ -110,7 +110,7 @@ def iter_step_uploads(
     """
     data = data or submission_step.data
     uploads = resolve_uploads_from_data(
-        submission_step.form_step.form_definition.configuration, data
+        submission_step.form_step.form_definition.configuration, data.data
     )
     for data_path, (component, upload_instances, configuration_path) in uploads.items():
         # formio sends a list of uploads even with multiple=False
@@ -245,6 +245,8 @@ def iter_component_data(components: Iterable[dict], data: dict, filter_types=Non
         yield component, data[key]
 
 
+# TODO-5221: should `data` also be a FormioData instance instead of a `dict`? Probably,
+#  because this is still all custom code, no third-party libraries involved here
 def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     """
     "my_file": [

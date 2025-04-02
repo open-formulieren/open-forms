@@ -66,56 +66,19 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    @overload
-    def get_data(
-        self,
-        *,
-        as_formio_data: Literal[True],
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> FormioData: ...
-
-    @overload
-    def get_data(
-        self,
-        *,
-        as_formio_data: Literal[False] = False,
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> DataMapping: ...
-
-    def get_data(
-        self,
-        *,
-        as_formio_data: bool = False,
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> DataMapping | FormioData:
-        """
-        Return the values of the dynamic variables in the submission.
-
-        :arg as_formio_data: set to ``True`` to get the :class:`FormioData`
-          datastructure instead of the underlying nested dictionaries.
-        """
+    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
+        """Return the values of the dynamic variables in the submission."""
         submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
                 submission_step, include_unsaved=False
             )
 
-        formio_data = FormioData()
+        data = FormioData()
         for variable_key, variable in submission_variables.items():
-            if (
-                variable.value is None
-                and variable.form_variable
-                and variable.value == variable.form_variable.initial_value
-                and not return_unchanged_data
-            ):
-                continue
-
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                formio_data[variable_key] = variable.value
-        return formio_data if as_formio_data else formio_data.data
+                data[variable_key] = variable.value
+        return data
 
     def get_variables_in_submission_step(
         self,

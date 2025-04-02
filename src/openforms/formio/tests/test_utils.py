@@ -6,13 +6,14 @@ from openforms.formio.tests.search_strategies import formio_key
 from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
+from ..datastructures import FormioData
 from ..typing import Component
 from ..utils import is_visible_in_frontend
 
 
 class FormioUtilsTest(SimpleTestCase):
     def test_is_visible_in_frontend_with_selectboxes(self):
-        data = {"selectBoxes1": {"a": True, "b": False}}
+        data = FormioData({"selectBoxes1": {"a": True, "b": False}})
 
         component = {
             "key": "textField1",
@@ -25,7 +26,7 @@ class FormioUtilsTest(SimpleTestCase):
         self.assertTrue(result)
 
     def test_is_hidden_in_frontend_with_selectboxes(self):
-        data = {"selectBoxes1": {"a": True, "b": False}}
+        data = FormioData({"selectBoxes1": {"a": True, "b": False}})
 
         component = {
             "key": "textField1",
@@ -38,7 +39,7 @@ class FormioUtilsTest(SimpleTestCase):
         self.assertFalse(result)
 
     def test_is_hidden_if_not_selected(self):
-        data = {"selectBoxes1": {"a": False, "b": False}}
+        data = FormioData({"selectBoxes1": {"a": False, "b": False}})
 
         component = {
             "key": "textField1",
@@ -51,7 +52,7 @@ class FormioUtilsTest(SimpleTestCase):
         self.assertFalse(result)
 
     def test_is_visible_if_not_selected(self):
-        data = {"selectBoxes1": {"a": False, "b": False}}
+        data = FormioData({"selectBoxes1": {"a": False, "b": False}})
 
         component = {
             "key": "textField1",
@@ -78,7 +79,7 @@ class FormioUtilsTest(SimpleTestCase):
         when: None | str,
         eq: JSONPrimitive,
     ):
-        data = {}
+        data = FormioData()
         component: Component = {
             "key": "someComponent",
             "type": "textfield",

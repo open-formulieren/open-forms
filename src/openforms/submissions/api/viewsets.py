@@ -582,9 +582,7 @@ class SubmissionStepViewSet(
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
-            evaluate_form_logic(
-                submission, subsequent_step, merged_data, request=request
-            )
+            evaluate_form_logic(submission, subsequent_step, merged_data)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
 
@@ -660,10 +658,7 @@ class SubmissionStepViewSet(
             submission_step.data = DirtyData(data)
 
             new_configuration = evaluate_form_logic(
-                submission,
-                submission_step,
-                merged_data.data,
-                request=request,
+                submission, submission_step, merged_data
             )
             submission_step.form_step.form_definition.configuration = new_configuration
 
