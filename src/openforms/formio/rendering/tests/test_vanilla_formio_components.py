@@ -17,11 +17,8 @@ from openforms.submissions.tests.factories import (
 )
 
 from ..nodes import ComponentNode
-from ...datastructures import FormioData
 
 
-# TODO-5221: remove all the FormioData instances from these tests when (or if)
-#  SubmissionStep.data/Submission.data already return FormioData instances.
 @override_settings(LANGUAGE_CODE="en")
 class FormNodeTests(TestCase):
     @classmethod
@@ -210,7 +207,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -223,7 +220,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertTrue(component_node.is_visible)
@@ -239,7 +236,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "fieldset"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -257,7 +254,7 @@ class FormNodeTests(TestCase):
         }
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertEqual(component_node.label, "")
@@ -269,7 +266,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -282,7 +279,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertTrue(component_node.is_visible)
@@ -298,7 +295,7 @@ class FormNodeTests(TestCase):
         assert component["type"] == "columns"
 
         component_node = ComponentNode.build_node(
-            step_data=FormioData(self.step.data), component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertFalse(component_node.is_visible)
@@ -313,7 +310,7 @@ class FormNodeTests(TestCase):
                 renderer = Renderer(self.submission, mode=render_mode, as_html=False)
 
                 component_node = ComponentNode.build_node(
-                    step_data=FormioData(self.step.data), component=component, renderer=renderer
+                    step_data=self.step.data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.label, "")
@@ -352,7 +349,7 @@ class FormNodeTests(TestCase):
             with self.subTest(render_mode=render_mode):
                 renderer = Renderer(submission, mode=render_mode, as_html=False)
                 component_node = ComponentNode.build_node(
-                    step_data=FormioData(step.data), component=component, renderer=renderer
+                    step_data=step.data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.is_visible, is_visible)
@@ -360,7 +357,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
 
             self.assertEqual(
@@ -370,7 +367,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=False):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=False)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
@@ -408,7 +405,7 @@ class FormNodeTests(TestCase):
             with self.subTest(render_mode=render_mode):
                 renderer = Renderer(submission, mode=render_mode, as_html=False)
                 component_node = ComponentNode.build_node(
-                    step_data=FormioData(step.data), component=component, renderer=renderer
+                    step_data=step.data, component=component, renderer=renderer
                 )
 
                 self.assertEqual(component_node.is_visible, is_visible)
@@ -416,7 +413,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
 
             self.assertEqual(
@@ -426,7 +423,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=False):
             renderer = Renderer(submission, mode=RenderModes.pdf, as_html=False)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
@@ -481,7 +478,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=component,
                 configuration_path="components.0",
                 renderer=renderer,
@@ -500,7 +497,7 @@ class FormNodeTests(TestCase):
                 submission, mode=RenderModes.registration, as_html=False
             )
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=component,
                 configuration_path="components.0",
                 renderer=renderer,
@@ -650,7 +647,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=components[0],
                 renderer=renderer,
                 configuration_path="components.0",
@@ -689,7 +686,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             nested_file_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=components[1],
                 renderer=renderer,
                 configuration_path="components.1",
@@ -804,7 +801,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=components[0],
                 configuration_path="components.0",
                 renderer=renderer,
@@ -829,7 +826,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             outside_file_node = ComponentNode.build_node(
-                step_data=FormioData(step.data),
+                step_data=step.data,
                 component=components[1],
                 configuration_path="components.1",
                 renderer=renderer,
@@ -955,7 +952,7 @@ class FormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         repeating_group_node = ComponentNode.build_node(
-            step_data=FormioData(step.data),
+            step_data=step.data,
             component=components[0],
             configuration_path="components.0",
             renderer=renderer,
@@ -1005,7 +1002,7 @@ class FormNodeTests(TestCase):
         )
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         component_node = ComponentNode.build_node(
-            step_data=FormioData(step.data), component=component, renderer=renderer
+            step_data=step.data, component=component, renderer=renderer
         )
         link = component_node.render()
         self.assertEqual(link, "My File: ")
@@ -1043,7 +1040,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1090,7 +1087,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1169,7 +1166,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=FormioData(step.data), component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 

@@ -42,7 +42,6 @@ class RenderConfiguration:
 @dataclass
 class ComponentNode(Node):
     component: Component
-    # TODO-5221: update all instances of ComponentNode
     step_data: FormioData
     depth: int = 0
     is_layout = False
@@ -56,7 +55,6 @@ class ComponentNode(Node):
     parent_node: Node | None = None
 
     @staticmethod
-    # TODO-5221: update all calls of this
     def build_node(
         step_data: FormioData,
         component: Component,
@@ -309,10 +307,8 @@ class FormioNode(Node):
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):
-            # TODO-5221: remove the FormioData instance here when (or if)
-            #  SubmissionStep.data/Submission.data already return FormioData instances.
             child_node = ComponentNode.build_node(
-                step_data=FormioData(self.step.data),
+                step_data=self.step.data,
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,

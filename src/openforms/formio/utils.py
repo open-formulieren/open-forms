@@ -372,6 +372,7 @@ class ComponentWithDataItem:
     configuration_path: str
 
 
+# TODO-5221: I think `data` should also be a FormioData instance
 def iterate_data_with_components(
     configuration: JSONObject,
     data: JSONObject,
@@ -443,7 +444,8 @@ def iterate_data_with_components(
             )
 
 
-# TODO-5221: is this still within our 'code boundary'? Probably not.
+# TODO-5221: is this still within our 'code boundary'? Probably not. Also, why is this
+#  in openforms.formio? Seems like a way too generic function for that...
 def recursive_apply(
     input: JSONValue, func: Callable, transform_leaf: bool = False, *args, **kwargs
 ):

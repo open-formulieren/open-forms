@@ -137,8 +137,6 @@ def iter_evaluate_rules(
         ):
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
-                # TODO-5221: we pass the internal dict here, as it crosses the boundary
-                #  to a third-party library
                 triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
 
             if not triggered:

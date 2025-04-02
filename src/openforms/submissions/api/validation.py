@@ -12,7 +12,6 @@ from rest_framework.request import Request
 from rest_framework.settings import api_settings
 
 from openforms.formio.service import (
-    FormioData,
     build_serializer,
     get_dynamic_configuration,
 )
@@ -85,8 +84,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
         all_step_errors: list[StepValidationErrors] = []
         step_errors: StepValidationErrors
 
-        # TODO-5221: should Submission.data maybe already return a FormioData instance?
-        data = FormioData(submission.data)
+        data = submission.data
 
         for step in submission.steps:
             form_step = step.form_step
@@ -123,7 +121,6 @@ class SubmissionCompletionSerializer(serializers.Serializer):
                     submission=submission,
                     data=data,
                 ).configuration
-                # TODO-5221: does this need to accept FormioData as well?
                 step_data_serializer = build_serializer(
                     configuration["components"],
                     data=data.data,
