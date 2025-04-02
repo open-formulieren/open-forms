@@ -2,6 +2,27 @@
 Changelog
 =========
 
+2.8.8 (2025-04-??)
+==================
+
+Final bugfix release in the ``2.8.x`` series.
+
+.. warning:: Manual intervention required
+
+    We included a script to remove corrupt API group configuration to make the upgrade
+    to Open Forms 3.0 easier. This script removes API groups (Objects API and ZGW API's)
+    for which *no* services have been configured.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python src/manage.py /app/bin/delete_empty_api_groups.py
+
+**Bugfixes**
+
+.. todo:: ...
+
+
 2.8.7 (2025-03-17)
 ==================
 
