@@ -52,10 +52,8 @@ class JSONDumpRegistration(BasePlugin):
         # Update static values with registration variables
         static_values.update(state.get_static_data(other_registry=variables_registry))
 
-        all_values: JSONObject = {
-            **static_values,
-            **state.get_data(),  # dynamic values from user input
-        }
+        all_values = state.get_data()
+        all_values.update(static_values)
 
         # Values
         values = {

@@ -870,7 +870,7 @@ class ComponentModificationTests(TestCase):
             data={"radio": "yes", "textField": "Some data that must not be cleared!"},
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+        evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertEqual(
             "Some data that must not be cleared!", submission_step.data["textField"]

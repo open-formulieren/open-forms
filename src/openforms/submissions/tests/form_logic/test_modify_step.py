@@ -338,7 +338,7 @@ class StepModificationTests(TestCase):
             "changingKey": "original",
         }
 
-        evaluate_form_logic(submission, submission_step, dirty_data, dirty=True)
+        evaluate_form_logic(submission, submission_step, dirty_data)
 
         self.assertEqual(
             submission_step.data,
@@ -506,7 +506,7 @@ class StepModificationTests(TestCase):
 
         # This shouldn't raise an error
         evaluate_form_logic(
-            submission, submission_step, submission_step.data, dirty=True
+            submission, submission_step, submission_step.data
         )
 
     def test_datetime_trigger(self):

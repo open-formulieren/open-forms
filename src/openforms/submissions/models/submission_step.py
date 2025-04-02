@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 
 from frozendict import frozendict
 
+from openforms.formio.service import FormioData
 from openforms.forms.models import FormDefinition, FormStep
-from openforms.typing import DataMapping
 
 
 def _make_frozen(obj):
@@ -202,15 +202,15 @@ class SubmissionStep(models.Model):
         self.save()
 
     @property
-    def data(self) -> DataMapping:
+    def data(self) -> FormioData:
         values_state = self.submission.load_submission_value_variables_state()
-        # This is used in the evaluate_form_logic function, which only returns the data that has been changed to the
-        # frontend.
+        # This is used in the evaluate_form_logic function, which only returns the data
+        # that has been changed to the frontend.
         step_data = values_state.get_data(
             submission_step=self, return_unchanged_data=False
         )
         if self._unsaved_data:
-            return {**step_data, **self._unsaved_data}
+            step_data.update(self._unsaved_data)
         return step_data
 
     @data.setter
