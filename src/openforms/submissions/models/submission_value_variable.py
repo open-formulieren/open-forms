@@ -66,16 +66,7 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    def get_data(
-        self,
-        *,
-        submission_step: SubmissionStep | None = None,
-        # TODO-5221: we might be able to get rid of this kwarg, because according to the
-        #  comment in SubmissionStep.data, evaluate_form_logic is the only place where
-        #  this is used. And as of recent refactors, it creates its own diff, so it
-        #  should no longer be used anywhere.
-        return_unchanged_data: bool = True,
-    ) -> FormioData:
+    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
         """Return the values of the dynamic variables in the submission."""
         submission_variables = self.saved_variables
         if submission_step:
@@ -85,14 +76,6 @@ class SubmissionValueVariablesState:
 
         data = FormioData()
         for variable_key, variable in submission_variables.items():
-            if (
-                variable.value is None
-                and variable.form_variable
-                and variable.value == variable.form_variable.initial_value
-                and not return_unchanged_data
-            ):
-                continue
-
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 data[variable_key] = variable.value
         return data
