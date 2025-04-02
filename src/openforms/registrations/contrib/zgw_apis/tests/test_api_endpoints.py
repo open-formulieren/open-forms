@@ -500,6 +500,13 @@ class GetProductsListViewTests(OFVCRMixin, APITestCase):
     def test_fetch_products_by_case_type(self):
         user = StaffUserFactory.create()
         self.client.force_login(user)
+        # because we pin the "open forms time" to a particular moment, but the live
+        # service is running in the true time, the `exp` claim in the JWT trips. So, we
+        # set an extremely long expiry to ensure Open Zaak accepts this.
+        self.zgw_api_group.ztc_service.jwt_valid_for = (
+            10 * 365 * 24 * 60 * 60
+        )  # 10 years
+        self.zgw_api_group.ztc_service.save()
 
         response = self.client.get(
             self.endpoint,
