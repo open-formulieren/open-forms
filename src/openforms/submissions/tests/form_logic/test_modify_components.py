@@ -146,7 +146,7 @@ class ComponentModificationTests(TestCase):
         )
 
         configuration = evaluate_form_logic(
-            submission, submission_step, submission.data, dirty=True
+            submission, submission_step, submission.data
         )
 
         expected = {
