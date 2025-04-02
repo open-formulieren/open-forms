@@ -95,6 +95,7 @@ COPY \
     ./bin/fix_objects_api_form_registration_variables_mapping.py \
     ./bin/check_api_groups_null.py \
     ./bin/check_temporary_uploads.py \
+    ./bin/delete_empty_api_groups.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
