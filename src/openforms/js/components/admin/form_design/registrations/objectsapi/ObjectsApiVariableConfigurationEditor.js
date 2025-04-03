@@ -11,11 +11,15 @@ import {TextInput} from 'components/admin/forms/Inputs';
 
 import {AddressNlEditor} from './AddressNlObjectsApiVariableConfigurationEditor';
 import {GenericEditor} from './GenericObjectsApiVariableConfigurationEditor';
+import {MapEditor} from './MapObjectsApiVariableConfigurationEditor';
+import {SelectboxesEditor} from './SelectboxesObjectsApiVariableConfigurationEditor';
 
 // This can be updated with component-specific variable configuration options which do not
 // adhere to the generic behaviour (GenericEditor)
 const VARIABLE_CONFIGURATION_OPTIONS = {
   addressNL: AddressNlEditor,
+  map: MapEditor,
+  selectboxes: SelectboxesEditor,
 };
 
 /**
@@ -40,19 +44,10 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {components} = useContext(FormContext);
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
-  const {
-    objectsApiGroup,
-    objecttype,
-    objecttypeVersion,
-    geometryVariableKey,
-    transformToList = [],
-    variablesMapping,
-    version,
-  } = backendOptions;
+  const {objectsApiGroup, objecttype, objecttypeVersion, variablesMapping, version} =
+    backendOptions;
 
   if (version !== 2) throw new Error('Not supported, must be config version 2.');
-
-  const isGeometry = geometryVariableKey && geometryVariableKey === variable.key;
 
   // get the index of our variable in the mapping, if it exists
   let index = variablesMapping.findIndex(
@@ -71,7 +66,6 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   // the formik state is populated with the backend options, so our path needs to be
   // relative to that
   const namePrefix = `variablesMapping.${index}`;
-
   // check if there is a specific ConfigurationEditor according to the variable type,
   // if not, fallback to the default/generic one
   const componentType = components[variable?.key]?.type;
@@ -99,13 +93,12 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           variable={variable}
           components={components}
           namePrefix={namePrefix}
-          isGeometry={isGeometry}
-          transformToList={transformToList}
           index={index}
           mappedVariable={mappedVariable}
           objecttype={objecttype}
           objectsApiGroup={objectsApiGroup}
           objecttypeVersion={objecttypeVersion}
+          backendOptions={backendOptions}
         />
       </Fieldset>
     </>

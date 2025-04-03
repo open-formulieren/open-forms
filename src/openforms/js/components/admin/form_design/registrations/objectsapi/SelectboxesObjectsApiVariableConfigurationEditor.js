@@ -1,6 +1,5 @@
-import {FieldArray, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -8,75 +7,14 @@ import {useAsync, useToggle} from 'react-use';
 import {APIContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {TargetPathSelect} from 'components/admin/forms/objects_api';
+import {Checkbox} from 'components/admin/forms/Inputs';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
+import {MappedVariableTargetPathSelect} from './GenericObjectsApiVariableConfigurationEditor';
 import {asJsonSchema} from './utils';
 import {fetchTargetPaths} from './utils';
 
-/**
- * Hack-ish way to manage the variablesMapping state for one particular entry.
- *
- * We ensure that an item is added to `variablesMapping` by using the `FieldArray`
- * helper component if it doesn't exist yet, otherwise we update it.
- */
-export const MappedVariableTargetPathSelect = ({
-  name,
-  index,
-  mappedVariable,
-  isLoading = false,
-  targetPaths = [],
-  isDisabled = false,
-}) => {
-  const {
-    values: {variablesMapping = []},
-    setFieldValue,
-  } = useFormikContext();
-  const isNew = variablesMapping.length === index;
-  return (
-    <FieldArray
-      name="variablesMapping"
-      render={arrayHelpers => (
-        <TargetPathSelect
-          name={name}
-          isLoading={isLoading}
-          targetPaths={targetPaths}
-          isDisabled={isDisabled}
-          onChange={newValue => {
-            // Clearing the select means we need to remove the record from the mapping,
-            // otherwise it's not a valid item for the backend.
-            if (newValue === null) {
-              arrayHelpers.remove(index);
-              return;
-            }
-
-            // otherwise, either add a new item, or update the existing
-            if (isNew) {
-              const newMapping = {...mappedVariable, targetPath: newValue.targetPath};
-              arrayHelpers.push(newMapping);
-            } else {
-              setFieldValue(name, newValue.targetPath);
-            }
-          }}
-        />
-      )}
-    />
-  );
-};
-
-MappedVariableTargetPathSelect.propTypes = {
-  name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  mappedVariable: PropTypes.shape({
-    variableKey: PropTypes.string.isRequired,
-    targetPath: PropTypes.arrayOf(PropTypes.string),
-    options: PropTypes.object,
-  }).isRequired,
-  isLoading: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-};
-
-export const GenericEditor = ({
+export const SelectboxesEditor = ({
   variable,
   components,
   namePrefix,
@@ -85,11 +23,14 @@ export const GenericEditor = ({
   objecttype,
   objectsApiGroup,
   objecttypeVersion,
+  backendOptions,
 }) => {
   const {csrftoken} = useContext(APIContext);
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
+  const {setFieldValue} = useFormikContext();
+  const {transformToList = []} = backendOptions;
 
-  const componentType = components[variable?.key]?.type;
+  const transformationNeeded = transformToList.includes(variable.key);
 
   // Load all the possible target paths in parallel depending on if the data should be
   // transformed or not
@@ -103,11 +44,11 @@ export const GenericEditor = ({
       objectsApiGroup,
       objecttype,
       objecttypeVersion,
-      asJsonSchema(variable, components)
+      asJsonSchema(variable, components, transformToList)
     );
 
     return results;
-  }, []);
+  }, [transformationNeeded]);
 
   const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
@@ -122,6 +63,34 @@ export const GenericEditor = ({
     );
   return (
     <>
+      <FormRow>
+        <Field name="transformToList">
+          <Checkbox
+            name="transformToListCheckbox"
+            label={
+              <FormattedMessage
+                defaultMessage="Transform to list"
+                description="'Transform to list' checkbox label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="'Transform to list' checkbox help text"
+                defaultMessage="If enabled, the selected values are sent as an array of values instead of an object with a boolean value for each option."
+              />
+            }
+            checked={transformToList.includes(variable.key) || false}
+            onChange={event => {
+              const shouldBeTransformed = event.target.checked;
+              const newTransformToList = shouldBeTransformed
+                ? [...transformToList, variable.key]
+                : transformToList.filter(key => key !== variable.key);
+              setFieldValue('transformToList', newTransformToList);
+              setFieldValue(`${namePrefix}.targetPath`, undefined);
+            }}
+          />
+        </Field>
+      </FormRow>
       <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}
