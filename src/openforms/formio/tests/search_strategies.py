@@ -211,7 +211,7 @@ def data_sources():
         [
             DataSrcOptions.manual,
             DataSrcOptions.variable,
-            DataSrcOptions.referentielijsten,
+            DataSrcOptions.reference_lists,
         ]
     )
 

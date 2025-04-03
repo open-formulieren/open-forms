@@ -3165,6 +3165,12 @@
       "value": "You need to configure both longitude and latitude."
     }
   ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
+    }
+  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3915,12 +3921,6 @@
     {
       "type": 0,
       "value": "Maximum width"
-    }
-  ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
     }
   ],
   "Y8cmP1": [
@@ -6429,6 +6429,30 @@
       "value": "Plugin attribute"
     }
   ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6635,30 +6659,6 @@
     {
       "type": 0,
       "value": "Error"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [

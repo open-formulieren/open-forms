@@ -25,7 +25,7 @@ from . import serializers
                 location=OpenApiParameter.QUERY,
                 description=_("The type of Services to return."),
                 required=False,
-                enum=["referentielijsten"],
+                enum=["reference_lists"],
             )
         ],
     ),
@@ -44,7 +44,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if self.request.query_params.get("type") == "referentielijsten":
+        if self.request.query_params.get("type") == "reference_lists":
             config = GlobalConfiguration.get_solo()
-            return config.referentielijsten_services
+            return config.reference_lists_services
         return qs

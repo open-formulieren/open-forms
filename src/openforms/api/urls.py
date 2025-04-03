@@ -10,9 +10,9 @@ from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.config.api.viewsets import ThemeViewSet
-from openforms.contrib.referentielijsten.api.views import (
-    ReferentielijstenTabelItemsViewSet,
-    ReferentielijstenTabellenViewSet,
+from openforms.contrib.reference_lists.api.views import (
+    ReferenceListsTableItemsViewSet,
+    ReferenceListsTablesViewSet,
 )
 from openforms.forms.api.public_api.viewsets import CategoryViewSet
 from openforms.forms.api.viewsets import (
@@ -125,14 +125,14 @@ urlpatterns = [
                 path("geo/", include("openforms.contrib.kadaster.api.urls")),
                 path("i18n/", include("openforms.translations.api.urls")),
                 path(
-                    "referentielijst-tabellen/<slug:service_slug>",
-                    ReferentielijstenTabellenViewSet.as_view(),
-                    name="referentielijst-tabellen-list",
+                    "reference-lists-tables/<slug:service_slug>",
+                    ReferenceListsTablesViewSet.as_view(),
+                    name="reference-lists-tables-list",
                 ),
                 path(
-                    "referentielijst-tabellen/<slug:service_slug>/<str:tabel_code>/tabel-items",
-                    ReferentielijstenTabelItemsViewSet.as_view(),
-                    name="referentielijst-tabel-items-list",
+                    "reference-lists-tables/<slug:service_slug>/<str:table_code>/table-items",
+                    ReferenceListsTableItemsViewSet.as_view(),
+                    name="reference-lists-table-items-list",
                 ),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),

@@ -3182,6 +3182,12 @@
       "value": "Je moet latitude en longitude allebei instellen."
     }
   ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3932,12 +3938,6 @@
     {
       "type": 0,
       "value": "Maximale breedte"
-    }
-  ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
     }
   ],
   "Y8cmP1": [
@@ -6451,6 +6451,30 @@
       "value": "Pluginattribuut"
     }
   ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6653,30 +6677,6 @@
     {
       "type": 0,
       "value": "Fout"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [

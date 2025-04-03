@@ -1316,5 +1316,17 @@
         "einddatum_geldigheid": null,
         "aanvullende_gegevens": null
     }
+},
+{
+  "model": "api.item",
+  "pk": 105,
+  "fields": {
+    "tabel": 3,
+    "code": "geldig_option",
+    "naam": "geldig_option",
+    "begindatum_geldigheid": null,
+    "einddatum_geldigheid": null,
+    "aanvullende_gegevens": null
+  }
 }
 ]

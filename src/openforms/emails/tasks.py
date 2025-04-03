@@ -11,7 +11,7 @@ from openforms.config.models import GlobalConfiguration
 
 from .digest import (
     collect_broken_configurations,
-    collect_expired_or_near_expiry_referentielijsten_data,
+    collect_expired_or_near_expiry_reference_lists_data,
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
@@ -34,8 +34,8 @@ class Digest:
         invalid_certificates = collect_invalid_certificates()
         invalid_registration_backends = collect_invalid_registration_backends()
         invalid_logic_rules = collect_invalid_logic_rules()
-        expired_or_near_expiry_referentielijsten_data = (
-            collect_expired_or_near_expiry_referentielijsten_data()
+        expired_or_near_expiry_reference_lists_data = (
+            collect_expired_or_near_expiry_reference_lists_data()
         )
 
         return {
@@ -46,7 +46,7 @@ class Digest:
             "invalid_certificates": invalid_certificates,
             "invalid_registration_backends": invalid_registration_backends,
             "invalid_logic_rules": invalid_logic_rules,
-            "expired_or_near_expiry_referentielijsten_data": expired_or_near_expiry_referentielijsten_data,
+            "expired_or_near_expiry_reference_lists_data": expired_or_near_expiry_reference_lists_data,
         }
 
     def render(self) -> str:

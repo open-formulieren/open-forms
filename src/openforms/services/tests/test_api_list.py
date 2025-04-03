@@ -32,9 +32,9 @@ class AccessControlTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
 
-    def test_service_list_filter_by_referentielijsten(self):
+    def test_service_list_filter_by_reference_lists(self):
         config = GlobalConfiguration.get_solo()
-        config.referentielijsten_services.set(
+        config.reference_lists_services.set(
             [ServiceFactory.create(label="Referentielijsten", slug="referentielijsten")]
         )
         config.save()
