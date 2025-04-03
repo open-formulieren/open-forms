@@ -6,11 +6,11 @@ export const getServices = async type => {
 };
 
 export const getReferenceListsTables = async service => {
-  const resp = await get(`/api/v2/referentielijst-tabellen/${service}`);
+  const resp = await get(`/api/v2/reference-lists-tables/${service}`);
   return resp.data;
 };
 
-export const getReferenceListsTableItems = async (service, tabelCode) => {
-  const resp = await get(`/api/v2/referentielijst-tabellen/${service}/${tabelCode}/tabel-items`);
+export const getReferenceListsTableItems = async (service, tableCode) => {
+  const resp = await get(`/api/v2/reference-lists-tables/${service}/${tableCode}/table-items`);
   return resp.data;
 };

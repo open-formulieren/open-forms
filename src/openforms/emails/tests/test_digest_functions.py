@@ -38,7 +38,7 @@ from stuf.stuf_bg.client import NoServiceConfigured
 from ..digest import (
     InvalidLogicRule,
     collect_broken_configurations,
-    collect_expired_or_near_expiry_referentielijsten_data,
+    collect_expired_or_near_expiry_reference_lists_data,
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
@@ -1029,14 +1029,14 @@ class ReferencelistExpiredDataTests(TestCase):
     def test_inactive_form_does_not_trigger_checks(self):
         FormFactory.create(active=False)
 
-        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+        expired_data = collect_expired_or_near_expiry_reference_lists_data()
 
         self.assertEqual(len(expired_data), 0)
 
     def test_soft_deleted_form_does_not_trigger_checks(self):
         FormFactory.create(_is_deleted=True)
 
-        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+        expired_data = collect_expired_or_near_expiry_reference_lists_data()
 
         self.assertEqual(len(expired_data), 0)
 
@@ -1054,6 +1054,6 @@ class ReferencelistExpiredDataTests(TestCase):
             },
         )
 
-        expired_data = collect_expired_or_near_expiry_referentielijsten_data()
+        expired_data = collect_expired_or_near_expiry_reference_lists_data()
 
         self.assertEqual(len(expired_data), 0)

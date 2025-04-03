@@ -562,9 +562,9 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
-    referentielijsten_services = models.ManyToManyField(
+    reference_lists_services = models.ManyToManyField(
         Service,
-        verbose_name=_("referentielijsten services"),
+        verbose_name=_("reference lists services"),
         help_text=_(
             "List of services that are instances of the Referentielijsten API. "
             "The selected services will be shown as options when configuring "

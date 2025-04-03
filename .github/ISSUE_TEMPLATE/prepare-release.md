@@ -34,9 +34,10 @@ assignees: sergei-maertens
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
     - [ ] Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
           be reinstated)
-  - Referencelist:
+  - ReferenceLists:
+    - [ ] `openforms.contrib.reference_lists`
     - [ ] `openforms.emails.tests.test_tasks_integration`
-    - [ ] `openforms.formio.dynamic_config.tests.test_referentielijsten_config`
+    - [ ] `openforms.formio.dynamic_config.tests.test_reference_lists_config`
   - Registration plugins:
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`

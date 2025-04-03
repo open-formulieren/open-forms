@@ -11,6 +11,7 @@ import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
+from requests import RequestException
 from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -301,7 +302,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
+class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def setUp(self) -> None:
@@ -314,12 +315,12 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
 
         # The service is relative to the docker compose instance that we have in the
         # docker directory (docker-compose.referentielijsten.yml)
-        self.referentielijsten_service = ServiceFactory.create(
+        self.reference_lists_service = ServiceFactory.create(
             api_root="http://localhost:8004/api/v1/",
-            slug="referentielijsten",
+            slug="reference-lists",
             auth_type=AuthTypes.no_auth,
         )
-        config.referentielijsten_services.add(self.referentielijsten_service)
+        config.reference_lists_services.add(self.reference_lists_service)
 
     def test_tables(self):
         FormFactory.create(
@@ -331,8 +332,8 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                         "type": "selectboxes",
                         "label": "Selectboxes",
                         "openForms": {
-                            "dataSrc": "referentielijsten",
-                            "service": "referentielijsten",
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
                             "code": "not-geldig-anymore	",
                         },
                     }
@@ -370,8 +371,8 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                         "type": "selectboxes",
                         "label": "Selectboxes",
                         "openForms": {
-                            "dataSrc": "referentielijsten",
-                            "service": "referentielijsten",
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
                             "code": "item-not-geldig-anymore",
                         },
                     }
@@ -398,3 +399,95 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                 "Item 'Not geldig option' expired 3 weeks ago.",
                 sent_email.body,
             )
+
+    @requests_mock.Mocker()
+    def test_exception_for_tables_returns_proper_message(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
+                            "code": "item-not-geldig-anymore",
+                        },
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            f"{self.reference_lists_service.api_root}tabellen?code=item-not-geldig-anymore",
+            exc=RequestException("something went wrong (Table)"),
+        )
+
+        send_email_digest()
+        sent_email = mail.outbox[-1]
+
+        self.assertIn(
+            f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",
+            sent_email.body,
+        )
+        self.assertIn(
+            "something went wrong (Table)",
+            sent_email.body,
+        )
+
+    @requests_mock.Mocker()
+    def test_exception_for_items_returns_proper_message(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
+                            "code": "item-not-geldig-anymore",
+                        },
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            f"{self.reference_lists_service.api_root}tabellen?code=item-not-geldig-anymore",
+            json={
+                "results": [
+                    {
+                        "code": "item-not-geldig-anymore",
+                        "naam": "Tabel that contains item not geldig anymore",
+                        "einddatumGeldigheid": "2020-02-03T08:48:49Z",
+                        "beheerder": {
+                            "beheerder_naam": "",
+                            "beheerder_email": "",
+                            "beheerder_afdeling": "",
+                            "beheerder_organisatie": "",
+                        },
+                    }
+                ]
+            },
+        )
+        m.get(
+            f"{self.reference_lists_service.api_root}items?tabel__code=item-not-geldig-anymore",
+            exc=RequestException("something went wrong (Items)"),
+        )
+
+        send_email_digest()
+        sent_email = mail.outbox[-1]
+
+        self.assertIn(
+            f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",
+            sent_email.body,
+        )
+        self.assertIn(
+            "something went wrong (Items)",
+            sent_email.body,
+        )

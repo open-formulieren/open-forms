@@ -25,7 +25,7 @@ include = [
     # Formio tooling
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
-    "src/openforms/formio/dynamic_config/referentielijsten.py",
+    "src/openforms/formio/dynamic_config/reference_lists.py",
     # Core forms app
     "src/openforms/forms/api/serializers/logic/action_serializers.py",
     # Payments
@@ -33,7 +33,7 @@ include = [
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
     "src/openforms/contrib/objects_api/",
-    "src/openforms/contrib/referentielijsten/",
+    "src/openforms/contrib/reference_lists/",
     # Emails
     "src/openforms/emails/templatetags/cosign_information.py",
     # Logging
