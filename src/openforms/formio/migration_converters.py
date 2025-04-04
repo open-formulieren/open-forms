@@ -116,6 +116,7 @@ def fix_column_sizes(component: Component) -> bool:
     return changed
 
 
+# TODO-5181: setting file default values to an empty list contradicts this behaviour...
 def fix_file_default_value(component: Component) -> bool:
     component = cast(FileComponent, component)
     default_value = component.get("defaultValue")
@@ -327,6 +328,8 @@ DEFINITION_CONVERTERS = [
 ]
 
 
+# TODO-5181: add (or perhaps extend fix_empty_default_value) migration converter to
+#  handle all components in fix_component_default_values.py
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
