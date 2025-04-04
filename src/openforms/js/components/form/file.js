@@ -106,6 +106,7 @@ class FileField extends BaseFileField {
         webcam: false,
         input: true,
         fileMaxSize: '10MB', // override default of 1GB
+        defaultValue: [],
       },
       ...extend
     );

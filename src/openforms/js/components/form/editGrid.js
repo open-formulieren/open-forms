@@ -12,6 +12,7 @@ class EditGrid extends EditGridFormio {
         key: 'repeatingGroup',
         hideLabel: false,
         inlineEdit: false,
+        defaultValue: [],
       },
       ...extend
     );
@@ -24,6 +25,10 @@ class EditGrid extends EditGridFormio {
       icon: 'repeat',
       schema: EditGrid.schema(),
     };
+  }
+
+  get defaultSchema() {
+    return EditGrid.schema();
   }
 }
 

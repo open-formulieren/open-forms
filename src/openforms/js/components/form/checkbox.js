@@ -6,7 +6,7 @@ const Checkbox = Formio.Components.components.checkbox;
 
 class CheckboxField extends Checkbox {
   static schema(...extend) {
-    return localiseSchema(Checkbox.schema(...extend));
+    return localiseSchema(Checkbox.schema({defaultValue: false}, ...extend));
   }
 
   static get builderInfo() {
@@ -14,6 +14,10 @@ class CheckboxField extends Checkbox {
       ...Checkbox.builderInfo,
       schema: CheckboxField.schema(),
     };
+  }
+
+  get defaultSchema() {
+    return CheckboxField.schema();
   }
 }
 
