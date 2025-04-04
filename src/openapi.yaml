@@ -3715,12 +3715,12 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/referentielijst-tabellen/{service_slug}:
+  /api/v2/reference-lists-tables/{service_slug}:
     get:
-      operationId: referentielijst_tabellen_list
-      description: Return a list of available tabellen in a given Referentielijsten
-        service configured in the backend.
-      summary: List tabellen for a Referentielijsten service
+      operationId: reference_lists_tables_list
+      description: Return a list of available tables in a given ReferenceLists service
+        configured in the backend.
+      summary: List tables for a ReferenceLists service
       parameters:
       - in: path
         name: service_slug
@@ -3728,7 +3728,7 @@ paths:
           type: string
         required: true
       tags:
-      - referentielijst-tabellen
+      - reference-lists-tables
       security:
       - cookieAuth: []
       responses:
@@ -3738,7 +3738,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ReferentielijstTabellen'
+                  $ref: '#/components/schemas/ReferenceListsTable'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -3749,11 +3749,11 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/referentielijst-tabellen/{service_slug}/{tabel_code}/tabel-items:
+  /api/v2/reference-lists-tables/{service_slug}/{table_code}/table-items:
     get:
-      operationId: referentielijst_tabellen_tabel_items_list
-      description: Return a list of available items in a given Referentielijsten tabel.
-      summary: List items for a Referentielijsten tabel
+      operationId: reference_lists_tables_table_items_list
+      description: Return a list of available items in a given ReferenceLists table.
+      summary: List items for a ReferenceLists table
       parameters:
       - in: path
         name: service_slug
@@ -3761,12 +3761,12 @@ paths:
           type: string
         required: true
       - in: path
-        name: tabel_code
+        name: table_code
         schema:
           type: string
         required: true
       tags:
-      - referentielijst-tabellen
+      - reference-lists-tables
       security:
       - cookieAuth: []
       responses:
@@ -3776,7 +3776,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ReferentielijstTabelItems'
+                  $ref: '#/components/schemas/ReferenceListsTableItem'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4273,7 +4273,7 @@ paths:
         schema:
           type: string
           enum:
-          - referentielijsten
+          - reference_lists
         description: The type of Services to return.
       tags:
       - services
@@ -9791,40 +9791,40 @@ components:
       required:
       - name
       - slug
-    ReferentielijstTabelItems:
-      type: object
-      properties:
-        code:
-          type: string
-          description: The unique code that identifies the item.
-        naam:
-          type: string
-          description: The name of the item.
-        isGeldig:
-          type: boolean
-          readOnly: true
-          description: Indicates whether or not the item is expired.
-      required:
-      - code
-      - isGeldig
-      - naam
-    ReferentielijstTabellen:
+    ReferenceListsTable:
       type: object
       properties:
         code:
           type: string
           description: The unique code that identifies the table.
-        naam:
+        name:
           type: string
           description: The name of the table.
-        isGeldig:
+        isValid:
           type: boolean
           readOnly: true
           description: Indicates whether or not the table is expired.
       required:
       - code
-      - isGeldig
-      - naam
+      - isValid
+      - name
+    ReferenceListsTableItem:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The unique code that identifies the item.
+        name:
+          type: string
+          description: The name of the item.
+        isValid:
+          type: boolean
+          readOnly: true
+          description: Indicates whether or not the item is expired.
+      required:
+      - code
+      - isValid
+      - name
     RegistrationAttribute:
       type: object
       properties:

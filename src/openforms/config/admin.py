@@ -166,7 +166,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             {
                 "fields": (
                     "plugin_configuration",
-                    "referentielijsten_services",
+                    "reference_lists_services",
                 )
             },
         ),
@@ -206,7 +206,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
         ),
     )
     readonly_fields = ("feature_flags_link",)
-    filter_horizontal = ("referentielijsten_services",)
+    filter_horizontal = ("reference_lists_services",)
 
     @admin.display(description=_("feature flags"))
     def feature_flags_link(self, obj) -> str:

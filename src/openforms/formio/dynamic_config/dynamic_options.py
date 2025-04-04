@@ -13,7 +13,7 @@ from openforms.submissions.models import Submission
 from openforms.typing import DataMapping, JSONValue
 
 from ..typing import Component
-from .referentielijsten import fetch_options_from_referentielijsten
+from .reference_lists import fetch_options_from_reference_lists
 
 
 def normalise_option(option: JSONValue) -> tuple[JSONValue, JSONValue]:
@@ -109,8 +109,8 @@ def add_options_to_config(
 ) -> None:
     data_src = glom(component, "openForms.dataSrc", default=None)
     match data_src:
-        case DataSrcOptions.referentielijsten:
-            items_array = fetch_options_from_referentielijsten(component, submission)
+        case DataSrcOptions.reference_lists:
+            items_array = fetch_options_from_reference_lists(component, submission)
             if items_array is None:
                 raise ServiceUnavailable(
                     _("Could not retrieve options from Referentielijsten API."),

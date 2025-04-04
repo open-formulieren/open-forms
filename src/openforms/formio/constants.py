@@ -18,4 +18,4 @@ COMPONENT_DATATYPES = {
 class DataSrcOptions(StrEnum):
     manual = "manual"
     variable = "variable"
-    referentielijsten = "referentielijsten"
+    reference_lists = "referenceLists"
