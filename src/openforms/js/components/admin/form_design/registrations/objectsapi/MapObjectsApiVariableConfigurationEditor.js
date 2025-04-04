@@ -1,6 +1,5 @@
-import {FieldArray, useFormikContext} from 'formik';
+import {useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -8,75 +7,14 @@ import {useAsync, useToggle} from 'react-use';
 import {APIContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {TargetPathSelect} from 'components/admin/forms/objects_api';
+import {Checkbox} from 'components/admin/forms/Inputs';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
-import {asJsonSchema} from './utils';
+import {MappedVariableTargetPathSelect} from './GenericObjectsApiVariableConfigurationEditor';
 import {fetchTargetPaths} from './utils';
+import {asJsonSchema} from './utils';
 
-/**
- * Hack-ish way to manage the variablesMapping state for one particular entry.
- *
- * We ensure that an item is added to `variablesMapping` by using the `FieldArray`
- * helper component if it doesn't exist yet, otherwise we update it.
- */
-export const MappedVariableTargetPathSelect = ({
-  name,
-  index,
-  mappedVariable,
-  isLoading = false,
-  targetPaths = [],
-  isDisabled = false,
-}) => {
-  const {
-    values: {variablesMapping = []},
-    setFieldValue,
-  } = useFormikContext();
-  const isNew = variablesMapping.length === index;
-  return (
-    <FieldArray
-      name="variablesMapping"
-      render={arrayHelpers => (
-        <TargetPathSelect
-          name={name}
-          isLoading={isLoading}
-          targetPaths={targetPaths}
-          isDisabled={isDisabled}
-          onChange={newValue => {
-            // Clearing the select means we need to remove the record from the mapping,
-            // otherwise it's not a valid item for the backend.
-            if (newValue === null) {
-              arrayHelpers.remove(index);
-              return;
-            }
-
-            // otherwise, either add a new item, or update the existing
-            if (isNew) {
-              const newMapping = {...mappedVariable, targetPath: newValue.targetPath};
-              arrayHelpers.push(newMapping);
-            } else {
-              setFieldValue(name, newValue.targetPath);
-            }
-          }}
-        />
-      )}
-    />
-  );
-};
-
-MappedVariableTargetPathSelect.propTypes = {
-  name: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  mappedVariable: PropTypes.shape({
-    variableKey: PropTypes.string.isRequired,
-    targetPath: PropTypes.arrayOf(PropTypes.string),
-    options: PropTypes.object,
-  }).isRequired,
-  isLoading: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-};
-
-export const GenericEditor = ({
+export const MapEditor = ({
   variable,
   components,
   namePrefix,
@@ -85,14 +23,16 @@ export const GenericEditor = ({
   objecttype,
   objectsApiGroup,
   objecttypeVersion,
+  backendOptions,
 }) => {
   const {csrftoken} = useContext(APIContext);
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
+  const {setFieldValue} = useFormikContext();
+  const {geometryVariableKey} = backendOptions;
 
-  const componentType = components[variable?.key]?.type;
+  const isGeometry = geometryVariableKey && geometryVariableKey === variable.key;
 
-  // Load all the possible target paths in parallel depending on if the data should be
-  // transformed or not
+  // Load all the possible target paths in parallel
   const {
     loading,
     value: targetPaths,
@@ -105,7 +45,6 @@ export const GenericEditor = ({
       objecttypeVersion,
       asJsonSchema(variable, components)
     );
-
     return results;
   }, []);
 
@@ -123,6 +62,31 @@ export const GenericEditor = ({
   return (
     <>
       <FormRow>
+        <Field name="geometryVariableKey" disabled={!!mappedVariable.targetPath}>
+          <Checkbox
+            name="geometryCheckbox"
+            label={
+              <FormattedMessage
+                defaultMessage="Map to geometry field"
+                description="'Map to geometry field' checkbox label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="'Map to geometry field' checkbox help text"
+                defaultMessage="Whether to map this variable to the {geometryPath} attribute"
+                values={{geometryPath: <code>record.geometry</code>}}
+              />
+            }
+            checked={isGeometry}
+            onChange={event => {
+              const newValue = event.target.checked ? variable.key : undefined;
+              setFieldValue('geometryVariableKey', newValue);
+            }}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}
           label={
@@ -131,11 +95,13 @@ export const GenericEditor = ({
               description="'JSON Schema target' label"
             />
           }
+          disabled={isGeometry}
         >
           <MappedVariableTargetPathSelect
             name={`${namePrefix}.targetPath`}
             index={index}
             mappedVariable={mappedVariable}
+            isDisabled={isGeometry}
             isLoading={loading}
             targetPaths={targetPaths}
           />

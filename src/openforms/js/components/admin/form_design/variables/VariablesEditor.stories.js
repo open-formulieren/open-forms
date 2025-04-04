@@ -551,6 +551,86 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
   },
 };
 
+export const WithObjectsAPIRegistrationBackendsGeometryField = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Map object',
+        key: 'map',
+        type: 'map',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+    ],
+    availableComponents: {
+      map: {
+        type: 'map',
+        multiple: false,
+        key: 'map',
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'objects_api',
+        key: 'objects_api_1',
+        name: 'Example Objects API reg.',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
+          objecttypeVersion: 2,
+          variablesMapping: [],
+          transformToList: [],
+          geometryvariableKey: '',
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: {
+        objectTypeTargetPaths: [
+          mockTargetPathsPost({
+            object: [
+              {
+                targetPath: ['path', 'to.the', 'target'],
+                isRequired: false,
+                jsonSchema: {type: 'object'},
+              },
+            ],
+          }),
+        ],
+      },
+    },
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+
+    expect(editIcons).toHaveLength(1);
+
+    await userEvent.click(editIcons[0]);
+
+    const geometryCheckbox = canvas.queryByLabelText('Koppel aan geometrie-veld');
+    const targetPathSelect = await canvas.findByLabelText('Bestemmingspad');
+
+    expect(geometryCheckbox).not.toBeChecked();
+    expect(targetPathSelect).not.toBeDisabled();
+
+    await userEvent.click(geometryCheckbox);
+
+    expect(targetPathSelect).toBeDisabled();
+  },
+};
+
 // gh-4978 regression for geometry field on empty variable
 export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
   args: {

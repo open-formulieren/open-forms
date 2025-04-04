@@ -28,7 +28,6 @@ export const AddressNlEditor = ({
   variable,
   components,
   namePrefix,
-  isGeometry,
   index,
   mappedVariable,
   objecttype,
@@ -147,7 +146,7 @@ export const AddressNlEditor = ({
             name={`${namePrefix}.targetPath`}
             index={index}
             mappedVariable={mappedVariable}
-            isDisabled={isGeometry || specificTargetPaths}
+            isDisabled={specificTargetPaths}
             isLoading={loading}
             targetPaths={objectTypeTargetPaths}
           />
