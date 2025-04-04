@@ -13,7 +13,12 @@ from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
-from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
+from openforms.api.geojson import (
+    GEO_JSON_COORDINATE_SCHEMAS,
+    GEO_JSON_TYPE_TO_INTERACTION,
+    GeoJsonGeometryPolymorphicSerializer,
+    GeoJsonGeometryTypes,
+)
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
@@ -243,21 +248,33 @@ class Map(BasePlugin[MapComponent]):
 
     @staticmethod
     def as_json_schema(component: MapComponent) -> JSONObject:
-        label = component.get("label", "Map coordinate")
+        label = component.get("label", "Map")
+        interactions = component["interactions"]
 
-        base = {
+        properties = [
+            {
+                "properties": {
+                    "type": {"type": "string", "const": geometry_type},
+                    "coordinates": GEO_JSON_COORDINATE_SCHEMAS[geometry_type],
+                },
+                "additionalProperties": False,
+            }
+            for geometry_type in GeoJsonGeometryTypes.values
+            # Only include the schema of types that are allowed
+            if interactions.get(GEO_JSON_TYPE_TO_INTERACTION[geometry_type], True)
+        ]
+
+        schema = {
             "title": label,
-            "type": "array",
-            "prefixItems": [
-                {"title": "Latitude", "type": "number"},
-                {"title": "Longitude", "type": "number"},
-            ],
-            "items": False,
-            "minItems": 2,
-            "maxItems": 2,
+            "type": "object",
+            "required": ["type", "coordinates"],
         }
+        if len(properties) == 1:
+            schema.update(properties[0])
+        else:
+            schema["oneOf"] = properties
 
-        return base
+        return schema
 
 
 @register("postcode")

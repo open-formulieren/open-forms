@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Literal, TypedDict
 
 from django.db import models
@@ -63,3 +64,45 @@ class LineStringGeometry(TypedDict):
 class PolygonGeometry(TypedDict):
     type: Literal["Polygon"]
     coordinates: list[list[Coordinates]]
+
+
+# TODO-5027: probably this needs to go somewhere else... Perhaps
+#  openforms.formio.components.json_schema?
+COORDINATE_SCHEMA = {
+    "type": "array",
+    "prefixItems": [
+        {"title": "Longitude", "type": "number"},
+        {"title": "Latitude", "type": "number"},
+    ],
+    "items": False,
+    "minItems": 2,
+}
+
+LINE_COORDINATE_SCHEMA = {
+    "type": "array",
+    "minItems": 2,
+    "items": deepcopy(COORDINATE_SCHEMA),
+}
+
+POLYGON_COORDINATE_SCHEMA = {
+    "type": "array",
+    "minItems": 1,
+    "maxItems": 1,
+    "items": {
+        "type": "array",
+        "minItems": 4,
+        "items": deepcopy(COORDINATE_SCHEMA),
+    },
+}
+
+GEO_JSON_COORDINATE_SCHEMAS = {
+    GeoJsonGeometryTypes.point: COORDINATE_SCHEMA,
+    GeoJsonGeometryTypes.line_string: LINE_COORDINATE_SCHEMA,
+    GeoJsonGeometryTypes.polygon: POLYGON_COORDINATE_SCHEMA,
+}
+
+GEO_JSON_TYPE_TO_INTERACTION = {
+    GeoJsonGeometryTypes.point: "marker",
+    GeoJsonGeometryTypes.polygon: "polygon",
+    GeoJsonGeometryTypes.line_string: "polyline",
+}
