@@ -8,20 +8,20 @@
             <li class="utrecht-link-list__item">
                 <a
                     href="{{ config.privacy_policy_url }}"
-                    class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                    class="utrecht-link utrecht-link--html-a utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
                 >{% trans "Privacy policy" %}</a>
             </li>
             <li class="utrecht-link-list__item">
                 <a
                     href="{% url 'cookie_consent_cookie_group_list' %}"
-                    class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                    class="utrecht-link utrecht-link--html-a utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
                 >{% trans "Manage cookies" %}</a>
             </li>
             {% if user.is_staff %}
                 <li class="utrecht-link-list__item">
                     <a
                         href="{% url 'api:api-docs' %}"
-                        class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                        class="utrecht-link utrecht-link--html-a utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
                     >{% trans "API docs" %}</a>
                 </li>
             {% endif %}
