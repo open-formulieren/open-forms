@@ -6,7 +6,7 @@ const Signature = Formio.Components.components.signature;
 
 class SignatureField extends Signature {
   static schema(...extend) {
-    return localiseSchema(Signature.schema(...extend));
+    return localiseSchema(Signature.schema({defaultValue: ''}, ...extend));
   }
 
   static get builderInfo() {
@@ -14,6 +14,10 @@ class SignatureField extends Signature {
       ...Signature.builderInfo,
       schema: localiseSchema(SignatureField.schema()),
     };
+  }
+
+  get defaultSchema() {
+    return SignatureField.schema();
   }
 }
 
