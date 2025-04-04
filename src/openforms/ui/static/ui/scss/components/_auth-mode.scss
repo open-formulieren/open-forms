@@ -11,6 +11,6 @@
   @include modifier('active') {
     display: flex;
     flex-direction: column;
-    gap: 2em;
+    gap: 0;
   }
 }

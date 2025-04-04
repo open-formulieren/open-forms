@@ -1,0 +1,13 @@
+/**
+ * Default design tokens for backwards compatibility reasons.
+ * These *must* be overridden when someone includes their own theme (stylesheet or
+ * on-the-fly generated from design tokens).
+ *
+ * We use the :root selector because it has the lowest specificity.
+ */
+
+:root {
+  --utrecht-button-column-gap: 4px;
+  --of-form-navigation-row-gap: 12px;
+  --of-abort-button-color: var(--utrecht-button-primary-action-danger-background-color);
+}

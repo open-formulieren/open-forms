@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 from openforms.typing import JSONPrimitive
 
@@ -20,7 +21,12 @@ def extract_tokens(node: dict, prefix: str | None = None) -> dict[str, JSONPrimi
     # if a value is found, we have built up the entire token name and can return
     # the name + value combination
     if "value" in node:
-        tokens[prefix] = node["value"]
+        # escape possible HTML tag attempts, as that could break someone out of the
+        # style tag, but leave other characters intact.
+        # TODO: this should probably be more clever by default...
+        tokens[prefix] = mark_safe(
+            node["value"].replace("<", "&lt;").replace(">", "&gt;")
+        )
         return tokens
 
     # if nothing is found, we need to recurse and a node could contain multiple keys
