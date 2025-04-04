@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 
 from jsonschema import Draft202012Validator
 
@@ -21,7 +21,7 @@ from ..typing import (
 )
 
 
-class ComponentValidJsonSchemaTests(TestCase):
+class ComponentValidJsonSchemaTests(SimpleTestCase):
     validator = Draft202012Validator
 
     def assertValidSchema(self, properties):
@@ -235,15 +235,6 @@ class ComponentValidJsonSchemaTests(TestCase):
         }
         self.assertComponentSchemaIsValid(component=component, multiple=True)
 
-    def test_map(self):
-        component: MapComponent = {
-            "label": "Map",
-            "key": "map",
-            "type": "map",
-            "useConfigDefaultMapSettings": False,
-        }
-        self.assertComponentSchemaIsValid(component=component)
-
     def test_postcode(self):
         component: Component = {
             "label": "Postcode",
@@ -394,5 +385,191 @@ class SelectBoxesTests(TestCase):
             "type": "object",
             "additionalProperties": True,
         }
+        schema = as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
+
+
+class MapTests(SimpleTestCase):
+    def test_marker(self):
+        component: MapComponent = {
+            "label": "Map",
+            "key": "map",
+            "type": "map",
+            "useConfigDefaultMapSettings": False,
+            "interactions": {"marker": True, "polygon": False, "polyline": False},
+        }
+
+        expected_schema = {
+            "title": "Map",
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "additionalProperties": False,
+            "properties": {
+                "type": {"type": "string", "const": "Point"},
+                "coordinates": {
+                    "type": "array",
+                    "prefixItems": [
+                        {"title": "Longitude", "type": "number"},
+                        {"title": "Latitude", "type": "number"},
+                    ],
+                    "items": False,
+                    "minItems": 2,
+                },
+            },
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
+
+    def test_polyline(self):
+        component: MapComponent = {
+            "label": "Map",
+            "key": "map",
+            "type": "map",
+            "useConfigDefaultMapSettings": False,
+            "interactions": {"marker": False, "polygon": False, "polyline": True},
+        }
+
+        expected_schema = {
+            "title": "Map",
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "additionalProperties": False,
+            "properties": {
+                "type": {"type": "string", "const": "LineString"},
+                "coordinates": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                        "type": "array",
+                        "prefixItems": [
+                            {"title": "Longitude", "type": "number"},
+                            {"title": "Latitude", "type": "number"},
+                        ],
+                        "items": False,
+                        "minItems": 2,
+                    },
+                },
+            },
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
+
+    def test_polygon(self):
+        component: MapComponent = {
+            "label": "Map",
+            "key": "map",
+            "type": "map",
+            "useConfigDefaultMapSettings": False,
+            "interactions": {"marker": False, "polygon": True, "polyline": False},
+        }
+
+        expected_schema = {
+            "title": "Map",
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "additionalProperties": False,
+            "properties": {
+                "type": {"type": "string", "const": "Polygon"},
+                "coordinates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "items": {
+                        "type": "array",
+                        "minItems": 4,
+                        "items": {
+                            "type": "array",
+                            "prefixItems": [
+                                {"title": "Longitude", "type": "number"},
+                                {"title": "Latitude", "type": "number"},
+                            ],
+                            "items": False,
+                            "minItems": 2,
+                        },
+                    },
+                },
+            },
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema, expected_schema)
+
+    def test_all(self):
+        component: MapComponent = {
+            "label": "Map",
+            "key": "map",
+            "type": "map",
+            "useConfigDefaultMapSettings": False,
+            "interactions": {"marker": True, "polygon": True, "polyline": True},
+        }
+
+        expected_schema = {
+            "title": "Map",
+            "type": "object",
+            "required": ["type", "coordinates"],
+            "oneOf": [
+                {
+                    "additionalProperties": False,
+                    "properties": {
+                        "coordinates": {
+                            "items": False,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {"title": "Longitude", "type": "number"},
+                                {"title": "Latitude", "type": "number"},
+                            ],
+                            "type": "array",
+                        },
+                        "type": {"const": "Point", "type": "string"},
+                    },
+                },
+                {
+                    "additionalProperties": False,
+                    "properties": {
+                        "coordinates": {
+                            "items": {
+                                "items": {
+                                    "items": False,
+                                    "minItems": 2,
+                                    "prefixItems": [
+                                        {"title": "Longitude", "type": "number"},
+                                        {"title": "Latitude", "type": "number"},
+                                    ],
+                                    "type": "array",
+                                },
+                                "minItems": 4,
+                                "type": "array",
+                            },
+                            "maxItems": 1,
+                            "minItems": 1,
+                            "type": "array",
+                        },
+                        "type": {"const": "Polygon", "type": "string"},
+                    },
+                },
+                {
+                    "additionalProperties": False,
+                    "properties": {
+                        "coordinates": {
+                            "items": {
+                                "items": False,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {"title": "Longitude", "type": "number"},
+                                    {"title": "Latitude", "type": "number"},
+                                ],
+                                "type": "array",
+                            },
+                            "minItems": 2,
+                            "type": "array",
+                        },
+                        "type": {"const": "LineString", "type": "string"},
+                    },
+                },
+            ],
+        }
+
         schema = as_json_schema(component)
         self.assertEqual(schema, expected_schema)
