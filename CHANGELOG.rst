@@ -246,19 +246,23 @@ Regular bugfix release.
 .. warning:: Manual intervention required
 
     In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
-    being shown in the variables tab. In this bugfix we added scripts to fix any forms
-    that still might be affected by this issue. You should run these scripts after
+    being shown in the variables tab, and in 3.0.6 we fixed a bug regarding the default
+    values of radio fields being ``null``. In this bugfix we added scripts to fix any forms
+    that still might be affected by these issues. You should run these scripts after
     deploying the patch release, to make sure all Objects API registrations are correctly
-    configured.
+    configured, and the default values of radio fields are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_radio_component_default_values.py
 
     Alternatively, you can also manually edit all the affected forms in the
-    admin interface. This would require you to remove the Objects API registrations, and
-    re-define them.
+    admin interface. For the Objects API, this would require you to remove the Objects API
+    registrations, and re-define them. For the radio fields, this would require you to change
+    the ``defaultValue`` of all radio components from ``null`` to an empty string ``""``.
+
 
 **Bugfixes**
 
@@ -277,20 +281,23 @@ Regular bugfix release.
 
 .. warning:: Manual intervention required
 
-    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
-    being shown in the variables tab. In this bugfix we added scripts to fix any forms
-    that still might be affected by this issue. You should run these scripts after
+    In the 2.8.4 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab, and in 2.8.7 we fixed a bug regarding the default
+    values of radio fields being ``null``. In this bugfix we added scripts to fix any forms
+    that still might be affected by these issues. You should run these scripts after
     deploying the patch release, to make sure all Objects API registrations are correctly
-    configured.
+    configured, and the default values of radio fields are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_radio_component_default_values.py
 
     Alternatively, you can also manually edit all the affected forms in the
-    admin interface. This would require you to remove the Objects API registrations, and
-    re-define them.
+    admin interface. For the Objects API, this would require you to remove the Objects API
+    registrations, and re-define them. For the radio fields, this would require you to change
+    the ``defaultValue`` of all radio components from ``null`` to an empty string ``""``.
 
 **Bugfixes**
 
