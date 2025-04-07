@@ -141,6 +141,9 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             attribute=RegistrationAttribute.initiator_handelsnaam,
             transform=lambda v: [v],
         ),
+        "betrokkeneIdentificatie.kvkNummer": FieldConf(
+            submission_auth_info_attribute="kvk"
+        ),
         # Niet Natuurlijk Persoon
         "betrokkeneIdentificatie.statutaireNaam": RegistrationAttribute.initiator_handelsnaam,
         "betrokkeneIdentificatie.innNnpId": FieldConf(
