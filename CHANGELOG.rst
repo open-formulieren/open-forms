@@ -254,7 +254,7 @@ Regular bugfix release.
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_objects_api_form_registration_variables_mapping.py
 
     Alternatively, you can also manually edit all the affected forms in the
     admin interface. This would require you to remove the Objects API registrations, and
@@ -286,7 +286,7 @@ Regular bugfix release.
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_objects_api_form_registration_variables_mapping.py
 
     Alternatively, you can also manually edit all the affected forms in the
     admin interface. This would require you to remove the Objects API registrations, and
@@ -316,7 +316,7 @@ Regular bugfix release.
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_softrequired_component_required_validation.py
+        python /app/bin/fix_softrequired_component_required_validation.py
 
     Alternatively, you can also manually edit all the affected forms in the
     admin interface. Simply edit the soft-required components by opening the ``JSON`` view
@@ -989,7 +989,7 @@ Regular bugfix release
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+        python /app/bin/fix_selectboxes_component_default_values.py
 
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
@@ -1022,7 +1022,7 @@ Periodic bugfix release
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+        python /app/bin/fix_selectboxes_component_default_values.py
 
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
