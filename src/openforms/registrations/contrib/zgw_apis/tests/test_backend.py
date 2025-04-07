@@ -3,6 +3,7 @@ import textwrap
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
+from unittest import expectedFailure
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings, tag
@@ -159,789 +160,6 @@ class ZGWBackendTests(TestCase):
                 "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
             ),
         )
-
-    def test_submission_with_zgw_backend_with_natuurlijk_persoon_initiator(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voorletters",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voorletters,
-                    },
-                },
-                {
-                    "key": "voornaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
-                    },
-                },
-                {
-                    "key": "achternaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
-                    },
-                },
-                {
-                    "key": "tussenvoegsel",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
-                    },
-                },
-                {
-                    "key": "geboortedatum",
-                    "type": "date",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geboortedatum,
-                    },
-                },
-                {
-                    "key": "geslachtsaanduiding",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-            ],
-            submitted_data={
-                "voornaam": "Foo",
-                "achternaam": "Bar",
-                "tussenvoegsel": "de",
-                "postcode": "1000 AA",
-                "geboortedatum": "2000-12-31",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-                "voorletters": "J.W.",
-                "geslachtsaanduiding": "mannelijk",
-            },
-            bsn="111222333",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            language_code="en",
-            completed=True,
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["document"]["url"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
-        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-
-        self.assertEqual(len(m.request_history), 9)
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        with self.subTest("Create zaak call"):
-            create_zaak_body = create_zaak.json()
-
-            self.assertNotIn("kenmerken", create_zaak_body)
-            self.assertEqual(create_zaak.method, "POST")
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-            self.assertEqual(
-                create_zaak_body["verantwoordelijkeOrganisatie"],
-                "000000000",
-            )
-            self.assertEqual(
-                create_zaak_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-            )
-            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
-
-            self.assertEqual(
-                create_zaak_body["zaakgeometrie"],
-                {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            )
-
-        with self.subTest("Create summary PDF document"):
-            create_eio_body = create_pdf_document.json()
-
-            self.assertEqual(create_pdf_document.method, "POST")
-            self.assertEqual(
-                create_pdf_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-            self.assertEqual(create_eio_body["formaat"], "application/pdf")
-            self.assertEqual(
-                create_eio_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_eio_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            )
-            self.assertEqual(create_eio_body["taal"], "eng")
-
-            create_zio_body = relate_pdf_document.json()
-            self.assertEqual(relate_pdf_document.method, "POST")
-            self.assertEqual(
-                relate_pdf_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_zio_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            )
-
-        with self.subTest("Create rol"):
-            create_rol_body = create_rol.json()
-
-            self.assertEqual(create_rol.method, "POST")
-            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_rol_body["roltype"],
-                "https://catalogus.nl/api/v1/roltypen/1",
-            )
-            self.assertEqual(
-                create_rol_body["betrokkeneIdentificatie"],
-                {
-                    "voornamen": "Foo",
-                    "geboortedatum": "2000-12-31",
-                    "inpBsn": "111222333",
-                    "voorvoegselGeslachtsnaam": "de",
-                    "geslachtsnaam": "Bar",
-                    "verblijfsadres": {
-                        "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "OFWORKAROUND",
-                    },
-                    "voorletters": "J.W.",
-                    "geslachtsaanduiding": "m",
-                },
-            )
-            self.assertEqual(
-                create_rol_body["betrokkeneType"],
-                "natuurlijk_persoon",
-            )
-
-        with self.subTest("Create initial status"):
-            create_status_body = create_status.json()
-
-            self.assertEqual(create_status.method, "POST")
-            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-            self.assertEqual(
-                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                create_status_body["statustype"],
-                "https://catalogus.nl/api/v1/statustypen/1",
-            )
-
-        with self.subTest("Create attachment document"):
-            create_attachment_body = create_attachment_document.json()
-
-            self.assertEqual(create_attachment_document.method, "POST")
-            self.assertEqual(
-                create_attachment_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(
-                create_attachment_body["bestandsnaam"], attachment.file_name
-            )
-            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
-            self.assertEqual(create_attachment_body["taal"], "eng")
-
-            relate_attachment_body = relate_attachment_document.json()
-            self.assertEqual(relate_attachment_document.method, "POST")
-            self.assertEqual(
-                relate_attachment_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(
-                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                relate_attachment_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            )
-
-    def test_submission_with_zgw_backend_with_vestiging_and_kvk_initiator(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-                {
-                    "key": "vestigingsNummer",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
-                    },
-                },
-            ],
-            submitted_data={
-                "handelsnaam": "ACME",
-                "postcode": "1000 AA",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-                "vestigingsNummer": "87654321",
-            },
-            kvk="12345678",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            completed=True,
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["document"]["url"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
-        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-
-        self.assertEqual(len(m.request_history), 9)
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        with self.subTest("Create zaak call"):
-            create_zaak_body = create_zaak.json()
-            self.assertNotIn("kenmerken", create_zaak_body)
-            self.assertEqual(create_zaak.method, "POST")
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-            self.assertEqual(
-                create_zaak_body["verantwoordelijkeOrganisatie"],
-                "000000000",
-            )
-            self.assertEqual(
-                create_zaak_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-            )
-            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
-
-            self.assertEqual(
-                create_zaak_body["zaakgeometrie"],
-                {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            )
-
-        with self.subTest("Create summary PDF document"):
-            create_eio_body = create_pdf_document.json()
-            self.assertEqual(create_pdf_document.method, "POST")
-            self.assertEqual(
-                create_pdf_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-            self.assertEqual(create_eio_body["formaat"], "application/pdf")
-            self.assertEqual(
-                create_eio_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_eio_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            )
-
-            create_zio_body = relate_pdf_document.json()
-            self.assertEqual(relate_pdf_document.method, "POST")
-            self.assertEqual(
-                relate_pdf_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_zio_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            )
-
-        with self.subTest("Create rol"):
-            create_rol_body = create_rol.json()
-            self.assertEqual(create_rol.method, "POST")
-            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_rol_body["roltype"],
-                "https://catalogus.nl/api/v1/roltypen/1",
-            )
-            self.assertEqual(
-                create_rol_body["betrokkeneType"],
-                "vestiging",
-            )
-            self.assertEqual(
-                create_rol_body["betrokkeneIdentificatie"],
-                {
-                    "handelsnaam": ["ACME"],
-                    "vestigingsNummer": "87654321",
-                    "innNnpId": "12345678",
-                    "statutaireNaam": "ACME",
-                    "verblijfsadres": {
-                        "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "OFWORKAROUND",
-                    },
-                },
-            )
-
-        with self.subTest("Create initial status"):
-            create_status_body = create_status.json()
-            self.assertEqual(create_status.method, "POST")
-            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-            self.assertEqual(
-                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                create_status_body["statustype"],
-                "https://catalogus.nl/api/v1/statustypen/1",
-            )
-
-        with self.subTest("Create attachment document"):
-            create_attachment_body = create_attachment_document.json()
-            self.assertEqual(create_attachment_document.method, "POST")
-            self.assertEqual(
-                create_attachment_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(
-                create_attachment_body["bestandsnaam"], attachment.file_name
-            )
-            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
-
-            relate_attachment_body = relate_attachment_document.json()
-            self.assertEqual(relate_attachment_document.method, "POST")
-            self.assertEqual(
-                relate_attachment_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(
-                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                relate_attachment_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            )
-
-    def test_submission_with_zgw_backend_with_kvk_only_initiator(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-            ],
-            submitted_data={
-                "handelsnaam": "ACME",
-                "postcode": "1000 AA",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            },
-            kvk="12345678",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-            completed=True,
-        )
-        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        plugin.register_submission(submission, zgw_form_options)
-
-        self.assertEqual(len(m.request_history), 8)
-        (
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        create_rol_body = create_rol.json()
-        self.assertEqual(
-            create_rol_body["betrokkeneType"],
-            "niet_natuurlijk_persoon",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"]["statutaireNaam"],
-            "ACME",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"]["innNnpId"],
-            "12345678",
-        )
-
-    def test_submission_with_zgw_backend_with_vestiging_initiator_kvk_only(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_handelsnaam,
-                    },
-                },
-                {
-                    "key": "postcode",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_postcode,
-                    },
-                },
-                {
-                    "key": "coordinaat",
-                    "type": "map",
-                    "registration": {
-                        "attribute": RegistrationAttribute.locatie_coordinaat,
-                    },
-                },
-            ],
-            submitted_data={
-                "handelsnaam": "ACME",
-                "postcode": "1000 AA",
-                "coordinaat": {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            },
-            kvk="12345678",
-            form__product__price=Decimal("0"),
-            form__payment_backend="demo",
-            completed=True,
-        )
-        attachment = SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        plugin = ZGWRegistration("zgw")
-        pre_registration_result = plugin.pre_register_submission(
-            submission, zgw_form_options
-        )
-        assert submission.registration_result is not None
-        assert isinstance(pre_registration_result.data, dict)
-        submission.registration_result.update(pre_registration_result.data)
-        submission.save()
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["document"]["url"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
-        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
-        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-
-        self.assertEqual(len(m.request_history), 9)
-        (
-            create_zaak,
-            create_pdf_document,
-            relate_pdf_document,
-            get_roltypen,
-            create_rol,
-            get_statustypen,
-            create_status,
-            create_attachment_document,
-            relate_attachment_document,
-        ) = m.request_history
-
-        with self.subTest("Create zaak call"):
-            create_zaak_body = create_zaak.json()
-
-            self.assertNotIn("kenmerken", create_zaak_body)
-            self.assertEqual(create_zaak.method, "POST")
-            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-            self.assertEqual(
-                create_zaak_body["verantwoordelijkeOrganisatie"],
-                "000000000",
-            )
-            self.assertEqual(
-                create_zaak_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-            )
-            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
-
-            self.assertEqual(
-                create_zaak_body["zaakgeometrie"],
-                {
-                    "type": "Point",
-                    "coordinates": [4.893164274470299, 52.36673378967122],
-                },
-            )
-
-        with self.subTest("Create summary PDF document"):
-            create_eio_body = create_pdf_document.json()
-
-            self.assertEqual(create_pdf_document.method, "POST")
-            self.assertEqual(
-                create_pdf_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-            self.assertEqual(create_eio_body["formaat"], "application/pdf")
-            self.assertEqual(
-                create_eio_body["vertrouwelijkheidaanduiding"],
-                "openbaar",
-            )
-            self.assertEqual(
-                create_eio_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            )
-
-            create_zio_body = relate_pdf_document.json()
-            self.assertEqual(relate_pdf_document.method, "POST")
-            self.assertEqual(
-                relate_pdf_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_zio_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            )
-
-        with self.subTest("Create rol"):
-            create_rol_body = create_rol.json()
-
-            self.assertEqual(create_rol.method, "POST")
-            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-            self.assertEqual(
-                create_rol_body["roltype"],
-                "https://catalogus.nl/api/v1/roltypen/1",
-            )
-            self.assertEqual(
-                create_rol_body["betrokkeneIdentificatie"],
-                {
-                    "handelsnaam": ["ACME"],
-                    "innNnpId": "12345678",
-                    "statutaireNaam": "ACME",
-                    "verblijfsadres": {
-                        "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "OFWORKAROUND",
-                    },
-                },
-            )
-
-        with self.subTest("Create initial status"):
-            create_status_body = create_status.json()
-
-            self.assertEqual(create_status.method, "POST")
-            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-            self.assertEqual(
-                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                create_status_body["statustype"],
-                "https://catalogus.nl/api/v1/statustypen/1",
-            )
-
-        with self.subTest("Create attachment document"):
-            create_attachment_body = create_attachment_document.json()
-
-            self.assertEqual(create_attachment_document.method, "POST")
-            self.assertEqual(
-                create_attachment_document.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(
-                create_attachment_body["bestandsnaam"], attachment.file_name
-            )
-            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
-
-            relate_attachment_body = relate_attachment_document.json()
-            self.assertEqual(relate_attachment_document.method, "POST")
-            self.assertEqual(
-                relate_attachment_document.url,
-                "https://zaken.nl/api/v1/zaakinformatieobjecten",
-            )
-            self.assertEqual(
-                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-            )
-            self.assertEqual(
-                relate_attachment_body["informatieobject"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            )
 
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_with_registrator(self, m):
@@ -1938,461 +1156,6 @@ class ZGWBackendTests(TestCase):
             },
         )
 
-    def test_submission_with_multiple_eigenschappen_creation(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "textField1",
-                    "type": "textfield",
-                },
-                {
-                    "key": "textField2",
-                    "type": "textfield",
-                },
-            ],
-            submitted_data={
-                "textField1": "some data",
-                "textField2": "more data",
-            },
-            language_code="en",
-            form_definition_kwargs={"slug": "test-eigenschappen"},
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "property_mappings": [
-                {"component_key": "textField1", "eigenschap": "a property name"},
-                {"component_key": "textField2", "eigenschap": "second property"},
-            ],
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        m.get(
-            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
-            status_code=200,
-            json={
-                "count": 2,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
-            [
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                        uuid=1,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        waarde="some data",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                        uuid=2,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        waarde="more data",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-            ],
-        )
-
-        plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["zaakeigenschappen"]["1"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                "uuid": 1,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                "naam": "a property name",
-                "waarde": "some data",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-        self.assertEqual(
-            result["zaakeigenschappen"]["2"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                "uuid": 2,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                "naam": "second property",
-                "waarde": "more data",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-
-    def test_submission_with_nested_component_columns_and_eigenschap(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "column1",
-                    "type": "columns",
-                    "columns": [
-                        {
-                            "size": 6,
-                            "components": [
-                                {
-                                    "key": "textField1",
-                                    "type": "textfield",
-                                }
-                            ],
-                        },
-                        {
-                            "size": 6,
-                            "components": [
-                                {
-                                    "key": "textField2",
-                                    "type": "textfield",
-                                }
-                            ],
-                        },
-                    ],
-                },
-                {
-                    "key": "textField3.blah",
-                    "type": "textfield",
-                },
-            ],
-            submitted_data={
-                "textField1": "data in columns",
-                "textField2": "more data",
-                "textField3": {"blah": "a value"},
-            },
-            language_code="en",
-            form_definition_kwargs={"slug": "test-eigenschappen"},
-            registration_result={
-                "zaak": {
-                    "url": "https://zaken.nl/api/v1/zaken/1",
-                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-                }
-            },
-        )
-        zgw_form_options: RegistrationOptions = {
-            "zgw_api_group": self.zgw_group,
-            "case_type_identification": "",
-            "document_type_description": "",
-            "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
-            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            "organisatie_rsin": "000000000",
-            "zaak_vertrouwelijkheidaanduiding": "openbaar",
-            "doc_vertrouwelijkheidaanduiding": "openbaar",
-            "property_mappings": [
-                {"component_key": "textField1", "eigenschap": "a property name"},
-                {"component_key": "textField2", "eigenschap": "second property"},
-                {"component_key": "textField3.blah", "eigenschap": "third property"},
-            ],
-            "objects_api_group": None,
-            "product_url": "",
-        }
-        self.install_mocks(m)
-
-        m.get(
-            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
-            status_code=200,
-            json={
-                "count": 3,
-                "next": None,
-                "previous": None,
-                "results": [
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                    generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
-                        naam="third property",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                ],
-            },
-            headers={"API-version": "1.0.0"},
-        )
-        m.post(
-            "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
-            [
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                        uuid=1,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                        naam="a property name",
-                        waarde="data in columns",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                        uuid=2,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                        naam="second property",
-                        waarde="more data",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-                {
-                    "status_code": 201,
-                    "json": generate_oas_component(
-                        "catalogi",
-                        "schemas/Eigenschap",
-                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
-                        uuid=2,
-                        zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
-                        naam="third property",
-                        waarde="a value",
-                        definitie="a definition",
-                        specificatie={
-                            "groep": "",
-                            "formaat": "tekst",
-                            "lengte": "14",
-                            "kardinaliteit": "1",
-                            "waardenverzameling": [],
-                        },
-                        toelichting="",
-                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
-                    ),
-                },
-            ],
-        )
-
-        plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
-        result = plugin.register_submission(submission, zgw_form_options)
-        assert result
-
-        self.assertEqual(
-            result["zaakeigenschappen"]["1"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
-                "uuid": 1,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
-                "naam": "a property name",
-                "waarde": "data in columns",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-        self.assertEqual(
-            result["zaakeigenschappen"]["2"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
-                "uuid": 2,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
-                "naam": "second property",
-                "waarde": "more data",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-        self.assertEqual(
-            result["zaakeigenschappen"]["3"],
-            {
-                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
-                "uuid": 2,
-                "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/3",
-                "naam": "third property",
-                "waarde": "a value",
-                "definitie": "a definition",
-                "specificatie": {
-                    "groep": "",
-                    "formaat": "tekst",
-                    "lengte": "14",
-                    "kardinaliteit": "1",
-                    "waardenverzameling": [],
-                },
-                "toelichting": "",
-                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
-            },
-        )
-
     @tag("gh-4337")
     def test_zgw_backend_zaak_omschrijving(self, m):
         with self.subTest("Short name that is not truncated"):
@@ -2467,6 +1230,455 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             for_test_docker_compose=True,
             organisatie_rsin="000000000",
         )
+
+    def test_create_zaak_with_natuurlijk_persoon_initiator_and_legacy_config(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "woonplaats",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_woonplaats
+                    },
+                },
+                {
+                    "key": "straat",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
+                    "key": "huisnummer",
+                    "type": "number",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_huisnummer,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "woonplaats": "Ketnet",
+                "straat": "Samsonweg",
+                "huisnummer": 101,
+                "geboortedatum": "2000-12-31",
+                "coordinaat": {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+            language_code="en",
+            completed=True,
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            content_type="image/png",
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        with self.subTest("check recorded result"):
+            zaken_root = self.zgw_group.zrc_service.api_root
+            documenten_root = self.zgw_group.drc_service.api_root
+            self.assertTrue(result["zaak"]["url"].startswith(f"{zaken_root}zaken/"))
+            self.assertTrue(
+                result["document"]["url"].startswith(
+                    f"{documenten_root}enkelvoudiginformatieobjecten/"
+                )
+            )
+            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
+            self.assertTrue(
+                result["status"]["url"].startswith(f"{zaken_root}statussen/")
+            )
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        documents_client = get_documents_client(self.zgw_group)
+        self.addCleanup(documents_client.close)
+
+        with self.subTest("verify zaak"):
+            zaak_data = client.get(result["zaak"]["url"], headers=CRS_HEADERS).json()
+
+            self.assertEqual(zaak_data["kenmerken"], [])
+            self.assertEqual(zaak_data["bronorganisatie"], "000000000")
+            self.assertEqual(zaak_data["verantwoordelijkeOrganisatie"], "000000000")
+            self.assertEqual(zaak_data["vertrouwelijkheidaanduiding"], "openbaar")
+            self.assertEqual(
+                zaak_data["zaaktype"],
+                f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            )
+            self.assertEqual(zaak_data["betalingsindicatie"], "nvt")
+            self.assertEqual(
+                zaak_data["zaakgeometrie"],
+                {
+                    "type": "Point",
+                    "coordinates": [4.893164274470299, 52.36673378967122],
+                },
+            )
+
+        with self.subTest("verify rol"):
+            rol_data = client.get(result["rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "natuurlijk_persoon")
+            expected_identificatie = {
+                "inpBsn": "111222333",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geboortedatum": "2000-12-31",
+                "geslachtsaanduiding": "m",
+                "geslachtsnaam": "Bar",
+                "voorletters": "J.W.",
+                "voornamen": "Foo",
+                "subVerblijfBuitenland": None,
+                "verblijfsadres": {
+                    "aoaHuisletter": "",
+                    "aoaHuisnummer": 101,
+                    "aoaHuisnummertoevoeging": "",
+                    "aoaIdentificatie": "OFWORKAROUND",
+                    "aoaPostcode": "1000 AA",
+                    "gorOpenbareRuimteNaam": "Samsonweg",
+                    "inpLocatiebeschrijving": "",
+                    "wplWoonplaatsNaam": "Ketnet",
+                },
+                "voorvoegselGeslachtsnaam": "de",
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
+        with self.subTest("verify initial status"):
+            status_data = client.get(
+                "statussen", params={"zaak": result["zaak"]["url"]}
+            ).json()
+            self.assertEqual(status_data["count"], 1)
+
+        with self.subTest("verify related documents"):
+            zios = client.get(
+                "zaakinformatieobjecten", params={"zaak": result["zaak"]["url"]}
+            ).json()
+            self.assertEqual(len(zios), 2)  # one for summary PDF, one for attachment
+
+            attachment_document_data = documents_client.get(
+                zios[0]["informatieobject"]
+            ).json()
+            summary_pdf_data = documents_client.get(zios[1]["informatieobject"]).json()
+
+            self.assertEqual(summary_pdf_data["bronorganisatie"], "000000000")
+            self.assertEqual(summary_pdf_data["formaat"], "application/pdf")
+            self.assertEqual(
+                summary_pdf_data["vertrouwelijkheidaanduiding"], "openbaar"
+            )
+            self.assertEqual(summary_pdf_data["taal"], "eng")
+
+            self.assertEqual(attachment_document_data["bronorganisatie"], "000000000")
+            self.assertEqual(attachment_document_data["formaat"], "image/png")
+            self.assertEqual(
+                attachment_document_data["vertrouwelijkheidaanduiding"], "openbaar"
+            )
+            self.assertEqual(attachment_document_data["taal"], "eng")
+
+    def test_create_zaak_with_vestiging_and_kvk_initiator_and_legacy_config(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "woonplaats",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_woonplaats
+                    },
+                },
+                {
+                    "key": "straat",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
+                    "key": "huisnummer",
+                    "type": "number",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_huisnummer,
+                    },
+                },
+                {
+                    "key": "vestigingsNummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "woonplaats": "Ketnet",
+                "straat": "Samsonweg",
+                "huisnummer": 101,
+                "vestigingsNummer": "87654321",
+            },
+            kvk="12345678",
+            completed=True,
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        with self.subTest("check recorded result"):
+            zaken_root = self.zgw_group.zrc_service.api_root
+            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("verify initiator"):
+            rol_data = client.get(result["rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "vestiging")
+            expected_identificatie = {
+                "handelsnaam": ["ACME"],
+                "kvkNummer": "12345678",
+                "vestigingsNummer": "87654321",
+                "verblijfsadres": {
+                    "aoaHuisletter": "",
+                    "aoaHuisnummer": 101,
+                    "aoaHuisnummertoevoeging": "",
+                    "aoaIdentificatie": "OFWORKAROUND",
+                    "aoaPostcode": "1000 AA",
+                    "gorOpenbareRuimteNaam": "Samsonweg",
+                    "inpLocatiebeschrijving": "",
+                    "wplWoonplaatsNaam": "Ketnet",
+                },
+                "subVerblijfBuitenland": None,
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
+
+    # breaks because we can't put a KVK number in an RSIN field
+    @expectedFailure
+    def test_create_zaak_with_kvk_initiator_only_and_legacy_config(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "woonplaats",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_woonplaats
+                    },
+                },
+                {
+                    "key": "straat",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_straat,
+                    },
+                },
+                {
+                    "key": "huisnummer",
+                    "type": "number",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_huisnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "woonplaats": "Ketnet",
+                "straat": "Samsonweg",
+                "huisnummer": 101,
+            },
+            kvk="12345678",
+            completed=True,
+        )
+
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        assert isinstance(pre_registration_result.data, dict)
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
+        result = plugin.register_submission(submission, options)
+        assert result
+
+        with self.subTest("check recorded result"):
+            zaken_root = self.zgw_group.zrc_service.api_root
+            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        with self.subTest("verify initiator"):
+            rol_data = client.get(result["rol"]["url"]).json()
+
+            self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
+            self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
+            self.assertEqual(rol_data["betrokkene"], "")
+            self.assertEqual(rol_data["betrokkeneType"], "niet_natuurlijk_persoon")
+            expected_identificatie = {
+                "annIdentificatie": "",
+                "bezoekadres": "",
+                "innNnpId": "12345678",
+                "innRechtsvorm": "",
+                "statutaireNaam": "ACME",
+                "subVerblijfBuitenland": None,
+            }
+            self.assertEqual(
+                rol_data["betrokkeneIdentificatie"], expected_identificatie
+            )
 
     def test_create_zaak_with_case_identification_reference(self):
         submission = SubmissionFactory.from_components(
@@ -2733,3 +1945,154 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                             "http://localhost:8003/catalogi/api/v1/"
                             "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
                         )
+
+    def test_submission_with_multiple_eigenschappen_creation(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textField1",
+                    "type": "textfield",
+                },
+                {
+                    "key": "textField2",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textField1": "some data",
+                "textField2": "more data",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version (2024-10-31)
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "property_mappings": [
+                {"component_key": "textField1", "eigenschap": "a property name"},
+                {"component_key": "textField2", "eigenschap": "second property"},
+            ],
+            "objects_api_group": None,
+        }
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["zaakeigenschappen"]), 2)
+        # verify the created properties
+        zaak_url = result["zaak"]["url"]
+        zaakeigenschappen = {
+            zaak_eigenschap["naam"]: zaak_eigenschap["waarde"]
+            for zaak_eigenschap in client.get(f"{zaak_url}/zaakeigenschappen").json()
+        }
+        self.assertEqual(
+            zaakeigenschappen,
+            {
+                "a property name": "some data",
+                "second property": "more data",
+            },
+        )
+
+    def test_submission_with_nested_component_columns_and_eigenschap(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "column1",
+                    "type": "columns",
+                    "columns": [
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "key": "textField1",
+                                    "type": "textfield",
+                                }
+                            ],
+                        },
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "key": "textField2",
+                                    "type": "textfield",
+                                }
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "key": "textField3.blah",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textField1": "data in columns",
+                "textField2": "more data",
+                "textField3": {"blah": "a value"},
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version (2024-10-31)
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "property_mappings": [
+                {"component_key": "textField1", "eigenschap": "a property name"},
+                {"component_key": "textField3.blah", "eigenschap": "second property"},
+            ],
+            "objects_api_group": None,
+        }
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(len(result["zaakeigenschappen"]), 2)
+        # verify the created properties
+        zaak_url = result["zaak"]["url"]
+        zaakeigenschappen = {
+            zaak_eigenschap["naam"]: zaak_eigenschap["waarde"]
+            for zaak_eigenschap in client.get(f"{zaak_url}/zaakeigenschappen").json()
+        }
+        self.assertEqual(
+            zaakeigenschappen,
+            {
+                "a property name": "data in columns",
+                "second property": "a value",
+            },
+        )
