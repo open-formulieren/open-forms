@@ -97,6 +97,7 @@ COPY \
     ./bin/check_api_groups_null.py \
     ./bin/fix_selectboxes_component_default_values.py \
     ./bin/fix_softrequired_component_required_validation.py \
+    ./bin/fix_component_default_values.py \
     ./bin/fix_objects_api_form_registration_variables_mapping.py \
     ./bin/
 
