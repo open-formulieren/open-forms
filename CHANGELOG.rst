@@ -6,6 +6,21 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.1 (placeholder)
+===================
+
+.. warning:: Manual intervention required
+
+    In the 3.1.1 bugfix release we fixed a bug regarding the default values of some component
+    being ``null``. In this bugfix we added a script to fix any forms that still might be
+    affected by these issues. You should run this script after deploying the patch release, to
+    make sure the default values of affected components are fixed.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_component_default_values.py
+
 3.1.0 "Lente" (2025-03-31)
 ==========================
 
@@ -246,19 +261,23 @@ Regular bugfix release.
 .. warning:: Manual intervention required
 
     In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
-    being shown in the variables tab. In this bugfix we added scripts to fix any forms
-    that still might be affected by this issue. You should run these scripts after
+    being shown in the variables tab, and in 3.0.6 we fixed a bug regarding the default
+    values of radio fields being ``null``. In this bugfix we added scripts to fix any forms
+    that still might be affected by these issues. You should run these scripts after
     deploying the patch release, to make sure all Objects API registrations are correctly
-    configured.
+    configured, and the default values of radio fields are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_radio_component_default_values.py
 
     Alternatively, you can also manually edit all the affected forms in the
-    admin interface. This would require you to remove the Objects API registrations, and
-    re-define them.
+    admin interface. For the Objects API, this would require you to remove the Objects API
+    registrations, and re-define them. For the radio fields, this would require you to change
+    the ``defaultValue`` of all radio components from ``null`` to an empty string ``""``.
+
 
 **Bugfixes**
 
@@ -277,20 +296,23 @@ Regular bugfix release.
 
 .. warning:: Manual intervention required
 
-    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
-    being shown in the variables tab. In this bugfix we added scripts to fix any forms
-    that still might be affected by this issue. You should run these scripts after
+    In the 2.8.4 bugfix release we fixed a bug regarding Objects API registration not
+    being shown in the variables tab, and in 2.8.7 we fixed a bug regarding the default
+    values of radio fields being ``null``. In this bugfix we added scripts to fix any forms
+    that still might be affected by these issues. You should run these scripts after
     deploying the patch release, to make sure all Objects API registrations are correctly
-    configured.
+    configured, and the default values of radio fields are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_radio_component_default_values.py
 
     Alternatively, you can also manually edit all the affected forms in the
-    admin interface. This would require you to remove the Objects API registrations, and
-    re-define them.
+    admin interface. For the Objects API, this would require you to remove the Objects API
+    registrations, and re-define them. For the radio fields, this would require you to change
+    the ``defaultValue`` of all radio components from ``null`` to an empty string ``""``.
 
 **Bugfixes**
 
@@ -316,7 +338,7 @@ Regular bugfix release.
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_softrequired_component_required_validation.py
+        python /app/bin/fix_softrequired_component_required_validation.py
 
     Alternatively, you can also manually edit all the affected forms in the
     admin interface. Simply edit the soft-required components by opening the ``JSON`` view
@@ -989,7 +1011,7 @@ Regular bugfix release
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+        python /app/bin/fix_selectboxes_component_default_values.py
 
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
@@ -1022,7 +1044,7 @@ Periodic bugfix release
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+        python /app/bin/fix_selectboxes_component_default_values.py
 
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
