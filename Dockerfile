@@ -96,6 +96,7 @@ COPY \
     ./bin/check_api_groups_null.py \
     ./bin/check_temporary_uploads.py \
     ./bin/delete_empty_api_groups.py \
+    ./bin/fix_component_default_values.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.

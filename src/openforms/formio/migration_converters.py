@@ -16,6 +16,7 @@ from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
 from .typing import AddressNLComponent, Component
+from .utils import get_component_empty_value
 
 logger = logging.getLogger(__name__)
 
@@ -117,11 +118,19 @@ def fix_column_sizes(component: Component) -> bool:
 
 def fix_file_default_value(component: Component) -> bool:
     component = cast(FileComponent, component)
-    default_value = component.get("defaultValue")
+
+    if "defaultValue" not in component:
+        return False
+
+    default_value = component["defaultValue"]
+    empty_value = get_component_empty_value(component)
 
     match default_value:
         case list() if None in default_value:
-            component["defaultValue"] = None
+            component["defaultValue"] = empty_value
+            return True
+        case None:
+            component["defaultValue"] = empty_value
             return True
         case _:
             return False
@@ -272,6 +281,24 @@ def rename_identifier_role_authorizee(component: Component) -> bool:
     return True
 
 
+def fix_empty_default_value(component: Component) -> bool:
+    if "defaultValue" not in component:
+        return False
+
+    changed = False
+    if component["defaultValue"] is None:
+        component["defaultValue"] = get_component_empty_value(component)
+        changed = True
+
+    if component.get("multiple", False):
+        for index, value in enumerate(component["defaultValue"]):
+            if value is None:
+                component["defaultValue"][index] = ""
+                changed = True
+
+    return changed
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -326,7 +353,13 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
-    "radio": {"set_openforms_datasrc": set_openforms_datasrc},
+    "radio": {
+        "set_openforms_datasrc": set_openforms_datasrc,
+        "fix_empty_default_value": fix_empty_default_value,
+    },
+    "checkbox": {
+        "fix_empty_default_value": fix_empty_default_value,
+    },
     # Special components
     "iban": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
@@ -345,6 +378,12 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "addressNL": {
         "ensure_addressnl_has_deriveAddress": ensure_addressnl_has_deriveAddress
+    },
+    "editgrid": {
+        "fix_empty_default_value": fix_empty_default_value,
+    },
+    "signature": {
+        "fix_empty_default_value": fix_empty_default_value,
     },
     # Layout components
     "columns": {

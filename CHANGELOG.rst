@@ -7,21 +7,27 @@ Changelog
 
 Final bugfix release in the ``2.8.x`` series.
 
-.. warning:: Manual intervention required
+
+.. warning:: Manual interventions required
 
     We included a script to remove corrupt API group configuration to make the upgrade
     to Open Forms 3.0 easier. This script removes API groups (Objects API and ZGW API's)
     for which *no* services have been configured.
 
+    In the 2.8.7 bugfix release we fixed a bug regarding the default values of some component
+    being ``null``. In this bugfix we added a script to fix any forms that still might be
+    affected by these issues. You should run this script after deploying the patch release, to
+    make sure the default values of affected components are fixed.
+
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/delete_empty_api_groups.py
+        python /app/bin/delete_empty_api_groups.py
+        python /app/bin/fix_component_default_values.py
 
 **Bugfixes**
 
 .. todo:: ...
-
 
 2.8.7 (2025-03-17)
 ==================
@@ -30,20 +36,24 @@ Regular bugfix release.
 
 .. warning:: Manual intervention required
 
-    In the 3.0.2 bugfix release we fixed a bug regarding Objects API registration not
-    being shown in the variables tab. In this bugfix we added scripts to fix any forms
-    that still might be affected by this issue. You should run these scripts after
-    deploying the patch release, to make sure all Objects API registrations are correctly
-    configured.
+    We fixed a bug regarding Objects API registration not being shown in the variables
+    tab, and we fixed a bug regarding the default values of radio fields being ``null``.
+    We include scripts to fix any forms that still might be affected by these issues. You
+    should run these scripts after deploying the patch release, to make sure all Objects
+    API registrations are correctly configured, and the default values of radio fields
+    are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_objects_api_form_registration_variables_mapping.py
+        python /app/bin/fix_radio_component_default_values.py
 
     Alternatively, you can also manually edit all the affected forms in the
-    admin interface. This would require you to remove the Objects API registrations, and
-    re-define them.
+    admin interface. For the Objects API, this would require you to remove the Objects API
+    registrations, and re-define them. For the radio fields, this would require you to change
+    the ``defaultValue`` of all radio components from ``null`` to an empty string ``""``.
+
 
 **Bugfixes**
 
@@ -126,7 +136,7 @@ Regular bugfix release
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
-        python src/manage.py /app/bin/fix_selectboxes_component_default_values.py
+        python /app/bin/fix_selectboxes_component_default_values.py
 
     Alternatively, you can also manually open and save all the affected forms in the
     admin interface.
@@ -222,11 +232,8 @@ For the ZGW API's, this even means you don't have to worry anymore of updating t
 configuration when you publish a new version of a "zaaktype" - the right version will
 now automatically be selected.
 
-
-
 Detailed changes
 ----------------
-
 
 This contains the changes from the alpha, beta and fixes applied between the beta and
 stable version.

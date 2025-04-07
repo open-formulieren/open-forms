@@ -4,6 +4,8 @@ from ..migration_converters import (
     ensure_addressnl_has_deriveAddress,
     ensure_licensplate_validate_pattern,
     ensure_postcode_validate_pattern,
+    fix_empty_default_value,
+    fix_file_default_value,
     fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
 )
@@ -111,3 +113,223 @@ class AddressNLTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertFalse(component["deriveAddress"])
+
+
+class RadioTests(SimpleTestCase):
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_empty_string_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Radio field",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+
+class FileTests(SimpleTestCase):
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "defaultValue": None,
+        }
+
+        changed = fix_file_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_multiple_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "multiple": True,
+            "defaultValue": None,
+        }
+
+        changed = fix_file_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_list_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "defaultValue": [],
+        }
+
+        changed = fix_file_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_multiple_empty_list_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "multiple": True,
+            "defaultValue": [],
+        }
+
+        changed = fix_file_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_in_list_as_default_value_does_change(self):
+        component: Component = {
+            "type": "file",
+            "key": "file",
+            "label": "File",
+            "multiple": True,
+            "defaultValue": [None],
+        }
+
+        changed = fix_file_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+
+class CheckboxTests(SimpleTestCase):
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Checkbox",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Checkbox",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], False)
+
+    def test_boolean_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Checkbox",
+            "defaultValue": False,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+
+class SignatureTests(SimpleTestCase):
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "signature",
+            "key": "signature",
+            "label": "Signature",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "signature",
+            "key": "signature",
+            "label": "Signature",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], "")
+
+    def test_empty_string_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "signature",
+            "key": "signature",
+            "label": "Signature",
+            "defaultValue": "",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+
+class EditGridTests(SimpleTestCase):
+    def test_no_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid",
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
+
+    def test_none_as_default_value_does_change(self):
+        component: Component = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid",
+            "defaultValue": None,
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])
+
+    def test_empty_list_as_default_value_doesnt_change(self):
+        component: Component = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid",
+            "defaultValue": [],
+        }
+
+        changed = fix_empty_default_value(component)
+
+        self.assertFalse(changed)
