@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.2
+    method: GET
+    uri: http://localhost:8004/api/v1/tabellen?code=item-not-geldig-anymore
+  response:
+    body:
+      string: '{"count":1,"next":null,"previous":null,"results":[{"code":"item-not-geldig-anymore","naam":"Tabel
+        that contains item not geldig anymore","beheerder":{"naam":"","email":"","afdeling":"","organisatie":""},"einddatumGeldigheid":"2020-02-03T08:48:49Z"}]}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Length:
+      - '250'
+      Content-Security-Policy:
+      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
+        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
+        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
+        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        form-action ''self'''
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

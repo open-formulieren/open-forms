@@ -11,6 +11,7 @@ import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
+from requests import RequestException
 from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -50,18 +51,23 @@ class InvalidBackend(BasePlugin):
         raise InvalidPluginConfiguration("Invalid")
 
 
-@patch(
-    "openforms.emails.tasks.GlobalConfiguration.get_solo",
-    return_value=GlobalConfiguration(
-        recipients_email_digest=["tralala@test.nl", "trblblb@test.nl"]
-    ),
-)
 @override_settings(LANGUAGE_CODE="en")
 class EmailDigestTaskIntegrationTests(TestCase):
 
-    def test_that_repeated_failures_are_not_mentioned_multiple_times(
-        self, mock_global_config
-    ):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        config = GlobalConfiguration.get_solo()
+        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        config.save()
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+    def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -95,15 +101,15 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
         self.assertEqual(submission_occurencies, 1)
 
-    def test_no_email_sent_if_no_logs(self, mock_global_config):
+    def test_no_email_sent_if_no_logs(self):
         send_email_digest()
 
         self.assertEqual(0, len(mail.outbox))
 
-    def test_no_email_sent_if_no_recipients(self, mock_global_config):
-        mock_global_config.return_value = GlobalConfiguration(
-            recipients_email_digest=[]
-        )
+    def test_no_email_sent_if_no_recipients(self):
+        config = GlobalConfiguration.get_solo()
+        config.recipients_email_digest = []
+        config.save()
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -127,9 +133,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
     @freeze_time("2023-01-03T01:00:00+01:00")
     @override_settings(BASE_URL="http://testserver")
     @requests_mock.Mocker()
-    def test_email_sent_when_there_are_failures(
-        self, mock_global_config, brk_config, m
-    ):
+    def test_email_sent_when_there_are_failures(self, brk_config, m):
         """Integration test for all the possible failures
 
         - failed emails
@@ -301,25 +305,30 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
+class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
-    def setUp(self) -> None:
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
         config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
         config.save()
-        self.addCleanup(GlobalConfiguration.clear_cache)
 
         # The service is relative to the docker compose instance that we have in the
         # docker directory (docker-compose.referentielijsten.yml)
-        self.referentielijsten_service = ServiceFactory.create(
+        cls.reference_lists_service = ServiceFactory.create(
             api_root="http://localhost:8004/api/v1/",
-            slug="referentielijsten",
+            slug="reference-lists",
             auth_type=AuthTypes.no_auth,
         )
-        config.referentielijsten_services.add(self.referentielijsten_service)
+        config.reference_lists_services.add(cls.reference_lists_service)
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_tables(self):
         FormFactory.create(
@@ -331,8 +340,8 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                         "type": "selectboxes",
                         "label": "Selectboxes",
                         "openForms": {
-                            "dataSrc": "referentielijsten",
-                            "service": "referentielijsten",
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
                             "code": "not-geldig-anymore	",
                         },
                     }
@@ -370,8 +379,8 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                         "type": "selectboxes",
                         "label": "Selectboxes",
                         "openForms": {
-                            "dataSrc": "referentielijsten",
-                            "service": "referentielijsten",
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
                             "code": "item-not-geldig-anymore",
                         },
                     }
@@ -398,3 +407,95 @@ class ReferencelistExpiredDataTests(OFVCRMixin, TestCase):
                 "Item 'Not geldig option' expired 3 weeks ago.",
                 sent_email.body,
             )
+
+    @requests_mock.Mocker()
+    def test_exception_for_tables_returns_proper_message(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
+                            "code": "broken-table",
+                        },
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            f"{self.reference_lists_service.api_root}tabellen?code=broken-table",
+            exc=RequestException("something went wrong (Table)"),
+        )
+
+        send_email_digest()
+        sent_email = mail.outbox[-1]
+
+        self.assertIn(
+            f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",
+            sent_email.body,
+        )
+        self.assertIn(
+            "something went wrong (Table)",
+            sent_email.body,
+        )
+
+    @requests_mock.Mocker()
+    def test_exception_for_items_returns_proper_message(self, m):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "openForms": {
+                            "dataSrc": "referenceLists",
+                            "service": "reference-lists",
+                            "code": "broken-items",
+                        },
+                    }
+                ],
+            },
+        )
+
+        m.get(
+            f"{self.reference_lists_service.api_root}tabellen?code=broken-items",
+            json={
+                "results": [
+                    {
+                        "code": "broken-items",
+                        "naam": "Broken items request",
+                        "einddatumGeldigheid": None,
+                        "beheerder": {
+                            "beheerder_naam": "",
+                            "beheerder_email": "",
+                            "beheerder_afdeling": "",
+                            "beheerder_organisatie": "",
+                        },
+                    }
+                ]
+            },
+        )
+        m.get(
+            f"{self.reference_lists_service.api_root}items?tabel__code=broken-items",
+            exc=RequestException("something went wrong (Items)"),
+        )
+
+        send_email_digest()
+        sent_email = mail.outbox[-1]
+
+        self.assertIn(
+            f"Something went wrong while trying to retrieve data from service: {self.reference_lists_service.label}",
+            sent_email.body,
+        )
+        self.assertIn(
+            "something went wrong (Items)",
+            sent_email.body,
+        )
