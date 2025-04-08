@@ -1,5 +1,6 @@
 import logging
 import uuid as _uuid
+from collections.abc import Iterator
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
@@ -25,6 +26,7 @@ from openforms.authentication.fields import AuthenticationBackendMultiSelectFiel
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.typing import Component
 from openforms.formio.validators import variable_key_validator
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
@@ -603,7 +605,7 @@ class Form(models.Model):
                     return_keys.add(key)
         return list(return_keys)
 
-    def iter_components(self, recursive=True):
+    def iter_components(self, recursive=True) -> Iterator[Component]:
         # steps are ordered on the 'order' field because of django-ordered-model through
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):

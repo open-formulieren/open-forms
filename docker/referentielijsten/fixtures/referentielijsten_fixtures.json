@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$600000$DCgCQRA6R57PicaatiWGHU$S65r6Yedgkfv/exr8gFZogpyuCgortmrloq7+LBdnyY=",
-        "last_login": "2025-02-03T08:48:13.944Z",
+        "last_login": "2025-04-08T11:00:51.377Z",
         "is_superuser": true,
         "username": "admin",
         "first_name": "",
@@ -62,7 +62,7 @@
     "fields": {
         "code": "item-not-geldig-anymore",
         "naam": "Tabel that contains item not geldig anymore",
-        "einddatum_geldigheid": "2020-02-03T08:48:49Z",
+        "einddatum_geldigheid": null,
         "beheerder_naam": "",
         "beheerder_email": "",
         "beheerder_afdeling": "",
@@ -93,18 +93,6 @@
         "aanvullende_gegevens": null
     }
 },
-{
-    "model": "api.item",
-    "pk": 104,
-    "fields": {
-      "tabel": 4,
-      "code": "not_geldig_option",
-      "naam": "Not geldig option",
-      "begindatum_geldigheid": "2025-01-07T14:17:59Z",
-      "einddatum_geldigheid": "2025-02-07T14:17:59Z",
-      "aanvullende_gegevens": null
-    }
-  },
 {
     "model": "api.item",
     "pk": 3,
@@ -1318,15 +1306,27 @@
     }
 },
 {
-  "model": "api.item",
-  "pk": 105,
-  "fields": {
-    "tabel": 3,
-    "code": "geldig_option",
-    "naam": "geldig_option",
-    "begindatum_geldigheid": null,
-    "einddatum_geldigheid": null,
-    "aanvullende_gegevens": null
-  }
+    "model": "api.item",
+    "pk": 104,
+    "fields": {
+        "tabel": 4,
+        "code": "not_geldig_option",
+        "naam": "Not geldig option",
+        "begindatum_geldigheid": "2025-01-07T14:17:59Z",
+        "einddatum_geldigheid": "2025-02-07T14:17:59Z",
+        "aanvullende_gegevens": null
+    }
+},
+{
+    "model": "api.item",
+    "pk": 105,
+    "fields": {
+        "tabel": 3,
+        "code": "geldig_option",
+        "naam": "geldig_option",
+        "begindatum_geldigheid": null,
+        "einddatum_geldigheid": null,
+        "aanvullende_gegevens": null
+    }
 }
 ]

@@ -1,10 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings, tag
-from django.utils.timezone import utc
 
 import requests_mock
 from django_yubin.models import Message
@@ -47,6 +46,8 @@ from ..digest import (
     collect_invalid_registration_backends,
 )
 from ..tasks import Digest
+
+utc = timezone.utc
 
 TEST_FILES = Path(__file__).parent / "data"
 

@@ -22,55 +22,11 @@ interactions:
       Content-Length:
       - '234'
       Content-Security-Policy:
-      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
-        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
-        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self'''
-      Content-Type:
-      - application/json
-      Cross-Origin-Opener-Policy:
-      - same-origin
-      Referrer-Policy:
-      - same-origin
-      Vary:
-      - origin
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - DENY
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Accept-Language:
-      - en
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.2
-    method: GET
-    uri: http://localhost:8004/api/v1/items?tabel__code=not-geldig-anymore
-  response:
-    body:
-      string: '{"count":1,"next":null,"previous":null,"results":[{"code":"geldig_option","naam":"geldig_option","begindatumGeldigheid":null,"einddatumGeldigheid":null,"aanvullendeGegevens":null}]}'
-    headers:
-      Allow:
-      - GET, HEAD, OPTIONS
-      Content-Length:
-      - '181'
-      Content-Security-Policy:
-      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
-        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
-        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self'''
+      - 'script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
+        fonts.gstatic.com; frame-ancestors ''none''; object-src ''none''; worker-src
+        ''self'' blob:; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        frame-src ''self''; img-src ''self'' data: cdn.redoc.ly; form-action ''self'';
+        default-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -109,55 +65,11 @@ interactions:
       Content-Length:
       - '234'
       Content-Security-Policy:
-      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
-        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
-        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self'''
-      Content-Type:
-      - application/json
-      Cross-Origin-Opener-Policy:
-      - same-origin
-      Referrer-Policy:
-      - same-origin
-      Vary:
-      - origin
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - DENY
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Accept-Language:
-      - en
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.2
-    method: GET
-    uri: http://localhost:8004/api/v1/items?tabel__code=not-geldig-anymore
-  response:
-    body:
-      string: '{"count":1,"next":null,"previous":null,"results":[{"code":"geldig_option","naam":"geldig_option","begindatumGeldigheid":null,"einddatumGeldigheid":null,"aanvullendeGegevens":null}]}'
-    headers:
-      Allow:
-      - GET, HEAD, OPTIONS
-      Content-Length:
-      - '181'
-      Content-Security-Policy:
-      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
-        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
-        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self'''
+      - 'script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
+        fonts.gstatic.com; frame-ancestors ''none''; object-src ''none''; worker-src
+        ''self'' blob:; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        frame-src ''self''; img-src ''self'' data: cdn.redoc.ly; form-action ''self'';
+        default-src ''self'''
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:

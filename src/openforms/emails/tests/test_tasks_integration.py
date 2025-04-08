@@ -51,18 +51,23 @@ class InvalidBackend(BasePlugin):
         raise InvalidPluginConfiguration("Invalid")
 
 
-@patch(
-    "openforms.emails.tasks.GlobalConfiguration.get_solo",
-    return_value=GlobalConfiguration(
-        recipients_email_digest=["tralala@test.nl", "trblblb@test.nl"]
-    ),
-)
 @override_settings(LANGUAGE_CODE="en")
 class EmailDigestTaskIntegrationTests(TestCase):
 
-    def test_that_repeated_failures_are_not_mentioned_multiple_times(
-        self, mock_global_config
-    ):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        config = GlobalConfiguration.get_solo()
+        config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
+        config.save()
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
+    def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -96,15 +101,15 @@ class EmailDigestTaskIntegrationTests(TestCase):
         )
         self.assertEqual(submission_occurencies, 1)
 
-    def test_no_email_sent_if_no_logs(self, mock_global_config):
+    def test_no_email_sent_if_no_logs(self):
         send_email_digest()
 
         self.assertEqual(0, len(mail.outbox))
 
-    def test_no_email_sent_if_no_recipients(self, mock_global_config):
-        mock_global_config.return_value = GlobalConfiguration(
-            recipients_email_digest=[]
-        )
+    def test_no_email_sent_if_no_recipients(self):
+        config = GlobalConfiguration.get_solo()
+        config.recipients_email_digest = []
+        config.save()
         submission = SubmissionFactory.create()
 
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -128,9 +133,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
     @freeze_time("2023-01-03T01:00:00+01:00")
     @override_settings(BASE_URL="http://testserver")
     @requests_mock.Mocker()
-    def test_email_sent_when_there_are_failures(
-        self, mock_global_config, brk_config, m
-    ):
+    def test_email_sent_when_there_are_failures(self, brk_config, m):
         """Integration test for all the possible failures
 
         - failed emails
@@ -305,22 +308,27 @@ class EmailDigestTaskIntegrationTests(TestCase):
 class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
-    def setUp(self) -> None:
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
         config.recipients_email_digest = ["tralala@test.nl", "trblblb@test.nl"]
         config.save()
-        self.addCleanup(GlobalConfiguration.clear_cache)
 
         # The service is relative to the docker compose instance that we have in the
         # docker directory (docker-compose.referentielijsten.yml)
-        self.reference_lists_service = ServiceFactory.create(
+        cls.reference_lists_service = ServiceFactory.create(
             api_root="http://localhost:8004/api/v1/",
             slug="reference-lists",
             auth_type=AuthTypes.no_auth,
         )
-        config.reference_lists_services.add(self.reference_lists_service)
+        config.reference_lists_services.add(cls.reference_lists_service)
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_tables(self):
         FormFactory.create(
@@ -413,7 +421,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
                         "openForms": {
                             "dataSrc": "referenceLists",
                             "service": "reference-lists",
-                            "code": "item-not-geldig-anymore",
+                            "code": "broken-table",
                         },
                     }
                 ],
@@ -421,7 +429,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         )
 
         m.get(
-            f"{self.reference_lists_service.api_root}tabellen?code=item-not-geldig-anymore",
+            f"{self.reference_lists_service.api_root}tabellen?code=broken-table",
             exc=RequestException("something went wrong (Table)"),
         )
 
@@ -450,7 +458,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
                         "openForms": {
                             "dataSrc": "referenceLists",
                             "service": "reference-lists",
-                            "code": "item-not-geldig-anymore",
+                            "code": "broken-items",
                         },
                     }
                 ],
@@ -458,13 +466,13 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
         )
 
         m.get(
-            f"{self.reference_lists_service.api_root}tabellen?code=item-not-geldig-anymore",
+            f"{self.reference_lists_service.api_root}tabellen?code=broken-items",
             json={
                 "results": [
                     {
-                        "code": "item-not-geldig-anymore",
-                        "naam": "Tabel that contains item not geldig anymore",
-                        "einddatumGeldigheid": "2020-02-03T08:48:49Z",
+                        "code": "broken-items",
+                        "naam": "Broken items request",
+                        "einddatumGeldigheid": None,
                         "beheerder": {
                             "beheerder_naam": "",
                             "beheerder_email": "",
@@ -476,7 +484,7 @@ class ReferenceListsExpiredDataTests(OFVCRMixin, TestCase):
             },
         )
         m.get(
-            f"{self.reference_lists_service.api_root}items?tabel__code=item-not-geldig-anymore",
+            f"{self.reference_lists_service.api_root}items?tabel__code=broken-items",
             exc=RequestException("something went wrong (Items)"),
         )
 

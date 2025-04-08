@@ -13,42 +13,37 @@ from zgw_consumers.service import pagination_helper
 from .typing import APITable, APITableItem
 
 REFERENCE_LISTS_LOOKUP_CACHE_TIMEOUT = 5 * 60
+NEARLY_EXPIRED_DAYS = 7
 
 
-@dataclass
 class EndDateMixin:
-    @cached_property
-    def parsed_end_date(self) -> datetime | None:
-        expires_on = getattr(self, "expires_on", None)
-        if expires_on is None:
-            return None
-        return expires_on
+    expires_on: datetime | None
 
     @cached_property
     def is_expired(self) -> bool:
-        if self.parsed_end_date:
-            return self.parsed_end_date <= timezone.now()
-        return False
+        if self.expires_on is None:
+            return False
+        return self.expires_on <= timezone.now()
 
     @cached_property
     def is_nearly_expired(self) -> bool:
-        if self.parsed_end_date:
-            return self.parsed_end_date <= (timezone.now() + timedelta(days=7))
-        return False
+        if self.expires_on is None:
+            return False
+        return self.expires_on <= (timezone.now() + timedelta(days=NEARLY_EXPIRED_DAYS))
 
 
 @dataclass
 class TableItem(EndDateMixin):
     code: str
     name: str
-    expires_on: datetime | None = None  # ISO 8601 datetime string
+    expires_on: datetime | None = None  # from ISO 8601 datetime string
 
 
 @dataclass
 class Table(EndDateMixin):
     code: str
     name: str
-    expires_on: datetime | None = None  # ISO 8601 datetime string
+    expires_on: datetime | None = None  # from ISO 8601 datetime string
 
 
 class ReferenceListsClient(APIClient):
