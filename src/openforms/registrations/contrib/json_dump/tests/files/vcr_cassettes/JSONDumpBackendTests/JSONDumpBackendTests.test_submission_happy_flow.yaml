@@ -10,7 +10,7 @@ interactions:
       \"string\"}, \"file\": {\"title\": \"File\", \"type\": \"object\", \"properties\":
       {\"file_name\": {\"type\": \"string\"}, \"content\": {\"type\": \"string\",
       \"format\": \"base64\"}}, \"required\": [\"file_name\", \"content\"], \"additionalProperties\":
-      false}}, \"required\": [\"firstName\", \"file\", \"auth_bsn\"], \"additionalProperties\":
+      false}}, \"required\": [\"auth_bsn\", \"firstName\", \"file\"], \"additionalProperties\":
       false}, \"metadata\": {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
       \"type\": \"object\", \"properties\": {}, \"required\": [], \"additionalProperties\":
       false}}"'
@@ -20,7 +20,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDMwODQwNTAsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.0XEoDKBotOt-6Ek_cT-RJgHk4svkhP191gGMao8z0EE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQxMjI4NTQsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.X1RCPXY5EGM1nqRhguNwFa5YleL-_wDaoUTPHELiiuU
       Connection:
       - keep-alive
       Content-Length:
@@ -52,7 +52,7 @@ interactions:
         \           \"content\"\n          ],\n          \"title\": \"File\",\n          \"type\":
         \"object\"\n        },\n        \"firstName\": {\n          \"title\": \"Firstname\",\n
         \         \"type\": \"string\"\n        }\n      },\n      \"required\": [\n
-        \       \"firstName\",\n        \"file\",\n        \"auth_bsn\"\n      ],\n
+        \       \"auth_bsn\",\n        \"firstName\",\n        \"file\"\n      ],\n
         \     \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
@@ -62,7 +62,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 27 Mar 2025 14:00:50 GMT
+      - Tue, 08 Apr 2025 14:34:14 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.9
     status:
