@@ -24,7 +24,7 @@ def _iter_form_variables(
         yield from get_static_variables(
             variables_registry=additional_variables_registry
         )
-    # Handle from variables holding dynamic data (component and user defined)
+    # Handle form variables holding dynamic data (component and user defined)
     yield from form.formvariable_set.all()
 
 
