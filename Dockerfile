@@ -94,6 +94,7 @@ COPY \
     ./bin/report_component_problems.py \
     ./bin/report_form_registration_problems.py \
     ./bin/fix_selectboxes_component_default_values.py \
+    ./bin/fix_component_default_values.py \
     ./bin/fix_objects_api_form_registration_variables_mapping.py \
     ./bin/
 
