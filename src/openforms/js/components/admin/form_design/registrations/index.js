@@ -10,9 +10,17 @@ import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import {ObjectsApiVariableConfigurationEditor} from './objectsapi/ObjectsApiVariableConfigurationEditor';
-import {onCamundaStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
+import {
+  onCamundaStepEdit,
+  onJSONDumpStepEdit,
+  onObjectsAPIStepEdit,
+  onZGWStepEdit,
+} from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
-import {onObjectsAPIUserDefinedVariableEdit} from './userDefinedVariableEditHandlers';
+import {
+  onJsonDumpUserDefinedVariableEdit,
+  onObjectsAPIUserDefinedVariableEdit,
+} from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 
 /**
@@ -56,6 +64,8 @@ export const BACKEND_OPTIONS_FORMS = {
     configurableFromVariables: true,
     summaryHandler: JSONDumpSummaryHandler,
     variableConfigurationEditor: JSONDumpVariableConfigurationEditor,
+    onStepEdit: onJSONDumpStepEdit,
+    onUserDefinedVariableEdit: onJsonDumpUserDefinedVariableEdit,
   },
   // demo plugins
   demo: {form: DemoOptionsForm},
