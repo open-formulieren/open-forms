@@ -22,11 +22,10 @@ interactions:
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; script-src ''self''
-        ''unsafe-inline''; frame-src ''self''; object-src ''none''; font-src ''self''
-        fonts.gstatic.com; base-uri ''self''; default-src ''self''; img-src ''self''
-        data: cdn.redoc.ly; worker-src ''self'' blob:; frame-ancestors ''none''; form-action
-        ''self'''
+      - 'frame-ancestors ''none''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        worker-src ''self'' blob:; img-src ''self'' data: cdn.redoc.ly; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; form-action ''self''; frame-src ''self'';
+        default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -68,11 +67,10 @@ interactions:
       Content-Length:
       - '325'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; script-src ''self''
-        ''unsafe-inline''; frame-src ''self''; object-src ''none''; font-src ''self''
-        fonts.gstatic.com; base-uri ''self''; default-src ''self''; img-src ''self''
-        data: cdn.redoc.ly; worker-src ''self'' blob:; frame-ancestors ''none''; form-action
-        ''self'''
+      - 'frame-ancestors ''none''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        worker-src ''self'' blob:; img-src ''self'' data: cdn.redoc.ly; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; form-action ''self''; frame-src ''self'';
+        default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -111,11 +109,10 @@ interactions:
       Content-Length:
       - '197'
       Content-Security-Policy:
-      - 'style-src ''self'' ''unsafe-inline'' fonts.googleapis.com; script-src ''self''
-        ''unsafe-inline''; frame-src ''self''; object-src ''none''; font-src ''self''
-        fonts.gstatic.com; base-uri ''self''; default-src ''self''; img-src ''self''
-        data: cdn.redoc.ly; worker-src ''self'' blob:; frame-ancestors ''none''; form-action
-        ''self'''
+      - 'frame-ancestors ''none''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        worker-src ''self'' blob:; img-src ''self'' data: cdn.redoc.ly; font-src ''self''
+        fonts.gstatic.com; object-src ''none''; form-action ''self''; frame-src ''self'';
+        default-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -134,8 +131,8 @@ interactions:
 - request:
     body: '"{\"values\": {\"selectBoxes1\": {\"option1\": true, \"option2\": false},
       \"selectBoxes2\": [\"option2\"]}, \"values_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"selectBoxes1\": {\"title\": \"Selectboxes1\",
-      \"type\": \"object\", \"properties\": {\"option2\": {\"type\": \"boolean\"},
+      \"type\": \"object\", \"properties\": {\"selectBoxes1\": {\"type\": \"object\",
+      \"title\": \"Selectboxes1\", \"properties\": {\"option2\": {\"type\": \"boolean\"},
       \"option1\": {\"type\": \"boolean\"}}, \"required\": [\"option2\", \"option1\"],
       \"additionalProperties\": false}, \"selectBoxes2\": {\"type\": \"array\", \"title\":
       \"Selectboxes2\", \"items\": {\"type\": \"string\", \"enum\": [\"option2\",
@@ -149,7 +146,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQxMjI4NTgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.b41LU9zRM0bOQiP7eQktOsaJkMOdim-6iKx648ymAK8
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTMsImV4cCI6MTc0NDMxOTQxMywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.cGlvnVYsQiLyz_-rWMzNWD8VY_M6daU5vdUIqJYDoIo
       Connection:
       - keep-alive
       Content-Length:
@@ -188,9 +185,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 08 Apr 2025 14:34:18 GMT
+      - Thu, 10 Apr 2025 09:10:13 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED

@@ -644,7 +644,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             key="valuesForSelect",
             user_defined=True,
             data_type=FormVariableDataTypes.array,
-            initial_value=["A", "B", "C"],
+            initial_value=["A", "B"],
         )
 
         options: JSONDumpOptions = {
@@ -670,14 +670,13 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     "properties": {
                         "A": {"type": "boolean"},
                         "B": {"type": "boolean"},
-                        "C": {"type": "boolean"},
                     },
-                    "required": ["A", "B", "C"],
+                    "required": ["A", "B"],
                     "title": "Selectboxes1",
                     "type": "object",
                 },
                 "selectBoxes2": {
-                    "items": {"enum": ["A", "B", "C"], "type": "string"},
+                    "items": {"enum": ["A", "B"], "type": "string"},
                     "title": "Selectboxes2",
                     "type": "array",
                 },
@@ -708,10 +707,6 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                         "dataSrc": DataSrcOptions.reference_lists,
                         "service": "referentielijsten",
                     },
-                    "values": [
-                        {"label": "Option 1", "value": "option1"},
-                        {"label": "Option 2", "value": "option2"},
-                    ],
                 },
                 {
                     "key": "selectBoxes2",

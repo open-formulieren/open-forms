@@ -298,6 +298,7 @@ def process_component(
                 values[key] = [
                     option for option, is_selected in values[key].items() if is_selected  # type: ignore
                 ]
+                return
 
             # If the select boxes component was hidden, the submitted data of this
             # component is an empty dict, so set the required to an empty list.

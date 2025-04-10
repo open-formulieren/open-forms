@@ -4,11 +4,11 @@ interactions:
       [\"B\"]}, \"values_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
       \"type\": \"object\", \"properties\": {\"selectBoxes1\": {\"title\": \"Selectboxes1\",
       \"type\": \"object\", \"additionalProperties\": false, \"properties\": {\"A\":
-      {\"type\": \"boolean\"}, \"B\": {\"type\": \"boolean\"}, \"C\": {\"type\": \"boolean\"}},
-      \"required\": [\"A\", \"B\", \"C\"]}, \"selectBoxes2\": {\"title\": \"Selectboxes2\",
-      \"type\": \"array\", \"items\": {\"type\": \"string\", \"enum\": [\"A\", \"B\",
-      \"C\"]}}}, \"required\": [\"selectBoxes1\", \"selectBoxes2\"], \"additionalProperties\":
-      false}, \"metadata\": {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
+      {\"type\": \"boolean\"}, \"B\": {\"type\": \"boolean\"}}, \"required\": [\"A\",
+      \"B\"]}, \"selectBoxes2\": {\"title\": \"Selectboxes2\", \"type\": \"array\",
+      \"items\": {\"type\": \"string\", \"enum\": [\"A\", \"B\"]}}}, \"required\":
+      [\"selectBoxes1\", \"selectBoxes2\"], \"additionalProperties\": false}, \"metadata\":
+      {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
       \"type\": \"object\", \"properties\": {}, \"required\": [], \"additionalProperties\":
       false}}"'
     headers:
@@ -17,11 +17,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQxMjI4NTgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.b41LU9zRM0bOQiP7eQktOsaJkMOdim-6iKx648ymAK8
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTIsImV4cCI6MTc0NDMxOTQxMiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.FTOfClEzItExXuWQPpTEhKsO8HyRjzpyGfbn8hvjJDY
       Connection:
       - keep-alive
       Content-Length:
-      - '889'
+      - '843'
       Content-Type:
       - application/json
       User-Agent:
@@ -39,27 +39,26 @@ interactions:
         \     \"additionalProperties\": false,\n      \"properties\": {\n        \"selectBoxes1\":
         {\n          \"additionalProperties\": false,\n          \"properties\": {\n
         \           \"A\": {\n              \"type\": \"boolean\"\n            },\n
-        \           \"B\": {\n              \"type\": \"boolean\"\n            },\n
-        \           \"C\": {\n              \"type\": \"boolean\"\n            }\n
-        \         },\n          \"required\": [\n            \"A\",\n            \"B\",\n
-        \           \"C\"\n          ],\n          \"title\": \"Selectboxes1\",\n
-        \         \"type\": \"object\"\n        },\n        \"selectBoxes2\": {\n
-        \         \"items\": {\n            \"enum\": [\n              \"A\",\n              \"B\",\n
-        \             \"C\"\n            ],\n            \"type\": \"string\"\n          },\n
-        \         \"title\": \"Selectboxes2\",\n          \"type\": \"array\"\n        }\n
-        \     },\n      \"required\": [\n        \"selectBoxes1\",\n        \"selectBoxes2\"\n
-        \     ],\n      \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+        \           \"B\": {\n              \"type\": \"boolean\"\n            }\n
+        \         },\n          \"required\": [\n            \"A\",\n            \"B\"\n
+        \         ],\n          \"title\": \"Selectboxes1\",\n          \"type\":
+        \"object\"\n        },\n        \"selectBoxes2\": {\n          \"items\":
+        {\n            \"enum\": [\n              \"A\",\n              \"B\"\n            ],\n
+        \           \"type\": \"string\"\n          },\n          \"title\": \"Selectboxes2\",\n
+        \         \"type\": \"array\"\n        }\n      },\n      \"required\": [\n
+        \       \"selectBoxes1\",\n        \"selectBoxes2\"\n      ],\n      \"type\":
+        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '1388'
+      - '1286'
       Content-Type:
       - application/json
       Date:
-      - Tue, 08 Apr 2025 14:34:18 GMT
+      - Thu, 10 Apr 2025 09:10:12 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED
