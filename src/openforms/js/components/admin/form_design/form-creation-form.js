@@ -115,6 +115,7 @@ const initialFormState = {
     confirmationEmailTemplate: {subject: '', content: '', translations: {}},
     autoLoginAuthenticationBackend: '',
     authenticationBackendOptions: {},
+    authenticationOidcPluginScopes: [],
     translations: {},
     appointmentOptions: {isAppointment: false},
     brpPersonenRequestOptions: {
@@ -336,8 +337,22 @@ function reducer(draft, action) {
         if (draft.form.autoLoginAuthenticationBackend === pluginId) {
           draft.form.autoLoginAuthenticationBackend = '';
         }
+        // Add custom plugin scopes fields for yivi and edias over OIDC plugins
+        if (['yivi_oidc', 'eidas_oidc'].includes(pluginId)) {
+          draft.form.authenticationOidcPluginScopes =
+            draft.form.authenticationOidcPluginScopes.filter(
+              pluginScope => pluginScope.pluginId !== pluginId
+            );
+        }
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
+        // Remove custom plugin scopes fields for yivi and edias over OIDC plugins
+        if (['yivi_oidc', 'eidas_oidc'].includes(pluginId)) {
+          draft.form.authenticationOidcPluginScopes = [
+            ...draft.form.authenticationOidcPluginScopes,
+            {pluginId, scopes: []},
+          ];
+        }
       }
       break;
     }

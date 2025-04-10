@@ -3,6 +3,7 @@ import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import LoAOverrideOption from 'components/admin/form_design/authentication/LoAOverrideOption';
+import OIDCPluginScopesConfiguration from 'components/admin/form_design/authentication/OIDCPluginScopesConfiguration';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -190,6 +191,7 @@ const AuthenticationFields = ({
   onAuthPluginChange,
   autoLoginAuthenticationBackend,
   authenticationBackendOptions,
+  authenticationOidcPluginScopes,
   onChange,
 }) => {
   const eligibleAutoLoginPlugins = availableAuthPlugins.filter(plugin =>
@@ -244,6 +246,11 @@ const AuthenticationFields = ({
         availableAuthPlugins={availableAuthPlugins}
         selectedAuthPlugins={selectedAuthPlugins}
         authenticationBackendOptions={authenticationBackendOptions}
+        onChange={onChange}
+      />
+      <OIDCPluginScopesConfiguration
+        authenticationOidcPluginScopes={authenticationOidcPluginScopes}
+        availableAuthPlugins={availableAuthPlugins}
         onChange={onChange}
       />
     </Fieldset>
@@ -675,6 +682,7 @@ const FormConfigurationFields = ({
           onAuthPluginChange={onAuthPluginChange}
           autoLoginAuthenticationBackend={form.autoLoginAuthenticationBackend}
           authenticationBackendOptions={form.authenticationBackendOptions}
+          authenticationOidcPluginScopes={form.authenticationOidcPluginScopes}
           onChange={onChange}
         />
       )}
@@ -726,6 +734,12 @@ FormConfigurationFields.propTypes = {
       isAppointment: PropTypes.bool.isRequired,
     }),
     authenticationBackendOptions: PropTypes.object,
+    authenticationOidcPluginScopes: PropTypes.arrayOf(
+      PropTypes.shape({
+        pluginId: PropTypes.string.isRequired,
+        scopes: PropTypes.arrayOf(PropTypes.string).isRequired,
+      })
+    ),
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(
