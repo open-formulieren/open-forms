@@ -112,6 +112,11 @@ class Form(models.Model):
     authentication_backend_options = models.JSONField(
         _("per form authentication backend config"), default=dict, blank=True
     )
+    authentication_oidc_plugin_claims = models.JSONField(
+        _("per form additional OIDC plugin authentication claims config"),
+        default=list,
+        blank=True,
+    )
 
     # appointments
     is_appointment = models.BooleanField(
