@@ -122,6 +122,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         default=list,
     )
     authentication_backend_options = serializers.DictField(required=False, default=dict)
+    authentication_oidc_plugin_scopes = serializers.ListField(
+        required=False, default=list
+    )
     login_options = LoginOptionsReadOnlyField()
     cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
     cosign_has_link_in_email = serializers.SerializerMethodField(
@@ -232,6 +235,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "registration_backends",
             "authentication_backends",
             "authentication_backend_options",
+            "authentication_oidc_plugin_scopes",
             "login_options",
             "auto_login_authentication_backend",
             "payment_required",
