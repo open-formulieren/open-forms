@@ -3,6 +3,7 @@ import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import LoAOverrideOption from 'components/admin/form_design/authentication/LoAOverrideOption';
+import OIDCPluginClaimsConfiguration from 'components/admin/form_design/authentication/OIDCPluginClaimsConfiguration';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -190,6 +191,7 @@ const AuthenticationFields = ({
   onAuthPluginChange,
   autoLoginAuthenticationBackend,
   authenticationBackendOptions,
+  authenticationOidcPluginClaims,
   onChange,
 }) => {
   const eligibleAutoLoginPlugins = availableAuthPlugins.filter(plugin =>
@@ -244,6 +246,11 @@ const AuthenticationFields = ({
         availableAuthPlugins={availableAuthPlugins}
         selectedAuthPlugins={selectedAuthPlugins}
         authenticationBackendOptions={authenticationBackendOptions}
+        onChange={onChange}
+      />
+      <OIDCPluginClaimsConfiguration
+        authenticationOidcPluginClaims={authenticationOidcPluginClaims}
+        availableAuthPlugins={availableAuthPlugins}
         onChange={onChange}
       />
     </Fieldset>
@@ -675,6 +682,7 @@ const FormConfigurationFields = ({
           onAuthPluginChange={onAuthPluginChange}
           autoLoginAuthenticationBackend={form.autoLoginAuthenticationBackend}
           authenticationBackendOptions={form.authenticationBackendOptions}
+          authenticationOidcPluginClaims={form.authenticationOidcPluginClaims}
           onChange={onChange}
         />
       )}
@@ -726,6 +734,17 @@ FormConfigurationFields.propTypes = {
       isAppointment: PropTypes.bool.isRequired,
     }),
     authenticationBackendOptions: PropTypes.object,
+    authenticationOidcPluginClaims: PropTypes.arrayOf(
+      PropTypes.shape({
+        pluginId: PropTypes.string.isRequired,
+        claimMapping: PropTypes.arrayOf(
+          PropTypes.shape({
+            claimName: PropTypes.string.isRequired,
+            formVariable: PropTypes.string.isRequired,
+          })
+        ).isRequired,
+      })
+    ),
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(

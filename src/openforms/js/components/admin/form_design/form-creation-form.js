@@ -115,6 +115,7 @@ const initialFormState = {
     confirmationEmailTemplate: {subject: '', content: '', translations: {}},
     autoLoginAuthenticationBackend: '',
     authenticationBackendOptions: {},
+    authenticationOidcPluginClaims: [],
     translations: {},
     appointmentOptions: {isAppointment: false},
     brpPersonenRequestOptions: {
@@ -336,8 +337,19 @@ function reducer(draft, action) {
         if (draft.form.autoLoginAuthenticationBackend === pluginId) {
           draft.form.autoLoginAuthenticationBackend = '';
         }
+        // @TODO detect if OIDC plugin. New util function?
+        if (pluginId.endsWith('-oidc') || pluginId.endsWith('_oidc')) {
+          draft.form.authenticationOidcPluginClaims =
+            draft.form.authenticationOidcPluginClaims.filter(claim => claim.pluginId !== pluginId);
+        }
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
+        if (pluginId.endsWith('-oidc') || pluginId.endsWith('_oidc')) {
+          draft.form.authenticationOidcPluginClaims = [
+            ...draft.form.authenticationOidcPluginClaims,
+            {pluginId, claimMapping: []},
+          ];
+        }
       }
       break;
     }
