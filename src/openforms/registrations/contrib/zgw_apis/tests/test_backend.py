@@ -590,6 +590,7 @@ class ZGWBackendTests(TestCase):
                 {
                     "handelsnaam": ["ACME"],
                     "vestigingsNummer": "87654321",
+                    "kvkNummer": "12345678",
                     "innNnpId": "12345678",
                     "statutaireNaam": "ACME",
                     "verblijfsadres": {
@@ -883,6 +884,7 @@ class ZGWBackendTests(TestCase):
                 {
                     "handelsnaam": ["ACME"],
                     "innNnpId": "12345678",
+                    "kvkNummer": "12345678",
                     "statutaireNaam": "ACME",
                     "verblijfsadres": {
                         "aoaPostcode": "1000 AA",
