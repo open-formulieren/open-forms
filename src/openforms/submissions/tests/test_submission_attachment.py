@@ -1043,6 +1043,7 @@ class SubmissionAttachmentTest(TestCase):
         with self.captureOnCommitCallbacks(execute=True):
             result = attach_uploads_to_submission_step(submission_step)
 
+        result = sorted(result, key=lambda x: x[0].pk)
         self.assertEqual(len(result), 2)
         # assert both are created
         self.assertEqual(result[0][1], True)
