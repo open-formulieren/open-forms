@@ -147,7 +147,7 @@ class SubmissionViewSet(
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
-                check_submission_logic(submission, submission.data)
+                check_submission_logic(submission)
                 submission.calculate_price(save=False)
         return self._get_object_cache
 
@@ -669,10 +669,6 @@ class SubmissionStepViewSet(
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
-            context={
-                "request": request,
-                "unsaved_data": data,
-                "current_step": submission_step,
-            },
+            context={"request": request, "current_step": submission_step},
         )
         return Response(submission_state_logic_serializer.data)

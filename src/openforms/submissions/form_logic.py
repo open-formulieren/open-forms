@@ -191,7 +191,6 @@ def evaluate_form_logic(
 
 def check_submission_logic(
     submission: "Submission",
-    unsaved_data: dict | None = None,
     current_step: "SubmissionStep | None" = None,
 ) -> None:
     if getattr(submission, "_form_logic_evaluated", False):
@@ -206,8 +205,6 @@ def check_submission_logic(
 
     # load the data state and all variables
     submission_variables_state = submission.load_submission_value_variables_state()
-    if unsaved_data:
-        submission_variables_state.set_values(FormioData(unsaved_data))
     data_for_evaluation = submission_variables_state.to_python()
 
     mutation_operations: list[ActionOperation] = []

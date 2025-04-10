@@ -252,13 +252,11 @@ def initialise_user_defined_variables(submission: Submission):
 
 
 def persist_user_defined_variables(submission: Submission) -> None:
-    data = submission.data
-
     last_form_step = submission.submissionstep_set.order_by("form_step__order").last()
     if not last_form_step:
         return
 
-    check_submission_logic(submission, data)
+    check_submission_logic(submission)
 
     state = submission.load_submission_value_variables_state()
     variables = state.variables
