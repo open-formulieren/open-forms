@@ -13,7 +13,7 @@ from openforms.api.utils import underscore_to_camel
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component, EditGridComponent
 from openforms.formio.typing.vanilla import FileComponent
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue, VariableValue
 
 from ..typing import ObjecttypeVariableMapping
 
@@ -55,9 +55,7 @@ class OutputSpec:
 
 def process_mapped_variable(
     mapping: ObjecttypeVariableMapping,
-    value: (
-        JSONValue | date | datetime
-    ),  # can't narrow it down yet, as the type depends on the component type
+    value: VariableValue,  # can't narrow it down yet, as the type depends on the component type
     transform_to_list: list[str] = [],
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
@@ -93,6 +91,10 @@ def process_mapped_variable(
     # serialization in the proper format
     if isinstance(value, (date, datetime)):
         value = value.isoformat()
+
+    # Date and datetime objects are now converted to strings, so we can safely cast to
+    # JSONValue
+    value = cast(JSONValue, value)
 
     # transform the value within the context of the component
     # TODO: convert this in a proper registry in due time so we can use better type
@@ -223,6 +225,8 @@ def _transform_editgrid_value(
                         key_prefix=f"{key_prefix}.{index}.{key}",
                     )
 
-        items.append(item_values.data)
+        # Argument ``value`` is already a list of JSON objects, so we can cast here to
+        # a JSON object
+        items.append(cast(JSONObject, item_values.data))
 
     return items

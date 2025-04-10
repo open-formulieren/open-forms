@@ -2,9 +2,9 @@ import re
 from collections import UserDict
 from typing import Iterator, cast
 
-from glom import PathAccessError, assign, glom
+from glom import glom
 
-from openforms.typing import DataMapping, JSONValue
+from openforms.typing import DataMapping, VariableValue
 
 from .typing import Component, EditGridComponent, FormioConfiguration
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
@@ -157,33 +157,78 @@ class FormioData(UserDict):
             data[component["key"]] = ...
 
     without having to worry about potential deep assignments or leak implementation
-    details (such as using ``glom`` for this).
+    details.
     """
 
-    data: dict[str, JSONValue]
-    _keys: set[str]
-    """
-    A collection of flattened key names, for quicker __contains__ access
-    """
+    data: dict[str, VariableValue]
 
-    def __init__(self, *args, **kwargs):
-        self._keys = set()
-        super().__init__(*args, **kwargs)
+    def __getitem__(self, key: str) -> VariableValue:
+        """
+        Get a value from the internal data dict.
 
-    def __getitem__(self, key: str):
+        Keys are expected to be strings and can indicate nested data, e.g.
+        ``variable.key``.
+        """
+        assert isinstance(key, str)
+
         if "." not in key:
             return self.data[key]
-        try:
-            return cast(JSONValue, glom(self.data, key))
-        except PathAccessError as exc:
-            raise KeyError(f"Key '{key}' is not present in the data") from exc
 
-    def __setitem__(self, key: str, value: JSONValue):
+        value = self.data
+        raise_error = False
+        for k in key.split("."):
+            if isinstance(value, dict):
+                try:
+                    value = value[k]
+                except KeyError:
+                    raise_error = True
+            elif isinstance(value, list):
+                try:
+                    value = value[int(k)]
+                except (ValueError, IndexError):
+                    raise_error = True
+            else:
+                raise_error = True
+
+            if raise_error:
+                raise KeyError(f"Key '{key}' is not present in the data")
+
+        return value
+
+    def __setitem__(self, key: str, value: VariableValue):
+        """
+        Set a value to the internal data dict.
+
+        Keys are expected to be strings and can indicate nested data, e.g.
+        ``variable.key``.
+        """
+        assert isinstance(key, str)
+
         if "." not in key:
             self.data[key] = value
-        else:
-            assign(self.data, key, value, missing=dict)
-        self._keys.add(key)
+            return
+
+        data = self.data
+        key_list = key.split(".")
+        for k in key_list[:-1]:
+            if isinstance(data, dict):
+                child = data.get(k, None)
+            elif isinstance(data, list):
+                try:
+                    k = int(k)
+                    child = data[k]
+                except (ValueError, IndexError):
+                    raise KeyError(f"Cannot set an item in a list on index '{k}'")
+            else:
+                raise AttributeError(f"Item '{data}' has no attribute '{k}'")
+
+            if not isinstance(child, (dict, list)):
+                # TODO-5179: should this be configurable?
+                data[k] = {}
+
+            data = data[k]
+
+        data[key_list[-1]] = value
 
     def __contains__(self, key: object) -> bool:
         """
@@ -193,16 +238,29 @@ class FormioData(UserDict):
         be returned or not. Keys are expected to be strings taken from ``variable.key``
         fields.
         """
-        if not isinstance(key, str):
-            raise TypeError("Only string keys are supported")
+        assert isinstance(key, str)
 
-        # for direct keys, we can optimize access and bypass glom + its exception
-        # throwing.
         if "." not in key:
-            return key in self._keys
+            return key in self.data
 
-        try:
-            self[key]
-            return True
-        except KeyError:
-            return False
+        value = self.data
+        for k in key.split("."):
+            if isinstance(value, dict):
+                try:
+                    value = value[k]
+                except KeyError:
+                    return False
+            elif isinstance(value, list):
+                try:
+                    value = value[int(k)]
+                except (ValueError, IndexError):
+                    return False
+            else:
+                return False
+
+        return True
+
+    def __iter__(self):
+        raise AttributeError(
+            "Iterating over the items of a 'FormioData' instance is not supported"
+        )

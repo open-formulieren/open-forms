@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import contextmanager
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from typing import (
     Any,
@@ -48,7 +48,7 @@ from openforms.submissions.models import (
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.utils import get_variables_for_context
@@ -539,7 +539,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 )
                 variable = None
 
-            value: JSONValue | date | datetime
+            value: VariableValue
             try:
                 value = all_values[key]
             except KeyError:
