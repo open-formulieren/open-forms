@@ -9,8 +9,8 @@ from openforms.formio.service import (
     get_dynamic_configuration,
     inject_variables,
 )
+from openforms.formio.typing import FormioConfiguration
 from openforms.formio.utils import get_component_empty_value
-from openforms.typing import DataMapping
 
 from .logic.actions import ActionOperation
 from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
@@ -24,9 +24,8 @@ if TYPE_CHECKING:
 def evaluate_form_logic(
     submission: "Submission",
     step: "SubmissionStep",
-    data: DataMapping,
-    **context,
-) -> DataMapping:
+    data: FormioData,
+) -> FormioConfiguration:
     """
     Process all the form logic rules and mutate the step configuration if required.
 
@@ -55,7 +54,6 @@ def evaluate_form_logic(
        2. Handle the 'clearOnHide' property
        3. Interpolate the component configuration with the variables
        4. Handle custom formio types
-
 
     7. Update relevant data structures
 
@@ -88,7 +86,7 @@ def evaluate_form_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
-    submission_variables_state.set_values(FormioData(data))
+    submission_variables_state.set_values(data)
     initial_data = submission_variables_state.to_python()
     data_for_evaluation = submission_variables_state.to_python()
 
@@ -120,7 +118,7 @@ def evaluate_form_logic(
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
         submission=submission,
-        data=data_for_evaluation.data,
+        data=data_for_evaluation,
     )
 
     # 6.1 Apply the component mutation operations
@@ -134,9 +132,7 @@ def evaluate_form_logic(
     # Note that only the dirty data logic check acts on these differences.
     for component in config_wrapper:
         key = component["key"]
-        is_visible = config_wrapper.is_visible_in_frontend(
-            key, data_for_evaluation.data
-        )
+        is_visible = config_wrapper.is_visible_in_frontend(key, data_for_evaluation)
         if is_visible:
             continue
 
@@ -155,7 +151,7 @@ def evaluate_form_logic(
         data_diff[key] = empty_value
 
     # 6.3 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_for_evaluation.data)
+    inject_variables(config_wrapper, data_for_evaluation)
 
     # 6.4 Handle custom formio types
     # TODO: this needs to be lifted out of :func:`get_dynamic_configuration` so that it
@@ -182,7 +178,7 @@ def evaluate_form_logic(
     for key, variable in relevant_variables.items():
         if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
             updated_step_data[key] = data_for_evaluation[key]
-    step.data = DirtyData(updated_step_data.data)
+    step.data = DirtyData(updated_step_data)
 
     step._form_logic_evaluated = True
 
