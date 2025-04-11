@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
+from openforms.formio.service import FormioData
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -293,7 +294,7 @@ class StepModificationTests(TestCase):
 
         self.assertFalse(submission_step.can_submit)
 
-    def test_dirty_data_only_diff_data_returned(self):
+    def test_only_diff_data_returned(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
             form=form,
@@ -331,14 +332,17 @@ class StepModificationTests(TestCase):
         )
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=step, data={}
+            submission=submission, form_step=step
         )
-        dirty_data = {
-            "name": "john",
-            "changingKey": "original",
-        }
 
-        evaluate_form_logic(submission, submission_step, dirty_data, dirty=True)
+        data = FormioData(
+            {
+                "name": "john",
+                "changingKey": "original",
+            }
+        )
+
+        evaluate_form_logic(submission, submission_step, data)
 
         self.assertEqual(
             submission_step.data,
@@ -505,9 +509,7 @@ class StepModificationTests(TestCase):
         )
 
         # This shouldn't raise an error
-        evaluate_form_logic(
-            submission, submission_step, submission_step.data, dirty=True
-        )
+        evaluate_form_logic(submission, submission_step, submission_step.data)
 
     def test_datetime_trigger(self):
         form = FormFactory.create()

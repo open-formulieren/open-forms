@@ -8,9 +8,9 @@ from django.utils.dateparse import parse_datetime
 from dateutil.relativedelta import relativedelta
 from glom import assign, glom
 
-from openforms.typing import DataMapping
 from openforms.utils.date import parse_date
 
+from ..datastructures import FormioData
 from ..typing import DateComponent, DatetimeComponent
 from ..typing.dates import DateConstraintConfiguration, DateConstraintDelta
 
@@ -22,7 +22,7 @@ class DatePickerConfig(TypedDict):
     maxDate: str | None
 
 
-def mutate(component: DateComponent | DatetimeComponent, data: DataMapping) -> None:
+def mutate(component: DateComponent | DatetimeComponent, data: FormioData) -> None:
     for key in ("minDate", "maxDate"):
         config = cast(
             DateConstraintConfiguration,
@@ -110,11 +110,11 @@ def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
 def calculate_delta(
     component: DateComponent | DatetimeComponent,
     config: DateConstraintConfiguration,
-    data: DataMapping,
+    data: FormioData,
 ) -> datetime | None:
     assert config["mode"] == "relativeToVariable"
 
-    base_value = glom(data, config["variable"], default=None)
+    base_value = data.get(config["variable"], None)
     if not base_value:
         return
 

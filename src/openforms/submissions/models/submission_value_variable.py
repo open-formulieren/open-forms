@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -14,13 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import (
-    DataMapping,
-    JSONEncodable,
-    JSONObject,
-    JSONSerializable,
-    VariableValue,
-)
+from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import VariablesRegistry, get_static_variables
@@ -66,56 +60,19 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    @overload
-    def get_data(
-        self,
-        *,
-        as_formio_data: Literal[True],
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> FormioData: ...
-
-    @overload
-    def get_data(
-        self,
-        *,
-        as_formio_data: Literal[False] = False,
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> DataMapping: ...
-
-    def get_data(
-        self,
-        *,
-        as_formio_data: bool = False,
-        submission_step: SubmissionStep | None = None,
-        return_unchanged_data: bool = True,
-    ) -> DataMapping | FormioData:
-        """
-        Return the values of the dynamic variables in the submission.
-
-        :arg as_formio_data: set to ``True`` to get the :class:`FormioData`
-          datastructure instead of the underlying nested dictionaries.
-        """
+    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
+        """Return the values of the dynamic variables in the submission."""
         submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
                 submission_step, include_unsaved=False
             )
 
-        formio_data = FormioData()
+        data = FormioData()
         for variable_key, variable in submission_variables.items():
-            if (
-                variable.value is None
-                and variable.form_variable
-                and variable.value == variable.form_variable.initial_value
-                and not return_unchanged_data
-            ):
-                continue
-
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                formio_data[variable_key] = variable.value
-        return formio_data if as_formio_data else formio_data.data
+                data[variable_key] = variable.value
+        return data
 
     def get_variables_in_submission_step(
         self,
@@ -278,7 +235,7 @@ class SubmissionValueVariablesState:
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
         self,
-        data: DataMapping,
+        data: FormioData,
         submission: Submission,
         submission_step: SubmissionStep | None = None,
         update_missing_variables: bool = False,
@@ -297,10 +254,9 @@ class SubmissionValueVariableManager(models.Manager):
         variables_to_create = []
         variables_to_update = []
         variables_keys_to_delete = []
-        formio_data = FormioData(data)
         for key, variable in submission_variables.items():
             try:
-                variable.value = formio_data[key]
+                variable.value = data[key]
             except KeyError:
                 if update_missing_variables:
                     if variable.pk:
