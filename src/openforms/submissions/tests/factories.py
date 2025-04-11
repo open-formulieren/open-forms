@@ -10,9 +10,9 @@ from django.utils.translation import get_language
 import factory
 import faker
 import magic
-from glom import PathAccessError, glom
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -290,21 +290,19 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         cls,
         **kwargs,
     ) -> SubmissionStep:
-        step_data = kwargs.pop("data", {})
+        step_data = FormioData(kwargs.pop("data", {}))
         submission_step = super().create(**kwargs)
 
         form_variables = submission_step.submission.form.formvariable_set.all()
 
         for variable in form_variables:
-            try:
-                value = glom(step_data, variable.key)
-            except PathAccessError:
+            if variable.key not in step_data:
                 continue
 
             SubmissionValueVariableFactory.create(
                 submission=submission_step.submission,
                 key=variable.key,
-                value=value,
+                value=step_data[variable.key],
             )
 
         if hasattr(submission_step.submission, "_variables_state"):

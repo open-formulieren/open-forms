@@ -235,7 +235,7 @@ class SubmissionValueVariablesState:
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
         self,
-        data: DataMapping,
+        data: FormioData,
         submission: Submission,
         submission_step: SubmissionStep | None = None,
         update_missing_variables: bool = False,
@@ -254,10 +254,9 @@ class SubmissionValueVariableManager(models.Manager):
         variables_to_create = []
         variables_to_update = []
         variables_keys_to_delete = []
-        formio_data = FormioData(data)
         for key, variable in submission_variables.items():
             try:
-                variable.value = formio_data[key]
+                variable.value = data[key]
             except KeyError:
                 if update_missing_variables:
                     if variable.pk:

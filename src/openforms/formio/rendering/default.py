@@ -192,11 +192,7 @@ class FileNode(ComponentNode):
 
         if value:
             for submission_file_attachment in value:
-                component_path = (
-                    f"{self.path}.{self.key}"
-                    if self.path
-                    else self.key
-                )
+                component_path = f"{self.path}.{self.key}" if self.path else self.key
                 if submission_file_attachment._component_data_path != component_path:
                     continue
 
