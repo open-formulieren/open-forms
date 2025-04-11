@@ -171,7 +171,7 @@ class CosignState:
         ), "You can only look up the email in forms that have a cosign component"
 
         variables_state = self.submission.load_submission_value_variables_state()
-        values = variables_state.get_data(as_formio_data=True)
+        values = variables_state.get_data()
         if (key := cosign_component["key"]) not in values:
             logger.info(
                 "Inconsistent state - there is a cosign component, but no value is"

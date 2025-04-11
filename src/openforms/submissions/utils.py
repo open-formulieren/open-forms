@@ -31,6 +31,7 @@ from openforms.emails.utils import (
     send_mail_html,
     strip_tags_plus,
 )
+from openforms.formio.service import FormioData
 from openforms.forms.models import Form
 from openforms.logging import logevent
 from openforms.utils.urls import build_absolute_uri
@@ -261,12 +262,14 @@ def persist_user_defined_variables(submission: Submission) -> None:
     state = submission.load_submission_value_variables_state()
     variables = state.variables
 
-    user_defined_vars_data = {
-        variable.key: variable.value
-        for variable in variables.values()
-        if variable.form_variable
-        and variable.form_variable.source == FormVariableSources.user_defined
-    }
+    user_defined_vars_data = FormioData(
+        {
+            variable.key: variable.value
+            for variable in variables.values()
+            if variable.form_variable
+            and variable.form_variable.source == FormVariableSources.user_defined
+        }
+    )
 
     if user_defined_vars_data:
         SubmissionValueVariable.objects.bulk_create_or_update_from_data(
