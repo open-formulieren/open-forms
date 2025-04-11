@@ -15,6 +15,7 @@ from mozilla_django_oidc_db.utils import obfuscate_claims
 from openforms.typing import JSONObject
 
 from .plugin import get_config_to_plugin
+from ...constants import ADDITIONAL_CLAIMS
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,13 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         assert self.config_class and self.config_class in config_to_plugin
         session_key = config_to_plugin[self.config_class].session_key
         procssed_claims = self._process_claims(claims)
+
+        additional_claims = {}
+        additional_claims_to_fetch = self.request.session[ADDITIONAL_CLAIMS]
+        for claim_name in additional_claims_to_fetch:
+            additional_claims[claim_name] = claims.get(claim_name)
+
+        procssed_claims["additional_claims"] = additional_claims
 
         assert self.request
         self.request.session[session_key] = procssed_claims

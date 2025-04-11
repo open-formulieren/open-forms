@@ -15,7 +15,10 @@ from flags.state import flag_enabled
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from openforms.authentication.constants import LegalSubjectIdentifierType
+from openforms.authentication.constants import (
+    LegalSubjectIdentifierType,
+    ADDITIONAL_CLAIMS,
+)
 from openforms.authentication.typing import FormAuth
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
@@ -82,6 +85,20 @@ class OIDCAuthentication(Generic[T, OptionsT], BasePlugin[OptionsT]):
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
 
+        additional_claims = []
+        if plugin_claims := next(
+            filter(
+                lambda plugin_claim: plugin_claim["plugin_id"] == self.identifier,
+                form.authentication_oidc_plugin_claims,
+            ),
+            None,
+        ):
+            for claim_mapping in plugin_claims["claim_mapping"]:
+                additional_claims.append(claim_mapping["claim_name"])
+
+        # @TODO i couldn't quickly find another solution. For now it works, but should discuss how this can be done correctly.
+        request.session[ADDITIONAL_CLAIMS] = additional_claims
+
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
@@ -126,6 +143,7 @@ class OIDCAuthentication(Generic[T, OptionsT], BasePlugin[OptionsT]):
         if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
             form_auth = self.transform_claims(normalized_claims)
             request.session[FORM_AUTH_SESSION_KEY] = form_auth
+        # @TODO map `normalized_claims['additional_claims']` to form variables
 
         return HttpResponseRedirect(form_url)
 

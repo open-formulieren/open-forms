@@ -5,6 +5,7 @@ FORM_AUTH_SESSION_KEY = "form_auth"
 REGISTRATOR_SUBJECT_SESSION_KEY = "registrator_subject"
 
 CO_SIGN_PARAMETER = "coSignSubmission"
+ADDITIONAL_CLAIMS = "additionalClaims"
 
 
 class AuthAttribute(models.TextChoices):
