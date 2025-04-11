@@ -20,7 +20,7 @@ from PIL import Image
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
-from openforms.formio.service import iterate_data_with_components
+from openforms.formio.service import FormioData, iterate_data_with_components
 from openforms.formio.typing import Component
 from openforms.submissions.models import (
     Submission,
@@ -100,7 +100,7 @@ class UploadContext:
 
 
 def iter_step_uploads(
-    submission_step: SubmissionStep, data=None
+    submission_step: SubmissionStep, data: FormioData | None = None
 ) -> Iterator[UploadContext]:
     """
     Iterate over all the uploads for a given submission step.
@@ -245,7 +245,7 @@ def iter_component_data(components: Iterable[dict], data: dict, filter_types=Non
         yield component, data[key]
 
 
-def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
+def resolve_uploads_from_data(configuration: JSONObject, data: FormioData) -> dict:
     """
     "my_file": [
         {
@@ -269,7 +269,7 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     result = dict()
 
     for component_with_data_item in iterate_data_with_components(
-        configuration, data, filter_types={"file"}
+        configuration, data, filter_types=["file"]
     ):
         uploads = list()
         for info in component_with_data_item.upload_info:
