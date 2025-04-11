@@ -141,6 +141,40 @@ class FormioDataTests(TestCase):
             ):
                 formio_data[key]
 
+    def test_ensure_nested_structure(self):
+        data = FormioData(
+            {"foo": {"bar": "baz"}, "key": "value", "list": [{"foo": {"bar": "baz"}}]}
+        )
+
+        with self.subTest("items"):
+            expected = (
+                ("foo", {"bar": "baz"}),
+                ("key", "value"),
+                ("list", [{"foo": {"bar": "baz"}}]),
+            )
+            for (key, value), (key_expected, value_expected) in zip(
+                expected, data.items()
+            ):
+                self.assertEqual(key, key_expected)
+                self.assertEqual(value, value_expected)
+
+        with self.subTest("keys and values"):
+            self.assertEqual(list(data.keys()), ["foo", "key", "list"])
+            self.assertEqual(
+                list(data.values()),
+                [{"bar": "baz"}, "value", [{"foo": {"bar": "baz"}}]],
+            )
+
+        with self.subTest("**"):
+            self.assertEqual(
+                {**data},
+                {
+                    "foo": {"bar": "baz"},
+                    "key": "value",
+                    "list": [{"foo": {"bar": "baz"}}],
+                },
+            )
+
 
 class FormioConfigurationWrapperTests(TestCase):
     def test_editgrid_lookups_by_key(self):
