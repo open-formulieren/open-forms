@@ -8,8 +8,9 @@ import jq
 from json_logic import jsonLogic
 from zgw_consumers.client import build_client
 
+from openforms.formio.service import FormioData
 from openforms.forms.models import FormVariable
-from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
 
 
@@ -24,7 +25,7 @@ class FetchResult:
 
 
 def perform_service_fetch(
-    var: FormVariable, context: DataMapping, submission_uuid: str = ""
+    var: FormVariable, context: FormioData, submission_uuid: str = ""
 ) -> FetchResult:
     """Fetch a value from a http-service, perform a transformation on it and
     return the result.
