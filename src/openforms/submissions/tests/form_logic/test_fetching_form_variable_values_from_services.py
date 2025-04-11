@@ -13,6 +13,7 @@ from hypothesis import assume, example, given, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
@@ -57,7 +58,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value["url"], "https://httpbin.org/get")
@@ -71,7 +72,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
                 path="delay/{{seconds}}",
             )
         )
-        context = {"seconds": 6}
+        context = FormioData({"seconds": 6})
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
@@ -89,7 +90,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
         # Intended use
-        context = {"seconds": 6, "second_fragments": "5"}
+        context = FormioData({"seconds": 6, "second_fragments": "5"})
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
@@ -99,7 +100,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self.assertEqual(request.url, "https://httpbin.org/delay/6.5")
 
         # Edge case
-        context = {"seconds": 6, "second_fragments": "{{seconds}}"}
+        context = FormioData({"seconds": 6, "second_fragments": "{{seconds}}"})
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY, json={})
@@ -116,7 +117,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         # request_mock eats the single dot :pacman:, and ".." is disallowed:
         assume(field_value not in {".", ".."})
         # https://swagger.io/docs/specification/describing-parameters/#path-parameters
-        context = {"late": {"seconds": field_value}}
+        context = FormioData({"late": {"seconds": field_value}})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -154,7 +155,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
     @tag("gh-4015")
     def test_raises_suspicious_operation_on_double_dot_input(self):
-        context = {"late": {"seconds": ".."}}
+        context = FormioData({"late": {"seconds": ".."}})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -187,7 +188,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     )
     def test_it_can_construct_simple_query_parameters(self, field_value):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
-        context = {"some_field": field_value}
+        context = FormioData({"some_field": field_value})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -221,7 +222,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self, some_text, some_value
     ):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
-        context = {"url": some_text, "code": [{"foo": some_value}]}
+        context = FormioData({"url": some_text, "code": [{"foo": some_value}]})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -276,7 +277,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        _ = perform_service_fetch(var, {})
+        _ = perform_service_fetch(var, FormioData())
         request_headers = m.last_request.headers
 
         self.assertIn(("X-Brony-Identity", "Jumper"), request_headers.items())
@@ -284,7 +285,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     def test_it_can_construct_simple_header_parameters(self):
         """Assert a happy path"""
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
-        context = {"some": [{"nested_value": "x"}]}
+        context = FormioData({"some": [{"nested_value": "x"}]})
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
@@ -305,7 +306,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     def test_it_never_sends_bad_headers_regardless_of_what_people_submit(
         self, field_value
     ):
-        context = {"some_value": field_value}
+        context = FormioData({"some_value": field_value})
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
@@ -352,7 +353,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        _ = perform_service_fetch(var, {})
+        _ = perform_service_fetch(var, FormioData())
         request = m.last_request
 
         self.assertIn(("Content-Type", "application/json"), request.headers.items())
@@ -371,7 +372,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -389,7 +390,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -409,7 +410,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
 
-        result = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, FormioData())
         value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
@@ -418,4 +419,4 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         var = FormVariableFactory.build()
 
         with self.assertRaises(ValueError):
-            perform_service_fetch(var, {})
+            perform_service_fetch(var, FormioData())
