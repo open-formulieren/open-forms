@@ -32,7 +32,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 from openforms.utils.json_schema import to_multiple
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -668,7 +668,7 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         self,
         component: SelectBoxesComponent,
         submission: "Submission",
-        data: DataMapping,
+        data: FormioData,
     ) -> None:
         add_options_to_config(component, data, submission)
 
@@ -727,7 +727,7 @@ class Select(BasePlugin[SelectComponent]):
     formatter = SelectFormatter
 
     def mutate_config_dynamically(
-        self, component, submission: "Submission", data: DataMapping
+        self, component, submission: "Submission", data: FormioData
     ) -> None:
         add_options_to_config(
             component,
@@ -830,7 +830,7 @@ class Radio(BasePlugin[RadioComponent]):
     formatter = RadioFormatter
 
     def mutate_config_dynamically(
-        self, component: RadioComponent, submission: "Submission", data: DataMapping
+        self, component: RadioComponent, submission: "Submission", data: FormioData
     ) -> None:
         add_options_to_config(component, data, submission)
 

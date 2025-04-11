@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING, TypeAlias
 from glom import assign, glom
 from rest_framework import serializers
 
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 
-from .datastructures import FormioConfigurationWrapper
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import is_layout_component, iter_components
 
@@ -47,8 +47,7 @@ class StepDataSerializer(serializers.Serializer):
 
         config_wrapper = FormioConfigurationWrapper(configuration)
 
-        # can't use FormioData yet because of is_visible_in_frontend
-        values: DataMapping = self.initial_data
+        values = FormioData(self.initial_data)
 
         # loop over all components and delegate application to the registry
         for component in iter_components(configuration, recurse_into_editgrid=False):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeAlias
@@ -318,7 +320,7 @@ def conform_to_mask(value: str, mask: str) -> str:
     return "".join(result)
 
 
-def is_visible_in_frontend(component: Component, data: "FormioData") -> bool:
+def is_visible_in_frontend(component: Component, data: FormioData) -> bool:
     """Check if the component is visible because of frontend logic
 
     The rules in formio are expressed as:
@@ -373,7 +375,7 @@ class ComponentWithDataItem:
 
 def iterate_data_with_components(
     configuration: JSONObject,
-    data: "FormioData",
+    data: FormioData,
     data_path: str = "",
     configuration_path: str = "components",
     filter_types: list[str] = None,

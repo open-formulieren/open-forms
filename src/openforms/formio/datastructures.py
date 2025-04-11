@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import re
 from collections import UserDict
 from typing import Iterator, cast
 
 from glom import glom
 
-from openforms.typing import DataMapping, VariableValue
+from openforms.typing import VariableValue
 
 from .typing import Component, EditGridComponent, FormioConfiguration
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
@@ -105,8 +107,8 @@ class FormioConfigurationWrapper:
         return self.component_map[key]
 
     def __add__(
-        self, other_wrapper: "FormioConfigurationWrapper"
-    ) -> "FormioConfigurationWrapper":
+        self, other_wrapper: FormioConfigurationWrapper
+    ) -> FormioConfigurationWrapper:
         self._configuration["components"] += other_wrapper._configuration["components"]
         self.component_map.update(other_wrapper.component_map)
         return self
@@ -130,7 +132,7 @@ class FormioConfigurationWrapper:
             }
         return self._reverse_flattened
 
-    def is_visible_in_frontend(self, key: str, values: DataMapping) -> bool:
+    def is_visible_in_frontend(self, key: str, values: FormioData) -> bool:
         config_path = self.reverse_flattened[key]
         path_bits = [".".join(bit) for bit in RE_PATH.findall(config_path)]
         nodes = []  # leftmost is root, rightmost is leaf

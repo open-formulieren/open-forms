@@ -53,4 +53,3 @@ def render_json(submission: "Submission") -> JSONObject:
             data[node_path] = value
 
     return data.data
-

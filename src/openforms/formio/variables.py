@@ -4,14 +4,13 @@ from typing import Iterator
 from django.template import TemplateSyntaxError
 
 from openforms.template import parse, render_from_string
-from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.typing import JSONObject, JSONValue
 
-from .datastructures import FormioConfigurationWrapper
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import flatten_by_path, recursive_apply
 
 logger = logging.getLogger(__name__)
-
 
 SUPPORTED_TEMPLATE_PROPERTIES = (
     "label",
@@ -66,7 +65,7 @@ def validate_configuration(configuration: JSONObject) -> dict[str, str]:
 
 
 def inject_variables(
-    configuration: FormioConfigurationWrapper, values: DataMapping
+    configuration: FormioConfigurationWrapper, values: FormioData
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
@@ -94,7 +93,7 @@ def inject_variables(
                     property_value = [s for s in property_value if isinstance(s, str)]
 
             try:
-                templated_value = render(property_value, values)
+                templated_value = render(property_value, values.data)
             except TemplateSyntaxError as exc:
                 logger.debug(
                     "Error during formio configuration 'template' rendering",

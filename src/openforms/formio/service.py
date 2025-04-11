@@ -8,12 +8,13 @@ apps/packages:
 * Keep it small! The actual implementation should be done in specialized subpackages or
   submodules and only their 'public' API should be imported and used.
 """
+from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
 import elasticapm
 
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
@@ -66,8 +67,8 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
-    submission: "Submission",
-    data: DataMapping | None = None,
+    submission: Submission,
+    data: FormioData | None = None,
 ) -> FormioConfigurationWrapper:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
