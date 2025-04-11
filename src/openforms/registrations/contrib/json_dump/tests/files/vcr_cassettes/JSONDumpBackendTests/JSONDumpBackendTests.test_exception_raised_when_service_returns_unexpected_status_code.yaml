@@ -1,30 +1,29 @@
 interactions:
 - request:
-    body: '"{\"values\": {\"auth_bsn\": \"123456789\", \"firstName\": \"We Are\"},
-      \"values_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"auth_bsn\": {\"title\": \"BSN\", \"description\":
-      \"Uniquely identifies the authenticated person. This value follows the rules
-      for Dutch social security numbers.\", \"type\": \"string\", \"pattern\": \"^\\\\d{9}$\",
-      \"format\": \"nl-bsn\"}, \"firstName\": {\"title\": \"Firstname\", \"type\":
-      \"string\"}}, \"required\": [\"auth_bsn\", \"firstName\"], \"additionalProperties\":
-      false}, \"metadata\": {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {}, \"required\": [], \"additionalProperties\":
-      false}}"'
+    body: '{"values": {"firstName": "We Are", "auth_bsn": "123456789"}, "values_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
+      the authenticated person. This value follows the rules for Dutch social security
+      numbers.", "type": "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "firstName":
+      {"title": "Firstname", "type": "string"}}, "required": ["auth_bsn", "firstName"],
+      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {}, "required": [], "additionalProperties": false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTIsImV4cCI6MTc0NDMxOTQxMiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.FTOfClEzItExXuWQPpTEhKsO8HyRjzpyGfbn8hvjJDY
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQ5NjUzMDAsImV4cCI6MTc0NTAwODUwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.Z191bMMtPrPqEVj-6qzTwVInxiPj99qEFiTPVxe69kY
       Connection:
       - keep-alive
       Content-Length:
-      - '779'
-      Content-Type:
-      - application/json
+      - '695'
       User-Agent:
       - python-requests/2.32.2
+      content-type:
+      - application/json
     method: POST
     uri: http://localhost/fake_endpoint
   response:
@@ -49,9 +48,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 10 Apr 2025 09:10:12 GMT
+      - Fri, 18 Apr 2025 08:35:00 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.10
+      - Werkzeug/3.1.3 Python/3.12.8
     status:
       code: 404
       message: NOT FOUND

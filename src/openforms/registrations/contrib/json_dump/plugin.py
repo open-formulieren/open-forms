@@ -52,10 +52,8 @@ class JSONDumpRegistration(BasePlugin):
         # Update static values with registration variables
         static_values.update(state.get_static_data(other_registry=variables_registry))
 
-        all_values: JSONObject = {
-            **static_values,
-            **state.get_data(),  # dynamic values from user input
-        }
+        all_values = state.get_data()
+        all_values.update(static_values)
 
         # Values
         values = {
@@ -144,7 +142,7 @@ def post_process(
     configuration_wrapper = rewrite_formio_components(
         submission.total_configuration_wrapper,
         submission=submission,
-        data=state.to_python().data,
+        data=state.to_python(),
     )
 
     # Create attachment mapping from key or component data path to attachment list

@@ -1,34 +1,33 @@
 interactions:
 - request:
-    body: '"{\"values\": {\"auth_bsn\": \"123456789\", \"firstName\": \"We Are\",
-      \"file\": {\"file_name\": \"test_file.txt\", \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\"}},
-      \"values_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {\"auth_bsn\": {\"title\": \"BSN\", \"description\":
-      \"Uniquely identifies the authenticated person. This value follows the rules
-      for Dutch social security numbers.\", \"type\": \"string\", \"pattern\": \"^\\\\d{9}$\",
-      \"format\": \"nl-bsn\"}, \"firstName\": {\"title\": \"Firstname\", \"type\":
-      \"string\"}, \"file\": {\"title\": \"File\", \"type\": \"object\", \"properties\":
-      {\"file_name\": {\"type\": \"string\"}, \"content\": {\"type\": \"string\",
-      \"format\": \"base64\"}}, \"required\": [\"file_name\", \"content\"], \"additionalProperties\":
-      false}}, \"required\": [\"auth_bsn\", \"firstName\", \"file\"], \"additionalProperties\":
-      false}, \"metadata\": {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {}, \"required\": [], \"additionalProperties\":
-      false}}"'
+    body: '{"values": {"firstName": "We Are", "file": {"file_name": "test_file.txt",
+      "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}, "auth_bsn": "123456789"}, "values_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
+      the authenticated person. This value follows the rules for Dutch social security
+      numbers.", "type": "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "firstName":
+      {"title": "Firstname", "type": "string"}, "file": {"title": "File", "type":
+      "object", "properties": {"file_name": {"type": "string"}, "content": {"type":
+      "string", "format": "base64"}}, "required": ["file_name", "content"], "additionalProperties":
+      false}}, "required": ["auth_bsn", "firstName", "file"], "additionalProperties":
+      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {}, "required": [], "additionalProperties":
+      false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTQsImV4cCI6MTc0NDMxOTQxNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.isiTrvUvdIUDgXK4sJKuLuF65coRxixk0uJrc4MkBzA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQ5NjUzMDEsImV4cCI6MTc0NTAwODUwMSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.9u6kSg-Z1q7v6Pi_ngu4FOUn1YqV9iTpnuyQNq9r2Ks
       Connection:
       - keep-alive
       Content-Length:
-      - '1136'
-      Content-Type:
-      - application/json
+      - '1004'
       User-Agent:
       - python-requests/2.32.2
+      content-type:
+      - application/json
     method: POST
     uri: http://localhost/json_plugin
   response:
@@ -62,9 +61,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Apr 2025 09:10:14 GMT
+      - Fri, 18 Apr 2025 08:35:01 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.10
+      - Werkzeug/3.1.3 Python/3.12.8
     status:
       code: 201
       message: CREATED

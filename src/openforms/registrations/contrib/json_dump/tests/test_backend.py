@@ -1616,8 +1616,8 @@ class JSONDumpRequestTests(TestCase):
 
         expected_data_sent = {
             "values": {
-                "auth_bsn": "123456789",
                 "firstName": "We Are",
+                "auth_bsn": "123456789",
             },
             "values_schema": {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
