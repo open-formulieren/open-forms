@@ -14,7 +14,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDMwODQwNTAsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.0XEoDKBotOt-6Ek_cT-RJgHk4svkhP191gGMao8z0EE
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTMsImV4cCI6MTc0NDMxOTQxMywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.cGlvnVYsQiLyz_-rWMzNWD8VY_M6daU5vdUIqJYDoIo
       Connection:
       - keep-alive
       Content-Length:
@@ -49,9 +49,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 27 Mar 2025 14:00:50 GMT
+      - Thu, 10 Apr 2025 09:10:13 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED

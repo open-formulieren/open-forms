@@ -10,15 +10,15 @@ interactions:
       \"\"]}, \"public_reference\": {\"title\": \"Public reference\", \"type\": \"string\"},
       \"form_version\": {\"title\": \"Form version\", \"type\": \"string\"}, \"registration_timestamp\":
       {\"title\": \"Registration timestamp\", \"type\": \"string\", \"format\": \"date-time\"}},
-      \"required\": [\"form_version\", \"public_reference\", \"registration_timestamp\",
-      \"auth_type\"], \"additionalProperties\": false}}"'
+      \"required\": [\"auth_type\", \"public_reference\", \"form_version\", \"registration_timestamp\"],
+      \"additionalProperties\": false}}"'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3MzgyNDIzMDAsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.47tdIv_fK-NTZyUtsVeNdZ4fAQvFuFvJcjYELMjeb8U
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3MzgyNDIzMDAsImV4cCI6MTczODI4NTUwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.xt2SCgMh9MK4Zzot8TZPNVLB4K72oC_MBhDm8ZmWOq4
       Connection:
       - keep-alive
       Content-Length:
@@ -44,11 +44,12 @@ interactions:
         reference\",\n          \"type\": \"string\"\n        },\n        \"registration_timestamp\":
         {\n          \"format\": \"date-time\",\n          \"title\": \"Registration
         timestamp\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
-        [\n        \"form_version\",\n        \"public_reference\",\n        \"registration_timestamp\",\n
-        \       \"auth_type\"\n      ],\n      \"type\": \"object\"\n    },\n    \"values\":
-        {},\n    \"values_schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {},\n      \"required\":
-        [],\n      \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+        [\n        \"auth_type\",\n        \"public_reference\",\n        \"form_version\",\n
+        \       \"registration_timestamp\"\n      ],\n      \"type\": \"object\"\n
+        \   },\n    \"values\": {},\n    \"values_schema\": {\n      \"$schema\":
+        \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
@@ -57,9 +58,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 27 Mar 2025 14:00:50 GMT
+      - Thu, 10 Apr 2025 09:10:13 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.9
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED

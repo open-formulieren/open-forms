@@ -198,7 +198,7 @@ def process_component(
     - File components: we send the content of the file encoded with base64, instead of
       the output from the serializer.
     - Radio, Select, and SelectBoxes components: need to be updated if their data source
-      is set to another form variable.
+      is set to another form variable or to the ReferenceLists API.
     - Edit grid components: layout component with other components as children, which
       (potentially) need to be processed.
 
@@ -239,13 +239,23 @@ def process_component(
             values[key] = value
             schema["properties"][key] = base_schema  # type: ignore
 
-        case {"type": "radio", "openForms": {"dataSrc": DataSrcOptions.variable}}:
+        case {
+            "type": "radio",
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable | DataSrcOptions.reference_lists
+            },
+        }:
             component = cast(RadioComponent, component)
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
             schema["properties"][key]["enum"] = choices  # type: ignore
 
-        case {"type": "select", "openForms": {"dataSrc": DataSrcOptions.variable}}:
+        case {
+            "type": "select",
+            "openForms": {
+                "dataSrc": DataSrcOptions.variable | DataSrcOptions.reference_lists
+            },
+        }:
             component = cast(SelectComponent, component)
             choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
             choices.append("")  # Take into account an unfilled field
@@ -259,28 +269,41 @@ def process_component(
             component = cast(SelectBoxesComponent, component)
             data_src = component.get("openForms", {}).get("dataSrc")
 
-            if data_src == DataSrcOptions.variable:
+            if data_src in (
+                DataSrcOptions.variable,
+                DataSrcOptions.reference_lists,
+            ) and not (key in transform_to_list):
                 properties = {
                     options["value"]: {"type": "boolean"}
                     for options in component["values"]
                 }
                 base_schema = {
                     "properties": properties,
-                    "required": list(properties.keys()),
+                    "required": list(properties),
                     "additionalProperties": False,
                 }
                 schema["properties"][key].update(base_schema)  # type: ignore
+            elif key in transform_to_list:
+                choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
+                base_schema = {
+                    "type": "array",
+                    "items": {"type": "string", "enum": choices},
+                }
+                schema["properties"][key].update(base_schema)  # type: ignore
+
+                keys_to_remove = ("properties", "required", "additionalProperties")
+                for k in keys_to_remove:
+                    schema["properties"][key].pop(k, None)  # type: ignore
+
+                values[key] = [
+                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
+                ]
+                return
 
             # If the select boxes component was hidden, the submitted data of this
             # component is an empty dict, so set the required to an empty list.
             if not values[key]:
                 schema["properties"][key]["required"] = []  # type: ignore
-
-            if transform_to_list and key in transform_to_list and values[key]:
-                schema["properties"][key]["type"] = "array"  # type: ignore
-                values[key] = [
-                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
-                ]
 
         case {"type": "editgrid"}:
             # Note: the schema actually only needs to be processed once for each child

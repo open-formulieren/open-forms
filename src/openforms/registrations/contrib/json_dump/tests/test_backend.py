@@ -7,6 +7,7 @@ from django.test import TestCase, tag
 
 from freezegun import freeze_time
 from requests import RequestException
+from zgw_consumers.constants import AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.constants import DataSrcOptions
@@ -16,6 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -31,7 +33,16 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.service = ServiceFactory.create(api_root="http://localhost:80/")
+        cls.json_dump_service = ServiceFactory.create(api_root="http://localhost:80/")
+        cls.referencelists_service = ServiceFactory.create(
+            api_root="http://localhost:8004/api/v1/",
+            slug="referentielijsten",
+            auth_type=AuthTypes.no_auth,
+        )
+
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(clear_caches)
 
     def test_submission_happy_flow(self):
         submission = SubmissionFactory.from_components(
@@ -69,9 +80,9 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
-            "variables": ["firstName", "file", "auth_bsn"],
+            "variables": ["auth_bsn", "firstName", "file"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
@@ -114,7 +125,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                     "additionalProperties": False,
                 },
             },
-            "required": ["firstName", "file", "auth_bsn"],
+            "required": ["auth_bsn", "firstName", "file"],
             "additionalProperties": False,
         }
 
@@ -148,7 +159,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "fake_endpoint",
             "variables": ["firstName", "auth_bsn"],
             "fixed_metadata_variables": [],
@@ -206,7 +217,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["file"],
             "fixed_metadata_variables": [],
@@ -289,7 +300,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["file"],
             "fixed_metadata_variables": [],
@@ -350,7 +361,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["file"],
             "fixed_metadata_variables": [],
@@ -395,7 +406,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["file"],
             "fixed_metadata_variables": [],
@@ -454,7 +465,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "..",
             "variables": ["firstName", "file", "auth_bsn"],
             "fixed_metadata_variables": [],
@@ -488,7 +499,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["selectboxes"],
             "fixed_metadata_variables": [],
@@ -505,42 +516,251 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             [],
         )
 
-    def test_list_transformation_in_selectboxes(self):
+    def test_list_transformation_in_selectboxes_with_manual_src(self):
         submission = SubmissionFactory.from_components(
             [
-                {"key": "selectBoxes1", "type": "selectboxes"},
-                {"key": "selectBoxes2", "type": "selectboxes"},
+                {
+                    "key": "selectBoxes1",
+                    "type": "selectboxes",
+                    "openForms": {"dataSrc": DataSrcOptions.manual},
+                    "values": [
+                        {"label": "manual 1", "value": "manual1"},
+                        {"label": "manual 2", "value": "manual2"},
+                    ],
+                },
+                {
+                    "key": "selectBoxes2",
+                    "type": "selectboxes",
+                    "openForms": {"dataSrc": "manual"},
+                    "values": [
+                        {"label": "manual array 1", "value": "manualarray1"},
+                        {"label": "manual array 2", "value": "manualarray2"},
+                    ],
+                },
             ],
             completed=True,
             submitted_data={
-                "selectBoxes1": {"option1": True},
-                "selectBoxes2": {"option2": True},
+                "selectBoxes1": {"manual1": True, "manual2": False},
+                "selectBoxes2": {"manualarray1": False, "manualarray2": True},
             },
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["selectBoxes1", "selectBoxes2"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
-            "transform_to_list": ["selectBoxes1"],
+            "transform_to_list": ["selectBoxes2"],
         }
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         expected_values = {
-            "selectBoxes1": ["option1"],
-            "selectBoxes2": {"option2": True},
+            "selectBoxes1": {"manual1": True, "manual2": False},
+            "selectBoxes2": ["manualarray2"],
         }
         expected_schema = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
+            "additionalProperties": False,
             "properties": {
-                "selectBoxes1": {"type": "array", "title": "Selectboxes1"},
-                "selectBoxes2": {"type": "object", "title": "Selectboxes2"},
+                "selectBoxes1": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "manual1": {"type": "boolean"},
+                        "manual2": {"type": "boolean"},
+                    },
+                    "required": ["manual1", "manual2"],
+                    "title": "Selectboxes1",
+                    "type": "object",
+                },
+                "selectBoxes2": {
+                    "items": {
+                        "enum": ["manualarray1", "manualarray2"],
+                        "type": "string",
+                    },
+                    "title": "Selectboxes2",
+                    "type": "array",
+                },
             },
             "required": ["selectBoxes1", "selectBoxes2"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_list_transformation_in_selectboxes_with_form_variable_src(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "selectBoxes1",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "dataSrc": DataSrcOptions.variable,
+                        "itemsExpression": {"var": "valuesForSelect"},
+                    },
+                    "data": {
+                        "values": [],
+                        "json": "",
+                        "url": "",
+                        "resource": "",
+                        "custom": "",
+                    },
+                },
+                {
+                    "key": "selectBoxes2",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "dataSrc": DataSrcOptions.variable,
+                        "itemsExpression": {"var": "valuesForSelect"},
+                    },
+                    "data": {
+                        "values": [],
+                        "json": "",
+                        "url": "",
+                        "resource": "",
+                        "custom": "",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "selectBoxes1": {"A": True, "B": False},
+                "selectBoxes2": {"A": False, "B": True},
+            },
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for select",
+            key="valuesForSelect",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B"],
+        )
+
+        options: JSONDumpOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["selectBoxes1", "selectBoxes2"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": ["selectBoxes2"],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        expected_values = {
+            "selectBoxes1": {"A": True, "B": False},
+            "selectBoxes2": ["B"],
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "additionalProperties": False,
+            "properties": {
+                "selectBoxes1": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "A": {"type": "boolean"},
+                        "B": {"type": "boolean"},
+                    },
+                    "required": ["A", "B"],
+                    "title": "Selectboxes1",
+                    "type": "object",
+                },
+                "selectBoxes2": {
+                    "items": {"enum": ["A", "B"], "type": "string"},
+                    "title": "Selectboxes2",
+                    "type": "array",
+                },
+            },
+            "required": ["selectBoxes1", "selectBoxes2"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
+    def test_list_transformation_in_selectboxes_with_referencelists_src(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "selectBoxes1",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "code": "tabel1",
+                        "dataSrc": DataSrcOptions.reference_lists,
+                        "service": "referentielijsten",
+                    },
+                },
+                {
+                    "key": "selectBoxes2",
+                    "type": "selectboxes",
+                    "openForms": {
+                        "code": "tabel1",
+                        "dataSrc": DataSrcOptions.reference_lists,
+                        "service": "referentielijsten",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "selectBoxes1": {"option1": True, "option2": False},
+                "selectBoxes2": {"option1": False, "option2": True},
+            },
+        )
+
+        options: JSONDumpOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["selectBoxes1", "selectBoxes2"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": ["selectBoxes2"],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        expected_values = {
+            "selectBoxes1": {"option1": True, "option2": False},
+            "selectBoxes2": ["option2"],
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "selectBoxes1": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "option1": {"type": "boolean"},
+                        "option2": {"type": "boolean"},
+                    },
+                    "required": ["option2", "option1"],
+                    "title": "Selectboxes1",
+                    "type": "object",
+                },
+                "selectBoxes2": {
+                    "items": {"enum": ["option2", "option1"], "type": "string"},
+                    "title": "Selectboxes2",
+                    "type": "array",
+                },
+            },
+            "required": ["selectBoxes1", "selectBoxes2"],
+            "type": "object",
         }
 
         result = json_plugin.register_submission(submission, options)
@@ -583,7 +803,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["select"],
             "fixed_metadata_variables": [],
@@ -640,7 +860,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["select"],
             "fixed_metadata_variables": [],
@@ -656,6 +876,64 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 "items"
             ]["enum"],
             ["A", "B", "C", ""],
+        )
+
+    def test_select_component_with_referencelists_as_data_source(self):
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Select",
+                    "key": "select",
+                    "type": "select",
+                    "multiple": True,
+                    "openForms": {
+                        "code": "tabel1",
+                        "dataSrc": DataSrcOptions.reference_lists,
+                        "service": "referentielijsten",
+                    },
+                    "data": {
+                        "values": [],
+                        "json": "",
+                        "url": "",
+                        "resource": "",
+                        "custom": "",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={"select": ["A", "C"]},
+            with_public_registration_reference=True,
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            name="Values for select",
+            key="valuesForSelect",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["select"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(
+            result["api_response"]["data"]["values_schema"]["properties"]["select"][
+                "items"
+            ]["enum"],
+            ["option2", "option1", ""],
         )
 
     def test_select_boxes_component_with_form_variable_as_data_source(self):
@@ -691,7 +969,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["selectBoxes"],
             "fixed_metadata_variables": [],
@@ -742,7 +1020,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["radio"],
             "fixed_metadata_variables": [],
@@ -792,7 +1070,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["radio"],
             "fixed_metadata_variables": [],
@@ -808,6 +1086,45 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 "enum"
             ],
             ["A", "B", "C", ""],
+        )
+
+    def test_radio_component_with_referencelists_data_source(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "openForms": {
+                        "code": "tabel1",
+                        "dataSrc": DataSrcOptions.reference_lists,
+                        "service": "referentielijsten",
+                    },
+                },
+            ],
+            completed=True,
+            submitted_data={"radio": "option1"},
+        )
+
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        options: JSONDumpOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["radio"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(
+            result["api_response"]["data"]["values_schema"]["properties"]["radio"][
+                "enum"
+            ],
+            ["option2", "option1", ""],
         )
 
     def test_components_with_form_variable_as_data_source_in_edit_grid_component(
@@ -887,7 +1204,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["repeatingGroup"],
             "fixed_metadata_variables": [],
@@ -939,7 +1256,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         json_plugin = JSONDumpRegistration("json_registration_plugin")
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["foo.bar"],
             "fixed_metadata_variables": [],
@@ -977,12 +1294,12 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
 
         json_plugin = JSONDumpRegistration("json_registration_plugin")
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": [],
             "fixed_metadata_variables": [
-                "form_version",
                 "public_reference",
+                "form_version",
                 "registration_timestamp",
             ],
             "additional_metadata_variables": ["auth_type"],
@@ -1015,10 +1332,10 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
                 },
             },
             "required": [
-                "form_version",
-                "public_reference",
-                "registration_timestamp",
                 "auth_type",
+                "public_reference",
+                "form_version",
+                "registration_timestamp",
             ],
             "type": "object",
         }
@@ -1146,7 +1463,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["repeatingGroup"],
             "fixed_metadata_variables": [],
@@ -1240,7 +1557,7 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
         options: JSONDumpOptions = {
-            "service": self.service,
+            "service": self.json_dump_service,
             "path": "json_plugin",
             "variables": ["firstName", "lastName"],
             "fixed_metadata_variables": [],
