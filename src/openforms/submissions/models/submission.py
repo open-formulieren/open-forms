@@ -4,7 +4,7 @@ import logging
 import uuid
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Mapping
 
 from django.conf import settings
 from django.db import models, transaction
@@ -20,7 +20,7 @@ from django_jsonform.models.fields import ArrayField
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
 from openforms.logging.logevent import registration_debug
 from openforms.payments.constants import PaymentStatus
@@ -693,14 +693,14 @@ class Submission(models.Model):
         return submission_state.get_last_completed_step()
 
     @property
-    def data(self) -> dict[str, Any]:
+    def data(self) -> FormioData:
         """The filled-in data of the submission.
 
         This is a mapping between variable keys and their corresponding values.
 
         .. note::
 
-            Keys containings dots (``.``) will be nested under another mapping.
+            Keys containing dots (``.``) will be nested under another mapping.
             Static variables values are *not* included.
         """
         values_state = self.load_submission_value_variables_state()
