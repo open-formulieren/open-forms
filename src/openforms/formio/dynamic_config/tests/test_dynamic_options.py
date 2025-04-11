@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.formio.constants import DataSrcOptions
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.datastructures import FormioConfigurationWrapper, FormioData
 from openforms.formio.dynamic_config import rewrite_formio_components
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -65,7 +65,9 @@ class TestDynamicConfigAddingOptions(TestCase):
         submission = SubmissionFactory.create()
 
         rewrite_formio_components(
-            FormioConfigurationWrapper(configuration), submission, {"some": "data"}
+            FormioConfigurationWrapper(configuration),
+            submission,
+            FormioData({"some": "data"}),
         )
 
         self.assertEqual(
@@ -150,7 +152,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]},
+            FormioData({"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]}),
         )
 
         self.assertEqual(
@@ -233,7 +235,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"repeatingGroup": []},
+            FormioData({"repeatingGroup": []}),
         )
 
         self.assertEqual(
@@ -303,7 +305,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"textField": ["Test1", "Test2"]},
+            FormioData({"textField": ["Test1", "Test2"]}),
         )
 
         self.assertEqual(
@@ -380,7 +382,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"textField": []},
+            FormioData({"textField": []}),
         )
 
         self.assertEqual(
@@ -456,7 +458,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]},
+            FormioData({"repeatingGroup": [{"name": "Test1"}, {"name": "Test2"}]}),
         )
 
         self.assertEqual(
@@ -519,7 +521,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"textField": ['Some data <IMG src="/test" />']},
+            FormioData({"textField": ['Some data <IMG src="/test" />']}),
         )
 
         self.assertEqual(
@@ -560,7 +562,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"textField": "Some test data!"},
+            FormioData({"textField": "Some test data!"}),
         )
 
         self.assertEqual(
@@ -606,7 +608,7 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"textField": ["duplicate", "duplicate", "duplicate"]},
+            FormioData({"textField": ["duplicate", "duplicate", "duplicate"]}),
         )
         self.assertEqual(
             configuration["components"][1]["values"],
@@ -643,7 +645,9 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {"repeatingGroup": [{"name": "duplicate"}, {"name": "duplicate"}]},
+            FormioData(
+                {"repeatingGroup": [{"name": "duplicate"}, {"name": "duplicate"}]}
+            ),
         )
         self.assertEqual(
             configuration["components"][1]["values"],
@@ -676,17 +680,19 @@ class TestDynamicConfigAddingOptions(TestCase):
             FormioConfigurationWrapper(configuration),
             submission,
             # Only the first object has the property "id"
-            {
-                "externalData": [
-                    {"id": "111"},
-                    {"no-id": "222"},
-                    "i'm not an object!",
-                    123,
-                    ["im", "an", "array"],
-                    {"id": ["111", None]},
-                    {"id": ["key", "label"]},
-                ]
-            },
+            FormioData(
+                {
+                    "externalData": [
+                        {"id": "111"},
+                        {"no-id": "222"},
+                        "i'm not an object!",
+                        123,
+                        ["im", "an", "array"],
+                        {"id": ["111", None]},
+                        {"id": ["key", "label"]},
+                    ]
+                }
+            ),
         )
         self.assertEqual(
             configuration["components"][0]["values"],
@@ -740,12 +746,14 @@ class TestDynamicConfigAddingOptions(TestCase):
         rewrite_formio_components(
             FormioConfigurationWrapper(configuration),
             submission,
-            {
-                "repeatingGroup": [
-                    {"name": "Test1", "bsn": "123456789"},
-                    {"name": "Test2", "bsn": "987654321"},
-                ]
-            },
+            FormioData(
+                {
+                    "repeatingGroup": [
+                        {"name": "Test1", "bsn": "123456789"},
+                        {"name": "Test2", "bsn": "987654321"},
+                    ]
+                }
+            ),
         )
 
         self.assertEqual(
