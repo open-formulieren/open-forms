@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from glom import Assign, Path, glom
-
+from openforms.formio.service import FormioData
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.rendering.nodes import SubmissionStepNode
 from openforms.typing import JSONObject
@@ -26,7 +25,7 @@ def render_json(submission: "Submission") -> JSONObject:
         submission=submission, mode=RenderModes.registration, as_html=False
     )
 
-    data = {}
+    data = FormioData()
     current_step_slug = None
     for node in renderer:
         if isinstance(node, SubmissionStepNode):
@@ -35,22 +34,23 @@ def render_json(submission: "Submission") -> JSONObject:
             continue
 
         if isinstance(node, EditGridGroupNode):
-            node_path = Path(current_step_slug, node.json_renderer_path)
-            editgrid_array = glom(data, node_path)
+            node_path = f"{current_step_slug}.{node.json_renderer_path}"
+            editgrid_array = data[node_path]
             editgrid_array.append({})
             continue
 
         if isinstance(node, ComponentNode):
             node_path = (
-                Path(current_step_slug, node.json_renderer_path, node.key)
+                f"{current_step_slug}.{node.json_renderer_path}.{node.key}"
                 if node.json_renderer_path
-                else Path(current_step_slug, node.key)
+                else f"{current_step_slug}.{node.key}"
             )
 
             value = {} if isinstance(node, (FieldSetNode, ColumnsNode)) else node.value
             if isinstance(node, EditGridNode):
                 value = []
 
-            glom(data, Assign(node_path, value, missing=dict))
+            data[node_path] = value
 
-    return data
+    return data.data
+
