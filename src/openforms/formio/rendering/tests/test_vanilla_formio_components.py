@@ -1026,7 +1026,7 @@ class FormNodeTests(TestCase):
         submission = SubmissionFactory.create(
             form=form,
         )
-        submission_step = SubmissionStepFactory.create(
+        step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={
@@ -1040,7 +1040,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=submission_step.data, component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1073,7 +1073,7 @@ class FormNodeTests(TestCase):
         submission = SubmissionFactory.create(
             form=form,
         )
-        submission_step = SubmissionStepFactory.create(
+        step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={
@@ -1087,7 +1087,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=submission_step.data, component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 
@@ -1152,7 +1152,7 @@ class FormNodeTests(TestCase):
         submission = SubmissionFactory.create(
             form=form_step.form,
         )
-        submission_step = SubmissionStepFactory.create(
+        step = SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={
@@ -1166,7 +1166,7 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step_data=submission_step.data, component=component, renderer=renderer
+                step_data=step.data, component=component, renderer=renderer
             )
             nodelist = list(component_node)
 

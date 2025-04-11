@@ -8,15 +8,13 @@ from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from furl import furl
-from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.formio.typing import Component
 from openforms.submissions.rendering.constants import RenderModes
-from openforms.typing import DataMapping
-from openforms.utils.glom import _glom_path_to_str
 from openforms.utils.urls import build_absolute_uri
 
+from ..datastructures import FormioData
 from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
@@ -26,7 +24,7 @@ from .registry import register
 class ContainerMixin:
     is_layout = True
 
-    step_data: DataMapping
+    step_data: FormioData
     component: Component
     mode: RenderModes
 
@@ -105,7 +103,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
     value: None = None  # columns never have a value
     display_value: str = ""
 
-    def get_children(self) -> Iterator["ComponentNode"]:
+    def get_children(self) -> Iterator[ComponentNode]:
         """
         Columns has an extra nested structure contained within.
 
@@ -142,9 +140,9 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     depth=self.depth + 1,
                     path=self.path,
                     json_renderer_path=(
-                        Path(self.json_renderer_path, self.key_as_path, index)
+                        f"{self.json_renderer_path}.{self.key}.{index}"
                         if self.json_renderer_path
-                        else Path(self.key_as_path, index)
+                        else f"{self.key}.{index}"
                     ),
                     configuration_path=configuration_path,
                 )
@@ -195,7 +193,7 @@ class FileNode(ComponentNode):
         if value:
             for submission_file_attachment in value:
                 component_path = (
-                    _glom_path_to_str(Path(self.path, self.key))
+                    f"{self.path}.{self.key}"
                     if self.path
                     else self.key
                 )
@@ -244,7 +242,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
     def _value(self):
         return super().value
 
-    def get_children(self) -> Iterator["ComponentNode"]:
+    def get_children(self) -> Iterator[ComponentNode]:
         """
         Return children as many times as they are repeated in the data
 
@@ -284,9 +282,9 @@ class EditGridNode(ContainerMixin, ComponentNode):
 
         for node_index in range(repeats):
             json_renderer_path = (
-                Path(self.json_renderer_path, self.key_as_path)
+                f"{self.json_renderer_path}.{self.key}"
                 if self.json_renderer_path
-                else self.key_as_path
+                else self.key
             )
 
             yield EditGridGroupNode(
@@ -295,7 +293,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 group_index=node_index,
-                path=self.key_as_path,
+                path=self.key,
                 json_renderer_path=json_renderer_path,
                 configuration_path=f"{self.configuration_path}.components",
             )
@@ -308,7 +306,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     display_value: str = ""
     default_label: str = _("Item")
 
-    def get_children(self) -> Iterator["ComponentNode"]:
+    def get_children(self) -> Iterator[ComponentNode]:
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration=self.component,
             prefix=self.configuration_path or "components",
@@ -319,10 +317,8 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                path=Path(self.path, Path(self.group_index)),
-                json_renderer_path=Path(
-                    self.json_renderer_path, Path(self.group_index)
-                ),
+                path=f"{self.path}.{self.group_index}",
+                json_renderer_path=f"{self.json_renderer_path}.{self.group_index}",
                 parent_node=self,
                 configuration_path=configuration_path,
             )
