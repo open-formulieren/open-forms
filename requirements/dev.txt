@@ -229,6 +229,7 @@ django==4.2.20
     #   django-tinymce
     #   django-treebeard
     #   django-two-factor-auth
+    #   django-upgrade-check
     #   djangorestframework
     #   drf-jsonschema-serializer
     #   drf-nested-routers
@@ -419,6 +420,10 @@ django-two-factor-auth==1.16.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-2fa
+django-upgrade-check==1.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
@@ -1054,6 +1059,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-upgrade-check
 sentry-sdk==2.10.0
     # via
     #   -c requirements/ci.txt

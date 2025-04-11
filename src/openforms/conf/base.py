@@ -10,6 +10,8 @@ from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
 from log_outgoing_requests.formatters import HttpFormatter
+from upgrade_check import UpgradeCheck, VersionRange
+from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 
@@ -190,6 +192,7 @@ INSTALLED_APPS = [
     "flags",
     "django_setup_configuration",
     "rangefilter",
+    "upgrade_check",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1218,6 +1221,14 @@ SETUP_CONFIGURATION_STEPS = [
     "openforms.contrib.objects_api.setup_configuration.steps.ObjectsAPIConfigurationStep",
     "openforms.registrations.contrib.zgw_apis.setup_configuration.steps.ZGWApiConfigurationStep",
 ]
+
+#
+# DJANGO-UPGRADE-CHECK
+#
+UPGRADE_CHECK_PATHS: UpgradePaths = {
+    "3.2.0": UpgradeCheck(VersionRange(minimum="3.0.1")),
+}
+UPGRADE_CHECK_STRICT = False
 
 #
 # Open Forms extensions
