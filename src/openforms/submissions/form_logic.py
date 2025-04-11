@@ -73,9 +73,6 @@ def evaluate_form_logic(
     #
     # The Formio *default values* are also recorded in here, because the `FormVariable`
     # for each component derives that from the configuration at save-time.
-    #
-    if not step.data:
-        step.data = DirtyData({})
 
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
