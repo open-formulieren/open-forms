@@ -19,7 +19,6 @@ from ..models import Submission
 from .base import Node
 from .constants import RenderModes
 from .nodes import FormNode, SubmissionStepNode
-from .utils import get_request
 
 
 @dataclass
@@ -36,9 +35,6 @@ class Renderer:
     submission: Submission
     mode: RenderModes
     as_html: bool
-
-    def __post_init__(self):
-        self.dummy_request = get_request()
 
     @property
     def form(self) -> Form:
@@ -74,7 +70,6 @@ class Renderer:
                 submission=self.submission,
                 step=step,
                 data=submission_data,
-                request=self.dummy_request,
             )
             # update the configuration for introspection - note that we are mutating
             # an instance here without persisting it to the backend on purpose!

@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.service import FormioData
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormLogicFactory, FormVariableFactory
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
@@ -163,7 +164,9 @@ class ServiceFetchWithActionsTest(TestCase):
         m.get("https://httpbin.org/get", json=42)
 
         evaluate_form_logic(
-            submission, submission.submissionstep_set.first(), {"fieldC": 42}
+            submission,
+            submission.submissionstep_set.first(),
+            FormioData({"fieldC": 42}),
         )
 
         self.assertEqual(len(m.request_history), 2)
@@ -171,7 +174,9 @@ class ServiceFetchWithActionsTest(TestCase):
         self.assertEqual(m.request_history[-2].url, "https://httpbin.org/get")
 
         evaluate_form_logic(
-            submission, submission.submissionstep_set.first(), {"fieldC": 43}
+            submission,
+            submission.submissionstep_set.first(),
+            FormioData({"fieldC": 43}),
         )
 
         self.assertEqual(len(m.request_history), 3)
