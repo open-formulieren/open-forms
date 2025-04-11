@@ -59,7 +59,7 @@ class DeterministicEvaluationTests(TestCase):
             submission=submission, form_step=step, data={"a": 3}
         )
 
-        evaluate_form_logic(submission, submission_step, {"a": 3})
+        evaluate_form_logic(submission, submission_step, submission_step.data)
 
         state = submission.load_submission_value_variables_state()
         variable = state.variables["a"]

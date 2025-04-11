@@ -33,7 +33,6 @@ from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
-from ..models.submission_step import DirtyData
 from ..parsers import (
     IgnoreDataAndConfigFieldCamelCaseJSONParser,
     IgnoreDataAndConfigJSONRenderer,
@@ -582,9 +581,7 @@ class SubmissionStepViewSet(
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
-            evaluate_form_logic(
-                submission, subsequent_step, merged_data, request=request
-            )
+            evaluate_form_logic(submission, subsequent_step, merged_data)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
 

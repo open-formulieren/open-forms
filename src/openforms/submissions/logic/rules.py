@@ -143,7 +143,7 @@ def iter_evaluate_rules(
                 continue
 
             for operation in rule.action_operations:
-                if mutations := operation.eval(data.data, submission=submission):
+                if mutations := operation.eval(data, submission=submission):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
