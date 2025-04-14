@@ -51,7 +51,41 @@ VCR.py). The primary reason this setup exists, is for automated testing reasons.
 - `eherkenning-vestiging` / `eherkenning-vestiging`, has the `vestiging` attribute plus the
   attributes from `eherkenning-bewindvoering`.
 - `admin` / `admin`, intended to create as django user (can be made staff). The email address is
-  `admin@example.com`.
+  `admin@example.com`. Should get the `employeeId` claim (See below for how to add the custom
+  claim).
+
+## Adding a custom claim to Keycloak
+
+\*\*You can copy over the endpoints needed for the Open Forms OpenID Connect configuration by going
+to the admin page of Keycloak and on the left side bar (_Realm settings_) you can find the json file
+(_OpenID Endpoint Configuration_).
+
+1. Login to the local instance of Keycloak with the credentials mentioned above.
+2. Choose user `test` from the left sidebar.
+3. Go to the *Client scopes* on the left sidebar and click _Create client scope_
+4. Fill in the necessary details (Name is the only one needed - you can turn *Display on consent
+   screen* to off)
+5. Click Save and on the same form click _Mappers_ > _Configure a new mapper_ > _User attribute_
+6. Fill in the following:
+   - Name: _employeeId_
+   - User Attribute: _employeeId_
+   - Token Claim Name: _employeeId_
+   - Add to ID token: _on_ 
+   - Add to access token: _on_ 
+   - Add to userinfo: _on_
+7. Click Save
+8. Go to the _Clients_ > _client ID_ (`testid`) > _Client scopes_ > _Add client scope_
+9. From the list you can choose the one you created (`employeeId`) and click Add
+10. Go to Users and select the user `admin`
+11. In the _Attributes_ tab you can add the new attribute _key='employeeId'_ and a value
+12. Click Save
+
+\*\* Finally, in user profile in the admin settings for the OIDC organization add the `employee_id`
+mapping (http://localhost:8000/admin/mozilla_django_oidc_db/openidconnectconfig/).
+
+\*\* You can evaluate your configuration in Keycloak (see exactly what data will be sent), by
+selecting _Clients_ > _The client ID_ (`testid`) > _Client scopes_ > _Evaluate_ (Evaluate is one of
+the sub-tabs of Client scopes) by providing the name of the user.
 
 ## Exporting the Realm
 
@@ -70,7 +104,7 @@ chmod o+rwx ./keycloak/import/
 Then open another terminal and run:
 
 ```bash
-docker-compose -f docker-compose.keycloak.yml exec keycloak \
+docker compose -f docker-compose.keycloak.yml exec keycloak \
    /opt/keycloak/bin/kc.sh \
    export \
    --file /opt/keycloak/data/import/test-realm.json \

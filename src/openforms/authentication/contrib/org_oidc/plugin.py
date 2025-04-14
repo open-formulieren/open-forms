@@ -64,7 +64,7 @@ class OIDCAuthentication(BasePlugin):
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
-            "value": request.user.username,
+            "value": request.user.employee_id or request.user.username,
         }
 
         # we could render here but let's redirect

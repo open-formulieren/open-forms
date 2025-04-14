@@ -76,6 +76,6 @@ class EmployeeAuthContextTests(PerformLoginMixin, IntegrationTestsBase):
             auth_context["authorizee"]["legalSubject"],
             {
                 "identifierType": "opaque",
-                "identifier": "admin",
+                "identifier": "9999",
             },
         )
