@@ -1,3 +1,4 @@
+import json
 import unittest
 from base64 import b64decode
 from pathlib import Path
@@ -5,6 +6,7 @@ from pathlib import Path
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, tag
 
+import requests_mock
 from freezegun import freeze_time
 from requests import RequestException
 from zgw_consumers.constants import AuthTypes
@@ -1587,3 +1589,72 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             self.assertEqual(
                 result["api_response"]["data"]["values_schema"], expected_schema
             )
+
+
+class JSONDumpRequestTests(TestCase):
+    def test_data_is_encoded_to_json_once(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "firstName", "type": "textfield"},
+                {"key": "lastName", "type": "textfield"},
+            ],
+            completed=True,
+            submitted_data={
+                "firstName": "We Are",
+                "lastName": "Checking",
+            },
+            bsn="123456789",
+            with_public_registration_reference=True,
+        )
+
+        options: JSONDumpOptions = {
+            "service": ServiceFactory.create(api_root="http://example.com/"),
+            "path": "",
+            "variables": ["auth_bsn", "firstName"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = JSONDumpRegistration("json_registration_plugin")
+
+        expected_data_sent = {
+            "values": {
+                "auth_bsn": "123456789",
+                "firstName": "We Are",
+            },
+            "values_schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                    "auth_bsn": {
+                        "title": "BSN",
+                        "description": (
+                            "Uniquely identifies the authenticated person. This "
+                            "value follows the rules for Dutch social security "
+                            "numbers."
+                        ),
+                        "type": "string",
+                        "pattern": "^\\d{9}$",
+                        "format": "nl-bsn",
+                    },
+                    "firstName": {"title": "Firstname", "type": "string"},
+                },
+                "required": ["auth_bsn", "firstName"],
+                "additionalProperties": False,
+            },
+            "metadata": {},
+            "metadata_schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": False,
+            },
+        }
+
+        with requests_mock.Mocker() as m:
+            m.register_uri("POST", "http://example.com/")
+            result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(m.last_request.body, json.dumps(expected_data_sent))

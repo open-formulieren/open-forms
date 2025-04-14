@@ -11,7 +11,7 @@ def json_plugin_post():
     app.logger.info(f"Data received: {data}")
 
     message = "No data" if data is None else "Data received"
-    return jsonify({"message": message, "data": json.loads(data)}), 201
+    return jsonify({"message": message, "data": data}), 201
 
 
 @app.route("/test_connection", methods=["GET"])
