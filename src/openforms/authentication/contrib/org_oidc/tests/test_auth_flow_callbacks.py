@@ -73,14 +73,14 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
             user = User.objects.get()
             self.assertEqual(user.username, "admin")
             self.assertEqual(user.email, "admin@example.com")
-            self.assertEqual(user.employee_id, "admin")
+            self.assertEqual(user.employee_id, "9999")
 
         # check our session data
         self.assertIn(FORM_AUTH_SESSION_KEY, self.app.session)
         s = self.app.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(s["plugin"], "org-oidc")
         self.assertEqual(s["attribute"], AuthAttribute.employee_id)
-        self.assertEqual(s["value"], "admin")
+        self.assertEqual(s["value"], "9999")
 
     @mock_org_oidc_config(username_claim=["absent-claim"])
     def test_failing_claim_verification(self):

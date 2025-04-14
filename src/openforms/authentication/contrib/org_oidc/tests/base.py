@@ -16,11 +16,11 @@ mock_org_oidc_config = partial(
     app_label="authentication_org_oidc",
     model="OrgOpenIDConnectConfig",
     id=1,  # required for the group queries because we're using in-memory objects
-    oidc_rp_scopes_list=["openid", "email", "profile"],
+    oidc_rp_scopes_list=["openid", "email", "profile", "employeeId"],
     username_claim=["preferred_username"],
     claim_mapping={
         "email": ["email"],
-        "employee_id": ["preferred_username"],
+        "employee_id": ["employeeId"],
     },
     groups_claim=["groups"],
 )

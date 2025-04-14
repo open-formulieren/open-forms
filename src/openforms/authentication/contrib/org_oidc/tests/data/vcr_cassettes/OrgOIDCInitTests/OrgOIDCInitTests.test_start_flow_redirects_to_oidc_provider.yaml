@@ -18,12 +18,12 @@ interactions:
         \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
         />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
         name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
-        in to test</title>\n    <link rel=\"icon\" href=\"/resources/ghaym/login/keycloak/img/favicon.ico\"
-        />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/common/keycloak/lib/pficon/pficon.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/ghaym/login/keycloak/css/login.css\"
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/0qwnp/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/0qwnp/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/0qwnp/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/0qwnp/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/0qwnp/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/0qwnp/login/keycloak/css/login.css\"
         rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
         \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
         \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n

@@ -47,7 +47,7 @@ class OrgOIDCInitTests(IntegrationTestsBase):
             redirect_target.path,
             "/realms/test/protocol/openid-connect/auth",
         )
-        self.assertEqual(query_params["scope"], "openid email profile")
+        self.assertEqual(query_params["scope"], "openid email profile employeeId")
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
