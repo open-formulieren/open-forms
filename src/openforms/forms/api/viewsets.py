@@ -663,7 +663,7 @@ FormViewSet.__doc__ = inspect.getdoc(FormViewSet).format(
 )
 class FormVersionViewSet(NestedViewSetMixin, ListModelMixin, viewsets.GenericViewSet):
     serializer_class = FormVersionSerializer
-    queryset = FormVersion.objects.all()
+    queryset = FormVersion.objects.all().order_by("-created")
     permission_classes = [FormAPIPermissions]
     lookup_field = "uuid"
     parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
