@@ -58,6 +58,7 @@ django-simple-certmanager
 django-solo
 django-tinymce
 django-treebeard
+django-upgrade-check
 django-yubin
 mozilla-django-oidc-db[setup-configuration]
 maykin-2fa
