@@ -99,7 +99,9 @@ class JSONDumpRegistration(BasePlugin):
             if ".." in (path := options["path"]):
                 raise SuspiciousOperation("Possible path traversal detected")
 
-            result = client.post(path, json=data)
+            result = client.post(
+                path, data=data, headers={"content-type": "application/json"}
+            )
             result.raise_for_status()
 
         result_json = result.json() if result.content else ""
