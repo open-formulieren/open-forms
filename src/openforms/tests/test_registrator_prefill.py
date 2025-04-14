@@ -138,7 +138,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(OFVCRMixin, WebTe
             s = self.app.session[FORM_AUTH_SESSION_KEY]
             self.assertEqual(s["plugin"], "org-oidc")
             self.assertEqual(s["attribute"], AuthAttribute.employee_id)
-            self.assertEqual(s["value"], "admin")
+            self.assertEqual(s["value"], "9999")
 
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             s = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
@@ -184,7 +184,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(OFVCRMixin, WebTe
             self.assertEqual(submission.auth_info.plugin, "registrator")
             self.assertEqual(submission.auth_info.attribute, AuthAttribute.bsn)
 
-            self.assertEqual(submission.registrator.value, "admin")
+            self.assertEqual(submission.registrator.value, "9999")
             self.assertEqual(submission.registrator.plugin, "org-oidc")
             self.assertEqual(
                 submission.registrator.attribute, AuthAttribute.employee_id
