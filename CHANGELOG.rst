@@ -2,22 +2,21 @@
 Changelog
 =========
 
-2.8.8 (2025-04-??)
+2.8.8 (2025-04-16)
 ==================
 
 Final bugfix release in the ``2.8.x`` series.
 
-
 .. warning:: Manual interventions required
 
     We included a script to remove corrupt API group configuration to make the upgrade
-    to Open Forms 3.0 easier. This script removes API groups (Objects API and ZGW API's)
+    to Open Forms 3.0 easier. This script removes API groups (Objects API and ZGW APIs)
     for which *no* services have been configured.
 
-    In the 2.8.7 bugfix release we fixed a bug regarding the default values of some component
-    being ``null``. In this bugfix we added a script to fix any forms that still might be
-    affected by these issues. You should run this script after deploying the patch release, to
-    make sure the default values of affected components are fixed.
+    In this bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by
+    these issues. You should run this script after deploying the patch release, to make
+    sure the default values of affected components are fixed.
 
     .. code-block:: bash
 
@@ -27,7 +26,10 @@ Final bugfix release in the ``2.8.x`` series.
 
 **Bugfixes**
 
-.. todo:: ...
+* [:backend:`5181`] Fixed incorrect ``null`` default values in components.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4662`, :backend:`5147`] Fixed not-required selectboxes field preventing
+  pausing the form.
 
 2.8.7 (2025-03-17)
 ==================
