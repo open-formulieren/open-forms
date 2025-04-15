@@ -17,7 +17,6 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
  * @param {string} p.name - The name of the current registration backend
  * @param {Object} p.variable - The current variable
  * @param {Object} p.backend - The current backend
- * @param {number} p.backendIndex - The current backend index (used to update the base state)
  * @param {JSX.Element} p.registrationSummary - The rendered summary of the registration backend for the current variable
  * @param {JSX.Element} p.variableConfigurationEditor - The rendered configuration editor for the current variable
  * @param {(_: Object) => void} p.onChange - The base onChange function to update the base state
@@ -27,13 +26,15 @@ const RegistrationSummary = ({
   name,
   variable,
   backend,
-  backendIndex,
   registrationSummary,
   variableConfigurationEditor,
   onChange,
 }) => {
   const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
+  const formContext = useContext(FormContext);
+  // always pick the right index of the backend from the updated context
+  const backendIndex = formContext.registrationBackends.findIndex(item => item.key === backend.key);
 
   return (
     <>
@@ -107,7 +108,6 @@ RegistrationSummary.propTypes = {
   name: PropTypes.string.isRequired,
   variable: PropTypes.object.isRequired,
   backend: PropTypes.object.isRequired,
-  backendIndex: PropTypes.number.isRequired,
   registrationSummary: PropTypes.element.isRequired,
   variableConfigurationEditor: PropTypes.element.isRequired,
   onChange: PropTypes.func.isRequired,
