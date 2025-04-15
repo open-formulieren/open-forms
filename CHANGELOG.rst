@@ -6,20 +6,40 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.1.1 (placeholder)
+3.1.1 (2025-04-16)
 ===================
+
+Regular bugfix release.
 
 .. warning:: Manual intervention required
 
-    In the 3.1.1 bugfix release we fixed a bug regarding the default values of some component
-    being ``null``. In this bugfix we added a script to fix any forms that still might be
-    affected by these issues. You should run this script after deploying the patch release, to
-    make sure the default values of affected components are fixed.
+    In this bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by these
+    issues. You should run this script after deploying the patch release, to make sure the
+    default values of affected components are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_component_default_values.py
+
+**Bugfixes**
+
+* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+  the organization-via-OIDC plugin is used.
+* [:backend: `5238`] Fixed the order of form versions in version history.
+* [:backend: `5263`] Fixed double encoding of data in generic JSON registration plugin.
+* [:backend: `5243`] Fixed non-existing variables being included in the 'transform to list'
+  option of the generic JSON registration and Objects API plugins.
+* [:backend:`5181`] Fixed incorrect ``null`` default values in components.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4917`] Fixed the backwards-compatibility issues of the reworked form
+  navigation. See `the SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_
+  for detailed upgrade documentation.
+
+**Project maintenance**
+
+* Fixed test flakiness.
 
 3.1.0 "Lente" (2025-03-31)
 ==========================
