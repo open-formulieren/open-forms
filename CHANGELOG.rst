@@ -6,20 +6,107 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.1.1 (placeholder)
-===================
+3.1.1 (2025-04-16)
+==================
+
+Regular bugfix release.
 
 .. warning:: Manual intervention required
 
-    In the 3.1.1 bugfix release we fixed a bug regarding the default values of some component
-    being ``null``. In this bugfix we added a script to fix any forms that still might be
-    affected by these issues. You should run this script after deploying the patch release, to
-    make sure the default values of affected components are fixed.
+    In this bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by these
+    issues. You should run this script after deploying the patch release, to make sure the
+    default values of affected components are fixed.
 
     .. code-block:: bash
 
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_component_default_values.py
+
+**Bugfixes**
+
+* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+  the organization-via-OIDC plugin is used.
+* [:backend: `5238`] Fixed the order of form versions in version history.
+* [:backend: `5263`] Fixed double encoding of data in generic JSON registration plugin.
+* [:backend: `5243`] Fixed non-existing variables being included in the 'transform to list'
+  option of the generic JSON registration and Objects API plugins.
+* [:backend:`5181`] Fixed incorrect ``null`` default values in components.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4917`] Fixed the backwards-compatibility issues of the reworked form
+  navigation. See `the SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_
+  for detailed upgrade documentation.
+
+**Project maintenance**
+
+* Fixed test flakiness.
+
+3.0.7 (2025-04-16)
+==================
+
+.. warning:: Manual intervention required
+
+    In this bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by these
+    issues. You should run this script after deploying the patch release, to make sure the
+    default values of affected components are fixed.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_component_default_values.py
+
+**Bugfixes**
+
+* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+  the organization-via-OIDC plugin is used.
+* [:backend: `5238`] Fixed the order of form versions in version history.
+* [:backend:`5181`] Fixed incorrect ``null`` default values in components.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend: `5188`] Fixed wrong prefill fields/attributes being logged.
+* [#5155] Fixed ``initial_date_reference`` being lost on language change while
+  filling out a form.
+* [:backend:`4662`, :backend:`5147`] Fixed not-required selectboxes field preventing
+  pausing the form.
+* Fixed SAMLv2 metadata generation when multiple certificates are configured.
+* Fixed the NLX directory URLs.
+
+**Project maintenance**
+
+* Fixed test flakiness.
+* Updated backend dependencies:
+
+    - Bumped zgw-consumers to 0.38.0
+    - Bumped django-digid-eherkenning to 0.21.0
+
+2.8.8 (2025-04-16)
+==================
+
+Final bugfix release in the ``2.8.x`` series.
+
+.. warning:: Manual interventions required
+
+    We included a script to remove corrupt API group configuration to make the upgrade
+    to Open Forms 3.0 easier. This script removes API groups (Objects API and ZGW APIs)
+    for which *no* services have been configured.
+
+    In this bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by
+    these issues. You should run this script after deploying the patch release, to make
+    sure the default values of affected components are fixed.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/delete_empty_api_groups.py
+        python /app/bin/fix_component_default_values.py
+
+**Bugfixes**
+
+* [:backend:`5181`] Fixed incorrect ``null`` default values in components.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4662`, :backend:`5147`] Fixed not-required selectboxes field preventing
+  pausing the form.
 
 3.1.0 "Lente" (2025-03-31)
 ==========================
