@@ -82,7 +82,7 @@ extend-select = [
     # "DJ",  # django
     # "LOG", # logging
     # "G",
-    # "I",   # isort
+    "I",   # isort
     # "E",   # pycodestyle
     # "F",   # pyflakes
     # "PERF",# perflint

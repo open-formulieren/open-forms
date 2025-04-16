@@ -20,8 +20,9 @@ sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
 def check_component(component: Component) -> str | None:
-    from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
     from rest_framework.exceptions import ValidationError
+
+    from openforms.api.geojson import GeoJsonGeometryPolymorphicSerializer
 
     match component:
         case {"type": "file", "defaultValue": list() as default_value}:
