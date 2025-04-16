@@ -959,6 +959,11 @@
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
   },
+  "Gi1Py0": {
+    "defaultMessage": "Additional scopes that should be used with the authentication, besides the bsn and/or kvk scopes.",
+    "description": "form.authenticationOidcPluginScopes help text",
+    "originalDefault": "Additional scopes that should be used with the authentication, besides the bsn and/or kvk scopes."
+  },
   "GjQdpb": {
     "defaultMessage": ", at location \"{location}\"",
     "description": "Formio configuration backend validation error location suffix",
@@ -1969,6 +1974,11 @@
     "description": "Form 'BRP Personen processing header value' field help text",
     "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
+  "ZQaGsO": {
+    "defaultMessage": "Authentication scopes",
+    "description": "form.authenticationOidcPluginScopes label",
+    "originalDefault": "Authentication scopes"
+  },
   "ZSvQcR": {
     "defaultMessage": "TITLE parameter",
     "description": "Ogone legacy payment options 'titleTemplate' label",
@@ -2893,6 +2903,11 @@
     "defaultMessage": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+  },
+  "qF8uxU": {
+    "defaultMessage": "Plugin: {plugin}",
+    "description": "Plugin name",
+    "originalDefault": "Plugin: {plugin}"
   },
   "qUYLVg": {
     "defaultMessage": "Product & payment",

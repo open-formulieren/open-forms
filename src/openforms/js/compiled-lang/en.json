@@ -2113,6 +2113,12 @@
       "value": "Use linked product price"
     }
   ],
+  "Gi1Py0": [
+    {
+      "type": 0,
+      "value": "Additional scopes that should be used with the authentication, besides the bsn and/or kvk scopes."
+    }
+  ],
   "GjQdpb": [
     {
       "type": 0,
@@ -3165,12 +3171,6 @@
       "value": "You need to configure both longitude and latitude."
     }
   ],
-  "R25Vbr": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3923,6 +3923,12 @@
       "value": "Maximum width"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4131,6 +4137,12 @@
     {
       "type": 0,
       "value": "The processing (\"verwerking\") for queries to the BRP Persoon API."
+    }
+  ],
+  "ZQaGsO": [
+    {
+      "type": 0,
+      "value": "Authentication scopes"
     }
   ],
   "ZSvQcR": [
@@ -6221,6 +6233,16 @@
       "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
     }
   ],
+  "qF8uxU": [
+    {
+      "type": 0,
+      "value": "Plugin: "
+    },
+    {
+      "type": 1,
+      "value": "plugin"
+    }
+  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -6429,30 +6451,6 @@
       "value": "Plugin attribute"
     }
   ],
-  "sjnifH": [
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
-    }
-  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6659,6 +6657,30 @@
     {
       "type": 0,
       "value": "Error"
+    }
+  ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "uiliGe": [
