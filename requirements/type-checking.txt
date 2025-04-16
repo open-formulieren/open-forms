@@ -56,10 +56,6 @@ billiard==4.2.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-black==25.1.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 bleach==5.0.1
     # via
     #   -c requirements/ci.txt
@@ -123,7 +119,6 @@ click==8.1.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   black
     #   celery
     #   click-didyoumean
     #   click-plugins
@@ -196,7 +191,6 @@ django==4.2.20
     #   django-formtools
     #   django-hijack
     #   django-import-export
-    #   django-jenkins
     #   django-jsonform
     #   django-log-outgoing-requests
     #   django-modeltranslation
@@ -304,10 +298,6 @@ django-import-export==3.3.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 django-ipware==5.0.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-django-jenkins==0.110.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -485,10 +475,6 @@ faker==23.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   factory-boy
-flake8==7.1.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 flower==2.0.1
     # via
     #   -c requirements/ci.txt
@@ -560,10 +546,6 @@ isodate==0.6.1
     #   maykin-json-logic-py
     #   maykin-python3-saml
     #   zeep
-isort==5.10.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 jinja2==3.1.6
     # via
     #   -c requirements/ci.txt
@@ -655,11 +637,6 @@ maykin-python3-saml==1.16.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-mccabe==0.7.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   flake8
 mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/ci.txt
@@ -674,11 +651,6 @@ multidict==6.0.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   yarl
-mypy-extensions==0.4.3
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   black
 o365==2.0.31
     # via
     #   -c requirements/ci.txt
@@ -721,7 +693,6 @@ packaging==23.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   black
     #   prance
     #   sphinx
 pathable==0.4.3
@@ -729,15 +700,6 @@ pathable==0.4.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jsonschema-spec
-pathspec==0.9.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   black
-pep8==1.7.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 phonenumberslite==8.13.29
     # via
     #   -c requirements/ci.txt
@@ -753,7 +715,6 @@ platformdirs==2.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   black
     #   zeep
 playwright==1.49.1
     # via
@@ -782,11 +743,6 @@ psycopg==3.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pycodestyle==2.12.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   flake8
 pycountry==23.12.11
     # via
     #   -c requirements/ci.txt
@@ -823,11 +779,6 @@ pyee==12.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pyflakes==3.2.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   flake8
 pygments==2.17.2
     # via
     #   -c requirements/ci.txt
@@ -988,6 +939,10 @@ ruamel-yaml-clib==0.2.12
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ruamel-yaml
+ruff==0.11.5
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 schwifty==2024.5.3
     # via
     #   -c requirements/ci.txt

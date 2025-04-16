@@ -3,7 +3,6 @@
 
 # Dependencies only relevant for (unit) testing
 coverage
-django-jenkins
 django-simple-certmanager[testutils]
 django-webtest
 factory-boy
@@ -14,15 +13,12 @@ requests-mock
 tenacity
 tblib
 testfixtures
-pep8
 hypothesis  # property-based testing
 vcrpy  # record HTTP fixtures
 zgw-consumers[testutils]
 
 # Code formatting
-black
-isort~=5.10.0
-flake8
+ruff
 
 # Build tooling
 # setup.py install fallback is deprecated, building wheels locally and caching them

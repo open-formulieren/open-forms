@@ -49,8 +49,6 @@ billiard==4.2.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-black==25.1.0
-    # via -r requirements/test-tools.in
 bleach==5.0.1
     # via
     #   -c requirements/base.txt
@@ -114,7 +112,6 @@ click==8.1.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   black
     #   celery
     #   click-didyoumean
     #   click-plugins
@@ -182,7 +179,6 @@ django==4.2.20
     #   django-formtools
     #   django-hijack
     #   django-import-export
-    #   django-jenkins
     #   django-jsonform
     #   django-log-outgoing-requests
     #   django-modeltranslation
@@ -291,8 +287,6 @@ django-ipware==5.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-jenkins==0.110.0
-    # via -r requirements/test-tools.in
 django-jsonform==2.21.2
     # via
     #   -c requirements/base.txt
@@ -456,8 +450,6 @@ faker==23.1.0
     # via
     #   factory-boy
     #   zgw-consumers
-flake8==7.1.0
-    # via -r requirements/test-tools.in
 flower==2.0.1
     # via
     #   -c requirements/base.txt
@@ -519,8 +511,6 @@ isodate==0.6.1
     #   maykin-json-logic-py
     #   maykin-python3-saml
     #   zeep
-isort==5.10.1
-    # via -r requirements/test-tools.in
 jinja2==3.1.6
     # via sphinx
 josepy==1.14.0
@@ -606,8 +596,6 @@ maykin-python3-saml==1.16.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-mccabe==0.7.0
-    # via flake8
 mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/base.txt
@@ -619,8 +607,6 @@ mozilla-django-oidc-db==0.22.0
     #   -r requirements/base.txt
 multidict==6.0.5
     # via yarl
-mypy-extensions==0.4.3
-    # via black
 o365==2.0.31
     # via
     #   -c requirements/base.txt
@@ -663,7 +649,6 @@ packaging==23.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   black
     #   prance
     #   sphinx
 pathable==0.4.3
@@ -671,10 +656,6 @@ pathable==0.4.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   jsonschema-spec
-pathspec==0.9.0
-    # via black
-pep8==1.7.1
-    # via -r requirements/test-tools.in
 phonenumberslite==8.13.29
     # via
     #   -c requirements/base.txt
@@ -690,7 +671,6 @@ platformdirs==2.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   black
     #   zeep
 playwright==1.49.1
     # via -r requirements/test-tools.in
@@ -717,8 +697,6 @@ psycopg==3.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pycodestyle==2.12.0
-    # via flake8
 pycountry==23.12.11
     # via
     #   -c requirements/base.txt
@@ -752,8 +730,6 @@ pydyf==0.8.0
     #   weasyprint
 pyee==12.0.0
     # via playwright
-pyflakes==3.2.0
-    # via flake8
 pygments==2.17.2
     # via
     #   sphinx
@@ -910,6 +886,8 @@ ruamel-yaml-clib==0.2.12
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   ruamel-yaml
+ruff==0.11.5
+    # via -r requirements/test-tools.in
 schwifty==2024.5.3
     # via
     #   -c requirements/base.txt
