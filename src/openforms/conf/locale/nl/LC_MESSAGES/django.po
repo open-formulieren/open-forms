@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-17 13:59+0100\n"
+"POT-Creation-Date: 2025-04-15 15:29+0200\n"
 "PO-Revision-Date: 2024-12-31 09:52+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -711,7 +711,7 @@ msgstr "Productcode"
 #: openforms/appointments/api/serializers.py:77
 #: openforms/config/models/csp.py:68 openforms/config/models/map.py:14
 #: openforms/contrib/objects_api/models.py:21
-#: openforms/registrations/contrib/zgw_apis/models.py:58
+#: openforms/registrations/contrib/zgw_apis/models.py:29
 msgid "identifier"
 msgstr "Unieke identificatie"
 
@@ -730,7 +730,7 @@ msgstr "Unieke sleutel van het product"
 #: openforms/forms/models/form_registration_backend.py:23
 #: openforms/forms/models/form_variable.py:228
 #: openforms/multidomain/models.py:7 openforms/products/models/product.py:24
-#: openforms/registrations/contrib/zgw_apis/models.py:53
+#: openforms/registrations/contrib/zgw_apis/models.py:24
 msgid "name"
 msgstr "naam"
 
@@ -3968,7 +3968,7 @@ msgid "A recognisable name for this set of Objects APIs."
 msgstr "Een herkenbare naam voor deze Objecten API-groep."
 
 #: openforms/contrib/objects_api/models.py:25
-#: openforms/registrations/contrib/zgw_apis/models.py:62
+#: openforms/registrations/contrib/zgw_apis/models.py:33
 msgid "A unique, human-friendly identifier to identify this group."
 msgstr "Een unieke, herkenbare identificatie om naar deze groep te verwijzen."
 
@@ -3977,40 +3977,40 @@ msgid "Objecttypes API"
 msgstr "Objecttypen API"
 
 #: openforms/contrib/objects_api/models.py:45
-#: openforms/registrations/contrib/zgw_apis/models.py:74
+#: openforms/registrations/contrib/zgw_apis/models.py:45
 msgid "Documenten API"
 msgstr "Documenten API"
 
 #: openforms/contrib/objects_api/models.py:54
-#: openforms/registrations/contrib/zgw_apis/models.py:82
+#: openforms/registrations/contrib/zgw_apis/models.py:53
 msgid "Catalogi API"
 msgstr "Catalogi API"
 
 #: openforms/contrib/objects_api/models.py:70
-#: openforms/registrations/contrib/zgw_apis/models.py:93
+#: openforms/registrations/contrib/zgw_apis/models.py:64
 msgid "catalogus domain"
 msgstr "catalogusdomein"
 
 #: openforms/contrib/objects_api/models.py:76
 #: openforms/contrib/zgw/serializers.py:29
-#: openforms/registrations/contrib/zgw_apis/models.py:99
+#: openforms/registrations/contrib/zgw_apis/models.py:70
 msgid "The 'domein' attribute for the Catalogus resource in the Catalogi API."
 msgstr "Het 'domein'-attribuut van de Catalogus-entiteit in de Catalogi API."
 
 #: openforms/contrib/objects_api/models.py:81
-#: openforms/registrations/contrib/zgw_apis/models.py:104
+#: openforms/registrations/contrib/zgw_apis/models.py:75
 msgid "catalogus RSIN"
 msgstr "catalogus-RSIN"
 
 #: openforms/contrib/objects_api/models.py:87
 #: openforms/contrib/zgw/serializers.py:40
-#: openforms/registrations/contrib/zgw_apis/models.py:110
+#: openforms/registrations/contrib/zgw_apis/models.py:81
 msgid "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
 msgstr "Het 'rsin'-attribuut van de catalogus-entiteit in de Catalogi API."
 
 #: openforms/contrib/objects_api/models.py:93
 #: openforms/registrations/contrib/objects_api/config.py:132
-#: openforms/registrations/contrib/zgw_apis/models.py:116
+#: openforms/registrations/contrib/zgw_apis/models.py:87
 msgid "organisation RSIN"
 msgstr "organisatie RSIN"
 
@@ -4112,7 +4112,7 @@ msgid "Objects API groups"
 msgstr "Objecten API-groepen"
 
 #: openforms/contrib/objects_api/models.py:185
-#: openforms/registrations/contrib/zgw_apis/models.py:172
+#: openforms/registrations/contrib/zgw_apis/models.py:143
 msgid "You must specify both domain and RSIN to uniquely identify a catalogue."
 msgstr ""
 "Je moet het domein én RSIN beide opgeven om een catalogus uniek te "
@@ -5425,21 +5425,21 @@ msgid ""
 msgstr ""
 "Zorg dat dit veld {max_selected_count} of minder opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:761
+#: openforms/formio/components/vanilla.py:764
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Een lijst van waarden was verwacht, maar kreeg \"{input_type}\"."
 
-#: openforms/formio/components/vanilla.py:762
+#: openforms/formio/components/vanilla.py:765
 msgid "This list may not be empty."
 msgstr "De lijst mag niet leeg zijn."
 
-#: openforms/formio/components/vanilla.py:763
+#: openforms/formio/components/vanilla.py:766
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr "Zorg dat dit veld {min_length} of meer waarden heeft."
 
-#: openforms/formio/components/vanilla.py:764
+#: openforms/formio/components/vanilla.py:767
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
@@ -6314,54 +6314,54 @@ msgstr "Formulier exporteren"
 msgid "Prepare form edit admin message"
 msgstr "Admin berichten voor formulier bewerken voorbereiden"
 
-#: openforms/forms/api/viewsets.py:509
+#: openforms/forms/api/viewsets.py:515
 msgid "List form variables"
 msgstr "Formuliervariabelen weergeven"
 
-#: openforms/forms/api/viewsets.py:510
+#: openforms/forms/api/viewsets.py:516
 msgid "List all variables defined for a form."
 msgstr "Geef alle variabelen terug die bij een formulier horen"
 
-#: openforms/forms/api/viewsets.py:523
+#: openforms/forms/api/viewsets.py:529
 msgid "Filter by form variable source"
 msgstr "Filteren op oorsprong formuliervariabele"
 
-#: openforms/forms/api/viewsets.py:578
+#: openforms/forms/api/viewsets.py:584
 msgid "List logic rules"
 msgstr "Logicaregels weergeven"
 
-#: openforms/forms/api/viewsets.py:579
+#: openforms/forms/api/viewsets.py:585
 msgid "List all logic rules defined for a form."
 msgstr "Geef een lijst van alle logicaregels van een formulier."
 
-#: openforms/forms/api/viewsets.py:614 openforms/forms/api/viewsets.py:631
-#: openforms/forms/api/viewsets.py:650
+#: openforms/forms/api/viewsets.py:620 openforms/forms/api/viewsets.py:637
+#: openforms/forms/api/viewsets.py:656
 msgid "Either a UUID4 or a slug identifying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:620
+#: openforms/forms/api/viewsets.py:626
 msgid "Save form version"
 msgstr "Formulierversie opslaan"
 
-#: openforms/forms/api/viewsets.py:624
+#: openforms/forms/api/viewsets.py:630
 msgid "Restore form version"
 msgstr "Formulierversie terugzetten"
 
-#: openforms/forms/api/viewsets.py:637
+#: openforms/forms/api/viewsets.py:643
 msgid "The UUID of the form version"
 msgstr "Het UUID van de formulierversie"
 
-#: openforms/forms/api/viewsets.py:643
+#: openforms/forms/api/viewsets.py:649
 msgid "List form versions"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:691
+#: openforms/forms/api/viewsets.py:697
 #: openforms/forms/templates/admin/forms/form/import_form.html:15
 #: openforms/forms/templates/admin/forms/form/import_form.html:20
 msgid "Import form"
 msgstr "Formulier importeren"
 
-#: openforms/forms/api/viewsets.py:693
+#: openforms/forms/api/viewsets.py:699
 msgid "No response body"
 msgstr "Geen antwoordbericht inhoud"
 
@@ -7523,46 +7523,46 @@ msgstr "AVG"
 msgid "Hijack"
 msgstr "Kaping"
 
-#: openforms/logging/models.py:37
+#: openforms/logging/models.py:41
 msgid "timeline log entry"
 msgstr "tijdlijn logboekvermelding"
 
-#: openforms/logging/models.py:38
+#: openforms/logging/models.py:42
 msgid "timeline log entries"
 msgstr "tijdlijn logboekvermeldingen "
 
-#: openforms/logging/models.py:65
+#: openforms/logging/models.py:69
 #, python-brace-format
 msgid "Staff user {user}"
 msgstr "Beheerder {user}"
 
-#: openforms/logging/models.py:69
+#: openforms/logging/models.py:73
 #, python-brace-format
 msgid "Authenticated via plugin {auth}"
 msgstr "Geauthenticeerd via plugin {auth}"
 
-#: openforms/logging/models.py:70
+#: openforms/logging/models.py:74
 msgid "Anonymous user"
 msgstr "Anonieme gebruiker"
 
-#: openforms/logging/models.py:91 openforms/logging/models.py:119
-#: openforms/logging/models.py:128
+#: openforms/logging/models.py:95 openforms/logging/models.py:131
+#: openforms/logging/models.py:140
 msgid "(unknown)"
 msgstr "(onbekend)"
 
-#: openforms/logging/models.py:154
+#: openforms/logging/models.py:166
 msgid "content object"
 msgstr "object"
 
-#: openforms/logging/models.py:159
+#: openforms/logging/models.py:171
 msgid "message"
 msgstr "bericht"
 
-#: openforms/logging/models.py:185
+#: openforms/logging/models.py:197
 msgid "avg timeline log entry"
 msgstr "AVG logboekvermelding"
 
-#: openforms/logging/models.py:186
+#: openforms/logging/models.py:198
 msgid "avg timeline log entries"
 msgstr "AVG logboekvermeldingen "
 
@@ -9464,7 +9464,7 @@ msgstr "Objecten-API prefill-plugin"
 
 #: openforms/prefill/contrib/objects_api/plugin.py:78
 #: openforms/registrations/contrib/objects_api/plugin.py:138
-#: openforms/registrations/contrib/zgw_apis/plugin.py:613
+#: openforms/registrations/contrib/zgw_apis/plugin.py:616
 msgid "Manage API groups"
 msgstr "API-groepen beheren"
 
@@ -10363,7 +10363,7 @@ msgid "JSON content template"
 msgstr "JSON-inhoud sjabloon"
 
 #: openforms/registrations/contrib/objects_api/models.py:46
-#: openforms/registrations/contrib/zgw_apis/models.py:160
+#: openforms/registrations/contrib/zgw_apis/models.py:131
 msgid ""
 "This template is evaluated with the submission data and the resulting JSON "
 "is sent to the objects API."
@@ -10646,37 +10646,23 @@ msgstr ""
 "Kan geen verbinding maken met {api_name} in de ZGW API-group {zgw_api_set}: "
 "{exception}"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:36
-msgid "default ZGW API set."
-msgstr "standaard ZGW API-groep"
-
-#: openforms/registrations/contrib/zgw_apis/models.py:37
-msgid "Which set of ZGW APIs should be used as default."
-msgstr ""
-"Stel in welke ZGW API-groep standaard gebruikt dien te worden. Indien er "
-"geen expliciete keuze opgegeven is, dan wordt deze waarde gebruikt."
-
-#: openforms/registrations/contrib/zgw_apis/models.py:42
-msgid "ZGW API's configuration"
-msgstr "ZGW API's configuratie"
-
-#: openforms/registrations/contrib/zgw_apis/models.py:55
+#: openforms/registrations/contrib/zgw_apis/models.py:26
 msgid "A recognisable name for this set of ZGW APIs."
 msgstr "Een herkenbare naam voor deze groep ZGW API's."
 
-#: openforms/registrations/contrib/zgw_apis/models.py:66
+#: openforms/registrations/contrib/zgw_apis/models.py:37
 msgid "Zaken API"
 msgstr "Zaken API"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:120
+#: openforms/registrations/contrib/zgw_apis/models.py:91
 msgid "Default RSIN of organization, which creates the ZAAK"
 msgstr "Standaard RSIN van de organisatie, die de ZAAK aanmaakt"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:123
+#: openforms/registrations/contrib/zgw_apis/models.py:94
 msgid "vertrouwelijkheidaanduiding zaak"
 msgstr "vertrouwelijkheidaanduiding zaak"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:128
+#: openforms/registrations/contrib/zgw_apis/models.py:99
 msgid ""
 "Indication of the level to which extend the ZAAK is meant to be public. Can "
 "be overridden in the Registration tab of a given form."
@@ -10685,11 +10671,11 @@ msgstr ""
 "openbaarheid bestemd is. Dit kan per formulier in de registratieconfiguratie "
 "overschreven worden."
 
-#: openforms/registrations/contrib/zgw_apis/models.py:133
+#: openforms/registrations/contrib/zgw_apis/models.py:104
 msgid "vertrouwelijkheidaanduiding document"
 msgstr "vertrouwelijkheidaanduiding document"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:138
+#: openforms/registrations/contrib/zgw_apis/models.py:109
 msgid ""
 "Indication of the level to which extend the document associated with the "
 "ZAAK is meant to be public. Can be overridden in the file upload component "
@@ -10699,20 +10685,20 @@ msgstr ""
 "bestemd is. Dit wordt toegepast op de zaakdocumenten die aangemaakt worden. "
 "Dit kan per formulier in de registratieconfiguratie overschreven worden."
 
-#: openforms/registrations/contrib/zgw_apis/models.py:144
+#: openforms/registrations/contrib/zgw_apis/models.py:115
 msgid "auteur"
 msgstr "auteur"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:151
+#: openforms/registrations/contrib/zgw_apis/models.py:122
 msgid "objects API - JSON content template"
 msgstr "objecten API - JSON-inhoud sjabloon"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:165
+#: openforms/registrations/contrib/zgw_apis/models.py:136
 #: openforms/registrations/contrib/zgw_apis/options.py:52
 msgid "ZGW API set"
 msgstr "ZGW API-groep"
 
-#: openforms/registrations/contrib/zgw_apis/models.py:166
+#: openforms/registrations/contrib/zgw_apis/models.py:137
 msgid "ZGW API sets"
 msgstr "ZGW API-groepen"
 
@@ -10921,7 +10907,7 @@ msgstr ""
 msgid "ZGW API's"
 msgstr "ZGW API's"
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:415
+#: openforms/registrations/contrib/zgw_apis/plugin.py:418
 msgid "Employee who registered the case on behalf of the customer."
 msgstr "Medewerker die de zaak registreerde voor de klant."
 
@@ -13737,6 +13723,17 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
+
+#~ msgid "default ZGW API set."
+#~ msgstr "standaard ZGW API-groep"
+
+#~ msgid "Which set of ZGW APIs should be used as default."
+#~ msgstr ""
+#~ "Stel in welke ZGW API-groep standaard gebruikt dien te worden. Indien er "
+#~ "geen expliciete keuze opgegeven is, dan wordt deze waarde gebruikt."
+
+#~ msgid "ZGW API's configuration"
+#~ msgstr "ZGW API's configuratie"
 
 #, python-brace-format
 #~ msgid "Submission value variable {name}"
