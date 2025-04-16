@@ -42,7 +42,7 @@ eindgebruikers als beheerders.
 Component
 =========
 
-|build-status| |coverage| |code-quality| |black| |python-versions|
+|build-status| |coverage| |code-quality| |ruff| |python-versions|
 
 Dit component omvat **Open Formulieren Beheer** en de **Open Formulieren API**.
 
@@ -91,9 +91,9 @@ Licensed under the `EUPL`_.
     :alt: Coverage
     :target: https://codecov.io/gh/open-formulieren/open-forms
 
-.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :alt: Code style
-    :target: https://github.com/psf/black
+.. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+    :target: https://github.com/astral-sh/ruff
+    :alt: Ruff
 
 .. |docker| image:: https://img.shields.io/docker/v/openformulieren/open-forms?sort=semver
     :alt: Docker image
