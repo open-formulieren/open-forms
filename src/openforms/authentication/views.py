@@ -344,7 +344,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         co_sign_submission = self._validate_co_sign_submission(plugin)
         if co_sign_submission is not None:
             warnings.warn(
-                "Legacy co-sign is deprecated and will be removed in Open Forms 3.0",
+                "Legacy co-sign is deprecated and will be removed in Open Forms 4.0",
                 DeprecationWarning,
             )
             logger.debug("Co-sign authentication detected, invoking plugin handler.")
