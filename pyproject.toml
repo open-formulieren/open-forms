@@ -84,10 +84,10 @@ extend-select = [
     # "G",
     "I",   # isort
     # "E",   # pycodestyle
-    # "F",   # pyflakes
+    "F",   # pyflakes
     # "PERF",# perflint
-    # "B006",# flake8-bugbear
-    # "B010",
+    "B006",# flake8-bugbear
+    "B010",
     # "B904",
 ]
 

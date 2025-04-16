@@ -119,7 +119,7 @@ def post_process(
     values: JSONObject,
     schema: JSONObject,
     submission: Submission,
-    transform_to_list: list[str] = [],
+    transform_to_list: list[str] | None = None,
 ) -> None:
     """Post-process the values and schema.
 
@@ -135,6 +135,9 @@ def post_process(
     :param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
       object-shape for selectboxes components.
     """
+    if transform_to_list is None:
+        transform_to_list = []
+
     state = submission.load_submission_value_variables_state()
 
     # Update config wrapper
@@ -192,7 +195,7 @@ def process_component(
     attachments: dict[str, list[SubmissionFileAttachment]],
     configuration_wrapper,
     key_prefix: str = "",
-    transform_to_list: list[str] = [],
+    transform_to_list: list[str] | None = None,
 ) -> None:
     """Process a component.
 
@@ -217,6 +220,9 @@ def process_component(
     ::param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
       object-shape for selectboxes components.
     """
+    if transform_to_list is None:
+        transform_to_list = []
+
     key = component["key"]
     assert isinstance(schema["properties"], dict)
 
