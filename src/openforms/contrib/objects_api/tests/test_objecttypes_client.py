@@ -12,7 +12,6 @@ from ..models import ObjectsAPIGroupConfig
 
 
 class ObjecttypesClientTest(OFVCRMixin, TestCase):
-
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
     @classmethod

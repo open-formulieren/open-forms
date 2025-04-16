@@ -5,7 +5,6 @@ from .factories import SubmissionFactory
 
 
 class CosignStateTests(TestCase):
-
     def test_string_representation(self):
         submission = SubmissionFactory.build(public_registration_reference="OF-123")
         cosign = CosignState(submission=submission)

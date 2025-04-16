@@ -12,24 +12,29 @@ class AttributesV1(models.TextChoices):
     """
 
     burgerservicenummer = "burgerservicenummer", _("Burgerservicenummer")
-    datumEersteInschrijvingGBA_dag = "datumEersteInschrijvingGBA.dag", _(
-        "DatumEersteInschrijvingGBA > Dag"
+    datumEersteInschrijvingGBA_dag = (
+        "datumEersteInschrijvingGBA.dag",
+        _("DatumEersteInschrijvingGBA > Dag"),
     )
-    datumEersteInschrijvingGBA_datum = "datumEersteInschrijvingGBA.datum", _(
-        "DatumEersteInschrijvingGBA > Datum"
+    datumEersteInschrijvingGBA_datum = (
+        "datumEersteInschrijvingGBA.datum",
+        _("DatumEersteInschrijvingGBA > Datum"),
     )
-    datumEersteInschrijvingGBA_jaar = "datumEersteInschrijvingGBA.jaar", _(
-        "DatumEersteInschrijvingGBA > Jaar"
+    datumEersteInschrijvingGBA_jaar = (
+        "datumEersteInschrijvingGBA.jaar",
+        _("DatumEersteInschrijvingGBA > Jaar"),
     )
-    datumEersteInschrijvingGBA_maand = "datumEersteInschrijvingGBA.maand", _(
-        "DatumEersteInschrijvingGBA > Maand"
+    datumEersteInschrijvingGBA_maand = (
+        "datumEersteInschrijvingGBA.maand",
+        _("DatumEersteInschrijvingGBA > Maand"),
     )
     geboorte_datum_dag = "geboorte.datum.dag", _("Geboorte > Datum > Dag")
     geboorte_datum_datum = "geboorte.datum.datum", _("Geboorte > Datum > Datum")
     geboorte_datum_jaar = "geboorte.datum.jaar", _("Geboorte > Datum > Jaar")
     geboorte_datum_maand = "geboorte.datum.maand", _("Geboorte > Datum > Maand")
-    geboorte_inOnderzoek_datum = "geboorte.inOnderzoek.datum", _(
-        "Geboorte > InOnderzoek > Datum"
+    geboorte_inOnderzoek_datum = (
+        "geboorte.inOnderzoek.datum",
+        _("Geboorte > InOnderzoek > Datum"),
     )
     geboorte_inOnderzoek_datumIngangOnderzoek_dag = (
         "geboorte.inOnderzoek.datumIngangOnderzoek.dag",
@@ -47,22 +52,27 @@ class AttributesV1(models.TextChoices):
         "geboorte.inOnderzoek.datumIngangOnderzoek.maand",
         _("Geboorte > InOnderzoek > DatumIngangOnderzoek > Maand"),
     )
-    geboorte_inOnderzoek_land = "geboorte.inOnderzoek.land", _(
-        "Geboorte > InOnderzoek > Land"
+    geboorte_inOnderzoek_land = (
+        "geboorte.inOnderzoek.land",
+        _("Geboorte > InOnderzoek > Land"),
     )
-    geboorte_inOnderzoek_plaats = "geboorte.inOnderzoek.plaats", _(
-        "Geboorte > InOnderzoek > Plaats"
+    geboorte_inOnderzoek_plaats = (
+        "geboorte.inOnderzoek.plaats",
+        _("Geboorte > InOnderzoek > Plaats"),
     )
     geboorte_land_code = "geboorte.land.code", _("Geboorte > Land > Code")
-    geboorte_land_omschrijving = "geboorte.land.omschrijving", _(
-        "Geboorte > Land > Omschrijving"
+    geboorte_land_omschrijving = (
+        "geboorte.land.omschrijving",
+        _("Geboorte > Land > Omschrijving"),
     )
     geboorte_plaats_code = "geboorte.plaats.code", _("Geboorte > Land > Code")
-    geboorte_plaats_omschrijving = "geboorte.plaats.omschrijving", _(
-        "Geboorte > Land > Omschrijving"
+    geboorte_plaats_omschrijving = (
+        "geboorte.plaats.omschrijving",
+        _("Geboorte > Land > Omschrijving"),
     )
-    geheimhoudingPersoonsgegevens = "geheimhoudingPersoonsgegevens", _(
-        "GeheimhoudingPersoonsgegevens"
+    geheimhoudingPersoonsgegevens = (
+        "geheimhoudingPersoonsgegevens",
+        _("GeheimhoudingPersoonsgegevens"),
     )
     geslachtsaanduiding = "geslachtsaanduiding", _("Geslachtsaanduiding")
     gezagsverhouding_inOnderzoek_datumIngangOnderzoek_dag = (
@@ -97,8 +107,9 @@ class AttributesV1(models.TextChoices):
         "gezagsverhouding.indicatieGezagMinderjarige",
         _("Gezagsverhouding > IndicatieGezagMinderjarige"),
     )
-    inOnderzoek_burgerservicenummer = "inOnderzoek.burgerservicenummer", _(
-        "InOnderzoek > Burgerservicenummer"
+    inOnderzoek_burgerservicenummer = (
+        "inOnderzoek.burgerservicenummer",
+        _("InOnderzoek > Burgerservicenummer"),
     )
     inOnderzoek_datumIngangOnderzoek_dag = (
         "inOnderzoek.datumIngangOnderzoek.dag",
@@ -116,8 +127,9 @@ class AttributesV1(models.TextChoices):
         "inOnderzoek.datumIngangOnderzoek.maand",
         _("InOnderzoek > DatumIngangOnderzoek > Maand"),
     )
-    inOnderzoek_geslachtsaanduiding = "inOnderzoek.geslachtsaanduiding", _(
-        "InOnderzoek > Geslachtsaanduiding"
+    inOnderzoek_geslachtsaanduiding = (
+        "inOnderzoek.geslachtsaanduiding",
+        _("InOnderzoek > Geslachtsaanduiding"),
     )
     kiesrecht_einddatumUitsluitingEuropeesKiesrecht_dag = (
         "kiesrecht.einddatumUitsluitingEuropeesKiesrecht.dag",
@@ -151,20 +163,24 @@ class AttributesV1(models.TextChoices):
         "kiesrecht.einddatumUitsluitingKiesrecht.maand",
         _("Kiesrecht > EinddatumUitsluitingEuropeesKiesrecht > Maand"),
     )
-    kiesrecht_europeesKiesrecht = "kiesrecht.europeesKiesrecht", _(
-        "Kiesrecht > EuropeesKiesrecht"
+    kiesrecht_europeesKiesrecht = (
+        "kiesrecht.europeesKiesrecht",
+        _("Kiesrecht > EuropeesKiesrecht"),
     )
-    kiesrecht_uitgeslotenVanKiesrecht = "kiesrecht.uitgeslotenVanKiesrecht", _(
-        "Kiesrecht > UitgeslotenVanKiesrecht"
+    kiesrecht_uitgeslotenVanKiesrecht = (
+        "kiesrecht.uitgeslotenVanKiesrecht",
+        _("Kiesrecht > UitgeslotenVanKiesrecht"),
     )
     leeftijd = "leeftijd", _("Leeftijd")
-    naam_aanduidingNaamgebruik = "naam.aanduidingNaamgebruik", _(
-        "Naam > AanduidingNaamgebruik"
+    naam_aanduidingNaamgebruik = (
+        "naam.aanduidingNaamgebruik",
+        _("Naam > AanduidingNaamgebruik"),
     )
     naam_aanhef = "naam.aanhef", _("Naam > Aanhef")
     naam_aanschrijfwijze = "naam.aanschrijfwijze", _("Naam > Aanschrijfwijze")
-    naam_gebruikInLopendeTekst = "naam.gebruikInLopendeTekst", _(
-        "Naam > GebruikInLopendeTekst"
+    naam_gebruikInLopendeTekst = (
+        "naam.gebruikInLopendeTekst",
+        _("Naam > GebruikInLopendeTekst"),
     )
     naam_geslachtsnaam = "naam.geslachtsnaam", _("Naam > Geslachtsnaam")
     naam_inOnderzoek_datumIngangOnderzoek_dag = (
@@ -183,14 +199,17 @@ class AttributesV1(models.TextChoices):
         "naam.inOnderzoek.datumIngangOnderzoek.maand",
         _("Naam > InOnderzoek > DatumIngangOnderzoek > Maand"),
     )
-    naam_inOnderzoek_geslachtsnaam = "naam.inOnderzoek.geslachtsnaam", _(
-        "Naam > InOnderzoek > Geslachtsnaam"
+    naam_inOnderzoek_geslachtsnaam = (
+        "naam.inOnderzoek.geslachtsnaam",
+        _("Naam > InOnderzoek > Geslachtsnaam"),
     )
-    naam_inOnderzoek_voornamen = "naam.inOnderzoek.voornamen", _(
-        "Naam > InOnderzoek > Voornamen"
+    naam_inOnderzoek_voornamen = (
+        "naam.inOnderzoek.voornamen",
+        _("Naam > InOnderzoek > Voornamen"),
     )
-    naam_inOnderzoek_voorvoegsel = "naam.inOnderzoek.voorvoegsel", _(
-        "Naam > InOnderzoek > Voorvoegsel"
+    naam_inOnderzoek_voorvoegsel = (
+        "naam.inOnderzoek.voorvoegsel",
+        _("Naam > InOnderzoek > Voorvoegsel"),
     )
     naam_voorletters = "naam.voorletters", _("Naam > Voorletters")
     naam_voornamen = "naam.voornamen", _("Naam > Voornamen")
@@ -211,15 +230,17 @@ class AttributesV1(models.TextChoices):
         "opschortingBijhouding.datum.maand",
         _("OpschortingBijhouding > Datum > Maand"),
     )
-    opschortingBijhouding_reden = "opschortingBijhouding.reden", _(
-        "OpschortingBijhouding > Reden"
+    opschortingBijhouding_reden = (
+        "opschortingBijhouding.reden",
+        _("OpschortingBijhouding > Reden"),
     )
     overlijden_datum_dag = "overlijden.datum.dag", _("Overlijden > Datum > Dag")
     overlijden_datum_datum = "overlijden.datum.datum", _("Overlijden > Datum > Datum")
     overlijden_datum_jaar = "overlijden.datum.jaar", _("Overlijden > Datum > Jaar")
     overlijden_datum_maand = "overlijden.datum.maand", _("Overlijden > Datum > Maand")
-    overlijden_inOnderzoek_datum = "overlijden.inOnderzoek.datum", _(
-        "Overlijden > InOnderzoek > Datum"
+    overlijden_inOnderzoek_datum = (
+        "overlijden.inOnderzoek.datum",
+        _("Overlijden > InOnderzoek > Datum"),
     )
     overlijden_inOnderzoek_datumIngangOnderzoek_dag = (
         "overlijden.inOnderzoek.datumIngangOnderzoek.dag",
@@ -237,22 +258,27 @@ class AttributesV1(models.TextChoices):
         "overlijden.inOnderzoek.datumIngangOnderzoek.maand",
         _("Overlijden > InOnderzoek > DatumIngangOnderzoek > Maand"),
     )
-    overlijden_inOnderzoek_land = "overlijden.inOnderzoek.land", _(
-        "Overlijden > InOnderzoek > Land"
+    overlijden_inOnderzoek_land = (
+        "overlijden.inOnderzoek.land",
+        _("Overlijden > InOnderzoek > Land"),
     )
-    overlijden_inOnderzoek_plaats = "overlijden.inOnderzoek.plaats", _(
-        "Overlijden > InOnderzoek > Plaats"
+    overlijden_inOnderzoek_plaats = (
+        "overlijden.inOnderzoek.plaats",
+        _("Overlijden > InOnderzoek > Plaats"),
     )
-    overlijden_indicatieOverleden = "overlijden.indicatieOverleden", _(
-        "Overlijden > IndicatieOverleden"
+    overlijden_indicatieOverleden = (
+        "overlijden.indicatieOverleden",
+        _("Overlijden > IndicatieOverleden"),
     )
     overlijden_land_code = "overlijden.land.code", _("Overlijden > Land > Code")
-    overlijden_land_omschrijving = "overlijden.land.omschrijving", _(
-        "Overlijden > Land > Omschrijving"
+    overlijden_land_omschrijving = (
+        "overlijden.land.omschrijving",
+        _("Overlijden > Land > Omschrijving"),
     )
     overlijden_plaats_code = "overlijden.plaats.code", _("Overlijden > Land > Code")
-    overlijden_plaats_omschrijving = "overlijden.plaats.omschrijving", _(
-        "Overlijden > Land > Omschrijving"
+    overlijden_plaats_omschrijving = (
+        "overlijden.plaats.omschrijving",
+        _("Overlijden > Land > Omschrijving"),
     )
     verblijfplaats_aanduidingBijHuisnummer = (
         "verblijfplaats.aanduidingBijHuisnummer",
@@ -322,8 +348,9 @@ class AttributesV1(models.TextChoices):
         "verblijfplaats.datumVestigingInNederland.maand",
         _("Verblijfplaats > DatumVestigingInNederland > Maand"),
     )
-    verblijfplaats_functieAdres = "verblijfplaats.functieAdres", _(
-        "Verblijfplaats > FunctieAdres"
+    verblijfplaats_functieAdres = (
+        "verblijfplaats.functieAdres",
+        _("Verblijfplaats > FunctieAdres"),
     )
     verblijfplaats_gemeenteVanInschrijving_code = (
         "verblijfplaats.gemeenteVanInschrijving.code",
@@ -333,11 +360,13 @@ class AttributesV1(models.TextChoices):
         "verblijfplaats.gemeenteVanInschrijving.omschrijving",
         _("Verblijfplaats > GemeenteVanInschrijving > Omschrijving"),
     )
-    verblijfplaats_huisletter = "verblijfplaats.huisletter", _(
-        "Verblijfplaats > Huisletter"
+    verblijfplaats_huisletter = (
+        "verblijfplaats.huisletter",
+        _("Verblijfplaats > Huisletter"),
     )
-    verblijfplaats_huisnummer = "verblijfplaats.huisnummer", _(
-        "Verblijfplaats > Huisnummer"
+    verblijfplaats_huisnummer = (
+        "verblijfplaats.huisnummer",
+        _("Verblijfplaats > Huisnummer"),
     )
     verblijfplaats_huisnummertoevoeging = (
         "verblijfplaats.huisnummertoevoeging",
@@ -455,11 +484,13 @@ class AttributesV1(models.TextChoices):
         "verblijfplaats.landVanwaarIngeschreven.omschrijving",
         _("Verblijfplaats > LandVanwaarIngeschreven > Omschrijving"),
     )
-    verblijfplaats_locatiebeschrijving = "verblijfplaats.locatiebeschrijving", _(
-        "Verblijfplaats > Locatiebeschrijving"
+    verblijfplaats_locatiebeschrijving = (
+        "verblijfplaats.locatiebeschrijving",
+        _("Verblijfplaats > Locatiebeschrijving"),
     )
-    verblijfplaats_naamOpenbareRuimte = "verblijfplaats.naamOpenbareRuimte", _(
-        "Verblijfplaats > NaamOpenbareRuimte"
+    verblijfplaats_naamOpenbareRuimte = (
+        "verblijfplaats.naamOpenbareRuimte",
+        _("Verblijfplaats > NaamOpenbareRuimte"),
     )
     verblijfplaats_postcode = "verblijfplaats.postcode", _("Verblijfplaats > Postcode")
     verblijfplaats_straat = "verblijfplaats.straat", _("Verblijfplaats > Straat")
@@ -491,11 +522,13 @@ class AttributesV1(models.TextChoices):
         "verblijfplaats.verblijfBuitenland.vertrokkenOnbekendWaarheen",
         _("Verblijfplaats > VerblijfBuitenland > VertrokkenOnbekendWaarheen"),
     )
-    verblijfplaats_woonplaats = "verblijfplaats.woonplaats", _(
-        "Verblijfplaats > Woonplaats"
+    verblijfplaats_woonplaats = (
+        "verblijfplaats.woonplaats",
+        _("Verblijfplaats > Woonplaats"),
     )
-    verblijfstitel_aanduiding_code = "verblijfstitel.aanduiding.code", _(
-        "Verblijfstitel > Land > Code"
+    verblijfstitel_aanduiding_code = (
+        "verblijfstitel.aanduiding.code",
+        _("Verblijfstitel > Land > Code"),
     )
     verblijfstitel_aanduiding_omschrijving = (
         "verblijfstitel.aanduiding.omschrijving",
@@ -590,58 +623,70 @@ class AttributesV2(models.TextChoices):
         "verblijfplaats.verblijfadres.officieleStraatnaam",
         _("Verblijfplaats > Verblijf Adres > Officiele Straatnaam"),
     )
-    verblijfplaats_verblijfadres_postcode = "verblijfplaats.verblijfadres.postcode", _(
-        "Verblijfplaats > Verblijf Adres > Postcode"
+    verblijfplaats_verblijfadres_postcode = (
+        "verblijfplaats.verblijfadres.postcode",
+        _("Verblijfplaats > Verblijf Adres > Postcode"),
     )
     verblijfplaats_verblijfadres_woonplaats = (
         "verblijfplaats.verblijfadres.woonplaats",
         _("Verblijfplaats > Verblijf Adres > Woonplaats"),
     )
-    gemeentevaninschrijving_code = "gemeenteVanInschrijving.code", _(
-        "Gemeentevaninschrijving > Code"
+    gemeentevaninschrijving_code = (
+        "gemeenteVanInschrijving.code",
+        _("Gemeentevaninschrijving > Code"),
     )
-    gemeentevaninschrijving_omschrijving = "gemeenteVanInschrijving.omschrijving", _(
-        "Gemeentevaninschrijving > Omschrijving"
+    gemeentevaninschrijving_omschrijving = (
+        "gemeenteVanInschrijving.omschrijving",
+        _("Gemeentevaninschrijving > Omschrijving"),
     )
-    adressering_adresregel1 = "adressering.adresregel1", _(
-        "Adressering > Adres Regel 1"
+    adressering_adresregel1 = (
+        "adressering.adresregel1",
+        _("Adressering > Adres Regel 1"),
     )
-    adressering_adresregel2 = "adressering.adresregel2", _(
-        "Adressering > Adres Regel 2"
+    adressering_adresregel2 = (
+        "adressering.adresregel2",
+        _("Adressering > Adres Regel 2"),
     )
-    adressering_adresregel3 = "adressering.adresregel3", _(
-        "Adressering > Adres Regel 3"
+    adressering_adresregel3 = (
+        "adressering.adresregel3",
+        _("Adressering > Adres Regel 3"),
     )
     adressering_land = "adressering.land", _("Adressering > Land")
     geboorte_land = "geboorte.land", _("Geboorte > Land")
     geboorte_land_code = "geboorte.land.code", _("Geboorte > Land > Code")
-    geboorte_land_omschrijving = "geboorte.land.omschrijving", _(
-        "Geboorte > Land > Omschrijving"
+    geboorte_land_omschrijving = (
+        "geboorte.land.omschrijving",
+        _("Geboorte > Land > Omschrijving"),
     )
     geboorte_plaats = "geboorte.plaats", _("Geboorte > Plaats")
     geboorte_plaats_code = "geboorte.plaats.code", _("Geboorte > Plaats > Code")
-    geboorte_plaats_omschrijving = "geboorte.plaats.omschrijving", _(
-        "Geboorte > Plaats > Omschrijving"
+    geboorte_plaats_omschrijving = (
+        "geboorte.plaats.omschrijving",
+        _("Geboorte > Plaats > Omschrijving"),
     )
-    geboorte_datum_langformaat = "geboorte.datum.langFormaat", _(
-        "Geboorte > Datum > Lang Formaat"
+    geboorte_datum_langformaat = (
+        "geboorte.datum.langFormaat",
+        _("Geboorte > Datum > Lang Formaat"),
     )
     geboorte_datum_type = "geboorte.datum.type", _("Geboorte > Datum > Type")
     geboorte_datum_datum = "geboorte.datum.datum", _("Geboorte > Datum > Datum")
-    geboorte_datum_onbekend = "geboorte.datum.onbekend", _(
-        "Geboorte > Datum > Onbekend"
+    geboorte_datum_onbekend = (
+        "geboorte.datum.onbekend",
+        _("Geboorte > Datum > Onbekend"),
     )
     geboorte_datum_jaar = "geboorte.datum.jaar", _("Geboorte > Datum > Jaar")
     geboorte_datum_maand = "geboorte.datum.maand", _("Geboorte > Datum > Maand")
     geslacht_code = "geslacht.code", _("Geslacht > Code")
     geslacht_omschrijving = "geslacht.omschrijving", _("Geslacht > Omschrijving")
-    overlijden_datum_langformaat = "overlijden.datum.langFormaat", _(
-        "Overlijden > Datum > Lang Formaat"
+    overlijden_datum_langformaat = (
+        "overlijden.datum.langFormaat",
+        _("Overlijden > Datum > Lang Formaat"),
     )
     overlijden_datum_type = "overlijden.datum.type", _("Overlijden > Datum > Type")
     overlijden_datum_datum = "overlijden.datum.datum", _("Overlijden > Datum > Datum")
-    overlijden_datum_onbekend = "overlijden.datum.onbekend", _(
-        "Overlijden > Datum > Onbekend"
+    overlijden_datum_onbekend = (
+        "overlijden.datum.onbekend",
+        _("Overlijden > Datum > Onbekend"),
     )
     overlijden_datum_jaar = "overlijden.datum.jaar", _("Overlijden > Datum > Jaar")
     overlijden_datum_maand = "overlijden.datum.maand", _("Overlijden > Datum > Maand")

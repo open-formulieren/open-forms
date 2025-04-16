@@ -15,7 +15,6 @@ class StufServiceManager(models.Manager):
 
 
 class StufService(models.Model):
-
     soap_service = models.OneToOneField(
         "soap.SoapService",
         on_delete=models.CASCADE,

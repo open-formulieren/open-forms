@@ -9,7 +9,6 @@ from .mixins import FormListAjaxMixin
 
 @disable_admin_mfa()
 class FormReachedSubmissionLimitListFilterTests(FormListAjaxMixin, WebTest):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

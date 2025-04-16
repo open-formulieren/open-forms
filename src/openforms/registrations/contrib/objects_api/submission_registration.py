@@ -474,7 +474,6 @@ def _lookup_component(variable: SubmissionValueVariable) -> Component:
 
 
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
-
     @staticmethod
     def get_attachment_urls_by_key(submission: Submission) -> dict[str, list[str]]:
         urls_map = defaultdict[str, list[str]](list)
@@ -502,7 +501,6 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     def get_record_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> Record:
-
         state = submission.load_submission_value_variables_state()
 
         # dynamic values: values driven by user input

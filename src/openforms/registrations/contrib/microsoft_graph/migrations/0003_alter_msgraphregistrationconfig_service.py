@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("microsoft", "0003_auto_20211210_1804"),
         ("registrations_microsoft_graph", "0002_auto_20211210_1804"),

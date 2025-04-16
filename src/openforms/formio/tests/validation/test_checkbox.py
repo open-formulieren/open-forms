@@ -21,7 +21,6 @@ class OnlyFalseValidator(BasePlugin[bool]):
 
 
 class CheckboxValidationTests(SimpleTestCase):
-
     def test_checkbox_field_required_validation(self):
         component: Component = {
             "type": "checkbox",

@@ -95,9 +95,9 @@ def log_flaky():
     """
     frame = currentframe()
     assert frame is not None
-    assert (
-        frame.f_back is not None
-    ), "You may only call log_flaky inside another function"
+    assert frame.f_back is not None, (
+        "You may only call log_flaky inside another function"
+    )
     frame_info = getframeinfo(frame.f_back)
     relative_path = Path(frame_info.filename).relative_to(Path(settings.BASE_DIR))
     flaky_test_logger.warning(

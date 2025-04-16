@@ -125,9 +125,7 @@ class BaseTokenGenerator(ABC):
             self.key_salt,
             self._make_hash_value(obj, timestamp),
             secret=self.secret,
-        ).hexdigest()[
-            ::2
-        ]  # Limit to 20 characters to shorten the URL.
+        ).hexdigest()[::2]  # Limit to 20 characters to shorten the URL.
         return "%s-%s" % (ts_b36, hash_string)
 
     def _make_hash_value(self, obj: models.Model, timestamp: int) -> str:
@@ -139,9 +137,9 @@ class BaseTokenGenerator(ABC):
         invalidate the token.
         """
         parts = self.get_hash_value_parts(obj)
-        assert all(
-            (isinstance(bit, str) for bit in parts)
-        ), "All hash value parts should be strings."
+        assert all((isinstance(bit, str) for bit in parts)), (
+            "All hash value parts should be strings."
+        )
         joined_parts = "".join(parts)
         return f"{joined_parts}{timestamp}"
 

@@ -11,7 +11,6 @@ import csp_post_processor.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("forms", "0097_v267_to_v270"),
     ]

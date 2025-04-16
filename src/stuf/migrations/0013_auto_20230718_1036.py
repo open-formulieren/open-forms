@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("soap", "0001_initial"),
         ("stuf", "0001_initial_pre_openforms_v230"),

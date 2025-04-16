@@ -18,7 +18,6 @@ class SpacerTagTests(SimpleTestCase):
     def test_render_empty(self):
         for amount in (0, -1):
             with self.subTest(amount=amount):
-
                 template = Template(
                     """
                     {% load forms_admin_list %}

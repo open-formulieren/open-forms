@@ -789,7 +789,8 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
-    "RETRY_SUBMISSIONS_TIME_LIMIT", default=48  # hours
+    "RETRY_SUBMISSIONS_TIME_LIMIT",
+    default=48,  # hours
 )
 
 # Only ACK when the task has been executed. This prevents tasks from getting lost, with

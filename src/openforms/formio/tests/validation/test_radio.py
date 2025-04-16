@@ -8,7 +8,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class RadioValidationTests(SimpleTestCase):
-
     def test_radio_required_validation(self):
         component: RadioComponent = {
             "type": "radio",

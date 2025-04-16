@@ -48,9 +48,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="111222333",
         )
-        formio_wrapper = (
-            submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
-        )
+        formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
 
         with patch(
             "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
@@ -219,9 +217,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             ],
             auth_info=None,
         )
-        formio_wrapper = (
-            submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
-        )
+        formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
 
         updated_config_wrapper = get_dynamic_configuration(
             formio_wrapper,

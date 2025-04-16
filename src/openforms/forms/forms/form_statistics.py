@@ -32,8 +32,9 @@ def get_last_of_previous_month() -> date:
 
 
 class EventChoices(TextChoices):
-    registration_success = logevent.REGISTRATION_SUCCESS_EVENT, _(
-        "Successfully registered"
+    registration_success = (
+        logevent.REGISTRATION_SUCCESS_EVENT,
+        _("Successfully registered"),
     )
     submission_success = logevent.FORM_SUBMIT_SUCCESS_EVENT, _("Completed")
 

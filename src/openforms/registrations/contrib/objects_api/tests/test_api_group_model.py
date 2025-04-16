@@ -16,7 +16,6 @@ VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class ObjectsAPIGroupTests(TestCase):
-
     def test_can_save_without_catalogue_information(self):
         # checks that the check constraints are defined correctly
         instance = ObjectsAPIGroupConfigFactory.create(
@@ -339,7 +338,6 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
             "iot_submission_csv",
             "iot_attachment",
         ):
-
             err = _("No document type with description {description} found.").format(
                 description=iot_in_other
             )

@@ -4,7 +4,6 @@ from .factories import EmailVerificationFactory
 
 
 class EmailVerificationModelTests(SimpleTestCase):
-
     @override_settings(LANGUAGE_CODE="en")
     def test_string_representation(self):
         with self.subTest("unverified"):

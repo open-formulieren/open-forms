@@ -18,18 +18,21 @@ class Attributes(models.TextChoices):
     # NOTE the plugin manipulates the data to finds and attach the 'bezoekadres' and
     # 'correspondentieadres' from 'adressen' list so to make these 'bezoekadres_xx'
     # and 'correspondentieadres_xx' attributes we did some manual copy/paste/replace on the generated attrutes
-    bezoekadres_aanduidingBijHuisnummer = "bezoekadres.aanduidingBijHuisnummer", _(
-        "bezoekadres > aanduidingBijHuisnummer"
+    bezoekadres_aanduidingBijHuisnummer = (
+        "bezoekadres.aanduidingBijHuisnummer",
+        _("bezoekadres > aanduidingBijHuisnummer"),
     )
     bezoekadres_geoData_addresseerbaarObjectId = (
         "bezoekadres.geoData.addresseerbaarObjectId",
         _("bezoekadres > geoData > addresseerbaarObjectId"),
     )
-    bezoekadres_geoData_gpsLatitude = "bezoekadres.geoData.gpsLatitude", _(
-        "bezoekadres > geoData > gpsLatitude"
+    bezoekadres_geoData_gpsLatitude = (
+        "bezoekadres.geoData.gpsLatitude",
+        _("bezoekadres > geoData > gpsLatitude"),
     )
-    bezoekadres_geoData_gpsLongitude = "bezoekadres.geoData.gpsLongitude", _(
-        "bezoekadres > geoData > gpsLongitude"
+    bezoekadres_geoData_gpsLongitude = (
+        "bezoekadres.geoData.gpsLongitude",
+        _("bezoekadres > geoData > gpsLongitude"),
     )
     bezoekadres_geoData_nummerAanduidingId = (
         "bezoekadres.geoData.nummerAanduidingId",
@@ -49,24 +52,29 @@ class Attributes(models.TextChoices):
     )
     bezoekadres_huisletter = "bezoekadres.huisletter", _("bezoekadres > huisletter")
     bezoekadres_huisnummer = "bezoekadres.huisnummer", _("bezoekadres > huisnummer")
-    bezoekadres_huisnummerToevoeging = "bezoekadres.huisnummerToevoeging", _(
-        "bezoekadres > huisnummerToevoeging"
+    bezoekadres_huisnummerToevoeging = (
+        "bezoekadres.huisnummerToevoeging",
+        _("bezoekadres > huisnummerToevoeging"),
     )
-    bezoekadres_indAfgeschermd = "bezoekadres.indAfgeschermd", _(
-        "bezoekadres > indAfgeschermd"
+    bezoekadres_indAfgeschermd = (
+        "bezoekadres.indAfgeschermd",
+        _("bezoekadres > indAfgeschermd"),
     )
     bezoekadres_land = ("bezoekadres.land", _("bezoekadres > land"))
     bezoekadres_plaats = ("bezoekadres.plaats", _("bezoekadres > plaats"))
-    bezoekadres_postbusnummer = "bezoekadres.postbusnummer", _(
-        "bezoekadres > postbusnummer"
+    bezoekadres_postbusnummer = (
+        "bezoekadres.postbusnummer",
+        _("bezoekadres > postbusnummer"),
     )
     bezoekadres_postcode = "bezoekadres.postcode", _("bezoekadres > postcode")
-    bezoekadres_postcodeWoonplaats = "bezoekadres.postcodeWoonplaats", _(
-        "bezoekadres > postcodeWoonplaats"
+    bezoekadres_postcodeWoonplaats = (
+        "bezoekadres.postcodeWoonplaats",
+        _("bezoekadres > postcodeWoonplaats"),
     )
     bezoekadres_regio = ("bezoekadres.regio", _("bezoekadres > regio"))
-    bezoekadres_straatHuisnummer = "bezoekadres.straatHuisnummer", _(
-        "bezoekadres > straatHuisnummer"
+    bezoekadres_straatHuisnummer = (
+        "bezoekadres.straatHuisnummer",
+        _("bezoekadres > straatHuisnummer"),
     )
     bezoekadres_straatnaam = "bezoekadres.straatnaam", _("bezoekadres > straatnaam")
     bezoekadres_toevoegingAdres = (
@@ -107,54 +115,65 @@ class Attributes(models.TextChoices):
         "correspondentieadres.geoData.rijksdriehoekZ",
         _("correspondentieadres > geoData > rijksdriehoekZ"),
     )
-    correspondentieadres_huisletter = "correspondentieadres.huisletter", _(
-        "correspondentieadres > huisletter"
+    correspondentieadres_huisletter = (
+        "correspondentieadres.huisletter",
+        _("correspondentieadres > huisletter"),
     )
-    correspondentieadres_huisnummer = "correspondentieadres.huisnummer", _(
-        "correspondentieadres > huisnummer"
+    correspondentieadres_huisnummer = (
+        "correspondentieadres.huisnummer",
+        _("correspondentieadres > huisnummer"),
     )
     correspondentieadres_huisnummerToevoeging = (
         "correspondentieadres.huisnummerToevoeging",
         _("correspondentieadres > huisnummerToevoeging"),
     )
-    correspondentieadres_indAfgeschermd = "correspondentieadres.indAfgeschermd", _(
-        "correspondentieadres > indAfgeschermd"
+    correspondentieadres_indAfgeschermd = (
+        "correspondentieadres.indAfgeschermd",
+        _("correspondentieadres > indAfgeschermd"),
     )
-    correspondentieadres_land = "correspondentieadres.land", _(
-        "correspondentieadres > land"
+    correspondentieadres_land = (
+        "correspondentieadres.land",
+        _("correspondentieadres > land"),
     )
-    correspondentieadres_plaats = "correspondentieadres.plaats", _(
-        "correspondentieadres > plaats"
+    correspondentieadres_plaats = (
+        "correspondentieadres.plaats",
+        _("correspondentieadres > plaats"),
     )
-    correspondentieadres_postbusnummer = "correspondentieadres.postbusnummer", _(
-        "correspondentieadres > postbusnummer"
+    correspondentieadres_postbusnummer = (
+        "correspondentieadres.postbusnummer",
+        _("correspondentieadres > postbusnummer"),
     )
-    correspondentieadres_postcode = "correspondentieadres.postcode", _(
-        "correspondentieadres > postcode"
+    correspondentieadres_postcode = (
+        "correspondentieadres.postcode",
+        _("correspondentieadres > postcode"),
     )
     correspondentieadres_postcodeWoonplaats = (
         "correspondentieadres.postcodeWoonplaats",
         _("correspondentieadres > postcodeWoonplaats"),
     )
-    correspondentieadres_regio = "correspondentieadres.regio", _(
-        "correspondentieadres > regio"
+    correspondentieadres_regio = (
+        "correspondentieadres.regio",
+        _("correspondentieadres > regio"),
     )
     correspondentieadres_straatHuisnummer = (
         "correspondentieadres.straatHuisnummer",
         _("correspondentieadres > straatHuisnummer"),
     )
-    correspondentieadres_straatnaam = "correspondentieadres.straatnaam", _(
-        "correspondentieadres > straatnaam"
+    correspondentieadres_straatnaam = (
+        "correspondentieadres.straatnaam",
+        _("correspondentieadres > straatnaam"),
     )
     correspondentieadres_toevoegingAdres = (
         "correspondentieadres.toevoegingAdres",
         _("correspondentieadres > toevoegingAdres"),
     )
-    correspondentieadres_type = "correspondentieadres.type", _(
-        "correspondentieadres > type"
+    correspondentieadres_type = (
+        "correspondentieadres.type",
+        _("correspondentieadres > type"),
     )
-    eigenaar_rechtsvorm = "_embedded.eigenaar.rechtsvorm", _(
-        "_embedded > eigenaar > rechtsvorm"
+    eigenaar_rechtsvorm = (
+        "_embedded.eigenaar.rechtsvorm",
+        _("_embedded > eigenaar > rechtsvorm"),
     )
     eigenaar_rsin = "_embedded.eigenaar.rsin", _("_embedded > eigenaar > rsin")
     eigenaar_uitgebreideRechtsvorm = (
@@ -204,8 +223,9 @@ class Attributes(models.TextChoices):
         "_embedded.hoofdvestiging.materieleRegistratie.datumEinde",
         _("_embedded > hoofdvestiging > materieleRegistratie > datumEinde"),
     )
-    hoofdvestiging_rsin = "_embedded.hoofdvestiging.rsin", _(
-        "_embedded > hoofdvestiging > rsin"
+    hoofdvestiging_rsin = (
+        "_embedded.hoofdvestiging.rsin",
+        _("_embedded > hoofdvestiging > rsin"),
     )
     # hoofdvestiging_sbiActiviteiten_i_indHoofdactiviteit = (
     #     "_embedded.hoofdvestiging.sbiActiviteiten[].indHoofdactiviteit",
@@ -237,11 +257,13 @@ class Attributes(models.TextChoices):
     # )
     indNonMailing = ("indNonMailing", _("indNonMailing"))
     kvkNummer = ("kvkNummer", _("kvkNummer"))
-    materieleRegistratie_datumAanvang = "materieleRegistratie.datumAanvang", _(
-        "materieleRegistratie > datumAanvang"
+    materieleRegistratie_datumAanvang = (
+        "materieleRegistratie.datumAanvang",
+        _("materieleRegistratie > datumAanvang"),
     )
-    materieleRegistratie_datumEinde = "materieleRegistratie.datumEinde", _(
-        "materieleRegistratie > datumEinde"
+    materieleRegistratie_datumEinde = (
+        "materieleRegistratie.datumEinde",
+        _("materieleRegistratie > datumEinde"),
     )
     naam = ("naam", _("naam"))
     # sbiActiviteiten_i_indHoofdactiviteit = (

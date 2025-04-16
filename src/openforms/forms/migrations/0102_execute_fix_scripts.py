@@ -17,7 +17,6 @@ class FixScript:
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("forms", "0101_fix_radio_empty_default_value"),
     ]

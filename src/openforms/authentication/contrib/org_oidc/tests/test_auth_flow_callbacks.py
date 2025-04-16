@@ -38,9 +38,9 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         super().setUpTestData()
 
         # grab user group (from default_groups fixture)
-        assert Group.objects.filter(
-            name__iexact="Registreerders"
-        ).exists(), "Group with required permissions is missing"
+        assert Group.objects.filter(name__iexact="Registreerders").exists(), (
+            "Group with required permissions is missing"
+        )
 
     @mock_org_oidc_config()
     def test_redirects_after_successful_auth(self):

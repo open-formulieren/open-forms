@@ -43,7 +43,6 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_client(self):
-
         with get_kvk_profile_client() as client:
             # exists
             res = client.get_profile("69599084")

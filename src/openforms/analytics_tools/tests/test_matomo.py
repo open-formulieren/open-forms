@@ -24,7 +24,6 @@ class MatomoTests(AnalyticsMixin, TestCase):
         cls.json_csp = [{"directive": "default-src", "value": cls.matomo_url}]
 
     def test_matomo_properly_enabled(self):
-
         self.config.matomo_url = self.matomo_url
         self.config.matomo_site_id = "1234"
 

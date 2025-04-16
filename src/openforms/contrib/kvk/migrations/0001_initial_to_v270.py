@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_consumers", "0012_auto_20210104_1039"),
     ]

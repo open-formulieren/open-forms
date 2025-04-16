@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("prefill_haalcentraal", "0003_haalcentraalconfig_version"),
         ("haalcentraal", "0002_copy_config_from_prefill"),

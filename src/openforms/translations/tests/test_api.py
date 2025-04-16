@@ -15,7 +15,6 @@ from rest_framework.test import APITestCase
 )
 class I18NAPITests(APITestCase):
     def test_info_contains_available_languages(self):
-
         # expect language names in their local representation
         url = reverse("api:i18n:info")
 

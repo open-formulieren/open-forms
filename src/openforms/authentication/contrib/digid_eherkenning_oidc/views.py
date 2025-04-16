@@ -69,7 +69,6 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
         plugin = config_to_plugin[config_class]
 
         match error, error_description, plugin:
-
             case (
                 "access_denied",
                 "The user cancelled",

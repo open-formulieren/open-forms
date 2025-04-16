@@ -8,7 +8,6 @@ from .serializers import FixedMetadataVariableSerializer
 
 
 class FixedMetadataVariablesView(APIView):
-
     serializer_class = FixedMetadataVariableSerializer
 
     @extend_schema(

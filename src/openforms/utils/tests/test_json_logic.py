@@ -21,7 +21,6 @@ def _load_shared_tests() -> list[Annotated[list[JSON], 3]]:
 
 @override_settings(LANGUAGE_CODE="en")
 class RuleDescriptionTests(SimpleTestCase):
-
     UNSUPPORTED_OPERATORS = (
         "filter",
         "all",

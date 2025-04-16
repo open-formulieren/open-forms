@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_apis", "0016_zgwapigroupconfig_identifier"),
     ]

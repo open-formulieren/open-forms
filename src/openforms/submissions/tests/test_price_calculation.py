@@ -10,7 +10,6 @@ from .factories import SubmissionFactory
 
 
 class PriceCalculationTests(TestCase):
-
     def test_price_from_related_product(self):
         submission = SubmissionFactory.create(
             completed=True,

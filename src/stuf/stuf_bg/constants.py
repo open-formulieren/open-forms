@@ -31,8 +31,9 @@ class FieldChoices(models.TextChoices):
     huisnummertoevoeging = "huisnummertoevoeging", _("House number addition")
     postcode = "postcode", _("Postal code")
     woonplaatsNaam = "woonplaatsNaam", _("Residence name")
-    gemeenteVanInschrijving = "gemeenteVanInschrijving", _(
-        "Municipality where registered"
+    gemeenteVanInschrijving = (
+        "gemeenteVanInschrijving",
+        _("Municipality where registered"),
     )
 
     landAdresBuitenland = "landAdresBuitenland", _("Foreign address country")

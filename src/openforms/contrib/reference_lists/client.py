@@ -47,7 +47,6 @@ class Table(EndDateMixin):
 
 
 class ReferenceListsClient(APIClient):
-
     def get_table(self, code: str) -> Table | None:
         response = self.get("tabellen", params={"code": code})
         response.raise_for_status()

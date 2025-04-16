@@ -242,9 +242,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         logevent.registration_skip(submission)
         return
 
-    registry = backend_config._meta.get_field(
-        "backend"
-    ).registry  # pyright: ignore[reportAttributeAccessIssue]
+    registry = backend_config._meta.get_field("backend").registry  # pyright: ignore[reportAttributeAccessIssue]
     backend = backend_config.backend
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)

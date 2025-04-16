@@ -29,7 +29,6 @@ from openforms.submissions.utils import append_to_session_list, remove_from_sess
 
 @temp_private_root()
 class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
-
     def tearDown(self):
         self._clear_session()
 

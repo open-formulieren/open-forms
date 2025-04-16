@@ -143,7 +143,6 @@ class FormioDataTests(TestCase):
 
 
 class FormioConfigurationWrapperTests(TestCase):
-
     def test_editgrid_lookups_by_key(self):
         outer_textfield: Component = {
             "type": "textfield",

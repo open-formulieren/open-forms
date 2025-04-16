@@ -11,7 +11,6 @@ from openforms.submissions.dev_views import SubmissionPDFTestView
 
 
 class DevViewAccessTests(TestCase):
-
     dev_view_classes = (
         EmailWrapperTestView,
         SubmissionPDFTestView,

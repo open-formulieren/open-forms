@@ -25,9 +25,9 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_task_without_mail_template(self):
         submission = SubmissionFactory.create()
-        assert (
-            not ConfirmationEmailTemplate.objects.exists()
-        ), "There should not be any mail templates"
+        assert not ConfirmationEmailTemplate.objects.exists(), (
+            "There should not be any mail templates"
+        )
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             schedule_emails(submission.id)

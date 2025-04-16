@@ -28,8 +28,7 @@ class FormPriceLogic(models.Model):
     json_logic_trigger = models.JSONField(
         verbose_name=_("JSON logic"),
         help_text=_(
-            'JSON logic expression that must evaluate to "true" for the price '
-            "to apply."
+            'JSON logic expression that must evaluate to "true" for the price to apply.'
         ),
     )
     price = models.DecimalField(_("price"), max_digits=10, decimal_places=2)

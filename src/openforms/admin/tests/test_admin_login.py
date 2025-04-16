@@ -24,7 +24,6 @@ LOGIN_URL = reverse_lazy("admin:login")
 @disable_admin_mfa()
 @override_settings(USE_OIDC_FOR_ADMIN_LOGIN=False)
 class ClassicLoginTests(WebTest):
-
     def test_admin_login_without_next_param(self):
         user = SuperUserFactory.create()
         login_page = self.app.get(LOGIN_URL, auto_follow=True)
@@ -78,7 +77,6 @@ class ClassicLoginTests(WebTest):
 @disable_admin_mfa()
 @override_settings(USE_OIDC_FOR_ADMIN_LOGIN=True)
 class OIDCLoginTests(WebTest):
-
     def setUp(self):
         super().setUp()
 
@@ -113,7 +111,6 @@ class OIDCLoginTests(WebTest):
 
 @disable_admin_mfa()
 class AlreadyLoggedInTests(WebTest):
-
     def test_admin_login_without_next_param(self):
         user = SuperUserFactory.create()
 
@@ -145,7 +142,6 @@ class AlreadyLoggedInTests(WebTest):
     MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[],  # enforce MFA
 )
 class RecoveryTokenTests(WebTest):
-
     @tag("gh-4072")
     def test_can_enter_recovery_token(self):
         user = StaffUserFactory.create(

@@ -16,7 +16,6 @@ class WrapperFieldTests(TestCase):
         self.assertEqual(field.description, models.TextField.description)
 
     def test_value_write_and_read(self):
-
         instance = Model.objects.create(wysiwyg="testdata")
 
         self.assertEqual(instance.wysiwyg, "testdata")

@@ -39,7 +39,6 @@ else:
 
 
 class HaalCentraalConfigFactory(DjangoModelFactory):
-
     brp_personen_service = factory.SubFactory(
         ServiceFactory,
         api_root=HC_BRP_PERSONEN_BASE_URL,

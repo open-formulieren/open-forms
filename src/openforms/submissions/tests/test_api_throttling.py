@@ -35,10 +35,10 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
                 )
                 response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
-                assert (
-                    response.status_code == status.HTTP_200_OK
-                ), "Expected: HTTP 200 (OK); Actual: HTTP {status}".format(
-                    status=response.status_code
+                assert response.status_code == status.HTTP_200_OK, (
+                    "Expected: HTTP 200 (OK); Actual: HTTP {status}".format(
+                        status=response.status_code
+                    )
                 )
 
             # Request #11 should fail with HTTP 429
@@ -49,10 +49,10 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             )
             response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
-            assert (
-                response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
-            ), "Expected: HTTP 429 (too many requests); Actual: HTTP {status}".format(
-                status=response.status_code
+            assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS, (
+                "Expected: HTTP 429 (too many requests); Actual: HTTP {status}".format(
+                    status=response.status_code
+                )
             )
 
             # Wait 1 minute for the next request
@@ -60,10 +60,10 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
 
             response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
-            assert (
-                response.status_code == status.HTTP_200_OK
-            ), "Expected: HTTP 200 (OK); Actual: HTTP {status}".format(
-                status=response.status_code
+            assert response.status_code == status.HTTP_200_OK, (
+                "Expected: HTTP 200 (OK); Actual: HTTP {status}".format(
+                    status=response.status_code
+                )
             )
 
     def test_throttling_pause(self):
@@ -83,10 +83,10 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
                 )
                 response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
 
-                assert (
-                    response.status_code == status.HTTP_201_CREATED
-                ), "Expected: HTTP 201 (created); Actual: HTTP {status}".format(
-                    status=response.status_code
+                assert response.status_code == status.HTTP_201_CREATED, (
+                    "Expected: HTTP 201 (created); Actual: HTTP {status}".format(
+                        status=response.status_code
+                    )
                 )
 
             # Request #4 should fail with HTTP 429
@@ -97,10 +97,10 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             )
             response = self.client.post(endpoint)
 
-            assert (
-                response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
-            ), "Expected: HTTP 429 (too many requests); Actual: HTTP {status}".format(
-                status=response.status_code
+            assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS, (
+                "Expected: HTTP 429 (too many requests); Actual: HTTP {status}".format(
+                    status=response.status_code
+                )
             )
 
             # Wait 1 minute for the next request
@@ -108,8 +108,8 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
 
             response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
 
-            assert (
-                response.status_code == status.HTTP_201_CREATED
-            ), "Expected: HTTP 201 (created); Actual: HTTP {status}".format(
-                status=response.status_code
+            assert response.status_code == status.HTTP_201_CREATED, (
+                "Expected: HTTP 201 (created); Actual: HTTP {status}".format(
+                    status=response.status_code
+                )
             )

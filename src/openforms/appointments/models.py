@@ -35,7 +35,6 @@ class AppointmentsConfig(SingletonModel):
 
 
 class AppointmentInfo(models.Model):
-
     status = models.CharField(
         _("status"),
         choices=AppointmentDetailsStatus.choices,

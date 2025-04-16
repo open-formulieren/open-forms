@@ -13,7 +13,6 @@ import openforms.template.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("config", "0001_initial_to_v250"),
         ("upgrades", "0001_initial"),

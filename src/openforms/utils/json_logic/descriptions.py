@@ -68,9 +68,9 @@ class TemplatedArgs:
         self.arg_names = arg_names
 
     def _get_template_format_kwargs(self, args):
-        assert (num_args := len(args)) == (
-            num_names := len(self.arg_names)
-        ), f"Unexpected number of operation arguments, got {num_args}, expected {num_names}"
+        assert (num_args := len(args)) == (num_names := len(self.arg_names)), (
+            f"Unexpected number of operation arguments, got {num_args}, expected {num_names}"
+        )
         return {name: value for name, value in zip(self.arg_names, args)}
 
     def __call__(self, operation: Operation, for_root: bool = False) -> str:

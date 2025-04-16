@@ -102,7 +102,6 @@ DYNAMIC_TOOL_CONFIGURATION = {
 
 
 class AnalyticsToolsConfiguration(SingletonModel):
-
     gtm_code = models.CharField(
         _("Google Tag Manager code"),
         max_length=50,

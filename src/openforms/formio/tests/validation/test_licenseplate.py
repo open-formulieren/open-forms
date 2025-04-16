@@ -7,7 +7,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class LicenseplateFieldValidationTests(SimpleTestCase):
-
     def test_valid_non_required_licenseplatefield(self):
         component: Component = {
             "type": "licenseplate",

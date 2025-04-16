@@ -6,7 +6,6 @@ from openforms.forms.migration_operations import ConvertComponentsOperation
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("forms", "0100_add_interaction_config_to_map_component"),
     ]

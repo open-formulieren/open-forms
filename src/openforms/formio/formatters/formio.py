@@ -177,9 +177,9 @@ class SignatureFormatter(FormatterBase):
         if not self.as_html:
             return text
 
-        assert value.startswith(
-            "data:image/"
-        ), "Expected 'data:' URI with image mime type"
+        assert value.startswith("data:image/"), (
+            "Expected 'data:' URI with image mime type"
+        )
 
         # max-width is required for e-mail styling where it may overflow a table cell
         return format_html(

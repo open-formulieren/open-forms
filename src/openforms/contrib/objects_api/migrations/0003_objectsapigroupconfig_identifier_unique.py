@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("objects_api", "0002_objectsapigroupconfig_identifier"),
     ]

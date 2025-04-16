@@ -245,7 +245,6 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
 
 
 class RadioTests(TestCase):
-
     def test_manual_data_source(self):
         component: RadioComponent = {
             "label": "Radio label",
@@ -282,7 +281,6 @@ class RadioTests(TestCase):
 
 
 class SelectTests(TestCase):
-
     def test_manual_data_source(self):
         component: SelectComponent = {
             "label": "Select label",

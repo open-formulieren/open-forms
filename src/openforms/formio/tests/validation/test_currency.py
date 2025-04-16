@@ -21,7 +21,6 @@ class GT5Validator(BasePlugin[int | float]):
 
 
 class CurrencyFieldValidationTests(SimpleTestCase):
-
     def test_currencyfield_required_validation(self):
         component: Component = {
             "type": "currency",

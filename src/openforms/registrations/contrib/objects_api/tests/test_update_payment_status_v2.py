@@ -22,7 +22,6 @@ from ..typing import RegistrationOptionsV2
 
 @freeze_time("2020-02-02")
 class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
-
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
     def setUp(self):
@@ -71,10 +70,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 # fmt: off
-                {
-                    "key": "age",
-                    "type": "number"
-                },
+                {"key": "age", "type": "number"},
                 {
                     "key": "lastname",
                     "type": "textfield",
@@ -118,10 +114,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "age",
                     "target_path": ["age"],
                 },
-                {
-                    "variable_key": "lastname",
-                    "target_path": ["name", "last.name"]
-                },
+                {"variable_key": "lastname", "target_path": ["name", "last.name"]},
                 {
                     "variable_key": "now",
                     "target_path": ["submission_date"],

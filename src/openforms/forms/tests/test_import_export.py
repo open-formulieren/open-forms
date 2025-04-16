@@ -75,7 +75,6 @@ class TempdirMixin:
 
 
 class ImportExportTests(TempdirMixin, TestCase):
-
     @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
         form, _ = FormFactory.create_batch(2, authentication_backends=["demo"])

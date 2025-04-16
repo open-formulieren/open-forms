@@ -145,7 +145,6 @@ class TestStaticVariables(TestCase):
 
 
 class StaticVariableValidJsonSchemaTests(TestCase):
-
     validator = Draft202012Validator
 
     def assertValidSchema(self, properties):

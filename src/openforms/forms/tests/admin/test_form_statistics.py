@@ -146,7 +146,6 @@ class SubmissionStatisticsAdminTests(WebTest):
 
 @disable_admin_mfa()
 class FormStatisticsExportAdminTests(WebTest):
-
     admin_url = reverse_lazy("admin:formstatistics_export")
 
     def test_access_control_no_access(self):

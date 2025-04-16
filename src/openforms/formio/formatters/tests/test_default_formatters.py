@@ -124,7 +124,7 @@ class DefaultFormatterTestCase(TestCase):
 
         self.assertHTMLEqual(
             formatted_html,
-            f"""<img src="{value}" alt="{_('signature added')}" style="max-width: 100%;" />""",
+            f"""<img src="{value}" alt="{_("signature added")}" style="max-width: 100%;" />""",
         )
 
     def test_addressnl_missing_keys(self):

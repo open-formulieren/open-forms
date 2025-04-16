@@ -10,7 +10,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class SelectboxesValidationTests(SimpleTestCase):
-
     def test_selectboxes_required_validation(self):
         component: SelectBoxesComponent = {
             "type": "selectboxes",

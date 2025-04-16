@@ -79,9 +79,9 @@ class OFVCRMixin(VCRMixin):
     """
 
     def _get_cassette_library_dir(self):
-        assert (
-            self.VCR_TEST_FILES
-        ), "You must define the `VCR_TEST_FILES` class attribute"
+        assert self.VCR_TEST_FILES, (
+            "You must define the `VCR_TEST_FILES` class attribute"
+        )
         return str(self.VCR_TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
 
     def _get_vcr_kwargs(self):

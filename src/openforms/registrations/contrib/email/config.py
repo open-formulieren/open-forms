@@ -135,7 +135,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 # sanity check for development - keep serializer and type definitions in sync
 _serializer_fields = EmailOptionsSerializer._declared_fields.keys()
 _options_keys = Options.__annotations__.keys()
-assert (
-    _serializer_fields == _options_keys
-), "Mismatch between serializer fields and options dictionary keys!"
+assert _serializer_fields == _options_keys, (
+    "Mismatch between serializer fields and options dictionary keys!"
+)
 del _serializer_fields, _options_keys

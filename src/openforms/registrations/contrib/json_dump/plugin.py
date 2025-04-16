@@ -298,7 +298,9 @@ def process_component(
                     schema["properties"][key].pop(k, None)  # type: ignore
 
                 values[key] = [
-                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
+                    option
+                    for option, is_selected in values[key].items()
+                    if is_selected  # type: ignore
                 ]
                 return
 
@@ -316,7 +318,6 @@ def process_component(
             for index, edit_grid_values in enumerate(
                 cast(list[JSONObject], values[key])
             ):
-
                 for child_key in edit_grid_values.keys():
                     process_component(
                         component=configuration_wrapper[child_key],
@@ -370,9 +371,7 @@ def get_attachments_and_base_schema(
             "content": {"type": "string", "format": "base64"},
         },
         "required": (
-            ["file_name", "content"]
-            if len(encoded_attachments) != 0
-            else []
+            ["file_name", "content"] if len(encoded_attachments) != 0 else []
             # No required properties when there are no attachments
         ),
         "additionalProperties": False,

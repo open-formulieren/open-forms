@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("timeline_logger", "0004_alter_fields"),
         ("forms", "0097_v267_to_v270"),

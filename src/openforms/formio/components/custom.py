@@ -572,13 +572,11 @@ class AddressValueSerializer(serializers.Serializer):
 
 @register("addressNL")
 class AddressNL(BasePlugin[AddressNLComponent]):
-
     formatter = AddressNLFormatter
 
     def build_serializer_field(
         self, component: AddressNLComponent
     ) -> AddressValueSerializer:
-
         validate = component.get("validate", {})
         required = validate.get("required", False)
 

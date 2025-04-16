@@ -7,16 +7,18 @@ EXPORT_META_KEY = "_meta"
 
 
 class LogicActionTypes(models.TextChoices):
-    step_not_applicable = "step-not-applicable", _(
-        "Mark the form step as not-applicable"
+    step_not_applicable = (
+        "step-not-applicable",
+        _("Mark the form step as not-applicable"),
     )
     step_applicable = "step-applicable", _("Mark the form step as applicable")
     disable_next = "disable-next", _("Disable the next step")
     property = "property", _("Modify a component property")
     variable = "variable", _("Set the value of a variable")
     fetch_from_service = "fetch-from-service", _("Fetch the value from a service")
-    set_registration_backend = "set-registration-backend", _(
-        "Set the registration backend to use for the submission"
+    set_registration_backend = (
+        "set-registration-backend",
+        _("Set the registration backend to use for the submission"),
     )
     evaluate_dmn = "evaluate-dmn", _("Evaluate DMN")
 

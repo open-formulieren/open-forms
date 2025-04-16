@@ -7,7 +7,6 @@ import openforms.variables.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_consumers", "0016_auto_20220818_1412"),
     ]

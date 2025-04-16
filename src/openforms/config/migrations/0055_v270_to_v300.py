@@ -18,7 +18,6 @@ from openforms.utils.migrations_utils.fix_default_translation import (
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("config", "0054_v250_to_v270"),
     ]

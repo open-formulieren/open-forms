@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_consumers", "0022_set_default_service_slug"),
         ("objects_api", "0003_objectsapigroupconfig_identifier_unique"),

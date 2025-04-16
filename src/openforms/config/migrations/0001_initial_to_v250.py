@@ -91,7 +91,6 @@ def remove_colors(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

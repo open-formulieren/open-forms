@@ -49,9 +49,7 @@ class ComponentNode(Node):
     json_renderer_path: Path | None = (
         None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     )
-    configuration_path: str = (
-        ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
-    )
+    configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node | None = None
 
     @staticmethod

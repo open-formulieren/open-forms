@@ -59,10 +59,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             [
                 # fmt: off
-                {
-                    "key": "age",
-                    "type": "number"
-                },
+                {"key": "age", "type": "number"},
                 {
                     "key": "lastname",
                     "type": "textfield",
@@ -103,10 +100,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "age",
                     "target_path": ["age"],
                 },
-                {
-                    "variable_key": "lastname",
-                    "target_path": ["name", "last.name"]
-                },
+                {"variable_key": "lastname", "target_path": ["name", "last.name"]},
                 {
                     "variable_key": "now",
                     "target_path": ["submission_date"],
@@ -311,10 +305,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "single_file",
                     "target_path": ["single_file"],
                 },
-                {
-                    "variable_key": "multiple_files",
-                    "target_path": ["multiple_files"]
-                },
+                {"variable_key": "multiple_files", "target_path": ["multiple_files"]},
                 # fmt: on
             ],
             "transform_to_list": [],

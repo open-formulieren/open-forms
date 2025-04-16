@@ -484,9 +484,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         acs_url.remove(netloc=True, scheme=True)
 
         # but in the meanwhile the form designer goes all-in
-        form.authentication_backend_options[PLUGIN_ID][
-            "loa"
-        ] = DigiDAssuranceLevels.high
+        form.authentication_backend_options[PLUGIN_ID]["loa"] = (
+            DigiDAssuranceLevels.high
+        )
         form.save()
         clear_caches()
 

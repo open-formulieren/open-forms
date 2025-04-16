@@ -7,7 +7,6 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class EventTests(TestCase):
-
     # test for specific events
     def test_submission_start(self):
         with self.subTest("anon"):

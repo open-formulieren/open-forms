@@ -7,7 +7,6 @@ import openforms.analytics_tools.validators
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

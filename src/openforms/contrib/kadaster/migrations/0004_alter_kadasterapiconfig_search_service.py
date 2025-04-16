@@ -7,7 +7,6 @@ import openforms.contrib.kadaster.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_consumers", "0019_alter_service_uuid"),
         ("kadaster", "0003_move_bag_service_config"),

@@ -18,6 +18,6 @@ SOAP_VERSION_CONTENT_TYPES = {
     SOAPVersion.soap12: "application/soap+xml",
 }
 
-assert [
-    version in SOAP_VERSION_CONTENT_TYPES for version, _ in SOAPVersion.choices
-], "Not all SOAP versions are present in the SOAP_VERSION_CONTENT_TYPES constant"
+assert [version in SOAP_VERSION_CONTENT_TYPES for version, _ in SOAPVersion.choices], (
+    "Not all SOAP versions are present in the SOAP_VERSION_CONTENT_TYPES constant"
+)

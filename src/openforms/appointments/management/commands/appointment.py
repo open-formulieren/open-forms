@@ -82,7 +82,6 @@ class Command(BaseCommand):
                     return available_options[selected_option]
 
     def create_booking(self):
-
         # Products
         available_products = self.plugin.get_available_products()
 
@@ -156,7 +155,6 @@ class Command(BaseCommand):
                 self.stderr.write(f"{do_book} is not a valid choice.")
 
     def show_booking(self, booking_id=None):
-
         while not booking_id:
             booking_id = input("Appointment ID: ")
 
@@ -171,7 +169,6 @@ class Command(BaseCommand):
             self.stdout.write(f"- {k}: {getattr(details, k)}")
 
     def cancel_booking(self, booking_id=None):
-
         while not booking_id:
             booking_id = input("Appointment ID: ")
 

@@ -44,7 +44,6 @@ def _setup_random_state():
 
 
 class RandomStateRunner(DiscoverRunner):
-
     def setup_test_environment(self, **kwargs):
         _setup_random_state()
         super().setup_test_environment(**kwargs)

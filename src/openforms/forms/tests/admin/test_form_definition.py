@@ -30,7 +30,6 @@ class TestFormDefinitionAdmin(WebTest):
         self.app.set_user(self.user)
 
     def test_used_in_forms_shown_in_list_response(self):
-
         response = self.app.get(reverse("admin:forms_formdefinition_changelist"))
 
         self.assertInHTML(
