@@ -218,14 +218,15 @@ def process_component(
       object-shape for selectboxes components.
     """
     key = component["key"]
+    assert isinstance(schema["properties"], dict)
 
     match component:
         case {"type": "file", "multiple": True}:
             attachment_list, base_schema = get_attachments_and_base_schema(
                 cast(FileComponent, component), attachments, key_prefix
             )
-            values[key] = attachment_list  # type: ignore
-            schema["properties"][key] = to_multiple(base_schema)  # type: ignore
+            values[key] = attachment_list
+            schema["properties"][key] = to_multiple(base_schema)
 
         case {"type": "file"}:  # multiple is False or missing
             attachment_list, base_schema = get_attachments_and_base_schema(
@@ -239,7 +240,7 @@ def process_component(
             else:
                 value = attachment_list[0]
             values[key] = value
-            schema["properties"][key] = base_schema  # type: ignore
+            schema["properties"][key] = base_schema  # pyright: ignore[reportArgumentType]
 
         case {
             "type": "radio",
@@ -250,7 +251,9 @@ def process_component(
             component = cast(RadioComponent, component)
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
-            schema["properties"][key]["enum"] = choices  # type: ignore
+            _properties = schema["properties"][key]
+            assert isinstance(_properties, dict)
+            _properties["enum"] = choices
 
         case {
             "type": "select",
@@ -262,10 +265,13 @@ def process_component(
             choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
             choices.append("")  # Take into account an unfilled field
 
+            _properties = schema["properties"][key]
+            assert isinstance(_properties, dict)
             if component.get("multiple", False):
-                schema["properties"][key]["items"]["enum"] = choices  # type: ignore
+                assert isinstance(_properties["items"], dict)
+                _properties["items"]["enum"] = choices
             else:
-                schema["properties"][key]["enum"] = choices  # type: ignore
+                _properties["enum"] = choices
 
         case {"type": "selectboxes"}:
             component = cast(SelectBoxesComponent, component)
@@ -288,23 +294,27 @@ def process_component(
                     "required": list(properties),
                     "additionalProperties": False,
                 }
-                schema["properties"][key].update(base_schema)  # type: ignore
+                _properties = schema["properties"][key]
+                assert isinstance(_properties, dict)
+                _properties.update(base_schema)
             elif key in transform_to_list:
                 choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
                 base_schema = {
                     "type": "array",
                     "items": {"type": "string", "enum": choices},
                 }
-                schema["properties"][key].update(base_schema)  # type: ignore
+                _properties = schema["properties"][key]
+                assert isinstance(_properties, dict)
+                _properties.update(base_schema)
 
                 keys_to_remove = ("properties", "required", "additionalProperties")
                 for k in keys_to_remove:
-                    schema["properties"][key].pop(k, None)  # type: ignore
+                    _properties.pop(k, None)
 
                 values[key] = [
                     option
-                    for option, is_selected in values[key].items()
-                    if is_selected  # type: ignore
+                    for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
+                    if is_selected
                 ]
                 return
 
