@@ -1,3 +1,4 @@
+# ruff: noqa: F403 F405
 import logging
 from datetime import timedelta
 
@@ -13,12 +14,12 @@ from openforms.config.models import GlobalConfiguration
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import PostCompletionMetadata, Submission
-from .cleanup import *  # noqa
-from .emails import *  # noqa
-from .payments import *  # noqa
-from .pdf import *  # noqa
-from .registration import *  # noqa
-from .user_uploads import *  # noqa
+from .cleanup import *
+from .emails import *
+from .payments import *
+from .pdf import *
+from .registration import *
+from .user_uploads import *
 
 logger = logging.getLogger(__name__)
 

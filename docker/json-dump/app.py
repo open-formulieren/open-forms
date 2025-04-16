@@ -1,8 +1,7 @@
-import json
-
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+
 
 @app.route("/json_plugin", methods=["POST"])
 def json_plugin_post():

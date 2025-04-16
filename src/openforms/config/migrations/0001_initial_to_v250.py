@@ -63,7 +63,7 @@ def hsl_to_rgbhex(hsl_css_color):
     if m:
         h = int(m.group(1))
         s = int(m.group(2))
-        l = int(m.group(3))
+        l = int(m.group(3))  # noqa: E741
 
         # conversion algorithm via https://stackoverflow.com/questions/41403936/converting-hsl-to-hex-in-python3
         rgb = colorsys.hls_to_rgb(h / 360, l / 100, s / 100)

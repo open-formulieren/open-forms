@@ -271,10 +271,14 @@ def process_component(
             component = cast(SelectBoxesComponent, component)
             data_src = component.get("openForms", {}).get("dataSrc")
 
-            if data_src in (
-                DataSrcOptions.variable,
-                DataSrcOptions.reference_lists,
-            ) and not (key in transform_to_list):
+            if (
+                data_src
+                in (
+                    DataSrcOptions.variable,
+                    DataSrcOptions.reference_lists,
+                )
+                and key not in transform_to_list
+            ):
                 properties = {
                     options["value"]: {"type": "boolean"}
                     for options in component["values"]
