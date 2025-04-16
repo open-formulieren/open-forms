@@ -36,6 +36,8 @@ Regular bugfix release.
 * [:backend:`4917`] Fixed the backwards-compatibility issues of the reworked form
   navigation. See `the SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_
   for detailed upgrade documentation.
+* [:backend:`5245`] Fixed broken variable mapping configuration when multiple registration
+  backends are available on a form.
 
 **Project maintenance**
 
