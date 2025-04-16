@@ -35,6 +35,8 @@ Changelog
   pausing the form.
 * Fixed SAMLv2 metadata generation when multiple certificates are configured.
 * Fixed the NLX directory URLs.
+* [:backend:`5245`] Fixed broken variable mapping configuration when multiple registration
+  backends are available on a form.
 
 **Project maintenance**
 
