@@ -553,11 +553,6 @@ inflection==0.5.1
     #   -r requirements/ci.txt
     #   django-camunda
     #   drf-spectacular
-iniconfig==1.1.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   pytest
 isodate==0.6.1
     # via
     #   -c requirements/ci.txt
@@ -728,7 +723,6 @@ packaging==23.1
     #   -r requirements/ci.txt
     #   black
     #   prance
-    #   pytest
     #   sphinx
 pathable==0.4.3
     # via
@@ -765,11 +759,6 @@ playwright==1.49.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pluggy==0.13.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   pytest
 portalocker==2.3.2
     # via
     #   -c requirements/ci.txt
@@ -867,10 +856,6 @@ pypng==0.20220715.0
     #   -r requirements/ci.txt
     #   qrcode
 pyquery==1.4.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-pytest==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
