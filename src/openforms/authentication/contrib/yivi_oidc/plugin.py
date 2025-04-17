@@ -1,9 +1,10 @@
 from typing import TypedDict
 
+from digid_eherkenning.oidc.models import BaseConfig
 from django.contrib import auth
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from mozilla_django_oidc_db.views import OIDCInit
 
@@ -15,7 +16,6 @@ from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
 from .models import YiviOpenIDConnectConfig
-from ...typing import FormAuth
 
 PLUGIN_IDENTIFIER = "yivi_oidc"
 
@@ -23,19 +23,6 @@ yivi_init = OIDCInit.as_view(
     config_class=YiviOpenIDConnectConfig,
     allow_next_from_query=False,
 )
-
-
-def get_config_to_plugin() -> (
-    dict[type[YiviOpenIDConnectConfig], YiviOIDCAuthentication]
-):
-    """
-    Get the mapping of config class to plugin identifier from the registry.
-    """
-    return {
-        plugin.config_class: plugin
-        for plugin in register
-        if isinstance(plugin, YiviOIDCAuthentication)
-    }
 
 
 class YiviClaims(TypedDict):
@@ -55,10 +42,11 @@ class YiviOIDCAuthentication(BasePlugin):
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
 
-    # @TODO check yivi documentation if `pseudo` is correct
-    session_key: str = "yivi_oidc:pseudo"
+    session_key: str = "yivi_oidc"
     verbose_name = _("Yivi via OpenID Connect")
-    provides_auth = AuthAttribute.pseudo
+    # Yivi can provide a range of auth attributes, including bsn and kvk
+    provides_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
+    config_class = YiviOpenIDConnectConfig
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
         return_url = reverse_plus(
@@ -71,14 +59,6 @@ class YiviOIDCAuthentication(BasePlugin):
         response = yivi_init(request, return_url=return_url)
         assert isinstance(response, HttpResponseRedirect)
         return response
-
-    def transform_claims(self, normalized_claims: YiviClaims) -> FormAuth:
-        return {
-            "plugin": self.identifier,
-            "attribute": self.provides_auth,
-            "value": "some yivi claim",  # @TODO get a yivi claim value from normalized_claims
-            # @TODO add `additional_claims`
-        }
 
     def handle_return(self, request, form):
         """
@@ -93,7 +73,14 @@ class YiviOIDCAuthentication(BasePlugin):
 
         normalized_claims: YiviClaims | None = request.session.get(self.session_key)
         if normalized_claims:
-            form_auth = self.transform_claims(normalized_claims)
+            # @TODO set `attribute` and `value` dynamically
+            # Perhaps based on the used scopes?
+            form_auth = {
+                "plugin": self.identifier,
+                "attribute": AuthAttribute,
+                "value": "some yivi claim",
+                # @TODO add `additional_claims`
+            }
             request.session[FORM_AUTH_SESSION_KEY] = form_auth
 
         return HttpResponseRedirect(form_url)
@@ -122,3 +109,14 @@ class YiviOIDCAuthentication(BasePlugin):
             href="https://yivi.app/",
             appearance=LogoAppearance.light,
         )
+
+
+def get_config_to_plugin() -> dict[type[BaseConfig], YiviOIDCAuthentication]:
+    """
+    Get the mapping of config class to plugin identifier from the registry.
+    """
+    return {
+        plugin.config_class: plugin
+        for plugin in register
+        if isinstance(plugin, YiviOIDCAuthentication)
+    }

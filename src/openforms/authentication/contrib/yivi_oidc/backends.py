@@ -7,9 +7,7 @@ from django.http import HttpRequest
 
 from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
-from flags.state import flag_enabled
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
-from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
 from openforms.typing import JSONObject
@@ -23,8 +21,6 @@ class YiviOIDCBackend(OIDCAuthenticationBackend):
     """
     A backend specialised to the yivi subclassed model.
     """
-
-    OF_OIDCDB_REQUIRED_CLAIMS = dynamic_setting[list[str]](default=[])
 
     @override
     def _check_candidate_backend(self) -> bool:
@@ -67,12 +63,7 @@ class YiviOIDCBackend(OIDCAuthenticationBackend):
     def _process_claims(self, claims: JSONObject) -> JSONObject:
         # see if we can use a cached config instance from the settings configuration
         assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
-        # @TODO add strict flag for YIVI OIDC
-        strict_mode = flag_enabled(
-            "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
-        )
-        assert isinstance(strict_mode, bool)
-        return process_claims(claims, self._config, strict=strict_mode)
+        return process_claims(claims, self._config, strict=False)
 
     @override
     def verify_claims(self, claims) -> bool:
@@ -92,16 +83,6 @@ class YiviOIDCBackend(OIDCAuthenticationBackend):
                 extra={"claims": obfuscated_claims},
             )
             return False
-
-        # even in non-strict mode, some claims are a hard requirement
-        for claim in self.OF_OIDCDB_REQUIRED_CLAIMS:
-            if claim not in processed_claims:
-                logger.error(
-                    "Claims are incomplete - claim for '%s' is missing",
-                    claim,
-                    extra={"claims": obfuscated_claims},
-                )
-                return False
 
         return True
 
