@@ -6,6 +6,8 @@ const AuthPlugin = PropTypes.shape({
   providesAuth: PropTypes.string,
   assuranceLevel: PropTypes.array,
   supportsLoaOverride: PropTypes.bool,
+  // Schema will be null for plugins that don't support additional configuration
+  schema: PropTypes.object,
 });
 
 export default AuthPlugin;
