@@ -35,6 +35,12 @@ class AuthPluginSerializer(PluginBaseSerializer):
         label=_("Levels of assurance"),
         help_text=_("The levels of assurance this plugin defines."),
     )
+    schema = serializers.DictField(
+        source="configuration_options.display_as_jsonschema",
+        default=None,  # Return None for plugins that don't support configuration_options
+        label=_("JSON schema"),
+        help_text=_("The generated JSON schema for the plugin options."),
+    )
 
 
 class LoginLogoSerializer(serializers.Serializer):
