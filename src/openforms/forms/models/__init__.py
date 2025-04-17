@@ -1,5 +1,6 @@
 from .category import Category
 from .form import Form, FormsExport
+from .form_authentication_backend import FormAuthenticationBackend
 from .form_definition import FormDefinition
 from .form_registration_backend import FormRegistrationBackend
 from .form_step import FormStep
@@ -21,4 +22,5 @@ __all__ = [
     "FormVariable",
     "Category",
     "FormRegistrationBackend",
+    "FormAuthenticationBackend",
 ]
