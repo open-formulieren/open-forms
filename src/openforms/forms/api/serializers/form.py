@@ -29,7 +29,7 @@ from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...constants import StatementCheckboxChoices
-from ...models import Category, Form, FormRegistrationBackend
+from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -53,6 +53,26 @@ class FormLiteralsSerializer(serializers.Serializer):
     begin_text = ButtonTextSerializer(raw_field="begin_text", required=False)
     change_text = ButtonTextSerializer(raw_field="change_text", required=False)
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
+
+
+class FormAuthenticationBackendSerializer(serializers.ModelSerializer):
+    options = serializers.JSONField(
+        label=_("authentication backend options"), allow_null=True, required=False
+    )
+
+    class Meta:
+        model = FormAuthenticationBackend
+        fields = ("backend", "options")
+
+    def validate(self, attrs):
+        # validate config options with selected plugin
+        if "backend" not in attrs:
+            raise serializers.ValidationError(_("authentication backend required"))
+
+        plugin = auth_register[attrs["backend"]]
+
+        # @TODO validate options with the selected plugin
+        return attrs
 
 
 class FormRegistrationBackendSerializer(serializers.ModelSerializer):
@@ -220,6 +240,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     translations = ModelTranslationsSerializer()
 
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+    auth_backends = FormAuthenticationBackendSerializer(many=True, required=False)
 
     class Meta:
         model = Form
@@ -231,6 +252,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translation_enabled",
             "registration_backends",
             "authentication_backends",
+            "auth_backends",
             "authentication_backend_options",
             "login_options",
             "auto_login_authentication_backend",
@@ -335,6 +357,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "brp_personen_request_options", None
         )
         registration_backends = validated_data.pop("registration_backends", [])
+        auth_backends = validated_data.pop("auth_backends", [])
 
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -348,6 +371,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
         )
+        FormAuthenticationBackend.objects.bulk_create(
+            FormAuthenticationBackend(form=instance, **backend)
+            for backend in auth_backends
+        )
         return instance
 
     @transaction.atomic()
@@ -359,6 +386,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "brp_personen_request_options", None
         )
         registration_backends = validated_data.pop("registration_backends", None)
+        auth_backends = validated_data.pop("auth_backends", None)
 
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -368,14 +396,18 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             BRPPersonenRequestOptions.objects.update_or_create(
                 form=instance, defaults=brp_personen_request_options
             )
-        if registration_backends is None:
-            return instance
-
-        instance.registration_backends.all().delete()
-        FormRegistrationBackend.objects.bulk_create(
-            FormRegistrationBackend(form=instance, **backend)
-            for backend in registration_backends
-        )
+        if registration_backends is not None:
+            instance.registration_backends.all().delete()
+            FormRegistrationBackend.objects.bulk_create(
+                FormRegistrationBackend(form=instance, **backend)
+                for backend in registration_backends
+            )
+        if auth_backends is not None:
+            instance.auth_backends.all().delete()
+            FormAuthenticationBackend.objects.bulk_create(
+                FormAuthenticationBackend(form=instance, **backend_config)
+                for backend_config in auth_backends
+            )
 
         return instance
 
