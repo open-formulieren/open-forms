@@ -11,6 +11,7 @@ Django specific.
 Note that you should have the CI docker-compose running with the mock endpoints, which
 uses the self-signed certificates.
 """
+
 import os
 import tempfile
 from pathlib import Path
@@ -55,7 +56,6 @@ class RestoreOriginalCABundleMixin:
 
 
 class SelfSignedCertificateTests(RestoreOriginalCABundleMixin, TestCase):
-
     root_cert = os.path.join(CERTS_DIR, "openforms.crt")
 
     @classmethod

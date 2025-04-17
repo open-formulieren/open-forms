@@ -5,7 +5,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class MapValidationTests(SimpleTestCase):
-
     def test_map_field_required_validation(self):
         component: MapComponent = {
             "type": "map",

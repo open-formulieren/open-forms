@@ -42,7 +42,6 @@ def populate_submission_event_extra_data(apps: StateApps, _):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("logging", "0002_avgtimelinelogproxy"),
         ("submissions", "0002_v230_to_v300"),

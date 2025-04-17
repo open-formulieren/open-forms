@@ -7,7 +7,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class FallbackBehaviourTests(SimpleTestCase):
-
     def test_unknown_component_passthrough(self):
         # TODO: this should *not* pass when all components are implemented, it's a
         # temporary compatibility layer

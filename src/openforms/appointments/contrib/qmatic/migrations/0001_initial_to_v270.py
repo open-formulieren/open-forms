@@ -9,7 +9,6 @@ import openforms.appointments.contrib.qmatic.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

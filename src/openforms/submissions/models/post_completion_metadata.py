@@ -47,4 +47,4 @@ class PostCompletionMetadata(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.submission.public_registration_reference}: {", ".join(self.tasks_ids)}'
+        return f"{self.submission.public_registration_reference}: {', '.join(self.tasks_ids)}"

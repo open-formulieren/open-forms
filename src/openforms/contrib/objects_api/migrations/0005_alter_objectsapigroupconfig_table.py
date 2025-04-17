@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("objects_api", "0004_alter_objectsapigroupconfig_objects_service_and_more"),
     ]

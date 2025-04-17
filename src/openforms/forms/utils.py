@@ -345,7 +345,7 @@ def import_form_data(
                     and e.detail["slug"][0].code == "unique"
                 ):
                     entry["slug"] = (
-                        f'{entry["slug"]}-{"".join(random.choices(string.hexdigits, k=6))}'
+                        f"{entry['slug']}-{''.join(random.choices(string.hexdigits, k=6))}"
                     )
 
                     deserialized = serializer(

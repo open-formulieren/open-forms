@@ -7,7 +7,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class TimeFieldValidationTests(SimpleTestCase):
-
     def test_timefield_required_validation(self):
         component: Component = {
             "type": "time",

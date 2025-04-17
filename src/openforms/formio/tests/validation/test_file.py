@@ -358,7 +358,6 @@ class FileValidationTests(TestCase):
 
 
 class FileValidationMimeTypeTests(TestCase):
-
     @tag("GHSA-h85r-xv4w-cg8g")
     def test_attach_upload_validates_file_content_types_malicious_content(self):
         """

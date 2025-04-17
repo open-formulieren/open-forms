@@ -13,7 +13,6 @@ import openforms.submissions.models.submission_value_variable
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("submissions", "0001_initial_to_openforms_v230"),
     ]

@@ -49,7 +49,6 @@ def _calculate_price(
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
-
     # this repeats the default of the Charfield LazyAttribute evaluation needs;
     # stub.factory_parent.__getattr__ cs. doesn't check the model's attributes.
     language_code = factory.LazyAttribute(lambda _: get_language())
@@ -291,7 +290,6 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         cls,
         **kwargs,
     ) -> SubmissionStep:
-
         step_data = kwargs.pop("data", {})
         submission_step = super().create(**kwargs)
 

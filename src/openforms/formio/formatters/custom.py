@@ -56,7 +56,6 @@ class AddressValue(TypedDict):
 
 
 class AddressNLFormatter(FormatterBase):
-
     empty_values = ({},)
 
     def format(self, component: AddressNLComponent, value: AddressValue) -> str:

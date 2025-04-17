@@ -45,9 +45,11 @@ async def add_new_step(page: Page):
 async def drag_and_drop_component(
     page: Page, component: str, parent_ref: str = "sidebar-groups"
 ):
-    await page.locator(f'css=[ref="{parent_ref}"]').get_by_text(
-        component, exact=True
-    ).hover()
+    await (
+        page.locator(f'css=[ref="{parent_ref}"]')
+        .get_by_text(component, exact=True)
+        .hover()
+    )
     await page.mouse.down()
     # This is added to make it work for when there is already a component in the container.
     # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
@@ -61,7 +63,6 @@ async def drag_and_drop_component(
 
 
 class FormDesignerComponentTranslationTests(E2ETestCase):
-
     def setUp(self):
         super().setUp()
 
@@ -1950,9 +1951,12 @@ class SelectReuseableFormDefinitionsTests(E2ETestCase):
             await page.get_by_role("button", name="Confirm").click()
 
             # Select third form step and open selectbox
-            await sidebar.get_by_role("listitem").nth(1).get_by_text(
-                "Stap 3 [new]"
-            ).click()
+            await (
+                sidebar.get_by_role("listitem")
+                .nth(1)
+                .get_by_text("Stap 3 [new]")
+                .click()
+            )
             await page.get_by_role(
                 "button", name="Select existing form definition"
             ).click()

@@ -35,9 +35,7 @@ class PrefillConfigTests(WebTest):
         (
             config,
             _,
-        ) = (
-            PrefillConfig.objects.get_or_create()
-        )  # not using get_solo for cache reasons
+        ) = PrefillConfig.objects.get_or_create()  # not using get_solo for cache reasons
         url = reverse("admin:prefill_prefillconfig_change", args=(config.pk,))
 
         response = self.app.get(url, user=user)

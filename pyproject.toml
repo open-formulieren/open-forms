@@ -1,5 +1,5 @@
 [project]
-requires-python = "3.12"
+requires-python = "== 3.12"
 
 [tool.uv.pip]
 emit-index-url = false
@@ -65,3 +65,42 @@ replace = "softwareVersion: {new_version}"
 filename = "package.json"
 search = "    \"version\": \"{current_version}\""
 replace = "    \"version\": \"{new_version}\""
+
+[tool.ruff]
+extend-exclude = [
+    "static",
+    "media",
+    "src/openforms/conf/local_example.py",
+    # Might be created by developers:
+    "src/openforms/conf/local.py",
+    "nlx",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    # "UP",  # pyupgrade
+    # "DJ",  # django
+    # "LOG", # logging
+    # "G",
+    "I",   # isort
+    # "E",   # pycodestyle
+    "F",   # pyflakes
+    # "PERF",# perflint
+    "B006",# flake8-bugbear
+    "B010",
+    # "B904",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+"django" = ["django"]

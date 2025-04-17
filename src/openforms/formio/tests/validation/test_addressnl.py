@@ -23,7 +23,6 @@ class PostcodeValidator(BasePlugin[AddressValue]):
 
 @override_settings(LANGUAGE_CODE="en")
 class AddressNLValidationTests(SimpleTestCase):
-
     def test_addressNL_field_required_validation(self):
         component: AddressNLComponent = {
             "key": "addressNl",

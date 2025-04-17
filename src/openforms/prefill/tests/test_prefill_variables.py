@@ -60,7 +60,6 @@ CONFIGURATION = {
 
 
 class PrefillVariablesTests(TestCase):
-
     @patch(
         "openforms.prefill.service.fetch_prefill_values_from_attribute",
         return_value={"voornamen": "Not so random string", "age": 123},

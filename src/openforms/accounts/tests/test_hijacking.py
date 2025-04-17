@@ -139,7 +139,6 @@ class HijackTests(WebTest):
 
 @override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])  # enforce MFA
 class HijackSecurityTests(TestCase):
-
     @tag("security-28", "CVE-2024-24771")
     def test_cannot_hijack_without_second_factor(self):
         staff_user = StaffUserFactory.create(with_totp_device=True)
@@ -149,9 +148,9 @@ class HijackSecurityTests(TestCase):
 
         # sanity check - MFA is being enforced
         admin_index_response = self.client.get(reverse("admin:index"))
-        assert (
-            admin_index_response.status_code == 302
-        ), "Non-verified user unexpected has access to the admin"
+        assert admin_index_response.status_code == 302, (
+            "Non-verified user unexpected has access to the admin"
+        )
 
         # try the hijack
         acquire = self.client.post(

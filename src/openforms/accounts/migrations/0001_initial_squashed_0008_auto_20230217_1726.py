@@ -9,7 +9,6 @@ import openforms.accounts.managers
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("auth", "0008_alter_user_username_max_length"),
     ]

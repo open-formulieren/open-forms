@@ -7,7 +7,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class PostcodeFieldValidationTests(SimpleTestCase):
-
     def test_postcodefield_required_validation(self):
         component: Component = {
             "type": "postcode",

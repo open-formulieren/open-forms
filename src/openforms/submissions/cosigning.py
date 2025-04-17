@@ -166,9 +166,9 @@ class CosignState:
         Get the email address of the cosigner.
         """
         cosign_component = self._find_component()
-        assert (
-            cosign_component is not None
-        ), "You can only look up the email in forms that have a cosign component"
+        assert cosign_component is not None, (
+            "You can only look up the email in forms that have a cosign component"
+        )
 
         variables_state = self.submission.load_submission_value_variables_state()
         values = variables_state.get_data(as_formio_data=True)
@@ -202,7 +202,7 @@ class CosignState:
         Legacy (cosign v1) cosign details are unsupported, use
         :attr:`legacy_signing_details` for those instead.
         """
-        assert (
-            self.is_signed
-        ), "You may only access the signing details after validating the 'is_signed' state."
+        assert self.is_signed, (
+            "You may only access the signing details after validating the 'is_signed' state."
+        )
         return self.submission.co_sign_data

@@ -147,9 +147,9 @@ class ExportSubmissionStatisticsView(
         )
 
     def get_context_data(self, **kwargs):
-        assert (
-            self.media is not None
-        ), "You must pass media=self.media in the model admin"
+        assert self.media is not None, (
+            "You must pass media=self.media in the model admin"
+        )
         context = super().get_context_data(**kwargs)
 
         form = context["form"]

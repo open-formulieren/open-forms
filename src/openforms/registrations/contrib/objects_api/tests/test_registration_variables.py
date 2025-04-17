@@ -4,7 +4,6 @@ from ..registration_variables import register
 
 
 class RegistrationVariableTests(TestCase):
-
     def test_variables_handle_None_submission(self):
         for variable in register:
             with self.subTest(variable=variable.identifier):

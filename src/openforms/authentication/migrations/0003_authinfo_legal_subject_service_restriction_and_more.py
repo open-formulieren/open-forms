@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("of_authentication", "0002_add_authentication_context_mandate_fields"),
     ]

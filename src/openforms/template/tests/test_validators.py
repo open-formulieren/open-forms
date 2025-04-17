@@ -12,9 +12,9 @@ from ..validators import DjangoTemplateValidator
 # to Jinja2 or something else - check your TEMPLATES setting and adapt the index below
 # as needed.
 django_backend = engines.all()[0]
-assert (
-    type(django_backend).__name__ == "DjangoTemplates"
-), "Expected the backend to be a plain (non-sandboxed) Django templates backend."
+assert type(django_backend).__name__ == "DjangoTemplates", (
+    "Expected the backend to be a plain (non-sandboxed) Django templates backend."
+)
 
 
 class DjangoTemplateValidatorTest(SimpleTestCase):

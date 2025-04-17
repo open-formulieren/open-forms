@@ -7,7 +7,6 @@ from ..migration_converters import convert_simple_conditionals
 
 
 class RegressionTests(SimpleTestCase):
-
     @tag("gh-4247")
     def test_editgrid_reference(self):
         configuration: JSONObject = {

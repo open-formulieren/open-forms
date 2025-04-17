@@ -82,7 +82,6 @@ class InvalidFormConfiguration(BasePlugin):
 
 @freeze_time("2023-02-02T12:30:00+01:00")
 class FailedEmailsTests(TestCase):
-
     def test_failed_emails_are_collected(self):
         submission = SubmissionFactory.create()
 
@@ -132,7 +131,6 @@ class FailedEmailsTests(TestCase):
 
 @freeze_time("2023-01-02T12:30:00+01:00")
 class FailedRegistrationsTests(TestCase):
-
     def test_failed_registrations_are_collected(self):
         # 1st form with 2 failures in the past 24 hours
         form_1 = FormFactory.create()
@@ -192,7 +190,6 @@ class FailedRegistrationsTests(TestCase):
 
 @freeze_time("2023-01-02T12:30:00+01:00")
 class FailedPrefillTests(TestCase):
-
     def test_prefill_plugin_failures_are_collected(self):
         hc_plugin = prefill_register["haalcentraal"]
         stufbg_plugin = prefill_register["stufbg"]
@@ -245,7 +242,6 @@ class FailedPrefillTests(TestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class BrokenConfigurationTests(TestCase):
-
     def test_no_addressNL_component_not_collected(self):
         FormFactory.create(
             generate_minimal_setup=True,
@@ -621,7 +617,6 @@ class BrokenConfigurationTests(TestCase):
 
 @override_settings(LANGUAGE_CODE="en")
 class InvalidCertificatesTests(TestCase):
-
     def test_expiring_certificates_not_used_by_a_service_are_not_collected(self):
         # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
         with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
@@ -709,7 +704,6 @@ class InvalidCertificatesTests(TestCase):
 
 
 class InvalidRegistrationBackendsTests(TestCase):
-
     def test_invalid_general_registration_backend_is_collected(self):
         form = FormFactory.create()
         FormRegistrationBackendFactory.create(
@@ -786,7 +780,6 @@ class InvalidRegistrationBackendsTests(TestCase):
 
 
 class InvalidLogicRulesTests(TestCase):
-
     def test_valid_logic_rules_are_not_collected_and_not_logged(self):
         form = FormFactory.create()
         FormVariableFactory.create(
@@ -1026,7 +1019,6 @@ class InvalidLogicRulesTests(TestCase):
 
 
 class ReferencelistExpiredDataTests(TestCase):
-
     def test_inactive_form_does_not_trigger_checks(self):
         FormFactory.create(active=False)
 

@@ -428,12 +428,12 @@ class FormVariable(models.Model):
         still in sync. Foreign key relations to form etc. are ignored as this doesn't
         contain semantic information.
         """
-        assert (
-            self.source == FormVariableSources.component
-        ), "Can only compare component variables"
-        assert (
-            other.source == FormVariableSources.component
-        ), "Can only compare component variables"
+        assert self.source == FormVariableSources.component, (
+            "Can only compare component variables"
+        )
+        assert other.source == FormVariableSources.component, (
+            "Can only compare component variables"
+        )
         assert self.key == other.key, (
             "Different keys are being compared, are you sure you're comparing "
             "the right instances?"

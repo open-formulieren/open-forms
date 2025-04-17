@@ -119,7 +119,7 @@ def post_process(
     values: JSONObject,
     schema: JSONObject,
     submission: Submission,
-    transform_to_list: list[str] = [],
+    transform_to_list: list[str] | None = None,
 ) -> None:
     """Post-process the values and schema.
 
@@ -135,6 +135,9 @@ def post_process(
     :param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
       object-shape for selectboxes components.
     """
+    if transform_to_list is None:
+        transform_to_list = []
+
     state = submission.load_submission_value_variables_state()
 
     # Update config wrapper
@@ -192,7 +195,7 @@ def process_component(
     attachments: dict[str, list[SubmissionFileAttachment]],
     configuration_wrapper,
     key_prefix: str = "",
-    transform_to_list: list[str] = [],
+    transform_to_list: list[str] | None = None,
 ) -> None:
     """Process a component.
 
@@ -217,15 +220,19 @@ def process_component(
     ::param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
       object-shape for selectboxes components.
     """
+    if transform_to_list is None:
+        transform_to_list = []
+
     key = component["key"]
+    assert isinstance(schema["properties"], dict)
 
     match component:
         case {"type": "file", "multiple": True}:
             attachment_list, base_schema = get_attachments_and_base_schema(
                 cast(FileComponent, component), attachments, key_prefix
             )
-            values[key] = attachment_list  # type: ignore
-            schema["properties"][key] = to_multiple(base_schema)  # type: ignore
+            values[key] = attachment_list
+            schema["properties"][key] = to_multiple(base_schema)
 
         case {"type": "file"}:  # multiple is False or missing
             attachment_list, base_schema = get_attachments_and_base_schema(
@@ -239,7 +246,7 @@ def process_component(
             else:
                 value = attachment_list[0]
             values[key] = value
-            schema["properties"][key] = base_schema  # type: ignore
+            schema["properties"][key] = base_schema  # pyright: ignore[reportArgumentType]
 
         case {
             "type": "radio",
@@ -250,7 +257,9 @@ def process_component(
             component = cast(RadioComponent, component)
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
-            schema["properties"][key]["enum"] = choices  # type: ignore
+            _properties = schema["properties"][key]
+            assert isinstance(_properties, dict)
+            _properties["enum"] = choices
 
         case {
             "type": "select",
@@ -262,19 +271,26 @@ def process_component(
             choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
             choices.append("")  # Take into account an unfilled field
 
+            _properties = schema["properties"][key]
+            assert isinstance(_properties, dict)
             if component.get("multiple", False):
-                schema["properties"][key]["items"]["enum"] = choices  # type: ignore
+                assert isinstance(_properties["items"], dict)
+                _properties["items"]["enum"] = choices
             else:
-                schema["properties"][key]["enum"] = choices  # type: ignore
+                _properties["enum"] = choices
 
         case {"type": "selectboxes"}:
             component = cast(SelectBoxesComponent, component)
             data_src = component.get("openForms", {}).get("dataSrc")
 
-            if data_src in (
-                DataSrcOptions.variable,
-                DataSrcOptions.reference_lists,
-            ) and not (key in transform_to_list):
+            if (
+                data_src
+                in (
+                    DataSrcOptions.variable,
+                    DataSrcOptions.reference_lists,
+                )
+                and key not in transform_to_list
+            ):
                 properties = {
                     options["value"]: {"type": "boolean"}
                     for options in component["values"]
@@ -284,21 +300,27 @@ def process_component(
                     "required": list(properties),
                     "additionalProperties": False,
                 }
-                schema["properties"][key].update(base_schema)  # type: ignore
+                _properties = schema["properties"][key]
+                assert isinstance(_properties, dict)
+                _properties.update(base_schema)
             elif key in transform_to_list:
                 choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
                 base_schema = {
                     "type": "array",
                     "items": {"type": "string", "enum": choices},
                 }
-                schema["properties"][key].update(base_schema)  # type: ignore
+                _properties = schema["properties"][key]
+                assert isinstance(_properties, dict)
+                _properties.update(base_schema)
 
                 keys_to_remove = ("properties", "required", "additionalProperties")
                 for k in keys_to_remove:
-                    schema["properties"][key].pop(k, None)  # type: ignore
+                    _properties.pop(k, None)
 
                 values[key] = [
-                    option for option, is_selected in values[key].items() if is_selected  # type: ignore
+                    option
+                    for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
+                    if is_selected
                 ]
                 return
 
@@ -316,7 +338,6 @@ def process_component(
             for index, edit_grid_values in enumerate(
                 cast(list[JSONObject], values[key])
             ):
-
                 for child_key in edit_grid_values.keys():
                     process_component(
                         component=configuration_wrapper[child_key],
@@ -370,9 +391,7 @@ def get_attachments_and_base_schema(
             "content": {"type": "string", "format": "base64"},
         },
         "required": (
-            ["file_name", "content"]
-            if len(encoded_attachments) != 0
-            else []
+            ["file_name", "content"] if len(encoded_attachments) != 0 else []
             # No required properties when there are no attachments
         ),
         "additionalProperties": False,

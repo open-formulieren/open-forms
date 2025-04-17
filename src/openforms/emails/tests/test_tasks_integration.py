@@ -53,7 +53,6 @@ class InvalidBackend(BasePlugin):
 
 @override_settings(LANGUAGE_CODE="en")
 class EmailDigestTaskIntegrationTests(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  isort:
-    name: Check import sorting
+  ruff:
+    name: Lint codebase with ruff (black, isort and flake8 alternative)
     runs-on: ubuntu-latest
 
     steps:
@@ -24,59 +24,8 @@ jobs:
           apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
           python-version: '3.12'
           setup-node: 'no'
-      - uses: isort/isort-action@v1.1.0
-        with:
-          requirements-files: requirements/ci.txt
-          sort-paths: 'src docs'
-          configuration: '--check-only --diff'
-
-  black:
-    name: Check code formatting with black
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
-          setup-node: 'no'
-      - name: Run black
-        run: |
-          black --check src docs
-
-  flake8:
-    name: Code style (flake8)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.3
-        with:
-          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.12'
-          setup-node: 'no'
-      - name: Run flake8
-        id: flake8
-        run: |
-          flake8 src 2>&1 | tee flake8_output.txt
-          result_code=${PIPESTATUS[0]}
-          report="$(cat flake8_output.txt)"
-          report="${report//$'\n'/'%0A'}"  # escape newlines
-          echo "flake8_output=${report}" >> $GITHUB_OUTPUT
-          exit $result_code
-      - name: Emit flake8 flake8 output
-        if: ${{ failure() }}
-        run: |
-          echo "${{ steps.flake8.outputs.flake8_output }}"
-
-          echo 'flake8 found some issues' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '| File | Line | Column | Issue |' >> $GITHUB_STEP_SUMMARY
-          echo '| :--- | ---- | ------ | :---- |' >> $GITHUB_STEP_SUMMARY
-          python ./bin/flake8_summary.py "${{ steps.flake8.outputs.flake8_output }}" >> $GITHUB_STEP_SUMMARY
+      - run: |
+          ruff check --output-format=github .
 
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture

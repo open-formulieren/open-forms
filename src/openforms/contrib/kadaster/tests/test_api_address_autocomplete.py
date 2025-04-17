@@ -55,7 +55,6 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
     def test_getting_street_name_and_city_without_post_code_returns_error(self, _mock):
-
         response = self.client.get(
             reverse("api:geo:address-autocomplete"),
             {"house_number": "117"},
@@ -88,7 +87,6 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     def test_getting_street_name_and_city_without_house_number_returns_error(
         self, _mock
     ):
-
         response = self.client.get(
             reverse("api:geo:address-autocomplete"),
             {"postcode": "1015CJ"},

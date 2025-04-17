@@ -78,7 +78,6 @@ def _get_sent_email(index: int = 0) -> tuple[mail.EmailMultiAlternatives, str, s
     LANGUAGE_CODE="nl",
 )
 class EmailBackendTests(HTMLAssertMixin, TestCase):
-
     def setUp(self):
         super().setUp()
 
@@ -1213,10 +1212,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         attach_uploads_to_submission_step(submission_step)
 
-        subject, body_html, body_text = (
-            EmailRegistration.render_registration_email(  # pyright: ignore[reportAttributeAccessIssue]
-                submission, is_payment_update=False
-            )
+        subject, body_html, body_text = EmailRegistration.render_registration_email(  # pyright: ignore[reportAttributeAccessIssue]
+            submission, is_payment_update=False
         )
 
         with self.subTest("Normal attachment"):

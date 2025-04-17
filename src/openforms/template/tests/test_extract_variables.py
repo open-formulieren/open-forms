@@ -4,7 +4,6 @@ from .. import extract_variables_used
 
 
 class ExtractVariablesTests(SimpleTestCase):
-
     def test_extract_vars_without_filters(self):
         source = """
         I have {{ foo }} {{bar}}s, but they don't {{ baz}}.

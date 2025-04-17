@@ -56,7 +56,7 @@ class OutputSpec:
 def process_mapped_variable(
     mapping: ObjecttypeVariableMapping,
     value: VariableValue,  # can't narrow it down yet, as the type depends on the component type
-    transform_to_list: list[str] = [],
+    transform_to_list: list[str] | None = None,
     component: Component | None = None,
     attachment_urls: dict[str, list[str]] | None = None,
 ) -> AssignmentSpec | Sequence[AssignmentSpec]:
@@ -84,6 +84,9 @@ def process_mapped_variable(
       which value needs to be written to which "object path" for the record data, for
       possible deep assignments.
     """
+    if transform_to_list is None:
+        transform_to_list = []
+
     variable_key = mapping["variable_key"]
     target_path = Path(*bits) if (bits := mapping.get("target_path")) else None
 

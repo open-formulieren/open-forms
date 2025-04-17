@@ -824,7 +824,6 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
     def test_select_component_with_form_variable_as_data_source(self):
-
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -881,7 +880,6 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
     def test_select_component_with_referencelists_as_data_source(self):
-
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -939,7 +937,6 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
         )
 
     def test_select_boxes_component_with_form_variable_as_data_source(self):
-
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1322,14 +1319,14 @@ class JSONDumpBackendTests(OFVCRMixin, TestCase):
             "properties": {
                 "auth_type": {
                     "enum": ["bsn", "kvk", "pseudo", "employee_id", ""],
-                    "title": "Authentication " "type",
+                    "title": "Authentication type",
                     "type": "string",
                 },
                 "form_version": {"title": "Form version", "type": "string"},
-                "public_reference": {"title": "Public " "reference", "type": "string"},
+                "public_reference": {"title": "Public reference", "type": "string"},
                 "registration_timestamp": {
                     "format": "date-time",
-                    "title": "Registration " "timestamp",
+                    "title": "Registration timestamp",
                     "type": "string",
                 },
             },

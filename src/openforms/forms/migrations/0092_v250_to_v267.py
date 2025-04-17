@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("variables", "0012_servicefetchconfiguration_cache_timeout"),
         ("forms", "0001_initial_to_v250"),

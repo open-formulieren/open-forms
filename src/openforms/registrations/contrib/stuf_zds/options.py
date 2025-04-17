@@ -94,9 +94,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     def display_as_jsonschema(cls):
         data = super().display_as_jsonschema()
         # Workaround because drf_jsonschema_serializer does not pick up defaults
-        data["properties"]["payment_status_update_mapping"][
-            "default"
-        ] = default_payment_status_update_mapping()
+        data["properties"]["payment_status_update_mapping"]["default"] = (
+            default_payment_status_update_mapping()
+        )
         # To avoid duplicating the title and help text for each item
         del data["properties"]["payment_status_update_mapping"]["items"]["title"]
         del data["properties"]["payment_status_update_mapping"]["items"]["description"]

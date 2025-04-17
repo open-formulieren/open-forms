@@ -33,7 +33,6 @@ class TemplateTagsTests(SimpleTestCase):
 
 @override_settings(SHOW_ENVIRONMENT=True)
 class EnvironmentInfoTests(SimpleTestCase):
-
     def _render(self, context=None):
         tpl = r"{% environment_info %}"
         return render_from_string(tpl, context=context or {}).strip()

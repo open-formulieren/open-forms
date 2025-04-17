@@ -42,7 +42,6 @@ class Person:
 
 
 class BRPClient(PreRequestMixin, ABC, APIClient):
-
     def __init__(
         self,
         *args,

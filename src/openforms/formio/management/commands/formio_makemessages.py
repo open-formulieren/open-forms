@@ -56,7 +56,6 @@ class Command(BaseCommand):
         )
 
     def _find_translations(self, filepath, no_empty_values):
-
         # Using `dict`` here to retain ordering.
         result = {}
         with open(filepath, "r") as f:

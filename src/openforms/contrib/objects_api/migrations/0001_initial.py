@@ -8,7 +8,6 @@ import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

@@ -11,7 +11,6 @@ from .base import E2ETestCase, browser_page, create_superuser
 
 
 class TinyMCEConfigurationTests(E2ETestCase):
-
     def setUp(self):
         super().setUp()
 

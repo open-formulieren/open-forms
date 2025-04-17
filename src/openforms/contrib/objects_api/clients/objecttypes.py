@@ -7,7 +7,6 @@ from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
 
 
 class ObjecttypesClient(NLXClient):
-
     def _get_paginated(
         self,
         endpoint: str,

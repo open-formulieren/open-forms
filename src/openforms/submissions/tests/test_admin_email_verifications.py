@@ -10,7 +10,6 @@ from .factories import EmailVerificationFactory
 
 @disable_admin_mfa()
 class EmailVerificationAdminTests(WebTest):
-
     def test_search_fields(self):
         # smoke test that the search fields are correctly configured
         user = SuperUserFactory.create()

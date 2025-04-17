@@ -344,7 +344,6 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
 @register("softRequiredErrors")
 class SoftRequiredErrors(ComponentNode):
-
     @property
     def is_visible(self) -> bool:
         """

@@ -38,7 +38,6 @@ TEST_FILES = Path(__file__).parent / "data"
 
 
 class SingleTextFieldTests(ValidationsTestCase):
-
     def test_required_field(self):
         component: Component = {
             "type": "textfield",
@@ -146,7 +145,6 @@ class SingleEmailTests(ValidationsTestCase):
 
 
 class SingleNumberTests(ValidationsTestCase):
-
     def test_required_field(self):
         component: Component = {
             "type": "number",
@@ -266,7 +264,6 @@ class SingleBSNTests(ValidationsTestCase):
 
 
 class SingleDateTests(ValidationsTestCase):
-
     async def apply_ui_input(
         self, page: Page, label: str, ui_input: str | int | float = ""
     ) -> None:
@@ -478,7 +475,6 @@ class SingleDatetimeTests(ValidationsTestCase):
 
 
 class SingleCheckboxTests(ValidationsTestCase):
-
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
         await expect(page.get_by_role("checkbox", name=label)).not_to_be_checked()
 
@@ -583,7 +579,6 @@ class SinglePostcodeTests(ValidationsTestCase):
 
 
 class SingleSignatureTests(ValidationsTestCase):
-
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
         # can't do anything because it's a canvas, but we can assert that the label
         # is rendered.

@@ -19,7 +19,6 @@ factory = APIRequestFactory()
 
 
 class PaymentFlowTests(E2ETestCase):
-
     @sync_to_async
     def get_form_url(self):
         # set up a form

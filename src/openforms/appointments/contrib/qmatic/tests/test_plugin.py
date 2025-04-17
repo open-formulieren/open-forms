@@ -43,7 +43,6 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_available_products(self, m):
-
         with self.subTest("without location ID"):
             m.get(f"{self.api_root}v1/services", text=mock_response("services.json"))
 
@@ -657,7 +656,6 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 class ConfigurationTests(SimpleTestCase):
     def test_all_customer_fields_have_required_formio_properties(self):
         for field in CustomerFields:
-
             if field == "externalId":
                 continue
 

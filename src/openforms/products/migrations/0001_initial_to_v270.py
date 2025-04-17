@@ -12,7 +12,6 @@ import csp_post_processor.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

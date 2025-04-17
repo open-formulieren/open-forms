@@ -76,7 +76,6 @@ def iter_json_schema_paths(
     def _iter_json_schema(
         json_schema: ObjectSchema, parent_json_path: JsonSchemaPath
     ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]:
-
         yield parent_json_path, json_schema
 
         if "properties" in json_schema:
@@ -142,7 +141,6 @@ def get_missing_required_paths(
     ]
 
     for r_path in required_paths:
-
         # If a child key is provided (e.g. "a.b"), any required parent key is dismissed (e.g. "a").
         if any(JsonSchemaPath(path).startswith(r_path) for path in paths):
             continue

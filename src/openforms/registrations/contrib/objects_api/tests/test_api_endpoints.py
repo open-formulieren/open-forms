@@ -15,7 +15,6 @@ TEST_FILES = Path(__file__).parent / "files"
 
 
 class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:object-types")
 
@@ -72,7 +71,6 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy(
         "api:objects_api:object-type-versions",
@@ -129,7 +127,6 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:registrations_objects_api:target-paths")
 
@@ -203,7 +200,6 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:catalogue-list")
 
@@ -256,7 +252,6 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
 
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:document-type-list")
 

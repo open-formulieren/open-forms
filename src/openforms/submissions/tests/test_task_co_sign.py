@@ -30,7 +30,6 @@ Please visit the form page by navigating to the following link: {{ form_url }}.
 
 
 class OnCompletionTests(TestCase):
-
     def setUp(self):
         super().setUp()
 

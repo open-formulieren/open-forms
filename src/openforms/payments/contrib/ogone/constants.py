@@ -11,8 +11,9 @@ class HashAlgorithm(models.TextChoices):
 
 
 class OgoneEndpoints(models.TextChoices):
-    test = "https://ogone.test.v-psp.com/ncol/test/orderstandard_utf8.asp", _(
-        "Ogone Test"
+    test = (
+        "https://ogone.test.v-psp.com/ncol/test/orderstandard_utf8.asp",
+        _("Ogone Test"),
     )
     live = "https://secure.ogone.com/ncol/prod/orderstandard_utf8.asp", _("Ogone Live")
 
@@ -95,6 +96,6 @@ OGONE_TO_PAYMENT_STATUS: dict[str, str] = {
     OgoneStatus.being_processed.value: PaymentStatus.processing.value,
 }
 
-assert set(OgoneStatus.values) == set(
-    OGONE_TO_PAYMENT_STATUS.keys()
-), "Not all Ogone statuses are mapped to a generic payment status"
+assert set(OgoneStatus.values) == set(OGONE_TO_PAYMENT_STATUS.keys()), (
+    "Not all Ogone statuses are mapped to a generic payment status"
+)

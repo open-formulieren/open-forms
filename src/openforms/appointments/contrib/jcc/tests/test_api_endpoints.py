@@ -196,7 +196,6 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_get_times_returns_all_times_for_a_give_location_product_and_date(self, m):
-
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovAvailableTimesPerDayResponse.xml"),

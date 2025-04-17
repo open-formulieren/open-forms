@@ -225,9 +225,9 @@ FIELD_TO_XML_NAME: dict[CustomerFields, str] = {
 
 # sanity checks
 for member in CustomerFields.values:
-    assert (
-        member in FIELD_TO_FORMIO_COMPONENT
-    ), f"Missing field '{member}' in FIELD_TO_FORMIO_COMPONENT mapping"
-    assert (
-        member in FIELD_TO_XML_NAME
-    ), f"Missing field '{member}' in FIELD_TO_XML_NAME mapping"
+    assert member in FIELD_TO_FORMIO_COMPONENT, (
+        f"Missing field '{member}' in FIELD_TO_FORMIO_COMPONENT mapping"
+    )
+    assert member in FIELD_TO_XML_NAME, (
+        f"Missing field '{member}' in FIELD_TO_XML_NAME mapping"
+    )

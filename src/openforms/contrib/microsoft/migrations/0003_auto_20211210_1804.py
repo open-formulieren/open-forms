@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("microsoft", "0002_auto_20211112_1126"),
     ]

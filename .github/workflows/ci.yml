@@ -357,7 +357,8 @@ jobs:
       - name: Build and test docs
         run: |
           export OPENSSL_CONF=$(pwd)/openssl.conf
-          pytest check_sphinx.py -v --tb=auto
+          make SPHINXOPTS="-W" html
+          make linkcheck
         working-directory: open-forms/docs
 
   # see https://github.com/orgs/community/discussions/26671

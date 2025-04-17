@@ -5,7 +5,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class SelectValidationTests(SimpleTestCase):
-
     def test_select_field_required_validation(self):
         component: SelectComponent = {
             "type": "select",

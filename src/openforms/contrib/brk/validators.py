@@ -42,7 +42,6 @@ class ValueSerializer(serializers.Serializer):
 @register("brk-zakelijk-gerechtigd")
 @deconstructible
 class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
-
     value_serializer = ValueSerializer
     verbose_name = _("BRK - Zakelijk gerechtigd")
     for_components = ("addressNL",)
@@ -59,7 +58,6 @@ class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
     }
 
     def __call__(self, value: AddressValue, submission: Submission) -> bool:
-
         if (
             not submission.is_authenticated
             or submission.auth_info.attribute != AuthAttribute.bsn

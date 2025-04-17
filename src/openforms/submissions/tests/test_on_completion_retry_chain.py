@@ -56,9 +56,9 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             with_completed_payment=True,
         )
         assert submission.payment_required, "Form must require payment for this test"
-        assert (
-            submission.payment_user_has_paid
-        ), "Paid status should be True - the return view received the payment from Ogone."
+        assert submission.payment_user_has_paid, (
+            "Paid status should be True - the return view received the payment from Ogone."
+        )
         original_register_date = submission.last_register_date
         appointment_info = AppointmentInfoFactory.create(
             submission=submission,
@@ -112,9 +112,9 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             with_completed_payment=True,
         )
         assert submission.payment_required, "Form must require payment for this test"
-        assert (
-            submission.payment_user_has_paid
-        ), "Paid status should be True - the return view received the payment from Ogone."
+        assert submission.payment_user_has_paid, (
+            "Paid status should be True - the return view received the payment from Ogone."
+        )
         original_register_date = submission.last_register_date
         appointment_info = AppointmentInfoFactory.create(
             submission=submission,

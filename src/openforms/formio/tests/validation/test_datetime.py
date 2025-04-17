@@ -11,7 +11,6 @@ from .helpers import extract_error, validate_formio_data
 
 
 class DatetimeFieldValidationTests(SimpleTestCase):
-
     def test_datetimefield_required_validation(self):
         component: DatetimeComponent = {
             "type": "datetime",

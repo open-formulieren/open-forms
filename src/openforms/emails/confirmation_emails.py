@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_confirmation_email_templates(submission: Submission) -> tuple[str, str]:
-
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
         custom_templates = getattr(submission.form, "confirmation_email_template", None)

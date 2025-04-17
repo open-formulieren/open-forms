@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("emails", "0002_confirmationemailtemplate_cosign_content_and_more"),
     ]

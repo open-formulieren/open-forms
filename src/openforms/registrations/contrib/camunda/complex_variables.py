@@ -14,9 +14,7 @@ from typing import Any, TypeAlias, TypedDict
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
 
-AnyVariable: TypeAlias = (
-    "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
-)
+AnyVariable: TypeAlias = "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
 
 
 class VarLogicExpression(TypedDict):

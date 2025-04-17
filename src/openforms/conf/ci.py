@@ -3,6 +3,8 @@
 """
 Continuous integration settings module.
 """
+# ruff: noqa: F405
+
 import os
 import warnings
 

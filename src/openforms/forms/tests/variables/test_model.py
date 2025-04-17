@@ -296,7 +296,6 @@ class FormVariableModelTests(TestCase):
 
 
 class FormVariableManagerTests(TestCase):
-
     @tag("gh-5084", "slow")
     def test_performance_upsert_single_form_definition(self):
         many_components = [

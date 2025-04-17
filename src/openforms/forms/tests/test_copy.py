@@ -17,7 +17,6 @@ from .factories import (
 
 
 class CopyFormTests(TestCase):
-
     def test_form_copy_with_reusable_definition(self):
         form = FormFactory.create(product=None)
         form_definition = FormDefinitionFactory.create(is_reusable=True)
@@ -45,7 +44,6 @@ class CopyFormTests(TestCase):
         self.assertEqual(copied_form_step.order, form_step.order)
 
     def test_form_copy_with_non_reusable_definition(self):
-
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(is_reusable=False)
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
@@ -60,7 +58,6 @@ class CopyFormTests(TestCase):
         self.assertNotEqual(copied_form_step.form_definition, form_step.form_definition)
 
     def test_form_copy_already_exists(self):
-
         form = FormFactory.create()
         copied_form_1 = form.copy()
 
@@ -78,7 +75,6 @@ class CopyFormTests(TestCase):
         self.assertEqual(copied_form_3.slug, "{}-3".format(copied_form_1.slug))
 
     def test_copy_form_with_variables(self):
-
         form = FormFactory.create(slug="test-copying-with-vars")
         FormStepFactory.create(
             form=form,

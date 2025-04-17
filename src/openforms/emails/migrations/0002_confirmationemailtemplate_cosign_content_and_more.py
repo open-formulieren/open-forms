@@ -7,7 +7,6 @@ import openforms.template.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("emails", "0001_initial_to_openforms_v270"),
     ]

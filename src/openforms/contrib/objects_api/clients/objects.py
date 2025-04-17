@@ -7,7 +7,6 @@ CRS_HEADERS = {"Content-Crs": "EPSG:4326"}
 
 class ObjectsClient(NLXClient):
     def create_object(self, objecttype_url: str, record_data: Record) -> dict:
-
         json: Object = {
             "type": objecttype_url,
             "record": record_data,

@@ -228,7 +228,6 @@ class FormioTimeField(serializers.TimeField):
 
 
 class TimeBetweenValidator:
-
     def __init__(self, min_time: time, max_time: time) -> None:
         self.min_time = min_time
         self.max_time = max_time
@@ -621,7 +620,6 @@ class Checkbox(BasePlugin[Component]):
 
 
 class SelectboxesField(serializers.Serializer):
-
     default_error_messages = {
         "min_selected_count": _(
             "Ensure this field has at least {min_selected_count} checked options."

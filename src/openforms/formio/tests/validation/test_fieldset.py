@@ -5,7 +5,6 @@ from .helpers import validate_formio_data
 
 
 class FieldSetValidationTests(SimpleTestCase):
-
     @tag("gh-4068")
     def test_fieldset_doesnt_require_value(self):
         # Fieldset is a layout component, so there's never any data to validate

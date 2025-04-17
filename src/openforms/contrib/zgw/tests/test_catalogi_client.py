@@ -21,7 +21,6 @@ from ..exceptions import StandardViolation
 
 
 class CatalogiClientTests(TestCase):
-
     @requests_mock.Mocker()
     def test_automatic_version_information_extraction(self, m: requests_mock.Mocker):
         client = CatalogiClient(base_url="https://dummy/")

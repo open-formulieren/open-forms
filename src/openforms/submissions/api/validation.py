@@ -130,9 +130,9 @@ class SubmissionCompletionSerializer(serializers.Serializer):
 
             all_step_errors.append(step_errors)
 
-        assert len(all_step_errors) == len(
-            submission.steps
-        ), "Detected a mismatch in validation errors list with actual submission steps."
+        assert len(all_step_errors) == len(submission.steps), (
+            "Detected a mismatch in validation errors list with actual submission steps."
+        )
 
         # as soon as one step has problems, we must raise a validation error
         if any(all_step_errors):

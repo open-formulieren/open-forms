@@ -15,7 +15,6 @@ class NoLeading1Validator(BasePlugin[str]):
 
 
 class BSNValidationTests(SimpleTestCase):
-
     def test_bsn_field_required_validation(self):
         component: Component = {
             "type": "bsn",

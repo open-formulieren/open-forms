@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("zgw_apis", "0019_alter_zgwapigroupconfig_auteur"),
         ("zgw_apis", "0019_alter_zgwapigroupconfig_catalogue_domain"),

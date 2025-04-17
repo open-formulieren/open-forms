@@ -21,19 +21,22 @@ class CustomerFields(TextChoices):
     last_name = "lastName", _("Last name")  # string, max length 200
     email = "email", _("Email address")  # string, max length 255
     phone_number = "phone", _("Phone number")  # string, max length 50
-    address_line_1 = "addressLine1", _(
-        "Street name and number"
+    address_line_1 = (
+        "addressLine1",
+        _("Street name and number"),
     )  # string, max length 255
     address_line_2 = "addressLine2", _("Address line 2")  # string, max length 255
     address_city = "addressCity", _("City")  # string, max length 255
     address_state = "addressState", _("State")  # string, max length 255
     address_zip = "addressZip", _("Postal code")  # string, max length 255
     address_country = "addressCountry", _("Country")  # string, max length 255
-    identification_number = "identificationNumber", _(
-        "Identification number"
+    identification_number = (
+        "identificationNumber",
+        _("Identification number"),
     )  # string, max length 255
-    external_id = "externalId", _(
-        "Unique customer identification/account number"
+    external_id = (
+        "externalId",
+        _("Unique customer identification/account number"),
     )  # string, max length 255
     """
     A unique customer identification or account number.
@@ -41,8 +44,9 @@ class CustomerFields(TextChoices):
     This could be used programmatically, but should not be set by the end-user as it is
     untrusted input.
     """
-    birthday = "dateOfBirth", _(
-        "Birthday"
+    birthday = (
+        "dateOfBirth",
+        _("Birthday"),
     )  # string, ISO-8601 date (return value is number)
 
 
@@ -175,6 +179,6 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
 for member in CustomerFields.values:
     if member == CustomerFields.external_id:
         continue
-    assert (
-        member in FIELD_TO_FORMIO_COMPONENT
-    ), f"Missing field '{member}' in FIELD_TO_FORMIO_COMPONENT mapping"
+    assert member in FIELD_TO_FORMIO_COMPONENT, (
+        f"Missing field '{member}' in FIELD_TO_FORMIO_COMPONENT mapping"
+    )

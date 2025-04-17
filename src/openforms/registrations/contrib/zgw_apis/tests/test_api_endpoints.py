@@ -17,7 +17,6 @@ TEST_FILES = Path(__file__).parent / "files"
 
 
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:catalogue-list")
 
@@ -188,7 +187,6 @@ class GetCaseTypesViewTests(OFVCRMixin, APITestCase):
 
 
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
-
     VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:zgw_apis:document-type-list")
 

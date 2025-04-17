@@ -151,7 +151,6 @@ def mute_deprecation_warnings():
 
 # TODO Apply these fixes to the fork of json-logic.py
 def monkeypatch_json_logic():
-
     from json_logic import operations
 
     operations["in"] = lambda a, b: (

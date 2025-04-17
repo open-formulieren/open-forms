@@ -41,7 +41,6 @@ class AdminTests(WebTest):
         self.addCleanup(_cleanup)
 
     def test_upload_svg(self):
-
         with self.subTest(part="admin config"):
             theme = ThemeFactory.create()
             url = reverse("admin:config_theme_change", args=(theme.pk,))

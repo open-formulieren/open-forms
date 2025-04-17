@@ -36,7 +36,6 @@ class HashIdentifyingAttributesTaskTests(TestCase):
 
 
 class HashIdentifyingAttributesTests(TestCase):
-
     def test_hashing_extra_identifying_attributes(self):
         input_attributes = {
             "value": "123456789",

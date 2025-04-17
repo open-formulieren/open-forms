@@ -4,7 +4,6 @@ from ...models import Form
 
 
 class FormCategoryNameFilter(filters.FilterSet):
-
     class Meta:
         model = Form
         fields = ("category__uuid",)

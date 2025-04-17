@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("stuf_zds", "0001_initial_to_openforms_v230"),
     ]

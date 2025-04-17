@@ -19,7 +19,6 @@ from .factories import FormFactory
     CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
 )
 class FormListViewTests(WebTest):
-
     url = reverse_lazy("forms:form-list")
 
     @classmethod

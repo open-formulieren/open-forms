@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("forms", "0001_initial_to_v250"),
         ("registrations_objects_api", "0001_initial_to_v267"),

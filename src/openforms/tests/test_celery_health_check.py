@@ -14,19 +14,20 @@ from openforms.conf.utils import config
 # require a real, functionining broker. Most people have redis running locally and CI
 # also runs it on localhost, if you need another solution, you can set the
 # _CELERY_BROKER_URL environment variable.
-CELERY_BROKER_URL: str = config("_CELERY_BROKER_URL", default="redis://localhost:6379/0")  # type: ignore
+CELERY_BROKER_URL: str = config(
+    "_CELERY_BROKER_URL", default="redis://localhost:6379/0"
+)  # type: ignore
 START_WORKER_SCRIPT = Path(settings.BASE_DIR) / "bin" / "celery_worker.sh"
 
 
 class CeleryTest(TestCase):
-
     def test_celery_worker_health_check(self):
         """Assert that READINESS_FILE exists after worker has started but not before and not after
         the shutdown
         """
-        assert (
-            not READINESS_FILE.is_file()
-        ), "Celery worker not started but READINESS_FILE found"
+        assert not READINESS_FILE.is_file(), (
+            "Celery worker not started but READINESS_FILE found"
+        )
 
         def cleanup():
             if READINESS_FILE.is_file():

@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from django.core.management import BaseCommand
 
-import black
 import requests
 import yaml
 from glom import GlomError, Path, glom
@@ -369,12 +368,5 @@ class Command(BaseCommand):
             )
         )
 
-        # paint it black
-        try:
-            mode = black.FileMode()
-            out = black.format_str("\n".join(output), mode=mode)
-            self.stdout.write(out)
-        except black.InvalidInput as e:
-            self.stdout.write("\n".join(output))
-            self.stdout.write("\n")
-            raise e
+        self.stdout.write("\n".join(output))
+        self.stdout.write("\n")

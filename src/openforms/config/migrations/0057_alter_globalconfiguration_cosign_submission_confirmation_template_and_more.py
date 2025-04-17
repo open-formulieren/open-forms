@@ -12,7 +12,6 @@ import openforms.utils.translations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("config", "0056_globalconfiguration_referentielijsten_services"),
     ]

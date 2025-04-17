@@ -25,9 +25,9 @@ class PluginValidator:
     requires_context = True
 
     def __init__(self, plugins: Iterable[str]):
-        assert all(
-            plugin in register for plugin in plugins
-        ), "Invalid plugin identifier specified"
+        assert all(plugin in register for plugin in plugins), (
+            "Invalid plugin identifier specified"
+        )
         self.plugins = plugins
 
     # FIXME: after deserializing the input data, this may actually be any python type,
@@ -41,9 +41,9 @@ class PluginValidator:
         it as valid.
         """
         submission = field.context.get("submission", None)
-        assert isinstance(
-            submission, Submission
-        ), "You must pass the submission in the serializer context"
+        assert isinstance(submission, Submission), (
+            "You must pass the submission in the serializer context"
+        )
 
         # evaluate all plugins to collect the error messages in case none is valid
         messages: list[str] = []

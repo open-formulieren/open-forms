@@ -81,9 +81,9 @@ def normalize_config(
 def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
     match [value, component_type]:
         case [datetime(), "date"]:
-            assert (
-                value.tzinfo is not None
-            ), "Expected the input variable to be timezone aware!"
+            assert value.tzinfo is not None, (
+                "Expected the input variable to be timezone aware!"
+            )
             return timezone.localtime(value=value).date()
         case [date(), "date"]:
             return value

@@ -117,12 +117,12 @@ class SoapService(models.Model):
     def get_wsse(
         self,
     ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
-        sig = lambda: _Signature(
+        sig = lambda: _Signature(  # noqa: E731
             self.client_certificate.private_key.path,
             self.client_certificate.public_certificate.path,
         )
 
-        basic = lambda: UsernameToken(self.user, self.password)
+        basic = lambda: UsernameToken(self.user, self.password)  # noqa: E731
 
         match self.endpoint_security:
             case EndpointSecurity.wss:

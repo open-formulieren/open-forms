@@ -223,7 +223,6 @@ class GenerateJsonSchemaTests(TestCase):
 
 
 class FormVariableAsJsonSchemaTests(TestCase):
-
     def test_component(self):
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(

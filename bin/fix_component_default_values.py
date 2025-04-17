@@ -44,8 +44,8 @@ COMPONENTS_TO_CHANGE = [
 
 
 def fix_component_default_values():
-    from openforms.forms.models import FormDefinition
     from openforms.formio.utils import get_component_empty_value
+    from openforms.forms.models import FormDefinition
 
     form_definitions_to_update = []
     for form_definition in FormDefinition.objects.iterator():

@@ -28,7 +28,6 @@ FieldOrNestedFields: TypeAlias = serializers.Field | dict[str, "FieldOrNestedFie
 
 
 class StepDataSerializer(serializers.Serializer):
-
     def apply_hidden_state(
         self, configuration: JSONObject, fields: dict[str, FieldOrNestedFields]
     ) -> None:
@@ -107,8 +106,7 @@ class StepDataSerializer(serializers.Serializer):
         # value, but we actually derive the value via :meth:`_get_required` above
         # dynamically based on the children, so we just ignore it.
         logging.debug(
-            "Setting the serializer required property has no effect. "
-            "This is deliberate"
+            "Setting the serializer required property has no effect. This is deliberate"
         )
 
     required = property(_get_required, _set_required)  # type:ignore

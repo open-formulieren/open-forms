@@ -11,10 +11,8 @@ class ReferenceListsTableSerializer(serializers.Serializer):
         help_text=_("The unique code that identifies the table.")
     )
     name = serializers.CharField(help_text=_("The name of the table."))
-    is_valid = (
-        serializers.SerializerMethodField(  # pyright: ignore[reportAssignmentType]
-            help_text=_("Indicates whether or not the table is expired.")
-        )
+    is_valid = serializers.SerializerMethodField(  # pyright: ignore[reportAssignmentType]
+        help_text=_("Indicates whether or not the table is expired.")
     )
 
     def get_is_valid(self, attrs: Table) -> bool:
@@ -28,10 +26,8 @@ class ReferenceListsTableItemSerializer(serializers.Serializer):
         help_text=_("The unique code that identifies the item.")
     )
     name = serializers.CharField(help_text=_("The name of the item."))
-    is_valid = (
-        serializers.SerializerMethodField(  # pyright: ignore[reportAssignmentType]
-            help_text=_("Indicates whether or not the item is expired.")
-        )
+    is_valid = serializers.SerializerMethodField(  # pyright: ignore[reportAssignmentType]
+        help_text=_("Indicates whether or not the item is expired.")
     )
 
     def get_is_valid(self, attrs: TableItem) -> bool:

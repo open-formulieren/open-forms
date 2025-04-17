@@ -35,7 +35,6 @@ class BaseRegistry(Generic[PluginT]):
     def __call__(
         self, unique_identifier: str
     ) -> Callable[[type[PluginT]], type[PluginT]]:
-
         if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
             raise ValueError(
                 f"The unique identifier '{unique_identifier}' is longer than "

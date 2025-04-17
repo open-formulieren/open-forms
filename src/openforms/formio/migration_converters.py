@@ -170,7 +170,9 @@ def ensure_licensplate_validate_pattern(component: Component) -> bool:
         return False
 
     component.setdefault("validate", {})
-    component["validate"]["pattern"] = r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+    component["validate"]["pattern"] = (
+        r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+    )
     return True
 
 
@@ -180,7 +182,9 @@ def ensure_postcode_validate_pattern(component: Component) -> bool:
         return False
 
     component.setdefault("validate", {})
-    component["validate"]["pattern"] = r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+    component["validate"]["pattern"] = (
+        r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+    )
     return True
 
 

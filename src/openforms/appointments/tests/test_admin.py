@@ -85,7 +85,6 @@ class AppointmentInfoAdminTests(WebTest):
 
     @freeze_time("2021-11-26T17:00:00+01:00")
     def test_cancel_link(self):
-
         user = SuperUserFactory.create()
         # appointment in the past
         AppointmentFactory.create(

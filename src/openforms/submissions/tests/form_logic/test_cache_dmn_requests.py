@@ -14,7 +14,6 @@ from ..mixins import SubmissionsMixin
 
 @requests_mock.Mocker()
 class TestCacheDMNRequests(SubmissionsMixin, APITestCase):
-
     def test_requests_not_made_multiple_times(self, m):
         submission = SubmissionFactory.from_components(
             [

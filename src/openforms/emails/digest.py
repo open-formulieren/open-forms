@@ -307,7 +307,6 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
         is_valid_pair = False
 
         match (time_until_expiry <= timedelta(days=14), cert.is_valid_key_pair()):
-
             case (True, True) | (True, None):
                 error_message = error_messages["expiring"]
                 is_valid_pair = True
@@ -518,9 +517,9 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
     return invalid_logic_rules
 
 
-def collect_expired_or_near_expiry_reference_lists_data() -> (
-    list[ExpiringReferenceListsService]
-):
+def collect_expired_or_near_expiry_reference_lists_data() -> list[
+    ExpiringReferenceListsService
+]:
     config = GlobalConfiguration.get_solo()
 
     service_tables_items_mapping = defaultdict(lambda: {"tables": [], "items": []})

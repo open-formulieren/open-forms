@@ -34,7 +34,6 @@ KVK_SERVICE = ServiceFactory.build(
 
 
 class KVKTestMixin:
-
     api_root = KVK_SERVICE.api_root
 
     def setUp(self):

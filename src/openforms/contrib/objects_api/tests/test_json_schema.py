@@ -324,7 +324,6 @@ class MissingRequiredPathsTests(SimpleTestCase):
     """Test cases to assert missing required paths are picked up."""
 
     def test_no_missing_required_paths(self):
-
         with self.subTest("top level"):
             missing_paths = get_missing_required_paths(
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b"]]
@@ -340,7 +339,6 @@ class MissingRequiredPathsTests(SimpleTestCase):
             self.assertEqual(missing_paths, [])
 
     def test_missing_required_paths(self):
-
         with self.subTest("Missing 'a'"):
             missing_paths = get_missing_required_paths(
                 JSON_SCHEMA_REQUIRED_PATHS, [["b"]]

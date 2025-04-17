@@ -17,10 +17,8 @@ from .base import E2ETestCase, browser_page
 # allow all origins, since we don't know exactly the generated live server port number
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class InputValidationRegressionTests(E2ETestCase):
-
     @tag("gh-4065")
     async def test_hidden_components_validation(self):
-
         @sync_to_async
         def setUpTestData():
             form = FormFactory.create(
