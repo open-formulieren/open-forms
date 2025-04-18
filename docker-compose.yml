@@ -93,6 +93,7 @@ services:
       - ./docker/setup_configuration:/app/setup_configuration
       - log:/app/log
       - certifi_ca_bundle:/app/certifi_ca_bundle
+      - ./bin/test_fix_scripts.sh:/app/bin/test_fix_scripts.sh
     ports:
       - 8000:8000
     depends_on:
