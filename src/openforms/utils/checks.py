@@ -1,6 +1,7 @@
 import inspect
 import logging
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -93,6 +94,14 @@ def check_missing_init_files(app_configs, **kwargs):
     return errors
 
 
+def is_subpath(*, parent: Path, child: str) -> bool:
+    try:
+        Path(child).relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
 @register
 def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cover
     app_configs, **kwargs
@@ -109,7 +118,9 @@ def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cove
     serializers = get_subclasses(Serializer)
     for serializer_class in serializers:
         serializer_defined_in = inspect.getfile(serializer_class)
-        if not serializer_defined_in.startswith(settings.DJANGO_PROJECT_DIR):
+        if not is_subpath(
+            parent=settings.DJANGO_PROJECT_DIR, child=serializer_defined_in
+        ):
             continue  # ignore code not defined in our own codebase
 
         if hasattr(serializer_class, "Meta") and not hasattr(
