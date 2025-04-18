@@ -23,13 +23,13 @@ Changelog
 
 **Bugfixes**
 
-* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+* [:backend:`5214`] Fixed employee ID not being used in the authentication context when
   the organization-via-OIDC plugin is used.
-* [:backend: `5238`] Fixed the order of form versions in version history.
+* [:backend:`5238`] Fixed the order of form versions in version history.
 * [:backend:`5181`] Fixed incorrect ``null`` default values in components.
 * [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
-* [:backend: `5188`] Fixed wrong prefill fields/attributes being logged.
-* [#5155] Fixed ``initial_date_reference`` being lost on language change while
+* [:backend:`5188`] Fixed wrong prefill fields/attributes being logged.
+* [:backend:`5155`] Fixed ``initial_date_reference`` being lost on language change while
   filling out a form.
 * [:backend:`4662`, :backend:`5147`] Fixed not-required selectboxes field preventing
   pausing the form.
