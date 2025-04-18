@@ -22,8 +22,6 @@ from pathlib import Path
 
 import django
 
-from openforms.setup import setup_env
-
 SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
@@ -75,6 +73,8 @@ def fix_component_default_values():
 
 
 def main():
+    from openforms.setup import setup_env
+
     setup_env()
     django.setup()
 
