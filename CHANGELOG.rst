@@ -6,6 +6,21 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.0.8 (2025-05-??)
+==================
+
+(unreleased)
+
+On request the low severity security patches from 3.1.0 are backported.
+
+* Administrators are no-longer able to change the submission summary PDF through the
+  admin interface.
+* SVGs uploaded through the admin interface, used for logos and favicons, are now
+  automatically sanitized.
+* The form preview seen by form designers in the admin now applies extra HTML sanitation
+  on the client side. The backend already properly escaped this and the public UI was
+  never affected.
+
 3.0.7 (2025-04-16)
 ===================
 
