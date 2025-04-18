@@ -2,6 +2,21 @@
 Changelog
 =========
 
+2.8.9 (2025-04-24)
+==================
+
+Final final bugfix release in the ``2.8.x`` series.
+
+On request the low severity security patches from 3.1.0 are backported.
+
+* Administrators are no-longer able to change the submission summary PDF through the
+  admin interface.
+* SVGs uploaded through the admin interface, used for logos and favicons, are now
+  automatically sanitized.
+* The form preview seen by form designers in the admin now applies extra HTML sanitation
+  on the client side. The backend already properly escaped this and the public UI was
+  never affected.
+
 2.8.8 (2025-04-16)
 ==================
 
