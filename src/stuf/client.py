@@ -26,7 +26,7 @@ from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
 
-logger = structlog.stdlib.get_logger()
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class LoggingHook(Protocol):

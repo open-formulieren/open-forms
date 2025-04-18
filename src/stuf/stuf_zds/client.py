@@ -28,7 +28,7 @@ from ..xml import fromstring
 from .constants import STUF_ZDS_EXPIRY_MINUTES
 from .models import StufZDSConfig
 
-logger = structlog.stdlib.get_logger()
+logger = structlog.stdlib.get_logger(__name__)
 
 nsmap = OrderedDict(
     (

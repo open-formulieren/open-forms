@@ -10,7 +10,6 @@ they are available for Django settings initialization.
     before Django is initialized.
 """
 
-import logging
 import mimetypes
 import os
 import sys
@@ -23,13 +22,14 @@ from django.conf import settings
 import defusedxml
 import portalocker
 import redis
+import structlog
 from django_redis import get_redis_connection
 from dotenv import load_dotenv
 from mozilla_django_oidc import views
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 mimetypes.init()
 
