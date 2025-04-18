@@ -120,7 +120,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
                 ).configuration
                 step_data_serializer = build_serializer(
                     configuration["components"],
-                    data=data,
+                    data=data.data,
                     context={"submission": submission},
                 )
                 if not step_data_serializer.is_valid():

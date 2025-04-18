@@ -2,9 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.formio.service import recursive_apply
+from openforms.formio.service import FormioData, recursive_apply
 from openforms.template import render_from_string, sandbox_backend
-from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import (
@@ -107,7 +106,7 @@ class ServiceFetchConfiguration(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def request_arguments(self, context: DataMapping) -> dict:
+    def request_arguments(self, context: FormioData) -> dict:
         """Return a dictionary with keyword arguments for a
         zgw_consumers.Service client request call.
         """
@@ -127,7 +126,7 @@ class ServiceFetchConfiguration(models.Model):
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
         # Explicitly cast values to strings to avoid localization
-        ctx = recursive_apply(context, str, transform_leaf=True)
+        ctx = recursive_apply(context.data, str, transform_leaf=True)
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
@@ -148,7 +147,7 @@ class ServiceFetchConfiguration(models.Model):
         HeaderValidator()(headers)
 
         escaped_for_path = recursive_apply(
-            context, validate_path_context_values, transform_leaf=True
+            context.data, validate_path_context_values, transform_leaf=True
         )
 
         query_params = {

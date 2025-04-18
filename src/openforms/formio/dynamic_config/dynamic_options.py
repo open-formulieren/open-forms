@@ -10,8 +10,9 @@ from openforms.api.exceptions import ServiceUnavailable
 from openforms.formio.constants import DataSrcOptions
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping, JSONValue
+from openforms.typing import JSONValue
 
+from ..datastructures import FormioData
 from ..typing import Component
 from .reference_lists import fetch_options_from_reference_lists
 
@@ -44,10 +45,10 @@ def deduplicate_options(
 
 
 def get_options_from_variable(
-    component: Component, data: DataMapping, submission: Submission
+    component: Component, data: FormioData, submission: Submission
 ) -> list[tuple[str, str]] | None:
     items_expression = glom(component, "openForms.itemsExpression")
-    items_array = jsonLogic(items_expression, data)
+    items_array = jsonLogic(items_expression, data.data)
     if not items_array:
         return
 
@@ -103,7 +104,7 @@ def get_options_from_variable(
 
 def add_options_to_config(
     component: Component,
-    data: DataMapping,
+    data: FormioData,
     submission: Submission,
     options_path: str = "values",
 ) -> None:

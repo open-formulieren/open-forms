@@ -6,25 +6,27 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
-from ..datastructures import FormioConfigurationWrapper
+from ..datastructures import FormioConfigurationWrapper, FormioData
 from ..variables import inject_variables, render
 
-VARIABLES = {
-    "html_variable": "<span>HTML injection!</span>",
-    "content_timestamp": date(2022, 8, 16),
-    # from json data - only use primitives!
-    "labels": {
-        "text1": "Label eerste textfield",
-    },
-    "placeholder_with_double_quotes": 'These should " be escaped',
-    "defaults": {
-        "text1": 123,
-        "text2": 123.45,
-        "number1": 0.1 + 0.1 + 0.1,
-    },
-    "now": timezone.now,
-    "checkboxChecked": True,
-}
+VARIABLES = FormioData(
+    {
+        "html_variable": "<span>HTML injection!</span>",
+        "content_timestamp": date(2022, 8, 16),
+        # from json data - only use primitives!
+        "labels": {
+            "text1": "Label eerste textfield",
+        },
+        "placeholder_with_double_quotes": 'These should " be escaped',
+        "defaults": {
+            "text1": 123,
+            "text2": 123.45,
+            "number1": 0.1 + 0.1 + 0.1,
+        },
+        "now": timezone.now,
+        "checkboxChecked": True,
+    }
+)
 
 
 CONFIGURATION = {
@@ -149,7 +151,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(FormioConfigurationWrapper(configuration), {})
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["label"],
@@ -167,7 +169,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(FormioConfigurationWrapper(configuration), {})
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["label"],
@@ -196,7 +198,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(FormioConfigurationWrapper(configuration), {})
+        inject_variables(FormioConfigurationWrapper(configuration), FormioData())
 
         self.assertEqual(
             configuration["components"][0]["html"],

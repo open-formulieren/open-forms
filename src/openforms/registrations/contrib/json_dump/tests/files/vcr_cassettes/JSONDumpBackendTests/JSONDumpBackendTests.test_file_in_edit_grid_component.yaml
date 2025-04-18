@@ -1,36 +1,34 @@
 interactions:
 - request:
-    body: '"{\"values\": {\"repeatingGroup\": [{\"fileUploadInRepeating\": [{\"file_name\":
-      \"test_file.txt\", \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\"}, {\"file_name\":
-      \"test_file_2.txt\", \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMi4=\"}]},
-      {\"fileUploadInRepeating\": [{\"file_name\": \"test_file_3.txt\", \"content\":
-      \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMy4=\"}]}]}, \"values_schema\": {\"$schema\":
-      \"https://json-schema.org/draft/2020-12/schema\", \"type\": \"object\", \"properties\":
-      {\"repeatingGroup\": {\"title\": \"Repeating Group\", \"type\": \"array\", \"items\":
-      {\"type\": \"object\", \"properties\": {\"fileUploadInRepeating\": {\"title\":
-      \"File upload\", \"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\":
-      {\"file_name\": {\"type\": \"string\"}, \"content\": {\"type\": \"string\",
-      \"format\": \"base64\"}}, \"required\": [\"file_name\", \"content\"], \"additionalProperties\":
-      false}}}, \"required\": [\"fileUploadInRepeating\"], \"additionalProperties\":
-      false}}}, \"required\": [\"repeatingGroup\"], \"additionalProperties\": false},
-      \"metadata\": {}, \"metadata_schema\": {\"$schema\": \"https://json-schema.org/draft/2020-12/schema\",
-      \"type\": \"object\", \"properties\": {}, \"required\": [], \"additionalProperties\":
-      false}}"'
+    body: '{"values": {"repeatingGroup": [{"fileUploadInRepeating": [{"file_name":
+      "test_file.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}, {"file_name":
+      "test_file_2.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMi4="}]}, {"fileUploadInRepeating":
+      [{"file_name": "test_file_3.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQgMy4="}]}]},
+      "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"repeatingGroup": {"title": "Repeating Group",
+      "type": "array", "items": {"type": "object", "properties": {"fileUploadInRepeating":
+      {"title": "File upload", "type": "array", "items": {"type": "object", "properties":
+      {"file_name": {"type": "string"}, "content": {"type": "string", "format": "base64"}},
+      "required": ["file_name", "content"], "additionalProperties": false}}}, "required":
+      ["fileUploadInRepeating"], "additionalProperties": false}}}, "required": ["repeatingGroup"],
+      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {}, "required": [], "additionalProperties": false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQyNzYyMTIsImV4cCI6MTc0NDMxOTQxMiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.FTOfClEzItExXuWQPpTEhKsO8HyRjzpyGfbn8hvjJDY
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDQ5NjUzMDAsImV4cCI6MTc0NTAwODUwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.Z191bMMtPrPqEVj-6qzTwVInxiPj99qEFiTPVxe69kY
       Connection:
       - keep-alive
       Content-Length:
-      - '1275'
-      Content-Type:
-      - application/json
+      - '1139'
       User-Agent:
       - python-requests/2.32.2
+      content-type:
+      - application/json
     method: POST
     uri: http://localhost/json_plugin
   response:
@@ -71,9 +69,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Apr 2025 09:10:12 GMT
+      - Fri, 18 Apr 2025 08:35:00 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.10
+      - Werkzeug/3.1.3 Python/3.12.8
     status:
       code: 201
       message: CREATED

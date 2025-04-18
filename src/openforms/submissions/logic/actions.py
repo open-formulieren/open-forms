@@ -11,8 +11,7 @@ from glom import assign
 from json_logic import jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
-from openforms.formio.datastructures import FormioData
-from openforms.formio.service import FormioConfigurationWrapper
+from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.typing import DataMapping, JSONObject
@@ -66,7 +65,7 @@ class ActionOperation:
 
     def eval(
         self,
-        context: DataMapping,
+        context: FormioData,
         submission: Submission,
     ) -> DataMapping | None:
         """
@@ -136,7 +135,7 @@ class StepNotApplicableAction(ActionOperation):
         submission_step_to_modify.data = {}
         if submission_step_to_modify == step:
             step.is_applicable = False
-            step.data = DirtyData({})
+            step.data = DirtyData(FormioData())
 
 
 @dataclass
@@ -172,11 +171,11 @@ class VariableAction(ActionOperation):
 
     def eval(
         self,
-        context: DataMapping,
+        context: FormioData,
         submission: Submission,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            return {self.variable: jsonLogic(self.value, context)}
+            return {self.variable: jsonLogic(self.value, context.data)}
 
 
 @dataclass
@@ -189,7 +188,7 @@ class ServiceFetchAction(ActionOperation):
 
     def eval(
         self,
-        context: DataMapping,
+        context: FormioData,
         submission: Submission,
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
@@ -230,13 +229,12 @@ class EvaluateDMNAction(ActionOperation):
 
     def eval(
         self,
-        context: DataMapping,
+        context: FormioData,
         submission: Submission,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
-        data = FormioData(context)
         dmn_inputs = {
-            item["dmn_variable"]: data[item["form_variable"]]
+            item["dmn_variable"]: context[item["form_variable"]]
             for item in self.input_mapping
         }
 

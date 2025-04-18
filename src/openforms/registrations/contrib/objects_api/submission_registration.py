@@ -504,15 +504,15 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         state = submission.load_submission_value_variables_state()
 
         # dynamic values: values driven by user input
-        dynamic_values = state.get_data()
+        all_values = state.get_data()
         # static values: values not driven by user input
         static_values = state.get_static_data()
         # update with the registration static values - a special subtype of static
         # variables. They're possibly derived from user input.
         static_values.update(state.get_static_data(other_registry=variables_registry))
 
-        # merge everything in one container where we can easily do dotted key lookups
-        all_values = FormioData({**dynamic_values, **static_values})
+        # add static values
+        all_values.update(static_values)
 
         # For every file upload component, we alter the value of the variable to be
         # the Document API URL(s).

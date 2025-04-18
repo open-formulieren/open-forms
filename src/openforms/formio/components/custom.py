@@ -20,12 +20,13 @@ from openforms.api.geojson import (
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
 
+from ..datastructures import FormioData
 from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import (
     AddressNLFormatter,
@@ -80,7 +81,7 @@ class Date(BasePlugin[DateComponent]):
         return format_date_value(value)
 
     def mutate_config_dynamically(
-        self, component: DateComponent, submission: Submission, data: DataMapping
+        self, component: DateComponent, submission: Submission, data: FormioData
     ) -> None:
         """
         Implement the behaviour for our custom date component options.
@@ -171,7 +172,7 @@ class Datetime(BasePlugin):
         self,
         component: DatetimeComponent,
         submission: Submission,
-        data: DataMapping,
+        data: FormioData,
     ) -> None:
         """
         Implement the behaviour for our custom datetime component options.
@@ -224,7 +225,7 @@ class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
 
     def mutate_config_dynamically(
-        self, component: MapComponent, submission: Submission, data: DataMapping
+        self, component: MapComponent, submission: Submission, data: FormioData
     ) -> None:
         if (identifier := component.get("tileLayerIdentifier")) is not None:
             tile_layer = MapTileLayer.objects.filter(identifier=identifier).first()
@@ -368,7 +369,7 @@ class NPFamilyMembers(BasePlugin):
         return handlers[config.data_api]
 
     def mutate_config_dynamically(
-        self, component: Component, submission: Submission, data: DataMapping
+        self, component: Component, submission: Submission, data: FormioData
     ) -> None:
         # Check authentication details/status before proceeding
         has_bsn = (

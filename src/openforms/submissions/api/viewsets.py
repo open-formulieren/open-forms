@@ -33,7 +33,6 @@ from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
-from ..models.submission_step import DirtyData
 from ..parsers import (
     IgnoreDataAndConfigFieldCamelCaseJSONParser,
     IgnoreDataAndConfigJSONRenderer,
@@ -147,7 +146,7 @@ class SubmissionViewSet(
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
-                check_submission_logic(submission, submission.data)
+                check_submission_logic(submission)
                 submission.calculate_price(save=False)
         return self._get_object_cache
 
@@ -582,9 +581,7 @@ class SubmissionStepViewSet(
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
-            evaluate_form_logic(
-                submission, subsequent_step, merged_data, request=request
-            )
+            evaluate_form_logic(submission, subsequent_step, merged_data)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
 
@@ -654,25 +651,14 @@ class SubmissionStepViewSet(
         form_data_serializer = FormDataSerializer(data=request.data)
         form_data_serializer.is_valid(raise_exception=True)
 
-        data = form_data_serializer.validated_data["data"]
-        if data:
-            merged_data = FormioData({**submission.data, **data})
-            submission_step.data = DirtyData(data)
-
+        if data := form_data_serializer.validated_data["data"]:
             new_configuration = evaluate_form_logic(
-                submission,
-                submission_step,
-                merged_data.data,
-                request=request,
+                submission, submission_step, FormioData(data)
             )
             submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
-            context={
-                "request": request,
-                "unsaved_data": data,
-                "current_step": submission_step,
-            },
+            context={"request": request, "current_step": submission_step},
         )
         return Response(submission_state_logic_serializer.data)

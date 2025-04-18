@@ -22,8 +22,9 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import JSONObject
 
+from .datastructures import FormioData
 from .typing import Component
 from .utils import is_layout_component
 
@@ -77,7 +78,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: ComponentT, submission: "Submission", data: DataMapping
+        self, component: ComponentT, submission: "Submission", data: FormioData
     ) -> None: ...
 
     def localize(self, component: ComponentT, language_code: str, enabled: bool):
@@ -147,7 +148,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         return formatter(component, value)
 
     def update_config(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self, component: Component, submission: "Submission", data: FormioData
     ) -> None:
         """
         Mutate the component configuration in place.

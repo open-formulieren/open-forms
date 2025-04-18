@@ -1,16 +1,16 @@
+from __future__ import annotations
+
 import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal
 
 from django.conf import settings
 
-from glom import Path, assign, glom
-
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
-from openforms.typing import DataMapping
 
+from ..datastructures import FormioData
 from ..service import format_value
 from ..typing import Component
 from ..utils import (
@@ -42,27 +42,27 @@ class RenderConfiguration:
 @dataclass
 class ComponentNode(Node):
     component: Component
-    step_data: DataMapping  # XXX refactor to FormioData
+    step_data: FormioData
     depth: int = 0
     is_layout = False
-    path: Path | None = None  # Path in the data (#TODO rename to data_path?)
-    json_renderer_path: Path | None = (
-        None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
+    path: str = ""  # Path in the data (#TODO rename to data_path?)
+    json_renderer_path: str = (
+        ""  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     )
     configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node | None = None
 
     @staticmethod
     def build_node(
-        step_data: DataMapping,
+        step_data: FormioData,
         component: Component,
-        renderer: "Renderer",
-        path: Path | None = None,  # Path in the data
-        json_renderer_path: Path | None = None,
+        renderer: Renderer,
+        path: str = "",  # Path in the data
+        json_renderer_path: str = "",
         configuration_path: str = "",
         depth: int = 0,
         parent_node: Node | None = None,
-    ) -> "ComponentNode":
+    ) -> ComponentNode:
         """
         Instantiate the most specific node type for a given component type.
         """
@@ -116,7 +116,8 @@ class ComponentNode(Node):
         from .default import EditGridGroupNode
 
         # everything is emitted in export mode to get consistent columns
-        # the same happens with the registration in order to include hidden fields as well
+        # the same happens with the registration in order to include hidden fields as
+        # well
         visible_modes = {RenderModes.export, RenderModes.registration}
         if settings.DISABLE_SENDING_HIDDEN_FIELDS:
             visible_modes.remove(RenderModes.registration)
@@ -125,14 +126,16 @@ class ComponentNode(Node):
 
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
-        # We only pass the step data, since frontend logic only has access to the current step data.
+        # We only pass the step data, since frontend logic only has access to the
+        # current step data.
         if isinstance(self.parent_node, EditGridGroupNode):
-            # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
-            # the data for a specific iteration to figure out if a field within the iteration is visible
-            step_data = copy.deepcopy(self.step_data)
-            current_iteration_data = glom(step_data, self.path, default=None)
-            artificial_repeating_group_data = assign(
-                step_data, self.parent_node.path, current_iteration_data, missing=dict
+            # Frontend logic for repeating group does not specify the index of the
+            # iteration. So we need to look at the data for a specific iteration to
+            # figure out if a field within the iteration is visible
+            artificial_repeating_group_data = copy.deepcopy(self.step_data)
+            current_iteration_data = self.step_data.get(self.path, None)
+            artificial_repeating_group_data[self.parent_node.path] = (
+                current_iteration_data
             )
             if not is_visible_in_frontend(
                 self.component, artificial_repeating_group_data
@@ -160,14 +163,6 @@ class ComponentNode(Node):
         return self.component["key"]
 
     @property
-    def key_as_path(self) -> Path:
-        """
-        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
-        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
-        """
-        return Path.from_text(self.key)
-
-    @property
     def label(self) -> str:
         """
         Obtain the (human-readable) label for the Formio component.
@@ -188,21 +183,22 @@ class ComponentNode(Node):
 
         TODO: build and use the type conversion for Formio components.
         """
-        path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
+        path = f"{self.path}.{self.key}" if self.path else self.key
 
         empty_value = (
             get_component_empty_value(self.component)
             if self.renderer.mode == RenderModes.registration
             else None
         )
-        value = glom(self.step_data, path, default=empty_value)
+
+        value = self.step_data.get(path, empty_value)
         return value
 
     @property
     def prefix(self) -> str:
         return self.configuration_path or "components"
 
-    def get_children(self) -> Iterator["ComponentNode"]:
+    def get_children(self) -> Iterator[ComponentNode]:
         """
         Yield the child components if this component is a container type.
         """
@@ -218,14 +214,14 @@ class ComponentNode(Node):
                 depth=self.depth + 1,
                 path=self.path,
                 json_renderer_path=(
-                    Path(self.json_renderer_path, self.key_as_path)
+                    f"{self.json_renderer_path}.{self.key}"
                     if self.json_renderer_path
-                    else Path(self.key_as_path)
+                    else self.key
                 ),
                 configuration_path=configuration_path,
             )
 
-    def __iter__(self) -> Iterator["ComponentNode"]:
+    def __iter__(self) -> Iterator[ComponentNode]:
         """
         Yield depth-first children, including itself.
         """

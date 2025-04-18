@@ -216,8 +216,8 @@ class TestRenderNestedJSON(TestCase):
             {
                 "fd0": {
                     "column1": {
-                        0: {"input1": "Foo"},
-                        1: {
+                        "0": {"input1": "Foo"},
+                        "1": {
                             "fieldset1": {
                                 "input2": "Bar",
                             },

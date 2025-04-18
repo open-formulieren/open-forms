@@ -11,6 +11,7 @@ from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.api.exceptions import RequestEntityTooLarge
+from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import FormStepFactory
 
 from ..attachments import (
@@ -116,7 +117,7 @@ class SubmissionAttachmentTest(TestCase):
                 "components": [{"key": "fileInFieldset", "type": "file"}],
             },
         ]
-        actual = resolve_uploads_from_data({"components": components}, data)
+        actual = resolve_uploads_from_data({"components": components}, FormioData(data))
         self.assertEqual(
             actual,
             {
@@ -215,7 +216,7 @@ class SubmissionAttachmentTest(TestCase):
 
         actual = resolve_uploads_from_data(
             configuration,
-            data,
+            FormioData(data),
         )
 
         self.assertEqual(

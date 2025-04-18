@@ -10,7 +10,7 @@ from freezegun import freeze_time
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
 
-from ...service import FormioConfigurationWrapper, get_dynamic_configuration
+from ...service import FormioConfigurationWrapper, FormioData, get_dynamic_configuration
 from ...typing import DateComponent
 
 
@@ -24,16 +24,17 @@ class DynamicDateConfigurationTests(TestCase):
         static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
         config_wrapper = get_dynamic_configuration(
-            config_wrapper, submission=submission, data=variables
+            config_wrapper, submission=submission, data=FormioData(variables)
         )
         new_configuration = config_wrapper.configuration
         return new_configuration["components"][0]
 
     def test_legacy_configuration_still_works(self):
         # legacy configuration = without the openForms.minDate keys etc.
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "datePicker": {
                 "minDate": None,
                 "maxDate": "2022-09-08T00:00:00+02:00",
@@ -48,9 +49,10 @@ class DynamicDateConfigurationTests(TestCase):
         )
 
     def test_min_max_date_fixed_value(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "minDate": {"mode": "fixedValue"},
                 "maxDate": {"mode": "fixedValue"},
@@ -70,11 +72,12 @@ class DynamicDateConfigurationTests(TestCase):
 
     @freeze_time("2022-09-12T14:07:00Z")
     def test_min_date_future(self):
-        date_component = {
+        date_component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {"minDate": {"mode": "future"}},
-            "datePicker": {"minDate": None},
+            "datePicker": {"minDate": None, "maxDate": None},
         }
 
         with self.subTest(include_today=True):
@@ -100,11 +103,12 @@ class DynamicDateConfigurationTests(TestCase):
 
     @freeze_time("2022-09-12T14:07:00Z")
     def test_max_date_past(self):
-        date_component = {
+        date_component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {"maxDate": {"mode": "past"}},
-            "datePicker": {"maxDate": None},
+            "datePicker": {"minDate": None, "maxDate": None},
         }
 
         with self.subTest(include_today=True):
@@ -131,9 +135,10 @@ class DynamicDateConfigurationTests(TestCase):
 
     @freeze_time("2022-10-03T12:00:00Z")
     def test_relative_to_variable_blank_delta(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "minDate": {
                     "mode": "relativeToVariable",
@@ -156,9 +161,10 @@ class DynamicDateConfigurationTests(TestCase):
 
     @freeze_time("2022-11-03T12:00:00Z")
     def test_relative_to_variable_blank_delta_dst_over(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "minDate": {
                     "mode": "relativeToVariable",
@@ -180,9 +186,10 @@ class DynamicDateConfigurationTests(TestCase):
         )
 
     def test_relative_to_variable_add_delta(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "minDate": {
                     "mode": "relativeToVariable",
@@ -207,9 +214,10 @@ class DynamicDateConfigurationTests(TestCase):
         )
 
     def test_relative_to_variable_subtract_delta(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "maxDate": {
                     "mode": "relativeToVariable",
@@ -232,9 +240,10 @@ class DynamicDateConfigurationTests(TestCase):
         )
 
     def test_variable_empty_or_none(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "maxDate": {
                     "mode": "relativeToVariable",
@@ -255,9 +264,10 @@ class DynamicDateConfigurationTests(TestCase):
 
     @tag("gh-2581")
     def test_variable_is_string_serialized_date(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {
                 "maxDate": {
                     "mode": "relativeToVariable",
@@ -309,11 +319,12 @@ class DynamicDateConfigurationTests(TestCase):
 
     @tag("gh-2581")
     def test_incomplete_config_no_crash(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             "openForms": {"maxDate": {}},
-            "datePicker": {"maxDate": "2022-09-12T14:08:00Z"},
+            "datePicker": {"minDate": None, "maxDate": "2022-09-12T14:08:00Z"},
         }
 
         new_component = self._get_dynamic_config(component, {})
@@ -322,12 +333,13 @@ class DynamicDateConfigurationTests(TestCase):
 
     @tag("gh-2525")
     def test_configuration_after_delete_validation(self):
-        component = {
+        component: DateComponent = {
             "type": "date",
             "key": "aDate",
+            "label": "Date",
             # This is the configuration that gets saved if the maxDate validation is removed in the editForm
             "openForms": {"maxDate": {"mode": ""}},
-            "datePicker": {"maxDate": None},
+            "datePicker": {"minDate": None, "maxDate": None},
         }
 
         new_component = self._get_dynamic_config(component, {})

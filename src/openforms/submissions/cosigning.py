@@ -103,7 +103,7 @@ class CosignState:
                 # https://github.com/open-formulieren/open-forms/issues/3901
                 state = self.submission.load_submission_value_variables_state()
                 visible = configuration_wrapper.is_visible_in_frontend(
-                    component["key"], values=state.to_python().data
+                    component["key"], values=state.to_python()
                 )
                 if not visible:
                     return None
@@ -171,7 +171,7 @@ class CosignState:
         )
 
         variables_state = self.submission.load_submission_value_variables_state()
-        values = variables_state.get_data(as_formio_data=True)
+        values = variables_state.get_data()
         if (key := cosign_component["key"]) not in values:
             logger.info(
                 "Inconsistent state - there is a cosign component, but no value is"

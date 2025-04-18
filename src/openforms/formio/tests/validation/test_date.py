@@ -4,7 +4,7 @@ from django.utils import timezone
 from openforms.submissions.models import Submission
 from openforms.utils.date import get_today
 
-from ...datastructures import FormioConfigurationWrapper
+from ...datastructures import FormioConfigurationWrapper, FormioData
 from ...dynamic_config import rewrite_formio_components
 from ...typing import DateComponent
 from .helpers import extract_error, validate_formio_data
@@ -83,7 +83,7 @@ class DateFieldValidationTests(SimpleTestCase):
         config_wraper = rewrite_formio_components(
             config_wraper,
             submission=submission,
-            data={"now": timezone.now()},
+            data=FormioData({"now": timezone.now()}),
         )
 
         updated_component = config_wraper["foo"]

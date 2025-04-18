@@ -1,17 +1,21 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
-from typing import Any, Callable, Iterator, TypeAlias
+from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeAlias
 
 import elasticapm
 from glom import Coalesce, Path, glom
 from typing_extensions import TypeIs
 
-from openforms.typing import DataMapping, JSONObject, JSONValue
-from openforms.utils.glom import _glom_path_to_str
+from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from .constants import COMPONENT_DATATYPES
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
+
+if TYPE_CHECKING:
+    from .datastructures import FormioData
 
 logger = logging.getLogger(__name__)
 
@@ -316,7 +320,7 @@ def conform_to_mask(value: str, mask: str) -> str:
     return "".join(result)
 
 
-def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
+def is_visible_in_frontend(component: Component, data: FormioData) -> bool:
     """Check if the component is visible because of frontend logic
 
     The rules in formio are expressed as:
@@ -341,7 +345,7 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     if not (trigger_component_key := conditional.get("when")):
         return not hidden
 
-    trigger_component_value = glom(data, trigger_component_key, default=None)
+    trigger_component_value = data.get(trigger_component_key, None)
     compare_value = conditional.get("eq")
 
     if (
@@ -371,8 +375,8 @@ class ComponentWithDataItem:
 
 def iterate_data_with_components(
     configuration: JSONObject,
-    data: JSONObject,
-    data_path: Path = Path(),
+    data: FormioData,
+    data_path: str = "",
     configuration_path: str = "components",
     filter_types: list[str] = None,
 ) -> Iterator[ComponentWithDataItem] | None:
@@ -401,19 +405,21 @@ def iterate_data_with_components(
     if configuration.get("type") == "columns":
         for index, column in enumerate(configuration["columns"]):
             child_configuration_path = f"{configuration_path}.columns.{index}"
-            yield from iterate_data_with_components(
+            yield from iterate_data_with_components(  # type: ignore
                 column, data, data_path, child_configuration_path, filter_types
             )
 
     parent_type = configuration.get("type")
     if parent_type == "editgrid":
-        parent_path = Path(data_path, Path.from_text(configuration["key"]))
-        group_data = glom(data, parent_path, default=list())
+        parent_path = (
+            f"{data_path}.{configuration['key']}" if data_path else configuration["key"]
+        )
+        group_data = data.get(parent_path, [])
         for index in range(len(group_data)):
-            yield from iterate_data_with_components(
+            yield from iterate_data_with_components(  # type: ignore
                 {"components": configuration.get("components", [])},
                 data,
-                data_path=Path(parent_path, index),
+                data_path=f"{parent_path}.{index}",
                 configuration_path=f"{configuration_path}.components",
                 filter_types=filter_types,
             )
@@ -423,19 +429,21 @@ def iterate_data_with_components(
             base_configuration_path += ".components"
         for index, child_component in enumerate(configuration.get("components", [])):
             child_configuration_path = f"{base_configuration_path}.{index}"
-            yield from iterate_data_with_components(
+            yield from iterate_data_with_components(  # type: ignore
                 child_component, data, data_path, child_configuration_path, filter_types
             )
 
     filter_out = (parent_type not in filter_types) if filter_types else False
     if "key" in configuration and not filter_out:
-        component_data_path = Path(data_path, Path.from_text(configuration["key"]))
-        component_data = glom(data, component_data_path, default=None)
+        component_data_path = (
+            f"{data_path}.{configuration['key']}" if data_path else configuration["key"]
+        )
+        component_data = data.get(component_data_path)
         if component_data is not None:
-            yield ComponentWithDataItem(
+            yield ComponentWithDataItem(  # type: ignore
                 configuration,
                 component_data,
-                _glom_path_to_str(component_data_path),
+                component_data_path,
                 configuration_path,
             )
 
