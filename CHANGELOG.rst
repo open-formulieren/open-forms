@@ -6,6 +6,19 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.0 (2025-??-??)
+==================
+
+.. warning::
+
+    For the generic JSON registration plugin, we changed the way that the data is generated.
+    In case of key conflicts between static, component, and user-defined variables,
+    the static variables will take precedence. Previously, the component and user-defined
+    variables would override the static variables. Our validation guards against the use of
+    keys that are already present in the static variables, but this does not cover old forms
+    and new added static variables.
+
+
 3.1.1 (2025-04-16)
 ==================
 
