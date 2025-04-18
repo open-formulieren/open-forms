@@ -7,6 +7,7 @@ os.environ.setdefault("DB_HOST", os.getenv("DATABASE_HOST", "db"))
 
 os.environ.setdefault("ENVIRONMENT", "docker")
 os.environ.setdefault("LOG_STDOUT", "yes")
+os.environ.setdefault("LOG_FORMAT_CONSOLE", "json")
 os.environ.setdefault("CACHE_DEFAULT", "redis:6379/0")
 os.environ.setdefault("CACHE_AXES", "redis:6379/0")
 os.environ.setdefault("CACHE_PORTALOCKER", "redis:6379/0")

@@ -1,11 +1,13 @@
 import json
 import os
+from pathlib import Path
 
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 import sentry_sdk
+import structlog
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 from log_outgoing_requests.datastructures import ContentType
@@ -18,13 +20,9 @@ from csp_post_processor.constants import NONCE_HTTP_HEADER
 from .utils import Filesize, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
-# the code root.
-DJANGO_PROJECT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir)
-)
-BASE_DIR = os.path.abspath(
-    os.path.join(DJANGO_PROJECT_DIR, os.path.pardir, os.path.pardir)
-)
+# the code root. Gets the abspath to src/openforms
+DJANGO_PROJECT_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = DJANGO_PROJECT_DIR.parent.parent
 
 #
 # Core Django settings
@@ -158,6 +156,7 @@ INSTALLED_APPS = [
     "colorfield",
     "cookie_consent",
     "corsheaders",
+    "django_structlog",
     "django_jsonform",  # django_better_admin_arrayfield replacement
     "django_yubin",
     "hijack",
@@ -271,6 +270,7 @@ MIDDLEWARE = [
     # must come after django's locale middleware so that we can override the result
     # from django and after the authentication middleware so we can check request.user
     "openforms.translations.middleware.AdminLocaleMiddleware",
+    "django_structlog.middlewares.RequestMiddleware",
     "hijack.middleware.HijackUserMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
     "maykin_2fa.middleware.OTPMiddleware",
@@ -288,9 +288,7 @@ ROOT_URLCONF = "openforms.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            os.path.join(DJANGO_PROJECT_DIR, "templates"),
-        ],
+        "DIRS": [DJANGO_PROJECT_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -309,8 +307,8 @@ WSGI_APPLICATION = "openforms.wsgi.application"
 
 # Translations
 LOCALE_PATHS = (
-    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale"),
-    os.path.join(DJANGO_PROJECT_DIR, "conf", "locale_extensions"),
+    DJANGO_PROJECT_DIR / "conf" / "locale",
+    DJANGO_PROJECT_DIR / "conf" / "locale_extensions",
 )
 
 #
@@ -319,17 +317,15 @@ LOCALE_PATHS = (
 
 STATIC_URL = "/static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = BASE_DIR / "static"
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    os.path.join(DJANGO_PROJECT_DIR, "static"),
+    DJANGO_PROJECT_DIR / "static",
     # font-awesome fonts
     (
         "fonts",
-        os.path.join(
-            BASE_DIR, "node_modules", "@fortawesome", "fontawesome-free", "webfonts"
-        ),
+        BASE_DIR / "node_modules" / "@fortawesome" / "fontawesome-free" / "webfonts",
     ),
 ]
 
@@ -340,11 +336,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "/media/"
 
-PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, "private_media")
+PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
 
 PRIVATE_MEDIA_URL = "/private-media/"
 
@@ -375,15 +371,38 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", "openforms@example.com")
 LOG_STDOUT = config("LOG_STDOUT", default=False)
 LOG_REQUESTS = config("LOG_REQUESTS", default=True)
 
-LOGGING_DIR = os.path.join(BASE_DIR, "log")
+LOGGING_DIR = BASE_DIR / "log"
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(module)s P%(process)d/T%(thread)d |  %(message)s"
+        # structlog
+        "json": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(),
+            "foreign_pre_chain": [
+                structlog.contextvars.merge_contextvars, # <---- add this
+                # customize the rest as you need
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.stdlib.add_logger_name,
+                structlog.stdlib.add_log_level,
+                structlog.stdlib.PositionalArgumentsFormatter(),
+            ],
         },
+        "plain_console": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.dev.ConsoleRenderer(),
+            "foreign_pre_chain": [
+                structlog.contextvars.merge_contextvars, # <---- add this
+                # customize the rest as you need
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.stdlib.add_logger_name,
+                structlog.stdlib.add_log_level,
+                structlog.stdlib.PositionalArgumentsFormatter(),
+            ],
+        },
+        # legacy
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
         "outgoing_requests": {"()": HttpFormatter},
@@ -409,35 +428,31 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": config("LOG_FORMAT_CONSOLE", default="timestamped"),
         },
-        "django": {
+        # replaces the "django" and "project" handlers - in containerized applications
+        # the best practices is to log to stdout.
+        "json_file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "django.log"),
-            "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 10,
-        },
-        "project": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "openforms.log"),
-            "formatter": "verbose",
+            "filename": LOGGING_DIR / "application.jsonl",
+            "formatter": "json",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
         "log_outgoing_requests": {
             "level": "DEBUG",
-            "formatter": "outgoing_requests",
             "class": "logging.StreamHandler",
+            # TODO: use nicer formatter, OIP has something?
+            "formatter": "outgoing_requests",
         },
         "save_outgoing_requests": {
             "level": "DEBUG",
             "class": "log_outgoing_requests.handlers.DatabaseOutgoingRequestsHandler",
         },
+        # TODO: properly convert to structlog and we'll get JSON logs for free :)
         "flaky_tests": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "flaky.jsonl"),
+            "filename": LOGGING_DIR / "flaky.jsonl",
             "formatter": "flaky_tests_github_actions",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
@@ -445,19 +460,26 @@ LOGGING = {
     },
     "loggers": {
         "openforms": {
-            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
             "level": "INFO",
             "propagate": True,
         },
         "stuf": {
-            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
             "level": "DEBUG",
             "propagate": True,
         },
         "django.request": {
-            "handlers": ["django"] if not LOG_STDOUT else ["console"],
+            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
             "level": "ERROR",
-            "propagate": True,
+            "propagate": False,
+        },
+        # suppress django.server request logs because those are already emitted by
+        # django-structlog middleware
+        "django.server": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
         },
         "django.template": {
             "handlers": ["console"],
@@ -465,7 +487,7 @@ LOGGING = {
             "propagate": True,
         },
         "mozilla_django_oidc": {
-            "handlers": ["project"] if not LOG_STDOUT else ["console"],
+            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
             "level": "INFO",
         },
         "log_outgoing_requests": {
@@ -477,6 +499,11 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": True,
         },
+        "django_structlog": {
+            "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
         "flaky_tests": {
             "handlers": ["flaky_tests"],
             "level": "INFO",
@@ -484,6 +511,24 @@ LOGGING = {
         },
     },
 }
+
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        # structlog.processors.ExceptionPrettyPrinter(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    cache_logger_on_first_use=True,
+)
 
 #
 # AUTH settings - user accounts, passwords, backends...
@@ -551,7 +596,7 @@ TEST_RUNNER = "openforms.tests.runner.RandomStateRunner"
 # FIXTURES
 #
 
-FIXTURE_DIRS = (os.path.join(DJANGO_PROJECT_DIR, "fixtures"),)
+FIXTURE_DIRS = (DJANGO_PROJECT_DIR / "fixtures",)
 
 #
 # Custom settings
@@ -568,7 +613,7 @@ SHOW_ENVIRONMENT = config("SHOW_ENVIRONMENT", default=True)
 if "GIT_SHA" in os.environ:
     GIT_SHA = config("GIT_SHA", "")
 # in docker (build) context, there is no .git directory
-elif os.path.exists(os.path.join(BASE_DIR, ".git")):
+elif (BASE_DIR / ".git").exists():
     try:
         import git
     except ImportError:
@@ -581,9 +626,7 @@ else:
 
 RELEASE = config("RELEASE", GIT_SHA)
 
-with open(os.path.join(BASE_DIR, ".sdk-release"), "r") as sdk_release_file:
-    sdk_release_default = sdk_release_file.read().strip()
-
+sdk_release_default = (BASE_DIR / ".sdk-release").read_text().strip()
 SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
 
 NUM_PROXIES = config(
@@ -1004,11 +1047,14 @@ SPECTACULAR_SETTINGS = {
 # ZGW Consumers
 #
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
-    os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
-    os.path.join(
-        BASE_DIR, "src/openforms/registrations/contrib/objects_api/tests/files"
-    ),
-    os.path.join(BASE_DIR, "src/openforms/contrib/haal_centraal/tests/files"),
+    DJANGO_PROJECT_DIR / "registrations" / "contrib" / "zgw_apis" / "tests" / "files",
+    DJANGO_PROJECT_DIR
+    / "registrations"
+    / "contrib"
+    / "objects_api"
+    / "tests"
+    / "files",
+    DJANGO_PROJECT_DIR / "contrib" / "haal_centraal" / "tests" / "files",
 ]
 
 ZGW_CONSUMERS_IGNORE_OAS_FIELDS = True
@@ -1022,9 +1068,7 @@ SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
 #
 # Self-Certifi
 #
-SELF_CERTIFI_DIR = config(
-    "SELF_CERTIFI_DIR", os.path.join(BASE_DIR, "certifi_ca_bundle")
-)
+SELF_CERTIFI_DIR = config("SELF_CERTIFI_DIR", str(BASE_DIR / "certifi_ca_bundle"))
 
 #
 # Django Cookie-Consent
@@ -1148,7 +1192,7 @@ CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 #
 # Tiny MCE default settings
 #
-with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
+with (Path(__file__).parent / "tinymce_config.json").open("r") as f:
     # NOTE django-tinymce will add locale/language settings automatically
     TINYMCE_DEFAULT_CONFIG = json.load(f)
 
@@ -1230,6 +1274,11 @@ UPGRADE_CHECK_PATHS: UpgradePaths = {
     "3.2.0": UpgradeCheck(VersionRange(minimum="3.0.1")),
 }
 UPGRADE_CHECK_STRICT = False
+
+#
+# DJANGO-STRUCTLOG
+#
+DJANGO_STRUCTLOG_IP_LOGGING_ENABLED = False
 
 #
 # Open Forms extensions
