@@ -25,11 +25,11 @@ Regular bugfix release.
 
 **Bugfixes**
 
-* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+* [:backend:`5214`] Fixed employee ID not being used in the authentication context when
   the organization-via-OIDC plugin is used.
-* [:backend: `5238`] Fixed the order of form versions in version history.
-* [:backend: `5263`] Fixed double encoding of data in generic JSON registration plugin.
-* [:backend: `5243`] Fixed non-existing variables being included in the 'transform to list'
+* [:backend:`5238`] Fixed the order of form versions in version history.
+* [:backend:`5263`] Fixed double encoding of data in generic JSON registration plugin.
+* [:backend:`5243`] Fixed non-existing variables being included in the 'transform to list'
   option of the generic JSON registration and Objects API plugins.
 * [:backend:`5181`] Fixed incorrect ``null`` default values in components.
 * [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
