@@ -112,3 +112,6 @@ banned-module-level-imports = [
     "idna", # IO hit
     "weasyprint",  # IO hit
 ]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"logging".msg = "Use `structlog.stdlib.get_logger()` instead of the stdlib logging module."

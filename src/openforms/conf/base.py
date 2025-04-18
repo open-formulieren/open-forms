@@ -462,7 +462,7 @@ LOGGING = {
         "openforms": {
             "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "stuf": {
             "handlers": ["json_file"] if not LOG_STDOUT else ["console"],

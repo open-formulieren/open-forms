@@ -11,13 +11,12 @@ The base class here provides the shared mechanisms for StUF v3 that are domain-a
 Whenever you are implementing a particular StUF integration, you are expected to
 subclass the base class and implement your domain specific logic in your own class.
 """
-
-import logging
 import uuid
 from typing import Any, Literal, Protocol
 
 from django.template import loader
 
+import structlog
 from ape_pie import APIClient, InvalidURLError
 from ape_pie.client import is_base_url
 from requests.models import Response
@@ -27,7 +26,7 @@ from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger()
 
 
 class LoggingHook(Protocol):
@@ -212,13 +211,12 @@ class BaseClient(APIClient):
         rendered into a string, suitable to be passed down to :meth:`request`.
         """
         full_context = {**self.build_base_context(), **(context or {})}
-        ref_nr = full_context["referentienummer"]
-        logger.debug(
-            "Making StUF-%r request with referentienummer %s",
-            self.sector_alias.upper(),
-            ref_nr,
-            extra={"ref_nr": ref_nr, "sector_alias": self.sector_alias},
+        structlog.contextvars.bind_contextvars(
+            standard="StUF",
+            sector_alias=self.sector_alias.upper(),
+            referentienummer=full_context["referentienummer"],
         )
+        logger.debug("prepare_and_make_request")
         body = loader.render_to_string(template, full_context)
         response = self.soap_request(
             soap_action, body=body, endpoint_type=endpoint_type
