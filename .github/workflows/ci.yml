@@ -474,6 +474,9 @@ jobs:
         run: |
           docker compose run -e RELEASE=${RELEASE} web \
             python src/manage.py migrate
+          # run fix scripts to verify they don't crash
+          docker compose run -e RELEASE=${RELEASE} web \
+            /app/bin/test_fix_scripts.sh
         env:
           RELEASE: '3.1.0'
           # ensure local image gets used
