@@ -38,7 +38,7 @@ class SubmissionIntegrationTests(APITestCase):
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
-            authentication_backends=["eherkenning"],
+            authentication_backend="eherkenning",
         )
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         start_endpoint = reverse("api:submission-list")

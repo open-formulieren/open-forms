@@ -136,7 +136,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
     def test_submission_with_authentication_context(self):
         submission = SubmissionFactory.create(
             completed=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             auth_info__is_digid=True,
             auth_info__with_hashed_identifying_attributes=True,
         )

@@ -56,7 +56,7 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
 
     @mock_org_oidc_config()
     def test_logout_clears_session(self):
-        form = FormFactory.create(authentication_backends=[PLUGIN_IDENTIFIER])
+        form = FormFactory.create(authentication_backend=PLUGIN_IDENTIFIER)
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id=PLUGIN_IDENTIFIER)
         self._do_keycloak_login(start_url)

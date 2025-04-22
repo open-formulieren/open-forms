@@ -61,7 +61,7 @@ class DigiDConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        FormFactory.create(authentication_backends=["other-backend"])
+        FormFactory.create(authentication_backend="other-backend")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofdigidconfig_form"]
@@ -76,7 +76,7 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertFalse(self.config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        FormFactory.create(authentication_backends=["digid_oidc"])
+        FormFactory.create(authentication_backend="digid_oidc")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofdigidconfig_form"]
@@ -91,7 +91,7 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertTrue(self.config.enabled)
 
     def test_leave_enabled(self):
-        FormFactory.create(authentication_backends=["other-backend"])
+        FormFactory.create(authentication_backend="other-backend")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofdigidconfig_form"]
@@ -129,7 +129,7 @@ class DigiDMachtigenConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        FormFactory.create(authentication_backends=["other-backend"])
+        FormFactory.create(authentication_backend="other-backend")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofdigidmachtigenconfig_form"]
@@ -144,7 +144,7 @@ class DigiDMachtigenConfigAdminTests(AdminTestsBase):
         self.assertFalse(self.config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        FormFactory.create(authentication_backend="digid_machtigen_oidc")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofdigidmachtigenconfig_form"]
@@ -182,7 +182,7 @@ class EHerkenningConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        FormFactory.create(authentication_backends=["other-backend"])
+        FormFactory.create(authentication_backend="other-backend")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofeherkenningconfig_form"]
@@ -197,7 +197,7 @@ class EHerkenningConfigAdminTests(AdminTestsBase):
         self.assertFalse(self.config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        FormFactory.create(authentication_backend="eherkenning_oidc")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofeherkenningconfig_form"]
@@ -235,7 +235,7 @@ class EHerkenningBewindvoeringConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        FormFactory.create(authentication_backends=["other-backend"])
+        FormFactory.create(authentication_backend="other-backend")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofeherkenningbewindvoeringconfig_form"]
@@ -250,7 +250,7 @@ class EHerkenningBewindvoeringConfigAdminTests(AdminTestsBase):
         self.assertFalse(self.config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        FormFactory.create(authentication_backends=["eherkenning_bewindvoering_oidc"])
+        FormFactory.create(authentication_backend="eherkenning_bewindvoering_oidc")
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofeherkenningbewindvoeringconfig_form"]

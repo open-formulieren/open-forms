@@ -77,7 +77,7 @@ class TempdirMixin:
 class ImportExportTests(TempdirMixin, TestCase):
     @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
-        form, _ = FormFactory.create_batch(2, authentication_backends=["demo"])
+        form, _ = FormFactory.create_batch(2, authentication_backend="demo")
         form_definition, _ = FormDefinitionFactory.create_batch(2)
         FormStepFactory.create(form=form, form_definition=form_definition)
         FormStepFactory.create()
@@ -117,7 +117,12 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(forms[0]["name"], form.name)
             self.assertEqual(forms[0]["internal_name"], form.internal_name)
             self.assertEqual(forms[0]["slug"], form.slug)
-            self.assertEqual(forms[0]["authentication_backends"], ["demo"])
+            self.assertEqual(forms[0]["auth_backends"], [
+                {
+                    "backend": "demo",
+                    "options": {},
+                }
+            ])
             self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
             self.assertIsNone(forms[0]["product"])
 
@@ -197,7 +202,7 @@ class ImportExportTests(TempdirMixin, TestCase):
         merchant = OgoneMerchantFactory.create()
         form = FormFactory.create(
             product=product,
-            authentication_backends=["digid"],
+            authentication_backend="digid",
             payment_backend="ogone-legacy",
             payment_backend_options={"merchant_id": merchant.id},
         )
@@ -300,7 +305,8 @@ class ImportExportTests(TempdirMixin, TestCase):
         self.assertEqual(imported_form.name, form.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, old_form_slug)
-        self.assertEqual(imported_form.authentication_backends, ["digid"])
+        self.assertEqual(imported_form.auth_backends.count(), 1)
+        self.assertEqual(imported_form.auth_backends.get().backend, "digid")
         self.assertEqual(imported_form.payment_backend, "ogone-legacy")
         self.assertEqual(
             imported_form.payment_backend_options,

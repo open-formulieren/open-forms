@@ -141,7 +141,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form_definition__login_required=True,
         ).form
 
@@ -191,7 +191,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form_definition__login_required=True,
         ).form
         submission = SubmissionFactory.create(
@@ -248,7 +248,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form_definition__login_required=True,
         ).form
         submission = SubmissionFactory.create(
@@ -316,7 +316,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form_definition__login_required=True,
         ).form
 

@@ -270,7 +270,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(len(response.json()), 3)
 
     def test_logo_details(self):
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create()
         FormStepFactory.create(form=form, form_definition=form_definition)
 
@@ -404,7 +404,11 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
-            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                }
+            ],
         }
         response = self.client.post(url, data=data)
 
@@ -1166,7 +1170,11 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
-            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                }
+            ],
             "auto_login_authentication_backend": "eherkenning",
         }
 
@@ -1189,7 +1197,11 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
-            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                }
+            ],
             "auto_login_authentication_backend": "eherkenning",
         }
 
@@ -1208,12 +1220,12 @@ class FormsAPITests(APITestCase):
         self,
     ):
         """
-        When altering `authentication_backends` on an existing form that has a
+        When altering `auth_backends` on an existing form that has a
         `auto_login_authentication_backend` configured, validation should check whether
         this auto login backend is still allowed
         """
         form = FormFactory.create(
-            authentication_backends=["digid"], auto_login_authentication_backend="digid"
+            authentication_backend="digid", auto_login_authentication_backend="digid"
         )
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
@@ -1221,7 +1233,11 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
-            "authentication_backends": ["eherkenning"],
+            "auth_backends": [
+                {
+                    "backend": "eherkenning",
+                }
+            ],
         }
 
         response = self.client.patch(url, data=data)
@@ -1242,7 +1258,14 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
-            "authentication_backends": ["eherkenning", "digid"],
+            "auth_backends": [
+                {
+                    "backend": "eherkenning",
+                },
+                {
+                    "backend": "digid",
+                },
+            ],
             "auto_login_authentication_backend": "digid",
         }
 
@@ -1260,7 +1283,14 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Put Form",
             "slug": "test-put-form",
-            "authentication_backends": ["eherkenning", "digid"],
+            "auth_backends": [
+                {
+                    "backend": "eherkenning",
+                },
+                {
+                    "backend": "digid",
+                },
+            ],
             "auto_login_authentication_backend": "digid",
         }
 
@@ -1279,7 +1309,6 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Form",
             "slug": "test-form",
-            "authentication_backends": ["digid"],
             "auth_backends": [
                 {
                     "backend": "digid",
@@ -1308,7 +1337,6 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Form",
             "slug": "test-form",
-            "authentication_backends": ["digid"],
             "auth_backends": [
                 {
                     "backend": "digid",
@@ -1339,7 +1367,6 @@ class FormsAPITests(APITestCase):
         data = {
             "name": "Test Form",
             "slug": "test-form",
-            "authentication_backends": ["digid"],
             "auth_backends": [
                 {
                     "backend": "digid",
@@ -1598,7 +1625,11 @@ class FormsAPITranslationTests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
-            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                }
+            ],
             "translations": {
                 "en": {
                     "name": "Form 1",
@@ -1899,7 +1930,11 @@ class FormsAPITranslationTests(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
-            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                }
+            ],
             "translations": {
                 "en": {
                     "begin_text": "start",

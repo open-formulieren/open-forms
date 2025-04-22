@@ -175,7 +175,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
@@ -221,7 +221,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
