@@ -58,6 +58,7 @@ class CosignV2Data(FormAuth):
     contains the auth plugin, attribute and identifier value.
     """
 
+    # TODO-2324: should this be a native datetime object as well?
     cosign_date: NotRequired[str]
     """
     ISO-8601 formatted datetime indicating when the cosigner confirmed the submission.

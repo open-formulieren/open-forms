@@ -78,8 +78,12 @@ def normalize_config(
     return config
 
 
+# TODO-2324: this function *should* be redundant now that the data can be converted to
+#  python types during evaluation of form logic
 def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
     match [value, component_type]:
+        # TODO-2324: is this a situation that can still occur? Seems weird... looks like
+        #  date components use datetime under the hood
         case [datetime(), "date"]:
             assert value.tzinfo is not None, (
                 "Expected the input variable to be timezone aware!"

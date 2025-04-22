@@ -5,6 +5,8 @@ from openforms.typing import JSONValue
 from openforms.utils.date import datetime_in_amsterdam
 
 
+# TODO-2324: we probably need to keep these conversion in place here, as they interact
+#  with a third-party API
 def process_according_to_eigenschap_format(
     specificatie: EigenschapSpecificatie, value: JSONValue
 ) -> JSONValue:

@@ -233,6 +233,14 @@ class LogicComponentActionSerializer(serializers.Serializer):
         ):
             form_var = self.context["form_variables"].variables[variable]
 
+            # TODO-2324: This check happens when an action is being saved. It only covers
+            #  date fields, though. It is still possible to enter an invalid value for
+            #  time and datetime fields. If we want to be thorough, we should also cover
+            #  those here. That being said, with the to python conversion we do
+            #  in the logic check, the form will no longer fail as was the case when
+            #  this check was introduced (issue 2826). It now just falls back to None
+            #  during the logic check. Should we extend this check to cover the time and
+            #  datetime types as well, or can we remove it?
             if form_var.data_type == FormVariableDataTypes.date:
                 try:
                     # type check muted since we handle it at runtime

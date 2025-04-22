@@ -267,6 +267,7 @@ class Time(BasePlugin[Component]):
 
         validators = []
 
+        # TODO-2324: is this the right place to do this conversion?
         match (
             min_time := validate.get("minTime"),
             max_time := validate.get("maxTime"),

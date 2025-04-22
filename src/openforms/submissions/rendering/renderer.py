@@ -69,6 +69,7 @@ class Renderer:
             new_configuration = evaluate_form_logic(
                 submission=self.submission,
                 step=step,
+                # TODO: can be removed
                 data=submission_data,
             )
             # update the configuration for introspection - note that we are mutating

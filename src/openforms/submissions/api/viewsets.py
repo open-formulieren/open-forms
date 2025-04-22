@@ -581,6 +581,7 @@ class SubmissionStepViewSet(
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
+            # TODO: ``merged_data`` can be removed
             evaluate_form_logic(submission, subsequent_step, merged_data)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
