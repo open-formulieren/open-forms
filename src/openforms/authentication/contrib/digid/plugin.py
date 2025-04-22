@@ -13,6 +13,7 @@ from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
+from .config import DigidOptionsSerializer
 from .constants import (
     DIGID_AUTH_SESSION_AUTHN_CONTEXTS,
     DIGID_AUTH_SESSION_KEY,
@@ -34,6 +35,7 @@ class DigidAuthentication(BasePlugin):
     provides_auth = AuthAttribute.bsn
     supports_loa_override = True
     assurance_levels = DigiDAssuranceLevels
+    configuration_options = DigidOptionsSerializer
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str

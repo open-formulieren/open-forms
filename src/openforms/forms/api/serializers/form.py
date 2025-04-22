@@ -65,13 +65,18 @@ class FormAuthenticationBackendSerializer(serializers.ModelSerializer):
         fields = ("backend", "options")
 
     def validate(self, attrs):
-        # validate config options with selected plugin
-        if "backend" not in attrs:
-            raise serializers.ValidationError(_("authentication backend required"))
-
         plugin = auth_register[attrs["backend"]]
+        if not hasattr(plugin, "configuration_options"):
+            return attrs
 
-        # @TODO validate options with the selected plugin
+        options = get_from_serializer_data_or_instance("options", attrs, self)
+        serializer = plugin.configuration_options(
+            data=options, context=self.context, required=False, allow_null=True
+        )
+        if not serializer.is_valid():
+            raise serializers.ValidationError({"options": serializer.errors})
+        # serializer does some normalization, so make sure to update the data
+        attrs["options"] = serializer.validated_data
         return attrs
 
 
