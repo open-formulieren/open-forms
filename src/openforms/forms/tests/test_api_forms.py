@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, APITestCase
 
@@ -1268,6 +1269,96 @@ class FormsAPITests(APITestCase):
                 response = getattr(self.client, verb)(url, data=data)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_form_with_valid_authentication_backend_loa_choice_succeeds(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Form",
+            "slug": "test-form",
+            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                    "options": {
+                        "loa": DigiDAssuranceLevels.middle,
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.json()["authBackends"][0]
+
+        self.assertEqual(data["backend"], "digid")
+        self.assertEqual(data["options"], {"loa": DigiDAssuranceLevels.middle})
+
+    def test_create_form_with_invalid_authentication_backend_loa_choice_fails(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Form",
+            "slug": "test-form",
+            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                    "options": {
+                        "loa": "whatever",
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        error = response.json()["invalidParams"][0]
+
+        self.assertEqual(error["name"], "authBackends.0.options.loa")
+        self.assertEqual(error["code"], "invalid_choice")
+
+    def test_create_form_with_unknown_authentication_backend_attribute_succeeds_with_allowed_attributes(
+        self,
+    ):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Form",
+            "slug": "test-form",
+            "authentication_backends": ["digid"],
+            "auth_backends": [
+                {
+                    "backend": "digid",
+                    "options": {
+                        "loa": DigiDAssuranceLevels.middle,
+                        "additional_scope": "email",
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.json()["authBackends"][0]
+
+        self.assertEqual(data["backend"], "digid")
+        self.assertEqual(data["options"], {"loa": DigiDAssuranceLevels.middle})
 
 
 class FormsAPITranslationTests(APITestCase):
