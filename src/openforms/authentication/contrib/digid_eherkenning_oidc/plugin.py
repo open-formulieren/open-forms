@@ -67,7 +67,7 @@ class AuthInit(Protocol):
 T = TypeVar("T")
 
 
-class OIDCAuthentication(Generic[T], BasePlugin):
+class OIDCAuthentication(Generic[T], BasePlugin[TypedDict]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""

@@ -38,7 +38,11 @@ class Choice(TypedDict):
     label: str
 
 
-class BasePlugin(AbstractBasePlugin):
+class Options(TypedDict):
+    pass
+
+
+class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     provides_auth: AuthAttribute
     supports_loa_override = False
     assurance_levels: type[TextChoices] = TextChoices
@@ -123,7 +127,7 @@ class BasePlugin(AbstractBasePlugin):
             Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
         ]
 
-    def check_requirements(self, request: AnyRequest, config: dict) -> bool:
+    def check_requirements(self, request: AnyRequest, options: OptionsT | None) -> bool:
         "Check if the request meets requirements"
         return True
 

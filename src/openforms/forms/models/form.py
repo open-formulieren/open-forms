@@ -455,16 +455,16 @@ class Form(models.Model):
     get_payment_backend_display.short_description = _("payment backend")
 
     def get_authentication_backends_display(self):
-        if not self.authentication_backends:
+        if not self.auth_backends:
             return "-"
 
         choices = dict(authentication_register.get_choices())
         return [
             choices.get(
                 auth_backend,
-                _("{backend} (invalid)").format(backend=self.authentication_backends),
+                _("{backend} (invalid)").format(backend=auth_backend),
             )
-            for auth_backend in self.authentication_backends
+            for auth_backend in self.auth_backends.values_list("backend", flat=True)
         ]
 
     get_authentication_backends_display.short_description = _(
@@ -594,6 +594,12 @@ class Form(models.Model):
             registration_backend.pk = None
             registration_backend.form = copy
             registration_backend.save()
+
+        # authentication backends
+        for authentication_backend in self.auth_backends.all():
+            authentication_backend.pk = None
+            authentication_backend.form = copy
+            authentication_backend.save()
 
         return copy
 
