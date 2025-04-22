@@ -134,6 +134,7 @@ class SelectBoxesFormatter(FormatterBase):
         return self.multiple_separator.join(selected_labels)
 
 
+# TODO-2324: date/datetime conversions
 class SelectFormatter(FormatterBase):
     def format(self, component: SelectComponent, value: str | dict) -> str:
         # grab appointment specific data

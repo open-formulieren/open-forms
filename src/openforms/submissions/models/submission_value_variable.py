@@ -386,6 +386,8 @@ class SubmissionValueVariable(models.Model):
         ):
             return value
 
+        # TODO-2324: if it can't be parsed, might be good to fall back to the empty
+        #  component value instead of None?
         if value and data_type == FormVariableDataTypes.date:
             if isinstance(value, date):
                 return value

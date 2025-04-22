@@ -107,6 +107,7 @@ class Date(BasePlugin[DateComponent]):
         date_picker = component.get("datePicker") or {}
         validators = []
 
+        # TODO-2324: is this the right place to perform this conversion?
         if min_date := date_picker.get("minDate"):
             min_value = datetime_in_amsterdam(datetime.fromisoformat(min_date)).date()
             validators.append(MinValueValidator(min_value))
@@ -195,6 +196,7 @@ class Datetime(BasePlugin):
         date_picker = component.get("datePicker") or {}
         validators = []
 
+        # TODO-2324: is this the right place to perform this conversion?
         if min_date := date_picker.get("minDate"):
             min_value = _normalize_validation_datetime(min_date)
             validators.append(MinValueValidator(min_value))

@@ -268,6 +268,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         new_configuration = evaluate_form_logic(
             instance.submission,
             instance,
+            # TODO: also this can be removed.
             instance.submission.data,
         )
         # update the config for serialization
