@@ -27,7 +27,7 @@ export default {
       appointmentOptions: {
         isAppointment: false,
       },
-      authenticationBackendOptions: {},
+      authBackends: [],
     },
     onChange: fn(),
     availableAuthPlugins: [

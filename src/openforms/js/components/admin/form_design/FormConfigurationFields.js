@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
-import LoAOverrideOption from 'components/admin/form_design/authentication/LoAOverrideOption';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -12,6 +11,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
+import AuthPluginOptions from './AuthPluginOptions';
 
 const SUMBISSION_ALLOWED_CHOICES = [
   [
@@ -189,8 +189,10 @@ const AuthenticationFields = ({
   selectedAuthPlugins,
   onAuthPluginChange,
   autoLoginAuthenticationBackend,
+  // @TODO remove authenticationBackendOptions
   authenticationBackendOptions,
   onChange,
+  authBackends,
 }) => {
   const eligibleAutoLoginPlugins = availableAuthPlugins.filter(plugin =>
     selectedAuthPlugins.includes(plugin.id)
@@ -240,12 +242,16 @@ const AuthenticationFields = ({
           </Field>
         </FormRow>
       ) : null}
-      <LoAOverrideOption
-        availableAuthPlugins={availableAuthPlugins}
-        selectedAuthPlugins={selectedAuthPlugins}
-        authenticationBackendOptions={authenticationBackendOptions}
-        onChange={onChange}
-      />
+      {authBackends.map((authBackend, index) => (
+        <AuthPluginOptions
+          key={authBackend.backend}
+          index={index}
+          name={`form.authBackends.${index}`}
+          authBackend={authBackend}
+          availableAuthPlugins={availableAuthPlugins}
+          onChange={onChange}
+        />
+      ))}
     </Fieldset>
   );
 };
@@ -674,8 +680,10 @@ const FormConfigurationFields = ({
           selectedAuthPlugins={selectedAuthPlugins}
           onAuthPluginChange={onAuthPluginChange}
           autoLoginAuthenticationBackend={form.autoLoginAuthenticationBackend}
+          // @TODO remove authenticationBackendOptions
           authenticationBackendOptions={form.authenticationBackendOptions}
           onChange={onChange}
+          authBackends={form.authBackends}
         />
       )}
 
@@ -726,6 +734,13 @@ FormConfigurationFields.propTypes = {
       isAppointment: PropTypes.bool.isRequired,
     }),
     authenticationBackendOptions: PropTypes.object,
+    authBackends: PropTypes.arrayOf(
+      PropTypes.shape({
+        backend: PropTypes.string.isRequired, // Auth plugin id
+        // Options configuration shape is specific to plugin
+        options: PropTypes.object,
+      })
+    ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(
@@ -733,6 +748,7 @@ FormConfigurationFields.propTypes = {
       id: PropTypes.string,
       label: PropTypes.string,
       providesAuth: PropTypes.string,
+      schema: PropTypes.object,
     })
   ),
   selectedAuthPlugins: PropTypes.array.isRequired,
