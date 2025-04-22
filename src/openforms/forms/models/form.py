@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -11,6 +11,7 @@ from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Window
 from django.db.models.functions import RowNumber
+from django.db.models.manager import BaseManager
 from django.utils.formats import localize
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _, override
@@ -41,6 +42,9 @@ from .utils import literal_getter
 
 User = get_user_model()
 logger = structlog.stdlib.get_logger(__name__)
+
+if TYPE_CHECKING:
+    from . import FormAuthenticationBackend
 
 
 class FormQuerySet(models.QuerySet):
@@ -114,6 +118,7 @@ class Form(models.Model):
     authentication_backend_options = models.JSONField(
         _("per form authentication backend config"), default=dict, blank=True
     )
+    auth_backends: BaseManager["FormAuthenticationBackend"]
 
     # appointments
     is_appointment = models.BooleanField(
@@ -455,16 +460,16 @@ class Form(models.Model):
     get_payment_backend_display.short_description = _("payment backend")
 
     def get_authentication_backends_display(self):
-        if not self.authentication_backends:
+        if not self.auth_backends.exists():
             return "-"
 
         choices = dict(authentication_register.get_choices())
         return [
             choices.get(
-                auth_backend,
-                _("{backend} (invalid)").format(backend=self.authentication_backends),
+                backend,
+                _("{backend} (invalid)").format(backend=backend),
             )
-            for auth_backend in self.authentication_backends
+            for backend in self.auth_backends.values_list("backend", flat=True)
         ]
 
     get_authentication_backends_display.short_description = _(
@@ -594,6 +599,12 @@ class Form(models.Model):
             registration_backend.pk = None
             registration_backend.form = copy
             registration_backend.save()
+
+        # authentication backends
+        for authentication_backend in self.auth_backends.all():
+            authentication_backend.pk = None
+            authentication_backend.form = copy
+            authentication_backend.save()
 
         return copy
 

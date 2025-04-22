@@ -183,7 +183,7 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
             if not plugin.is_enabled:
                 return HttpResponseBadRequest("authentication plugin not enabled")
 
-            if plugin_id not in form.authentication_backends:
+            if not form.auth_backends.filter(backend=plugin_id).exists():
                 return HttpResponseBadRequest("plugin not allowed")
 
             # demo plugins should require admin authentication to protect against random
@@ -323,7 +323,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             self._plugin = plugin
             structlog.contextvars.bind_contextvars(plugin=type(plugin))
 
-            if plugin_id not in form.authentication_backends:
+            if not form.auth_backends.filter(backend=plugin_id).exists():
                 return HttpResponseBadRequest("plugin not allowed")
 
             if plugin.return_method.upper() != request.method.upper():
