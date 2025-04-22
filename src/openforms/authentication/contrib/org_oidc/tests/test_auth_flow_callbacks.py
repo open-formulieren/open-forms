@@ -44,7 +44,7 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
 
     @mock_org_oidc_config()
     def test_redirects_after_successful_auth(self):
-        form = FormFactory.create(authentication_backends=["org-oidc"])
+        form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
         start_response = self.app.get(start_url)
@@ -84,7 +84,7 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
 
     @mock_org_oidc_config(username_claim=["absent-claim"])
     def test_failing_claim_verification(self):
-        form = FormFactory.create(authentication_backends=["org-oidc"])
+        form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
         start_response = self.app.get(start_url)

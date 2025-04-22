@@ -80,7 +80,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
                 name_nl="Formulier Test Cosign",
                 generate_minimal_setup=True,
                 formstep__form_definition__configuration={"components": []},
-                authentication_backends=["digid"],
+                authentication_backend="digid",
             )
 
         await create_superuser()
@@ -125,7 +125,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
                 formstep__form_definition__configuration={
                     "components": [{"type": "cosign", "key": "cosign"}]
                 },
-                authentication_backends=["digid"],
+                authentication_backend="digid",
             )
 
         await create_superuser()

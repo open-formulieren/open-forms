@@ -33,7 +33,7 @@ class OrgOIDCInitTests(IntegrationTestsBase):
 
     @mock_org_oidc_config()
     def test_start_flow_redirects_to_oidc_provider(self):
-        form = FormFactory.create(authentication_backends=["org-oidc"])
+        form = FormFactory.create(authentication_backend="org-oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="org-oidc")
 
         response = self.app.get(start_url)
@@ -55,7 +55,7 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
     )
     def test_idp_availability_check(self):
-        form = FormFactory.create(authentication_backends=["org-oidc"])
+        form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
 
@@ -72,7 +72,7 @@ class OrgOIDCInitTests(IntegrationTestsBase):
     def test_start_flow_logs_out_existing_user(self):
         user = StaffUserFactory.create()
         self.app.get(reverse("admin:index"), user=user)
-        form = FormFactory.create(authentication_backends=["org-oidc"])
+        form = FormFactory.create(authentication_backend="org-oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="org-oidc")
         with self.subTest("verify auth state before test"):
             user = get_user(self.app)  # type: ignore

@@ -14,6 +14,7 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration, RichTextColor
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormLogicFactory
@@ -35,7 +36,12 @@ class FormAdminImportExportTests(WebTest):
 
     def test_form_admin_export(self):
         self.client.force_login(self.user)
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(
+            authentication_backend="digid",
+            authentication_backend_options={
+                "loa": DIGID_DEFAULT_LOA,
+            },
+        )
         admin_url = reverse("admin:forms_form_change", args=(form.pk,))
 
         response = self.client.post(admin_url, data={"_export": "Export"})
@@ -60,7 +66,17 @@ class FormAdminImportExportTests(WebTest):
         forms = json.loads(zf.read("forms.json"))
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0]["uuid"], str(form.uuid))
-        self.assertEqual(forms[0]["authentication_backends"], ["digid"])
+        self.assertEqual(
+            forms[0]["auth_backends"],
+            [
+                {
+                    "backend": "digid",
+                    "options": {
+                        "loa": DIGID_DEFAULT_LOA,
+                    },
+                }
+            ],
+        )
 
         form_definitions = json.loads(zf.read("formDefinitions.json"))
         self.assertEqual(len(form_definitions), 0)
@@ -128,7 +144,8 @@ class FormAdminImportExportTests(WebTest):
         self.assertNotEqual(form.uuid, "b8315e1d-3134-476f-8786-7661d8237c51")
         self.assertEqual(form.name, "Form 000")
         self.assertEqual(form.internal_name, "Form internal")
-        self.assertEqual(form.authentication_backends, ["digid"])
+        self.assertEqual(form.auth_backends.count(), 1)
+        self.assertEqual(form.auth_backends.get().backend, "digid")
 
     def test_form_admin_import_staff_required(self):
         self.user.is_superuser = False
@@ -472,7 +489,7 @@ class FormAdminCopyTests(TestCase):
         user = UserFactory.create(is_superuser=True, is_staff=True)
         self.client.force_login(user)
         form = FormFactory.create(
-            authentication_backends=["digid"], internal_name="internal"
+            authentication_backend="digid", internal_name="internal"
         )
         confirmation_email_template = ConfirmationEmailTemplateFactory(
             form=form, subject="Test"
@@ -496,7 +513,8 @@ class FormAdminCopyTests(TestCase):
             copied_form.internal_name,
             _("{name} (copy)").format(name=form.internal_name),
         )
-        self.assertEqual(copied_form.authentication_backends, ["digid"])
+        self.assertEqual(copied_form.auth_backends.count(), 1)
+        self.assertEqual(copied_form.auth_backends.get().backend, "digid")
 
         copied_logic = copied_form.formlogic_set.get()
         self.assertEqual(copied_logic.json_logic_trigger, logic.json_logic_trigger)

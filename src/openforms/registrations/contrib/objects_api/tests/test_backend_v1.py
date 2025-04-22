@@ -947,7 +947,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             completed=True,
             form__generate_minimal_setup=True,
             # simulate eherkenning bewindvoering, as that is most complex
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             auth_info__plugin="demo",
             auth_info__is_eh_bewindvoering=True,
         )

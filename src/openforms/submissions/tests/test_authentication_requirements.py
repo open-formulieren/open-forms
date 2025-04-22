@@ -37,7 +37,7 @@ class AuthOptionalTests(SubmissionsMixin, APITestCase):
 
         cls.form = FormFactory.create(
             generate_minimal_setup=True,
-            authentication_backends=["demo"],
+            authentication_backend="demo",
             formstep__form_definition__login_required=False,
             formstep__form_definition__configuration={
                 "components": [
@@ -88,7 +88,7 @@ class AuthOptionalTests(SubmissionsMixin, APITestCase):
     def test_submitting_step_data_is_allowed_authenticated_user(self):
         submission = SubmissionFactory.create(
             form=self.form,
-            auth_info__plugin=self.form.authentication_backends[0],
+            auth_info__plugin=self.form.auth_backends.get().backend,
             auth_info__value="123456782",
         )
         assert submission.is_authenticated, "Submission must have auth details"
@@ -118,7 +118,7 @@ class AuthRequiredTests(SubmissionsMixin, APITestCase):
 
         cls.form = FormFactory.create(
             generate_minimal_setup=True,
-            authentication_backends=["demo"],
+            authentication_backend="demo",
             formstep__form_definition__login_required=True,
             formstep__form_definition__configuration={
                 "components": [
@@ -165,7 +165,7 @@ class AuthRequiredTests(SubmissionsMixin, APITestCase):
     def test_submitting_step_data_is_allowed_authenticated_user(self):
         submission = SubmissionFactory.create(
             form=self.form,
-            auth_info__plugin=self.form.authentication_backends[0],
+            auth_info__plugin=self.form.auth_backends.get().backend,
             auth_info__value="123456782",
         )
         assert submission.is_authenticated, "Submission must have auth details"

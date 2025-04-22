@@ -7,6 +7,7 @@ from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models.config import GlobalConfiguration
 from openforms.forms.api.datastructures import FormVariableWrapper
 from openforms.forms.api.serializers import FormSerializer
@@ -131,7 +132,8 @@ class FormSerializerTest(TestCase):
     def test_form_with_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             form_definition__configuration={
                 "components": [
                     {
@@ -167,7 +169,8 @@ class FormSerializerTest(TestCase):
     def test_form_without_cosign_link_used_in_email(self, mock_get_solo):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             form_definition__configuration={
                 "components": [
                     {
@@ -199,7 +202,8 @@ class FormSerializerTest(TestCase):
     def test_form_with_cosign_link_used_in_email(self, mock_get_solo):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             form_definition__configuration={
                 "components": [
                     {
@@ -225,7 +229,8 @@ class FormSerializerTest(TestCase):
     def test_form_without_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-without-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             form_definition__configuration={
                 "components": [
                     {

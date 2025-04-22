@@ -167,6 +167,8 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             form_url="http://testserver/myform/",
             completed=True,
             auth_info__value="123456782",
