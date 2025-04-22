@@ -62,9 +62,13 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
+class OptionsT(TypedDict):
+    pass
+
+
 # can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
 # assignable... :(
-class OIDCAuthentication[T](BasePlugin):
+class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
@@ -154,7 +158,7 @@ class DigiDClaims(TypedDict):
 
 
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims]):
+class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_oidc:bsn"
@@ -194,7 +198,7 @@ class EHClaims(TypedDict):
 
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
@@ -255,7 +259,9 @@ class DigiDmachtigenClaims(TypedDict):
 
 
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims]):
+class DigiDMachtigenOIDCAuthentication(
+    OIDCAuthentication[DigiDmachtigenClaims, OptionsT]
+):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
@@ -316,7 +322,7 @@ _EH_IDENTIFIER_TYPE_MAP = {
 
 @register("eherkenning_bewindvoering_oidc")
 class EHerkenningBewindvoeringOIDCAuthentication(
-    OIDCAuthentication[EHBewindvoeringClaims]
+    OIDCAuthentication[EHBewindvoeringClaims, OptionsT]
 ):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been

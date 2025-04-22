@@ -54,7 +54,7 @@ class OIDCConfigForm(OpenIDConnectConfigForm):
         # deteermine which plugin ID we need to query for
         plugin = get_config_to_plugin()[self._meta.model]
         forms_with_backend = Form.objects.live().filter(
-            authentication_backends__contains=[plugin.identifier]
+            auth_backends__backend__exact=plugin.identifier,
         )
         if forms_with_backend.exists():
             raise forms.ValidationError(

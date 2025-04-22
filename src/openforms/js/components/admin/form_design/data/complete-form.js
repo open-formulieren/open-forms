@@ -138,7 +138,6 @@ const saveForm = async (state, csrftoken) => {
       ...draft.form,
       // FIXME - should not be required in backend for form designer
       name: draft.form?.translations?.[DEFAULT_LANGUAGE]?.name,
-      authenticationBackends: draft.selectedAuthPlugins,
     };
   });
 

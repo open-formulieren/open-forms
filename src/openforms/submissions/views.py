@@ -19,7 +19,7 @@ from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.utils import (
-    is_authenticated_with_an_allowed_plugin,
+    get_authentication_plugin,
     is_authenticated_with_plugin,
     meets_plugin_requirements,
 )
@@ -100,12 +100,15 @@ class ResumeFormMixin(TemplateResponseMixin):
         if not submission.is_authenticated:
             return False
 
-        is_auth_plugin_correct = is_authenticated_with_plugin(
-            self.request, submission.auth_info.plugin
-        )
-        if not meets_plugin_requirements(
-            self.request, submission.form.authentication_backend_options
-        ):
+        try:
+            is_auth_plugin_correct = is_authenticated_with_plugin(
+                self.request, submission.auth_info.plugin
+            )
+            plugin_id = get_authentication_plugin(self.request, submission.form)
+        except (ValueError, KeyError):
+            return False
+
+        if not meets_plugin_requirements(self.request, submission.form, plugin_id):
             return False
         is_auth_attribute_correct = (
             submission.auth_info.attribute
@@ -300,11 +303,11 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         The user should have authenticated with one of the auth plugin specified on the form
         """
         self.form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
-        return is_authenticated_with_an_allowed_plugin(
-            self.request, self.form.authentication_backends
-        ) and meets_plugin_requirements(
-            self.request, self.form.authentication_backend_options
-        )
+        try:
+            plugin_id = get_authentication_plugin(self.request, self.form)
+            return meets_plugin_requirements(self.request, self.form, plugin_id)
+        except (ValueError, KeyError):
+            return False
 
     def get(self, request: HttpRequest, *args, **kwargs):
         # If we have a code param in the query string, apply the shortcuts and skip

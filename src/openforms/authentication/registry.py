@@ -17,7 +17,7 @@ logger = structlog.stdlib.get_logger(__name__)
 
 def _iter_plugin_ids(form: Form | None, registry: Registry) -> Iterator[str]:
     if form is not None:
-        yield from form.authentication_backends
+        yield from form.auth_backends.values_list("backend", flat=True)
     else:
         for plugin in registry.iter_enabled_plugins():
             yield plugin.identifier

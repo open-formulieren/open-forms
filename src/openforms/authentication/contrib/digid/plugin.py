@@ -13,7 +13,7 @@ from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .config import DigidOptionsSerializer
+from .config import DigidOptions, DigidOptionsSerializer
 from .constants import (
     DIGID_AUTH_SESSION_AUTHN_CONTEXTS,
     DIGID_AUTH_SESSION_KEY,
@@ -30,7 +30,7 @@ def loa_order(loa: str) -> int:
 
 
 @register(PLUGIN_ID)
-class DigidAuthentication(BasePlugin):
+class DigidAuthentication(BasePlugin[DigidOptions]):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
     supports_loa_override = True
@@ -96,10 +96,10 @@ class DigidAuthentication(BasePlugin):
 
         return HttpResponseRedirect(form_url)
 
-    def check_requirements(self, request: AnyRequest, config: dict) -> bool:
+    def check_requirements(self, request: AnyRequest, options: DigidOptions) -> bool:
         # check LoA requirements
         authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
-        required = config.get("loa") or DIGID_DEFAULT_LOA
+        required = options["loa"] or DIGID_DEFAULT_LOA
         return loa_order(authenticated_loa) >= loa_order(required)
 
     def get_logo(self, request) -> LoginLogo | None:

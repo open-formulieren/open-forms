@@ -105,10 +105,10 @@ class CosignLoginInfoSerializer(LoginOptionSerializer):
         # cosign component but no auth backends is an invalid config that should
         # display a warning in the UI, but we don't have backend constraints for that
         # (yet).
-        if not form.authentication_backends:
+        if not form.auth_backends:
             return None
 
-        auth_plugin_id = form.authentication_backends[0]
+        auth_plugin_id = form.auth_backends.first().backend
         auth_url = reverse(
             "authentication:start",
             kwargs={

@@ -164,7 +164,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         help_text=_(
             "The authentication backend to which the user will be automatically "
             "redirected upon starting the form. The chosen backend must be present in "
-            "`authentication_backends`"
+            "`auth_backends`"
         ),
     )
 
@@ -471,19 +471,22 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         auto_login_backend = get_from_serializer_data_or_instance(
             field_name, attrs, self
         )
-        authentication_backends = get_from_serializer_data_or_instance(
-            "authentication_backends", attrs, self
+        auth_backends = get_from_serializer_data_or_instance(
+            "auth_backends", attrs, self
         )
 
         # If an auto login backend is supplied, it must be present in
-        # `authentication_backends`
-        if auto_login_backend and auto_login_backend not in authentication_backends:
+        # `auth_backends`
+        if auto_login_backend and not any(
+            auth_backend["backend"] == auto_login_backend
+            for auth_backend in auth_backends
+        ):
             raise serializers.ValidationError(
                 {
                     field_name: ErrorDetail(
                         _(
                             "The `auto_login_authentication_backend` must be one of "
-                            "the selected backends from `authentication_backends`"
+                            "the selected backends from `auth_backends`"
                         ),
                         code="invalid",
                     )

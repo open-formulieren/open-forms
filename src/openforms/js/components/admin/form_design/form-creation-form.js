@@ -349,15 +349,11 @@ function reducer(draft, action) {
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
         // If plugin could have additional configuration, add it to backend config
-        const plugin = draft.availableAuthPlugins.find(
-          backend => !!backend.schema && backend.id === pluginId
-        );
-        if (plugin) {
-          draft.form.authBackends.push({
-            backend: pluginId,
-            options: getInitialPluginOptions(plugin),
-          });
-        }
+        const plugin = draft.availableAuthPlugins.find(backend => backend.id === pluginId);
+        draft.form.authBackends.push({
+          backend: pluginId,
+          options: getInitialPluginOptions(plugin),
+        });
       }
       break;
     }
