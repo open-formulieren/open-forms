@@ -1329,7 +1329,9 @@ class FormDesignerRegressionTests(E2ETestCase):
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
             await page.keyboard.press("ArrowDown")
-            await expect(page.get_by_text("Field 1 (field1)")).to_be_visible()
+            await expect(
+                page.get_by_role("option", name="Field 1 (field1)")
+            ).to_be_visible()
 
     @tag("gh-4061")
     async def test_column_components_are_visible_in_component_select_dropdown(self):
@@ -1394,7 +1396,9 @@ class FormDesignerRegressionTests(E2ETestCase):
             dropdown = page.get_by_role("combobox", name="Postcode component")
             await dropdown.focus()
             await page.keyboard.press("ArrowDown")
-            await expect(page.get_by_text("Field 2 (field2)")).to_be_visible()
+            await expect(
+                page.get_by_role("option", name="Field 2 (field2)")
+            ).to_be_visible()
 
     @tag("gh-4969")
     async def test_saving_form_does_not_reset_submission_counter(self):

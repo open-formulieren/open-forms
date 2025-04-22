@@ -189,7 +189,7 @@ class HaalCentraalFindPersonTests:
 
         submission_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=False,
             auth_info__attribute_hashed=False,
             auth_info__attribute=AuthAttribute.bsn,

@@ -85,7 +85,7 @@ class DigiDConfigMixin:
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
 class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
     def test_redirect_to_digid(self):
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
@@ -113,7 +113,7 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         return_value="ONELOGIN_123456",
     )
     def test_authn_request(self, mock_id):
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
@@ -166,10 +166,8 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
     )
     def test_authn_request_uses_minimal_loa_from_form(self, mock_id):
         form = FormFactory.create(
-            authentication_backends=["digid"],
-            authentication_backend_options={
-                "digid": {"loa": DigiDAssuranceLevels.substantial}
-            },
+            authentication_backend="digid",
+            authentication_backend_options={"loa": DigiDAssuranceLevels.substantial},
         )
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
@@ -241,7 +239,7 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
             content=_get_artifact_response("ArtifactResponse.xml"),
         )
 
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
@@ -309,7 +307,7 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
             content=_get_artifact_response("ArtifactResponse.xml"),
         )
 
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
@@ -363,7 +361,7 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
             content=_get_artifact_response("ArtifactResponseCancelLogin.xml"),
         )
 
-        form = FormFactory.create(authentication_backends=["digid"])
+        form = FormFactory.create(authentication_backend="digid")
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
 
@@ -409,7 +407,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
         )
         self._add_submission_to_session(submission)
         form_path = reverse("core:form-detail", kwargs={"slug": submission.form.slug})
@@ -461,7 +459,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
         )
         self._add_submission_to_session(submission)
         auth_return_url = reverse(

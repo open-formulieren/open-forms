@@ -118,7 +118,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_user_must_have_authenticated_with_allowed_plugin(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["eherkenning"],
+            form__authentication_backend="eherkenning",
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
@@ -142,7 +142,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
             ],
@@ -201,7 +201,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_privacy_policy(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
@@ -235,7 +235,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_truth_declaration(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",

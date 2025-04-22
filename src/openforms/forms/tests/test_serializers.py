@@ -131,7 +131,7 @@ class FormSerializerTest(TestCase):
     def test_form_with_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             form_definition__configuration={
                 "components": [
                     {
@@ -167,7 +167,7 @@ class FormSerializerTest(TestCase):
     def test_form_without_cosign_link_used_in_email(self, mock_get_solo):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             form_definition__configuration={
                 "components": [
                     {
@@ -199,7 +199,7 @@ class FormSerializerTest(TestCase):
     def test_form_with_cosign_link_used_in_email(self, mock_get_solo):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             form_definition__configuration={
                 "components": [
                     {
@@ -225,7 +225,7 @@ class FormSerializerTest(TestCase):
     def test_form_without_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-without-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             form_definition__configuration={
                 "components": [
                     {

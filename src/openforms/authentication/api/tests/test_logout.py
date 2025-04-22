@@ -158,7 +158,7 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         """
         submission = SubmissionFactory.from_components(
             form__slug="form-to-cosign",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={"cosign": "test@example.com"},
             auth_info__value="111222333",
