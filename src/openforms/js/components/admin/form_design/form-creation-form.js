@@ -38,6 +38,7 @@ import {SubmissionLimitFields} from './SubmissionFields';
 import Tab from './Tab';
 import TextLiterals from './TextLiterals';
 import {FormWarnings} from './Warnings';
+import {getInitialPluginOptions} from './authentication/utils';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
@@ -121,6 +122,7 @@ const initialFormState = {
       brpPersonenPurposeLimitationHeaderValue: '',
       brpPersonenProcessingHeaderValue: '',
     },
+    authBackends: [],
   },
   newForm: true,
   formSteps: [],
@@ -336,8 +338,26 @@ function reducer(draft, action) {
         if (draft.form.autoLoginAuthenticationBackend === pluginId) {
           draft.form.autoLoginAuthenticationBackend = '';
         }
+        // If plugin could have additional configuration, remove it from backend configs
+        if (
+          draft.availableAuthPlugins.find(backend => !!backend.schema && backend.id === pluginId)
+        ) {
+          draft.form.authBackends = draft.form.authBackends.filter(
+            authBackend => authBackend.backend !== pluginId
+          );
+        }
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
+        // If plugin could have additional configuration, add it to backend config
+        const plugin = draft.availableAuthPlugins.find(
+          backend => !!backend.schema && backend.id === pluginId
+        );
+        if (plugin) {
+          draft.form.authBackends.push({
+            backend: pluginId,
+            options: getInitialPluginOptions(plugin),
+          });
+        }
       }
       break;
     }
