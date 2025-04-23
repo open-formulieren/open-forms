@@ -56,7 +56,7 @@ class ReferenceListsTablesEndpointTests(OFVCRMixin, APITestCase):
                 {
                     "code": "item-not-geldig-anymore",
                     "name": "Tabel that contains item not geldig anymore",
-                    "isValid": False,
+                    "isValid": True,
                 },
                 {
                     "code": "not-geldig-anymore",

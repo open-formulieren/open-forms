@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDM2NjAxNTksImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.pBu91w9EH8fb-b7d7fdu8-SDshxoMdrhup9Ylkut6Ro
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDU0MDA2NzYsImV4cCI6MTc0NTQ0Mzg3NiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.pssx4MmC6ur6stWv1VQn_eQuZSPT1v50JBtpJrfPomg
       Connection:
       - keep-alive
       User-Agent:
@@ -54,11 +54,11 @@ interactions:
       Content-Length:
       - '2864'
       Content-Security-Policy:
-      - 'worker-src ''self'' blob:; frame-ancestors ''none''; object-src ''none'';
-        script-src ''self'' ''unsafe-inline''; base-uri ''self''; font-src ''self''
-        fonts.gstatic.com; default-src ''self''; img-src ''self'' data: cdn.redoc.ly;
-        frame-src ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
-        form-action ''self'''
+      - 'form-action ''self''; style-src ''self'' ''unsafe-inline'' fonts.googleapis.com;
+        img-src ''self'' data: cdn.redoc.ly; frame-ancestors ''none''; worker-src
+        ''self'' blob:; default-src ''self''; script-src ''self'' ''unsafe-inline'';
+        object-src ''none''; frame-src ''self''; font-src ''self'' fonts.gstatic.com;
+        base-uri ''self'''
       Content-Type:
       - text/html; charset=utf-8
       Cross-Origin-Opener-Policy:
