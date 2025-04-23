@@ -10,6 +10,7 @@ from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from freezegun import freeze_time
 
 from openforms.config.constants import UploadFileType
@@ -30,6 +31,7 @@ from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from ..constants import EXPORT_META_KEY
 from ..models import (
     Form,
+    FormAuthenticationBackend,
     FormDefinition,
     FormLogic,
     FormRegistrationBackend,
@@ -117,12 +119,15 @@ class ImportExportTests(TempdirMixin, TestCase):
             self.assertEqual(forms[0]["name"], form.name)
             self.assertEqual(forms[0]["internal_name"], form.internal_name)
             self.assertEqual(forms[0]["slug"], form.slug)
-            self.assertEqual(forms[0]["auth_backends"], [
-                {
-                    "backend": "demo",
-                    "options": {},
-                }
-            ])
+            self.assertEqual(
+                forms[0]["auth_backends"],
+                [
+                    {
+                        "backend": "demo",
+                        "options": {},
+                    }
+                ],
+            )
             self.assertEqual(len(forms[0]["steps"]), form.formstep_set.count())
             self.assertIsNone(forms[0]["product"])
 
@@ -1262,6 +1267,245 @@ class ImportExportTests(TempdirMixin, TestCase):
                 },
             ],
         )
+
+    def test_import_form_with_old_authentication_backends(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "authentication_backends": ["digid", "demo"],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        authentication_backends = imported_form.auth_backends.all()
+
+        self.assertEqual(len(authentication_backends), 2)
+
+        self.assertEqual(authentication_backends[0].backend, "digid")
+        self.assertEqual(authentication_backends[0].form, imported_form)
+        self.assertEqual(authentication_backends[0].options, None)
+
+        self.assertEqual(authentication_backends[1].backend, "demo")
+        self.assertEqual(authentication_backends[1].form, imported_form)
+        self.assertEqual(authentication_backends[1].options, None)
+
+    def test_import_form_with_old_authentication_backend_options(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "authentication_backend_options": {
+                        "digid": {
+                            "loa": DigiDAssuranceLevels.substantial,
+                            "unknown_attribute": "will be removed",
+                        }
+                    },
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        form_authentication_backend = FormAuthenticationBackend.objects.filter(
+            form=imported_form
+        ).first()
+
+        # Assert that there is a FormAuthenticationBackend for the form, with the correct
+        # plugin and configuration
+        self.assertIsNotNone(form_authentication_backend)
+        self.assertEqual(form_authentication_backend.backend, "digid")
+        # Unknown attributes should be removed
+        self.assertEqual(
+            form_authentication_backend.options,
+            {"loa": DigiDAssuranceLevels.substantial},
+        )
+
+    def test_import_form_with_old_authentication_backends_and_authentication_backend_options(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "authentication_backends": ["demo"],
+                    "authentication_backend_options": {
+                        "digid": {
+                            "loa": DigiDAssuranceLevels.substantial,
+                            "unknown_attribute": "will be removed",
+                        }
+                    },
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        authentication_backends = imported_form.auth_backends.all()
+
+        self.assertEqual(len(authentication_backends), 2)
+
+        self.assertEqual(authentication_backends[0].backend, "demo")
+        self.assertEqual(authentication_backends[0].form, imported_form)
+        self.assertEqual(authentication_backends[0].options, None)
+
+        self.assertEqual(authentication_backends[1].backend, "digid")
+        self.assertEqual(authentication_backends[1].form, imported_form)
+        self.assertEqual(
+            authentication_backends[1].options,
+            {
+                "loa": DigiDAssuranceLevels.substantial,
+            },
+        )
+
+    def test_import_form_with_auth_backends(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "auth_backends": [
+                        {
+                            "backend": "demo",
+                        },
+                        {
+                            "backend": "digid",
+                            "options": {
+                                "loa": DigiDAssuranceLevels.substantial,
+                                "unknown_attribute": "will be removed",
+                            },
+                        },
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        authentication_backends = imported_form.auth_backends.all()
+
+        self.assertEqual(len(authentication_backends), 2)
+
+        self.assertEqual(authentication_backends[0].backend, "demo")
+        self.assertEqual(authentication_backends[0].form, imported_form)
+        self.assertEqual(authentication_backends[0].options, None)
+
+        self.assertEqual(authentication_backends[1].backend, "digid")
+        self.assertEqual(authentication_backends[1].form, imported_form)
+        self.assertEqual(
+            authentication_backends[1].options,
+            {
+                "loa": DigiDAssuranceLevels.substantial,
+            },
+        )
+
+    def test_import_form_with_missing_backend_in_auth_backends(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "auth_backends": [
+                        {
+                            "options": {
+                                "loa": DigiDAssuranceLevels.substantial,
+                                "unknown_attribute": "will be removed",
+                            }
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["auth_backends"][0]["backend"][0]
+
+        self.assertEqual(error_detail.code, "required")
+
+    def test_import_form_with_unknown_backend_in_auth_backends(
+        self,
+    ):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "auth_backends": [
+                        {
+                            "backend": "unknown_backend",
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["auth_backends"][0]["backend"][0]
+
+        self.assertEqual(error_detail.code, "invalid")
 
 
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
