@@ -9,6 +9,15 @@ from .registry import register
 
 
 class AuthenticationBackendMultiSelectField(ArrayField):
+    system_check_deprecated_details = {
+        "msg": (
+            "openforms.authentication.fields.AuthenticationBackendMultiSelectField has"
+            "been deprecated. Support for it (except in historical migrations) will be"
+            "removed in Open Forms 3.2.0."
+        ),
+        "id": "authentication.fields.W001",
+    }
+
     def __init__(self, *args, **kwargs):
         self.registry = kwargs.pop("registry", register)
         kwargs["base_field"] = BackendChoiceField(registry=self.registry)

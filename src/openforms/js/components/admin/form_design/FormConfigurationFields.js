@@ -189,8 +189,6 @@ const AuthenticationFields = ({
   selectedAuthPlugins,
   onAuthPluginChange,
   autoLoginAuthenticationBackend,
-  // @TODO remove authenticationBackendOptions
-  authenticationBackendOptions,
   onChange,
   authBackends,
 }) => {
@@ -680,8 +678,6 @@ const FormConfigurationFields = ({
           selectedAuthPlugins={selectedAuthPlugins}
           onAuthPluginChange={onAuthPluginChange}
           autoLoginAuthenticationBackend={form.autoLoginAuthenticationBackend}
-          // @TODO remove authenticationBackendOptions
-          authenticationBackendOptions={form.authenticationBackendOptions}
           onChange={onChange}
           authBackends={form.authBackends}
         />
@@ -733,7 +729,6 @@ FormConfigurationFields.propTypes = {
     appointmentOptions: PropTypes.shape({
       isAppointment: PropTypes.bool.isRequired,
     }),
-    authenticationBackendOptions: PropTypes.object,
     authBackends: PropTypes.arrayOf(
       PropTypes.shape({
         backend: PropTypes.string.isRequired, // Auth plugin id
