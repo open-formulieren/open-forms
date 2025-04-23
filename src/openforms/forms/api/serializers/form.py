@@ -430,8 +430,61 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
         return fields
 
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False) or not hasattr(
+            self, "initial_data"
+        ):
+            return
+
+        if (
+            "authentication_backends" not in self.initial_data
+            and "authentication_backend_options" not in self.initial_data
+        ):
+            return
+
+        # Make sure `auth_backends` exists
+        attrs["auth_backends"] = attrs.get("auth_backends", [])
+        auth_backends_map = {}
+
+        # Pre-fill the map with the `auth_backends` values
+        for auth_backend in attrs["auth_backends"]:
+            auth_backends_map[auth_backend["backend"]] = auth_backend
+
+        # Collect all the backends that should be transformed to `auth_backends`
+        if "authentication_backends" in self.initial_data:
+            for plugin in self.initial_data["authentication_backends"]:
+                # Add plugin if it's not already in the map
+                if plugin not in auth_backends_map:
+                    auth_backends_map[plugin] = {
+                        "backend": plugin,
+                        "options": None,
+                    }
+
+        if "authentication_backend_options" in self.initial_data:
+            for plugin, options in self.initial_data[
+                "authentication_backend_options"
+            ].items():
+                if plugin not in auth_backends_map:
+                    auth_backends_map[plugin] = {
+                        "backend": plugin,
+                        "options": options,
+                    }
+                    continue
+
+                if auth_backends_map[plugin]["options"] is None:
+                    auth_backends_map[plugin]["options"] = options
+
+        validated_auth_backends = []
+        for config in auth_backends_map.values():
+            validated_auth_backends.append(
+                FormAuthenticationBackendSerializer().validate(config)
+            )
+        attrs["auth_backends"] = validated_auth_backends
+
     def validate(self, attrs):
         super().validate(attrs)
+        self._handle_import(attrs)
 
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
