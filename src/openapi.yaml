@@ -1325,7 +1325,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1398,7 +1398,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1915,7 +1915,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1994,7 +1994,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -2077,7 +2077,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -6946,32 +6946,17 @@ components:
             $ref: '#/components/schemas/TextChoice'
           title: Levels of assurance
           description: The levels of assurance this plugin defines.
+        schema:
+          type: object
+          additionalProperties: {}
+          title: JSON schema
+          description: The generated JSON schema for the plugin options.
       required:
       - assuranceLevels
       - id
       - label
       - providesAuth
       - supportsLoaOverride
-    AuthenticationBackendsEnum:
-      enum:
-      - digid_oidc
-      - eherkenning_oidc
-      - digid_machtigen_oidc
-      - eherkenning_bewindvoering_oidc
-      - digid
-      - eherkenning
-      - eidas
-      - org-oidc
-      type: string
-      description: |-
-        * `digid_oidc` - DigiD
-        * `eherkenning_oidc` - eHerkenning
-        * `digid_machtigen_oidc` - DigiD Machtigen
-        * `eherkenning_bewindvoering_oidc` - eHerkenning bewindvoering
-        * `digid` - DigiD
-        * `eherkenning` - eHerkenning
-        * `eidas` - eIDAS
-        * `org-oidc` - OpenID Connect
     AvailableLanguagesEnum:
       enum:
       - nl
@@ -7616,7 +7601,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7638,14 +7623,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
-        authenticationBackends:
+        authBackends:
           type: array
           items:
-            $ref: '#/components/schemas/AuthenticationBackendsEnum'
-          writeOnly: true
-        authenticationBackendOptions:
-          type: object
-          additionalProperties: {}
+            $ref: '#/components/schemas/FormAuthenticationBackend'
         loginOptions:
           type: array
           items:
@@ -7655,7 +7636,7 @@ components:
           type: string
           description: The authentication backend to which the user will be automatically
             redirected upon starting the form. The chosen backend must be present
-            in `authentication_backends`
+            in `auth_backends`
         paymentRequired:
           type: boolean
           readOnly: true
@@ -7927,6 +7908,18 @@ components:
       - isCreate
       - redirectUrl
       - submitAction
+    FormAuthenticationBackend:
+      type: object
+      properties:
+        backend:
+          type: string
+          title: Authentication backend
+          maxLength: 100
+        options:
+          nullable: true
+          title: authentication backend options
+      required:
+      - backend
     FormData:
       type: object
       properties:
@@ -8135,7 +8128,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8306,7 +8299,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -9233,7 +9226,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -9255,14 +9248,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
-        authenticationBackends:
+        authBackends:
           type: array
           items:
-            $ref: '#/components/schemas/AuthenticationBackendsEnum'
-          writeOnly: true
-        authenticationBackendOptions:
-          type: object
-          additionalProperties: {}
+            $ref: '#/components/schemas/FormAuthenticationBackend'
         loginOptions:
           type: array
           items:
@@ -9272,7 +9261,7 @@ components:
           type: string
           description: The authentication backend to which the user will be automatically
             redirected upon starting the form. The chosen backend must be present
-            in `authentication_backends`
+            in `auth_backends`
         paymentRequired:
           type: boolean
           readOnly: true
