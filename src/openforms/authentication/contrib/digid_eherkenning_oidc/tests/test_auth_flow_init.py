@@ -84,6 +84,27 @@ class DigiDInitTests(IntegrationTestsBase):
         redirect_url = furl(response["Location"])
         self.assertEqual(redirect_url.args["kc_idp_hint"], "oidc-digid")
 
+    @mock_digid_config()
+    def test_start_flow_redirects_to_oidc_provider_with_additional_scopes(self):
+        form = FormFactory.create(
+            authentication_backend="digid_oidc",
+            authentication_backend_options={
+                "additional_scopes": ["my_custom_scope"],
+            },
+        )
+        start_url = URLsHelper(form=form).get_auth_start(plugin_id="digid_oidc")
+
+        response = self.app.get(start_url)
+
+        self.assertEqual(response.status_code, 302)
+
+        redirect_target = furl(response["Location"])
+        query_params = redirect_target.query.params
+
+        self.assertEqual(query_params["scope"], "openid bsn my_custom_scope")
+        self.assertEqual(query_params["client_id"], "testid")
+        self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
+
 
 class EHerkenningInitTests(IntegrationTestsBase):
     """

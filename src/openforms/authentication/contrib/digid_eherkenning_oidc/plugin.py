@@ -81,6 +81,12 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
     ):
+        if options is not None and "additional_scopes" in options:
+            # @TODO this will probably affect all users using the same plugin... will have to be updated with the "remove solo" update in mozilla-django-oidc-db
+            config = self.config_class.get_solo()
+            # Add additional_scope to the config
+            config.oidc_rp_scopes_list.extend(options["additional_scopes"])
+
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -118,6 +124,14 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
     def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
+        # Reset config scope list to default value
+        if options is not None and "additional_scopes" in options:
+            # @TODO this will probably affect all users using the same plugin... will have to be updated with the "remove solo" update in mozilla-django-oidc-db
+            config = self.config_class.get_solo()
+            # Reset oidc_rp_scopes_list to initial value
+            for additional_scope in options["additional_scopes"]:
+                config.oidc_rp_scopes_list.remove(additional_scope)
+
         """
         Redirect to form URL.
         """
