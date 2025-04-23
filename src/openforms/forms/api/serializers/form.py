@@ -140,13 +140,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
-    authentication_backends = serializers.ListField(
-        child=serializers.ChoiceField(choices=[]),
-        write_only=True,
-        required=False,
-        default=list,
-    )
-    authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
     cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
     cosign_has_link_in_email = serializers.SerializerMethodField(
@@ -256,9 +249,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "login_required",
             "translation_enabled",
             "registration_backends",
-            "authentication_backends",
             "auth_backends",
-            "authentication_backend_options",
             "login_options",
             "auto_login_authentication_backend",
             "payment_required",
@@ -314,7 +305,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "introduction_page_content",
             "explanation_template",
             "login_required",
-            "authentication_backends",
             "auto_login_authentication_backend",
             "login_options",
             "payment_required",
@@ -419,10 +409,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     def get_fields(self):
         fields = super().get_fields()
         # lazy set choices
-        if "authentication_backends" in fields:
-            fields[
-                "authentication_backends"
-            ].child.choices = auth_register.get_choices()
         if "payment_backend" in fields:
             fields["payment_backend"].choices = [
                 ("", "")
@@ -630,8 +616,6 @@ class FormExportSerializer(FormSerializer):
             del fields["login_options"]
         if "payment_options" in fields:
             del fields["payment_options"]
-        if "authentication_backends" in fields:
-            fields["authentication_backends"].write_only = False
         return fields
 
 

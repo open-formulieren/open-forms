@@ -30,7 +30,6 @@ export default {
       appointmentOptions: {
         isAppointment: false,
       },
-      authenticationBackendOptions: {},
       translations: {
         nl: {
           name: 'Mijn formulier',

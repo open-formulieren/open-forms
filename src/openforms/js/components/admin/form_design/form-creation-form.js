@@ -115,7 +115,6 @@ const initialFormState = {
     sendConfirmationEmail: true,
     confirmationEmailTemplate: {subject: '', content: '', translations: {}},
     autoLoginAuthenticationBackend: '',
-    authenticationBackendOptions: {},
     translations: {},
     appointmentOptions: {isAppointment: false},
     brpPersonenRequestOptions: {
