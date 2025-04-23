@@ -23,7 +23,6 @@ from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
-from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
@@ -109,14 +108,8 @@ class Form(models.Model):
     )
 
     # authentication
-    authentication_backends = AuthenticationBackendMultiSelectField(
-        _("authentication backend(s)"), blank=True
-    )
     auto_login_authentication_backend = models.CharField(
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
-    )
-    authentication_backend_options = models.JSONField(
-        _("per form authentication backend config"), default=dict, blank=True
     )
     auth_backends: BaseManager["FormAuthenticationBackend"]
 
