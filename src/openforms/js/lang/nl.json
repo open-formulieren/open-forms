@@ -1504,6 +1504,11 @@
     "description": "Manage process vars enabled checkbox column title",
     "originalDefault": "Enabled"
   },
+  "PN8vFa": {
+    "defaultMessage": "{plugin} plugin options",
+    "description": "Authentication plugin options configuration",
+    "originalDefault": "{plugin} plugin options"
+  },
   "PRNizF": {
     "defaultMessage": "Voeg de inhoud toe aan de PDF",
     "description": "Include confirmation page content in PDF",
