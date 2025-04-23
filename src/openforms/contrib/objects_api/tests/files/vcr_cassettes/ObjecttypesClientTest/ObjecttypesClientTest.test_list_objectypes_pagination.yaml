@@ -16,25 +16,25 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":8,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/f4df3ccb-df96-428b-b8c2-3bad8a496691","uuid":"f4df3ccb-df96-428b-b8c2-3bad8a496691","name":"Person
-        with address","namePlural":"Persons with addresses","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-01-08","modifiedAt":"2025-01-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/f4df3ccb-df96-428b-b8c2-3bad8a496691/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/f4df3ccb-df96-428b-b8c2-3bad8a496691/versions/2"]}]}'
+      string: '{"count":6,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
+        everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '835'
+      - '733'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 27 Mar 2025 12:54:01 GMT
+      - Wed, 23 Apr 2025 09:10:01 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.3
+      - nginx/1.27.4
       Vary:
       - origin
       X-Content-Type-Options:
