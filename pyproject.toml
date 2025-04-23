@@ -63,8 +63,8 @@ replace = "softwareVersion: {new_version}"
 
 [[tool.bumpversion.files]]
 filename = "package.json"
-search = "    \"version\": \"{current_version}\""
-replace = "    \"version\": \"{new_version}\""
+search = "  \"version\": \"{current_version}\""
+replace = "  \"version\": \"{new_version}\""
 
 [tool.ruff]
 extend-exclude = [
