@@ -1,6 +1,8 @@
 from django.test import TestCase, tag
 from django.utils.translation import gettext as _
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
+
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
@@ -213,3 +215,23 @@ class CopyFormTests(TestCase):
         copied_form = form.copy()
 
         self.assertEqual(copied_form.product, product)
+
+    def test_form_copy_with_authentication_backends(self):
+        form = FormFactory.create(
+            authentication_backend="digid",
+            authentication_backend_options={"loa": DigiDAssuranceLevels.base},
+        )
+
+        form_authentication_backend = form.auth_backends.get()
+        copied_form = form.copy()
+        copied_form_authentication_backend = copied_form.auth_backends.get()
+
+        # Assert that the configured plugin and options are the same after coping
+        self.assertEqual(
+            copied_form_authentication_backend.backend,
+            form_authentication_backend.backend,
+        )
+        self.assertEqual(
+            copied_form_authentication_backend.options,
+            form_authentication_backend.options,
+        )
