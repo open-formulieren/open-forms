@@ -1356,7 +1356,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(error["name"], "authBackends.0.options.loa")
         self.assertEqual(error["code"], "invalid_choice")
 
-    def test_create_form_with_unknown_authentication_backend_attribute_succeeds_with_allowed_attributes(
+    def test_create_form_with_unknown_authentication_backend_attribute_succeeds_with_only_allowed_attributes(
         self,
     ):
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
@@ -1372,7 +1372,7 @@ class FormsAPITests(APITestCase):
                     "backend": "digid",
                     "options": {
                         "loa": DigiDAssuranceLevels.middle,
-                        "additional_scope": "email",
+                        "some_unknown_attribute": "should be removed",
                     },
                 }
             ],
