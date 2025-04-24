@@ -6,8 +6,15 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.2.0 (2025-??-??)
-==================
+3.2.0-alpha.0 (2025-04-25)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+.. warning::
+
+   The Camunda registration backend will be removed in Open Forms 4.0. There is no
+   replacement scheduled - if you rely on this plugin, please get in touch.
 
 .. warning::
 
@@ -16,7 +23,73 @@ Changelog
     the static variables will take precedence. Previously, the component and user-defined
     variables would override the static variables. Our validation guards against the use of
     keys that are already present in the static variables, but this does not cover old forms
-    and new added static variables.
+    and newly-added static variables.
+
+.. warning:: Manual intervention required
+
+    In the 3.1.1 bugfix release we fixed a bug regarding the default values of some components
+    being ``null``. We added a script to fix any forms that still might be affected by these
+    issues. You should run this script after deploying the patch release, to make sure the
+    default values of affected components are fixed.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_component_default_values.py
+
+
+**New features**
+
+* [:backend:`5027`] Added support for broader range of GeoJSON in JSON schema generation for the
+  map component: includes points, lines, and polygons.
+* [:backend:`5193`] Added `exp` claim to JWT in ZGW APIs.
+
+**Bugfixes**
+
+* [:backend:`5245`] Fixed broken variable-mapping configuration when multiple registration backends
+  are available on a form.
+* [:backend:`5214`] Fixed employee ID not being used in the authentication context when the
+  organization-via-OIDC plugin is used.
+* [:backend:`5238`] Fixed the order of form versions in version history.
+* [:backend:`5263`] Fixed double encoding of data in generic JSON registration plugin.
+* [:backend:`5202`] Removed appointment information from the submission tab in the admin.
+* [:backend:`5207`] Fixed two bugs regarding reference-list integration:
+
+    - Fixed JSON schema generation for components that use reference lists as a data source in the
+      generic JSON registration plugin.
+    - Fixed valid items of invalid table being shown for components that use reference lists as a
+      data source.
+
+* Fixed the ‘transform to list’ setting for the Objects API variable options being available for all
+  components.
+* Fixed the ‘map to geometry field’ setting for the Objects API variable options being available for
+  all components.
+* [:backend:`5181`, :backend:`5235`, :backend:`5289`] Fixed incorrect ``null`` values in components.
+* [:backend:`5243`] Fixed non-existing variables being included in the 'transform to list'
+  option of the generic JSON registration and Objects API plugins.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4917`] Fixed the backwards-compatibility issues of the reworked form
+  navigation. See `the SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_
+  for detailed upgrade documentation.
+
+**Project maintenance**
+
+* Archived old release notes.
+* Prepared migration to django-upgrade-check.
+* [:backend:`5179`, :backend:`5221`, :backend:`5139`] Optimized creation and access of data structures.
+* Switched to bump-my-version from bump2version.
+* Switched to ruff from black, isort, and flake8.
+* Added script to verify that fix scripts work as expected.
+* Fixed test flakiness.
+* Updated backend dependencies:
+
+    - Bumped zgw-consumers to 0.38.0.
+    - Bumped celery to 5.5.0.
+
+* Updated frontend dependencies:
+
+    - Bumped @open-formulieren/design-tokens to 0.59.0.
+    - Bumped @open-formulieren/formio-builder to 0.40.0.
 
 
 3.1.1 (2025-04-16)
