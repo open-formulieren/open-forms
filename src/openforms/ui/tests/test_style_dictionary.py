@@ -63,3 +63,11 @@ class StyleDictionaryTests(SimpleTestCase):
         tokens = style_dictionary(style_dict)
 
         self.assertEqual(tokens, {})
+
+    def test_non_string_value(self):
+        style_dict = {"some-width": {"value": 0}}
+
+        tokens = style_dictionary(style_dict)
+
+        expected = {"--some-width": 0}
+        self.assertEqual(tokens, expected)
