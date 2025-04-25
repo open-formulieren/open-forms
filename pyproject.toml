@@ -5,7 +5,7 @@ requires-python = "== 3.12"
 emit-index-url = false
 
 [tool.bumpversion]
-current_version = "3.1.0"
+current_version = "3.2.0-alpha.0"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
@@ -63,8 +63,8 @@ replace = "softwareVersion: {new_version}"
 
 [[tool.bumpversion.files]]
 filename = "package.json"
-search = "    \"version\": \"{current_version}\""
-replace = "    \"version\": \"{new_version}\""
+search = "  \"version\": \"{current_version}\""
+replace = "  \"version\": \"{new_version}\""
 
 [tool.ruff]
 extend-exclude = [

@@ -15,10 +15,10 @@ interactions:
       User-Agent:
       - python-requests/2.32.2
     method: GET
-    uri: http://localhost:8002/api/v2/objects/0e7a2ea1-c528-4443-a60a-846a13333cce
+    uri: http://localhost:8002/api/v2/objects/9e92589a-34ed-40c2-bab8-7d36330971b9
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/0e7a2ea1-c528-4443-a60a-846a13333cce","uuid":"0e7a2ea1-c528-4443-a60a-846a13333cce","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","foo":"bar"},"geometry":null,"startAt":"2025-03-27","endAt":null,"registrationAt":"2025-03-27","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/9e92589a-34ed-40c2-bab8-7d36330971b9","uuid":"9e92589a-34ed-40c2-bab8-7d36330971b9","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"bsn":"111222333","foo":"bar"},"geometry":null,"startAt":"2025-04-23","endAt":null,"registrationAt":"2025-04-23","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -33,11 +33,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Thu, 27 Mar 2025 12:54:15 GMT
+      - Wed, 23 Apr 2025 09:10:03 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.3
+      - nginx/1.27.4
       Vary:
       - origin
       X-Content-Type-Options:

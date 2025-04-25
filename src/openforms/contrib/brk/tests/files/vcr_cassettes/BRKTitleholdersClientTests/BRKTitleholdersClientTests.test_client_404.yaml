@@ -33,17 +33,17 @@ interactions:
       - '217'
       Content-Security-Policy:
       - 'default-src ''self''; script-src ''self''; connect-src ''self''; style-src
-        ''self''; img-src ''self'' data:; object-src ''self''; font-src ''self'' https://*.kadaster.nl;
+        ''self''; img-src ''self'' data:; object-src ''none''; font-src ''self'' https://*.kadaster.nl;
         media-src ''self'' data: https://*.kadaster.nl; frame-src ''self''; frame-ancestors
-        ''self'';'
+        ''none''; upgrade-insecure-requests;'
       Content-Type:
       - application/problem+json
       Date:
-      - Thu, 27 Mar 2025 13:46:35 GMT
+      - Wed, 23 Apr 2025 08:54:21 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
-      - strict-origin-when-cross-origin
+      - no-referrer
       Server:
       - Unspecified
       Vary:
@@ -51,7 +51,7 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
-      - SAMEORIGIN
+      - DENY
       X-Xss-Protection:
       - 1; mode=block
     status:

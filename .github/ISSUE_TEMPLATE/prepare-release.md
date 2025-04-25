@@ -32,7 +32,7 @@ assignees: sergei-maertens
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
   - Prefill
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
-    - [ ] Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
+    - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
           be reinstated)
   - ReferenceLists:
     - [ ] `openforms.contrib.reference_lists`
@@ -42,6 +42,7 @@ assignees: sergei-maertens
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
     - [ ] StUF_ZDS APIs: `openforms.registrations.contrib.stuf_zds.tests.test_backend`
+    - [ ] Generic JSON: `openforms.registration.contrib.json_dump.tests.test_backend`
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
@@ -51,7 +52,7 @@ assignees: sergei-maertens
   - [ ] Formio
 - [ ] Bump API version number
   - [ ] Version bump
-  - [ ] Regenerate API spec
+  - [ ] Regenerate API spec (`./bin/generate_oas.sh`)
   - [ ] Update READMEs with release dates + links
 - [ ] Update the `upgrade_simulation` CI job matrix
 - [ ] Bump version number (including package-lock.json)
