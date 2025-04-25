@@ -71,9 +71,10 @@ class Auth(BaseStaticVariable):
 
     def as_json_schema(self):
         # NOTE: this has been made 'vague' on purpose, see the comment on AuthContext.
+        # Will be ``null`` when no authentication was used.
         return {
             "title": "Authentication summary",
-            "type": "object",
+            "type": ["object", "null"],
             "additionalProperties": True,
         }
 
@@ -122,7 +123,7 @@ class AuthBSN(BaseStaticVariable):
                 "rules for Dutch social security numbers."
             ),
             "type": "string",
-            "pattern": "^\\d{9}$",
+            "pattern": r"^\d{9}$|^$",  # Note: will be an empty string if no authentication was used
             "format": "nl-bsn",
         }
 
@@ -143,7 +144,7 @@ class AuthKvK(BaseStaticVariable):
                 "company."
             ),
             "type": "string",
-            "pattern": "^\\d{8}$",
+            "pattern": r"^\d{8}$|^$",  # Note: will be an empty string if no authentication was used
             "format": "urn:etoegang:1.9:EntityConcernedID:KvKnr",
         }
 
@@ -178,11 +179,11 @@ class AuthContext(BaseStaticVariable):
         # users from using this, no specific object information will be provided here.
         # Instead, variables like `auth_bsn` and `auth_kvk` should be used for
         # extracting information about authentication (they are strictly defined with a
-        # schema)
+        # schema). Will be ``null`` when no authentication was used.
         return {
             "title": "Authentication options",
             "description": "Options for the selected authentication plugin",
-            "type": "object",
+            "type": ["object", "null"],
         }
 
 

@@ -112,7 +112,7 @@ class GenerateJsonSchemaTests(TestCase):
                 "title": "BSN",
                 "description": "Uniquely identifies the authenticated person. This value follows the rules for Dutch social security numbers.",
                 "type": "string",
-                "pattern": "^\\d{9}$",
+                "pattern": "^\\d{9}$|^$",
                 "format": "nl-bsn",
             },
             "firstName": {"title": "First Name", "type": "string"},
