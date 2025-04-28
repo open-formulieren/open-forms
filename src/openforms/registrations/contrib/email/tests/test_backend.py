@@ -249,7 +249,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         }
         plugin = EmailRegistration("email")
 
-        updated_template = TEST_TEMPLATE_NL.replace("{{ co_signer }}", "{{ co_signer.value }}")
+        updated_template = TEST_TEMPLATE_NL.replace(
+            "{{ co_signer }}", "{{ co_signer.value }}"
+        )
         with patch(
             "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
             return_value=EmailConfig(
