@@ -23,3 +23,7 @@ class FormAuth(BaseAuth):
     legal_subject_identifier_value: NotRequired[str]
     legal_subject_service_restriction: NotRequired[str]
     mandate_context: NotRequired[JSONObject]
+
+
+class CosignData(FormAuth):
+    cosign_date: str  # ISO-8601 timestamp
