@@ -26,6 +26,7 @@ jobs:
           setup-node: 'no'
       - run: |
           ruff check --output-format=github .
+          ruff format --check
 
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture
