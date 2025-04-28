@@ -497,9 +497,28 @@ Variabele                           Beschrijving
 ``{{ payment_received }}``          Indicatie of de gebruiker wel of niet heeft betaald.
 ``{{ payment_order_id }}``          De referentie van de betaling.
 ``{{ submission_language }}``       De taal van het formulier die werd ingezonden, bijvoorbeeld 'nl'.
-``{{ co_signer }}``                 De voorletters, achternaam en ID (bijvoorbeeld het BSN) van de persoon die het formulier heeft mede-ondertekend.
+``{{ co_signer }}``                 De details van de medeondertekening, zie hieronder. Bij de verouderde
+                                    medeondertekening geeft dit de voorletters, achternaam en ID (bijvoorbeeld
+                                    het BSN) van de persoon die het formulier heeft mede-ondertekend.
 ``{% registration_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden en gebruikersvariabelen.
 ==================================  ===========================================================================
+
+**Structuur co_signer-variabele**
+
+Deze structuur is enkel van toepassing in de niet-verouderde medeondertekenencomponent.
+
+``co_signer.plugin``
+   ID van de authenticatieplugin waarmee de medeondertekenaar ingelogd is. Bijvoorbeeld ``digid``.
+
+``co_signer.attribute``
+   Het authenticatietype. Mogelijke waarden zijn ``bsn``, ``kvk``, ``pseudo`` en ``employee_id``.
+
+``co_signer.value``
+   Het identificatiekenmerk van de medeondertekenaar. De betekenis van de waarde hangt
+   samen met ``co_signer.attribute``.
+
+``co_signer.cosign_date``
+   Het moment (datumtijd) waarop de medeondertekening plaatsvond.
 
 Voorbeeld
 ---------
@@ -527,7 +546,7 @@ Voorbeeld
         {% registration_summary %}
 
         {% if co_signer %}
-        Mede-ondertekend door: {{ co_signer }}
+        Mede-ondertekend door: BSN {{ co_signer.value }}
         {% endif %}
 
    .. tab:: Weergave (impressie)
@@ -559,7 +578,7 @@ Voorbeeld
          - totaalSchuld: 500,0
 
 
-         Mede-ondertekend door: N. Doe (BSN: 123456789)
+         Mede-ondertekend door: BSN 123456789
 
 E-mail mede-ondertekenverzoek
 =============================
