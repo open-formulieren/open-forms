@@ -1,3 +1,4 @@
+import logging
 from typing import Any, NoReturn
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
@@ -24,8 +25,11 @@ from ...registry import register
 from .constants import (
     EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS,
     EHERKENNING_AUTH_SESSION_KEY,
+    EHERKENNING_BRANCH_NUMBERS_SESSION_KEY,
     EIDAS_AUTH_SESSION_KEY,
 )
+
+logger = logging.getLogger(__name__)
 
 _LOA_ORDER = [loa.value for loa in AssuranceLevels]
 
@@ -108,12 +112,16 @@ class AuthenticationBasePlugin(BasePlugin):
                 "attribute": self.provides_auth,
                 "value": identifier,
                 "loa": self.get_session_loa(request.session),
+                **self.get_extra_form_auth_kwargs(request.session),
             }
 
         return HttpResponseRedirect(form_url)
 
     def get_session_loa(self, session):
         return ""
+
+    def get_extra_form_auth_kwargs(self, session) -> dict[str, Any]:
+        return {}
 
     def logout(self, request: HttpRequest):
         if self.session_key in request.session:
@@ -129,6 +137,21 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
     def get_session_loa(self, session) -> str:
         authn_contexts = session.get(EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS, [""])
         return max(authn_contexts, key=loa_order)
+
+    def get_extra_form_auth_kwargs(self, session) -> dict[str, Any]:
+        branch_numbers = session.get(EHERKENNING_BRANCH_NUMBERS_SESSION_KEY)
+        if not branch_numbers:
+            return {}
+        if (num := len(branch_numbers)) > 1:
+            # https://afsprakenstelsel.etoegang.nl/Startpagina/v2/interface-specifications-dv-hm
+            # explicitly mentions that "one or more ServiceRestrictions" can be provided,
+            # we currently only support one.
+            logger.warning(
+                "Got more than one branch number (got %d), this is unexpected!",
+                num,
+            )
+        branch_number = branch_numbers[0]
+        return {"legal_subject_service_restriction": branch_number}
 
     def check_requirements(self, request, config):
         # check LoA requirements
