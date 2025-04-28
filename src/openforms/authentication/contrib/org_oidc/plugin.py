@@ -23,15 +23,22 @@ oidc_init = OIDCInit.as_view(
 
 
 @register(PLUGIN_IDENTIFIER)
-class OIDCAuthentication(BasePlugin):
+class OIDCAuthentication(BasePlugin[OrgOpenIDConnectConfig]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
 
+    config_class = OrgOpenIDConnectConfig
     verbose_name = _("Organization via OpenID Connect")
     provides_auth = AuthAttribute.employee_id
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self,
+        request: HttpRequest,
+        form: Form,
+        form_url: str,
+        options: OrgOpenIDConnectConfig,
+    ):
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
@@ -50,7 +57,7 @@ class OIDCAuthentication(BasePlugin):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options: OrgOpenIDConnectConfig):
         """
         Redirect to form URL.
         """

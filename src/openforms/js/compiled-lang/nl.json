@@ -2134,6 +2134,12 @@
       "value": "Gebruik gekoppelde productprijs"
     }
   ],
+  "Gi1Py0": [
+    {
+      "type": 0,
+      "value": "Additional scopes that should be used with the authentication, besides the bsn and/or kvk scopes."
+    }
+  ],
   "GjQdpb": [
     {
       "type": 0,
@@ -3182,12 +3188,6 @@
       "value": "Je moet latitude en longitude allebei instellen."
     }
   ],
-  "R25Vbr": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3940,6 +3940,12 @@
       "value": "Maximale breedte"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4149,6 +4155,12 @@
     {
       "type": 0,
       "value": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier."
+    }
+  ],
+  "ZQaGsO": [
+    {
+      "type": 0,
+      "value": "Authentication scopes"
     }
   ],
   "ZSvQcR": [
@@ -6243,6 +6255,16 @@
       "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten-API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
     }
   ],
+  "qF8uxU": [
+    {
+      "type": 0,
+      "value": "Plugin: "
+    },
+    {
+      "type": 1,
+      "value": "plugin"
+    }
+  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -6451,30 +6473,6 @@
       "value": "Pluginattribuut"
     }
   ],
-  "sjnifH": [
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
-    }
-  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6677,6 +6675,30 @@
     {
       "type": 0,
       "value": "Fout"
+    }
+  ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "uiliGe": [

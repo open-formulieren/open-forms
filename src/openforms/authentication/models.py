@@ -48,6 +48,13 @@ class BaseAuthInfo(models.Model):
         help_text=_("Are the auth/identifying attributes hashed?"),
         default=False,
     )
+    additional_claims = models.JSONField(
+        verbose_name=_("additional claims"),
+        help_text=_(
+            "Additional claims, configurable in form OIDC configuration, returned by the authentication plugin."
+        ),
+        default=dict,
+    )
 
     identifying_attributes: tuple[str, ...] = ("value",)
     """

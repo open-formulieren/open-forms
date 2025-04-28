@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import DigiDAssuranceLevels
+from digid_eherkenning.models import DigidConfiguration
 from furl import furl
 from rest_framework.reverse import reverse
 
@@ -31,14 +32,19 @@ def loa_order(loa: str) -> int:
 
 
 @register(PLUGIN_ID)
-class DigidAuthentication(BasePlugin):
+class DigidAuthentication(BasePlugin[DigidConfiguration]):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
+    config_class = DigidConfiguration
     supports_loa_override = True
     assurance_levels = DigiDAssuranceLevels
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self,
+        request: HttpRequest,
+        form: Form,
+        form_url: str,
+        options: DigidConfiguration,
     ) -> HttpResponseRedirect:
         """Redirect to the /digid/login endpoint to start step 2 of the authentication
 
@@ -73,7 +79,7 @@ class DigidAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options: DigidConfiguration):
         """Redirect to form URL.
 
         This is called after step 7 of the authentication is finished
