@@ -112,7 +112,9 @@ class EmailRegistration(BasePlugin[Options]):
             self.update_payment_status(submission=submission, options=options)
 
     @staticmethod
-    def render_registration_email(submission, is_payment_update, extra_context=None):
+    def render_registration_email(
+        submission: Submission, is_payment_update: bool, extra_context=None
+    ):
         if extra_context is None:
             extra_context = {}
 
