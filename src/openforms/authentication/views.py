@@ -350,6 +350,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             logger.debug("Co-sign authentication detected, invoking plugin handler.")
             co_sign_data = {
                 **plugin.handle_co_sign(self.request, form),
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "co_sign_auth_attribute": plugin.provides_auth,
             }

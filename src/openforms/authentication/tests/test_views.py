@@ -340,6 +340,7 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
         self.assertEqual(
             self.submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": "plugin1",
                 "identifier": "mock-id",
                 "representation": "",

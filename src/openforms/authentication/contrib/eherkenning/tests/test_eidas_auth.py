@@ -429,6 +429,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCas
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": "eidas",
                 "identifier": "112233445",
                 "representation": "",

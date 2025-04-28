@@ -282,11 +282,14 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
 @freeze_time("2021-11-26T17:00:00+00:00")
 class SetCosignDataTests(APITestCase):
+    @override_settings(ALLOWED_HOSTS=["localhost"])
     def test_set_cosigner_data(self):
-        submission = SubmissionFactory.create(completed=True)
+        submission = SubmissionFactory.create(
+            completed=True, form_url="http://localhost/some-form"
+        )
         request = APIRequestFactory().get("/")
         request.user = UserFactory()
-        request.session = {
+        request.session = {  # type: ignore
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "digid",
                 "attribute": "bsn",
@@ -301,6 +304,7 @@ class SetCosignDataTests(APITestCase):
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",

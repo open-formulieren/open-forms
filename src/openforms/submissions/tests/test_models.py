@@ -258,6 +258,7 @@ class SubmissionTests(TestCase):
             {},
             None,
             {
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "co_sign_auth_attribute": "bsn",
@@ -442,6 +443,46 @@ class SubmissionTests(TestCase):
 
         with self.subTest("nested"):
             self.assertEqual(submission3.cosign_state.email, "test@test.nl")
+
+    @override_settings(ALLOWED_HOSTS=["localhost"])
+    def test_set_co_sign_data(self):
+        form = FormFactory.create()
+
+        with self.subTest(version="v1"):
+            submission = SubmissionFactory.build(
+                form=form, form_url="http://localhost/some-form"
+            )
+            submission.co_sign_data = {
+                "version": "v1",
+                "plugin": "digid",
+                "identifier": "123456782",
+                "representation": "John Doe",
+                "co_sign_auth_attribute": AuthAttribute.bsn,
+                "fields": {
+                    "firstName": "John",
+                    "lastName": "Doe",
+                },
+            }
+            try:
+                submission.full_clean()
+            except ValidationError as exc:
+                raise self.failureException("Should be valid") from exc
+
+        with self.subTest(version="v2"):
+            submission = SubmissionFactory.build(
+                form=form, form_url="http://localhost/some-form"
+            )
+            submission.co_sign_data = {
+                "version": "v2",
+                "plugin": "digid",
+                "attribute": "bsn",
+                "value": "123456782",
+                "cosign_date": "2025-01-01T00:00:00+01:00",
+            }
+            try:
+                submission.full_clean()
+            except ValidationError as exc:
+                raise self.failureException("Should be valid") from exc
 
     def test_clear_execution_state_without_execution_state(self):
         submission = SubmissionFactory.create()

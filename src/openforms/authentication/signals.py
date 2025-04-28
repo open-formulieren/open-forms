@@ -154,9 +154,14 @@ def set_cosign_data_on_submission(
     sender, instance: Submission, request: Request, **kwargs
 ):
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
+    assert form_auth is not None
 
-    instance.co_sign_data = form_auth
-    instance.co_sign_data["cosign_date"] = timezone.now().isoformat()
+    instance.co_sign_data = {
+        "version": "v2",
+        **form_auth,
+        "cosign_date": timezone.now().isoformat(),
+    }
+    instance.full_clean()  # run validation to ensure the shape is as documented (!)
     instance.save()
 
     remove_auth_info_from_session(request)

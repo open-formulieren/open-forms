@@ -140,8 +140,10 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
+    @override_settings(ALLOWED_HOSTS=["testserver", "localhost"])
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
+            form_url="http://localhost/some-form",
             form__authentication_backends=["digid"],
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
