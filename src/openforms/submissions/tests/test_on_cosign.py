@@ -20,6 +20,7 @@ class OnCosignTests(TestCase):
                 {"key": "mainEmail", "type": "email", "confirmationRecipient": True},
             ],
             co_sign_data={
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",
@@ -65,6 +66,7 @@ class OnCosignTests(TestCase):
                 {"key": "mainEmail", "type": "email", "confirmationRecipient": True},
             ],
             co_sign_data={
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",

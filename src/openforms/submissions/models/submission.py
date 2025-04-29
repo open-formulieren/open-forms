@@ -20,6 +20,7 @@ import elasticapm
 from django_jsonform.models.fields import ArrayField
 from furl import furl
 
+from openforms.authentication.typing import CosignData
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
@@ -709,30 +710,22 @@ class Submission(models.Model):
         return values_state.get_data()
 
     def get_co_signer(self) -> str | SubmissionCosignData:
-        from openforms.authentication.service import AuthAttribute
-
         # Legacy cosign returns an empty string, cosign v2 returns SubmissionCosignData
         if not self.co_sign_data:
             return ""
 
         match self.co_sign_data:
             # v2 cosign
-            case {
-                "plugin": str() as plugin,
-                "attribute": str() as attribute,
-                "value": str() as value,
-                "cosign_date": str() as timestamp,
-            }:
+            case {"version": "v2"}:
+                co_sign_data: CosignData = self.co_sign_data
                 _co_sign_data: SubmissionCosignData = {
-                    "plugin": plugin,
-                    "attribute": AuthAttribute(attribute),
-                    "value": value,
-                    "cosign_date": datetime.fromisoformat(timestamp),
+                    **co_sign_data,
+                    "cosign_date": datetime.fromisoformat(co_sign_data["cosign_date"]),
                 }
                 return _co_sign_data
 
             # v1 cosign
-            case {"identifier": str()}:
+            case {"version": "v1"}:
                 if not (representation := self.co_sign_data.get("representation", "")):
                     logger.warning(
                         "Incomplete co-sign data for submission %s", self.uuid

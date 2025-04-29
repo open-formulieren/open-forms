@@ -126,6 +126,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__internal_name="MyInternalName",
             form__registration_backend="email",
             co_sign_data={
+                "version": "v1",
                 "plugin": "demo",
                 "representation": "Demo Person",
                 "identifier": "111222333",
@@ -241,7 +242,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"cosign": "cosigner@example.com"},
             form__registration_backend="email",
-            co_sign_data=cosign_data,
+            co_sign_data={**cosign_data, "version": "v2"},
         )
         email_form_options: Options = {
             "to_emails": ["foo@bar.nl", "bar@foo.nl"],
