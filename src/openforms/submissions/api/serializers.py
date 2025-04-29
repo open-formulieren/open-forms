@@ -527,7 +527,7 @@ class SubmissionComponentSummarySerializer(serializers.Serializer):
     )
 
 
-class SubmissionStepSummarySerialzier(serializers.Serializer):
+class SubmissionStepSummarySerializer(serializers.Serializer):
     slug = serializers.SlugField(
         help_text=_("Slug of the form definition used in the form step."),
         required=True,

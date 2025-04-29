@@ -63,7 +63,7 @@ from .serializers import (
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
     SubmissionStepSerializer,
-    SubmissionStepSummarySerialzier,
+    SubmissionStepSummarySerializer,
     SubmissionSuspensionSerializer,
 )
 from .validation import SubmissionCompletionSerializer
@@ -434,7 +434,7 @@ class SubmissionViewSet(
         summary=_("Summary page data"),
         description=_("Retrieve the data to display in the submission summary page."),
         responses={
-            200: SubmissionStepSummarySerialzier(many=True),
+            200: SubmissionStepSummarySerializer(many=True),
         },
     )
     @action(detail=True, methods=["get"], url_name="summary", pagination_class=None)

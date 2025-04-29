@@ -5414,7 +5414,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SubmissionStepSummarySerialzier'
+                  $ref: '#/components/schemas/SubmissionStepSummary'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -10273,7 +10273,7 @@ components:
       - id
       - isApplicable
       - slug
-    SubmissionStepSummarySerialzier:
+    SubmissionStepSummary:
       type: object
       properties:
         slug:
