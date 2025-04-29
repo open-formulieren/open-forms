@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 
+from openforms.formio.datastructures import FormioData
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -158,12 +159,14 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 3. bulk_create var3 and var4 submission value variables
         # 4. bulk_update var1 and var2 submission value variables
         with self.assertNumQueries(4):
-            submission_step.data = {
-                "var1": "test1-modified",
-                "var2": "test2-modified",
-                "var3": "test3",
-                "var4": "test4",
-            }
+            submission_step.data = FormioData(
+                {
+                    "var1": "test1-modified",
+                    "var2": "test2-modified",
+                    "var3": "test3",
+                    "var4": "test4",
+                }
+            )
 
     def test_get_step_data(self):
         form = FormFactory.create()

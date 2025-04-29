@@ -300,7 +300,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
 
 class FormDataSerializer(serializers.Serializer):
-    data = serializers.DictField(
+    data = FormioDataField(
         label=_("form data"),
         required=False,
         help_text=_(

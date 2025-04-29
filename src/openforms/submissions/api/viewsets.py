@@ -21,7 +21,6 @@ from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
 from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
-from openforms.formio.service import FormioData
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
@@ -652,9 +651,7 @@ class SubmissionStepViewSet(
         form_data_serializer.is_valid(raise_exception=True)
 
         if data := form_data_serializer.validated_data["data"]:
-            new_configuration = evaluate_form_logic(
-                submission, submission_step, FormioData(data)
-            )
+            new_configuration = evaluate_form_logic(submission, submission_step, data)
             submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(

@@ -198,7 +198,7 @@ class SubmissionStep(models.Model):
         self._is_applicable = value
 
     def reset(self):
-        self.data = {}
+        self.data = FormioData()
         self.save()
 
     @property
