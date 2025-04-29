@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.fields import DictField
 
+from ..datastructures import FormioData
 from ..validators import variable_key_validator
 
 
@@ -12,3 +14,11 @@ class FormioVariableKeyField(serializers.CharField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.validators = [variable_key_validator, *self.validators]
+
+
+class FormioDataField(DictField):
+    """A dict field which supports nested data access via dot notation."""
+
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        return FormioData(data)

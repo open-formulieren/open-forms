@@ -20,6 +20,7 @@ from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
+from openforms.formio.api.fields import FormioDataField
 from openforms.formio.service import FormioData, build_serializer
 from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
@@ -227,7 +228,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     form_step = ContextAwareFormStepSerializer(read_only=True)
     slug = serializers.SlugField(source="form_step.slug", read_only=True)
-    data = serializers.DictField(  # type: ignore
+    data = FormioDataField(  # type: ignore
         label=_("data"),
         required=False,
         allow_null=True,
@@ -272,16 +273,14 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)
 
-    def validate_data(self, data: dict):
+    def validate_data(self, data: FormioData):
         self._run_formio_validation(data)
         return data
 
-    def _run_formio_validation(self, data: dict) -> None:
+    def _run_formio_validation(self, data: FormioData) -> None:
         submission = self.instance.submission
         # evaluate dynamic configuration
-        configuration = evaluate_form_logic(
-            submission, step=self.instance, data=FormioData(data)
-        )
+        configuration = evaluate_form_logic(submission, step=self.instance, data=data)
 
         # mark them all as not required, to support pausing forms where data is very
         # likely to still be incomplete. See #4144.
