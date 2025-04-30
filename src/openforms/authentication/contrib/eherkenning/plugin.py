@@ -1,5 +1,3 @@
-from typing import Any, NoReturn
-
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +10,7 @@ from rest_framework.reverse import reverse
 from openforms.contrib.digid_eherkenning.utils import get_eherkenning_logo
 from openforms.forms.models import Form
 
-from ...base import BasePlugin, LoginLogo
+from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
@@ -77,9 +75,7 @@ class AuthenticationBasePlugin(BasePlugin):
         )
         return HttpResponseRedirect(str(redirect_url))
 
-    def handle_co_sign(
-        self, request: HttpRequest, form: Form
-    ) -> dict[str, Any] | NoReturn:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         if not (identifier := request.session.get(self.session_key)):
             raise InvalidCoSignData(
                 f"Missing or empty auth session data (key: {self.session_key})"

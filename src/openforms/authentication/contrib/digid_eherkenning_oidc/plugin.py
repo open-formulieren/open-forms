@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, NotRequired, Protocol, TypedDict, TypeVar
+from typing import ClassVar, NotRequired, Protocol, TypedDict
 
 from django.http import (
     HttpRequest,
@@ -25,7 +25,7 @@ from openforms.forms.models import Form
 from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
 
-from ...base import BasePlugin, LoginLogo
+from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -62,12 +62,9 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
-# can't bind it to JSONObject because TypedDict and dict[str, ...] are not considered
+# can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
 # assignable... :(
-T = TypeVar("T")
-
-
-class OIDCAuthentication(Generic[T], BasePlugin):
+class OIDCAuthentication[T](BasePlugin):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
@@ -100,7 +97,7 @@ class OIDCAuthentication(Generic[T], BasePlugin):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any]:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         if not (claim := request.session.get(self.session_key)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {

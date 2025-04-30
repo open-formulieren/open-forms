@@ -12,7 +12,6 @@ import tablib
 from furl import furl
 
 from openforms.authentication.service import AuthAttribute
-from openforms.authentication.typing import CosignData
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
@@ -25,6 +24,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
 from openforms.submissions.constants import PostSubmissionEvents
+from openforms.submissions.cosigning import CosignData
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -229,6 +229,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
     def test_submission_with_cosign_v2(self):
         cosign_data: CosignData = {
+            "version": "v2",
             "plugin": "demo",
             "attribute": AuthAttribute.bsn,
             "value": "111222333",

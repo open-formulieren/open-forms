@@ -1,5 +1,3 @@
-from typing import Any, NoReturn
-
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
@@ -11,7 +9,7 @@ from openforms.contrib.digid_eherkenning.utils import get_digid_logo
 from openforms.forms.models import Form
 from openforms.typing import AnyRequest
 
-from ...base import BasePlugin, LoginLogo
+from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -63,9 +61,7 @@ class DigidAuthentication(BasePlugin):
         redirect_url = furl(login_url).set({"next": str(return_url)})
         return HttpResponseRedirect(str(redirect_url))
 
-    def handle_co_sign(
-        self, request: HttpRequest, form: Form
-    ) -> dict[str, Any] | NoReturn:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         if not (bsn := request.session.get(DIGID_AUTH_SESSION_KEY)):
             raise InvalidCoSignData("Missing 'bsn' parameter/value")
         return {

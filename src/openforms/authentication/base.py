@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.typing import AnyRequest, StrOrPromise
+from openforms.typing import AnyRequest, JSONObject, StrOrPromise
 
 from .constants import AuthAttribute
 from .utils import get_cosign_login_url
@@ -38,6 +38,11 @@ class Choice(TypedDict):
     label: str
 
 
+class CosignSlice(TypedDict):
+    identifier: str
+    fields: JSONObject
+
+
 class BasePlugin(AbstractBasePlugin):
     provides_auth: AuthAttribute
     supports_loa_override = False
@@ -55,7 +60,7 @@ class BasePlugin(AbstractBasePlugin):
         # process and validate return information, store bsn in session
         raise NotImplementedError()  # noqa
 
-    def handle_co_sign(self, request: Request, form: Form) -> dict[str, Any]:
+    def handle_co_sign(self, request: Request, form: Form) -> CosignSlice:
         """
         Process the authentication and return a dict of co-sign details.
 

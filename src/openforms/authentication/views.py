@@ -26,6 +26,7 @@ from rest_framework.request import Request
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form
 from openforms.submissions.api.permissions import owns_submission
+from openforms.submissions.cosigning import CosignData
 from openforms.submissions.models import Submission
 from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
@@ -348,7 +349,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 DeprecationWarning,
             )
             logger.debug("Co-sign authentication detected, invoking plugin handler.")
-            co_sign_data = {
+            co_sign_data: CosignData = {
                 **plugin.handle_co_sign(self.request, form),
                 "version": "v1",
                 "plugin": plugin.identifier,
