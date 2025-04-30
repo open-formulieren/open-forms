@@ -841,8 +841,10 @@ class V2HandlerTests(TestCase):
             },
             cosign_complete=True,
             co_sign_data={
-                "value": "123456789",
+                "version": "v2",
+                "plugin": "demo",
                 "attribute": AuthAttribute.bsn,
+                "value": "123456789",
                 "cosign_date": now,
             },
         )
@@ -886,8 +888,10 @@ class V2HandlerTests(TestCase):
         self.assertEqual(
             data["cosign_data"],
             {
-                "value": "123456789",
+                "version": "v2",
+                "plugin": "demo",
                 "attribute": AuthAttribute.bsn,
+                "value": "123456789",
                 "cosign_date": now,
             },
         )
@@ -963,8 +967,10 @@ class V2HandlerTests(TestCase):
             },
             cosign_complete=True,
             co_sign_data={
-                "value": "123456789",
+                "version": "v2",
+                "plugin": "demo",
                 "attribute": AuthAttribute.bsn,
+                "value": "123456789",
             },
         )
 

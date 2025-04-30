@@ -20,7 +20,6 @@ import elasticapm
 from django_jsonform.models.fields import ArrayField
 from furl import furl
 
-from openforms.authentication.typing import CosignData
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
@@ -35,7 +34,7 @@ from ..constants import (
     RegistrationStatuses,
     SubmissionValueVariableSources,
 )
-from ..cosigning import CosignState
+from ..cosigning import CosignData, CosignState
 from ..pricing import get_submission_price
 from ..query import SubmissionQuerySet
 from ..serializers import CoSignDataSerializer
@@ -714,13 +713,17 @@ class Submission(models.Model):
         if not self.co_sign_data:
             return ""
 
-        match self.co_sign_data:
+        co_sign_data: CosignData = self.co_sign_data
+
+        match co_sign_data:
             # v2 cosign
             case {"version": "v2"}:
-                co_sign_data: CosignData = self.co_sign_data
+                timestamp = co_sign_data.get("cosign_date")
                 _co_sign_data: SubmissionCosignData = {
                     **co_sign_data,
-                    "cosign_date": datetime.fromisoformat(co_sign_data["cosign_date"]),
+                    "cosign_date": datetime.fromisoformat(timestamp)
+                    if timestamp
+                    else None,
                 }
                 return _co_sign_data
 
@@ -732,7 +735,7 @@ class Submission(models.Model):
                     )
                 return representation
             case _:  # pragma: no cover
-                assert_never(self.co_sign_data)
+                assert_never(co_sign_data)
 
     def get_attachments(self) -> SubmissionFileAttachmentQuerySet:
         from .submission_files import SubmissionFileAttachment

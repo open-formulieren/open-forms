@@ -13,4 +13,4 @@ class SubmissionCosignData(TypedDict):
     plugin: str
     attribute: AuthAttribute
     value: str
-    cosign_date: datetime
+    cosign_date: datetime | None
