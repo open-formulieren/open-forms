@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from openforms.formio.service import FormioData
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -103,7 +104,7 @@ class FormNodeTests(TestCase):
             ],
         )
         # set up data that marks step as not-applicable
-        self.sstep1.data = {"input1": "disabled-step-2"}
+        self.sstep1.data = FormioData({"input1": "disabled-step-2"})
         self.sstep1.save()
 
         renderer = Renderer(

@@ -6,6 +6,8 @@ submitted to a submission step. Existing data can be overwritten and new data is
 by using HTTP PUT.
 """
 
+from django.test import tag
+
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
@@ -274,3 +276,56 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # Check that the data has not been converted to camel case
         self.assertIn("country_of_residence", data)
         self.assertNotIn("countryOfResidence", data)
+
+    @tag("gh-5300")
+    def test_update_step_data_component_with_nested_data(self):
+        step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "nested.key"}]
+            },
+        )
+        submission = SubmissionFactory.create(form=step.form)
+        self._add_submission_to_session(submission)
+
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            data={},
+            form_step=step,
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        body = {"data": {"nested": {"key": "some data"}}}
+
+        response = self.client.put(endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            {
+                "id": str(submission_step.uuid),
+                "slug": step.slug,
+                "formStep": {
+                    "index": 0,
+                    "configuration": {
+                        "components": [
+                            {"key": "nested.key", "type": "textfield"},
+                        ]
+                    },
+                },
+                "data": {"nested": {"key": "some data"}},
+                "isApplicable": True,
+                "completed": True,
+                "canSubmit": True,
+            },
+        )
+        submission_step.refresh_from_db()
+        self.assertEqual(submission_step.data, {"nested": {"key": "some data"}})
+
+        variable = SubmissionValueVariable.objects.get(key="nested.key")
+        self.assertEqual(variable.value, "some data")

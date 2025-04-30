@@ -132,7 +132,7 @@ class StepNotApplicableAction(ActionOperation):
 
         # This clears data in the database to make sure that saved steps which later become
         # not-applicable don't have old data
-        submission_step_to_modify.data = {}
+        submission_step_to_modify.data = FormioData()
         if submission_step_to_modify == step:
             step.is_applicable = False
             step.data = DirtyData(FormioData())
