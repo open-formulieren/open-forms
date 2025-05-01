@@ -143,8 +143,14 @@ class TextField(BasePlugin[TextFieldComponent]):
     def as_json_schema(component: TextFieldComponent) -> JSONObject:
         label = component.get("label", "Text")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "string"}
+        if pattern := validate.get("pattern"):
+            base["pattern"] = pattern
+        if validate.get("maxLength"):
+            base["maxLength"] = validate["maxLength"]
+
         return to_multiple(base) if multiple else base
 
 
@@ -358,8 +364,13 @@ class PhoneNumber(BasePlugin):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Phone number")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
-        base = {"title": label, "type": "string"}
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": validate.get("pattern", r"^\+?[\d\s]+$"),
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -540,8 +551,14 @@ class TextArea(BasePlugin[Component]):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Text area")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "string"}
+        if pattern := validate.get("pattern"):
+            base["pattern"] = pattern
+        if validate.get("maxLength"):
+            base["maxLength"] = validate["maxLength"]
+
         return to_multiple(base) if multiple else base
 
 
@@ -579,8 +596,14 @@ class Number(BasePlugin):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Number")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "number"}
+        if min_value := validate.get("min"):
+            base["minimum"] = min_value
+        if max_value := validate.get("max"):
+            base["maximum"] = max_value
+
         return to_multiple(base) if multiple else base
 
 
@@ -825,8 +848,13 @@ class Currency(BasePlugin[Component]):
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Currency")
-        base = {"title": label, "type": "number"}
+        validate = component.get("validate", {})
 
+        base = {"title": label, "type": "number"}
+        if min_value := validate.get("min"):
+            base["minimum"] = min_value
+        if max_value := validate.get("max"):
+            base["maximum"] = max_value
         return base
 
 
@@ -1044,6 +1072,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
     @staticmethod
     def as_json_schema(component: EditGridComponent) -> JSONObject:
         label = component.get("label", "Edit grid")
+        validate = component.get("validate", {})
 
         # Build the edit grid object properties by iterating over the child components
         properties = {
@@ -1060,5 +1089,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 "additionalProperties": False,
             },
         }
+        if max_length := validate.get("maxLength"):
+            base["maxItems"] = max_length
 
         return base
