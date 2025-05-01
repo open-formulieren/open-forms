@@ -221,6 +221,289 @@ class GenerateJsonSchemaTests(TestCase):
 
         self.assertEqual(schema["required"], ["firstName", "lastName"])
 
+    def test_key_with_period(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "nested.data",
+                        "type": "textfield",
+                        "label": "Textfield with nested data",
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(form, limit_to_variables=["nested.data"])
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "nested": {
+                    "properties": {
+                        "data": {
+                            "title": "Textfield with nested data",
+                            "type": "string",
+                        }
+                    },
+                    "required": ["data"],
+                    "type": "object",
+                    "additionalProperties": False,
+                },
+            },
+            "required": ["nested"],
+            "additionalProperties": False,
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_key_with_two_periods(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "nested.data.second",
+                        "type": "textfield",
+                        "label": "Textfield with nested data",
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(form, limit_to_variables=["nested.data.second"])
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "nested": {
+                    "properties": {
+                        "data": {
+                            "properties": {
+                                "second": {
+                                    "title": "Textfield with nested data",
+                                    "type": "string",
+                                }
+                            },
+                            "required": ["second"],
+                            "type": "object",
+                            "additionalProperties": False,
+                        }
+                    },
+                    "required": ["data"],
+                    "type": "object",
+                    "additionalProperties": False,
+                },
+            },
+            "required": ["nested"],
+            "additionalProperties": False,
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_two_keys_with_same_top_level(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "nested.key_1",
+                        "type": "textfield",
+                        "label": "Textfield with nested data",
+                    },
+                    {
+                        "key": "nested.key_2",
+                        "type": "textfield",
+                        "label": "Textfield 2 with nested data",
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(
+            form, limit_to_variables=["nested.key_1", "nested.key_2"]
+        )
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "nested": {
+                    "properties": {
+                        "key_1": {
+                            "title": "Textfield with nested data",
+                            "type": "string",
+                        },
+                        "key_2": {
+                            "title": "Textfield 2 with nested data",
+                            "type": "string",
+                        },
+                    },
+                    "required": ["key_1", "key_2"],
+                    "type": "object",
+                    "additionalProperties": False,
+                },
+            },
+            "required": ["nested"],
+            "additionalProperties": False,
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_nested_data_in_edit_grid(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Edit grid",
+                        "key": "editgrid",
+                        "type": "editgrid",
+                        "components": [
+                            {
+                                "label": "Text field A",
+                                "key": "text.a",
+                                "type": "textfield",
+                            },
+                            {
+                                "label": "Text field B",
+                                "key": "text.b",
+                                "type": "textfield",
+                            },
+                            {
+                                "label": "Email",
+                                "key": "email",
+                                "type": "email",
+                            },
+                        ],
+                    }
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        schema = generate_json_schema(form, limit_to_variables=["editgrid"])
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "editgrid": {
+                    "title": "Edit grid",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "object",
+                                "properties": {
+                                    "a": {"title": "Text field A", "type": "string"},
+                                    "b": {"title": "Text field B", "type": "string"},
+                                },
+                                "additionalProperties": False,
+                                "required": ["a", "b"],
+                            },
+                            "email": {
+                                "title": "Email",
+                                "type": "string",
+                                "format": "email",
+                            },
+                        },
+                        "additionalProperties": False,
+                        "required": ["text", "email"],
+                    },
+                },
+            },
+            "required": ["editgrid"],
+            "additionalProperties": False,
+        }
+
+        self.assertEqual(schema, expected_schema)
+
+    def test_user_variable_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "type": "select",
+                        "openForms": {
+                            "dataSrc": DataSrcOptions.variable,
+                            "itemsExpression": {"var": "valuesForComponents"},
+                        },
+                        "data": {
+                            "values": [],
+                            "json": "",
+                            "url": "",
+                            "resource": "",
+                            "custom": "",
+                        },
+                    },
+                    {
+                        "label": "Select boxes",
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "openForms": {
+                            "dataSrc": DataSrcOptions.variable,
+                            "itemsExpression": {"var": "valuesForComponents"},
+                        },
+                        "values": [],
+                    },
+                    {
+                        "label": "Radio",
+                        "key": "radio",
+                        "type": "radio",
+                        "openForms": {
+                            "dataSrc": DataSrcOptions.variable,
+                            "itemsExpression": {"var": "valuesForComponents"},
+                        },
+                        "values": [],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        FormVariableFactory.create(
+            form=form,
+            name="Values for components",
+            key="valuesForComponents",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        schema = generate_json_schema(
+            form, limit_to_variables=["select", "selectboxes", "radio"]
+        )
+
+        with self.subTest("select"):
+            self.assertEqual(
+                schema["properties"]["select"]["enum"], ["A", "B", "C", ""]
+            )
+
+        with self.subTest("selectboxes"):
+            expected_property = {
+                "title": "Select boxes",
+                "type": "object",
+                "properties": {
+                    "A": {"type": "boolean"},
+                    "B": {"type": "boolean"},
+                    "C": {"type": "boolean"},
+                },
+                "required": ["A", "B", "C"],
+                "additionalProperties": False,
+            }
+            self.assertEqual(schema["properties"]["selectboxes"], expected_property)
+
+        with self.subTest("radio"):
+            self.assertEqual(schema["properties"]["radio"]["enum"], ["A", "B", "C", ""])
+
 
 class FormVariableAsJsonSchemaTests(TestCase):
     def test_component(self):
