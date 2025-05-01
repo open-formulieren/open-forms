@@ -1,4 +1,9 @@
+from pathlib import Path
+
 from django.test import TestCase, tag
+
+from zgw_consumers.constants import AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
@@ -7,9 +12,13 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.utils.tests.cache import clear_caches
+from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..json_schema import generate_json_schema
+
+VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class GenerateJsonSchemaTests(TestCase):
@@ -503,6 +512,118 @@ class GenerateJsonSchemaTests(TestCase):
 
         with self.subTest("radio"):
             self.assertEqual(schema["properties"]["radio"]["enum"], ["A", "B", "C", ""])
+
+
+class GenerateJsonSchemaReferenceListsTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = VCR_TEST_FILES
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.reference_lists_service = ServiceFactory.create(
+            api_root="http://localhost:8004/api/v1/",
+            slug="reference_lists",
+            auth_type=AuthTypes.no_auth,
+        )
+
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(clear_caches)
+
+    def test_select_with_reference_list_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "type": "select",
+                        "openForms": {
+                            "code": "tabel1",
+                            "dataSrc": DataSrcOptions.reference_lists,
+                            "service": "reference_lists",
+                        },
+                        "data": {
+                            "values": [],
+                            "json": "",
+                            "url": "",
+                            "resource": "",
+                            "custom": "",
+                        },
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(form, limit_to_variables=["select"])
+
+        self.assertEqual(
+            schema["properties"]["select"]["enum"], ["option2", "option1", ""]
+        )
+
+    def test_select_boxes_with_reference_list_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Select boxes",
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "openForms": {
+                            "code": "tabel1",
+                            "dataSrc": DataSrcOptions.reference_lists,
+                            "service": "reference_lists",
+                        },
+                        "values": [],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(form, limit_to_variables=["selectboxes"])
+
+        expected_property = {
+            "title": "Select boxes",
+            "type": "object",
+            "properties": {
+                "option2": {"type": "boolean"},
+                "option1": {"type": "boolean"},
+            },
+            "required": ["option2", "option1"],
+            "additionalProperties": False,
+        }
+        self.assertEqual(schema["properties"]["selectboxes"], expected_property)
+
+    def test_radio_with_reference_list_as_data_source(self):
+        form = FormFactory.create()
+        form_def_1 = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "label": "Radio",
+                        "key": "radio",
+                        "type": "radio",
+                        "openForms": {
+                            "code": "tabel1",
+                            "dataSrc": DataSrcOptions.reference_lists,
+                            "service": "reference_lists",
+                        },
+                        "values": [],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def_1)
+
+        schema = generate_json_schema(form, limit_to_variables=["radio"])
+
+        self.assertEqual(
+            schema["properties"]["radio"]["enum"], ["option2", "option1", ""]
+        )
 
 
 class FormVariableAsJsonSchemaTests(TestCase):
