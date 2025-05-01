@@ -60,6 +60,11 @@ GEO_JSON_TYPE_TO_INTERACTION = {
     GeoJsonGeometryTypes.line_string: "polyline",
 }
 
+POSTCODE_REGEX = r"^[1-9][0-9]{3} ?(?![sS][adsADS])[a-zA-Z]{2}$"
+HOUSE_NUMBER_REGEX = r"^\d{1,5}$"
+HOUSE_LETTER_REGEX = r"^[a-zA-Z]$"
+HOUSE_NUMBER_ADDITION_REGEX = "^([a-z,A-Z,0-9]){1,4}$"
+
 
 class FormioDateField(serializers.DateField):
     def validate_empty_values(self, data):
@@ -340,11 +345,15 @@ class Postcode(BasePlugin[Component]):
 
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
-        # TODO-4923: add a regex
         label = component.get("label", "Postcode")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
-        base = {"title": label, "type": "string"}
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": validate.get("pattern", POSTCODE_REGEX),
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -480,22 +489,20 @@ class BSN(BasePlugin[Component]):
         base = {
             "title": label,
             "type": "string",
-            "pattern": "^\\d{9}",
+            "pattern": r"^\d{9}$",
             "format": "nl-bsn",
         }
         return to_multiple(base) if multiple else base
 
 
 class AddressValueSerializer(serializers.Serializer):
-    postcode = serializers.RegexField(
-        "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+    postcode = serializers.RegexField(POSTCODE_REGEX)
+    houseNumber = serializers.RegexField(HOUSE_NUMBER_REGEX)
+    houseLetter = serializers.RegexField(
+        HOUSE_LETTER_REGEX, required=False, allow_blank=True
     )
-    houseNumber = serializers.RegexField(
-        r"^\d{1,5}$",
-    )
-    houseLetter = serializers.RegexField("^[a-zA-Z]$", required=False, allow_blank=True)
     houseNumberAddition = serializers.RegexField(
-        "^([a-z,A-Z,0-9]){1,4}$",
+        HOUSE_NUMBER_ADDITION_REGEX,
         required=False,
         allow_blank=True,
     )
@@ -603,19 +610,32 @@ class AddressNL(BasePlugin[AddressNLComponent]):
     @staticmethod
     def as_json_schema(component: AddressNLComponent) -> JSONObject:
         label = component.get("label", "Address NL")
+        components = component.get("openForms", {}).get("components", {})
+        postcode_validate = components.get("postcode", {}).get("validate", {})
+        city_validate = components.get("city", {}).get("validate", {})
+
         base = {
             "title": label,
             "type": "object",
             "properties": {
                 "city": {"type": "string"},
-                "houseLetter": {"type": "string"},
-                "houseNumber": {"type": "string"},
-                "houseNumberAddition": {"type": "string"},
-                "postcode": {"type": "string"},
+                "houseLetter": {"type": "string", "pattern": HOUSE_LETTER_REGEX},
+                "houseNumber": {"type": "string", "pattern": HOUSE_NUMBER_REGEX},
+                "houseNumberAddition": {
+                    "type": "string",
+                    "pattern": HOUSE_NUMBER_ADDITION_REGEX,
+                },
+                "postcode": {
+                    "type": "string",
+                    "pattern": postcode_validate.get("pattern", POSTCODE_REGEX),
+                },
                 "streetName": {"type": "string"},
             },
             "required": ["houseNumber", "postcode"],
         }
+
+        if city_pattern := city_validate.get("pattern"):
+            base["properties"]["city"]["pattern"] = city_pattern
 
         return base
 
@@ -664,7 +684,11 @@ class Iban(BasePlugin):
         label = component.get("label", "IBAN")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "type": "string"}
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": r"^NL[0-9]{2}[A-Z]{4}[0-9]{10}$",
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -710,5 +734,27 @@ class LicensePlate(BasePlugin):
         label = component.get("label", "License plate")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "type": "string"}
+        # NOTE: the pattern does not take into account letters that are not allowed
+        # by the government.
+        # Ref: https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_the_Netherlands
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": (
+                r"^[a-zA-Z]{2}-\d{2}-\d{2}$|"  # XX-99-99
+                r"^\d{2}-\d{2}-[a-zA-Z]{2}$|"  # 99-99-XX
+                r"^\d{2}-[a-zA-Z]{2}-\d{2}$|"  # 99-XX-99
+                r"^[a-zA-Z]{2}-\d{2}-[a-zA-Z]{2}$|"  # XX-99-XX
+                r"^[a-zA-Z]{2}-[a-zA-Z]{2}-\d{2}$|"  # XX-XX-99
+                r"^\d{2}-[a-zA-Z]{2}-[a-zA-Z]{2}$|"  # 99-XX-XX
+                r"^\d{2}-[a-zA-Z]{3}-\d$|"  # 99-XXX-9
+                r"^\d-[a-zA-Z]{3}-\d{2}$|"  # 9-XXX-99
+                r"^[a-zA-Z]{2}-\d{3}-[a-zA-Z]$|"  # XX-999-X
+                r"^[a-zA-Z]-\d{3}-[a-zA-Z]{2}$|"  # X-999-XX
+                r"^[a-zA-Z]{3}-\d{2}-[a-zA-Z]$|"  # XXX-99-X
+                r"^[a-zA-Z]-\d{2}-[a-zA-Z]{3}$|"  # X-99-XXX
+                r"^\d{1}-[a-zA-Z]{2}-\d{3}$|"  # 9-XX-999
+                r"^\d{3}-[a-zA-Z]{2}-\d$|"  # 999-XX-9
+            ),
+        }
         return to_multiple(base) if multiple else base
