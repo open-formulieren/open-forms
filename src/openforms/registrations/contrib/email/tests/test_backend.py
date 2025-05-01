@@ -243,7 +243,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"cosign": "cosigner@example.com"},
             form__registration_backend="email",
-            co_sign_data={**cosign_data, "version": "v2"},
+            co_sign_data=cosign_data,
         )
         email_form_options: Options = {
             "to_emails": ["foo@bar.nl", "bar@foo.nl"],

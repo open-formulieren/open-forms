@@ -65,8 +65,10 @@ class CoSignPrefillTests:
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "identifier": "999990676",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
             }
         )
@@ -75,8 +77,10 @@ class CoSignPrefillTests:
 
         submission.refresh_from_db()
         expected = {
+            "version": "v1",
             "plugin": plugin.identifier,
             "identifier": "999990676",
+            "co_sign_auth_attribute": "bsn",
             "representation": "C. F. Wiegman",
             "fields": {
                 "naam.voornamen": "Cornelia Francisca",
@@ -90,8 +94,10 @@ class CoSignPrefillTests:
     def test_incomplete_data_returned(self):
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "identifier": "999990676",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
             }
         )
@@ -100,9 +106,11 @@ class CoSignPrefillTests:
 
         submission.refresh_from_db()
         expected = {
+            "version": "v1",
             "plugin": plugin.identifier,
             "identifier": "999990676",
             "representation": "",
+            "co_sign_auth_attribute": "bsn",
             "fields": {},
         }
         self.assertEqual(submission.co_sign_data, expected)  # type: ignore
@@ -172,8 +180,10 @@ class CoSignPrefillEmptyConfigTests(TestCase):
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "identifier": "999990676",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
             }
         )
@@ -182,8 +192,10 @@ class CoSignPrefillEmptyConfigTests(TestCase):
 
         submission.refresh_from_db()
         expected = {
+            "version": "v1",
             "plugin": plugin.identifier,
             "identifier": "999990676",
+            "co_sign_auth_attribute": "bsn",
             "representation": "",
             "fields": {},
         }

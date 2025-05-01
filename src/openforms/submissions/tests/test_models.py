@@ -133,9 +133,11 @@ class SubmissionTests(TestCase):
         """
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "representation": "T. Hulk",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {
                     "firstName": "The",
                     "lastName": "Hulk",
@@ -149,8 +151,10 @@ class SubmissionTests(TestCase):
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
                 "representation": "T. Hulk",
             },
