@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase
 
 from jsonschema import Draft202012Validator
 
@@ -257,7 +257,7 @@ class GeneralComponentSchemaTests(SimpleTestCase):
         self.assertEqual(schema["description"], "This is a description")
 
 
-class RadioTests(TestCase):
+class RadioTests(SimpleTestCase):
     def test_manual_data_source(self):
         component: RadioComponent = {
             "label": "Radio label",
@@ -293,7 +293,7 @@ class RadioTests(TestCase):
         self.assertEqual(expected_schema, schema)
 
 
-class SelectTests(TestCase):
+class SelectTests(SimpleTestCase):
     def test_manual_data_source(self):
         component: SelectComponent = {
             "label": "Select label",
@@ -355,7 +355,7 @@ class SelectTests(TestCase):
             self.assertEqual(schema, expected_schema)
 
 
-class SelectBoxesTests(TestCase):
+class SelectBoxesTests(SimpleTestCase):
     def test_manual_data_source(self):
         component: SelectBoxesComponent = {
             "label": "Select boxes label",
@@ -584,3 +584,274 @@ class MapTests(SimpleTestCase):
 
         schema = as_json_schema(component)
         self.assertEqual(schema, expected_schema)
+
+
+class TextFieldTests(SimpleTestCase):
+    def test_validation_rules_are_added(self):
+        component: TextFieldComponent = {
+            "label": "Text field",
+            "key": "textfield",
+            "type": "textfield",
+            "validate": {"pattern": "^[A-Z]$", "maxLength": 10},
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertEqual(schema["pattern"], "^[A-Z]$")
+            self.assertEqual(schema["maxLength"], 10)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertEqual(schema["items"]["pattern"], "^[A-Z]$")
+            self.assertEqual(schema["items"]["maxLength"], 10)
+
+
+class TextAreaTests(SimpleTestCase):
+    def test_validation_rules_are_added(self):
+        component: TextFieldComponent = {
+            "label": "Text area",
+            "key": "textarea",
+            "type": "textarea",
+            "validate": {"pattern": "^[A-Z]$", "maxLength": 10},
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertEqual(schema["pattern"], "^[A-Z]$")
+            self.assertEqual(schema["maxLength"], 10)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertEqual(schema["items"]["pattern"], "^[A-Z]$")
+            self.assertEqual(schema["items"]["maxLength"], 10)
+
+
+class PostcodeTests(SimpleTestCase):
+    def test_includes_pattern_by_default(self):
+        component: Component = {
+            "label": "Postcode",
+            "key": "postcode",
+            "type": "postcode",
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertIn("pattern", schema)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertIn("pattern", schema["items"])
+
+    def test_includes_custom_pattern(self):
+        component: Component = {
+            "label": "Postcode",
+            "key": "postcode",
+            "type": "postcode",
+            "validate": {"pattern": r"\d{4} [A-Z]{2}"},
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertEqual(schema["pattern"], r"\d{4} [A-Z]{2}")
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertEqual(schema["items"]["pattern"], r"\d{4} [A-Z]{2}")
+
+
+class PhoneNumberTests(SimpleTestCase):
+    def test_includes_pattern_by_default(self):
+        component: Component = {
+            "label": "Phone number",
+            "key": "phonenumber",
+            "type": "phoneNumber",
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertIn("pattern", schema)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertIn("pattern", schema["items"])
+
+    def test_includes_custom_pattern(self):
+        component: Component = {
+            "label": "Phone number",
+            "key": "phonenumber",
+            "type": "phoneNumber",
+            "validate": {"pattern": r"\d{10}"},
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertEqual(schema["pattern"], r"\d{10}")
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertEqual(schema["items"]["pattern"], r"\d{10}")
+
+
+class NumberTests(SimpleTestCase):
+    def test_includes_minimum_maximum_values(self):
+        component: Component = {
+            "label": "Number",
+            "key": "number",
+            "type": "number",
+            "validate": {"min": 10, "max": 20},
+        }
+
+        with self.subTest("single"):
+            schema = as_json_schema(component)
+            self.assertEqual(schema["minimum"], 10)
+            self.assertEqual(schema["maximum"], 20)
+
+        with self.subTest("multiple"):
+            component["multiple"] = True
+            schema = as_json_schema(component)
+            self.assertEqual(schema["items"]["minimum"], 10)
+            self.assertEqual(schema["items"]["maximum"], 20)
+
+
+class CurrencyTests(SimpleTestCase):
+    def test_includes_minimum_maximum_values(self):
+        component: Component = {
+            "label": "Currency",
+            "key": "currency",
+            "type": "currency",
+            "validate": {"min": 10, "max": 20},
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema["minimum"], 10)
+        self.assertEqual(schema["maximum"], 20)
+
+
+class EditGridTests(SimpleTestCase):
+    def test_generate_schema(self):
+        component: EditGridComponent = {
+            "key": "repeatingGroup",
+            "label": "Repeating Group Outer",
+            "type": "editgrid",
+            "components": [
+                {
+                    "key": "repeatingGroupInner",
+                    "label": "Repeating Group Inner",
+                    "type": "editgrid",
+                    "components": [
+                        {
+                            "key": "textFieldInner",
+                            "label": "Text field",
+                            "type": "textfield",
+                        },
+                    ],
+                },
+                {
+                    "key": "emailAddress",
+                    "label": "Email address",
+                    "type": "email",
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "Repeating Group Outer",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "repeatingGroupInner": {
+                        "title": "Repeating Group Inner",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "textFieldInner": {
+                                    "type": "string",
+                                    "title": "Text field",
+                                },
+                            },
+                            "required": ["textFieldInner"],
+                            "additionalProperties": False,
+                        },
+                    },
+                    "emailAddress": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email address",
+                    },
+                },
+                "required": ["repeatingGroupInner", "emailAddress"],
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_includes_maximum_length(self):
+        component: EditGridComponent = {
+            "key": "repeatingGroup",
+            "label": "Repeating Group",
+            "type": "editgrid",
+            "components": [
+                {
+                    "key": "textField",
+                    "label": "Text field",
+                    "type": "textfield",
+                }
+            ],
+            "validate": {"maxLength": 10},
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema["maxItems"], 10)
+
+
+class AddressNLTests(SimpleTestCase):
+    def test_includes_pattern_by_default(self):
+        component: AddressNLComponent = {
+            "label": "Address NL",
+            "key": "addressNL",
+            "type": "addressNL",
+            "deriveAddress": False,
+        }
+
+        schema = as_json_schema(component)
+        for field in ("houseLetter", "houseNumber", "houseNumberAddition", "postcode"):
+            self.assertIn("pattern", schema["properties"][field])
+
+    def test_includes_custom_patterns(self):
+        component: AddressNLComponent = {
+            "label": "Address NL",
+            "key": "addressNL",
+            "type": "addressNL",
+            "deriveAddress": False,
+            "openForms": {
+                "components": {
+                    "postcode": {
+                        "validate": {
+                            "pattern": r"^1234 [A-Z]{2}$",
+                        },
+                        "translatedErrors": {},
+                    },
+                    "city": {
+                        "validate": {"pattern": r"Amsterdam"},
+                        "translatedErrors": {},
+                    },
+                }
+            },
+        }
+
+        schema = as_json_schema(component)
+
+        self.assertEqual(
+            schema["properties"]["postcode"]["pattern"], r"^1234 [A-Z]{2}$"
+        )
+        self.assertEqual(schema["properties"]["city"]["pattern"], r"Amsterdam")
