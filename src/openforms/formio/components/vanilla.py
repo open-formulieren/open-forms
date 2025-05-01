@@ -29,7 +29,6 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
 from openforms.typing import JSONObject
@@ -727,13 +726,13 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     @staticmethod
     def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
         label = component.get("label", "Select boxes")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["values"]
 
         base = {"title": label, "type": "object"}
-        if data_src != DataSrcOptions.variable:
-            # Only add properties if the data source IS NOT another variable, because
-            # component[values] is not updated when it IS. So it does not make sense to
-            # add properties in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             properties = {
                 options["value"]: {"type": "boolean"} for options in component["values"]
             }
@@ -802,13 +801,13 @@ class Select(BasePlugin[SelectComponent]):
     def as_json_schema(component: SelectComponent) -> JSONObject:
         multiple = component.get("multiple", False)
         label = component.get("label", "Select")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["data"]["values"]
 
         base = {"type": "string"}
-        if data_src != DataSrcOptions.variable:
-            # Only add properties if the data source IS NOT another variable, because
-            # component[data][values] is not updated when it IS. So it does not make
-            # sense to add properties in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             choices = [options["value"] for options in component["data"]["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices
@@ -895,13 +894,13 @@ class Radio(BasePlugin[RadioComponent]):
     @staticmethod
     def as_json_schema(component: RadioComponent) -> JSONObject:
         label = component.get("label", "Radio")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["values"]
 
         base = {"title": label, "type": "string"}
-        if data_src != DataSrcOptions.variable:
-            # Only add enum if the data source IS NOT another variable, because
-            # component[values] is not updated when it IS. So it does not make sense to
-            # add a list of choices to the enum in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices

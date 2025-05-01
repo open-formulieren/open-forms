@@ -1,10 +1,11 @@
 from typing import Iterator, Sequence
 
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioData, rewrite_formio_components
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
 from openforms.variables.base import BaseStaticVariable
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
 from ..formio.datastructures import FormioConfigurationWrapper
@@ -50,11 +51,20 @@ def generate_json_schema(
     # Note: we generate a 'fake' submission here to get the total component
     # configuration
     submission = SubmissionFactory(form=form)
+    state = submission.load_submission_value_variables_state()
+    new_configuration = rewrite_formio_components(
+        submission.total_configuration_wrapper, submission, state.to_python()
+    )
 
     requested_variables_schema = FormioData()
     for variable in _iter_form_variables(form, additional_variables_registry):
         if variable.key not in limit_to_variables:
             continue
+
+        # Add the new total configuration to the form definition of the variable. Note
+        # that we are muting the instance without persisting to the database.
+        if variable.source == FormVariableSources.component:
+            variable.form_definition.configuration = new_configuration.configuration
 
         process_variable_schema_and_add_to_schema(
             variable.key,
@@ -62,6 +72,7 @@ def generate_json_schema(
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
+
 
     # Result
     schema = {
