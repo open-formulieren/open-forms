@@ -244,6 +244,19 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
         self.assertComponentSchemaIsValid(component=component, multiple=True)
 
 
+class GeneralComponentSchemaTests(SimpleTestCase):
+    def test_description(self):
+        component: Component = {
+            "label": "This is a label",
+            "key": "textfield",
+            "type": "textfield",
+            "description": "This is a description",
+        }
+
+        schema = as_json_schema(component)
+        self.assertEqual(schema["description"], "This is a description")
+
+
 class RadioTests(TestCase):
     def test_manual_data_source(self):
         component: RadioComponent = {
