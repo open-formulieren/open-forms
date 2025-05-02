@@ -82,13 +82,15 @@ extend-select = [
     # "DJ",  # django
     # "LOG", # logging
     # "G",
-    "I",   # isort
+    "I",     # isort
     # "E",   # pycodestyle
-    "F",   # pyflakes
+    "F",     # pyflakes
     # "PERF",# perflint
-    "B006",# flake8-bugbear
+    "B006",  # flake8-bugbear
     "B010",
     # "B904",
+    "TID251",# tidy-imports
+    "TID253",
 ]
 
 [tool.ruff.lint.isort]
@@ -104,3 +106,12 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 "django" = ["django"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+banned-module-level-imports = [
+    "idna", # IO hit
+    "weasyprint",  # IO hit
+]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"logging".msg = "Use `structlog.stdlib.get_logger(__name__)` instead of the stdlib logging module."
