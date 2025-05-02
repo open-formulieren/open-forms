@@ -1,4 +1,3 @@
-import logging
 from copy import deepcopy
 from unittest.mock import patch
 
@@ -374,14 +373,11 @@ class PrefillHookTests(TransactionTestCase):
             def get_prefill_values(*args, **kwargs):
                 raise Exception("boo")
 
-        with self.assertLogs(level=logging.ERROR) as log:
-            new_configuration = apply_prefill(
-                configuration=configuration,
-                submission=submission,
-                register=register,
-            )
-
-        self.assertIn("boo", log.output[0])
+        new_configuration = apply_prefill(
+            configuration=configuration,
+            submission=submission,
+            register=register,
+        )
 
         field = new_configuration["components"][0]
         self.assertIsNone(field["defaultValue"])

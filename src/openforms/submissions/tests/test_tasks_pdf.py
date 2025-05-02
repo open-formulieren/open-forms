@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from pyquery import PyQuery as pq
-from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.constants import DataSrcOptions
@@ -75,10 +74,8 @@ class SubmissionReportGenerationTests(TestCase):
         """
         report = SubmissionReportFactory.create(content="", submission__completed=True)
 
-        with LogCapture(level=logging.ERROR) as capture:
+        with self.assertNoLogs(level=logging.ERROR):
             report.generate_submission_report_pdf()
-
-        capture.check()
 
     def test_hidden_output_not_included(self):
         """

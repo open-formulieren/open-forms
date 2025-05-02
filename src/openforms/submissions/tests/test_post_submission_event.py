@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
-from testfixtures import LogCapture
 
 from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -23,7 +22,6 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
 from openforms.tests.utils import log_flaky
-from openforms.utils.tests.logging import ensure_logger_level
 
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from ..models import SubmissionReport
@@ -1232,19 +1230,14 @@ class PaymentFlowTests(TestCase):
                 "openforms.registrations.tasks.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(wait_for_payment_to_register=True),
             ),
-            ensure_logger_level("DEBUG"),
-            LogCapture() as logs,
         ):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         mock_registration.assert_not_called()
-        logs.check_present(
-            (
-                "openforms.registrations.tasks",
-                "DEBUG",
-                f"Skipping registration for submission '{submission}' as the payment hasn't been received yet.",
-            )
+        log_event = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "registration_skipped_not_yet_paid"
         )
+        self.assertEqual(log_event.count(), 1)
 
     def test_payment_done_and_should_wait_for_payment(
         self,

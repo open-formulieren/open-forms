@@ -1,4 +1,3 @@
-import logging
 import os
 from unittest.mock import patch
 
@@ -7,7 +6,6 @@ from django.test import TestCase, override_settings, tag
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
-from testfixtures import LogCapture
 
 from openforms.authentication.service import AuthAttribute
 from openforms.forms.tests.factories import (
@@ -200,26 +198,15 @@ class SubmissionTests(TestCase):
         # delete the submission, it must cascade
         exc = Exception("Delete failed")
 
-        with patch(
-            "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
-        ) as mock_delete:
-            with LogCapture(level=logging.WARNING) as capture:
-                with self.captureOnCommitCallbacks(execute=True):
-                    submission.delete()
+        with (
+            patch(
+                "django.core.files.storage.FileSystemStorage.delete", side_effect=exc
+            ) as mock_delete,
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            submission.delete()
 
         mock_delete.assert_called_once_with(attachment.content.name)
-        capture.check(
-            (
-                "openforms.utils.files",
-                "WARNING",
-                "File delete on model %r (pk=%s, field=content, path=%s) failed: Delete failed"
-                % (
-                    SubmissionFileAttachment,
-                    attachment.pk,
-                    attachment.content.path,
-                ),
-            ),
-        )
 
         self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
         self.assertFalse(

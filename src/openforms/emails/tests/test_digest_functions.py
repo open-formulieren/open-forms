@@ -800,7 +800,7 @@ class InvalidLogicRulesTests(TestCase):
         self.assertEqual(len(invalid_logic_rules), 0)
         self.assertFalse(logs_exist)
 
-    def test_invalid_logic_rules_with_nested_key_are_only_logged(self):
+    def test_invalid_logic_rules_with_nested_key_are_not_reported(self):
         form = FormFactory.create()
         FormVariableFactory.create(
             form=form,
@@ -828,24 +828,9 @@ class InvalidLogicRulesTests(TestCase):
             ],
         )
 
-        with self.assertLogs() as logs:
-            collect_invalid_logic_rules()
+        invalid_logic_rules = collect_invalid_logic_rules()
 
-        logs_messages = [log.getMessage() for log in logs.records]
-
-        self.assertEqual(len(logs.records), 3)
-        self.assertIn(
-            f"possible invalid variable reference (foo.wrong) in logic of form {form.admin_name}",
-            logs_messages,
-        )
-        self.assertIn(
-            f"possible invalid variable reference (foo.bar) in logic of form {form.admin_name}",
-            logs_messages,
-        )
-        self.assertIn(
-            f"possible invalid variable reference (foo.0.bar) in logic of form {form.admin_name}",
-            logs_messages,
-        )
+        self.assertEqual(invalid_logic_rules, [])
 
     def test_invalid_logic_rules_are_collected_and_not_logged(self):
         form = FormFactory.create()
@@ -939,7 +924,7 @@ class InvalidLogicRulesTests(TestCase):
         )
 
     @tag("gh-4400")
-    def test_invalid_logic_rules_with_exceptions_are_both_reported_and_logged(self):
+    def test_invalid_logic_rules_with_exceptions_are_reported(self):
         form = FormFactory.create()
         FormLogicFactory(
             form=form,
@@ -947,16 +932,8 @@ class InvalidLogicRulesTests(TestCase):
             actions=[],
         )
 
-        with self.assertLogs() as logs:
-            invalid_logic_rules = collect_invalid_logic_rules()
+        invalid_logic_rules = collect_invalid_logic_rules()
 
-        logs_messages = [log.getMessage() for log in logs.records]
-
-        self.assertEqual(len(logs.records), 1)
-        self.assertIn(
-            f"malformed/unsupported JsonLogic expression in form {form.admin_name}: {{'custom_operator': [5, 3]}}",
-            logs_messages,
-        )
         self.assertEqual(len(invalid_logic_rules), 1)
         self.assertIn(
             InvalidLogicRule(
@@ -970,7 +947,7 @@ class InvalidLogicRulesTests(TestCase):
         )
 
     @tag("gh-4400")
-    def test_invalid_logic_actions_with_exceptions_are_both_reported_and_logged(self):
+    def test_invalid_logic_actions_with_exceptions_are_reported(self):
         form = FormFactory.create()
         FormVariableFactory.create(
             form=form,
@@ -995,16 +972,8 @@ class InvalidLogicRulesTests(TestCase):
             ],
         )
 
-        with self.assertLogs() as logs:
-            invalid_logic_rules = collect_invalid_logic_rules()
+        invalid_logic_rules = collect_invalid_logic_rules()
 
-        logs_messages = [log.getMessage() for log in logs.records]
-
-        self.assertEqual(len(logs.records), 1)
-        self.assertIn(
-            f"malformed/unsupported JsonLogic expression in form {form.admin_name}: {{'custom_operator': [5, 3]}}",
-            logs_messages,
-        )
         self.assertEqual(len(invalid_logic_rules), 1)
         self.assertIn(
             InvalidLogicRule(

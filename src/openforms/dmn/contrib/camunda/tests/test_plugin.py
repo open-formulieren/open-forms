@@ -14,7 +14,6 @@ You can also point to a different host/URL and/or credentials through environmen
 variables, see :mod:`openforms.contrib.camunda.tests.utils`.
 """
 
-import logging
 from functools import partial
 from unittest.mock import patch
 
@@ -22,7 +21,6 @@ from django.test import TestCase
 
 import requests_mock
 from lxml import etree
-from testfixtures import LogCapture
 
 from openforms.contrib.camunda.tests.utils import get_camunda_client, require_camunda
 
@@ -101,22 +99,12 @@ class CamundaDMNTests(TestCase):
 
     def test_evaluation_bad_input(self):
         with self.subTest("Camunda 500"):
-            with LogCapture(
-                level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
-            ) as capture:
-                result = _evaluate_dmn(
-                    "invoiceClassification",
-                    # invoiceCategory value is missing
-                    input_values={"amount": 30.0},
-                )
+            # invoiceCategory value is missing
+            result = _evaluate_dmn(
+                "invoiceClassification", input_values={"amount": 30.0}
+            )
 
             self.assertEqual(result, {})
-
-            self.assertEqual(len(capture.records), 2)
-            self.assertEqual(
-                capture.records[0].msg, "Error occurred while calling Camunda API"
-            )
-            self.assertRegex(capture.records[1].msg, r"^Camunda error information: .*")
 
         with (
             self.subTest("Mocked 500 without JSON response body"),
@@ -132,25 +120,12 @@ class CamundaDMNTests(TestCase):
                 text="errored",
             )
 
-            with LogCapture(
-                level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
-            ) as capture:
-                result = _evaluate_dmn(
-                    "invoiceClassification",
-                    # invoiceCategory value is missing
-                    input_values={"amount": 30.0},
-                )
+            # invoiceCategory value is missing
+            result = _evaluate_dmn(
+                "invoiceClassification", input_values={"amount": 30.0}
+            )
 
             self.assertEqual(result, {})
-
-            self.assertEqual(len(capture.records), 2)
-            self.assertEqual(
-                capture.records[0].msg, "Error occurred while calling Camunda API"
-            )
-            self.assertEqual(
-                capture.records[1].msg,
-                "Could not decode JSON data in error response body",
-            )
 
     def test_get_inputs_outputs(self):
         params = plugin.get_decision_definition_parameters(
