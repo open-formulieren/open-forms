@@ -20,6 +20,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
     def test_submission_id_not_in_session(self):
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "representation": "B. My Tires",
@@ -41,6 +42,7 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
         """
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "representation": "B. My Tires",
@@ -140,8 +142,10 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
+    @override_settings(ALLOWED_HOSTS=["testserver", "localhost"])
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
+            form_url="http://localhost/some-form",
             form__authentication_backends=["digid"],
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}

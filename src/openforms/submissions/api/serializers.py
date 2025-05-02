@@ -15,6 +15,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
+from typing_extensions import deprecated
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.utils import mark_experimental
@@ -489,6 +490,7 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
         return GlobalConfiguration.get_solo().main_website
 
 
+@deprecated("Cosign v1 is deprecated")
 class SubmissionCoSignStatusSerializer(serializers.ModelSerializer):
     co_signed = serializers.SerializerMethodField(
         label=_("is co-signed?"),

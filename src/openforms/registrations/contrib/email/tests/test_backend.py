@@ -11,6 +11,7 @@ from django.utils.translation import gettext as _
 import tablib
 from furl import furl
 
+from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
@@ -23,6 +24,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.attachments import attach_uploads_to_submission_step
 from openforms.submissions.constants import PostSubmissionEvents
+from openforms.submissions.cosigning import CosignData
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -124,6 +126,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__internal_name="MyInternalName",
             form__registration_backend="email",
             co_sign_data={
+                "version": "v1",
                 "plugin": "demo",
                 "representation": "Demo Person",
                 "identifier": "111222333",
@@ -223,6 +226,48 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         self.assertIn(f"{expected_download_url_1} (my-foo.bin)", message_text)
         self.assertIn(f"{expected_download_url_2} (my-bar.txt)", message_text)
+
+    def test_submission_with_cosign_v2(self):
+        cosign_data: CosignData = {
+            "version": "v2",
+            "plugin": "demo",
+            "attribute": AuthAttribute.bsn,
+            "value": "111222333",
+            "cosign_date": timezone.now().isoformat(),
+        }
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            with_public_registration_reference=True,
+            components_list=[
+                {"key": "cosign", "type": "cosign", "label": "Cosigner"},
+            ],
+            submitted_data={"cosign": "cosigner@example.com"},
+            form__registration_backend="email",
+            co_sign_data=cosign_data,
+        )
+        email_form_options: Options = {
+            "to_emails": ["foo@bar.nl", "bar@foo.nl"],
+            "attach_files_to_email": None,
+        }
+        plugin = EmailRegistration("email")
+
+        updated_template = TEST_TEMPLATE_NL.replace(
+            "{{ co_signer }}", "{{ co_signer.value }}"
+        )
+        with patch(
+            "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
+            return_value=EmailConfig(
+                subject="Subject: {{ form_name }} - submission {{ public_reference }}",
+                content_html=updated_template,
+                content_text=updated_template,
+            ),
+        ):
+            plugin.register_submission(submission, email_form_options)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message_text = _get_sent_email()[1]
+        self.assertIn("Mede-ondertekend door: 111222333", message_text)
 
     def test_submission_with_email_backend_using_to_emails_from_variable(self):
         submission = SubmissionFactory.from_components(

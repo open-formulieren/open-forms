@@ -20,9 +20,11 @@ class OnCosignTests(TestCase):
                 {"key": "mainEmail", "type": "email", "confirmationRecipient": True},
             ],
             co_sign_data={
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",
+                "cosign_date": "2024-03-27T14:00:00Z",
             },
             form__send_confirmation_email=True,
             completed=True,
@@ -64,9 +66,11 @@ class OnCosignTests(TestCase):
                 {"key": "mainEmail", "type": "email", "confirmationRecipient": True},
             ],
             co_sign_data={
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",
+                "cosign_date": "2024-03-27T14:00:00Z",
             },
             form__send_confirmation_email=True,
             completed=True,

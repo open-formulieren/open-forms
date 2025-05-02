@@ -44,8 +44,10 @@ class CoSignPrefillTests(TestCase):
     def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
             co_sign_data={
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "identifier": "999992314",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
             }
         )
@@ -55,9 +57,11 @@ class CoSignPrefillTests(TestCase):
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": plugin.identifier,
                 "identifier": "999992314",
                 "representation": "M. Maykin",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {
                     "voornamen": "Media",
                     "geslachtsnaam": "Maykin",

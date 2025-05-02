@@ -191,6 +191,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             self.assertEqual(
                 submission.co_sign_data,
                 {
+                    "version": "v1",
                     "plugin": "demo",
                     "representation": "",
                     "identifier": "111222333",

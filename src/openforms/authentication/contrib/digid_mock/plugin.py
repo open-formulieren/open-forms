@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +8,7 @@ from rest_framework.reverse import reverse
 from openforms.contrib.digid_eherkenning.utils import get_digid_logo
 from openforms.forms.models import Form
 
-from ...base import BasePlugin, LoginLogo
+from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -35,7 +33,7 @@ class DigidMockAuthentication(BasePlugin):
         url = f"{url}?{urlencode(params)}"
         return HttpResponseRedirect(url)
 
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         if not (bsn := request.GET.get("bsn")):
             raise InvalidCoSignData("Missing 'bsn' parameter/value")
         return {

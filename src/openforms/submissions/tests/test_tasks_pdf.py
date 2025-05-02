@@ -664,6 +664,7 @@ class SubmissionReportCoSignTests(TestCase):
             content="",
             submission__completed=True,
             submission__co_sign_data={
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "co_sign_auth_attribute": "bsn",
@@ -702,6 +703,7 @@ class SubmissionReportCoSignTests(TestCase):
             content="",
             submission__completed=True,
             submission__co_sign_data={
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "123456782",
                 "co_sign_auth_attribute": "bsn",
@@ -739,6 +741,7 @@ class SubmissionReportCoSignTests(TestCase):
             content="",
             submission__completed=True,
             submission__co_sign_data={
+                "version": "v2",
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",

@@ -487,6 +487,7 @@ class CoSignLoginAuthenticationTests(
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": "eherkenning",
                 "identifier": "123456782",
                 "representation": "",

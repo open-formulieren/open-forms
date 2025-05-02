@@ -502,6 +502,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
         self.assertEqual(
             submission.co_sign_data,
             {
+                "version": "v1",
                 "plugin": "digid",
                 "identifier": "12345678",
                 "representation": "",

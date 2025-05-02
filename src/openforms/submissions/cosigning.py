@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import logging
 from functools import cached_property
-from typing import TYPE_CHECKING, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Literal, NotRequired, TypedDict
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.typing import FormAuth
@@ -42,6 +42,7 @@ class CosignV1Data(TypedDict):
     :attr:`openforms.submissions.models.Submission.co_sign_data`.
     """
 
+    version: Literal["v1"]
     plugin: str
     identifier: str
     representation: NotRequired[str]
@@ -58,6 +59,7 @@ class CosignV2Data(FormAuth):
     contains the auth plugin, attribute and identifier value.
     """
 
+    version: Literal["v2"]
     cosign_date: NotRequired[str]
     """
     ISO-8601 formatted datetime indicating when the cosigner confirmed the submission.

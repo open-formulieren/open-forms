@@ -1,5 +1,3 @@
-from typing import Any
-
 from django import forms
 from django.http import (
     HttpRequest,
@@ -13,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from openforms.forms.models import Form
 from openforms.utils.validators import BSNValidator
 
-from ...base import BasePlugin
+from ...base import BasePlugin, CosignSlice
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -66,7 +64,7 @@ class DemoBaseAuthentication(BasePlugin):
         }
         return render(request, "authentication/contrib/demo/login.html", context)
 
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
         submitted = self.form_class(request.POST)
         if not submitted.is_valid():
             raise InvalidCoSignData(f"Validation errors: {submitted.errors}")

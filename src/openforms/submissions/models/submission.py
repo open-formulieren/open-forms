@@ -4,7 +4,8 @@ import logging
 import uuid
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from datetime import datetime
+from typing import TYPE_CHECKING, Mapping, assert_never
 
 from django.conf import settings
 from django.db import models, transaction
@@ -33,11 +34,12 @@ from ..constants import (
     RegistrationStatuses,
     SubmissionValueVariableSources,
 )
-from ..cosigning import CosignState
+from ..cosigning import CosignData, CosignState
 from ..pricing import get_submission_price
 from ..query import SubmissionQuerySet
 from ..serializers import CoSignDataSerializer
 from .submission_step import SubmissionStep
+from .typing import SubmissionCosignData
 
 if TYPE_CHECKING:
     from openforms.authentication.models import AuthInfo, RegistratorInfo
@@ -706,13 +708,34 @@ class Submission(models.Model):
         values_state = self.load_submission_value_variables_state()
         return values_state.get_data()
 
-    def get_co_signer(self) -> str:
-        # XXX only deals with cosign v1
+    def get_co_signer(self) -> str | SubmissionCosignData:
+        # Legacy cosign returns an empty string, cosign v2 returns SubmissionCosignData
         if not self.co_sign_data:
             return ""
-        if not (co_signer := self.co_sign_data.get("representation", "")):
-            logger.warning("Incomplete co-sign data for submission %s", self.uuid)
-        return co_signer
+
+        co_sign_data: CosignData = self.co_sign_data
+
+        match co_sign_data:
+            # v2 cosign
+            case {"version": "v2"}:
+                timestamp = co_sign_data.get("cosign_date")
+                _co_sign_data: SubmissionCosignData = {
+                    **co_sign_data,
+                    "cosign_date": datetime.fromisoformat(timestamp)
+                    if timestamp
+                    else None,
+                }
+                return _co_sign_data
+
+            # v1 cosign
+            case {"version": "v1"}:
+                if not (representation := self.co_sign_data.get("representation", "")):
+                    logger.warning(
+                        "Incomplete co-sign data for submission %s", self.uuid
+                    )
+                return representation
+            case _:  # pragma: no cover
+                assert_never(co_sign_data)
 
     def get_attachments(self) -> SubmissionFileAttachmentQuerySet:
         from .submission_files import SubmissionFileAttachment

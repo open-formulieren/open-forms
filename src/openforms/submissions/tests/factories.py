@@ -154,6 +154,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             cosign_complete=True,
             co_sign_data=factory.Dict(
                 {
+                    "version": "v2",
                     "plugin": "demo",
                     "attribute": AuthAttribute.bsn,
                     "value": "123456782",
