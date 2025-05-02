@@ -25,8 +25,9 @@ os.environ.setdefault("RELEASE", "dev")
 os.environ.setdefault("SDK_RELEASE", "latest")
 # otherwise the test suite is flaky due to logging config lookups to the DB in
 # non-DB test cases
-os.environ.setdefault("LOG_REQUESTS", "no")
+os.environ.setdefault("LOG_OUTGOING_REQUESTS", "no")
 os.environ.setdefault("LOG_STDOUT", "1")
+os.environ.setdefault("LOG_FORMAT_CONSOLE", "plain_console")
 os.environ.setdefault("VCR_RECORD_MODE", "once")
 
 os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
@@ -51,7 +52,7 @@ LOGGING["loggers"].update(
             "propagate": False,
         },
         "django.db.backends": {
-            "handlers": ["django"],
+            "handlers": ["json_file"],
             "level": "INFO",
             "propagate": False,
         },
@@ -60,7 +61,7 @@ LOGGING["loggers"].update(
         # Autoreload logs excessively, turn it down a bit.
         #
         "django.utils.autoreload": {
-            "handlers": ["django"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
