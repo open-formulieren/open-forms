@@ -30,7 +30,7 @@ from ....contrib.tests.saml_utils import (
     get_artifact_response,
     get_encrypted_attribute,
 )
-from .utils import TEST_FILES
+from .utils import TEST_FILES, mock_saml2_return_flow
 
 
 class EIDASConfigMixin:
@@ -207,28 +207,8 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
 @temp_private_root()
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    @patch(
-        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    )
-    @patch(
-        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-        return_value=True,
-    )
-    def test_receive_samlart_from_eHerkenning(
-        self,
-        m,
-        mock_verification,
-        mock_validation,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @mock_saml2_return_flow(mock_saml_art_verification=True)
+    def test_receive_samlart_from_eHerkenning(self, m):
         encrypted_attribute = _get_encrypted_attribute("123456782")
         m.post(
             "https://test-iwelcome.nl/broker/ars/1.13",
@@ -270,19 +250,8 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
         self.assertEqual(session_data["attribute"], AuthAttribute.pseudo)
         self.assertEqual(session_data["value"], "123456782")
 
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    def test_cancel_login(
-        self,
-        m,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @mock_saml2_return_flow(mock_saml_art_verification=False)
+    def test_cancel_login(self, m):
         m.post(
             "https://test-iwelcome.nl/broker/ars/1.13",
             content=_get_artifact_response("ArtifactResponseCancelLogin.xml"),
@@ -356,28 +325,8 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCas
         self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
         self.assertEqual(relay_state.args[CO_SIGN_PARAMETER], str(submission.uuid))
 
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    @patch(
-        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    )
-    @patch(
-        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-        return_value=True,
-    )
-    def test_return_with_samlart_from_eidas(
-        self,
-        m,
-        mock_verification,
-        mock_validation,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @mock_saml2_return_flow(mock_saml_art_verification=True)
+    def test_return_with_samlart_from_eidas(self, m):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
