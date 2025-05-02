@@ -92,6 +92,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
             f"{component['type']} is deprecated. Instead, define the "
             "'build_serializer_field' method on the specific component plugin.",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         # not considered a layout component (because it doesn't have children)

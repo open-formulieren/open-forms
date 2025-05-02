@@ -86,11 +86,15 @@ extend-select = [
     # "E",   # pycodestyle
     "F",     # pyflakes
     # "PERF",# perflint
-    "B006",  # flake8-bugbear
-    "B010",
+    "B",     # flake8-bugbear
     # "B904",
     "TID251",# tidy-imports
     "TID253",
+]
+ignore = [
+    "B017",
+    "B018",
+    "B904",
 ]
 
 [tool.ruff.lint.isort]

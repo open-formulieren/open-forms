@@ -190,6 +190,7 @@ class ImportExportAPITests(APITestCase):
         for imported, original in zip(
             imported_form.registration_backends.order_by("id"),
             original_registration_backends,
+            strict=False,
         ):
             self.assertEqual(imported.key, original.key)
             self.assertEqual(imported.name, original.name)

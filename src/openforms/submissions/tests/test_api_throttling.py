@@ -27,7 +27,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
 
         with freeze_time(initial_datetime) as frozen_datetime:
             # 10 requests per minute allowed
-            for i in range(10):
+            for _ in range(10):
                 submission = SubmissionFactory.create()
                 self._add_submission_to_session(submission)
                 endpoint = reverse(
@@ -75,7 +75,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
 
         with freeze_time(initial_datetime) as frozen_datetime:
             # 3 requests per minute allowed
-            for i in range(3):
+            for _ in range(3):
                 submission = SubmissionFactory.create()
                 self._add_submission_to_session(submission)
                 endpoint = reverse(

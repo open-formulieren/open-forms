@@ -32,7 +32,8 @@ class ListMixin(Generic[T], SerializerContextMixin):
 
     def get_serializer(self, *args, **kwargs):
         kwargs.setdefault("context", self.get_serializer_context())
-        return self.serializer_class(many=True, *args, **kwargs)
+        kwargs["many"] = True
+        return self.serializer_class(*args, **kwargs)
 
     def get_objects(self) -> Iterable[T]:
         raise NotImplementedError("You must implement the 'get_objects' method")

@@ -27,7 +27,8 @@ def _generate_description(tree: JSONLogicExpressionTree, root=False) -> str:
         items = [_generate_description(child) for child in tree]
         wrappers = ["{}" if isinstance(child, Primitive) else "({})" for child in tree]
         joined_descriptions = ", ".join(
-            wrapper.format(description) for description, wrapper in zip(items, wrappers)
+            wrapper.format(description)
+            for description, wrapper in zip(items, wrappers, strict=False)
         )
         return f"[{joined_descriptions}]"
 
@@ -71,7 +72,7 @@ class TemplatedArgs:
         assert (num_args := len(args)) == (num_names := len(self.arg_names)), (
             f"Unexpected number of operation arguments, got {num_args}, expected {num_names}"
         )
-        return {name: value for name, value in zip(self.arg_names, args)}
+        return {name: value for name, value in zip(self.arg_names, args, strict=False)}
 
     def __call__(self, operation: Operation, for_root: bool = False) -> str:
         args = [_generate_description(argument) for argument in operation.arguments]

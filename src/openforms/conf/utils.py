@@ -90,7 +90,8 @@ def config(option: str, default: Any = undefined, *args, **kwargs):
 
     if default is not undefined and default is not None:
         kwargs.setdefault("cast", type(default))
-    return _config(option, default=default, *args, **kwargs)
+    kwargs["default"] = default
+    return _config(option, *args, **kwargs)
 
 
 def get_sentry_integrations() -> list:

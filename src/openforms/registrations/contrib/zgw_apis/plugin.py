@@ -249,6 +249,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "Using the zaaktype URL option is deprecated and will be removed in "
                 "Open Forms 4.0.",
                 DeprecationWarning,
+                stacklevel=2,
             )
             zaaktype_url = options["zaaktype"]
 
@@ -343,6 +344,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "Using the informatieobjecttype URL option is deprecated and will "
                     "be removed in Open Forms 4.0.",
                     DeprecationWarning,
+                    stacklevel=2,
                 )
                 informatieobjecttype_url = options["informatieobjecttype"]
 

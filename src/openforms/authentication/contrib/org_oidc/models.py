@@ -20,6 +20,7 @@ class OrgOpenIDConnectConfig(OpenIDConnectConfig):
             warnings.warn(
                 "Legacy DigiD-eHerkenning callback endpoints will be removed in 3.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             return "org-oidc-callback"
         return "oidc_authentication_callback"

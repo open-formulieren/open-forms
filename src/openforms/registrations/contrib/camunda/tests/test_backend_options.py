@@ -261,7 +261,9 @@ class FormRegistrationBackendOptionsTests(APITestCase):
             },
         ]
 
-        for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
+        for invalid_var, expected_error_codes in zip(
+            invalid_vars, expected_errors, strict=False
+        ):
             with self.subTest(invalid_var=invalid_var):
                 data = {
                     "registrationBackends": [
@@ -320,7 +322,9 @@ class FormRegistrationBackendOptionsTests(APITestCase):
             },
         ]
 
-        for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
+        for invalid_var, expected_error_codes in zip(
+            invalid_vars, expected_errors, strict=False
+        ):
             with self.subTest(invalid_var=invalid_var):
                 data = {
                     "registrationBackends": [

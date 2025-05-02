@@ -67,7 +67,8 @@ class ModelTranslationsSerializer(serializers.Serializer):
         if source and source != "*":
             raise TypeError("Only source='*' is supported.")
 
-        super().__init__(source="*", *args, **kwargs)
+        kwargs["source"] = "*"
+        super().__init__(*args, **kwargs)
 
     def get_fields(self):
         fields = {}

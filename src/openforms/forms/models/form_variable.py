@@ -169,7 +169,7 @@ class FormVariableManager(models.Manager["FormVariable"]):
 
             def _add_variable(variable: FormVariable):
                 form_specific_variable = copy(variable)
-                form_specific_variable.form_id = form_id
+                form_specific_variable.form_id = form_id  # noqa: B023
                 to_upsert.append(form_specific_variable)
 
             # check whether we need to create or update the variable by comparing against
