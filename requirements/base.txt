@@ -9,7 +9,9 @@ ape-pie==0.1.0
     #   -r requirements/base.in
     #   zgw-consumers
 asgiref==3.7.2
-    # via django
+    # via
+    #   django
+    #   django-structlog
 asn1crypto==1.5.1
     # via webauthn
 attrs==23.2.0
@@ -115,6 +117,7 @@ django==4.2.20
     #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
+    #   django-structlog
     #   django-timeline-logger
     #   django-tinymce
     #   django-treebeard
@@ -170,8 +173,10 @@ django-hijack==3.4.1
     # via -r requirements/base.in
 django-import-export==3.3.7
     # via -r requirements/base.in
-django-ipware==5.0.0
-    # via django-axes
+django-ipware==7.0.1
+    # via
+    #   django-axes
+    #   django-structlog
 django-jsonform==2.21.2
     # via
     #   -r requirements/base.in
@@ -217,6 +222,8 @@ django-solo==2.3.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-structlog==9.1.1
+    # via -r requirements/base.in
 django-timeline-logger==4.0.0
     # via -r requirements/base.in
 django-tinymce==4.1.0
@@ -415,6 +422,8 @@ python-dotenv==1.0.1
     # via
     #   -r requirements/base.in
     #   pydantic-settings
+python-ipware==3.0.0
+    # via django-ipware
 python-magic==0.4.27
     # via -r requirements/base.in
 pytz==2024.1
@@ -509,6 +518,8 @@ sqlparse==0.5.0
     # via django
 stringcase==1.2.0
     # via o365
+structlog==25.2.0
+    # via django-structlog
 tablib==3.5.0
     # via
     #   -r requirements/base.in

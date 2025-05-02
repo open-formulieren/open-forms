@@ -22,6 +22,7 @@ asgiref==3.7.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django
+    #   django-structlog
 asn1crypto==1.5.1
     # via
     #   -c requirements/base.txt
@@ -192,6 +193,7 @@ django==4.2.20
     #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
+    #   django-structlog
     #   django-timeline-logger
     #   django-tinymce
     #   django-treebeard
@@ -283,10 +285,11 @@ django-import-export==3.3.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-ipware==5.0.0
+django-ipware==7.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-structlog
 django-jsonform==2.21.2
     # via
     #   -c requirements/base.txt
@@ -359,6 +362,10 @@ django-solo==2.3.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-structlog==9.1.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-timeline-logger==4.0.0
     # via
     #   -c requirements/base.txt
@@ -776,6 +783,11 @@ python-dotenv==1.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   pydantic-settings
+python-ipware==3.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-ipware
 python-magic==0.4.27
     # via
     #   -c requirements/base.txt
@@ -971,6 +983,11 @@ stringcase==1.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   o365
+structlog==25.2.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-structlog
 tablib==3.5.0
     # via
     #   -c requirements/base.txt
@@ -983,8 +1000,6 @@ tabulate==0.8.9
 tblib==1.7.0
     # via -r requirements/test-tools.in
 tenacity==8.2.3
-    # via -r requirements/test-tools.in
-testfixtures==6.17.1
     # via -r requirements/test-tools.in
 tinycss2==1.1.0
     # via
