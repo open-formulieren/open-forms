@@ -31,7 +31,11 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
         )
         values = plugin.get_prefill_values(
             submission,
-            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+            [
+                Attributes.bezoekadres_straatnaam,
+                Attributes.kvkNummer,
+                "invalidAttribute",
+            ],
         )
         expected = {
             "bezoekadres.straatnaam": "Abebe Bikilalaan",
