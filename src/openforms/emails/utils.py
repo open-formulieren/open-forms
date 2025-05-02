@@ -1,4 +1,3 @@
-import logging
 import re
 from typing import Any, Sequence
 from urllib.parse import urlsplit
@@ -14,8 +13,6 @@ from openforms.config.models import GlobalConfiguration, Theme
 from openforms.template import openforms_backend, render_from_string
 
 from .context import get_wrapper_context
-
-logger = logging.getLogger(__name__)
 
 MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
 

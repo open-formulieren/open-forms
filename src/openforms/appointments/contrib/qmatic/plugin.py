@@ -1,5 +1,4 @@
 import json
-import logging
 from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
@@ -12,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from dateutil.parser import isoparse
 from requests.exceptions import RequestException
 
@@ -30,18 +30,18 @@ from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from .exceptions import GracefulQmaticException, QmaticException
 from .models import QmaticConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 _CustomerDetails = CustomerDetails[CustomerFields]
 
 
 @contextmanager
-def log_api_errors(template: str, *args):
+def log_api_errors(event: str):
     try:
         yield
-    except (QmaticException, RequestException) as e:
-        logger.exception(template, *args, exc_info=e)
-        raise GracefulQmaticException("API call failed") from e
+    except (QmaticException, RequestException) as exc:
+        logger.exception(event, exc_info=exc)
+        raise GracefulQmaticException("API call failed") from exc
     except Exception as exc:
         raise QmaticException from exc
 
@@ -114,7 +114,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
 
         # enter context block to use connection pooling
         with QmaticClient() as client:
-            with log_api_errors("Could not retrieve list of all available products"):
+            with log_api_errors("products_retrieval_failure"):
                 services = client.list_services(location_id=location_id)
 
             # only consider services publicly available and active
@@ -129,8 +129,11 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             # clear that this service ID parameter can be repeated, even though the
             # documentation does not explicitly mention it.
             group_service_ids = [product.identifier for product in current_products]
-            with log_api_errors(
-                "Could not retrieve service groups for products '%s'", group_service_ids
+            with (
+                structlog.contextvars.bound_contextvars(
+                    group_service_ids=group_service_ids
+                ),
+                log_api_errors("product_service_groups_retrieval_failure"),
             ):
                 service_groups = (
                     client.list_service_groups(
@@ -180,17 +183,17 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
 
         client = QmaticClient()
 
+        # if multiple products are provided, we use the first one as there's no way to
+        # provide multiple products in the query
         if len(product_ids) > 1:
             logger.debug(
-                "Attempt to retrieve locations for more than one product. Using "
-                "the first ID to limit locations.",
-                extra={"product_ids": product_ids},
+                "limit_location_retrieval_products_filter",
+                product_ids=product_ids,
             )
         endpoint = f"services/{product_ids[0]}/branches" if product_ids else "branches"
-
-        with log_api_errors(
-            "Could not retrieve locations for product, using API endpoint '%s'",
-            endpoint,
+        with (
+            structlog.contextvars.bound_contextvars(endpoint=endpoint),
+            log_api_errors("locations_retrieval_failure"),
         ):
             response = client.get(endpoint)
             response.raise_for_status()
@@ -235,17 +238,15 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         assert products, "Can't retrieve dates without having product information"
         unique_product_ids, num_customers = self._count_products(products)
 
-        with log_api_errors(
-            "Could not retrieve dates for products '%s' at location '%s'",
-            unique_product_ids,
-            location,
+        with (
+            log_api_errors("dates_retrieval_failure"),
+            QmaticClient() as client,
         ):
-            with QmaticClient() as client:
-                return client.list_dates(
-                    location_id=location.identifier,
-                    service_ids=unique_product_ids,
-                    num_customers=num_customers,
-                )
+            return client.list_dates(
+                location_id=location.identifier,
+                service_ids=unique_product_ids,
+                num_customers=num_customers,
+            )
 
     @with_graceful_default(default=[])
     def get_times(
@@ -257,19 +258,16 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         assert products, "Can't retrieve dates without having product information"
         unique_product_ids, num_customers = self._count_products(products)
 
-        with log_api_errors(
-            "Could not retrieve times for products '%s' at location '%s' on %s",
-            unique_product_ids,
-            location,
-            day,
+        with (
+            log_api_errors("times_retrieval_failure"),
+            QmaticClient() as client,
         ):
-            with QmaticClient() as client:
-                return client.list_times(
-                    location_id=location.identifier,
-                    day=day,
-                    service_ids=unique_product_ids,
-                    num_customers=num_customers,
-                )
+            return client.list_times(
+                location_id=location.identifier,
+                day=day,
+                service_ids=unique_product_ids,
+                num_customers=num_customers,
+            )
 
     def get_required_customer_fields(
         self,
@@ -333,16 +331,11 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
                 return response.json()["publicId"]
             except (QmaticException, RequestException, KeyError) as exc:
                 logger.error(
-                    "Could not create appointment for product '%s' at location '%s' starting at %s",
-                    unique_product_ids,
-                    location,
-                    start_at,
+                    "appointment_create_failure",
+                    products=unique_product_ids,
+                    location=location.identifier,
+                    start_at=start_at,
                     exc_info=exc,
-                    extra={
-                        "product_ids": unique_product_ids,
-                        "location": location.identifier,
-                        "start_time": start_at,
-                    },
                 )
                 raise AppointmentCreateFailed("Could not create appointment") from exc
             except Exception as exc:

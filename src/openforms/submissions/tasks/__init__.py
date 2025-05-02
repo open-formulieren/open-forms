@@ -1,10 +1,10 @@
 # ruff: noqa: F403 F405
-import logging
 from datetime import timedelta
 
 from django.conf import settings
 from django.utils import timezone
 
+import structlog
 from celery import chain
 from celery.result import AsyncResult
 
@@ -21,7 +21,7 @@ from .pdf import *
 from .registration import *
 from .user_uploads import *
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) -> None:
@@ -97,8 +97,12 @@ def retry_processing_submissions():
         needs_on_completion_retry=True,
         completed_on__gte=retry_time_limit,
     ):
-        logger.debug("Retry processing submission '%s'", submission)
-        on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
+        logger.debug(
+            "retry_start",
+            action="submissions.retry_processing",
+            submission_uuid=str(submission.uuid),
+        )
+        on_post_submission_event(submission.pk, PostSubmissionEvents.on_retry)
 
 
 @app.task()

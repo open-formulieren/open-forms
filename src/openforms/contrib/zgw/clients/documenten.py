@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 
 from zgw_consumers.nlx import NLXClient
 
+from openforms.contrib.client import LoggingMixin
 from openforms.translations.utils import to_iso639_2b
 from openforms.utils.date import get_today
 
@@ -16,7 +17,7 @@ DocumentStatus: TypeAlias = Literal[
 ]
 
 
-class DocumentenClient(NLXClient):
+class DocumentenClient(LoggingMixin, NLXClient):
     def create_document(
         self,
         informatieobjecttype: str,

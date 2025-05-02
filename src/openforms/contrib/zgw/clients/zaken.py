@@ -1,20 +1,20 @@
-import logging
-
 from django.utils import timezone
 
+import structlog
 from furl import furl
 from zgw_consumers.nlx import NLXClient
 
+from openforms.contrib.client import LoggingMixin
 from openforms.utils.date import get_today
 
 from .catalogi import CatalogiClient
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 CRS_HEADERS = {"Content-Crs": "EPSG:4326", "Accept-Crs": "EPSG:4326"}
 
 
-class ZakenClient(NLXClient):
+class ZakenClient(LoggingMixin, NLXClient):
     def create_zaak(
         self,
         zaaktype: str,
@@ -113,10 +113,7 @@ class ZakenClient(NLXClient):
             }
             rol_typen = catalogi_client.list_roltypen(**roltypen_kwargs)
             if not rol_typen:
-                logger.warning(
-                    "No matching roltype found in the zaaktype.",
-                    extra=roltypen_kwargs,
-                )
+                logger.warning("no_roltypen_found", **roltypen_kwargs)
                 return None
             roltype = rol_typen[0]["url"]
 

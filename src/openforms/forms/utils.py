@@ -1,5 +1,4 @@
 import json
-import logging
 import random
 import string
 import zipfile
@@ -12,6 +11,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import override
 
+import structlog
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -32,7 +32,7 @@ from .api.serializers import (
 from .constants import EXPORT_META_KEY, LogicActionTypes
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 IMPORT_ORDER = {
@@ -370,16 +370,15 @@ def apply_component_conversions(configuration):
     """
     Apply the known formio component conversions to the entire form definition.
     """
+    log = logger.bind(action="forms.apply_component_conversions")
     for component in iter_components(configuration):
         if not (component_type := component.get("type")):  # pragma: no cover
             continue
         if not (converters := CONVERTERS.get(component_type)):
             continue
         for identifier, apply_converter in converters.items():
-            logger.debug(
-                "Applying converter '%s' to component type '%s'",
-                identifier,
-                component_type,
+            log.debug(
+                "apply_converter", component_type=component_type, identifier=identifier
             )
             apply_converter(component)
 

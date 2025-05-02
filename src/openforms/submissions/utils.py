@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from contextlib import contextmanager
 from typing import Any
 
@@ -10,6 +9,7 @@ from django.core.cache import caches
 from django.http import HttpRequest
 from django.utils import translation
 
+import structlog
 from furl import furl
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
@@ -43,7 +43,7 @@ from .form_logic import check_submission_logic
 from .models import Submission, SubmissionReport, SubmissionValueVariable
 from .tokens import submission_report_token_generator
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 # with the interval of 0.1s, this gives us 2.0 / 0.1 = 20 concurrent requests,
 # which is far above the typical browser concurrency mode (~6-8 requests).
@@ -83,7 +83,10 @@ def _session_lock(session: SessionBase, key: str):
     #
     # For the locking interface, see redis-py :meth:`redis.client.Redis.lock`
 
-    logger.debug("Acquiring session lock for session %s", session.session_key)
+    log = logger.bind(
+        action="submissions.session_lock", session_key=session.session_key
+    )
+    log.debug("acquiring_lock")
     with redis_cache.lock(
         cache_key,
         # max lifetime for the lock itself, must always be provided in case something
@@ -96,7 +99,7 @@ def _session_lock(session: SessionBase, key: str):
         # how long we can try to acquire the lock
         blocking_timeout=SESSION_LOCK_TIMEOUT_SECONDS,
     ):
-        logger.debug("Got session lock for session %s", session.session_key)
+        log.debug("lock_acquired")
         # nasty bit... the session itself can already be modified with *other*
         # information that isn't relevant. So, we load the data from the storage again
         # and only look at the provided key. If that one is different, we update our
@@ -104,32 +107,21 @@ def _session_lock(session: SessionBase, key: str):
         # would discard modifications that should be persisted.
         persisted_data = session.load()
         if (data_slice := persisted_data.get(key)) != (current := session.get(key)):
-            logger.debug(
-                "Data from storage is different than what we currently have. "
-                "Session %s, key '%s' - in storage: %s, our view: %s",
-                session.session_key,
-                key,
-                data_slice,
-                current,
+            log.debug(
+                "stored_data_mismatch", key=key, in_storage=data_slice, our_view=current
             )
             session[key] = data_slice
-            logger.debug(
-                "Updated key '%s' from storage for session %s", key, session.session_key
-            )
+            log.debug("data_updated", key=key)
 
         # execute the calling code and exit, clearing the lock.
         yield
 
-        logger.debug(
-            "New session data for session %s is: %s",
-            session.session_key,
-            session._session,
-        )
+        log.debug("session_updated", keys=list(session.keys()))
 
         # ensure we save in-between to persist the modifications, before the request
         # may even be finished
         session.save()
-        logger.debug("Saved session data for session %s", session.session_key)
+        log.debug("session_saved")
 
 
 def append_to_session_list(session: SessionBase, session_key: str, value: Any) -> None:
@@ -174,9 +166,9 @@ def send_confirmation_email(submission: Submission) -> None:
     to_emails = submission.get_email_confirmation_recipients(submission.data)
     if not to_emails:
         logger.warning(
-            "Could not determine the recipient e-mail address for submission %d, "
-            "skipping the confirmation e-mail.",
-            submission.pk,
+            "skip_confirmation_email",
+            reason="could_not_determine_recipient_email_address",
+            submission_uuid=str(submission.uuid),
         )
         logevent.confirmation_email_skip(submission)
         return

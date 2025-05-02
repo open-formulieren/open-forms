@@ -5,11 +5,10 @@ This module is the follow-up to the bulk of functionality in utils.py, which is 
 way too much but can't be easily refactored without breaking existing functionality.
 """
 
-import logging
-
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+import structlog
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
@@ -26,7 +25,7 @@ from .registry import register
 
 __all__ = ["book_for_submission"]
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _get_plugin(appointment: Appointment) -> BasePlugin:
@@ -99,8 +98,14 @@ def book_for_submission(submission: Submission) -> str:
 
     try:
         appointment_id = book(appointment)
-    except AppointmentCreateFailed as e:
-        logger.error("Appointment creation failed", exc_info=e)
+    except AppointmentCreateFailed as exc:
+        plugin = _get_plugin(appointment)
+        logger.error(
+            "appointment_register_failure",
+            plugin=plugin,
+            submission_uuid=str(submission.uuid),
+            exc_info=exc,
+        )
         # This is displayed to the end-user!
         error_information = _(
             "A technical error occurred while we tried to book your appointment. "
@@ -111,8 +116,7 @@ def book_for_submission(submission: Submission) -> str:
             error_information=error_information,
             submission=submission,
         )
-        plugin = _get_plugin(appointment)
-        logevent.appointment_register_failure(appointment_info, plugin, e)
-        raise AppointmentRegistrationFailed("Unable to create appointment") from e
+        logevent.appointment_register_failure(appointment_info, plugin, exc)
+        raise AppointmentRegistrationFailed("Unable to create appointment") from exc
 
     return appointment_id

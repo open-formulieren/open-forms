@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import uuid
 from copy import deepcopy
 from dataclasses import dataclass
@@ -17,6 +16,7 @@ from django.utils.timezone import localtime
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
+import structlog
 from django_jsonform.models.fields import ArrayField
 from furl import furl
 
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
     from .submission_report import SubmissionReport
     from .submission_value_variable import SubmissionValueVariablesState
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
@@ -731,7 +731,8 @@ class Submission(models.Model):
             case {"version": "v1"}:
                 if not (representation := self.co_sign_data.get("representation", "")):
                     logger.warning(
-                        "Incomplete co-sign data for submission %s", self.uuid
+                        "incomplete_co_sign_data_detected",
+                        submission_uuid=str(self.uuid),
                     )
                 return representation
             case _:  # pragma: no cover
@@ -754,7 +755,7 @@ class Submission(models.Model):
     def get_email_confirmation_recipients(self, submitted_data: dict) -> list[str]:
         from openforms.appointments.service import get_email_confirmation_recipients
 
-        # first check if there are any recipients because it's an e-mail form, as that
+        # first check if there are any recipients because it's an appointment form, as that
         # shortcuts the formio component checking (there aren't any)
         if emails := get_email_confirmation_recipients(self):
             return emails
@@ -774,17 +775,21 @@ class Submission(models.Model):
         """
         Calculate and save the price of this particular submission.
         """
-        logger.debug("Calculating submission %s price", self.uuid)
+        log = logger.bind(
+            action="submissions.calculate_price", submission_uuid=str(self.uuid)
+        )
+
+        log.debug("start_calculation")
         if not self.payment_required:
-            logger.debug(
-                "Submission %s does not require payment, skipping price calculation",
-                self.uuid,
-            )
+            log.debug("skip_calculation", reason="no_payment_required")
             return None
 
         self.price = get_submission_price(self)
         if save:
+            log.debug("save_price")
             self.save(update_fields=["price"])
+        else:
+            log.debug("skip_save")
 
     @property
     def payment_required(self) -> bool:

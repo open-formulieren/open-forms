@@ -1,4 +1,3 @@
-import logging
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
@@ -8,7 +7,9 @@ from django.utils.dateparse import (
     parse_time as _parse_time,
 )
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
@@ -20,9 +21,9 @@ def format_date_value(date_value: str) -> str:
     except ValueError:
         try:
             parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
-        except ValueError:
+        except ValueError as exc:
             logger.info(
-                "Can't format date '%s', falling back to an empty string.", date_value
+                "date_formatting_error", value=date_value, fallback="", exc_inf=exc
             )
             return ""
 
@@ -44,30 +45,30 @@ def parse_date(value: str) -> date:
 
 
 def parse_datetime(value: str) -> None | datetime:
+    log = logger.bind(value=value, fallback=None)
     try:
         datetime_value = _parse_datetime(value)
-    except ValueError:
-        logger.info("Can't parse datetime '%s', falling back to 'None' instead.", value)
+    except ValueError as exc:
+        log.info("datetime_parse_error", exc_info=exc)
         return
 
     if datetime_value is None:
-        logger.info(
-            "Badly formatted datetime '%s', falling back to 'None' instead.", value
-        )
+        log.info("bad_datetime_format")
         return
 
     return datetime_value
 
 
 def parse_time(value: str) -> None | time:
+    log = logger.bind(value=value, fallback=None)
     try:
         time_value = _parse_time(value)
-    except ValueError:
-        logger.info("Invalid time '%s', falling back to 'None' instead.", value)
+    except ValueError as exc:
+        log.info("time_parse_error", exc_info=exc)
         return
 
     if time_value is None:
-        logger.info("Badly formatted time '%s', falling back to 'None' instead.", value)
+        log.info("bad_time_format")
         return
 
     return time_value

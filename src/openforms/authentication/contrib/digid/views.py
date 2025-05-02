@@ -1,9 +1,8 @@
-import logging
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import resolve
 
+import structlog
 from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.choices import SectorType
 from digid_eherkenning.saml2.digid import DigiDClient
@@ -24,7 +23,7 @@ from .constants import (
 )
 from .mixins import AssertionConsumerServiceMixin
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class BSNNotPresentError(Exception):
@@ -64,14 +63,14 @@ class DigiDAssertionConsumerServiceView(
 
         try:
             response = client.artifact_resolve(request, saml_art)
-            logger.debug(response.pretty_print())
+            logger.debug("saml_artifact_resolved", response=response.pretty_print())
         except OneLogin_Saml2_ValidationError as exc:
             if exc.code == OneLogin_Saml2_ValidationError.STATUS_CODE_AUTHNFAILED:
                 failure_url = self.get_failure_url(
                     DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED
                 )
             else:
-                logger.error(exc, exc_info=exc)
+                logger.error("artifact_resolution_failure", exc_info=exc)
                 failure_url = self.get_failure_url(
                     DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
                 )
@@ -80,7 +79,7 @@ class DigiDAssertionConsumerServiceView(
         try:
             name_id = response.get_nameid()
         except OneLogin_Saml2_ValidationError as exc:
-            logger.error(exc, exc_info=exc)
+            logger.error("name_id_extraction_failure", exc_info=exc)
             failure_url = self.get_failure_url(
                 DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
             )
@@ -99,7 +98,7 @@ class DigiDAssertionConsumerServiceView(
         # store the bsn itself in the session, and let the plugin decide where
         # to persist it. This is an implementation detail for this specific plugin!
         request.session[DIGID_AUTH_SESSION_KEY] = bsn
-        # store the authn contexts so the plugin can check persmission when
+        # store the authn contexts so the plugin can check permission when
         # accessing/creating an object
         request.session[DIGID_AUTH_SESSION_AUTHN_CONTEXTS] = (
             response.get_authn_contexts()

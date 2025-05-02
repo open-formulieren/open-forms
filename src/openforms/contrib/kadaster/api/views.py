@@ -1,4 +1,3 @@
-import logging
 from functools import partial
 
 from django.core.cache import cache
@@ -24,9 +23,6 @@ from .serializers import (
     LatLngSearchInputSerializer,
     LatLngSearchResultSerializer,
 )
-
-logger = logging.getLogger(__name__)
-
 
 ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT = (
     60 * 60 * 24

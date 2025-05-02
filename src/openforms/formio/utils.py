@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeAlias
 
 import elasticapm
+import structlog
 from glom import Coalesce, Path, glom
 from typing_extensions import TypeIs
 
@@ -17,7 +17,7 @@ from .typing import Column, ColumnsComponent, Component, FormioConfiguration
 if TYPE_CHECKING:
     from .datastructures import FormioData
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 # XXX: we should probably be able to narrow this in Python 3.11 with non-total typed
 # dicts.

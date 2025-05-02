@@ -1,4 +1,3 @@
-import logging
 import uuid
 from collections import OrderedDict
 
@@ -6,12 +5,13 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.urls import reverse
 
+import structlog
 from rest_framework import exceptions
 
 from .serializers import ExceptionSerializer, ValidationErrorSerializer
 from .utils import underscore_to_camel
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 ErrorSerializer = ExceptionSerializer | ValidationErrorSerializer
 
@@ -112,6 +112,7 @@ class HandledException:
         self.response = response
         self.request = request
         self._exc_id = str(uuid.uuid4())
+        structlog.contextvars.bind_contextvars(exception_id=self._exc_id)
 
     @property
     def _error_detail(self) -> str:
@@ -134,7 +135,7 @@ class HandledException:
         """
         exc = _translate_exceptions(exc)
         self = cls(exc, response, request)
-        self.log()
+        logger.warning("api.handle_exception", exc_info=exc)
 
         if isinstance(exc, exceptions.ValidationError):
             serializer_class = ValidationErrorSerializer
@@ -142,9 +143,6 @@ class HandledException:
             serializer_class = ExceptionSerializer
 
         return serializer_class(instance=self)
-
-    def log(self):
-        logger.exception("Exception %s ocurred", self._exc_id)
 
     @property
     def type(self) -> str:

@@ -1,7 +1,7 @@
-import logging
-
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+import structlog
 
 from openforms.authentication.service import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -15,14 +15,14 @@ from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...registry import register
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _get_client() -> SuwinetClient | None:
     try:
         return get_client()
     except NoServiceConfigured:
-        logger.warning("No service defined for Suwinet.")
+        logger.warning("suwinet_service_not_configured")
     return None
 
 
@@ -64,10 +64,9 @@ class SuwinetPrefill(BasePlugin):
                 return perform_soap_call(bsn)
             except Exception:
                 logger.exception(
-                    "Suwinet operation '%s' on service '%s' failed.",
-                    operation,
-                    service_name,
-                    extra={"service": service_name, "operation": operation},
+                    "prefill.suwinet.operation_failed",
+                    operation=operation,
+                    service=service_name,
                 )
                 return None
 

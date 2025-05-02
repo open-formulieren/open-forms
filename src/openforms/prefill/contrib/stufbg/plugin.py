@@ -1,10 +1,10 @@
-import logging
 from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
+import structlog
 from glom import T as Target, glom
 from lxml import etree
 
@@ -20,7 +20,7 @@ from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...registry import register
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 """
@@ -165,7 +165,11 @@ class StufBgPrefill(BasePlugin):
     ) -> dict[str, Any]:
         if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             #  If there is no bsn we can't prefill any values so just return
-            logger.info("No BSN associated with submission, cannot prefill.")
+            logger.info(
+                "lookup_identifier_absent",
+                submission_uuid=str(submission.uuid),
+                plugin=cls,
+            )
             return {}
 
         return cls._get_values_for_bsn(bsn_value, attributes)

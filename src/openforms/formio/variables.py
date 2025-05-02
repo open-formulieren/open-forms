@@ -1,7 +1,8 @@
-import logging
 from typing import Iterator
 
 from django.template import TemplateSyntaxError
+
+import structlog
 
 from openforms.template import parse, render_from_string
 from openforms.typing import JSONObject, JSONValue
@@ -10,7 +11,7 @@ from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import flatten_by_path, recursive_apply
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 SUPPORTED_TEMPLATE_PROPERTIES = (
     "label",
@@ -96,7 +97,8 @@ def inject_variables(
                 templated_value = render(property_value, values.data)
             except TemplateSyntaxError as exc:
                 logger.debug(
-                    "Error during formio configuration 'template' rendering",
+                    "formio.template_evaluation_failure",
+                    template=property_value,
                     exc_info=exc,
                 )
                 # keep the original value on error

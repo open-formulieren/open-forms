@@ -4,7 +4,6 @@ Utility classes for the submission report rendering.
 
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass
 from typing import cast
 
@@ -12,13 +11,15 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
+import structlog
+
 from openforms.authentication.service import AuthAttribute
 from openforms.forms.models import Form
 
 from .cosigning import CosignV1Data
 from .models import Submission
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
@@ -70,7 +71,8 @@ class Report:
 
         if not representation:
             logger.warning(
-                "Incomplete co-sign data for submission %s", self.submission.uuid
+                "incomplete_co_sign_data_detected",
+                submission_uuid=str(self.submission.uuid),
             )
 
         return _("{representation} ({auth_attribute}: {identifier})").format(

@@ -6,21 +6,21 @@ Open Forms supports v1 and v2 of the APIs.
 Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/getting-started
 """
 
-import logging
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
 
 import requests
-from ape_pie import APIClient
+import structlog
 
+from openforms.contrib.client import LoggingClient
 from openforms.contrib.hal_client import HALMixin
 from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject
 
 from ..constants import BRPVersions
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 # DATA MODEL DEFINITIONS
 
@@ -41,7 +41,7 @@ class Person:
 # CLIENT IMPLEMENTATIONS
 
 
-class BRPClient(PreRequestMixin, ABC, APIClient):
+class BRPClient(PreRequestMixin, ABC, LoggingClient):
     def __init__(
         self,
         *args,
@@ -86,7 +86,7 @@ class V1Client(HALMixin, BRPClient):
             response = self.get(f"ingeschrevenpersonen/{bsn}")
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making request", exc_info=exc)
+            logger.exception("brp_request_failure", exc_info=exc)
             return None
 
         return response.json()
@@ -180,14 +180,14 @@ class V2Client(BRPClient):
         except requests.RequestException as exc:
             if reraise_errors:
                 raise exc
-            logger.exception("exception while making request", exc_info=exc)
+            logger.exception("brp_request_failure", exc_info=exc)
             return None
 
         data = response.json()
         assert isinstance(data, dict)
 
         if not (personen := data.get("personen", [])):
-            logger.debug("Person not found")
+            logger.debug("person_not_found")
             return None
 
         return personen[0]
@@ -211,7 +211,7 @@ class V2Client(BRPClient):
 
         data = response.json()
         if not (personen := data.get("personen", [])):
-            logger.debug("Person not found")
+            logger.debug("person_not_found")
             return []
 
         family_data = []

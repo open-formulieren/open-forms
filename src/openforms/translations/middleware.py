@@ -1,13 +1,13 @@
-import logging
-
 from django.conf import settings
 from django.http import HttpRequest
 from django.utils import translation
 
+import structlog
+
 from openforms.typing import RequestHandler
 from openforms.utils.urls import is_admin_request
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _remove_language_cookie_from_request(request: HttpRequest) -> None:
@@ -16,19 +16,11 @@ def _remove_language_cookie_from_request(request: HttpRequest) -> None:
 
     settings.LANGUAGE_COOKIE_NAME
     """
-    logger.debug(
-        "Removing the language cookie (if present) from request %r",
-        request,
-        extra={"request": request},
-    )
     cookie_name = settings.LANGUAGE_COOKIE_NAME
-    if cookie_name in request.COOKIES:
+    cookie_present = cookie_name in request.COOKIES
+    if cookie_present:
         del request.COOKIES[cookie_name]
-        logger.debug(
-            "Cookie %s was present but is now ignored.",
-            cookie_name,
-            extra={"request": request},
-        )
+    logger.debug("language_cookie_removal", was_present=cookie_present)
 
 
 class AdminLocaleMiddleware:

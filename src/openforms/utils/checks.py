@@ -1,6 +1,6 @@
 import inspect
-import logging
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -9,12 +9,13 @@ from django.core.checks import Error, Warning, register
 from django.db import ProgrammingError
 from django.forms import ModelForm
 
+import structlog
 from psycopg.errors import DatabaseError
 from rest_framework.serializers import CharField, Serializer, empty
 from rest_framework.test import APIRequestFactory
 from treebeard.forms import MoveNodeForm
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_subclasses(cls):
@@ -93,6 +94,14 @@ def check_missing_init_files(app_configs, **kwargs):
     return errors
 
 
+def is_subpath(*, parent: Path, child: str) -> bool:
+    try:
+        Path(child).relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
 @register
 def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cover
     app_configs, **kwargs
@@ -109,7 +118,9 @@ def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cove
     serializers = get_subclasses(Serializer)
     for serializer_class in serializers:
         serializer_defined_in = inspect.getfile(serializer_class)
-        if not serializer_defined_in.startswith(settings.DJANGO_PROJECT_DIR):
+        if not is_subpath(
+            parent=settings.DJANGO_PROJECT_DIR, child=serializer_defined_in
+        ):
             continue  # ignore code not defined in our own codebase
 
         if hasattr(serializer_class, "Meta") and not hasattr(
@@ -120,8 +131,12 @@ def check_serializer_non_required_charfield_allow_blank_true(  # pragma: no cove
         try:
             serializer = serializer_class(context={"request": request})
             fields = serializer.fields
-        except (ProgrammingError, DatabaseError) as e:
-            logger.debug(f"Could not instantiate {serializer_class}: {e}")
+        except (ProgrammingError, DatabaseError) as exc:
+            logger.debug(
+                "serializer_instantation_failure",
+                serializer=serializer_class,
+                exc_info=exc,
+            )
             continue
 
         for field_name, field in fields.items():

@@ -1,4 +1,3 @@
-import logging
 import warnings
 from datetime import datetime
 from functools import partial, wraps
@@ -9,6 +8,7 @@ from django.utils.text import Truncator
 from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
+import structlog
 from furl import furl
 from glom import assign
 
@@ -43,7 +43,7 @@ from .options import ZaakOptionsSerializer
 from .typing import CatalogueOption, RegistrationOptions
 from .utils import process_according_to_eigenschap_format
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class VariablesProperties(TypedDict):

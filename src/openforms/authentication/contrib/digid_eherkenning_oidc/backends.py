@@ -1,10 +1,10 @@
-import logging
 from typing import override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 
+import structlog
 from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
@@ -16,7 +16,7 @@ from openforms.typing import JSONObject
 
 from .plugin import get_config_to_plugin
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
@@ -78,27 +78,26 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         """Verify the provided claims to decide if authentication should be allowed."""
         assert claims, "Empty claims should have been blocked earlier"
         obfuscated_claims = obfuscate_claims(claims, self.OIDCDB_SENSITIVE_CLAIMS)
-        logger.debug("OIDC claims received: %s", obfuscated_claims)
+        log = logger.bind(claims=obfuscated_claims)
+        log.debug("received_oidc_claims")
 
         # process_claims in strict mode raises ValueError if *required* claims are
         # missing
         try:
             processed_claims = self._process_claims(claims)
         except ValueError as exc:
-            logger.error(
-                "Claims are incomplete",
-                exc_info=exc,
-                extra={"claims": obfuscated_claims},
+            log.error(
+                "claim_processing_failure", reason="claims_incomplete", exc_info=exc
             )
             return False
 
         # even in non-strict mode, some claims are a hard requirement
         for claim in self.OF_OIDCDB_REQUIRED_CLAIMS:
             if claim not in processed_claims:
-                logger.error(
-                    "Claims are incomplete - claim for '%s' is missing",
-                    claim,
-                    extra={"claims": obfuscated_claims},
+                log.error(
+                    "claim_processing_failure",
+                    reason="claims_incomplete",
+                    missing_claim=claim,
                 )
                 return False
 

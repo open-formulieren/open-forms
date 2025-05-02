@@ -4,13 +4,16 @@ Implement :class:`django.db.models.FileField` related utilities.
 These utilities apply to file fields and subclasses thereof.
 """
 
-import logging
+from contextlib import contextmanager
 
 from django.db import models, transaction
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 
-logger = logging.getLogger(__name__)
+import sentry_sdk
+import structlog
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_file_field_names(model: type[Model]) -> list[str]:
@@ -22,39 +25,34 @@ def get_file_field_names(model: type[Model]) -> list[str]:
     return [field.name for field in file_fields]
 
 
-class log_failed_deletes:
+@contextmanager
+def log_deletes(filefield: FieldFile):
     """
     Context manager adding robustness to model file field deletes.
 
     Deletes that fail for whatever reason are logged with ``level`` and exceptions
-    are surpressed.
+    are supressed.
     """
-
-    def __init__(self, filefield: FieldFile):
-        self.filefield = filefield
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        instance = self.filefield.instance
-        if exc_value:
-            logger.warning(
-                "File delete on model %r (pk=%s, field=%s, path=%s) failed: %s",
-                type(instance),
-                instance.pk,
-                self.filefield.field.name,
-                self.filefield.path,
-                exc_value,
-                exc_info=exc_value,
-            )
-            return True
+    instance = filefield.instance
+    with structlog.contextvars.bound_contextvars(
+        model=type(instance),
+        pk=instance.pk,
+        field=filefield.field.name,
+        path=filefield.path,
+    ):
+        try:
+            yield
+        except Exception as exc:
+            sentry_sdk.capture_exception(exc)
+            logger.warning("file_delete_failure", exc_info=exc)
+        else:
+            logger.debug("file_deleted")
 
 
 def _delete_obj_files(fields: list[str], obj: models.Model) -> None:
     for name in fields:
         filefield = getattr(obj, name)
-        with log_failed_deletes(filefield):
+        with log_deletes(filefield):
             filefield.delete(save=False)
 
 

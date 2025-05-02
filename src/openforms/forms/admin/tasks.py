@@ -1,4 +1,3 @@
-import logging
 import tempfile
 import zipfile
 from pathlib import Path
@@ -11,6 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
@@ -24,7 +24,7 @@ from ..models import Form
 from ..models.form import FormsExport
 from ..utils import export_form, import_form
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task
@@ -90,7 +90,9 @@ def process_forms_import(import_file: str, user_id: int) -> None:
                 except ValidationError as exc:
                     filename = Path(zipped_form_file.filename).name
                     failed_files.append((filename, exc.detail))
-                    logger.error("Could not import form %s", filename)
+                    logger.error(
+                        "forms.import_failure", filename=filename, exc_info=exc
+                    )
                     continue
 
     logevent.bulk_forms_imported(user=user, failed_files=failed_files)

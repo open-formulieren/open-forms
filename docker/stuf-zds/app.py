@@ -1,4 +1,4 @@
-import logging
+import logging  # noqa: TID251
 from secrets import token_hex
 
 from flask import Flask, Response, request

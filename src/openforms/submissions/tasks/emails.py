@@ -1,11 +1,10 @@
-import logging
-
 from django.conf import settings
 from django.db import DatabaseError, transaction
 from django.template.defaultfilters import date as date_filter
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from celery_once import QueueOnce
 
 from openforms.celery import app
@@ -31,7 +30,7 @@ __all__ = [
 ]
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(ignore_result=True)
@@ -61,14 +60,16 @@ def send_confirmation_email(submission_id: int) -> None:
     try:
         submission = (
             Submission.objects.select_related("form")
-            .select_for_update(nowait=True)
+            .select_for_update(of=("self",), nowait=True)
             .get(id=submission_id)
         )
     except DatabaseError:
+        # lock acquiry failing is not necessarily a problem, it likely means that the
+        # coordination mechanism works as intended
         logger.debug(
-            "Submission %d confirmation e-mail task failed to acquire a lock. This is "
-            "likely intended behaviour to prevent race conditions.",
-            submission_id,
+            "lock_acquiry_failed",
+            action="submissions.send_confirmation_email",
+            submission_id=submission_id,
         )
         return
 
@@ -96,8 +97,10 @@ def send_email_cosigner(submission_id: int) -> None:
 
         if not cosign.is_required or not (recipient := cosign.email):
             logger.warning(
-                "No co-signer email found in the form. Skipping co-sign email for submission %d.",
-                submission.pk,
+                "skip_cosign_email",
+                submission_uuid=str(submission.uuid),
+                action="submissions.send_email_cosigner",
+                reason="no_cosign_email_found_in_form",
             )
             return
 
@@ -182,10 +185,10 @@ def schedule_emails(submission_id: int) -> None:
 
     if not submission.form.send_confirmation_email:
         logger.debug(
-            "Form %d is configured to not send a confirmation email for submission %d, "
-            "skipping the confirmation e-mail.",
-            submission.form.id,
-            submission.pk,
+            "confirmation_email_skip",
+            submission_uuid=str(submission.uuid),
+            form_uuid=submission.form.uuid,
+            reason="form_configured_no_confirmation_email",
         )
         logevent.confirmation_email_skip(submission)
         return

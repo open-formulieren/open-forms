@@ -1,5 +1,3 @@
-import logging
-
 from openforms.submissions.models import Submission
 
 from .base import BasePlugin
@@ -7,8 +5,6 @@ from .base import BasePlugin
 __all__ = [
     "get_registration_plugin",
 ]
-
-logger = logging.getLogger(__name__)
 
 
 def get_registration_plugin(submission: Submission) -> BasePlugin | None:

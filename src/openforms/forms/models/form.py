@@ -1,4 +1,3 @@
-import logging
 import uuid as _uuid
 from collections.abc import Iterator
 from contextlib import suppress
@@ -16,6 +15,7 @@ from django.utils.formats import localize
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _, override
 
+import structlog
 from autoslug import AutoSlugField
 from privates.fields import PrivateMediaFileField
 from rest_framework.reverse import reverse
@@ -40,7 +40,7 @@ from ..constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class FormQuerySet(models.QuerySet):
@@ -668,14 +668,14 @@ class Form(models.Model):
     def activate(self):
         self.active = True
         self.activate_on = None
-        logger.debug("Activating form %s", self.admin_name)
         self.save(update_fields=["active", "activate_on"])
+        logger.debug("forms.form_activated", id=self.pk, name=self.admin_name)
 
     def deactivate(self):
         self.active = False
         self.deactivate_on = None
-        logger.debug("Deactivating form %s", self.admin_name)
         self.save(update_fields=["active", "deactivate_on"])
+        logger.debug("forms.form_deactivated", id=self.pk, name=self.admin_name)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

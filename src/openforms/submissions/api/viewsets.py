@@ -1,11 +1,11 @@
 import contextlib
-import logging
 from uuid import UUID
 
 from django.db import transaction
 from django.db.models import Exists, OuterRef
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
@@ -67,7 +67,7 @@ from .serializers import (
 )
 from .validation import SubmissionCompletionSerializer
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @contextlib.contextmanager

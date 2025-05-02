@@ -1,5 +1,4 @@
 import contextlib
-import logging
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -9,13 +8,14 @@ from django.conf import settings
 from django.core.management import CommandError, call_command
 from django.utils.module_loading import import_string
 
+import structlog
 from semantic_version import SimpleSpec, Version
 
 from .models import VERSION_DEV
 
 __all__ = ["check_upgrade_path"]
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class VersionParseError(Exception):
@@ -64,7 +64,7 @@ class UpgradeConstraint:
             try:
                 result = main_func(skip_setup=True)
             except Exception as exc:
-                logger.error("Script check errored", exc_info=exc)
+                logger.error("script_check_error", exc_info=exc)
                 result = False
             if result is False:
                 checks_pass = False

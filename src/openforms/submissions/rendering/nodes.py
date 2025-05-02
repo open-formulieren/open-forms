@@ -1,6 +1,7 @@
-import logging
 from dataclasses import dataclass
 from typing import Iterator
+
+import structlog
 
 from openforms.formio.rendering.nodes import FormioNode
 
@@ -8,7 +9,7 @@ from ..models import SubmissionStep
 from .base import Node
 from .constants import RenderModes
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class FormNode(Node):
@@ -57,12 +58,12 @@ class SubmissionStepNode(Node):
         # applicable because of form logic.
         logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)
         if not logic_evaluated:
+            # logic should really be evaluated before rendering steps!
             logger.warning(
-                "You should ensure that the form logic is evaluated before rendering "
-                "steps! Submission ID: %s, renderer: %r, step ID: %s",
-                self.step.submission.uuid,
-                self.renderer,
-                self.step.uuid,
+                "submissions.rendering.logic_not_evaluated",
+                submission_uuid=str(self.step.submission.uuid),
+                renderer=self.renderer,
+                step_uuid=str(self.step.uuid),
             )
         return self.step.is_applicable
 

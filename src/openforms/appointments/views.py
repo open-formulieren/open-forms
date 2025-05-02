@@ -1,5 +1,3 @@
-import logging
-
 from django.views.generic import RedirectView
 
 from openforms.frontend import get_frontend_redirect_url
@@ -7,8 +5,6 @@ from openforms.submissions.models import Submission
 from openforms.submissions.views import ResumeFormMixin
 
 from .tokens import submission_appointment_token_generator
-
-logger = logging.getLogger(__name__)
 
 
 class VerifyCancelAppointmentLinkView(ResumeFormMixin, RedirectView):

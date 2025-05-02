@@ -1,8 +1,9 @@
 import itertools
-import logging
 from datetime import timedelta
 
 from django.db.models import F
+
+import structlog
 
 from openforms.celery import app
 from openforms.submissions.constants import RegistrationStatuses
@@ -10,12 +11,13 @@ from openforms.submissions.models import Submission
 
 from .constants import RemovalMethods
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(ignore_result=True)
 def delete_submissions():
-    logger.debug("Deleting submissions")
+    log = logger.bind(action="data_removal.delete_submissions")
+    log.debug("start")
 
     successful_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "successful_submissions_removal_limit",
@@ -25,8 +27,10 @@ def delete_submissions():
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
     )
-    logger.info(
-        "Deleting %s successful submissions", successful_submissions_to_delete.count()
+    log.info(
+        "delete_submissions",
+        kind="successful",
+        amount=successful_submissions_to_delete.count(),
     )
     successful_submissions_to_delete.delete()
 
@@ -41,8 +45,10 @@ def delete_submissions():
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
     )
-    logger.info(
-        "Deleting %s incomplete submissions", incomplete_submissions_to_delete.count()
+    log.info(
+        "delete_submissions",
+        kind="incomplete",
+        amount=incomplete_submissions_to_delete.count(),
     )
     incomplete_submissions_to_delete.delete()
 
@@ -54,9 +60,10 @@ def delete_submissions():
         removal_method=RemovalMethods.delete_permanently,
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
     )
-
-    logger.info(
-        "Deleting %s errored submissions", errored_submissions_to_delete.count()
+    log.info(
+        "delete_submissions",
+        kind="errored",
+        amount=errored_submissions_to_delete.count(),
     )
     errored_submissions_to_delete.delete()
 
@@ -65,16 +72,16 @@ def delete_submissions():
     ).filter(
         time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
     )
-    logger.info(
-        "Deleting %s other submissions regardless of registration",
-        other_submissions_to_delete.count(),
+    log.info(
+        "delete_submissions", kind="other", amount=other_submissions_to_delete.count()
     )
     other_submissions_to_delete.delete()
 
 
 @app.task(ignore_result=True)
 def make_sensitive_data_anonymous() -> None:
-    logger.debug("Making sensitive submission data anonymous")
+    log = logger.bind(action="data_removal.make_sensitive_data_anonymous")
+    log.debug("start")
 
     successful_submissions = Submission.objects.annotate_removal_fields(
         "successful_submissions_removal_limit",
@@ -109,17 +116,18 @@ def make_sensitive_data_anonymous() -> None:
         _is_cleaned=False,
     )
 
-    logger.info(
-        "Anonymizing %s successful submissions",
-        successful_submissions.count(),
+    log.info(
+        "anonymize_submissions",
+        kind="successful",
+        amount=successful_submissions.count(),
     )
-    logger.info(
-        "anonymizing %s incomplete submissions",
-        incomplete_submissions.count(),
+    log.info(
+        "anonymize_submissions",
+        kind="incomplete",
+        amount=incomplete_submissions.count(),
     )
-    logger.info(
-        "anonymizing %s errored submissions",
-        errored_submissions.count(),
+    log.info(
+        "anonymize_submissions", kind="errored", amount=errored_submissions.count()
     )
 
     for submission in itertools.chain(

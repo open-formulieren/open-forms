@@ -1,8 +1,7 @@
-import logging
 from collections.abc import Mapping
 from functools import partial
-from typing import TypeVar
 
+import structlog
 import xmltodict
 from glom import glom
 
@@ -15,7 +14,7 @@ from ..service_client_factory import ServiceClientFactory, get_client_init_kwarg
 from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES
 from .models import StufBGConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class NoServiceConfigured(RuntimeError):
@@ -61,6 +60,7 @@ class Client(BaseClient):
         return response.content
 
     def get_values(self, bsn: str, attributes: list[str]) -> dict:
+        structlog.contextvars.bind_contextvars(requested_attributes=attributes)
         response_data = self.get_values_for_attributes(bsn, attributes)
 
         dict_response = _remove_nils(
@@ -81,25 +81,21 @@ class Client(BaseClient):
 
         # success case - we did receive a meaningful response
         if antwoord_object is not None:
+            logger.info("received_response_object")
             return antwoord_object
 
         # no fault, but also empty antwoord data -> treat this as empty response
         if fault is None:
+            logger.info("received_empty_response")
             return {}
 
         # we have a fault -> log it appropriately and raise an exception
-        logger.error(
-            "Response data has an unexpected shape",
-            extra={"response": dict_response, "fault": fault},
-        )
+        logger.error("received_fault_response", response=dict_response, fault=fault)
         raise ValueError("Problem processing StUF-BG response")
 
 
 # `Sequence` isn't used here at it would match str (and possibly others)
-C = TypeVar("C", bound=Mapping | list)
-
-
-def _remove_nils(container: C) -> C:
+def _remove_nils[C: Mapping | list](container: C) -> C:
     """Return a copy of d with nils removed"""
     Container = type(container)  # use the same container type
 

@@ -1,5 +1,4 @@
-import logging
-
+import structlog
 from celery_once import QueueOnce
 
 from openforms.celery import app
@@ -10,7 +9,7 @@ from .exceptions import AppointmentRegistrationFailed, NoAppointmentForm
 
 __all__ = ["maybe_register_appointment"]
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(
@@ -29,17 +28,14 @@ def maybe_register_appointment(submission_id: int) -> None | str:
     be stored in the database. If appointment registration fails, this feedback
     should find its way back to the end-user.
     """
-    logger.info("Registering appointment for submission %d", submission_id)
     submission = Submission.objects.select_related("form").get(id=submission_id)
+    log = logger.bind(submission_uuid=str(submission.uuid))
+    log.info("appointment_registration")
 
     try:
         return book_for_submission(submission=submission)
     except NoAppointmentForm:
         pass
     except AppointmentRegistrationFailed as exc:
-        logger.info(
-            "Appointment registration failed, aborting workflow.",
-            exc_info=exc,
-            extra={"submission": submission_id},
-        )
+        log.info("appointment_registration_failure", exc_info=exc)
         raise

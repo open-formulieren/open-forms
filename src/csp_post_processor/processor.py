@@ -1,5 +1,4 @@
 import hashlib
-import logging
 
 from django.http import HttpRequest
 from django.utils.safestring import SafeString, mark_safe
@@ -7,6 +6,7 @@ from django.utils.safestring import SafeString, mark_safe
 import bleach
 import html5lib
 import lxml.html
+import structlog
 import tinycss2
 from bleach import css_sanitizer
 from lxml import etree
@@ -14,7 +14,7 @@ from rest_framework.request import Request
 
 from .constants import NONCE_HTTP_HEADER
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 wysiwyg_allowed_protocols = ["http", "https", "mailto", "data"]
 
@@ -129,7 +129,7 @@ def post_process_html(
         return html
 
     if not (csp_nonce := request.headers.get(NONCE_HTTP_HEADER)):
-        logger.info("No nonce available on the request, returning html unmodified.")
+        logger.info("skip_processing", reason="nonce_not_found")
         return html
 
     lxml_etree_document = html5lib.parse(

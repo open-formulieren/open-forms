@@ -8,9 +8,9 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, TypeAlias
 
+import structlog
 from glom import assign, glom
 from rest_framework import serializers
 
@@ -23,6 +23,7 @@ from .utils import is_layout_component, iter_components
 if TYPE_CHECKING:
     from .registry import ComponentRegistry
 
+logger = structlog.stdlib.get_logger(__name__)
 
 FieldOrNestedFields: TypeAlias = serializers.Field | dict[str, "FieldOrNestedFields"]
 
@@ -101,12 +102,10 @@ class StepDataSerializer(serializers.Serializer):
         return any(field.required for field in self.fields.values())
 
     def _set_required(self, value: bool) -> None:
-        # we need a setter because the serializers.Field.__init__ sets the initival
+        # we need a setter because the serializers.Field.__init__ sets the initial
         # value, but we actually derive the value via :meth:`_get_required` above
         # dynamically based on the children, so we just ignore it.
-        logging.debug(
-            "Setting the serializer required property has no effect. This is deliberate"
-        )
+        logger.debug("disabled_setter_call")
 
     required = property(_get_required, _set_required)  # type:ignore
 

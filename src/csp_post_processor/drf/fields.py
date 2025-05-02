@@ -2,13 +2,12 @@
 Django Rest Framework integration to apply post processing for serializer fields.
 """
 
-import logging
-
+import structlog
 from rest_framework import fields
 
 from ..processor import post_process_html
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class CSPPostProcessedHTMLField(fields.CharField):
@@ -27,10 +26,7 @@ class CSPPostProcessedHTMLField(fields.CharField):
         # the request from the context is required for post-processing, but there is no
         # guarantee this is always present!
         if not (request := self.parent.context.get("request")):
-            logger.warning(
-                "Cannot CSP post-process value, there is no valid request in the "
-                "serializer context. Returning original version."
-            )
+            logger.warning("skip_processing", reason="no_request_in_context")
             return str_value
 
         return post_process_html(str_value, request)

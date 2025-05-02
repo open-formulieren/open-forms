@@ -1,12 +1,9 @@
-import logging
 from io import BytesIO
 from typing import Literal, NotRequired, TypeAlias, TypedDict
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 
 from .clients.documenten import DocumentenClient
-
-logger = logging.getLogger(__name__)
 
 SupportedLanguage: TypeAlias = Literal["nl", "en"]
 

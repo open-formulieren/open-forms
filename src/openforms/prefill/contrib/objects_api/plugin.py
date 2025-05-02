@@ -1,8 +1,7 @@
-import logging
-
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from glom import Path, PathAccessError, glom
 
 from openforms.contrib.objects_api.checks import check_config
@@ -17,7 +16,7 @@ from ...registry import register
 from .api.serializers import ObjectsAPIOptionsSerializer
 from .typing import ObjectsAPIOptions
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 PLUGIN_IDENTIFIER = "objects_api"
@@ -32,7 +31,11 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
         self, submission: Submission, prefill_options: ObjectsAPIOptions
     ) -> None:
         if prefill_options["skip_ownership_check"]:
-            logger.info("Skipping ownership check for submission %r.", submission.uuid)
+            logger.info(
+                "skip_ownership_check",
+                submission_uuid=str(submission.uuid),
+                plugin=self,
+            )
             return
 
         assert submission.initial_data_reference

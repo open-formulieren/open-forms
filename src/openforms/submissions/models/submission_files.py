@@ -1,5 +1,4 @@
 import hashlib
-import logging
 import os.path
 import uuid
 from collections import defaultdict
@@ -11,6 +10,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
@@ -23,7 +23,7 @@ from .submission_step import SubmissionStep
 if TYPE_CHECKING:
     from .submission_value_variable import SubmissionValueVariable
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def fmt_upload_to(prefix, instance, filename):

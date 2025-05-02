@@ -1,10 +1,9 @@
-import logging
-
 from django.core.exceptions import PermissionDenied
 from django.dispatch import Signal, receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from rest_framework.request import Request
 
 from openforms.logging import logevent
@@ -24,7 +23,7 @@ from .utils import (
     store_registrator_details,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 #
 # Custom signals
@@ -59,7 +58,9 @@ Provides:
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, anonymous=False, **kwargs
 ):
+    log = logger.bind(submission_uuid=str(instance.uuid), anonymous=anonymous)
     if anonymous:
+        log.info("authentication.skip_storing_auth_info")
         return
 
     # form_auth has information from an authentication backend, so could be a client or employee
@@ -75,38 +76,23 @@ def set_auth_attribute_on_session(
 
     plugin = form_auth["plugin"]
     attribute = form_auth["attribute"]
-
     plugin_instance = register[plugin]
+
+    log = log.bind(plugin=plugin_instance, attribute=attribute)
     if plugin_instance.is_demo_plugin and not request.user.is_staff:
-        logger.warning(
-            "Demo plugin '%s' auth flow bypassed, blocking attempt to set identifying "
-            "attribute on submission '%s'.",
-            plugin,
-            instance.uuid,
+        log.warning(
+            "authentication.block_storing_auth_info",
+            reason="demo_plugin_requires_staff_user",
+            user=request.user,
         )
         raise PermissionDenied(_("Demo plugins require an active admin session."))
 
     user = request.user if request.user.is_authenticated else None
-    logger.debug(
-        "Persisting form auth to submission %s. Plugin: '%s' (setting attribute '%s')",
-        instance.uuid,
-        plugin,
-        attribute,
-        extra={
-            "user_id": user.id if user else None,
-            "submission_uuid": instance.uuid,
-            "plugin": plugin,
-            "attribute": attribute,
-        },
+    is_delegated = bool(
+        registrator_subject and registrator_subject.get("skipped_subject_info") is None
     )
-    logevent.submission_auth(
-        instance,
-        delegated=bool(
-            registrator_subject
-            and registrator_subject.get("skipped_subject_info") is None
-        ),
-        user=user,
-    )
+    log.debug("authentication.submission_auth", is_delegated=is_delegated)
+    logevent.submission_auth(instance, delegated=is_delegated, user=user)
 
     if registrator_subject:
         # we got registrator_subject data so form_auth is an employee

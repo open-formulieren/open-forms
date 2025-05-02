@@ -1,4 +1,3 @@
-import logging
 from functools import partial
 
 from django.core.exceptions import ValidationError
@@ -31,8 +30,6 @@ from openforms.utils.translations import runtime_gettext
 from ..constants import UploadFileType
 from ..utils import verify_clamav_connection
 from .theme import Theme
-
-logger = logging.getLogger(__name__)
 
 
 @ensure_default_language()

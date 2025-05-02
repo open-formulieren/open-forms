@@ -1,5 +1,3 @@
-import logging
-
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -13,8 +11,6 @@ from openforms.utils.decorators import conditional_search_engine_index
 from openforms.utils.mixins import UserIsStaffMixin
 
 from ..models import Form
-
-logger = logging.getLogger(__name__)
 
 
 class FormListView(ListView):

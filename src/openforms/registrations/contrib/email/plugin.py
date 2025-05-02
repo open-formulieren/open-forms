@@ -1,5 +1,4 @@
 import html
-import logging
 from mimetypes import types_map
 from typing import Any
 
@@ -7,6 +6,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, gettext_lazy as _
+
+import structlog
 
 from openforms.config.data import Action
 from openforms.config.models import GlobalConfiguration
@@ -37,7 +38,7 @@ from .constants import PLUGIN_ID, AttachmentFormat
 from .models import EmailConfig
 from .utils import get_registration_email_templates
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @register(PLUGIN_ID)
@@ -55,6 +56,9 @@ class EmailRegistration(BasePlugin[Options]):
 
     @staticmethod
     def get_recipients(submission: Submission, options: Options) -> list[str]:
+        log = logger.bind(
+            submission_uuid=str(submission.uuid), form_uuid=str(submission.form.uuid)
+        )
         state = submission.load_submission_value_variables_state()
         # ensure we have a fallback
         recipients: list[str] = options["to_emails"]
@@ -63,20 +67,14 @@ class EmailRegistration(BasePlugin[Options]):
         # do that because variables get created *after* the registration options are
         # submitted...
         if variable_key := options.get("to_emails_from_variable"):
+            log = log.bind(variable=variable_key)
+            log.info("lookup_recipient_from_variable")
             try:
                 variable = state.get_variable(variable_key)
             except KeyError:
-                logger.info(
-                    "Variable %s does not exist in submission %r",
-                    variable_key,
-                    submission.uuid,
-                    extra={
-                        "variable_key": variable_key,
-                        "form": submission.form.uuid,
-                        "submission": submission.uuid,
-                    },
-                )
+                log.info("variable_not_found")
             else:
+                log.info("variable_found")
                 if variable_value := variable.value:
                     # Normalize to a list of email addresses. Note that a form component
                     # could be used with multiple=True, then it will already be a list of
@@ -87,11 +85,7 @@ class EmailRegistration(BasePlugin[Options]):
                     # do not validate that the values are emails, if they're wrong values,
                     # we want to see this in error monitoring.
                     recipients = variable_value
-                    logger.info(
-                        "Determined recipients from form variable %r: %r",
-                        variable_key,
-                        recipients,
-                    )
+                    log.info("recipients_resolved", recipients=recipients)
 
         return recipients
 

@@ -1,8 +1,10 @@
-import logging
+from __future__ import annotations
+
 from typing import Literal, TypedDict
 
 import elasticapm
 import requests
+import structlog
 from zgw_consumers.client import build_client
 
 from openforms.contrib.hal_client import HALClient
@@ -10,17 +12,17 @@ from openforms.contrib.hal_client import HALClient
 from .api_models.basisprofiel import BasisProfiel
 from .models import KVKConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
-def get_kvk_profile_client() -> "KVKProfileClient":
+def get_kvk_profile_client() -> KVKProfileClient:
     config = KVKConfig.get_solo()
     if not (service := config.profile_service):
         raise NoServiceConfigured("No KVK basisprofielen service configured!")
     return build_client(service, client_factory=KVKProfileClient)
 
 
-def get_kvk_search_client() -> "KVKSearchClient":
+def get_kvk_search_client() -> KVKSearchClient:
     config = KVKConfig.get_solo()
     if not (service := config.search_service):
         raise NoServiceConfigured("No KVK zoeken service configured!")
@@ -65,9 +67,7 @@ class KVKProfileClient(HALClient):
             response = self.get(path)
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception(
-                "exception while making KVK basisprofiel request", exc_info=exc
-            )
+            logger.exception("kvk_profile_request_failure", exc_info=exc)
             raise exc
 
         return response.json()
@@ -93,7 +93,7 @@ class KVKSearchClient(HALClient):
             )
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making KVK zoeken request", exc_info=exc)
+            logger.exception("kvk_search_request_failure", exc_info=exc)
             raise exc
 
         return response.json()

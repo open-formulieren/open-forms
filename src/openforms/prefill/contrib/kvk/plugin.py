@@ -1,9 +1,9 @@
-import logging
 from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from glom import GlomError, glom
 from requests import RequestException
 
@@ -19,7 +19,7 @@ from ...constants import IdentifierRoles
 from ...registry import register
 from .constants import Attributes
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _select_address(items, type_):
@@ -78,9 +78,9 @@ class KVK_KVKNumberPrefill(BasePlugin):
         for attr in attributes:
             try:
                 values[attr] = glom(result, attr)
-            except GlomError:
+            except GlomError as exc:
                 logger.warning(
-                    f"missing expected attribute '{attr}' in backend response"
+                    "missing_attribute_in_response", attribute=attr, exc_info=exc
                 )
         return values
 

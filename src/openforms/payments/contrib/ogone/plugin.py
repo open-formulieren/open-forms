@@ -1,11 +1,10 @@
-import logging
-
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
+import structlog
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
@@ -30,7 +29,7 @@ from .exceptions import InvalidSignature
 from .models import OgoneMerchant
 from .typing import PaymentOptions
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class OgoneOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -126,39 +125,51 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
     def handle_return(
         self, request: Request, payment: SubmissionPayment, options: PaymentOptions
     ):
-        action = request.query_params.get(RETURN_ACTION_PARAM)
-        payment_id = request.query_params[PAYMENT_ID_PARAM]
+        with structlog.contextvars.bound_contextvars(
+            submission_uuid=str(payment.submission.uuid),
+            payment_uuid=str(payment.uuid),
+            plugin=self,
+            entrypoint="browser",
+        ):
+            action = request.query_params.get(RETURN_ACTION_PARAM)
+            payment_id = request.query_params[PAYMENT_ID_PARAM]
+            log = logger.bind(payment_id=payment_id)
 
-        client = OgoneClient(options["merchant_id"])
+            log.info("process_payment_status")
+            client = OgoneClient(options["merchant_id"])
 
-        try:
-            params = client.get_validated_params(request.query_params)
-        except InvalidSignature as e:
-            logger.warning(f"invalid SHASIGN for payment {payment}")
-            logevent.payment_flow_failure(payment, self, e)
-            return HttpResponseBadRequest("bad shasign")
+            try:
+                params = client.get_validated_params(request.query_params)
+            except InvalidSignature as exc:
+                log.warning(
+                    "payment_flow_failure",
+                    reason="invalid_shasign_signature",
+                    exc_info=exc,
+                )
+                logevent.payment_flow_failure(payment, self, exc)
+                return HttpResponseBadRequest("bad shasign")
 
-        self.apply_status(payment, params.STATUS, payment_id)
+            self.apply_status(payment, params.STATUS, payment_id)
 
-        token = submission_status_token_generator.make_token(payment.submission)
-        status_url = request.build_absolute_uri(
-            reverse(
-                "api:submission-status",
-                kwargs={"uuid": payment.submission.uuid, "token": token},
+            token = submission_status_token_generator.make_token(payment.submission)
+            status_url = request.build_absolute_uri(
+                reverse(
+                    "api:submission-status",
+                    kwargs={"uuid": payment.submission.uuid, "token": token},
+                )
             )
-        )
 
-        redirect_url = get_frontend_redirect_url(
-            payment.submission,
-            action="payment",
-            action_params={
-                "of_payment_status": payment.status,
-                "of_payment_id": str(payment.uuid),
-                "of_payment_action": action or UserAction.unknown,
-                "of_submission_status": status_url,
-            },
-        )
-        return HttpResponseRedirect(redirect_url)
+            redirect_url = get_frontend_redirect_url(
+                payment.submission,
+                action="payment",
+                action_params={
+                    "of_payment_status": payment.status,
+                    "of_payment_id": str(payment.uuid),
+                    "of_payment_action": action or UserAction.unknown,
+                    "of_submission_status": status_url,
+                },
+            )
+            return HttpResponseRedirect(redirect_url)
 
     def handle_webhook(self, request: Request):
         # unvalidated data
@@ -173,22 +184,35 @@ class OgoneLegacyPaymentPlugin(BasePlugin[PaymentOptions]):
             raise ParseError("missing PAYID")
 
         payment = get_object_or_404(SubmissionPayment, public_order_id=order_id)
-        options_serializer = self.configuration_options(data=payment.plugin_options)
-        options_serializer.is_valid(raise_exception=True)
-        options: PaymentOptions = options_serializer.validated_data
-        client = OgoneClient(options["merchant_id"])
+        with structlog.contextvars.bound_contextvars(
+            submission_uuid=str(payment.submission.uuid),
+            payment_uuid=str(payment.uuid),
+            plugin=self,
+            entrypoint="webhook",
+        ):
+            log = logger.bind(payment_id=payment_id)
+            log.info("process_payment_status")
 
-        try:
-            params = client.get_validated_params(request.data)
-        except InvalidSignature as e:
-            logger.warning(f"invalid SHASIGN for payment {payment}")
-            logevent.payment_flow_failure(payment, self, e)
-            # see note about ParseError above
-            raise ParseError("bad shasign")
+            options_serializer = self.configuration_options(data=payment.plugin_options)
+            options_serializer.is_valid(raise_exception=True)
+            options: PaymentOptions = options_serializer.validated_data
+            client = OgoneClient(options["merchant_id"])
 
-        self.apply_status(payment, params.STATUS, payment_id)
+            try:
+                params = client.get_validated_params(request.data)
+            except InvalidSignature as exc:
+                log.warning(
+                    "payment_flow_failure",
+                    reason="invalid_shasign_signature",
+                    exc_info=exc,
+                )
+                logevent.payment_flow_failure(payment, self, exc)
+                # see note about ParseError above
+                raise ParseError("bad shasign")
 
-        return payment
+            self.apply_status(payment, params.STATUS, payment_id)
+
+            return payment
 
     def apply_status(
         self, payment: SubmissionPayment, ogone_status: str, payment_id: str

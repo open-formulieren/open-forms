@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Any
 
 from django.template.defaultfilters import date as date_filter
@@ -16,9 +15,6 @@ from .models import ConfirmationEmailTemplate
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission  # pragma: nocover
-
-
-logger = logging.getLogger(__name__)
 
 
 def get_confirmation_email_templates(submission: Submission) -> tuple[str, str]:

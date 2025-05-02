@@ -1,11 +1,11 @@
 import json
-import logging
 from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
 import requests
 import simplejson  # dependency pulled in via mail-parser...
+import structlog
 from django_camunda.client import Camunda, get_client
 from django_camunda.dmn import evaluate_dmn, get_dmn_parser
 from django_camunda.dmn.datastructures import DMNIntrospectionResult
@@ -14,7 +14,7 @@ from ...base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ...registry import register
 from .checks import check_config
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _get_decision_definition_id(client: Camunda, key: str, version: str = ""):
@@ -31,9 +31,7 @@ def _get_decision_definition_id(client: Camunda, key: str, version: str = ""):
 
     if not results or num_results > 1:  # pragma: nocover
         logger.warning(
-            "None or multiple decision-definition found in the API, found %d results for query %r.",
-            num_results,
-            query,
+            "unexpected_definition_amount", expected=1, got=num_results, query=query
         )
         return ""
 
@@ -41,16 +39,19 @@ def _get_decision_definition_id(client: Camunda, key: str, version: str = ""):
 
 
 def handle_camunda_error(error: requests.HTTPError):
-    logger.exception("Error occurred while calling Camunda API", exc_info=error)
+    log = logger.bind(exc_info=error)
     if error.response is None:
+        log.exception("camunda_request_failure")
         raise
+
+    log = log.bind(response_status=error.response.status_code)
 
     try:
         response_body = error.response.json()
-    except (json.JSONDecodeError, simplejson.JSONDecodeError):
-        logger.exception("Could not decode JSON data in error response body")
+    except (json.JSONDecodeError, simplejson.JSONDecodeError) as exc:
+        log.exception("json_body_decode_failure", exc_info=exc)
     else:
-        logger.error("Camunda error information: %r", response_body)
+        log.error("camunda_request_failure", body=response_body)
 
 
 @register("camunda7")

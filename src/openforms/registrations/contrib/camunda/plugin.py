@@ -6,13 +6,13 @@ See the `documentation <_variables>` to learn more about Camunda variable types.
 .. _variables: https://docs.camunda.org/manual/7.16/reference/rest/overview/variables/
 """
 
-import logging
 from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
+import structlog
 from django_camunda.api import get_process_definitions
 from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
@@ -29,7 +29,7 @@ from .complex_variables import get_complex_process_variables
 from .serializers import CamundaOptionsSerializer
 from .type_mapping import to_python
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_process_variables(
@@ -64,7 +64,7 @@ def get_process_variables(
     )
 
     if intersection := set(complex_variables).intersection(set(variables)):
-        logger.warning("Complex variables overlap, check the keys %r", intersection)
+        logger.warning("complex_variables_overlap", keys=intersection)
 
     variables.update(**complex_variables)
 
@@ -115,27 +115,29 @@ class CamundaRegistration(BasePlugin):
             process_options["process_id"] = needle.id
             del process_options["process_key"]
 
+        log = logger.bind(**process_options)
         # celery task, but we call it synchronously since this codepath already runs
         # outside of a request-response cycle (celery or management command)
         try:
+            log.info("start_process")
             meta_information = start_process(**process_options)
         except requests.RequestException as exc:
             if (response := exc.response) is not None:
                 camunda_response = response.json()
+                log = log.bind(
+                    response_status_code=response.status_code,
+                    response=camunda_response,
+                    exc_info=exc,
+                )
 
                 if response.status_code >= 500:
-                    logger.exception(
-                        "Camunda error on process start: %r", camunda_response
-                    )
+                    log.exception("camunda_error")
                     raise RegistrationFailed(
                         f"Failed starting the process instance: {camunda_response}"
                     ) from exc
 
                 elif response.status_code >= 400:
-                    logger.error(
-                        "Invalid request made to Camunda to start a process instance: %r",
-                        camunda_response,
-                    )
+                    log.error("invalid_api_call")
                     raise RegistrationFailed(
                         f"Failed starting the process instance: {camunda_response}"
                     ) from exc
