@@ -4,7 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Prefetch
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
@@ -25,6 +25,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request
 from openforms.variables.constants import FormVariableSources
 
+from ..json_schema import generate_json_schema
 from ..messages import add_success_message
 from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..utils import export_form, import_form
@@ -607,6 +608,29 @@ class FormViewSet(viewsets.ModelViewSet):
             context={"request": request, "form": form},
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary=_("JSON schema"),
+        description=_("Generate the JSON schema for a form."),
+        parameters=[UUID_OR_SLUG_PARAMETER],
+        request=None,
+        responses={
+            (
+                status.HTTP_200_OK,
+                "application/json",
+            ): OpenApiTypes.OBJECT
+        },
+    )
+    @action(detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,))
+    def json_schema(self, request, *args, **kwargs):
+        form = self.get_object()
+
+        schema = generate_json_schema(
+            form,
+            limit_to_variables=form.formvariable_set.values_list("key", flat=True),
+        )
+
+        return JsonResponse(schema)
 
 
 FormViewSet.__doc__ = inspect.getdoc(FormViewSet).format(

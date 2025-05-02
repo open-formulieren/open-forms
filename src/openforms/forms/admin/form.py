@@ -261,7 +261,12 @@ class FormAdmin(
 
     @admin.display(description=_("Actions"))
     def get_object_actions(self, obj: Form) -> str:
-        links: list[tuple[str, StrOrPromise]] = []
+        links: list[tuple[str, StrOrPromise]] = [
+            (
+                obj.get_json_schema_url(),
+                _("Generate schema"),
+            )
+        ]
         if obj.active:
             links.append((obj.get_absolute_url(), _("Show form")))
         return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)

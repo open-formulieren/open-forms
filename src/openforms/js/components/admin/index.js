@@ -18,8 +18,15 @@ const mountForm = wrapperProps => {
   if (!formCreationFormNodes.length) return;
 
   for (const formCreationFormNode of formCreationFormNodes) {
-    const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl, outgoingRequestsUrl} =
-      formCreationFormNode.dataset;
+    const {
+      csrftoken,
+      formUuid,
+      formUrl,
+      tinymceUrl,
+      formHistoryUrl,
+      outgoingRequestsUrl,
+      formJsonSchemaUrl,
+    } = formCreationFormNode.dataset;
 
     ReactModal.setAppElement(formCreationFormNode);
     const root = createRoot(formCreationFormNode);
@@ -34,6 +41,7 @@ const mountForm = wrapperProps => {
             formUrl={formUrl}
             formHistoryUrl={formHistoryUrl}
             outgoingRequestsUrl={outgoingRequestsUrl}
+            formJsonSchemaUrl={formJsonSchemaUrl}
           />
         </TinyMceContext.Provider>
       </AppWrapper>

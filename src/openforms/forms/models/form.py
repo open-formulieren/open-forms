@@ -427,6 +427,9 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
+    def get_json_schema_url(self):
+        return reverse("api:form-json-schema", kwargs={"uuid_or_slug": self.uuid})
+
     def get_registration_backend_display(self) -> str:
         return (
             ", ".join(
