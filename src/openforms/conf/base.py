@@ -16,6 +16,7 @@ from upgrade_check import UpgradeCheck, VersionRange
 from upgrade_check.constraints import UpgradePaths
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
+from openforms.logging.processors import drop_user_agent_in_dev
 
 from .utils import Filesize, config, get_sentry_integrations
 
@@ -397,6 +398,7 @@ LOGGING = {
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
+                drop_user_agent_in_dev,
                 structlog.stdlib.PositionalArgumentsFormatter(),
             ],
         },
@@ -408,6 +410,7 @@ LOGGING = {
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
+                drop_user_agent_in_dev,
                 structlog.stdlib.PositionalArgumentsFormatter(),
             ],
         },
@@ -519,6 +522,7 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
+        drop_user_agent_in_dev,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
