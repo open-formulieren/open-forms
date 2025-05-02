@@ -11,7 +11,7 @@ import sys
 import django
 
 sys.path.insert(0, os.path.abspath("../src"))
-os.environ["LOG_REQUESTS"] = "false"
+os.environ["LOG_OUTGOING_REQUESTS"] = "false"
 
 import openforms  # noqa isort:skip
 
