@@ -11,14 +11,10 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
-from openforms.formio.constants import DataSrcOptions
-from openforms.formio.service import rewrite_formio_components
 from openforms.formio.typing import (
     Component,
     FileComponent,
-    RadioComponent,
     SelectBoxesComponent,
-    SelectComponent,
 )
 from openforms.forms.json_schema import generate_json_schema
 from openforms.forms.models import FormVariable
@@ -61,7 +57,9 @@ class GenericJSONRegistration(BasePlugin):
             for key, value in all_values.items()
             if key in options["variables"]
         }
-        values_schema = generate_json_schema(submission.form, list(values.keys()))
+        values_schema = generate_json_schema(
+            submission.form, list(values.keys()), submission=submission
+        )
         transform_to_list = options["transform_to_list"]
         post_process(values, values_schema, submission, transform_to_list)
 
@@ -130,20 +128,14 @@ def post_process(
     :param values: Mapping from key to value of the data to be sent.
     :param schema: JSON schema describing ``values``.
     :param submission: The corresponding submission instance.
-    :param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
-      object-shape for selectboxes components.
+    :param transform_to_list: Component keys in this list will be sent as an array of
+      values rather than the default object-shape for selectboxes components.
     """
     if transform_to_list is None:
         transform_to_list = []
 
     state = submission.load_submission_value_variables_state()
-
-    # Update config wrapper
-    configuration_wrapper = rewrite_formio_components(
-        submission.total_configuration_wrapper,
-        submission=submission,
-        data=state.to_python(),
-    )
+    configuration_wrapper = submission.total_configuration_wrapper
 
     # Create attachment mapping from key or component data path to attachment list
     attachments = submission.attachments.annotate(
@@ -200,8 +192,8 @@ def process_component(
     The following components need extra attention:
     - File components: we send the content of the file encoded with base64, instead of
       the output from the serializer.
-    - Radio, Select, and SelectBoxes components: need to be updated if their data source
-      is set to another form variable or to the ReferenceLists API.
+    - Selectboxes components: the selected options might need to be transformed to a
+      list
     - Edit grid components: layout component with other components as children, which
       (potentially) need to be processed.
 
@@ -215,8 +207,8 @@ def process_component(
     :param key_prefix: If the component is part of an edit grid component, this key
       prefix includes the parent key and the index of the component as it appears in the
       submitted data list of that edit grid component.
-    ::param transform_to_list: Component keys in this list will be sent as an array of values rather than the default
-      object-shape for selectboxes components.
+    :param transform_to_list: Component keys in this list will be sent as an array of
+      values rather than the default object-shape for selectboxes components.
     """
     if transform_to_list is None:
         transform_to_list = []
@@ -246,86 +238,36 @@ def process_component(
             values[key] = value
             schema["properties"][key] = base_schema  # pyright: ignore[reportArgumentType]
 
-        case {
-            "type": "radio",
-            "openForms": {
-                "dataSrc": DataSrcOptions.variable | DataSrcOptions.reference_lists
-            },
-        }:
-            component = cast(RadioComponent, component)
-            choices = [options["value"] for options in component["values"]]
-            choices.append("")  # Take into account an unfilled field
-            _properties = schema["properties"][key]
-            assert isinstance(_properties, dict)
-            _properties["enum"] = choices
-
-        case {
-            "type": "select",
-            "openForms": {
-                "dataSrc": DataSrcOptions.variable | DataSrcOptions.reference_lists
-            },
-        }:
-            component = cast(SelectComponent, component)
-            choices = [options["value"] for options in component["data"]["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
-            choices.append("")  # Take into account an unfilled field
-
-            _properties = schema["properties"][key]
-            assert isinstance(_properties, dict)
-            if component.get("multiple", False):
-                assert isinstance(_properties["items"], dict)
-                _properties["items"]["enum"] = choices
-            else:
-                _properties["enum"] = choices
-
         case {"type": "selectboxes"}:
             component = cast(SelectBoxesComponent, component)
-            data_src = component.get("openForms", {}).get("dataSrc")
-
-            if (
-                data_src
-                in (
-                    DataSrcOptions.variable,
-                    DataSrcOptions.reference_lists,
-                )
-                and key not in transform_to_list
-            ):
-                properties = {
-                    options["value"]: {"type": "boolean"}
-                    for options in component["values"]
-                }
-                base_schema = {
-                    "properties": properties,
-                    "required": list(properties),
-                    "additionalProperties": False,
-                }
-                _properties = schema["properties"][key]
-                assert isinstance(_properties, dict)
-                _properties.update(base_schema)
-            elif key in transform_to_list:
-                choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
-                base_schema = {
-                    "type": "array",
-                    "items": {"type": "string", "enum": choices},
-                }
-                _properties = schema["properties"][key]
-                assert isinstance(_properties, dict)
-                _properties.update(base_schema)
-
-                keys_to_remove = ("properties", "required", "additionalProperties")
-                for k in keys_to_remove:
-                    _properties.pop(k, None)
-
-                values[key] = [
-                    option
-                    for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
-                    if is_selected
-                ]
-                return
 
             # If the select boxes component was hidden, the submitted data of this
             # component is an empty dict, so set the required to an empty list.
             if not values[key]:
                 schema["properties"][key]["required"] = []  # type: ignore
+
+            if key not in transform_to_list:
+                return
+
+            # Convert the values to a list and update the schema accordingly
+            choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
+            base_schema = {
+                "type": "array",
+                "items": {"type": "string", "enum": choices},
+            }
+            _properties = schema["properties"][key]
+            assert isinstance(_properties, dict)
+            _properties.update(base_schema)
+
+            keys_to_remove = ("properties", "required", "additionalProperties")
+            for k in keys_to_remove:
+                _properties.pop(k, None)
+
+            values[key] = [
+                option
+                for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
+                if is_selected
+            ]
 
         case {"type": "editgrid"}:
             # Note: the schema actually only needs to be processed once for each child

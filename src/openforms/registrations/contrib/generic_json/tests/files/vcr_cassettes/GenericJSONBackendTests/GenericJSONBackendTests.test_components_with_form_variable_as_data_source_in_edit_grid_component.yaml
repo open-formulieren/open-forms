@@ -5,10 +5,10 @@ interactions:
       "type": "object", "properties": {"repeatingGroup": {"title": "Repeating Group",
       "type": "array", "items": {"type": "object", "properties": {"radio": {"title":
       "Radio", "type": "string", "enum": ["A", "B", "C", ""]}, "select": {"type":
-      "string", "title": "Select", "enum": ["A", "B", "C", ""]}, "selectBoxes": {"title":
-      "Select Boxes", "type": "object", "additionalProperties": false, "properties":
-      {"A": {"type": "boolean"}, "B": {"type": "boolean"}, "C": {"type": "boolean"}},
-      "required": ["A", "B", "C"]}}, "required": ["radio", "select", "selectBoxes"],
+      "string", "enum": ["A", "B", "C", ""], "title": "Select"}, "selectBoxes": {"title":
+      "Select Boxes", "type": "object", "properties": {"A": {"type": "boolean"}, "B":
+      {"type": "boolean"}, "C": {"type": "boolean"}}, "required": ["A", "B", "C"],
+      "additionalProperties": false}}, "required": ["radio", "select", "selectBoxes"],
       "additionalProperties": false}}}, "required": ["repeatingGroup"], "additionalProperties":
       false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object", "properties": {}, "required": [], "additionalProperties":
@@ -19,7 +19,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY2MTU0MzQsImV4cCI6MTc0NjY1ODYzNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.TvdI07iFDcZOK0hdTmB7qk6g4kLh0gFAdbG365UQC6Y
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY3Nzg0NTgsImV4cCI6MTc0NjgyMTY1OCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.vD8rm41xYa9fWY0_IlBsgAoDowEcl1RGyWq7BUxfHtM
       Connection:
       - keep-alive
       Content-Length:
@@ -70,9 +70,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 07 May 2025 10:57:14 GMT
+      - Fri, 09 May 2025 08:14:18 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.8
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED

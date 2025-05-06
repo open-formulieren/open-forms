@@ -112,7 +112,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                         "numbers."
                     ),
                     "type": "string",
-                    "pattern": "^\\d{9}$",
+                    "pattern": "^\\d{9}$|^$",
                     "format": "nl-bsn",
                 },
                 "firstName": {"title": "Firstname", "type": "string"},
@@ -902,17 +902,8 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 },
             ],
             completed=True,
-            submitted_data={"select": ["A", "C"]},
+            submitted_data={"select": ["option1"]},
             with_public_registration_reference=True,
-        )
-
-        FormVariableFactory.create(
-            form=submission.form,
-            name="Values for select",
-            key="valuesForSelect",
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
-            initial_value=["A", "B", "C"],
         )
 
         json_plugin = GenericJSONRegistration("json_registration_plugin")
@@ -1631,7 +1622,7 @@ class GenericJSONRequestTests(TestCase):
                             "numbers."
                         ),
                         "type": "string",
-                        "pattern": "^\\d{9}$",
+                        "pattern": "^\\d{9}$|^$",
                         "format": "nl-bsn",
                     },
                     "firstName": {"title": "Firstname", "type": "string"},

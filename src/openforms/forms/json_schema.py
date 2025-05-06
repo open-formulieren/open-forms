@@ -2,6 +2,7 @@ from typing import Iterator, Sequence
 
 from openforms.formio.service import FormioData, rewrite_formio_components
 from openforms.plugins.registry import BaseRegistry
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
 from openforms.variables.base import BaseStaticVariable
@@ -36,6 +37,7 @@ def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
+    submission: Submission | None = None,
 ) -> JSONObject:
     """Generate a JSON schema from a form, for the specified variables.
 
@@ -45,12 +47,15 @@ def generate_json_schema(
     :param form: The form to generate JSON schema for.
     :param limit_to_variables: Variables that will be included in the schema.
     :param additional_variables_registry: Optional extra registry of static variables.
+    :param submission: Optional submission to use for dynamic data. If not provided, a
+      fake submission will be created.
 
     :returns: A JSON schema representing the form variables.
     """
-    # Note: we generate a 'fake' submission here to get the total component
-    # configuration
-    submission = SubmissionFactory(form=form)
+    if submission is None:
+        # Note: we generate a 'fake' submission here to get the total component
+        # configuration
+        submission = SubmissionFactory(form=form)
     state = submission.load_submission_value_variables_state()
     new_configuration = rewrite_formio_components(
         submission.total_configuration_wrapper, submission, state.to_python()
@@ -72,7 +77,6 @@ def generate_json_schema(
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
-
 
     # Result
     schema = {
