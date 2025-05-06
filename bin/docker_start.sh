@@ -24,6 +24,7 @@ python src/manage.py migrate
 # Start server
 >&2 echo "Starting server"
 exec uwsgi \
+    --ini "${SCRIPTPATH}/uwsgi.ini" \
     --http :$uwsgi_port \
     --http-keepalive \
     --mount $mountpoint=openforms.wsgi:application \
