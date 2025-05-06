@@ -4,22 +4,22 @@ interactions:
       {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
       "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
       the authenticated person. This value follows the rules for Dutch social security
-      numbers.", "type": "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "firstName":
-      {"title": "Firstname", "type": "string"}}, "required": ["auth_bsn", "firstName"],
-      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
-      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
-      {}, "required": [], "additionalProperties": false}}'
+      numbers.", "type": "string", "pattern": "^\\d{9}$|^$", "format": "nl-bsn"},
+      "firstName": {"title": "Firstname", "type": "string"}}, "required": ["auth_bsn",
+      "firstName"], "additionalProperties": false}, "metadata": {}, "metadata_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {}, "required": [], "additionalProperties": false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY2MTU0MzQsImV4cCI6MTc0NjY1ODYzNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.TvdI07iFDcZOK0hdTmB7qk6g4kLh0gFAdbG365UQC6Y
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY3Nzg0NTksImV4cCI6MTc0NjgyMTY1OSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.XTbkNvNNRUntbWNSb8tUAS65BMxxC_SQ37VwElfBJ-E
       Connection:
       - keep-alive
       Content-Length:
-      - '695'
+      - '698'
       User-Agent:
       - python-requests/2.32.2
       content-type:
@@ -48,9 +48,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Wed, 07 May 2025 10:57:14 GMT
+      - Fri, 09 May 2025 08:14:19 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.8
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 404
       message: NOT FOUND
