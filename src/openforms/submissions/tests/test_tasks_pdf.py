@@ -1,4 +1,5 @@
-import logging
+import logging  # noqa TID251 -- used only for the log level
+from unittest.mock import patch
 
 from django.test import TestCase, override_settings, tag
 from django.utils.html import format_html
@@ -7,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from pyquery import PyQuery as pq
-from testfixtures import LogCapture
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import FormLogicFactory
@@ -75,10 +76,8 @@ class SubmissionReportGenerationTests(TestCase):
         """
         report = SubmissionReportFactory.create(content="", submission__completed=True)
 
-        with LogCapture(level=logging.ERROR) as capture:
+        with self.assertNoLogs(level=logging.ERROR):
             report.generate_submission_report_pdf()
-
-        capture.check()
 
     def test_hidden_output_not_included(self):
         """
@@ -655,6 +654,24 @@ class SubmissionReportGenerationTests(TestCase):
             """,
         )
         self.assertInHTML(expected, html, count=1)
+
+    def test_pdf_generation_failure_is_logged(self):
+        submission = SubmissionFactory.create(completed=True, with_report=False)
+        generate_submission_report.request.id = "some-id"
+
+        with (
+            patch(
+                "openforms.submissions.tasks.pdf.SubmissionReport.generate_submission_report_pdf",
+                side_effect=IOError("storage full"),
+            ),
+            self.assertRaises(IOError),
+        ):
+            generate_submission_report.run(submission.id)
+
+        logs = TimelineLogProxy.objects.for_object(submission).filter_event(
+            "pdf_generation_failure"
+        )
+        self.assertEqual(logs.count(), 1)
 
 
 @temp_private_root()

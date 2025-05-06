@@ -82,6 +82,7 @@ Development and debug tooling
     :maxdepth: 1
 
     tests
+    logging
     dev-rendering
     profiling
     file-uploads

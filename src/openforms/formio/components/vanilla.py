@@ -5,7 +5,6 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-import logging
 from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
@@ -20,6 +19,7 @@ from django.core.validators import (
 )
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from glom import glom
 from rest_framework import serializers
 from rest_framework.request import Request
@@ -77,7 +77,7 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @register("default")
@@ -284,8 +284,13 @@ class Time(BasePlugin[Component]):
                         time.fromisoformat(max_time),
                     )
                 )
-            case _:
-                logger.warning("Got unexpected min/max time in component %r", component)
+            case _:  # pragma: no cover
+                logger.warning(
+                    "formio.unexpected_min_max_time",
+                    component=component,
+                    min_time=min_time,
+                    max_time=max_time,
+                )
 
         base = FormioTimeField(
             required=required,

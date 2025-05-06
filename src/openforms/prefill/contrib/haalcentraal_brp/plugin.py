@@ -1,10 +1,10 @@
-import logging
 from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
+import structlog
 from glom import GlomError, glom
 
 from openforms.authentication.service import AuthAttribute
@@ -20,7 +20,7 @@ from ...constants import IdentifierRoles
 from ...registry import register
 from .constants import AttributesV1, AttributesV2
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "haalcentraal"
 
@@ -68,9 +68,7 @@ class HaalCentraalPrefill(BasePlugin):
                 values[attr] = glom(data, attr)
             except GlomError as exc:
                 logger.warning(
-                    "missing expected attribute '%s' in backend response",
-                    attr,
-                    exc_info=exc,
+                    "missing_attribute_in_response", attribute=attr, exc_info=exc
                 )
 
         return values
@@ -115,7 +113,11 @@ class HaalCentraalPrefill(BasePlugin):
             return {}
 
         if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
-            logger.info("No appropriate identifier found on the submission.")
+            logger.info(
+                "lookup_identifier_absent",
+                submission_uuid=str(submission.uuid),
+                plugin=cls,
+            )
             return {}
 
         with client:

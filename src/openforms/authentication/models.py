@@ -1,10 +1,11 @@
-import logging
 from collections.abc import Collection
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
+import structlog
 
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
@@ -23,7 +24,7 @@ from .types import (
     EmployeeContext,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class BaseAuthInfo(models.Model):
@@ -258,11 +259,7 @@ class AuthInfo(BaseAuthInfo):
         | EmployeeContext
     ):
         if self.attribute_hashed:
-            logger.debug(
-                "Authentication attributes are (already) hashed, using these values "
-                "can lead to unexpected results.",
-                extra={"auth_info": self.pk},
-            )
+            logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate

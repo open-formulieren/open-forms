@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import TypedDict
@@ -10,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
@@ -42,7 +42,7 @@ from .fields import (
 )
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):

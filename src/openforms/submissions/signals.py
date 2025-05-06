@@ -1,9 +1,9 @@
-import logging
-
 from django.db import transaction
 from django.db.models import F
 from django.db.models.signals import post_delete
 from django.dispatch import Signal, receiver
+
+import structlog
 
 from openforms.submissions.models import (
     Submission,
@@ -12,7 +12,7 @@ from openforms.submissions.models import (
 )
 from openforms.utils.files import _delete_obj_files, get_file_field_names
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 # custom signal to decouple actions done by feature modules - this avoids having to
@@ -74,7 +74,9 @@ def delete_obj_files(
 def delete_submission_report_files(
     sender: type[SubmissionReport], instance: SubmissionReport, **kwargs
 ) -> None:
-    logger.debug("Deleting file %r", instance.content.name)
+    logger.debug(
+        "submissions.delete_submission_report_pdf", filename=instance.content.name
+    )
 
     instance.content.delete(save=False)
 

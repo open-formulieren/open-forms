@@ -1,4 +1,3 @@
-import logging
 import re
 from datetime import datetime
 from typing import Protocol
@@ -9,6 +8,7 @@ from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+import structlog
 from glom import glom
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
@@ -51,7 +51,7 @@ from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 from .utils import _normalize_pattern, salt_location_message
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 GEO_JSON_TYPE_TO_INTERACTION = {
@@ -298,9 +298,13 @@ class Postcode(BasePlugin[Component]):
 
         try:
             return conform_to_mask(value, input_mask)
-        except ValueError:
+        except ValueError as exc:
             logger.warning(
-                "Could not conform value '%s' to input mask '%s', returning original value."
+                "formio.postcode_to_mask_failure",
+                input_mask=input_mask,
+                value=value,
+                component=component,
+                exc_info=exc,
             )
             return value
 

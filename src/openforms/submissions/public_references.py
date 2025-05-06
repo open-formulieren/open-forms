@@ -1,11 +1,11 @@
-import logging
-
 from django.db import IntegrityError, transaction
 from django.utils.crypto import get_random_string
 
+import structlog
+
 from .models import Submission
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def set_submission_reference(submission: Submission) -> str | None:
@@ -16,12 +16,14 @@ def set_submission_reference(submission: Submission) -> str | None:
     is possible that the backend registration failed or does not generate a reference
     (read: case number), in which case we need to generate a unique reference ourselves.
     """
+    log = logger.bind(
+        action="submissions.set_submission_reference",
+        submission_uuid=str(submission.uuid),
+    )
+
     # idempotency - do not run this again if there already is a reference!
     if submission.public_registration_reference:
-        logger.info(
-            "Submission %d already had a public registration reference, aborting.",
-            submission.id,
-        )
+        log.info("skip_set_public_reference", reason="reference_already_set")
         return
 
     # race-condition detection. There's no reason/logic after the number 5 other than
@@ -39,13 +41,12 @@ def set_submission_reference(submission: Submission) -> str | None:
                 submission.save(update_fields=["public_registration_reference"])
         except IntegrityError as error:
             race_condition_suspected = True
-            logger.warning(
-                "Likely race condition being handled for submission %d, did %d save attempts.",
-                submission.id,
-                save_attempts + 1,
+            save_attempts += 1
+            log.warning(
+                "likely_race_condition_detected",
+                num_attempts_done=save_attempts,
                 exc_info=error,
             )
-            save_attempts += 1
             # if we're about to leave the loop, re-raise the original exception
             if save_attempts >= MAX_NUM_ATTEMPTS:
                 raise

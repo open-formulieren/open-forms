@@ -1,11 +1,11 @@
 import dataclasses
-import logging
 from typing import Iterable, TypeAlias
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+import structlog
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 
@@ -15,7 +15,7 @@ from openforms.typing import JSONValue
 
 from .base import BasePlugin
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 StrOrIterable: TypeAlias = str | Iterable["StrOrIterable"]
 
@@ -57,10 +57,11 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
     def validate(
         self, plugin_id: str, value: JSONValue, submission: Submission
     ) -> ValidationResult:
+        log = logger.bind(plugin_id=plugin_id, submission_id=submission.uuid)
         try:
             validator = self._registry[plugin_id]
-        except KeyError:
-            logger.warning("called unregistered plugin_id %s", plugin_id)
+        except KeyError as exc:
+            log.warning("validations.unknown_plugin_called", exc_info=exc)
             return ValidationResult(
                 False,
                 messages=[
@@ -71,6 +72,7 @@ class Registry(BaseRegistry[BasePlugin[JSONValue]]):
             )
 
         if not validator.is_enabled:
+            log.info("validations.plugin_not_enabled")
             return ValidationResult(
                 False,
                 messages=[

@@ -1,4 +1,3 @@
-import logging
 from functools import partial
 
 from django import forms
@@ -9,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView
 
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import permissions
@@ -31,7 +31,7 @@ from .constants import PaymentStatus
 from .models import SubmissionPayment
 from .registry import register
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class PaymentFlowBaseView(APIView):
@@ -209,11 +209,13 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         path if something goes wrong on our end.
         """
         payment = self.get_object()
+        log = logger.bind(submission_payment_uuid=str(payment.uuid))
         try:
             plugin = register[payment.plugin_id]
         except KeyError:
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
+        log = log.bind(plugin=plugin)
 
         if not payment.submission.payment_required:
             raise ParseError(detail="payment not required")
@@ -228,19 +230,22 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         try:
             options.is_valid(raise_exception=True)
             response = plugin.handle_return(request, payment, options.validated_data)
-        except Exception as e:
-            logevent.payment_flow_failure(payment, plugin, e)
+        except Exception as exc:
+            log.error("payment_flow_failure", exc_info=exc)
+            logevent.payment_flow_failure(payment, plugin, exc)
             raise
         else:
+            log.info("payment_flow_return")
             logevent.payment_flow_return(payment, plugin)
 
         if response.status_code in (301, 302):
             location = response.get("Location", "")
             if location and not allow_redirect_url(location):
-                logger.warning(
-                    "blocked payment return with non-allowed redirect from "
-                    "plugin '%(plugin_id)s' to '%(location)s'",
-                    {"plugin_id": payment.plugin_id, "location": location},
+                log.warning(
+                    "payment_return_blocked",
+                    reason="disallowed_redirect",
+                    status_code=response.status_code,
+                    redirect_to=location,
                 )
                 raise ParseError(detail="redirect not allowed")
 

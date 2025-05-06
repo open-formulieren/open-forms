@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.test import TestCase, override_settings, tag
 from django.test.client import RequestFactory
+from django.urls import reverse
 
 from rest_framework import status
 
@@ -18,6 +19,10 @@ from ..registry import Registry
 from .factories import SubmissionPaymentFactory
 
 
+class PaymentError(Exception):
+    pass
+
+
 class Plugin(BasePlugin):
     verbose_name = "some human readable label"
     return_method = "GET"
@@ -27,6 +32,8 @@ class Plugin(BasePlugin):
         return PaymentInfo(type="get", url="http://testserver/foo")
 
     def handle_return(self, request, payment, options):
+        if request.GET.get("_error"):
+            raise PaymentError("error triggered")
         return HttpResponseRedirect(payment.submission.form_url)
 
     def handle_webhook(self, request):
@@ -212,6 +219,95 @@ class ViewsTests(TestCase):
         self.assertEqual(response.data["code"], "parse_error")
         self.assertEqual(response.data["detail"], "plugin not enabled")
         self.assertFalse(SubmissionPayment.objects.exists())
+
+    def test_start_with_no_payment_required(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product=None,
+        )
+        start_url = reverse(
+            "payments:start", kwargs={"uuid": submission.uuid, "plugin_id": "plugin1"}
+        )
+
+        with patch("openforms.payments.views.register", new=register):
+            response = self.client.post(start_url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_start_with_wrong_backend(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        register("plugin2")(Plugin)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="plugin1",
+        )
+        start_url = reverse(
+            "payments:start", kwargs={"uuid": submission.uuid, "plugin_id": "plugin2"}
+        )
+
+        with patch("openforms.payments.views.register", new=register):
+            response = self.client.post(start_url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_return_with_no_payment_required(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product=None,
+        )
+        payment = SubmissionPaymentFactory.create(
+            submission=submission, plugin_id="plugin1"
+        )
+        return_url = reverse("payments:return", kwargs={"uuid": payment.uuid})
+
+        with patch("openforms.payments.views.register", new=register):
+            response = self.client.get(return_url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_return_with_wrong_backend(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        register("plugin2")(Plugin)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="plugin1",
+        )
+        payment = SubmissionPaymentFactory.create(
+            submission=submission, plugin_id="plugin2"
+        )
+        return_url = reverse("payments:return", kwargs={"uuid": payment.uuid})
+
+        with patch("openforms.payments.views.register", new=register):
+            response = self.client.get(return_url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_return_crashes(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="plugin1",
+        )
+        payment = SubmissionPaymentFactory.create(
+            submission=submission, plugin_id="plugin1"
+        )
+        return_url = reverse("payments:return", kwargs={"uuid": payment.uuid})
+
+        with (
+            patch("openforms.payments.views.register", new=register),
+            self.assertRaises(PaymentError),
+        ):
+            self.client.get(return_url, {"_error": "1"})
 
 
 class PaymentPlugin(BasePlugin):

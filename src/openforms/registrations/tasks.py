@@ -1,10 +1,10 @@
-import logging
 import traceback
 from contextlib import contextmanager
 
 from django.db import transaction
 from django.utils import timezone
 
+import structlog
 from celery_once import QueueOnce
 from glom import assign
 from rest_framework.exceptions import ValidationError
@@ -19,7 +19,7 @@ from openforms.submissions.public_references import set_submission_reference
 from .exceptions import RegistrationFailed
 from .service import get_registration_plugin
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ShouldAbort:
@@ -31,6 +31,7 @@ class ShouldAbort:
 
 @contextmanager
 def track_error(submission: Submission, event: PostSubmissionEvents):
+    log = logger.bind(submission_uuid=str(submission.uuid), trigger=event)
     should_abort = ShouldAbort()
 
     try:
@@ -39,7 +40,7 @@ def track_error(submission: Submission, event: PostSubmissionEvents):
         should_abort.value = True
 
         if not isinstance(exc, ValidationError):
-            logger.exception("Pre-registration raised %s", exc)
+            log.exception("registrations.error", exc_info=exc)
 
         set_submission_reference(submission)
         submission.save_registration_status(
@@ -55,28 +56,37 @@ def track_error(submission: Submission, event: PostSubmissionEvents):
 @app.task()
 def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     submission = Submission.objects.get(id=submission_id)
+    log = logger.bind(
+        action="registrations.pre_registration",
+        submission_uuid=str(submission.uuid),
+        trigger=event,
+    )
     if not submission.completed_on:
         # This should never happen. Pre-registration shouldn't be attempted for a submission that is not complete.
-        logger.error(
-            "Trying to pre-register submission '%s' which is not completed.", submission
-        )
+        log.error("submission_not_completed")
         return
 
     if submission.pre_registration_completed:
         return
 
     config = GlobalConfiguration.get_solo()
-    if submission.registration_attempts >= config.registration_attempt_limit:
-        logger.debug(
-            "Skipping pre-registration for submission '%s' because it retried and failed too many times.",
-            submission,
+    if (num_attempts := submission.registration_attempts) >= (
+        max_num := config.registration_attempt_limit
+    ):
+        log.debug(
+            "max_registration_attempts_exceeded",
+            num_attempts=num_attempts,
+            max_num=max_num,
+            outcome="skip_pre_registration",
         )
         return
 
     registration_plugin = get_registration_plugin(submission)
+    log = log.bind(plugin=registration_plugin)
 
     with transaction.atomic():
         if not registration_plugin:
+            log.info("generate_submission_reference")
             set_submission_reference(submission)
             submission.pre_registration_completed = True
             submission.save()
@@ -89,9 +99,11 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         )
 
         with track_error(submission, event) as should_abort:
+            log.debug("validate_registration_plugin_options")
             options_serializer.is_valid(raise_exception=True)
 
         if should_abort:
+            log.debug("abort")
             return
 
         # If we are retrying, then an internal registration reference has been set. We keep track of it.
@@ -99,6 +111,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             if not submission.registration_result:
                 submission.registration_result = {}
 
+            log.debug("store_temporary_internal_reference")
             assign(
                 submission.registration_result,
                 "temporary_internal_reference",
@@ -111,7 +124,9 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     with track_error(submission, event) as should_abort:
         # If an `initial_data_reference` was passed, we must verify that the
         # authenticated user is the owner of the referenced object
-        if submission.initial_data_reference:
+        has_initial_data_reference = bool(submission.initial_data_reference)
+        log.info("verify_initial_data_ownership", skip=not has_initial_data_reference)
+        if has_initial_data_reference:
             # may raise PermissionDenied
             # XXX: audit logging inside this check is likely lost when the outer
             # transaction block rolls back. See
@@ -123,8 +138,10 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         result = registration_plugin.pre_register_submission(submission, plugin_options)
 
     if should_abort:
+        log.debug("abort")
         return
 
+    log.debug("assign_registration_reference")
     if not result.reference:
         set_submission_reference(submission)
     else:
@@ -133,6 +150,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     if not submission.registration_result:
         submission.registration_result = {}
 
+    log.debug("clear_error_information")
     if "traceback" in submission.registration_result:
         del submission.registration_result["traceback"]
 
@@ -141,6 +159,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
 
     submission.pre_registration_completed = True
     submission.save()
+    log.info("completed")
 
 
 @app.task(
@@ -169,7 +188,13 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     submission = Submission.objects.select_related("auth_info", "form").get(
         id=submission_id
     )
-    logger.debug("Register submission '%s'", submission)
+    form = submission.form
+    log = logger.bind(
+        action="registrations.main_registration",
+        form=form,
+        submission_uuid=str(submission.uuid),
+        trigger=event,
+    )
 
     if submission.registration_status == RegistrationStatuses.success:
         # if it's already successfully registered, do not overwrite that.
@@ -177,23 +202,15 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
 
     if not submission.completed_on:
         # This should never happen. Registration shouldn't be attempted for a submission that is not complete.
-        logger.error(
-            "Trying to register submission '%s' which is not completed.", submission
-        )
+        log.error("submission_not_completed", outcome="skip")
         return
 
     if not submission.pre_registration_completed:
-        logger.debug(
-            "Skipping registration for submission '%s' because it hasn't been pre-registered yet.",
-            submission,
-        )
+        log.debug("pre_registration_not_completed", outcome="skip")
         return
 
     if submission.cosign_state.is_waiting:
-        logger.debug(
-            "Skipping registration for submission '%s' as it hasn't been co-signed yet.",
-            submission,
-        )
+        log.debug("skipped_registration", reason="cosign_required", outcome="skip")
         logevent.skipped_registration_cosign_required(submission)
         return
 
@@ -203,22 +220,24 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         and submission.payment_required
         and not submission.payment_user_has_paid
     ):
-        logger.debug(
-            "Skipping registration for submission '%s' as the payment hasn't been received yet.",
-            submission,
-        )
+        log.debug("skipped_registration", reason="payment_not_received", outcome="skip")
         logevent.registration_skipped_not_yet_paid(submission)
         return
 
-    if submission.registration_attempts >= config.registration_attempt_limit:
+    if (num_attempts := submission.registration_attempts) >= (
+        max_num := config.registration_attempt_limit
+    ):
         # if it fails after this many attempts we give up
-        logevent.registration_attempts_limited(submission)
-        logger.debug(
-            "Skipping registration for submission '%s' because it retried and failed too many times.",
-            submission,
+        log.debug(
+            "max_registration_attempts_exceeded",
+            num_attempts=num_attempts,
+            max_num=max_num,
+            outcome="skip",
         )
+        logevent.registration_attempts_limited(submission)
         return
 
+    log.info("registration_start")
     logevent.registration_start(submission)
 
     submission.last_register_date = timezone.now()
@@ -233,11 +252,10 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     )
 
     # figure out which registry and backend to use from the model field used
-    form = submission.form
     backend_config = submission.registration_backend
 
     if not backend_config or not backend_config.backend:
-        logger.info("Form %s has no registration plugin configured, aborting", form)
+        log.info("registration_completed", reason="no_registration_plugin_configured")
         submission.save_registration_status(RegistrationStatuses.success, None)
         logevent.registration_skip(submission)
         return
@@ -245,11 +263,12 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     registry = backend_config._meta.get_field("backend").registry  # pyright: ignore[reportAttributeAccessIssue]
     backend = backend_config.backend
 
-    logger.debug("Looking up plugin with unique identifier '%s'", backend)
+    log.debug("resolve_plugin", plugin_id=backend)
     plugin = registry[backend]
+    log = log.bind(plugin=plugin)
 
     if not plugin.is_enabled:
-        logger.debug("Plugin '%s' is not enabled", backend)
+        log.debug("registration_failure", reason="plugin_disabled")
         exc = RegistrationFailed("Registration plugin is not enabled")
         submission.save_registration_status(
             RegistrationStatuses.failed,
@@ -260,7 +279,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             raise exc
         return
 
-    logger.debug("De-serializing the plugin configuration options")
+    log.debug("deserialize_and_validate_registration_plugin_options")
     options_serializer = plugin.configuration_options(
         data=backend_config.options,
         context={"validate_business_logic": False},
@@ -270,12 +289,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         options_serializer.is_valid(raise_exception=True)
     except ValidationError as exc:
         logevent.registration_failure(submission, exc, plugin)
-        logger.warning(
-            "Registration using plugin '%r' for submission '%s' failed",
-            plugin,
-            submission,
-            exc_info=exc,
-        )
+        log.warning("registration_failure", reason="invalid_options", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
@@ -283,36 +297,22 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             raise exc
         return
 
-    logger.debug("Invoking the '%r' plugin callback", plugin)
-
+    log.debug("call_plugin")
     try:
         result = plugin.register_submission(
             submission, options_serializer.validated_data
         )
     except RegistrationFailed as exc:
-        logger.warning(
-            "Registration using plugin '%r' for submission '%s' failed",
-            plugin,
-            submission,
-            exc_info=exc,
-        )
+        log.warning("registration_failure", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
         logevent.registration_failure(submission, exc, plugin)
-        submission.save_registration_status(
-            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
-        )
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
     except Exception as exc:
-        logger.error(
-            "Registration using plugin '%r' for submission '%s' unexpectedly errored",
-            plugin,
-            submission,
-            exc_info=True,
-        )
+        log.exception("unexpected_registration_failure", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
@@ -321,17 +321,14 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             raise exc
         return
 
-    logger.info(
-        "Registration using plugin '%r' for submission '%s' succeeded",
-        plugin,
-        submission,
-    )
-
+    log.info("registration_success")
     if (
         config.wait_for_payment_to_register
         and event == PostSubmissionEvents.on_payment_complete
     ):
         submission.payments.mark_registered()
+        log.info("marked_payments_registered")
 
     submission.save_registration_status(RegistrationStatuses.success, result or {})
     logevent.registration_success(submission, plugin)
+    log.info("done")

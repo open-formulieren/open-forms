@@ -1,4 +1,4 @@
-from ape_pie import APIClient
+from .client import LoggingClient
 
 HAL_CONTENT_TYPE = "application/hal+json"
 
@@ -14,5 +14,5 @@ class HALMixin:
         )
 
 
-class HALClient(HALMixin, APIClient):
+class HALClient(HALMixin, LoggingClient):
     pass

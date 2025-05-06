@@ -1,9 +1,9 @@
-import logging
 from collections import defaultdict
 
 from django.core.exceptions import PermissionDenied
 
 import elasticapm
+import structlog
 from rest_framework.exceptions import ValidationError
 from zgw_consumers.concurrent import parallel
 
@@ -18,7 +18,7 @@ from .base import BasePlugin
 from .constants import IdentifierRoles
 from .registry import Registry
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def fetch_prefill_values_from_attribute(
@@ -56,15 +56,18 @@ def fetch_prefill_values_from_attribute(
         item: tuple[BasePlugin, IdentifierRoles, list[dict[str, str]]],
     ) -> tuple[list[dict[str, str]], dict[str, JSONEncodable]]:
         plugin, identifier_role, fields = item
+        log = logger.bind(plugin=plugin, for_role=identifier_role, fields=fields)
 
         if not plugin.is_enabled:
+            log.debug("plugin_disabled")
             raise PluginNotEnabled()
 
         attributes = [attribute for field in fields for attribute in field]
+        log.debug("prefill.plugin.lookup_attributes", attributes=attributes)
         try:
             values = plugin.get_prefill_values(submission, attributes, identifier_role)
         except Exception as e:
-            logger.exception(f"exception in prefill plugin '{plugin_id}'")
+            log.exception("prefill.plugin.retrieve_failure")
             logevent.prefill_retrieve_failure(submission, plugin, e)
             values = {}
         else:
@@ -110,12 +113,16 @@ def fetch_prefill_values_from_options(
     for variable in variables:
         plugin = register[variable.form_variable.prefill_plugin]
         raw_options = variable.form_variable.prefill_options
+        log = logger.bind(
+            variable=variable.key, plugin=plugin, submission_uuid=str(submission.uuid)
+        )
 
         # validate the options before processing them
         options_serializer = plugin.options(data=raw_options)
         try:
             options_serializer.is_valid(raise_exception=True)
         except ValidationError as exc:
+            log.warning("prefill.plugin.retrieve_failure", reason="invalid_options")
             logevent.prefill_retrieve_failure(submission, plugin, exc)
             continue
 
@@ -123,25 +130,22 @@ def fetch_prefill_values_from_options(
 
         # If an `initial_data_reference` was passed, we must verify that the
         # authenticated user is the owner of the referenced object
-        if submission.initial_data_reference:
+        has_initial_data_reference = bool(submission.initial_data_reference)
+        log.debug(
+            "prefill.plugin.verify_initial_data_ownership",
+            has_initial_data_reference=has_initial_data_reference,
+        )
+        if has_initial_data_reference:
             try:
                 plugin.verify_initial_data_ownership(submission, plugin_options)
             except PermissionDenied as exc:
+                log.warning(
+                    "prefill.plugin.ownership_check_failure",
+                    data_reference=submission.initial_data_reference,
+                    exc_info=exc,
+                )
                 # XXX: these log records will typically not be created in the DB because
                 # the transaction is rolled back as part of DRFs exception handler
-                logger.warning(
-                    "Submission %s attempted to prefill the initial_data_reference %s "
-                    "using the %r plugin, but the ownership check failed.",
-                    submission.uuid,
-                    submission.initial_data_reference,
-                    plugin,
-                    exc_info=exc,
-                    extra={
-                        "submission": submission.uuid,
-                        "plugin_cls": type(plugin),
-                        "initial_data_reference": submission.initial_data_reference,
-                    },
-                )
                 logevent.prefill_retrieve_failure(submission, plugin, exc)
                 raise exc
 
@@ -150,7 +154,7 @@ def fetch_prefill_values_from_options(
                 submission, plugin_options
             )
         except Exception as exc:
-            logger.exception(f"exception in prefill plugin '{plugin.identifier}'")
+            log.exception("prefill.plugin.retrieve_failure")
             logevent.prefill_retrieve_failure(submission, plugin, exc)
         else:
             if new_values:

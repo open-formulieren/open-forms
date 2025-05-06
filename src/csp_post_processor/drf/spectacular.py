@@ -2,10 +2,9 @@
 API schema generation extension using drf-spectacular.
 """
 
-import logging
-
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from drf_spectacular.extensions import OpenApiViewExtension
 from drf_spectacular.openapi import AutoSchema
 from drf_spectacular.plumbing import force_instance, is_list_serializer
@@ -17,7 +16,7 @@ from rest_framework.viewsets import ViewSetMixin
 from ..constants import NONCE_HTTP_HEADER
 from .fields import CSPPostProcessedHTMLField
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 NONCE_PARAMETER = OpenApiParameter(
     name=NONCE_HTTP_HEADER,
@@ -76,7 +75,9 @@ def _get_serializer_class(view_cls: type[APIView]):
             try:
                 view.get_serializer_class()
             except AssertionError:  # view without serializer class, ignore
-                logger.warning("Could not determine view %r serializer class", view_cls)
+                logger.warning(
+                    "failed_to_determine_view_serializer_class", view=view_cls
+                )
                 return None
 
     serializer = auto_schema.get_response_serializers()

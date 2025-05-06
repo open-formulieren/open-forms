@@ -1,21 +1,19 @@
-import logging
+from typing import Literal
 
 from django.core import management
 
+import structlog
+
 from ..celery import app
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
+
+type Command = Literal["clearsessions", "clean_cspreports", "delete_export_files"]
 
 
 @app.task(ignore_result=True)
-def clear_session_store():
-    # https://docs.djangoproject.com/en/2.2/topics/http/sessions/#clearing-the-session-store
-    logger.debug("Clearing expired sessions")
-    management.call_command("clearsessions")
-
-
-@app.task(ignore_result=True)
-def cleanup_csp_reports() -> None:
-    logger.debug("Cleanup CSP reports")
-    # remove CSP reports older then a week
-    management.call_command("clean_cspreports")
+def run_management_command(*, command: Command) -> None:
+    log = logger.bind(command=command)
+    log.debug("start")
+    management.call_command(command)
+    log.debug("done")

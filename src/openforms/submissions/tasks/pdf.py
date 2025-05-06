@@ -1,6 +1,6 @@
-import logging
-
 from django.utils.translation import gettext_lazy as _
+
+import structlog
 
 from openforms.celery import app
 from openforms.logging import logevent
@@ -10,13 +10,18 @@ from ..models import Submission, SubmissionReport
 __all__ = ["generate_submission_report"]
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(bind=True)
 def generate_submission_report(task, submission_id: int) -> None:
-    logger.debug("Generating submission report for submission %d", submission_id)
+    log = logger.bind(
+        action="submissions.generate_submission_report", submission_id=submission_id
+    )
+
+    log.debug("trigger_submission_report_generation")
     submission = Submission.objects.get(id=submission_id)
+    log = log.bind(submission_uuid=str(submission.uuid))
 
     # idempotency: check if there already is a report!
     try:
@@ -34,14 +39,17 @@ def generate_submission_report(task, submission_id: int) -> None:
     # idempotency: check if there already is a report PDF!
     if submission_report.content:
         logevent.pdf_generation_skip(submission, submission_report)
-        logger.debug("Submission report PDF was already generated, skipping...")
+        log.debug("pdf_generation_skip", reason="already_exists")
         return
 
+    log.debug("pdf_generation_start")
     logevent.pdf_generation_start(submission)
     try:
         submission_report.generate_submission_report_pdf()
-    except Exception as e:
-        logevent.pdf_generation_failure(submission, submission_report, e)
+    except Exception as exc:
+        log.warning("pdf_generation_failure", exc_info=exc)
+        logevent.pdf_generation_failure(submission, submission_report, exc)
         raise
     else:
+        log.debug("pdf_generation_success")
         logevent.pdf_generation_success(submission, submission_report)

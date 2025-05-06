@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from collections.abc import Sequence
 from functools import partial
 from typing import TYPE_CHECKING
@@ -26,8 +25,6 @@ if TYPE_CHECKING:
     from stuf.models import StufService
 
     from .models import TimelineLogProxy
-
-logger = logging.getLogger(__name__)
 
 
 def _create_log(
@@ -71,7 +68,6 @@ def _create_log(
         extra_data=extra_data,
         user=user,
     )
-    # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
     return log_entry
 
 

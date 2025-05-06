@@ -4,7 +4,6 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
-from testfixtures import LogCapture
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -222,62 +221,27 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
 
-        with (
-            self.subTest("Invalid time with good format"),
-            LogCapture() as log_capture,
-        ):
-            self.client.post(endpoint, data={"data": {"time": "25:00"}})
+        with self.subTest("Invalid time with good format"):
+            response = self.client.post(endpoint, data={"data": {"time": "25:00"}})
 
-            log_capture.check_present(
-                (
-                    "openforms.utils.date",
-                    "INFO",
-                    "Invalid time '25:00', falling back to 'None' instead.",
-                )
-            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        with (
-            self.subTest("Invalid time with bad format"),
-            LogCapture() as log_capture,
-        ):
-            self.client.post(endpoint, data={"data": {"time": "Invalid"}})
+        with self.subTest("Invalid time with bad format"):
+            response = self.client.post(endpoint, data={"data": {"time": "Invalid"}})
 
-            log_capture.check_present(
-                (
-                    "openforms.utils.date",
-                    "INFO",
-                    "Badly formatted time 'Invalid', falling back to 'None' instead.",
-                )
-            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        with self.subTest("Invalid date"), LogCapture() as log_capture:
-            self.client.post(endpoint, data={"data": {"date": "2020-13-46"}})
+        with self.subTest("Invalid date"):
+            response = self.client.post(endpoint, data={"data": {"date": "2020-13-46"}})
 
-            log_capture.check_present(
-                (
-                    "openforms.utils.date",
-                    "INFO",
-                    "Can't format date '2020-13-46', falling back to an empty string.",
-                ),
-                (
-                    "openforms.utils.date",
-                    "INFO",
-                    "Badly formatted datetime '2020-13-46', falling back to 'None' instead.",
-                ),
-            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        with self.subTest("Invalid datetime"), LogCapture() as log_capture:
-            self.client.post(
+        with self.subTest("Invalid datetime"):
+            response = self.client.post(
                 endpoint, data={"data": {"datetime": "2022-13-46T00:00:00+02:00"}}
             )
 
-            log_capture.check_present(
-                (
-                    "openforms.utils.date",
-                    "INFO",
-                    "Can't parse datetime '2022-13-46T00:00:00+02:00', falling back to 'None' instead.",
-                )
-            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_handling_none_values_in_logic(self):
         submission = SubmissionFactory.from_components(

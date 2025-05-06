@@ -1,7 +1,6 @@
 import contextlib
 import cProfile
 import io
-import logging
 import os
 import pstats
 import socket
@@ -12,12 +11,14 @@ from pstats import SortKey
 
 from django.conf import settings
 
+import structlog
+
 NOOP_CACHES = {
     name: {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
     for name in settings.CACHES.keys()
 }
 
-flaky_test_logger = logging.getLogger("flaky_tests")
+flaky_test_logger = structlog.stdlib.get_logger("flaky_tests")
 
 
 def can_connect(hostname: str):
@@ -100,6 +101,7 @@ def log_flaky():
     )
     frame_info = getframeinfo(frame.f_back)
     relative_path = Path(frame_info.filename).relative_to(Path(settings.BASE_DIR))
+    # TODO: convert to structlog events
     flaky_test_logger.warning(
         "Flaky test: %s",
         frame_info.function,

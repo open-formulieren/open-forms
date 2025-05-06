@@ -1,10 +1,10 @@
 import base64
 import io
-import logging
 import re
 
 import elasticapm
 import qrcode
+import structlog
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
@@ -14,7 +14,7 @@ from .exceptions import AppointmentDeleteFailed
 from .models import Appointment, AppointmentInfo, AppointmentsConfig
 from .registry import register
 
-logger = logging.getLogger()
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_plugin(plugin: str = "") -> BasePlugin:
@@ -48,22 +48,23 @@ def delete_appointment_for_submission(submission: Submission, plugin=None) -> No
       appointment information.
     """
     plugin = plugin or get_plugin()
+    log = logger.bind(submission_uuid=str(submission.uuid), plugin=plugin)
+    log.info("delete_existing_appointment")
     try:
         appointment_info = submission.appointment_info
     except AppointmentInfo.DoesNotExist:
-        logger.info(
-            "Submission %s had no recorded appointment information, aborting deletion.",
-            submission.uuid,
-        )
+        log.info("skip_deletion", reason="no_existing_appointment_information")
         return
 
     try:
         plugin.delete_appointment(appointment_info.appointment_id)
         appointment_info.cancel()
     except AppointmentDeleteFailed as e:
+        log.warning("appointment_cancel_failure")
         logevent.appointment_cancel_failure(appointment_info, plugin, e)
         raise
 
+    log.info("appointment_cancel_success")
     logevent.appointment_cancel_success(appointment_info, plugin)
 
 

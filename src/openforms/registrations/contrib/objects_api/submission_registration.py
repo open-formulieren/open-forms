@@ -1,4 +1,3 @@
-import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import contextmanager
@@ -18,6 +17,8 @@ from typing import (
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
+
+import structlog
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import (
@@ -68,7 +69,7 @@ from .typing import (
     RegistrationOptionsV2,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _resolve_documenttype(
@@ -447,7 +448,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
         if not options["payment_status_update_json"]:
             logger.warning(
-                "Skipping payment status update because no template was configured."
+                "skip_payment_status_update", reason="no_template_configured"
             )
             return
 
@@ -501,6 +502,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     def get_record_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> Record:
+        log = logger.bind(submission_uuid=str(submission.uuid))
         state = submission.load_submission_value_variables_state()
 
         # dynamic values: values driven by user input
@@ -509,7 +511,8 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         static_values = state.get_static_data()
         # update with the registration static values - a special subtype of static
         # variables. They're possibly derived from user input.
-        static_values.update(state.get_static_data(other_registry=variables_registry))
+        registration_vars = state.get_static_data(other_registry=variables_registry)
+        static_values.update(registration_vars)
 
         # add static values
         all_values.update(static_values)
@@ -525,15 +528,15 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         assignment_specs: list[AssignmentSpec] = []
         for mapping in variables_mapping:
             key = mapping["variable_key"]
+            log = log.bind(action="process_variable_mapping", key=key, mapping=mapping)
 
             try:
                 variable = state.variables[key]
             except KeyError:
-                logger.debug(
-                    "No variable definition available for key %s - this is normal "
-                    "for registration variables.",
-                    key,
-                    extra={"key": key},
+                # this is normal for registration variables
+                log.debug(
+                    "variable_definition_not_found",
+                    is_registration_var=key in registration_vars,
                 )
                 variable = None
 
@@ -541,17 +544,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             try:
                 value = all_values[key]
             except KeyError:
-                logger.info(
-                    "Expected key %s to be present in the submission (%s) variables, "
-                    "but it wasn't. Ignoring it.",
-                    key,
-                    submission.uuid,
-                    extra={
-                        "submission": submission.uuid,
-                        "key": key,
-                        "mapping_config": mapping,
-                    },
-                )
+                log.info("variable_not_found", outcome="ignore_mapping")
                 continue
 
             # Look up if the key points to a form component that provides additional
@@ -576,6 +569,8 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 assignment_specs.append(assignment_spec)
             else:
                 assignment_specs.extend(assignment_spec)
+
+        log = log.unbind("action", "key", "mapping")
 
         output_spec = OutputSpec(assignments=assignment_specs)
         data = output_spec.create_output_data()

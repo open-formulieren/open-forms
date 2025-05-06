@@ -1,19 +1,18 @@
-import logging
 from dataclasses import dataclass
-from typing import Any, Generic, Iterable, Sequence, TypeVar
+from typing import Any, Iterable, Sequence
 
 from django.utils.encoding import force_str
 from django.utils.html import format_html, format_html_join
 
+import structlog
+
 from ..typing import Component
 
-logger = logging.getLogger(__name__)
-
-ComponentT = TypeVar("ComponentT", bound=Component)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
-class FormatterBase(Generic[ComponentT]):
+class FormatterBase[T: Component]:
     as_html: bool = False
     """
     Format for HTML output or not.
@@ -33,10 +32,10 @@ class FormatterBase(Generic[ComponentT]):
     # currently we're eating them in normalise_value_to_list()
     empty_values: Sequence[Any] = (None, "")
 
-    def is_empty_value(self, component: ComponentT, value: Any):
+    def is_empty_value(self, component: T, value: Any):
         return value in self.empty_values
 
-    def normalise_value_to_list(self, component: ComponentT, value: Any):
+    def normalise_value_to_list(self, component: T, value: Any):
         multiple = component.get("multiple", False)
         # this breaks if multiple is true and value not a list
         if multiple:
@@ -63,10 +62,10 @@ class FormatterBase(Generic[ComponentT]):
 
         return format_html_join(self.multiple_separator, "{}", args_generator)
 
-    def process_result(self, component: ComponentT, formatted: str) -> str:
+    def process_result(self, component: T, formatted: str) -> str:
         return formatted
 
-    def __call__(self, component: ComponentT, value: Any) -> str:
+    def __call__(self, component: T, value: Any) -> str:
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 
@@ -83,5 +82,5 @@ class FormatterBase(Generic[ComponentT]):
             component, self.join_formatted_values(component, formatted_values)
         )
 
-    def format(self, component: ComponentT, value: Any) -> str:  # pragma:nocover
+    def format(self, component: T, value: Any) -> str:  # pragma:nocover
         raise NotImplementedError("%r must implement the 'format' method" % type(self))

@@ -4,7 +4,6 @@ from django.core.exceptions import PermissionDenied
 from django.test import TestCase, tag
 
 from rest_framework.exceptions import ValidationError
-from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormRegistrationBackend
@@ -15,7 +14,6 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.utils.tests.logging import ensure_logger_level
 
 from ..contrib.demo.plugin import DemoRegistration
 from ..fields import RegistrationBackendChoiceField
@@ -37,18 +35,12 @@ class PreRegistrationTests(TestCase):
         self.addCleanup(GlobalConfiguration.clear_cache)
 
     def test_pre_registration_with_submission_not_completed(self):
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(completed_on=None)
 
-        with LogCapture() as logs:
+        try:
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
-
-        logs.check_present(
-            (
-                "openforms.registrations.tasks",
-                "ERROR",
-                f"Trying to pre-register submission '{submission}' which is not completed.",
-            )
-        )
+        except Exception as exc:
+            raise self.failureException("should abort silently") from exc
 
     @patch(
         "openforms.submissions.public_references.generate_unique_submission_reference",
@@ -318,20 +310,12 @@ class PreRegistrationTests(TestCase):
             registration_attempt_limit=TEST_NUM_ATTEMPTS,
         )
 
-        with (
-            patch(
-                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
-            ) as mock_pre_register,
-            ensure_logger_level("DEBUG"),
-            self.assertLogs(level="DEBUG") as logs,
-        ):
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
+        ) as mock_pre_register:
             pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         mock_pre_register.assert_not_called()
-        self.assertEqual(
-            "Skipping pre-registration for submission '%s' because it retried and failed too many times.",
-            logs.records[-1].msg,
-        )
 
     def test_update_registration_result_after_pre_registration(self):
         zgw_group = ZGWApiGroupConfigFactory.create()

@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import Iterable
 
@@ -7,11 +6,12 @@ from django.utils.translation import gettext_lazy as _
 
 import clamd
 import magic
+import structlog
 from rest_framework import serializers
 
 from openforms.config.models import GlobalConfiguration
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def mimetype_allowed(
@@ -168,7 +168,7 @@ class NoVirusValidator:
         try:
             result = scanner.instream(uploaded_file.file)
         except Exception as exc:
-            logger.error("ClamAV error", exc_info=exc)
+            logger.error("clamav.error", exc_info=exc)
             raise serializers.ValidationError(
                 _(
                     "The virus scan could not be performed at this time. Please retry later."
@@ -184,7 +184,7 @@ class NoVirusValidator:
                     ).format(virus_name=virus_name)
                 )
             case ("ERROR", error_message):
-                logger.error("ClamAV error: %s", error_message)
+                logger.error("clamav.error", message=error_message)
                 raise serializers.ValidationError(
                     _("The virus scan on this file returned an error.")
                 )
@@ -192,11 +192,7 @@ class NoVirusValidator:
                 return
 
             case (status, message):
-                logger.error(
-                    "ClamAV returned an unexpected status for a scan: %s, %s",
-                    status,
-                    message,
-                )
+                logger.error("clamav.unexpected_status", status=status, message=message)
                 raise serializers.ValidationError(
                     _("The virus scan returned an unexpected status.")
                 )

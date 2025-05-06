@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from typing import TYPE_CHECKING, Any
@@ -11,6 +10,8 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.utils.functional import empty
 from django.utils.translation import gettext_lazy as _
+
+import structlog
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from .submission_step import SubmissionStep
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ValueEncoder(DjangoJSONEncoder):
@@ -289,6 +290,7 @@ class SubmissionValueVariable(models.Model):
         help_text=_("The submission to which this variable value is related"),
         on_delete=models.CASCADE,
     )
+    submission_id: int
     key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable"),
@@ -364,14 +366,11 @@ class SubmissionValueVariable(models.Model):
         # In those situations, we can't do anything meaningful.
         if self.form_variable is None:
             logger.debug(
-                "No form variable information available for variable with key %s in "
-                "submission value variable %r.",
-                self.key,
-                self.pk,
-                extra={
-                    "key": self.key,
-                    "submission_id": self.submission_id,
-                },
+                "missing_form_variable",
+                action="submissions.convert_value_to_python",
+                submission_id=self.submission_id,
+                key=self.key,
+                submission_value_id=self.pk,
             )
             return value
 

@@ -20,7 +20,6 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.utils.tests.logging import ensure_logger_level
 
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
@@ -112,15 +111,13 @@ class RegistrationHookTests(TestCase):
         with (
             self.subTest("On completion - does NOT raise"),
             patch_registry(model_field, register),
-            self.assertLogs(level="WARNING") as log,
         ):
-            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
-
-            # check we log a WARNING with stack
-            error_log = log.records[-1]
-            self.assertEqual(error_log.levelname, "WARNING")
-            self.assertIn("failed", error_log.message)
-            self.assertIsNotNone(error_log.exc_info)
+            try:
+                register_submission(
+                    self.submission.id, PostSubmissionEvents.on_completion
+                )
+            except RegistrationFailed as exc:
+                raise self.failureException("Should not raise") from exc
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -157,15 +154,13 @@ class RegistrationHookTests(TestCase):
         with (
             self.subTest("On completion - does NOT raise"),
             patch_registry(model_field, register),
-            self.assertLogs(level="ERROR") as log,
         ):
-            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
-
-            # check we log an ERROR with stack
-            error_log = log.records[-1]
-            self.assertEqual(error_log.levelname, "ERROR")
-            self.assertIn("unexpectedly errored", error_log.message)
-            self.assertIsNotNone(error_log.exc_info)
+            try:
+                register_submission(
+                    self.submission.id, PostSubmissionEvents.on_completion
+                )
+            except RegistrationFailed as exc:
+                raise self.failureException("Should not raise") from exc
 
         self.submission.refresh_from_db()
         self.assertTrue(self.submission.needs_on_completion_retry)
@@ -252,13 +247,10 @@ class RegistrationHookTests(TestCase):
     def test_submission_is_not_completed_yet(self):
         submission = SubmissionFactory.create(completed=False)
 
-        with self.assertLogs() as logs:
+        try:
             register_submission(submission.id, PostSubmissionEvents.on_completion)
-
-        self.assertEqual(
-            logs.records[0].msg,
-            "Trying to register submission '%s' which is not completed.",
-        )
+        except Exception as exc:
+            raise self.failureException("Should not raise") from exc
 
     @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     @freeze_time("2021-08-04T12:00:00+02:00")
@@ -286,17 +278,11 @@ class RegistrationHookTests(TestCase):
                     self.submission.id, PostSubmissionEvents.on_completion
                 )
 
-            with self.subTest("on retry"):
-                with (
-                    ensure_logger_level("DEBUG"),
-                    self.assertRaises(RegistrationFailed),
-                    self.assertLogs(level="DEBUG") as logs,
-                ):
-                    register_submission(
-                        self.submission.id, PostSubmissionEvents.on_retry
-                    )
-
-        self.assertEqual(logs.records[-1].msg, "Plugin '%s' is not enabled")
+            with (
+                self.subTest("on retry"),
+                self.assertRaises(RegistrationFailed),
+            ):
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -314,18 +300,13 @@ class RegistrationHookTests(TestCase):
             form__registration_backend_options={},
         )  # Missing "to_emails" option
 
-        with (
-            self.subTest("On completion - does NOT raise"),
-            self.assertLogs(level="WARNING") as logs,
-        ):
-            register_submission(submission.id, PostSubmissionEvents.on_completion)
+        with self.subTest("On completion - does NOT raise"):
+            try:
+                register_submission(submission.id, PostSubmissionEvents.on_completion)
+            except Exception as exc:
+                raise self.failureException("Should not raise") from exc
 
             submission.refresh_from_db()
-
-            self.assertIn(
-                "Registration using plugin '%r' for submission '%s' failed",
-                logs.records[-1].msg,
-            )
             self.assertTrue(submission.needs_on_completion_retry)
 
         with (

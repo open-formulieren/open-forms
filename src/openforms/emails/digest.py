@@ -1,4 +1,3 @@
-import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -12,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from django_yubin.models import Message
 from furl import furl
 from json_logic.typing import JSON
@@ -46,7 +46,7 @@ from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
@@ -397,12 +397,12 @@ def introspect_json_logic_wrapper(
 ) -> list[InputVar] | None:
     try:
         introspection_result = introspect_json_logic(expression).get_input_keys()
-    except Exception as e:
+    except Exception as exc:
         logger.error(
-            "malformed/unsupported JsonLogic expression in form %s: %r",
-            form_name,
-            expression,
-            exc_info=e,
+            "logic_introspection_failure",
+            form=form_name,
+            expression=expression,
+            exc_info=exc,
         )
         return None
 
@@ -509,9 +509,9 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
             # so instead, log information for our own insight into (typical) usage/
             # constructions.
             logger.info(
-                "possible invalid variable reference (%s) in logic of form %s",
-                var.key,
-                form.admin_name,
+                "detected_possible_invalid_variable_reference",
+                variable=var.key,
+                form=form.admin_name,
             )
 
     return invalid_logic_rules

@@ -138,21 +138,10 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_when_error_occurs(self):
         client_patcher = mock_stufbg_client("StufBgErrorResponse.xml")
         self.addCleanup(client_patcher.stop)
-
         attributes = [c.value for c in FieldChoices]
 
-        with self.assertLogs() as logs:
-            with self.assertRaises(ValueError):
-                self.plugin.get_prefill_values(self.submission, attributes)
-
-            self.assertEqual(logs.records[0].fault["faultcode"], "soapenv:Server")
-            self.assertEqual(logs.records[0].fault["faultstring"], "Policy Falsified")
-            self.assertEqual(
-                logs.records[0].fault["detail"][
-                    "http://www.layer7tech.com/ws/policy/fault:policyResult"
-                ]["@status"],
-                "Error in Assertion Processing",
-            )
+        with self.assertRaises(ValueError):
+            self.plugin.get_prefill_values(self.submission, attributes)
 
     def test_get_available_attributes_when_no_answer_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNoAnswerResponse.xml")
@@ -172,13 +161,8 @@ class StufBgPrefillTests(TestCase):
         self.addCleanup(client_patcher.stop)
         attributes = [c.value for c in FieldChoices]
 
-        with self.assertLogs() as logs:
-            with self.assertRaises(ValueError):
-                self.plugin.get_prefill_values(self.submission, attributes)
-
-            self.assertEqual(
-                logs.records[0].fault, {"faultstring": "Object niet gevonden"}
-            )
+        with self.assertRaises(ValueError):
+            self.plugin.get_prefill_values(self.submission, attributes)
 
     def test_get_available_attributes_when_empty_reponse_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNoObjectResponse.xml")

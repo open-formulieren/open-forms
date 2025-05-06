@@ -170,14 +170,8 @@ class SuwinetPrefillTests(SuwinetTestCase):
         plugin = SuwinetPrefill(identifier="suwinet")
         submission = SubmissionFactory.create(auth_info__value="444444440")
 
-        with self.assertLogs("openforms.prefill.contrib.suwinet.plugin") as logged:
-            values = plugin.get_prefill_values(
-                submission, ["UWVWbDossierPersoonGSD.UwvWbPersoonsInfo"]
-            )
-
-        self.assertIn(
-            "Suwinet operation 'UwvWbPersoonsInfo' on service 'UWVWbDossierPersoonGSD' failed.",
-            logged.output[0],
+        values = plugin.get_prefill_values(
+            submission, ["UWVWbDossierPersoonGSD.UwvWbPersoonsInfo"]
         )
 
         # still returns empty values

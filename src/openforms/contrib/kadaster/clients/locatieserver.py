@@ -1,12 +1,13 @@
-import logging
 from dataclasses import dataclass
 
 from django.contrib.gis.geos import fromstr
 
 import requests
-from ape_pie import APIClient
+import structlog
 
-logger = logging.getLogger(__name__)
+from openforms.contrib.client import LoggingClient
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 # API DATA MODELS
@@ -48,7 +49,7 @@ def _parse_coordinates(doc: dict, key: str) -> tuple[float, float] | None:
         # we expect a two-tuple, and not any arbitrary shape
         coord0, coord1 = fromstr(wkt_value)
     except (ValueError, TypeError):
-        logger.info("Malformed %s in location server response: %r", key, doc)
+        logger.info("value_parse_error", key=key, doc=doc)
         return None
     return coord0, coord1
 
@@ -70,7 +71,7 @@ def _process_search_result(doc: dict) -> Location | None:
 # CLIENT IMPLEMENTATIONS
 
 
-class LocatieServerClient(APIClient):
+class LocatieServerClient(LoggingClient):
     """
     Client for the Kadaster locatieserver API.
 
@@ -89,7 +90,7 @@ class LocatieServerClient(APIClient):
         except requests.RequestException as exc:
             if reraise_errors:
                 raise exc
-            logger.exception("Couldn't retrieve pdok locatieserver data", exc_info=exc)
+            logger.exception("locatieserver_request_failure", exc_info=exc)
             return []
 
         docs: list[dict] = response.json().get("response", {}).get("docs")
@@ -111,9 +112,7 @@ class LocatieServerClient(APIClient):
             response.raise_for_status()
         except requests.RequestException as exc:
             logger.exception(
-                "Couldn't retrieve locatieserver reverse lookup data",
-                extra={"lat": lat, "lng": lng},
-                exc_info=exc,
+                "locatieserver_request_failure", lat=lat, lng=lng, exc_info=exc
             )
             return ""
 

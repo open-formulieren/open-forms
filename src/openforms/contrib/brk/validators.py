@@ -1,4 +1,3 @@
-import logging
 from contextlib import contextmanager
 from typing import Iterator
 
@@ -6,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from glom import glom
 from requests import RequestException
 from rest_framework import serializers
@@ -19,7 +19,7 @@ from openforms.validations.registry import register
 from .client import NoServiceConfigured, SearchParams, get_client
 from .constants import AddressValue
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 BRK_ZAKELIJK_GERECHTIGD_VALIDATOR_ID = "brk-zakelijk-gerechtigd"
 
@@ -28,11 +28,9 @@ BRK_ZAKELIJK_GERECHTIGD_VALIDATOR_ID = "brk-zakelijk-gerechtigd"
 def suppress_api_errors(error_message: str) -> Iterator[None]:
     try:
         yield
-    except RequestException as e:
-        logger.error(
-            "An exception occured when trying to fetch the BRK API", exc_info=e
-        )
-        raise ValidationError(error_message) from e
+    except RequestException as exc:
+        logger.error("brk_request_failure", exc_info=exc)
+        raise ValidationError(error_message) from exc
 
 
 class ValueSerializer(serializers.Serializer):
@@ -68,12 +66,9 @@ class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
 
         try:
             client = get_client(submission=submission)
-        except NoServiceConfigured as e:
-            logger.error(
-                "No BRK service configured when trying to validate address data",
-                exc_info=e,
-            )
-            raise ValidationError(self.error_messages["retrieving_error"]) from e
+        except NoServiceConfigured as exc:
+            logger.error("brk_service_not_configured", exc_info=exc)
+            raise ValidationError(self.error_messages["retrieving_error"]) from exc
 
         address_query: SearchParams = {
             "postcode": value["postcode"],

@@ -1,13 +1,13 @@
-import logging
 from dataclasses import dataclass
 
 import elasticapm
 import requests
+import structlog
 
 from openforms.contrib.hal_client import HALClient
 from openforms.formio.components.utils import salt_location_message
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @dataclass
@@ -44,9 +44,7 @@ class BAGClient(HALClient):
         except requests.RequestException as exc:
             if reraise_errors:
                 raise exc
-            logger.exception(
-                "Could not retrieve address details from the BAG API", exc_info=exc
-            )
+            logger.exception("bag_request_failure", exc_info=exc)
             return self.build_address_result(postcode, house_number)
 
         response_data = response.json()

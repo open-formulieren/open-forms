@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING, Iterator
 
+import structlog
 from rest_framework.request import Request
 
 from openforms.plugins.registry import BaseRegistry
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from .base import BasePlugin, LoginInfo  # noqa: F401
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def _iter_plugin_ids(form: Form | None, registry: Registry) -> Iterator[str]:
@@ -46,9 +46,9 @@ class Registry(BaseRegistry["BasePlugin"]):
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:
                 logger.warning(
-                    "Plugin %s not found in registry, ignoring it.",
-                    plugin_id,
-                    extra={"plugin_id": plugin_id, "form": form.pk if form else None},
+                    "ignore_unknown_plugin",
+                    plugin_id=plugin_id,
+                    form_uuid=str(form.uuid) if form else None,
                 )
                 continue
             plugin = self._registry[plugin_id]

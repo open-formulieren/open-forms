@@ -34,10 +34,10 @@ So, to recap:
    form field default values.
 """
 
-import logging
 from collections import defaultdict
 
 import elasticapm
+import structlog
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
@@ -56,7 +56,7 @@ from .sources import (
     fetch_prefill_values_from_options,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def inject_prefill(
@@ -97,8 +97,11 @@ def inject_prefill(
 
         if prefill_value != default_value and default_value is not None:
             logger.info(
-                "Overwriting non-null default value for component %r",
-                component,
+                "prefill.overwrite_non_null_default_value",
+                submission_uuid=str(submission.uuid),
+                component_type=component["type"],
+                default_value=default_value,
+                component_id=component.get("id"),
             )
         component["defaultValue"] = prefill_value
 

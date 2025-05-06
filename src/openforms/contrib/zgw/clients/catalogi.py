@@ -7,6 +7,7 @@ from flags.state import flag_enabled
 from requests import Response
 from zgw_consumers.nlx import NLXClient
 
+from openforms.contrib.client import LoggingMixin
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
 
 from ..exceptions import StandardViolation
@@ -136,7 +137,7 @@ class RoleTypeListParams(TypedDict, total=False):
     page: int
 
 
-class CatalogiClient(NLXClient):
+class CatalogiClient(LoggingMixin, NLXClient):
     _api_version: CatalogiAPIVersion | None = None
 
     @property

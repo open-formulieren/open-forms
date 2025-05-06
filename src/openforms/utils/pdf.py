@@ -1,4 +1,3 @@
-import logging
 import mimetypes
 from io import BytesIO
 from pathlib import PurePosixPath
@@ -10,7 +9,9 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.storage import FileSystemStorage, default_storage
 from django.template.loader import render_to_string
 
-logger = logging.getLogger(__name__)
+import structlog
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class UrlFetcher:
@@ -53,15 +54,15 @@ class UrlFetcher:
             path = PurePosixPath(parsed_url.path).relative_to(base_url.path)
 
             absolute_path = None
-            if storage.exists(path):
-                absolute_path = storage.path(path)
-            elif settings.DEBUG and storage is staticfiles_storage:
+            if storage.exists(str(path)):
+                absolute_path = storage.path(str(path))
+            elif settings.DEBUG and storage is staticfiles_storage:  # pragma: no cover
                 # use finders so that it works in dev too, we already check that it's
                 # using filesystem storage earlier
                 absolute_path = finders.find(str(path))
 
-            if absolute_path is None:
-                logger.error("Could not resolve path '%s'", path)
+            if absolute_path is None:  # pragma: no cover
+                logger.error("path_resolution_error", path=path)
                 return weasyprint.default_url_fetcher(orig_url)
 
             content_type, encoding = mimetypes.guess_type(absolute_path)

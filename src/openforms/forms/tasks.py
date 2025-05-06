@@ -1,14 +1,15 @@
-import logging
 from datetime import timedelta
 from functools import partial
 
 from django.db import DatabaseError, transaction
 from django.utils import timezone
 
+import structlog
+
 from ..celery import app
 from .models import Form
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task()
@@ -25,17 +26,15 @@ def activate_forms():
     )
 
     for form in forms:
+        log = logger.bind(form_id=form.pk, name=form.admin_name)
         with transaction.atomic():
+            log.info("form_activation")
             try:
                 form.activate()
             except DatabaseError as exc:
-                logger.error(
-                    "Form activation of form %s failed",
-                    form.admin_name,
-                    exc_info=exc,
-                    extra={"pk": form.pk},
-                )
+                log.error("form_activation_failure", exc_info=exc)
             else:
+                log.info("form_activated")
                 transaction.on_commit(partial(logevent.form_activated, form))
 
 
@@ -50,16 +49,13 @@ def deactivate_forms():
     )
 
     for form in forms:
+        log = logger.bind(form_id=form.pk, name=form.admin_name)
         with transaction.atomic():
+            log.info("form_deactivation")
             try:
                 form.deactivate()
             except DatabaseError as exc:
-                logger.error(
-                    "Form deactivation of form %s failed",
-                    form.admin_name,
-                    exc_info=exc,
-                    extra={"pk": form.pk},
-                )
-
+                log.error("form_deactivation_failure", exc_info=exc)
             else:
+                log.info("form_deactivated")
                 transaction.on_commit(partial(logevent.form_deactivated, form))

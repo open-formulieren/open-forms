@@ -3,7 +3,7 @@
 """
 Continuous integration settings module.
 """
-# ruff: noqa: F405
+# ruff: noqa: F401 F405 TID253
 
 import os
 import warnings
@@ -11,10 +11,10 @@ import warnings
 # Importing the idna module has an IO side-effect to load the data, which is a rather
 # big file. Pre-loading this in the settings file populates the python module cache,
 # preventing flakiness in hypothesis tests that hit this code path.
-import idna  # noqa: F401
+import idna
 
 # Heavy imports, can interfere with some tests making use of hypothesis' deadline:
-import weasyprint  # noqa: F401
+import weasyprint
 
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
@@ -25,7 +25,7 @@ os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development"
 # * overhead making tests slower
 # * it conflicts with SimpleTestCase in some cases when the run-time configuration is
 #   looked up from the django-solo model
-os.environ.setdefault("LOG_REQUESTS", "no")
+os.environ.setdefault("LOG_OUTGOING_REQUESTS", "no")
 
 from .base import *  # noqa isort:skip
 from .utils import mute_logging  # noqa isort:skip

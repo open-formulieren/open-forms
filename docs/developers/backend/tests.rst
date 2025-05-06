@@ -117,8 +117,8 @@ cache, sometimes there is a cache miss and a database query is needed (e.g. when
 tests in reverse).
 
 This is typically a test-isolation smell and the root cause should be fixed. This may
-also be caused indirectly if you have ``LOG_REQUESTS`` set to ``True`` in your local
-``.env``, as it also results in a django-solo lookup.
+also be caused indirectly if you have ``LOG_OUTGOING_REQUESTS`` set to ``True`` in your
+local ``.env``, as it also results in a django-solo lookup.
 
 The preferred approach to mitigate these kind of issues is to mock the ``get_solo`` call
 to prevent cache or DB hits:

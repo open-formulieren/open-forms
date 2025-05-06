@@ -1,5 +1,3 @@
-import logging
-
 from django.http import HttpRequest
 
 from digid_eherkenning.oidc.models import BaseConfig
@@ -25,8 +23,6 @@ from .models import (
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):

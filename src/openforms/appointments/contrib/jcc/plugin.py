@@ -1,4 +1,3 @@
-import logging
 from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
@@ -10,6 +9,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from requests.exceptions import RequestException
 from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
@@ -32,7 +32,7 @@ from .constants import FIELD_TO_FORMIO_COMPONENT, FIELD_TO_XML_NAME, CustomerFie
 from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def squash_ids(products: list[Product]):
@@ -43,12 +43,12 @@ def squash_ids(products: list[Product]):
 
 
 @contextmanager
-def log_soap_errors(template: str, *args):
+def log_soap_errors(event: str):
     try:
         yield
-    except (ZeepError, RequestException) as e:
-        logger.exception(template, *args, exc_info=e)
-        raise GracefulJCCError("SOAP call failed") from e
+    except (ZeepError, RequestException) as exc:
+        logger.exception(event, exc_info=exc)
+        raise GracefulJCCError("SOAP call failed") from exc
     except Exception as exc:
         raise JCCError from exc
 
@@ -98,13 +98,11 @@ class JccAppointment(BasePlugin[CustomerFields]):
         location_id: str = "",
     ) -> list[Product]:
         if location_id:
-            logger.debug(
-                "Plugin does not support filtering products by location.",
-                extra={"location_id": location_id},
-            )
+            # plugin doesn't support filtering by location_id
+            logger.debug("received_unsupported_location_id")
 
         client = get_client()
-        with log_soap_errors("Could not retrieve available products"):
+        with log_soap_errors("products_retrieval_failure"):
             if current_products:
                 current_product_ids = squash_ids(current_products)
                 result = client.service.getGovAvailableProductsByProduct(
@@ -119,7 +117,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
         ]
 
     def _get_all_locations(self, client: Client) -> list[Location]:
-        with log_soap_errors("Could not retrieve location IDs"):
+        with log_soap_errors("locations_retrieval_failure"):
             location_ids = client.service.getGovLocations()
             with parallel() as pool:
                 details = pool.map(
@@ -154,8 +152,9 @@ class JccAppointment(BasePlugin[CustomerFields]):
             return self._get_all_locations(client)
 
         product_ids = squash_ids(products)
-        with log_soap_errors(
-            "Could not retrieve locations for products '%s'", product_ids
+        with (
+            structlog.contextvars.bound_contextvars(product_ids=product_ids),
+            log_soap_errors("locations_for_products_retrieval_failure"),
         ):
             result = client.service.getGovLocationsForProduct(productID=product_ids)
 
@@ -176,12 +175,9 @@ class JccAppointment(BasePlugin[CustomerFields]):
         now_in_ams = datetime_in_amsterdam(timezone.now())
         start_at = start_at or now_in_ams.today()
 
-        with log_soap_errors(
-            "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
-            product_ids,
-            location,
-            start_at,
-            end_at,
+        with (
+            structlog.contextvars.bound_contextvars(start_at=start_at, end_at=end_at),
+            log_soap_errors("dates_retrieval_failure"),
         ):
             max_end_date = client.service.getGovLatestPlanDate(productId=product_ids)
             end_at = min(end_at, max_end_date) if end_at else max_end_date
@@ -204,12 +200,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
         product_ids = squash_ids(products)
 
         client = get_client()
-        with log_soap_errors(
-            "Could not retrieve times for products '%s' at location '%s' on %s",
-            product_ids,
-            location,
-            day,
-        ):
+        with log_soap_errors("times_retrieval_failure"):
             naive_datetimes = client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
@@ -230,9 +221,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
         product_ids = squash_ids(products)
 
         client = get_client()
-        with log_soap_errors(
-            "Could not retrieve required fields for products '%s'", product_ids
-        ):
+        with log_soap_errors("required_fields_retrieval_failure"):
             field_names = client.service.GetRequiredClientFields(productID=product_ids)
 
         last_name = FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]
@@ -282,18 +271,12 @@ class JccAppointment(BasePlugin[CustomerFields]):
                 f"Could not create appointment, got updateStatus={update_status}"
             )
             logger.error(
-                "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
-                product_ids,
-                location,
-                start_at,
-                update_status,
+                "appointment_create_failure",
+                products=product_ids,
+                location=location,
+                start_at=start_at,
+                update_status=update_status,
                 exc_info=error,
-                extra={
-                    "product_ids": product_ids,
-                    "location": location.identifier,
-                    "start_time": start_at,
-                    "update_status": update_status,
-                },
             )
             raise error
         except Exception as e:

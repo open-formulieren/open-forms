@@ -1,6 +1,6 @@
-import logging
 import traceback
 
+import structlog
 from celery_once import QueueOnce
 
 from openforms.celery import app
@@ -14,7 +14,7 @@ from .services import update_submission_payment_registration
 __all__ = ["update_submission_payment_status"]
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @app.task(
@@ -24,10 +24,17 @@ logger = logging.getLogger(__name__)
 def update_submission_payment_status(
     submission_id: int, event: PostSubmissionEvents
 ) -> None:
-    logger.info(
-        "Updating payment information for submission %d (if needed!)", submission_id
+    log = logger.bind(
+        action="payments.update_payment_status",
+        submission_id=submission_id,
+        triggered_by=event,
     )
+    log.info("update_payment_status_task_received")
     submission = Submission.objects.select_related("auth_info").get(id=submission_id)
+    log = log.bind(
+        submission_uuid=str(submission.uuid),
+        payment_required=submission.payment_required,
+    )
     config = GlobalConfiguration.get_solo()
 
     should_skip = config.wait_for_payment_to_register or any(
@@ -40,13 +47,20 @@ def update_submission_payment_status(
     )
     if should_skip:
         logevent.registration_payment_update_skip(submission)
-        logger.info("Skipping payment update for submission %d.", submission_id)
+        log.info(
+            "registration_payment_update_skip",
+            wait_for_payment_to_register=config.wait_for_payment_to_register,
+            registration_status=submission.registration_status,
+            payment_registered=submission.payment_registered,
+            registration_attempts=submission.registration_attempts,
+            max_number_of_attempts=config.registration_attempt_limit,
+        )
         return
 
     try:
         update_submission_payment_registration(submission)
     except Exception as exc:
-        logger.info("Updating submission payment registration failed", exc_info=exc)
+        log.info("payment_registration_update_failure", exc_info=exc)
         submission.needs_on_completion_retry = True
         submission.registration_result = {
             **(submission.registration_result or {}),

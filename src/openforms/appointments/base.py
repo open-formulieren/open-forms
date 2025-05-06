@@ -1,4 +1,3 @@
-import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -21,9 +20,6 @@ from .tokens import submission_appointment_token_generator
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
     pass
-
-
-logger = logging.getLogger(__name__)
 
 
 @dataclass()

@@ -25,6 +25,7 @@ asgiref==3.7.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django
+    #   django-structlog
     #   django-stubs
 asn1crypto==1.5.1
     # via
@@ -204,6 +205,7 @@ django==4.2.20
     #   django-setup-configuration
     #   django-simple-certmanager
     #   django-solo
+    #   django-structlog
     #   django-stubs
     #   django-stubs-ext
     #   django-timeline-logger
@@ -297,10 +299,11 @@ django-import-export==3.3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-ipware==5.0.0
+django-ipware==7.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-structlog
 django-jsonform==2.21.2
     # via
     #   -c requirements/ci.txt
@@ -372,6 +375,10 @@ django-solo==2.3.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-structlog==9.1.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-stubs==5.0.2
     # via
     #   -r requirements/type-checking.in
@@ -829,6 +836,11 @@ python-dotenv==1.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pydantic-settings
+python-ipware==3.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-ipware
 python-magic==0.4.27
     # via
     #   -c requirements/ci.txt
@@ -1060,6 +1072,11 @@ stringcase==1.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   o365
+structlog==25.2.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   django-structlog
 tablib==3.5.0
     # via
     #   -c requirements/ci.txt
@@ -1074,10 +1091,6 @@ tblib==1.7.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 tenacity==8.2.3
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-testfixtures==6.17.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

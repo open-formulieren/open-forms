@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from typing import Any
 
@@ -8,6 +7,7 @@ from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
 
+import structlog
 from glom import glom
 
 from ..typing import (
@@ -19,7 +19,7 @@ from ..typing import (
 )
 from .base import FormatterBase
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
@@ -34,9 +34,9 @@ def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
     if not isinstance(value, str):
         value = str(value)
         logger.info(
-            "Casted original value %r to string value %s for option comparison",
-            _original,
-            value,
+            "formio.formatter_cast_to_string",
+            original=_original,
+            value=value,
         )
 
     for possible_value in possible_values:

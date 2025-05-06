@@ -1,4 +1,3 @@
-import logging
 import os.path
 import pathlib
 import re
@@ -15,6 +14,7 @@ from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 
 import PIL
+import structlog
 from glom import Path, glom
 from PIL import Image
 
@@ -32,7 +32,7 @@ from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import JSONObject
 from openforms.utils.glom import _glom_path_to_str
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
 

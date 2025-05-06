@@ -1,7 +1,7 @@
-import logging
 from typing import NotRequired, TypedDict
 
 import requests
+import structlog
 from zgw_consumers.client import build_client
 
 from openforms.pre_requests.clients import PreRequestClientContext, PreRequestMixin
@@ -10,7 +10,7 @@ from openforms.submissions.models import Submission
 from ..hal_client import HALClient
 from .models import BRKConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class NoServiceConfigured(RuntimeError):
@@ -52,7 +52,7 @@ class BRKClient(PreRequestMixin, HALClient):
             )
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making BRK request", exc_info=exc)
+            logger.exception("brk_request_failure", exc_info=exc)
             raise exc
 
         return response.json()
@@ -69,7 +69,7 @@ class BRKClient(PreRequestMixin, HALClient):
             )
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making BRK request", exc_info=exc)
+            logger.exception("brk_request_failure", exc_info=exc)
             raise exc
 
         return response.json()

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import re
 from dataclasses import dataclass
 from functools import partial
@@ -9,6 +8,7 @@ from typing import TYPE_CHECKING, Any, override
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from json_logic.typing import Primitive
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -44,7 +44,7 @@ from .utils import flatten_data
 if TYPE_CHECKING:
     from openforms.forms.models import FormVariable
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 PLUGIN_IDENTIFIER = "stuf-zds-create-zaak"
 

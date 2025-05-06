@@ -5,6 +5,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.urls import resolve
 
 from furl import furl
+from rest_framework.reverse import reverse
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -177,6 +178,13 @@ class OgoneTests(TestCase):
             ogone_params, merchant.sha_out_passphrase, merchant.hash_algorithm
         )
 
+        with self.subTest("bad call, wrong hash"):
+            bad_params = {**ogone_params, "SHASIGN": "wrong-hash"}
+
+            response = self.client.post(url, bad_params)
+
+            self.assertEqual(response.status_code, 400)
+
         # good
         with self.subTest("valid call"):
             response = self.client.post(url, ogone_params)
@@ -248,3 +256,31 @@ class OgoneTests(TestCase):
             "Input: bröther gib lämp - ref: OF-1234 "
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         )
+
+    def test_spoof_attempt_prevented_by_signature_in_browser(self):
+        merchant = OgoneMerchantFactory.create()
+        submission = SubmissionFactory.from_components(
+            components_list=[],
+            with_public_registration_reference=True,
+            public_registration_reference="OF-1234",
+            form__payment_backend="ogone-legacy",
+            form__payment_backend_options={"merchant_id": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        assert submission.payment_required
+        assert not submission.payment_user_has_paid
+        url = reverse("payments:return", kwargs={"uuid": payment.uuid})
+        query = {
+            "ORDERID": payment.public_order_id,
+            "STATUS": OgoneStatus.payment_requested,
+            "GIROPAY_ACCOUNT_NUMBER": "1",  # hashed but not interesting
+            "UNKNOWN_PARAM": "1",  # not hashed
+            "PAYID": "4249708957",
+            RETURN_ACTION_PARAM: "accept",
+            "SHASIGN": "wrong-hash",
+        }
+
+        response = self.client.get(url, query)
+
+        self.assertEqual(response.status_code, 400)

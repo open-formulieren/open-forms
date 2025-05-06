@@ -1,10 +1,10 @@
-import logging
 from copy import copy
 
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+import structlog
 from drf_spectacular.plumbing import build_array_type, build_basic_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -47,9 +47,6 @@ from .serializers import (
     TimeInputSerializer,
     TimeSerializer,
 )
-
-logger = logging.getLogger(__name__)
-
 
 # TODO: see openforms.validations.api.serializers.ValidatorsFilterSerializer.as_openapi_params
 # and https://github.com/open-formulieren/open-forms/issues/611
@@ -101,8 +98,17 @@ class ProductsListView(ListMixin, APIView):
         if products := serializer.validated_data.get("product_id"):
             kwargs["current_products"] = products
 
-        with elasticapm.capture_span(
-            name="get-available-products", span_type="app.appointments.get_products"
+        with (
+            structlog.contextvars.bound_contextvars(
+                action="appointments.get_available_products",
+                plugin=plugin,
+                location_id=location_id,
+                current_products=products,
+            ),
+            elasticapm.capture_span(
+                name="get-available-products",
+                span_type="app.appointments.get_products",
+            ),
         ):
             return plugin.get_available_products(**kwargs)
 
@@ -129,8 +135,17 @@ class LocationsListView(ListMixin, APIView):
 
         products = serializer.validated_data["product_id"]
         plugin = get_plugin()
-        with elasticapm.capture_span(
-            name="get-available-locations", span_type="app.appointments.get_locations"
+
+        with (
+            structlog.contextvars.bound_contextvars(
+                action="appointments.get_locations",
+                plugin=plugin,
+                products=products,
+            ),
+            elasticapm.capture_span(
+                name="get-available-locations",
+                span_type="app.appointments.get_locations",
+            ),
         ):
             return plugin.get_locations(products)
 
@@ -162,8 +177,17 @@ class DatesListView(ListMixin, APIView):
         location = serializer.validated_data["location_id"]
 
         plugin = get_plugin()
-        with elasticapm.capture_span(
-            name="get-available-dates", span_type="app.appointments.get_dates"
+
+        with (
+            structlog.contextvars.bound_contextvars(
+                action="appointments.get_dates",
+                plugin=plugin,
+                products=products,
+                location=location,
+            ),
+            elasticapm.capture_span(
+                name="get-available-dates", span_type="app.appointments.get_dates"
+            ),
         ):
             dates = plugin.get_dates(products, location)
         return [{"date": date} for date in dates]
@@ -204,8 +228,18 @@ class TimesListView(ListMixin, APIView):
         date = serializer.validated_data["date"]
 
         plugin = get_plugin()
-        with elasticapm.capture_span(
-            name="get-available-times", span_type="app.appointments.get_times"
+
+        with (
+            structlog.contextvars.bound_contextvars(
+                action="appointments.get_times",
+                plugin=plugin,
+                products=products,
+                location=location,
+                date=date,
+            ),
+            elasticapm.capture_span(
+                name="get-available-times", span_type="app.appointments.get_times"
+            ),
         ):
             times = plugin.get_times(products, location, date)
         return [{"time": time} for time in times]
@@ -250,9 +284,16 @@ class RequiredCustomerFieldsListView(APIView):
         products = input_serializer.validated_data["product_id"]
         plugin = get_plugin()
 
-        with elasticapm.capture_span(
-            name="get-required-customer-fields",
-            span_type="app.appointments.get_required_customer_fields",
+        with (
+            structlog.contextvars.bound_contextvars(
+                action="appointments.get_required_customer_fields",
+                plugin=plugin,
+                products=products,
+            ),
+            elasticapm.capture_span(
+                name="get-required-customer-fields",
+                span_type="app.appointments.get_required_customer_fields",
+            ),
         ):
             fields = plugin.get_required_customer_fields(products)
 
@@ -285,28 +326,37 @@ class CancelAppointmentView(GenericAPIView):
         submission = self.get_object()
         plugin = get_plugin()
 
-        logevent.appointment_cancel_start(submission.appointment_info, plugin)
+        with structlog.contextvars.bound_contextvars(
+            action="appointments.cancel",
+            plugin=plugin,
+            submission_uuid=str(submission.uuid),
+        ):
+            logevent.appointment_cancel_start(submission.appointment_info, plugin)
 
-        serializer = CancelAppointmentInputSerializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except ValidationError as e:
-            logevent.appointment_cancel_failure(submission.appointment_info, plugin, e)
-            raise e
+            serializer = CancelAppointmentInputSerializer(data=request.data)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except ValidationError as e:
+                logevent.appointment_cancel_failure(
+                    submission.appointment_info, plugin, e
+                )
+                raise e
 
-        emails = submission.get_email_confirmation_recipients(submission.data)
+            emails = submission.get_email_confirmation_recipients(submission.data)
 
-        # The user must enter the email address they used when creating
-        # the appointment which we validate here
-        if serializer.validated_data["email"] not in emails:
-            e = PermissionDenied
-            logevent.appointment_cancel_failure(submission.appointment_info, plugin, e)
-            raise e
+            # The user must enter the email address they used when creating
+            # the appointment which we validate here
+            if serializer.validated_data["email"] not in emails:
+                e = PermissionDenied
+                logevent.appointment_cancel_failure(
+                    submission.appointment_info, plugin, e
+                )
+                raise e
 
-        try:
-            delete_appointment_for_submission(submission, plugin)
-        except AppointmentDeleteFailed as exc:
-            raise CancelAppointmentFailed() from exc
+            try:
+                delete_appointment_for_submission(submission, plugin)
+            except AppointmentDeleteFailed as exc:
+                raise CancelAppointmentFailed() from exc
 
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -357,8 +407,12 @@ class CreateAppointmentView(SubmissionCompletionMixin, CreateAPIView):
     def create(self, request: Request, *args, **kwargs):
         # ensure any previous attempts are deleted before creating a new one
         submission = self.extract_submission()
-        Appointment.objects.filter(submission=submission).delete()
-        return super().create(request, *args, **kwargs)
+        with structlog.contextvars.bound_contextvars(
+            action="appointments.create",
+            submission_uuid=str(submission.uuid) if submission else None,
+        ):
+            Appointment.objects.filter(submission=submission).delete()
+            return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer: AppointmentSerializer):
         super().perform_create(serializer)

@@ -6,9 +6,9 @@ component definitions are rewritten to be compatible with the current code.
 """
 
 import json
-import logging
 from typing import Protocol, cast
 
+import structlog
 from glom import assign, glom
 
 from openforms.formio.constants import DataSrcOptions
@@ -19,7 +19,7 @@ from .datastructures import FormioConfigurationWrapper
 from .typing import AddressNLComponent, Component, MapComponent
 from .utils import get_component_empty_value
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ComponentConverter(Protocol):
@@ -244,9 +244,9 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
 
         if comparison_component_key not in config:
             logger.warning(
-                "Couldn't locate component with key %s in configuration %r",
-                comparison_component_key,
-                configuration,
+                "component_not_found",
+                key=comparison_component_key,
+                configuration=configuration,
             )
             continue
 

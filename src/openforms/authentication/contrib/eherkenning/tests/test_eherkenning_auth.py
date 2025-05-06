@@ -15,6 +15,7 @@ from digid_eherkenning.choices import ConfigTypes
 from digid_eherkenning.models import ConfigCertificate, EherkenningConfiguration
 from furl import furl
 from lxml import etree
+from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 from privates.test import temp_private_root
 from simple_certmanager.test.factories import CertificateFactory
 
@@ -30,7 +31,7 @@ from ....contrib.tests.saml_utils import (
     get_artifact_response,
     get_encrypted_attribute,
 )
-from .utils import TEST_FILES
+from .utils import TEST_FILES, mock_saml2_return_flow
 
 
 class EHerkenningConfigMixin:
@@ -203,28 +204,36 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
 @temp_private_root()
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    @patch(
-        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    )
-    @patch(
-        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-        return_value=True,
-    )
-    def test_receive_samlart_from_eHerkenning(
-        self,
-        m,
-        mock_verification,
-        mock_validation,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
+        cls.form = form
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        # the URL to return to after successful authentication
+        cls.return_url = str(
+            furl(f"https://testserver{return_url}").set(
+                {"next": f"https://testserver{form_path}"}
+            )
+        )
+
+    def assertRedirectsToFormDetail(self, response):
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+        self.assertRedirects(
+            response, f"https://testserver{form_path}", status_code=302
+        )
+
+    @mock_saml2_return_flow(mock_saml_art_verification=True)
+    def test_receive_samlart_from_eHerkenning(self, m):
         encrypted_attribute = _get_encrypted_attribute("123456782")
         m.post(
             "https://test-iwelcome.nl/broker/ars/1.13",
@@ -233,149 +242,129 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
                 {"encrypted_attribute": mark_safe(encrypted_attribute)},
             ),
         )
-        form = FormFactory.create(
-            authentication_backends=["eherkenning"],
-            generate_minimal_setup=True,
-            formstep__form_definition__login_required=True,
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        return_url = reverse(
-            "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-        )
-        return_url_with_param = furl(f"https://testserver{return_url}").set(
-            {"next": f"https://testserver{form_path}"}
-        )
-
-        url = furl(reverse("eherkenning:acs")).set(
-            {
-                "SAMLart": _create_test_artifact(),
-                "RelayState": str(return_url_with_param),
-            }
-        )
 
         with supress_output(sys.stderr, os.devnull):
-            response = self.client.get(url, follow=True)
+            response = self.client.get(
+                reverse("eherkenning:acs"),
+                {
+                    "SAMLart": _create_test_artifact(),
+                    "RelayState": self.return_url,
+                },
+                follow=True,
+            )
 
-        self.assertRedirects(
-            response, f"https://testserver{form_path}", status_code=302
-        )
+        self.assertRedirectsToFormDetail(response)
         self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
         session_data = self.client.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(session_data["attribute"], AuthAttribute.kvk)
         self.assertEqual(session_data["value"], "123456782")
 
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    @patch(
-        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    )
-    @patch(
-        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-        return_value=True,
-    )
-    def test_receive_unencrypted_samlart_from_eHerkenning(
-        self,
-        m,
-        mock_verification,
-        mock_validation,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @mock_saml2_return_flow(mock_saml_art_verification=True)
+    def test_receive_unencrypted_samlart_from_eHerkenning(self, m):
         # Signicat testing environment doesn't encrypt the saml attributes
         # The encryption feature of SAML attributes isn't important, since we
         # only support Artefact Binding; we get the artefact from the Idp, *not*
         # the requesting browser
-
         m.post(
             "https://test-iwelcome.nl/broker/ars/1.13",
             content=_get_artifact_response("UnencryptedArtifactResponse.xml"),
         )
-        form = FormFactory.create(
-            authentication_backends=["eherkenning"],
-            generate_minimal_setup=True,
-            formstep__form_definition__login_required=True,
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        return_url = reverse(
-            "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-        )
-        return_url_with_param = furl(f"https://testserver{return_url}").set(
-            {"next": f"https://testserver{form_path}"}
-        )
-
-        url = furl(reverse("eherkenning:acs")).set(
-            {
-                "SAMLart": _create_test_artifact(),
-                "RelayState": str(return_url_with_param),
-            }
-        )
 
         with supress_output(sys.stderr, os.devnull):
-            response = self.client.get(url, follow=True)
+            response = self.client.get(
+                reverse("eherkenning:acs"),
+                {
+                    "SAMLart": _create_test_artifact(),
+                    "RelayState": self.return_url,
+                },
+                follow=True,
+            )
 
-        self.assertRedirects(
-            response, f"https://testserver{form_path}", status_code=302
-        )
+        self.assertRedirectsToFormDetail(response)
         self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
         session_data = self.client.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(session_data["attribute"], AuthAttribute.kvk)
         self.assertEqual(session_data["value"], "123456782")
 
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    def test_cancel_login(
-        self,
-        m,
-        mock_id,
-        mock_xml_validation,
-    ):
+    @mock_saml2_return_flow(mock_saml_art_verification=False)
+    def test_cancel_login(self, m):
         m.post(
             "https://test-iwelcome.nl/broker/ars/1.13",
             content=_get_artifact_response("ArtifactResponseCancelLogin.xml"),
         )
-        form = FormFactory.create(
-            authentication_backends=["eherkenning"],
-            generate_minimal_setup=True,
-            formstep__form_definition__login_required=True,
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = furl(f"http://testserver{form_path}")
-        form_url.args["_start"] = "1"
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
 
-        success_return_url = furl(
-            reverse(
-                "authentication:return",
-                kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-            )
-        )
-        success_return_url.add(args={"next": form_url.url})
-
-        url = furl(reverse("eherkenning:acs")).set(
+        response = self.client.get(
+            reverse("eherkenning:acs"),
             {
                 "SAMLart": _create_test_artifact(),
-                "RelayState": success_return_url.url,
-            }
+                "RelayState": self.return_url,
+            },
+            follow=True,
         )
 
-        response = self.client.get(url, follow=True)
-
-        form_url.args["_eherkenning-message"] = "login-cancelled"
-        self.assertEqual(
-            response.redirect_chain[-1],
-            (form_url.url, 302),
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(status_code, 302)
+        expected_url = furl(f"https://testserver{form_path}").set(
+            {"_eherkenning-message": "login-cancelled"}
         )
+        self.assertURLEqual(url, str(expected_url))
+
+    @mock_saml2_return_flow(
+        mock_saml_art_verification=True,
+        verify_error=OneLogin_Saml2_ValidationError("unknown error"),
+    )
+    def test_generic_authn_failure(self, m):
+        m.post(
+            "https://test-iwelcome.nl/broker/ars/1.13",
+            content=_get_artifact_response("UnencryptedArtifactResponse.xml"),
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+
+        with supress_output(sys.stderr, os.devnull):
+            response = self.client.get(
+                reverse("eherkenning:acs"),
+                {
+                    "SAMLart": _create_test_artifact(),
+                    "RelayState": self.return_url,
+                },
+                follow=True,
+            )
+
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(status_code, 302)
+        expected_url = furl(f"https://testserver{form_path}").set(
+            {"_eherkenning-message": "error"}
+        )
+        self.assertURLEqual(url, str(expected_url))
+
+    @mock_saml2_return_flow(
+        mock_saml_art_verification=True,
+        get_attributes_error=OneLogin_Saml2_ValidationError("unknown error"),
+    )
+    def test_attribute_extraction_failure(self, m):
+        m.post(
+            "https://test-iwelcome.nl/broker/ars/1.13",
+            content=_get_artifact_response("UnencryptedArtifactResponse.xml"),
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+
+        with supress_output(sys.stderr, os.devnull):
+            response = self.client.get(
+                reverse("eherkenning:acs"),
+                {
+                    "SAMLart": _create_test_artifact(),
+                    "RelayState": self.return_url,
+                },
+                follow=True,
+            )
+
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual(status_code, 302)
+        expected_url = furl(f"https://testserver{form_path}").set(
+            {"_eherkenning-message": "error"}
+        )
+        self.assertURLEqual(url, str(expected_url))
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -414,27 +403,10 @@ class CoSignLoginAuthenticationTests(
         self.assertIn(CO_SIGN_PARAMETER, relay_state.args)
         self.assertEqual(relay_state.args[CO_SIGN_PARAMETER], str(submission.uuid))
 
-    @patch(
-        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
-    )
-    @patch(
-        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="_1330416516",
-    )
-    @patch(
-        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
-    )
-    @patch(
-        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
-        return_value=True,
-    )
+    @mock_saml2_return_flow(mock_saml_art_verification=True)
     def test_return_with_samlart_from_eherkenning(
         self,
         m,
-        mock_verification,
-        mock_validation,
-        mock_id,
-        mock_xml_validation,
     ):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,

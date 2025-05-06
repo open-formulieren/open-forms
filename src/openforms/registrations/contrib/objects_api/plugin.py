@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import logging
 from functools import partial
 from typing import TYPE_CHECKING, Any, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+import structlog
 
 from openforms.config.data import Action
 from openforms.contrib.objects_api.checks import check_config
@@ -33,7 +34,7 @@ if TYPE_CHECKING:
 
 PLUGIN_IDENTIFIER = "objects_api"
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @register(PLUGIN_IDENTIFIER)

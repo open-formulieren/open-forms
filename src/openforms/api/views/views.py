@@ -2,12 +2,11 @@
 Concrete view classes/utilities not tied to any particular app.
 """
 
-import logging
-import os
 from collections import OrderedDict
 
 from django.utils.translation import gettext_lazy as _
 
+import sentry_sdk
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
     authentication,
@@ -18,13 +17,11 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.views import APIView, exception_handler as drf_exception_handler
 
+from openforms.conf.utils import config
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 from ..exception_handling import HandledException
 from ..serializers import ExceptionSerializer
-
-logger = logging.getLogger(__name__)
-
 
 ERR_CONTENT_TYPE = "application/problem+json"
 
@@ -35,12 +32,11 @@ def exception_handler(exc, context):
     """
     response = drf_exception_handler(exc, context)
     if response is None:
-        if os.getenv("DEBUG", "").lower() in ["yes", "1", "true"]:
+        # make it possible to debug failures in CI/local dev environment...
+        if config("DEBUG", default=False):
             return None
 
-        exc_message = args[0] if (args := exc.args) else type(exc).__name__
-        logger.exception(exc_message, exc_info=True)
-
+        sentry_sdk.capture_exception(exc)
         # unkown type, so we use the generic Internal Server Error
         exc = drf_exceptions.APIException("Internal Server Error")
         response = Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -1,4 +1,3 @@
-import logging
 import uuid
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView, RedirectView
 from django.views.generic.base import TemplateResponseMixin
 
+import structlog
 from furl import furl
 from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
@@ -35,7 +35,7 @@ from .signals import submission_resumed
 from .tokens import submission_report_token_generator, submission_resume_token_generator
 from .utils import add_submmission_to_session, check_form_status
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class ResumeFormMixin(TemplateResponseMixin):
@@ -55,18 +55,17 @@ class ResumeFormMixin(TemplateResponseMixin):
     def validate_url_and_get_submission(
         self, submission_uuid: uuid.UUID, token: str
     ) -> Submission:
+        log = logger.bind(submission_uuid=str(submission_uuid), token=token)
         try:
             submission = Submission.objects.get(uuid=submission_uuid)
         except Submission.DoesNotExist:
-            logger.debug(
-                "Called endpoint with an invalid submission uuid: %s", submission_uuid
-            )
+            log.debug("invalid_submission_lookup")
             raise PermissionDenied("Url is not valid")
 
         # Check that the token is valid
         valid = self.token_generator.check_token(submission, token)
         if not valid:
-            logger.debug("Called endpoint with an invalid token: %s", token)
+            log.debug("invalid_token_for_submission")
             raise PermissionDenied("Url is not valid")
 
         check_form_status(self.request, submission.form, include_safe_methods=True)
@@ -255,15 +254,15 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
 
     def get_object(self, queryset=None):
         assert queryset is None, "Code path with explicit queryset not supported"
+        log = logger.bind(
+            action="submissions.attachment_download",
+            user=self.request.user,
+        )
 
         # check that a hash parameter is present on the request
         content_hash = self.request.GET.get("hash")
         if not content_hash:
-            logger.warning(
-                "Unauthorized file download attempted (missing content hash). Path: %s, user: %r",
-                self.request.path,
-                self.request.user,
-            )
+            log.warning("missing_content_hash", download_blocked=True)
             raise PermissionDenied(_("File access denied."))
 
         # cache the object for future lookups
@@ -271,11 +270,7 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
             obj = super().get_object(queryset=queryset)
 
             if not constant_time_compare(obj.content_hash, content_hash):
-                logger.warning(
-                    "Unauthorized file download attempted (invalid content hash). Path: %s, user: %r",
-                    self.request.path,
-                    self.request.user,
-                )
+                log.warning("invalid_content_hash", download_blocked=True)
                 raise PermissionDenied(_("File access denied."))
 
             self._object = obj

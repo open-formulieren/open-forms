@@ -1,5 +1,4 @@
 import base64
-import logging
 import uuid
 from collections import OrderedDict
 from datetime import datetime
@@ -9,6 +8,7 @@ from typing import Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from json_logic.typing import Primitive
 from lxml import etree
 from lxml.etree import _Element
@@ -28,7 +28,7 @@ from ..xml import fromstring
 from .constants import STUF_ZDS_EXPIRY_MINUTES
 from .models import StufZDSConfig
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 nsmap = OrderedDict(
     (
@@ -141,6 +141,7 @@ class Client(BaseClient):
     ):
         super().__init__(*args, **kwargs)
         self.zds_options = options
+        # TODO: do we still need this? This can be a processor?
         self.log_stuf_zds_failure = failure_log_callback
         self.log_stuf_zds_success = success_log_callback
 
@@ -163,28 +164,22 @@ class Client(BaseClient):
         kwargs.setdefault("endpoint_type", EndpointType.vrije_berichten)
 
         # logging context
-        ref_nr = context["referentienummer"]
         _url = self.to_absolute_url(kwargs["endpoint_type"])
+        structlog.contextvars.bind_contextvars(
+            url=_url,
+            referentienummer=context["referentienummer"],
+        )
 
         try:
             response = self.templated_request(*args, **kwargs)
-        except RequestException as e:
-            logger.error(
-                "bad request for referentienummer '%s'",
-                ref_nr,
-                extra={"ref_nr": ref_nr},
-            )
+        except RequestException as exc:
+            logger.error("request_failure", exc_info=exc)
             self.log_stuf_zds_failure(_url)
-            raise RegistrationFailed("error while making backend request") from e
+            raise RegistrationFailed("error while making backend request") from exc
 
         if (status_code := response.status_code) < 200 or status_code >= 400:
             error_text = parse_soap_error_text(response)
-            logger.error(
-                "bad response for referentienummer '%s'\n%s",
-                ref_nr,
-                error_text,
-                extra={"ref_nr": ref_nr},
-            )
+            logger.error("bad_response", status_code=status_code, error_text=error_text)
             self.log_stuf_zds_failure(_url)
             raise RegistrationFailed(
                 f"error while making backend request: HTTP {status_code}: {error_text}",

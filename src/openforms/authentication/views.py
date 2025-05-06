@@ -1,4 +1,3 @@
-import logging
 import warnings
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
@@ -14,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
 
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from furl import furl
@@ -47,7 +47,7 @@ from .signals import (
     co_sign_authentication_success,
 )
 
-logger = logging.getLogger(__name__)
+logger = structlog.stdlib.get_logger(__name__)
 
 # unique name so we don't clobber a parameter on the arbitrary url form is hosted at
 BACKEND_OUTAGE_RESPONSE_PARAMETER = "of-auth-problem"
@@ -168,47 +168,54 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
     def get(self, request: Request, slug: str, plugin_id: str):
         form = self.get_object()
-        try:
-            plugin = self.register[plugin_id]
-        except KeyError:
-            return HttpResponseBadRequest("unknown plugin")
+        with structlog.contextvars.bound_contextvars(
+            module="authentication",
+            form=str(form.uuid),
+            plugin=plugin_id,
+        ):
+            logger.info("authentication.started")
+            try:
+                plugin = self.register[plugin_id]
+            except KeyError:
+                return HttpResponseBadRequest("unknown plugin")
+            structlog.contextvars.bind_contextvars(plugin=type(plugin))
 
-        if not plugin.is_enabled:
-            return HttpResponseBadRequest("authentication plugin not enabled")
+            if not plugin.is_enabled:
+                return HttpResponseBadRequest("authentication plugin not enabled")
 
-        if plugin_id not in form.authentication_backends:
-            return HttpResponseBadRequest("plugin not allowed")
+            if plugin_id not in form.authentication_backends:
+                return HttpResponseBadRequest("plugin not allowed")
 
-        # demo plugins should require admin authentication to protect against random
-        # people spoofing other people's credentials.
-        if plugin.is_demo_plugin and not request.user.is_staff:
-            raise PermissionDenied(_("Demo plugins require an active admin session."))
+            # demo plugins should require admin authentication to protect against random
+            # people spoofing other people's credentials.
+            if plugin.is_demo_plugin and not request.user.is_staff:
+                raise PermissionDenied(
+                    _("Demo plugins require an active admin session.")
+                )
 
-        form_url = request.GET.get("next")
-        if not form_url:
-            return HttpResponseBadRequest("missing 'next' parameter")
+            form_url = request.GET.get("next")
+            if not form_url:
+                return HttpResponseBadRequest("missing 'next' parameter")
 
-        if not allow_redirect_url(form_url):
-            logger.warning(
-                "blocked authentication start with non-allowed redirect to '%(form_url)s'",
-                {"form_url": form_url},
-            )
-            return HttpResponseBadRequest("redirect not allowed")
+            if not allow_redirect_url(form_url):
+                logger.warning(
+                    "authentication.start_blocked",
+                    reason="disallowed_redirect",
+                    redirect_url=form_url,
+                )
+                return HttpResponseBadRequest("redirect not allowed")
 
-        self._validate_co_sign_submission(plugin)
+            self._validate_co_sign_submission(plugin)
 
-        try:
-            response = plugin.start_login(request, form, form_url)
-        except Exception as e:
-            logger.exception(
-                "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
-                {"plugin_id": plugin_id},
-                exc_info=e,
-            )
-            # append failure parameter and return to form
-            f = furl(form_url)
-            f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = plugin_id
-            return HttpResponseRedirect(f.url)
+            logger.info("authentication.call_plugin")
+            try:
+                response = plugin.start_login(request, form, form_url)
+            except Exception as exc:
+                logger.exception("authentication.start_failure", exc_info=exc)
+                # append failure parameter and return to form
+                f = furl(form_url)
+                f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = plugin_id
+                return HttpResponseRedirect(f.url)
 
         return response
 
@@ -302,43 +309,54 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         be documented in the OAS.
         """
         form = self.get_object()
-        try:
-            plugin = self.register[plugin_id]
-        except KeyError:
-            return HttpResponseBadRequest("unknown plugin")
-        self._plugin = plugin
+        with structlog.contextvars.bound_contextvars(
+            module="authentication",
+            form=str(form.uuid),
+            plugin=plugin_id,
+        ):
+            logger.info("authentication.return")
 
-        if plugin_id not in form.authentication_backends:
-            return HttpResponseBadRequest("plugin not allowed")
+            try:
+                plugin = self.register[plugin_id]
+            except KeyError:
+                return HttpResponseBadRequest("unknown plugin")
+            self._plugin = plugin
+            structlog.contextvars.bind_contextvars(plugin=type(plugin))
 
-        if plugin.return_method.upper() != request.method.upper():
-            return HttpResponseNotAllowed([plugin.return_method])
+            if plugin_id not in form.authentication_backends:
+                return HttpResponseBadRequest("plugin not allowed")
 
-        # demo plugins should require admin authentication to protect against random
-        # people spoofing other people's credentials.
-        if plugin.is_demo_plugin and not request.user.is_staff:
-            raise PermissionDenied(_("Demo plugins require an active admin session."))
+            if plugin.return_method.upper() != request.method.upper():
+                return HttpResponseNotAllowed([plugin.return_method])
 
-        try:
-            self._handle_co_sign(form, plugin)
-        except serializers.ValidationError:
-            return HttpResponseBadRequest("plugin returned invalid data")
-        except InvalidCoSignData as exc:
-            return HttpResponseBadRequest(exc.args[0])
-        response = plugin.handle_return(request, form)
-
-        if response.status_code in (301, 302):
-            location = response.get("Location", "")
-            if location and not allow_redirect_url(location):
-                logger.warning(
-                    "blocked authentication return with non-allowed redirect from "
-                    "plugin '%(plugin_id)s' to '%(location)s'",
-                    {"plugin_id": plugin_id, "location": location},
+            # demo plugins should require admin authentication to protect against random
+            # people spoofing other people's credentials.
+            if plugin.is_demo_plugin and not request.user.is_staff:
+                raise PermissionDenied(
+                    _("Demo plugins require an active admin session.")
                 )
-                return HttpResponseBadRequest("redirect not allowed")
 
-        if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
-            authentication_success.send(sender=self.__class__, request=request)
+            try:
+                self._handle_co_sign(form, plugin)
+            except serializers.ValidationError:
+                return HttpResponseBadRequest("plugin returned invalid data")
+            except InvalidCoSignData as exc:
+                return HttpResponseBadRequest(exc.args[0])
+            response = plugin.handle_return(request, form)
+
+            if response.status_code in (301, 302):
+                location = response.get("Location", "")
+                if location and not allow_redirect_url(location):
+                    logger.warning(
+                        "authentication.return_blocked",
+                        reason="disallowed_redirect",
+                        redirect_url=location,
+                    )
+                    return HttpResponseBadRequest("redirect not allowed")
+
+            if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
+                authentication_success.send(sender=self.__class__, request=request)
+
         return response
 
     def _handle_co_sign(self, form: Form, plugin: BasePlugin) -> None:
@@ -348,7 +366,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 "Legacy co-sign is deprecated and will be removed in Open Forms 4.0",
                 DeprecationWarning,
             )
-            logger.debug("Co-sign authentication detected, invoking plugin handler.")
+            logger.debug("handle_co_sign")
             co_sign_data: CosignData = {
                 **plugin.handle_co_sign(self.request, form),
                 "version": "v1",
