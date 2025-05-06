@@ -17,6 +17,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         python3-dev \
         libpq-dev \
         shared-mime-info \
+        # required for (log) routing support in uwsgi
+        libpcre3 \
+        libpcre3-dev \
         # lxml/xmlsec deps
         zlib1g-dev \
         libxmlsec1-openssl \
@@ -75,6 +78,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         gdal-bin \
         gettext \
         shared-mime-info \
+        libpcre3 \
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
         libpangoft2-1.0-0 \
@@ -82,12 +86,14 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 WORKDIR /app
 COPY ./bin/docker_start.sh /start.sh
-COPY ./bin/celery_worker.sh /celery_worker.sh
-COPY ./bin/celery_beat.sh /celery_beat.sh
-COPY ./bin/celery_flower.sh /celery_flower.sh
-COPY ./bin/dump_configuration.sh /dump_configuration.sh
-COPY ./bin/wait_for_db.sh /wait_for_db.sh
-COPY ./bin/setup_configuration.sh /setup_configuration.sh
+COPY ./bin/celery_worker.sh \
+    ./bin/celery_beat.sh \
+    ./bin/celery_flower.sh \
+    ./bin/dump_configuration.sh \
+    ./bin/wait_for_db.sh \
+    ./bin/setup_configuration.sh \
+    ./bin/uwsgi.ini \
+    /
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
 COPY \
     ./bin/check_celery_worker_liveness.py \
