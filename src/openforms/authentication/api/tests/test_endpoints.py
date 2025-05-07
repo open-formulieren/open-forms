@@ -3,7 +3,6 @@ from unittest.mock import patch
 from django.db.models import TextChoices
 from django.test import override_settings
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -26,23 +25,19 @@ class SingleLoA(TextChoices):
 class SingleLoAOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     loa = serializers.ChoiceField(
         label="options LoA",
-        choices=DigiDAssuranceLevels.choices,
-        default=DigiDAssuranceLevels.middle,
+        choices=SingleLoA.choices,
+        default=SingleLoA.low,
     )
 
 
 class SingleAuthPlugin(BasePlugin):
     provides_auth = AuthAttribute.bsn
-    supports_loa_override = False
     verbose_name = "SingleAuthPlugin"
-    assurance_levels = SingleLoA
 
 
 class AdditionalConfigAuthPlugin(BasePlugin):
     provides_auth = AuthAttribute.bsn
-    supports_loa_override = False
     verbose_name = "AdditionalConfigAuthPlugin"
-    assurance_levels = SingleLoA
     configuration_options = SingleLoAOptionsSerializer
 
 
@@ -117,38 +112,24 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
                 "schema": None,
             },
             {
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
                 "schema": {
                     "type": "object",
                     "properties": {
                         "loa": {
                             "type": "string",
                             "enum": [
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+                                "low",
+                                "∞",
                             ],
                             "enumNames": [
-                                "DigiD Basis",
-                                "DigiD Midden",
-                                "DigiD Substantieel",
-                                "DigiD Hoog",
+                                "low",
+                                "Stare into the Sun",
                             ],
                             "title": "options LoA",
                         }
@@ -169,46 +150,30 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
                 "schema": None,
             },
             {
                 "id": "plugin2",
                 "label": "DemoAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [],
                 "schema": None,
             },
             {
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
                 "schema": {
                     "type": "object",
                     "properties": {
                         "loa": {
                             "type": "string",
                             "enum": [
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+                                "low",
+                                "∞",
                             ],
                             "enumNames": [
-                                "DigiD Basis",
-                                "DigiD Midden",
-                                "DigiD Substantieel",
-                                "DigiD Hoog",
+                                "low",
+                                "Stare into the Sun",
                             ],
                             "title": "options LoA",
                         }
@@ -234,27 +199,18 @@ class ResponseTests(APITestCase):
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
                 "schema": {
                     "type": "object",
                     "properties": {
                         "loa": {
                             "type": "string",
                             "enum": [
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-                                "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+                                "low",
+                                "∞",
                             ],
                             "enumNames": [
-                                "DigiD Basis",
-                                "DigiD Midden",
-                                "DigiD Substantieel",
-                                "DigiD Hoog",
+                                "low",
+                                "Stare into the Sun",
                             ],
                             "title": "options LoA",
                         }

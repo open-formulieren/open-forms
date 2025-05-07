@@ -19,18 +19,6 @@ class AuthPluginSerializer(PluginBaseSerializer):
         label=_("Provides authentication attributes"),
         help_text=_("The authentication attribute provided by this plugin."),
     )
-    supports_loa_override = serializers.BooleanField(
-        label=_("supports loa override"),
-        help_text=_(
-            "Does the Identity Provider support overriding the minimum "
-            "Level of Assurance (LoA) through the authentication request?"
-        ),
-    )
-    assurance_levels = serializers.ListField(
-        child=TextChoiceSerializer(),
-        label=_("Levels of assurance"),
-        help_text=_("The levels of assurance this plugin defines."),
-    )
     schema = serializers.DictField(
         source="configuration_options.display_as_jsonschema",
         default=None,  # Return None for plugins that don't support configuration_options
