@@ -1,10 +1,10 @@
-.. _configuration_registration_json_dump:
+.. _configuration_registration_generic_json:
 
-=========
-JSON Dump
-=========
+=========================
+Generic JSON registration
+=========================
 
-The JSON Dump registration plugin can be used to send submitted form data as a
+The Generic JSON registration plugin can be used to send submitted form data as a
 `JSON object`_ to a configured service.
 
 What does the Open Forms administrator need?
@@ -26,7 +26,7 @@ Plugin options:
 Configuration
 =============
 
-To configure the JSON Dump plugin, follow these steps:
+To configure the Generic JSON plugin, follow these steps:
 
 #. In Open Forms, navigate to: **Configuration** > **Services**
 #. Create a service to which the submitted form data should be sent
@@ -34,7 +34,7 @@ To configure the JSON Dump plugin, follow these steps:
    a. Click **Add service**
    b. Fill out the form:
 
-      * **Label**: *Fill in a human readable label*, for example: ``JSON Dump service``
+      * **Label**: *Fill in a human readable label*, for example: ``JSON service``
       * **Type**: Select the type: ``ORC``
       * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v2/``
       * **Authorization type**: Select the desired type of authorization
@@ -49,8 +49,8 @@ To configure the JSON Dump plugin, follow these steps:
 #. Navigate to: **Forms** > **Forms** and click on the desired form to configure the plugin for
 #. In the form, navigate to the **Registration** tab, click **Add registration backend**, and fill out:
 
-   a. **Name**: *Fill in a human readable label*, for example: ``JSON Dump plugin``
-   b. **Select registration backend**: Select ``JSON dump registration``
+   a. **Name**: *Fill in a human readable label*, for example: ``Generic JSON plugin``
+   b. **Select registration backend**: Select ``Generic JSON registration``
    c. Click on **Configure options** and fill out the options:
 
       * **Service**: Select the service created in step 2
