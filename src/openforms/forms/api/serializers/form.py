@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -11,7 +11,6 @@ from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
-from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
 from openforms.config.models import GlobalConfiguration, Theme
@@ -121,11 +120,6 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
         return attrs
 
 
-@extend_schema_serializer(
-    deprecate_fields=[
-        "cosign_login_info",
-    ]
-)
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -149,8 +143,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "or not."
         ),
     )
-    # TODO: deprecated, remove in 3.0.0
-    cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -293,7 +285,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "hide_non_applicable_steps",
             "cosign_login_options",
             "cosign_has_link_in_email",
-            "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
@@ -328,7 +319,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "hide_non_applicable_steps",
             "cosign_login_options",
             "cosign_has_link_in_email",
-            "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
         )

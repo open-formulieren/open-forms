@@ -153,12 +153,9 @@ class FormSerializerTest(TestCase):
             instance=form_step.form, context={"request": request}
         )
         cosign_login_options = serializer.data["cosign_login_options"]
-        cosign_login_info = serializer.data["cosign_login_info"]
 
         self.assertEqual(len(cosign_login_options), 1)
         self.assertEqual(cosign_login_options[0]["identifier"], "digid")
-        self.assertIsNotNone(cosign_login_info)
-        self.assertEqual(cosign_login_info["identifier"], "digid")
 
     @patch(
         "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
@@ -250,10 +247,8 @@ class FormSerializerTest(TestCase):
             instance=form_step.form, context={"request": request}
         )
         cosign_login_options = serializer.data["cosign_login_options"]
-        cosign_login_info = serializer.data["cosign_login_info"]
 
         self.assertEqual(cosign_login_options, [])
-        self.assertIsNone(cosign_login_info)
 
     def test_patching_registrations_deleting_the_first(self):
         form = FormFactory.create()
