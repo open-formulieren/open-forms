@@ -10,7 +10,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox} from 'components/admin/forms/Inputs';
 
-const JSONDumpVariableConfigurationEditor = ({variable}) => {
+const GenericJSONVariableConfigurationEditor = ({variable}) => {
   const {
     values: {
       variables = [],
@@ -121,10 +121,10 @@ const JSONDumpVariableConfigurationEditor = ({variable}) => {
   );
 };
 
-JSONDumpVariableConfigurationEditor.propTypes = {
+GenericJSONVariableConfigurationEditor.propTypes = {
   variable: PropTypes.shape({
     key: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-export default JSONDumpVariableConfigurationEditor;
+export default GenericJSONVariableConfigurationEditor;

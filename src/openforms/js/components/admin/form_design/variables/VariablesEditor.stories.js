@@ -940,13 +940,13 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
   },
 };
 
-export const WithJSONDumpRegistrationBackend = {
+export const WithGenericJSONRegistrationBackend = {
   args: {
     registrationBackends: [
       {
         backend: 'json_dump',
         key: 'test_json_dump_backend',
-        name: 'JSON dump registration',
+        name: 'Generic JSON registration',
         options: {
           service: 2,
           path: 'test',
@@ -959,7 +959,7 @@ export const WithJSONDumpRegistrationBackend = {
     registrationPluginsVariables: [
       {
         pluginIdentifier: 'json_dump',
-        pluginVerboseName: 'JSON dump registration',
+        pluginVerboseName: 'Generic JSON registration',
         pluginVariables: [
           {
             form: null,
@@ -1040,7 +1040,7 @@ export const WithJSONDumpRegistrationBackend = {
   },
 };
 
-export const WithJSONDumpRegistrationBackendTransformToList = {
+export const WithGenericJSONRegistrationBackendTransformToList = {
   args: {
     variables: [
       {
@@ -1107,7 +1107,7 @@ export const WithJSONDumpRegistrationBackendTransformToList = {
       {
         backend: 'json_dump',
         key: 'test_json_dump_backend',
-        name: 'JSON dump registration',
+        name: 'Generic JSON registration',
         options: {
           service: 2,
           path: 'test',

@@ -1,6 +1,6 @@
 @use 'microscope-sass/lib/bem';
 
-.json-dump-variables {
+.generic-json-variables {
   display: flex;
 
   @include bem.modifier('horizontal') {

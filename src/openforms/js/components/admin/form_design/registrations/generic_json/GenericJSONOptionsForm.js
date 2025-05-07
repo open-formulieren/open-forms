@@ -3,7 +3,7 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
-import {REGISTRATION_JSON_DUMP_FIXED_METADATA_VARIABLES} from 'components/admin/form_design/constants';
+import {REGISTRATION_GENERIC_JSON_FIXED_METADATA_VARIABLES} from 'components/admin/form_design/constants';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
 import {
@@ -22,7 +22,7 @@ import {
   Variables,
 } from './fields';
 
-const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
+const GenericJSONOptionsForm = ({name, label, schema, formData, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
@@ -34,7 +34,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
 
   // Get fixed metadata variables
   const {value: fixedMetadataVariables} = useAsync(async () => {
-    const response = await get(REGISTRATION_JSON_DUMP_FIXED_METADATA_VARIABLES);
+    const response = await get(REGISTRATION_GENERIC_JSON_FIXED_METADATA_VARIABLES);
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -49,7 +49,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
       modalTitle={
         <FormattedMessage
           description="JSON registration options modal title"
-          defaultMessage="Plugin configuration: JSON"
+          defaultMessage="Plugin configuration: Generic JSON"
         />
       }
       initialFormData={{
@@ -90,7 +90,7 @@ const JSONDumpOptionsForm = ({name, label, schema, formData, onChange}) => {
   );
 };
 
-JSONDumpOptionsForm.propTypes = {
+GenericJSONOptionsForm.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.node.isRequired,
   schema: PropTypes.shape({
@@ -111,4 +111,4 @@ JSONDumpOptionsForm.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export default JSONDumpOptionsForm;
+export default GenericJSONOptionsForm;

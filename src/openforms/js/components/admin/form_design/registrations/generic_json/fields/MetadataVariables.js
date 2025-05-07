@@ -17,7 +17,7 @@ const FixedMetadataVariables = () => {
   const {staticVariables, registrationPluginsVariables} = useContext(FormContext);
 
   // Create table data
-  const jsonDumpVariables = registrationPluginsVariables.find(
+  const registrationVariables = registrationPluginsVariables.find(
     v => v.pluginIdentifier === PLUGIN_ID
   ).pluginVariables;
   const relevantVariables = [
@@ -30,7 +30,7 @@ const FixedMetadataVariables = () => {
         />
       ),
     })),
-    ...jsonDumpVariables.map(v => ({
+    ...registrationVariables.map(v => ({
       ...v,
       source: (
         <FormattedMessage

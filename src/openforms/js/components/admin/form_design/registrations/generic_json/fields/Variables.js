@@ -35,7 +35,7 @@ const Variables = () => {
         required
         noManageChildProps
       >
-        <div className="json-dump-variables json-dump-variables--horizontal">
+        <div className="generic-json-variables generic-json-variables--horizontal">
           <VariableSelection
             {...fieldProps}
             isMulti

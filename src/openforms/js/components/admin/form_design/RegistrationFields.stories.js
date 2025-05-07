@@ -398,7 +398,7 @@ export default {
       },
       {
         id: 'json_dump',
-        label: 'JSON Dump registration',
+        label: 'Generic JSON registration',
         schema: {
           type: 'object',
           properties: {
@@ -576,7 +576,7 @@ export default {
       },
       {
         pluginIdentifier: 'json_dump',
-        pluginVerboseName: 'JSON Dump',
+        pluginVerboseName: 'Generic JSON registration',
         pluginVariables: [
           {
             form: null,
@@ -819,7 +819,7 @@ export const ConfiguredBackends = {
       },
       {
         key: 'backend11',
-        name: 'JSON Dump',
+        name: 'Generic JSON registration',
         backend: 'json_dump',
         options: {
           service: 1,
@@ -1120,12 +1120,12 @@ export const STUFZDS = {
   },
 };
 
-export const JSONDump = {
+export const GenericJSON = {
   args: {
     configuredBackends: [
       {
         key: 'backend11',
-        name: 'JSON Dump',
+        name: 'Generic JSON registration',
         backend: 'json_dump',
         options: {
           service: 1,

@@ -48,7 +48,7 @@ const onObjectsAPIUserDefinedVariableEdit = (
  * @return {Object|null}                       The updated registrationBackendOptions draft. Return null to indicate
  *                                             no changes need to be made.
  */
-const onJsonDumpUserDefinedVariableEdit = (
+const onGenericJSONUserDefinedVariableEdit = (
   registrationBackendOptions,
   variable,
   originalVariable
@@ -106,4 +106,4 @@ const onJsonDumpUserDefinedVariableEdit = (
   }
 };
 
-export {onObjectsAPIUserDefinedVariableEdit, onJsonDumpUserDefinedVariableEdit};
+export {onObjectsAPIUserDefinedVariableEdit, onGenericJSONUserDefinedVariableEdit};

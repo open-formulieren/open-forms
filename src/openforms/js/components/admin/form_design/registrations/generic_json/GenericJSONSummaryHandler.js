@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import {IconNo, IconYes} from 'components/admin/BooleanIcons';
 
-const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
+const GenericJSONSummaryHandler = ({variable, backendOptions}) => {
   const isIncludedInVariables = backendOptions.variables?.includes(variable.key);
   const isIncludedInMetadata =
     backendOptions.fixedMetadataVariables?.includes(variable.key) ||
@@ -27,7 +27,7 @@ const JSONDumpSummaryHandler = ({variable, backendOptions}) => {
   );
 };
 
-JSONDumpSummaryHandler.propTypes = {
+GenericJSONSummaryHandler.propTypes = {
   variable: PropTypes.shape({
     key: PropTypes.string.isRequired,
   }).isRequired,
@@ -38,4 +38,4 @@ JSONDumpSummaryHandler.propTypes = {
   }).isRequired,
 };
 
-export default JSONDumpSummaryHandler;
+export default GenericJSONSummaryHandler;
