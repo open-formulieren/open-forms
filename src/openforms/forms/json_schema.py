@@ -3,7 +3,6 @@ from typing import Iterator, Sequence
 from openforms.formio.service import FormioData, rewrite_formio_components
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
-from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableSources
@@ -55,6 +54,8 @@ def generate_json_schema(
     if submission is None:
         # Note: we generate a 'fake' submission here to get the total component
         # configuration
+        from openforms.submissions.tests.factories import SubmissionFactory
+
         submission = SubmissionFactory(form=form)
     state = submission.load_submission_value_variables_state()
     new_configuration = rewrite_formio_components(
