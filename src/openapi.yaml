@@ -3872,12 +3872,12 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/plugins/json-dump/fixed-metadata-variables:
+  /api/v2/registration/plugins/generic-json/fixed-metadata-variables:
     get:
-      operationId: registration_plugins_json_dump_fixed_metadata_variables_retrieve
-      description: Return a list of fixed metadata variables for the JSON dump registration
-        backend that are needed by the frontend as default options.
-      summary: Fixed metadata variables JSON dump registration backend
+      operationId: registration_plugins_generic_json_fixed_metadata_variables_retrieve
+      description: Return a list of fixed metadata variables for the Generic JSON
+        registration backend that are needed by the frontend as default options.
+      summary: Fixed metadata variables Generic JSON registration backend
       tags:
       - registration
       security:
@@ -7603,7 +7603,7 @@ components:
           - auth_type
           title: Fixed metadata variable key list
           description: A list of fixed variables to use in the metadata. These include
-            the registration variables of the JSON dump plugin.
+            the registration variables of the Generic JSON plugin.
       required:
       - variables
     Form:
