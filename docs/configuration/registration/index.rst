@@ -13,5 +13,5 @@ Registration plugins
    camunda
    msgraph
    email
-   json-dump
+   generic-json
    local

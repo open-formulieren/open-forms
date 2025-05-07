@@ -1301,12 +1301,6 @@
       "value": "Er ging iets fout bij het ophalen van de beschikbare roltypen in het geselecteerde zaaktype. Controleer of de services in de geselecteerde API-groep goed ingesteld zijn."
     }
   ],
-  "AkG8Zu": [
-    {
-      "type": 0,
-      "value": "Plugin configuratie: JSON"
-    }
-  ],
   "AtBVAV": [
     {
       "type": 0,
@@ -6277,6 +6271,12 @@
     {
       "type": 0,
       "value": "Exporteren"
+    }
+  ],
+  "qxmsAZ": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Generic JSON"
     }
   ],
   "qzISfx": [

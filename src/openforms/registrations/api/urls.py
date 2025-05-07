@@ -24,7 +24,7 @@ urlpatterns += [
         include("openforms.registrations.contrib.zgw_apis.api.urls"),
     ),
     path(
-        "plugins/json-dump/",
-        include("openforms.registrations.contrib.json_dump.api.urls"),
+        "plugins/generic-json/",
+        include("openforms.registrations.contrib.generic_json.api.urls"),
     ),
 ]

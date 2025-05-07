@@ -137,7 +137,7 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
  * @return {Object|null}                       The updated registrationBackendOptions draft. Return null to indicate
  *                                             no changes need to be made.
  */
-const onJSONDumpStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+const onGenericJSONStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
   const removed = originalComponent == null;
   const optionsArrays = [
     registrationBackendOptions.variables,
@@ -193,4 +193,4 @@ const onJSONDumpStepEdit = (registrationBackendOptions, componentSchema, origina
   return registrationBackendOptions;
 };
 
-export {onCamundaStepEdit, onZGWStepEdit, onObjectsAPIStepEdit, onJSONDumpStepEdit};
+export {onCamundaStepEdit, onZGWStepEdit, onObjectsAPIStepEdit, onGenericJSONStepEdit};

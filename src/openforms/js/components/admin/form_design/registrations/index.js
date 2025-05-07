@@ -2,23 +2,23 @@ import CamundaOptionsForm from './camunda';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
 import {
-  JSONDumpOptionsForm,
-  JSONDumpSummaryHandler,
-  JSONDumpVariableConfigurationEditor,
-} from './json_dump';
+  GenericJSONOptionsForm,
+  GenericJSONSummaryHandler,
+  GenericJSONVariableConfigurationEditor,
+} from './generic_json';
 import MSGraphOptionsForm from './ms_graph';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import {ObjectsApiVariableConfigurationEditor} from './objectsapi/ObjectsApiVariableConfigurationEditor';
 import {
   onCamundaStepEdit,
-  onJSONDumpStepEdit,
+  onGenericJSONStepEdit,
   onObjectsAPIStepEdit,
   onZGWStepEdit,
 } from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
 import {
-  onJsonDumpUserDefinedVariableEdit,
+  onGenericJSONUserDefinedVariableEdit,
   onObjectsAPIUserDefinedVariableEdit,
 } from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
@@ -60,12 +60,12 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'microsoft-graph': {form: MSGraphOptionsForm},
   json_dump: {
-    form: JSONDumpOptionsForm,
+    form: GenericJSONOptionsForm,
     configurableFromVariables: true,
-    summaryHandler: JSONDumpSummaryHandler,
-    variableConfigurationEditor: JSONDumpVariableConfigurationEditor,
-    onStepEdit: onJSONDumpStepEdit,
-    onUserDefinedVariableEdit: onJsonDumpUserDefinedVariableEdit,
+    summaryHandler: GenericJSONSummaryHandler,
+    variableConfigurationEditor: GenericJSONVariableConfigurationEditor,
+    onStepEdit: onGenericJSONStepEdit,
+    onUserDefinedVariableEdit: onGenericJSONUserDefinedVariableEdit,
   },
   // demo plugins
   demo: {form: DemoOptionsForm},
