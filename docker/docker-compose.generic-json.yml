@@ -1,14 +1,14 @@
 version: '3.8'
 
-name: json-dump
+name: generic-json
 
 services:
   flask_app:
-    build: ./json-dump
+    build: ./generic-json
     ports:
       - "80:80"
     volumes:
-      - ./json-dump/:/app/
+      - ./generic-json/:/app/
 
 networks:
   open-forms-dev:
