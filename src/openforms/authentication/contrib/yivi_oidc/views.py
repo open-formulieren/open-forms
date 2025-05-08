@@ -2,14 +2,13 @@ import logging
 
 from django.http import HttpRequest
 
-from digid_eherkenning.oidc.models import BaseConfig
 from digid_eherkenning.oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
 from furl import furl
-from mozilla_django_oidc_db.config import lookup_config
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
+from .plugin import PLUGIN_IDENTIFIER
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 
 logger = logging.getLogger(__name__)
@@ -44,13 +43,6 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
         """
         Return a tuple of the parameter type and the problem code.
         """
-        from .plugin import get_config_to_plugin
-
-        config_to_plugin = get_config_to_plugin()
-        config_class = lookup_config(self.request)
-        assert issubclass(config_class, BaseConfig)
-        plugin = config_to_plugin[config_class]
-
         match error, error_description:
             # @TODO set case and change return error_description
             case (
@@ -60,7 +52,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
                 return YIVI_MESSAGE_PARAMETER, LOGIN_CANCELLED
 
             case _:
-                return BACKEND_OUTAGE_RESPONSE_PARAMETER, plugin.identifier
+                return BACKEND_OUTAGE_RESPONSE_PARAMETER, PLUGIN_IDENTIFIER
 
     @property
     def failure_url(self) -> str:

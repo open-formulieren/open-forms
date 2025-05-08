@@ -5,7 +5,6 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.views import OIDCInit
 
 from openforms.accounts.models import User
@@ -109,14 +108,3 @@ class YiviOIDCAuthentication(BasePlugin):
             href="https://yivi.app/",
             appearance=LogoAppearance.light,
         )
-
-
-def get_config_to_plugin() -> dict[type[BaseConfig], YiviOIDCAuthentication]:
-    """
-    Get the mapping of config class to plugin identifier from the registry.
-    """
-    return {
-        plugin.config_class: plugin
-        for plugin in register
-        if isinstance(plugin, YiviOIDCAuthentication)
-    }
