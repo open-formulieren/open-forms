@@ -137,7 +137,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
                 postalcode=entry["postalcode"],
                 city=entry["city"],
             )
-            for identifier, entry in zip(location_ids, details)
+            for identifier, entry in zip(location_ids, details, strict=False)
         ]
 
         return locations

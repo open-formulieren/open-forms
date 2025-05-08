@@ -125,7 +125,7 @@ class FormioDataTests(TestCase):
 
         for key in bad_keys:
             with self.assertRaises(AssertionError):
-                key in formio_data  # type: ignore
+                key in formio_data  # type: ignore  # noqa: B015
 
     def test_keyerror_for_absent_keys(self):
         formio_data = FormioData({})
@@ -153,7 +153,7 @@ class FormioDataTests(TestCase):
                 ("list", [{"foo": {"bar": "baz"}}]),
             )
             for (key, value), (key_expected, value_expected) in zip(
-                expected, data.items()
+                expected, data.items(), strict=False
             ):
                 self.assertEqual(key, key_expected)
                 self.assertEqual(value, value_expected)

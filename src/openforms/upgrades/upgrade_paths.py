@@ -111,7 +111,7 @@ def check_upgrade_path(from_version: str, to_version: str) -> bool:
         raise VersionParseError(to_version) from exc
 
     target_version = None
-    for target_version, upgrade_constraint in UPGRADE_PATHS.items():
+    for target_version, upgrade_constraint in UPGRADE_PATHS.items():  # noqa: B007
         # 1. start by trying an exact match, which always wins
         if target_version == to_version:
             break

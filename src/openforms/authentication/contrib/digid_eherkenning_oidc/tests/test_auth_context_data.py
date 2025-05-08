@@ -191,7 +191,9 @@ class DigiDMachtigenAuthContextTests(
         runtime implications.
         """
         warnings.warn(
-            "Legacy behaviour will be removed in Open Forms 4.0", DeprecationWarning
+            "Legacy behaviour will be removed in Open Forms 4.0",
+            DeprecationWarning,
+            stacklevel=2,
         )
         self._login_and_start_form(
             "digid_machtigen_oidc",
@@ -281,7 +283,9 @@ class EHerkenningBewindvoeringAuthContextTests(
         runtime implications.
         """
         warnings.warn(
-            "Legacy behaviour will be removed in Open Forms 4.0", DeprecationWarning
+            "Legacy behaviour will be removed in Open Forms 4.0",
+            DeprecationWarning,
+            stacklevel=2,
         )
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",

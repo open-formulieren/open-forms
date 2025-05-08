@@ -1,3 +1,4 @@
+# ruff: noqa: B008
 from django.core.exceptions import ValidationError
 
 from hypothesis import strategies as st

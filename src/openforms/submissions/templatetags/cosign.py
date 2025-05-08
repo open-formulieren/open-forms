@@ -14,7 +14,7 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def cosign_button(context, text: StrOrPromise = _("Cosign now")):
+def cosign_button(context, text: StrOrPromise = _("Cosign now")):  # noqa: B008
     """
     Render a link/button to start the cosign process.
     """

@@ -365,6 +365,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             warnings.warn(
                 "Legacy co-sign is deprecated and will be removed in Open Forms 4.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             logger.debug("handle_co_sign")
             co_sign_data: CosignData = {

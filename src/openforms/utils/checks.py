@@ -71,7 +71,7 @@ def check_missing_init_files(app_configs, **kwargs):
     """
     errors = []
 
-    for dirpath, dirnames, filenames in os.walk(settings.DJANGO_PROJECT_DIR):
+    for dirpath, _, filenames in os.walk(settings.DJANGO_PROJECT_DIR):
         dirname = os.path.split(dirpath)[1]
         if dirname == "__pycache__":
             continue

@@ -265,7 +265,7 @@ class ExportTests(TestCase):
         )
         export = create_submission_export(Submission.objects.all())
 
-        self.assertIn(("Taalcode", "en"), zip(export.headers, export[0]))
+        self.assertIn(("Taalcode", "en"), zip(export.headers, export[0], strict=False))
 
     @tag("gh-3629")
     def test_different_number_of_items_in_repeating_groups(self):

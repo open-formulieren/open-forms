@@ -283,7 +283,7 @@ class FormAdmin(
         if "_copy" in request.POST:
             # Clear messages
             storage = messages.get_messages(request)
-            for i in storage:
+            for _msg in storage:
                 pass
 
             copied_form = obj.copy()
@@ -298,7 +298,7 @@ class FormAdmin(
         if "_export" in request.POST:
             # Clear messages
             storage = messages.get_messages(request)
-            for i in storage:
+            for _msg in storage:
                 pass
 
             response = HttpResponse(content_type="application/zip")

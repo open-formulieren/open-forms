@@ -33,6 +33,7 @@ class OFDigiDConfig(DigiDConfig):
             warnings.warn(
                 "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             return "digid_oidc:callback"
         return "oidc_authentication_callback"
@@ -53,6 +54,7 @@ class OFDigiDMachtigenConfig(DigiDMachtigenConfig):
             warnings.warn(
                 "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             return "digid_machtigen_oidc:callback"
         return "oidc_authentication_callback"
@@ -73,6 +75,7 @@ class OFEHerkenningConfig(EHerkenningConfig):
             warnings.warn(
                 "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             return "eherkenning_oidc:callback"
         return "oidc_authentication_callback"
@@ -93,6 +96,7 @@ class OFEHerkenningBewindvoeringConfig(EHerkenningBewindvoeringConfig):
             warnings.warn(
                 "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
             return "eherkenning_bewindvoering_oidc:callback"
         return "oidc_authentication_callback"

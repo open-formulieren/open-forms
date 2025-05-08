@@ -54,6 +54,7 @@ def validate_document_type_references(
             "URL references to document types are deprecated and will be remove in "
             "Open Forms 3.0",
             DeprecationWarning,
+            stacklevel=2,
         )
         if url not in catalogus["informatieobjecttypen"]:
             errors[field] = ValidationError(

@@ -442,6 +442,7 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                 "URL references to document types are deprecated and will be remove in "
                 "Open Forms 3.0",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
             err_tpl = (
