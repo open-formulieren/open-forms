@@ -1,0 +1,17 @@
+services:
+  personen-mock:
+    container_name: personen-mock
+    image: ghcr.io/brp-api/personen-mock:2.3.0-latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+      - ASPNETCORE_URLS=http://+:5010
+    ports:
+      - '5010:5010'
+    # volumes:
+    #   - ./haal_centraal_brp/data/test-data.json:/app/Data/test-data.json
+    networks:
+      - open-forms-dev
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
