@@ -550,20 +550,29 @@ class FormRegistrationBackendTests(TestCase):
 class FormAuthenticationBackendTests(TestCase):
     @enable_feature_flag("ENABLE_DEMO_PLUGINS")
     def test_string_contains_both_parts_of_the_relation(self):
+        form = FormFactory.create(name="zijn broer")
+        backend = FormAuthenticationBackendFactory.build(backend="demo", form=form)
+
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue("zijn broer" in str(backend))
+
+    def test_string_of_a_non_existent_form(self):
         backend = FormAuthenticationBackendFactory.build(
             backend="demo", form__name="zijn broer"
         )
 
-        self.assertTrue("demo" in str(backend))
-        self.assertTrue("zijn broer" in str(backend))
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))
 
     def test_backend_display_of_bad_backend(self):
-        backend = FormRegistrationBackendFactory.build(backend="open-kaboose")
+        backend = FormAuthenticationBackendFactory.build(backend="open-kaboose")
 
-        self.assertEqual(backend.get_backend_display(), "-")
+        self.assertTrue(_("unknown backend") in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))
 
     @enable_feature_flag("ENABLE_DEMO_PLUGINS")
     def test_backend_display_of_existing_backend(self):
-        backend = FormRegistrationBackendFactory.build(backend="demo")
+        backend = FormAuthenticationBackendFactory.build(backend="demo")
 
-        self.assertNotEqual(backend.get_backend_display(), "-")
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))
