@@ -94,6 +94,12 @@ services:
       - log:/app/log
       - certifi_ca_bundle:/app/certifi_ca_bundle
       - ./bin/test_fix_scripts.sh:/app/bin/test_fix_scripts.sh
+    labels:
+      client: dev
+      target: test
+      app: openforms
+      service: web
+
     ports:
       - 8000:8000
     depends_on:
