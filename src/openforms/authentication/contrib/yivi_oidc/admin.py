@@ -11,8 +11,9 @@ from solo.admin import SingletonModelAdmin
 
 from openforms.forms.models import Form
 
+from .constants import PLUGIN_ID
 from .models import AvailableScope, YiviOpenIDConnectConfig
-from .plugin import YiviOIDCAuthentication, PLUGIN_IDENTIFIER
+from .plugin import YiviOIDCAuthentication
 
 
 class OIDCConfigForm(OpenIDConnectConfigForm):
@@ -33,7 +34,7 @@ class OIDCConfigForm(OpenIDConnectConfigForm):
             return enabled
 
         forms_with_backend = Form.objects.live().filter(
-            auth_backends__backend__exact=PLUGIN_IDENTIFIER,
+            auth_backends__backend__exact=PLUGIN_ID,
         )
         if forms_with_backend.exists():
             raise forms.ValidationError(

@@ -14,9 +14,9 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from .config import YiviOptions, YiviOptionsPolymorphicSerializer
+from .constants import PLUGIN_ID
 from .models import YiviOpenIDConnectConfig
-
-PLUGIN_IDENTIFIER = "yivi_oidc"
 
 yivi_init = OIDCInit.as_view(
     config_class=YiviOpenIDConnectConfig,
@@ -35,8 +35,8 @@ class YiviClaims(TypedDict):
     # @TODO
 
 
-@register(PLUGIN_IDENTIFIER)
-class YiviOIDCAuthentication(BasePlugin):
+@register(PLUGIN_ID)
+class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
@@ -46,8 +46,11 @@ class YiviOIDCAuthentication(BasePlugin):
     # Yivi can provide a range of auth attributes, including bsn and kvk
     provides_auth = AuthAttribute
     config_class = YiviOpenIDConnectConfig
+    configuration_options = YiviOptionsPolymorphicSerializer
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: YiviOptions
+    ):
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
@@ -59,7 +62,7 @@ class YiviOIDCAuthentication(BasePlugin):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options: YiviOptions):
         """
         Redirect to form URL.
         """
@@ -72,11 +75,10 @@ class YiviOIDCAuthentication(BasePlugin):
 
         normalized_claims: YiviClaims | None = request.session.get(self.session_key)
         if normalized_claims:
-            # @TODO set `attribute` and `value` dynamically
-            # Perhaps based on the used scopes?
+            # @TODO set `value` dynamically
             form_auth = {
                 "plugin": self.identifier,
-                "attribute": AuthAttribute,
+                "attribute": options["authentication_attribute"],
                 "value": "some yivi claim",
                 # @TODO add `additional_claims`
             }

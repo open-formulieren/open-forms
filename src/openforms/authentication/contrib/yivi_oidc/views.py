@@ -8,8 +8,8 @@ from digid_eherkenning.oidc.views import (
 from furl import furl
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from .plugin import PLUGIN_IDENTIFIER
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from .constants import PLUGIN_ID
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
                 return YIVI_MESSAGE_PARAMETER, LOGIN_CANCELLED
 
             case _:
-                return BACKEND_OUTAGE_RESPONSE_PARAMETER, PLUGIN_IDENTIFIER
+                return BACKEND_OUTAGE_RESPONSE_PARAMETER, PLUGIN_ID
 
     @property
     def failure_url(self) -> str:
