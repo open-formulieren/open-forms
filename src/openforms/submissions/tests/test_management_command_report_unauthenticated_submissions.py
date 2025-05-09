@@ -10,23 +10,22 @@ class CommandTests(TestCase):
     def test_no_problematic_submissions(self):
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=[],
             form__formstep__form_definition__login_required=False,
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=False,
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=False,
             auth_info__plugin="demo",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=True,
             auth_info__plugin="demo",
             auth_info__value="123456782",
@@ -49,22 +48,21 @@ class CommandTests(TestCase):
     def test_with_problematic_submissions(self):
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=[],
             form__formstep__form_definition__login_required=False,
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=False,
         )
         sub3 = SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=True,
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__authentication_backends=["demo"],
+            form__authentication_backend="demo",
             form__formstep__form_definition__login_required=True,
             auth_info__plugin="demo",
             auth_info__value="123456782",

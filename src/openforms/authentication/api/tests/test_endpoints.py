@@ -3,12 +3,13 @@ from unittest.mock import patch
 from django.db.models import TextChoices
 from django.test import override_settings
 
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.config.models import GlobalConfiguration
+from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.tests.feature_flags import enable_feature_flag
 
 from ...base import BasePlugin
@@ -21,10 +22,23 @@ class SingleLoA(TextChoices):
     mordac = ("∞", "Stare into the Sun")
 
 
+class SingleLoAOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    loa = serializers.ChoiceField(
+        label="options LoA",
+        choices=SingleLoA.choices,
+        default=SingleLoA.low,
+    )
+
+
 class SingleAuthPlugin(BasePlugin):
     provides_auth = AuthAttribute.bsn
     verbose_name = "SingleAuthPlugin"
-    assurance_levels = SingleLoA
+
+
+class AdditionalConfigAuthPlugin(BasePlugin):
+    provides_auth = AuthAttribute.bsn
+    verbose_name = "AdditionalConfigAuthPlugin"
+    configuration_options = SingleLoAOptionsSerializer
 
 
 class DemoAuthPlugin(BasePlugin):
@@ -36,6 +50,7 @@ class DemoAuthPlugin(BasePlugin):
 register = Registry()
 register("plugin1")(SingleAuthPlugin)
 register("plugin2")(DemoAuthPlugin)
+register("plugin3")(AdditionalConfigAuthPlugin)
 
 
 class AuthTests(APITestCase):
@@ -88,7 +103,7 @@ class ResponseTests(APITestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_single_auth_plugin(self):
+    def test_regular_auth_plugins(self):
         endpoint = reverse("api:authentication-plugin-list")
         response = self.client.get(endpoint)
 
@@ -97,12 +112,30 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
-            }
+                "schema": None,
+            },
+            {
+                "id": "plugin3",
+                "label": "AdditionalConfigAuthPlugin",
+                "providesAuth": "bsn",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "loa": {
+                            "type": "string",
+                            "enum": [
+                                "low",
+                                "∞",
+                            ],
+                            "enumNames": [
+                                "low",
+                                "Stare into the Sun",
+                            ],
+                            "title": "options LoA",
+                        }
+                    },
+                },
+            },
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
@@ -117,18 +150,35 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [
-                    {"label": "low", "value": "low"},
-                    {"label": "Stare into the Sun", "value": "∞"},
-                ],
+                "schema": None,
             },
             {
                 "id": "plugin2",
                 "label": "DemoAuthPlugin",
                 "providesAuth": "bsn",
-                "supportsLoaOverride": False,
-                "assuranceLevels": [],
+                "schema": None,
+            },
+            {
+                "id": "plugin3",
+                "label": "AdditionalConfigAuthPlugin",
+                "providesAuth": "bsn",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "loa": {
+                            "type": "string",
+                            "enum": [
+                                "low",
+                                "∞",
+                            ],
+                            "enumNames": [
+                                "low",
+                                "Stare into the Sun",
+                            ],
+                            "title": "options LoA",
+                        }
+                    },
+                },
             },
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -144,5 +194,30 @@ class ResponseTests(APITestCase):
 
         response = self.client.get(endpoint)
 
+        expected = [
+            {
+                "id": "plugin3",
+                "label": "AdditionalConfigAuthPlugin",
+                "providesAuth": "bsn",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "loa": {
+                            "type": "string",
+                            "enum": [
+                                "low",
+                                "∞",
+                            ],
+                            "enumNames": [
+                                "low",
+                                "Stare into the Sun",
+                            ],
+                            "title": "options LoA",
+                        }
+                    },
+                },
+            },
+        ]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), [])
+        self.assertEqual(response.json(), expected)

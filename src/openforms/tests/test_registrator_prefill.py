@@ -92,7 +92,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(OFVCRMixin, WebTe
             generate_minimal_setup=True,
             formstep__form_definition__configuration=CONFIGURATION,
             formstep__form_definition__login_required=True,
-            authentication_backends=[PLUGIN_IDENTIFIER],
+            authentication_backend=PLUGIN_IDENTIFIER,
             name="My form",
             slug="my-form",
         )

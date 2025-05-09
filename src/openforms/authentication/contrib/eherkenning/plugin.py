@@ -126,7 +126,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
         authn_contexts = session.get(EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS, [""])
         return max(authn_contexts, key=loa_order)
 
-    def check_requirements(self, request, config):
+    def check_requirements(self, request, options):
         # check LoA requirements
         authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
         required = EherkenningConfiguration.get_solo().eh_loa

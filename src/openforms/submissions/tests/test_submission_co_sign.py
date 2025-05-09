@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -120,7 +121,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_user_must_have_authenticated_with_allowed_plugin(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["eherkenning"],
+            form__authentication_backend="eherkenning",
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
@@ -146,7 +147,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
             form_url="http://localhost/some-form",
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
             ],
@@ -205,7 +207,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_privacy_policy(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
@@ -239,7 +242,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_truth_declaration(self):
         submission = SubmissionFactory.from_components(
-            form__authentication_backends=["digid"],
+            form__authentication_backend="digid",
+            form__authentication_backend_options={"loa": DIGID_DEFAULT_LOA},
             components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
