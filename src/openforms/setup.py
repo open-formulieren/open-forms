@@ -45,6 +45,7 @@ def setup_env():
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
 
+    structlog.contextvars.bind_contextvars(source="app")
     setup_hypothesis()
     load_self_signed_certs()
     monkeypatch_requests()

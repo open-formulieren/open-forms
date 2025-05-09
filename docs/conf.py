@@ -73,7 +73,7 @@ intersphinx_mapping = {
     ),
     "django": (
         "http://docs.djangoproject.com/en/4.2/",
-        "http://docs.djangoproject.com/en/4.2/_objects/",
+        None,
     ),
     "zgw_consumers": (
         "https://zgw-consumers.readthedocs.io/en/latest/",
