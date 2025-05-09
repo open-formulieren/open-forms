@@ -10,6 +10,8 @@ import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
+from openforms.config.constants import FamilyMembersDataAPIChoices
+from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import get_dynamic_configuration
 from openforms.logging.tests.utils import disable_timelinelog
@@ -19,9 +21,7 @@ from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
-from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_family_members_haal_centraal
-from ..models import FamilyMembersTypeConfig
 from ..stuf_bg import get_np_family_members_stuf_bg
 
 TEST_FILES = Path(__file__).parent.resolve() / "responses"
@@ -51,9 +51,9 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         formio_wrapper = submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
 
         with patch(
-            "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
-            return_value=FamilyMembersTypeConfig(
-                data_api=FamilyMembersDataAPIChoices.haal_centraal
+            "openforms.formio.components.custom.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
             ),
         ):
             updated_config_wrapper = get_dynamic_configuration(
@@ -198,9 +198,9 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             self.assertEqual(("456456456", "Bully van Doe"), family_choices[3])
 
     @patch(
-        "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
-        return_value=FamilyMembersTypeConfig(
-            data_api=FamilyMembersDataAPIChoices.haal_centraal
+        "openforms.formio.components.custom.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
         ),
     )
     def test_no_crash_when_no_bsn_available(self, mock_get_solo):

@@ -1,0 +1,32 @@
+{% extends "stuf/soap_envelope.xml" %}{% load stuf %}
+{% block body %}
+<ns:npsLv01 xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310">
+    <ns:stuurgegevens>
+        <StUF:berichtcode>Lv01</StUF:berichtcode>
+        {% render_stuurgegevens stuurgegevens referentienummer %}
+        <StUF:entiteittype>NPS</StUF:entiteittype>
+    </ns:stuurgegevens>
+    <ns:parameters>
+        <StUF:sortering>0</StUF:sortering>
+        <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+        <StUF:maximumAantal>1</StUF:maximumAantal>
+        <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+        <StUF:indicatorAantal>false</StUF:indicatorAantal>
+    </ns:parameters>
+    <ns:gelijk StUF:entiteittype="NPS">
+        <ns:inp.bsn>{{ bsn }}</ns:inp.bsn>
+    </ns:gelijk>
+    <ns:scope>
+        <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
+            <ns:gerelateerde StUF:entiteittype="NPS">
+                <ns:inp.bsn xsi:nil="true" />
+                <ns:voornamen xsi:nil="true" />
+                <ns:voorletters xsi:nil="true" />
+                <ns:voorvoegselGeslachtsnaam xsi:nil="true" />
+                <ns:geslachtsnaam xsi:nil="true" />
+                <ns:geboortedatum xsi:nil="true" />
+            </ns:gerelateerde>
+        </ns:inp.heeftAlsKinderen>
+        </ns:object>
+    </ns:scope>
+</ns:npsLv01>{% endblock %}

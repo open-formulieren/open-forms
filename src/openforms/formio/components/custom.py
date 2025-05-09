@@ -18,6 +18,7 @@ from openforms.api.geojson import (
     GeoJsonGeometryTypes,
 )
 from openforms.authentication.service import AuthAttribute
+from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject
@@ -45,9 +46,7 @@ from ..typing import (
     MapComponent,
 )
 from ..utils import conform_to_mask
-from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
-from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 from .utils import _normalize_pattern, salt_location_message
 
@@ -369,8 +368,8 @@ class NPFamilyMembers(BasePlugin):
             FamilyMembersDataAPIChoices.haal_centraal: get_np_family_members_haal_centraal,
             FamilyMembersDataAPIChoices.stuf_bg: get_np_family_members_stuf_bg,
         }
-        config = FamilyMembersTypeConfig.get_solo()
-        return handlers[config.data_api]
+        config = GlobalConfiguration.get_solo()
+        return handlers[config.family_members_data_api]
 
     def mutate_config_dynamically(
         self, component: Component, submission: Submission, data: FormioData

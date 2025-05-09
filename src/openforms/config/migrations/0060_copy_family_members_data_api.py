@@ -18,7 +18,6 @@ def copy_family_members_data_api(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("np_family_members", "0002_alter_familymemberstypeconfig_table"),
         ("config", "0059_globalconfiguration_family_members_data_api"),

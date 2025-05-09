@@ -4,12 +4,12 @@ from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.models import StufBGConfig
+from stuf.stuf_bg.tests.utils import mock_stufbg_client
 from stuf.tests.factories import StufServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
 from ....registry import register
-from .utils import mock_stufbg_client
 
 plugin = register["stufbg"]
 

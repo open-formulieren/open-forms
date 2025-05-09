@@ -1,5 +1,12 @@
+from datetime import datetime
+from typing import Literal
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from pydantic import BaseModel
+
+from .utils import get_today
 
 # Namespacing in the XML we want to remove
 # Note:  This could cause a collision if two of the same elements
@@ -15,6 +22,37 @@ NAMESPACE_REPLACEMENTS = {
 
 # StUF-BG requires some expiry time to be given so we just give it 5 minutes.
 STUF_BG_EXPIRY_MINUTES = 5
+
+
+type DateOfBirthPrecisionType = Literal["date", "year_month", "year"]
+
+
+class NaturalPersonDetails(BaseModel):
+    bsn: str | None = None
+    first_names: str | None = None
+    initials: str | None = None
+    affixes: str | None = None
+    lastname: str | None = None
+    date_of_birth: str | None = None  # ISO - 8601
+    deceased: bool | None = None
+
+    @property
+    def age(self) -> int | None:
+        """Calculate age if date_of_birth is available."""
+        if not self.date_of_birth:
+            return None
+
+        try:
+            birth_date = datetime.strptime(self.date_of_birth, "%Y-%m-%d")
+            today = datetime.strptime(get_today(), "%Y-%m-%d")
+            age = today.year - birth_date.year
+
+            if (today.month, today.day) < (birth_date.month, birth_date.day):
+                age -= 1
+
+            return age
+        except ValueError:
+            return None
 
 
 class FieldChoices(models.TextChoices):

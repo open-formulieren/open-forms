@@ -17,7 +17,7 @@ class FamilyMembersDataApiMigrationTest(TestMigrations):
 
     def test_copy_data_api_setting_to_global_config(self):
         GlobalConfigModel = self.apps.get_model("config", "GlobalConfiguration")
-        config,_ = GlobalConfigModel.objects.get_or_create(id=1)
+        config, _ = GlobalConfigModel.objects.get_or_create(id=1)
 
         self.assertEqual(
             config.family_members_data_api, FamilyMembersDataAPIChoices.haal_centraal

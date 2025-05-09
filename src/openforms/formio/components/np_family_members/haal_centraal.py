@@ -1,5 +1,5 @@
 from openforms.contrib.haal_centraal.clients import get_brp_client
-from openforms.contrib.haal_centraal.clients.brp import Person
+from openforms.contrib.haal_centraal.clients.brp import NaturalPersonDetails
 from openforms.submissions.models import Submission
 
 
@@ -16,16 +16,16 @@ def get_np_family_members_haal_centraal(
     family_member_choices = [
         (family_member.bsn, get_np_name(family_member))
         for family_member in family_data
-        if bsn
+        if family_member.bsn
     ]
     return family_member_choices
 
 
-def get_np_name(person: Person) -> str:
+def get_np_name(person: NaturalPersonDetails) -> str:
     bits = [
-        person.name.voornamen,
-        person.name.voorvoegsel,
-        person.name.geslachtsnaam,
+        person.first_names,
+        person.affixes,
+        person.lastname,
     ]
     relevant_bits = [bit for bit in bits if bit]
     return " ".join(relevant_bits).strip()
