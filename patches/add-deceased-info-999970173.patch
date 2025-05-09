@@ -1,0 +1,25 @@
+[34mdiff --git a/test-data.json b/test-data.json[m
+[34mindex 39cde4f..f0d78d9 100644[m
+[34m--- a/test-data.json[m
+[34m+++ b/test-data.json[m
+[1;35m@@ -20042,6 +20042,20 @@[m
+       },[m
+       "datum": "20170901"[m
+     },[m
+[2;32m+[m[2;32m    "opschortingBijhouding": {[m
+[2;32m+[m[2;32m      "datum": "20251201",[m
+[2;32m+[m[2;32m      "reden": {[m
+[2;32m+[m[2;32m        "code": "O",[m
+[2;32m+[m[2;32m        "omschrijving": "overlijden"[m
+[2;32m+[m[2;32m      }[m
+[2;32m+[m[2;32m    },[m
+[2;32m+[m[2;32m    "overlijden": {[m
+[2;32m+[m[2;32m      "datum": "20251201",[m
+[2;32m+[m[2;32m      "land": {[m
+[2;32m+[m[2;32m        "code": "5103",[m
+[2;32m+[m[2;32m        "omschrijving": "Servië"[m
+[2;32m+[m[2;32m      }[m
+[2;32m+[m[2;32m    },[m
+     "verblijfplaats": {[m
+       "functieAdres": {[m
+         "code": "W",[m

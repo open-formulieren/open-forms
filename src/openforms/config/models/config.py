@@ -27,7 +27,7 @@ from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
-from ..constants import UploadFileType
+from ..constants import FamilyMembersDataAPIChoices, UploadFileType
 from ..utils import verify_clamav_connection
 from .theme import Theme
 
@@ -567,6 +567,13 @@ class GlobalConfiguration(SingletonModel):
             "The selected services will be shown as options when configuring "
             "select or selectboxes components to be populated from Referentielijsten."
         ),
+        blank=True,
+    )
+    family_members_data_api = models.CharField(
+        _("family members data api"),
+        help_text=_("Which API to use to retrieve the data of the family members."),
+        choices=FamilyMembersDataAPIChoices.choices,
+        max_length=100,
         blank=True,
     )
 
