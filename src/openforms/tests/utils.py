@@ -18,7 +18,7 @@ NOOP_CACHES = {
     for name in settings.CACHES.keys()
 }
 
-flaky_test_logger = structlog.stdlib.get_logger("flaky_tests")
+logger = structlog.stdlib.get_logger(__name__)
 
 
 def can_connect(hostname: str):
@@ -86,6 +86,19 @@ def c_profile(sort_by=SortKey.CUMULATIVE):  # pragma: no cover
             print(s.getvalue(), file=outfile)
 
 
+def is_github_actions() -> bool:
+    """
+    Determine if we're running in Github actions or not.
+
+    See https://docs.github.com/en/actions/writing-workflows/\
+        choosing-what-your-workflow-does/store-information-in-variables\
+        #default-environment-variables
+    """
+    is_ci = os.environ.get("CI") == "true"
+    is_gh_actions = os.environ.get("GITHUB_ACTIONS") == "true"
+    return is_ci and is_gh_actions
+
+
 def log_flaky():
     """
     Log that a/the test is flaky.
@@ -100,13 +113,21 @@ def log_flaky():
         "You may only call log_flaky inside another function"
     )
     frame_info = getframeinfo(frame.f_back)
-    relative_path = Path(frame_info.filename).relative_to(Path(settings.BASE_DIR))
-    # TODO: convert to structlog events
-    flaky_test_logger.warning(
-        "Flaky test: %s",
-        frame_info.function,
-        extra={
-            "file": relative_path,
-            "line": frame_info.lineno,
-        },
+    relative_path = (
+        Path(frame_info.filename).relative_to(Path(settings.BASE_DIR)).as_posix()
     )
+
+    # on github actions, we can directly output in the right format to get annotations,
+    # otherwise just plain log it in local dev
+    if is_github_actions():
+        print(
+            f"::warning file={relative_path},line={frame_info.lineno}"
+            f"::Flaky test: {frame_info.function}"
+        )
+    else:
+        logger.warning(
+            "flaky_test_detected",
+            function=frame_info.function,
+            file=relative_path,
+            line=frame_info.lineno,
+        )

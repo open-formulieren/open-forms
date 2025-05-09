@@ -416,9 +416,6 @@ LOGGING = {
         },
         # legacy
         "outgoing_requests": {"()": HttpFormatter},
-        "flaky_tests_github_actions": {
-            "format": """{"msg": "%(message)s", "file": "%(file)s", "line": %(line)d}"""
-        },
     },
     "filters": {},
     "handlers": {
@@ -450,15 +447,6 @@ LOGGING = {
         "save_outgoing_requests": {
             "level": "DEBUG",
             "class": "log_outgoing_requests.handlers.DatabaseOutgoingRequestsHandler",
-        },
-        # TODO: properly convert to structlog and we'll get JSON logs for free :)
-        "flaky_tests": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGGING_DIR / "flaky.jsonl",
-            "formatter": "flaky_tests_github_actions",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 10,
         },
     },
     "loggers": {
@@ -504,11 +492,6 @@ LOGGING = {
         },
         "django_structlog": {
             "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "flaky_tests": {
-            "handlers": ["flaky_tests"],
             "level": "INFO",
             "propagate": False,
         },
