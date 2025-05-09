@@ -1,0 +1,118 @@
+.. _installation_observability:
+
+=============
+Observability
+=============
+
+Observability is an umbrella term for a number of principles and technologies to get
+insight in running (distributed) systems. It typically focuses on Metrics, Logging and
+Tracing, which provide insight in:
+
+* what the application is doing, in particular as part of a larger system, such as
+  microservice environments
+* performance of the system
+* how the system is used
+
+Open Forms operates in distributed environments, and being able to fully trace a
+customer request from start to end, observability tools are crucial. Below we provide
+some additional context for infastructure teams that wish to integrate Open Forms in
+their observability stack.
+
+.. versionadded:: 3.2.0
+
+    Open Forms is being fitted with better instrumentation to facilitate vendor-agnostic
+    observability.
+
+Logging
+=======
+
+Logging is the practice of emitting log messages that describe what is happening in the
+system, or "events" in short. Log events can have varying degrees of severity, such as
+``debug``, ``info``, ``warning``, ``error`` or even ``critical``. By default, Open Forms
+emits logs with level ``info`` and higher.
+
+A collection of log events with a correlation ID (like a request or trace ID) allow one
+to reconstruct the chain of events that took place which lead to a particular outcome.
+
+Open Forms emits structured logs in JSON format (unless explicitly configured otherwise),
+which should make log aggregation and analysis easier.
+
+We try to keep a consistent log message structure, where the following keys
+are (usually) present:
+
+``source``
+    The component in the application stack that produced the log entry. Typical
+    values are ``uwsgi``, ``app`` and ``background_task``.
+
+``level``
+    The severity level of the log message. One of ``debug``, ``info``, ``warning``,
+    ``error`` or ``critical``.
+
+``timestamp``
+    The moment when the log entry was produced, a string in ISO-8601 format. Most of
+    the logs have microsecond precision, but some of them are limited to second
+    precision.
+
+``event``
+    The event that occurred, e.g. ``request_started`` or ``spawned worker (PID 123)``.
+    This gives the semantic meaning to the log entry.
+
+Other keys that frequently occur are:
+
+``request_id``
+    Present for application logs emitted during an HTTP request, makes it possible to
+    correlate multiple log entries for a single request. Not available in logs emitted
+    by background tasks or logs emitted before/after the Open Forms app.
+
+``submission_uuid``
+    If/when actions take place on or for a particular form submission, the UUID of that
+    submission will be present in the metadata. Not available when there is no submission
+    context.
+
+``module``
+    An identifier for the :ref:`module <developers_backend_modules_index>`
+    (feature-set) in Open Forms. Often used in conjunction with ``plugin``.
+
+``plugin``
+    When something happens in an Open Forms subsystem like authentication, prefill,
+    registraton or appointments, the plugin instance responsible for the actual
+    implementation will be present in the structured data.
+
+``action``
+    Often present to group a set of log entries for a particular routine that's being
+    executed.
+
+``reason``
+    Certain events like ``registration_skipped`` require more context to understand why
+    the event occurred. We often include a key ``reason`` for this. Additionally, you
+    may often find a key ``outcome``.
+
+.. tip:: Certain log aggregation solutions require you to configure "labels" to extract
+   for efficient querying. You can use the above summary of log context keys to configure
+   this according to your needs.
+
+.. note:: We can not 100% guarantee that every log message will always be JSON due to
+   limitations in third party software/packages that we use. Most (if not all) log
+   aggregation technologies support handling both structured and unstructured logs.
+
+Metrics
+=======
+
+.. note:: A vendor-agnostic implementation is under development. Currently you can
+   already use Elastic APM.
+
+Tracing
+=======
+
+Tracing makes it possible to follow the flow of requests across system boundaries,
+e.g. from one application to another. This makes it possible to pinpoint where errors
+or performance degrations are situated exactly. Trace IDs also make it possible to
+correlate the relevant log entries.
+
+.. note:: Better support for (distributed) traces is underway.
+
+Error monitoring
+================
+
+Uncaught exceptions are automatically sent to Sentry, if configured. It's highly
+recommended to configure Sentry for proper insight into bugs.

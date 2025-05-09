@@ -26,6 +26,7 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    ansible
    security
    config
+   observability
    setup_configuration
    file_uploads
    self_signed
