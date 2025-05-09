@@ -117,6 +117,8 @@ def as_json_schema(
 ) -> JSONObject:
     """Return a JSON schema of a component.
 
+    A description will be added if it is available.
+
     :param component: Component
     :param _register: ComponentRegistry | None
     :returns: JSONObject
@@ -124,4 +126,7 @@ def as_json_schema(
     registry = _register or register
 
     component_plugin = registry[component["type"]]
-    return component_plugin.as_json_schema(component)
+    schema = component_plugin.as_json_schema(component)
+    if description := component.get("description"):
+        schema["description"] = description
+    return schema

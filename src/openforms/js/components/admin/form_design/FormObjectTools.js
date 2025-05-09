@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-const FormObjectTools = ({isLoading, isActive, formUrl, historyUrl}) => {
+const FormObjectTools = ({isLoading, isActive, formUrl, historyUrl, formJsonSchemaUrl}) => {
   /* TODO The buttons are disabled if the form page is still loading. Interrupting the fetch of form data
     raises an error which is displayed as 'The form is invalid. Please correct the errors below.'.
      */
@@ -18,6 +18,14 @@ const FormObjectTools = ({isLoading, isActive, formUrl, historyUrl}) => {
           isLoading ? 'form-object-tools__loading' : ''
         }`}
       >
+        <li>
+          <a href={formJsonSchemaUrl} target="_blank" className="historylink">
+            <FormattedMessage
+              defaultMessage="Generate JSON schema"
+              description="From JSON schema button"
+            />
+          </a>
+        </li>
         {formUrl ? (
           <li>
             <a
@@ -54,6 +62,7 @@ FormObjectTools.propTypes = {
   isActive: PropTypes.bool.isRequired,
   historyUrl: PropTypes.string.isRequired,
   formUrl: PropTypes.string.isRequired,
+  formJsonSchemaUrl: PropTypes.string.isRequired,
 };
 
 export default FormObjectTools;

@@ -889,7 +889,13 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUrl}) => {
+const FormCreationForm = ({
+  formUuid,
+  formUrl,
+  formHistoryUrl,
+  outgoingRequestsUrl,
+  formJsonSchemaUrl,
+}) => {
   const {csrftoken} = useContext(APIContext);
   const intl = useIntl();
   const initialState = {
@@ -1178,6 +1184,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
         isActive={state.form.active}
         historyUrl={formHistoryUrl}
         formUrl={formUrl}
+        formJsonSchemaUrl={formJsonSchemaUrl}
       />
 
       <h1>

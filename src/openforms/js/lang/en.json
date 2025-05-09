@@ -2679,6 +2679,11 @@
     "description": "\"today\" operand type",
     "originalDefault": "today"
   },
+  "mKP97p": {
+    "defaultMessage": "Generate JSON schema",
+    "description": "From JSON schema button",
+    "originalDefault": "Generate JSON schema"
+  },
   "mOgTIH": {
     "defaultMessage": "the variable",
     "description": "\"variable\" operand type",
