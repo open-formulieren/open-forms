@@ -6,39 +6,44 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 
-const LoAOverride = ({name, schema, loa, onChange}) => {
-  const {enum: enumValue, enumNames} = schema.properties.loa;
-  const LoaChoices = enumValue.map((value, index) => [value, enumNames[index] || '------']);
+const AuthenticationAttributeField = ({name, schema, authenticationAttribute, onChange}) => {
+  const {enum: enumValue, enumNames} = schema.properties.authenticationAttribute;
+  const authenticationAttributeChoices = enumValue.map((value, index) => [value, enumNames[index]]);
   return (
     <FormRow>
       <Field
         name={name}
         label={
           <FormattedMessage
-            description="Minimal levels of assurance label"
-            defaultMessage="Minimal levels of assurance"
+            description="Authentication attribute label"
+            defaultMessage="Authentication attribute"
           />
         }
         helpText={
           <FormattedMessage
-            defaultMessage="Override the minimum Level of Assurance. This is not supported by all authentication plugins."
-            description="Minimal LoA override help text"
+            description="Authentication attribute help text"
+            defaultMessage="Specify which authentication attribute should be received from the login."
           />
         }
       >
-        <Select value={loa} onChange={onChange} choices={LoaChoices} />
+        <Select
+          value={authenticationAttribute}
+          onChange={onChange}
+          choices={authenticationAttributeChoices}
+        />
       </Field>
     </FormRow>
   );
 };
 
-LoAOverride.propTypes = {
+AuthenticationAttributeField.propType = {
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  authenticationAttribute: PropTypes.string,
   schema: PropTypes.exact({
     type: PropTypes.oneOf(['object']).isRequired,
     properties: PropTypes.shape({
-      loa: PropTypes.exact({
+      authenticationAttribute: PropTypes.exact({
         type: PropTypes.oneOf(['string']).isRequired,
         title: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
@@ -47,7 +52,6 @@ LoAOverride.propTypes = {
       }).isRequired,
     }),
   }).isRequired,
-  loa: PropTypes.string,
 };
 
-export default LoAOverride;
+export default AuthenticationAttributeField;

@@ -1,6 +1,7 @@
-from digid_eherkenning.choices import DigiDAssuranceLevels
 from django.test import TestCase
 from django.utils.translation import gettext_lazy as _
+
+from digid_eherkenning.choices import DigiDAssuranceLevels
 
 from ..config import YiviOptionsPolymorphicSerializer
 from ..constants import YiviAuthenticationAttributes

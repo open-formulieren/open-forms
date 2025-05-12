@@ -5,7 +5,7 @@ import LoAOverride from 'components/admin/form_design/authentication/LoAOverride
 const DigidOptionsForm = ({name, plugin, authBackend, onChange}) => (
   <LoAOverride
     name={`${name}.options.loa`}
-    plugin={plugin}
+    schema={plugin.schema}
     loa={authBackend.options.loa}
     onChange={onChange}
   />

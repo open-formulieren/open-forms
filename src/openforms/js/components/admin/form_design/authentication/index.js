@@ -1,4 +1,5 @@
 import DigidOptionsForm from './digid/DigidOptionsForm';
+import YiviOptionsForm from './yivi/YiviOptionsForm';
 
 /**
  * @typedef {{
@@ -10,5 +11,8 @@ import DigidOptionsForm from './digid/DigidOptionsForm';
 export const BACKEND_OPTIONS_FORMS = {
   digid: {
     form: DigidOptionsForm,
+  },
+  yivi_oidc: {
+    form: YiviOptionsForm,
   },
 };
