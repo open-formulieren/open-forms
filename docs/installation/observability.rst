@@ -42,7 +42,7 @@ are (usually) present:
 
 ``source``
     The component in the application stack that produced the log entry. Typical
-    values are ``uwsgi``, ``app`` and ``background_task``.
+    values are ``uwsgi`` and ``app``.
 
 ``level``
     The severity level of the log message. One of ``debug``, ``info``, ``warning``,
