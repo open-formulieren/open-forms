@@ -56,7 +56,7 @@ django-privates
 django-redis
 django-simple-certmanager
 django-solo
-django-structlog
+django-structlog[celery]
 django-tinymce
 django-treebeard
 django-upgrade-check
