@@ -13,6 +13,11 @@
 #
 version: '3.4'
 
+x-labels: &x-labels
+  client: dev
+  target: test
+  app: openforms
+
 services:
   db:
     image: postgres:${PG_VERSION:-15}  # Minimum required version is 12
@@ -95,9 +100,7 @@ services:
       - certifi_ca_bundle:/app/certifi_ca_bundle
       - ./bin/test_fix_scripts.sh:/app/bin/test_fix_scripts.sh
     labels:
-      client: dev
-      target: test
-      app: openforms
+      <<: *x-labels
       service: web
 
     ports:
@@ -149,6 +152,9 @@ services:
       retries: 3
       start_period: 10s
     volumes: *web_volumes
+    labels:
+      <<: *x-labels
+      service: background-tasks
     depends_on:
       - db
       - redis
@@ -160,6 +166,9 @@ services:
     image: openformulieren/open-forms:${TAG:-latest}
     environment: *web_env
     command: /celery_beat.sh
+    labels:
+      <<: *x-labels
+      service: task-scheduler
     depends_on:
       - db
       - redis
@@ -173,6 +182,9 @@ services:
     command: /celery_flower.sh
     ports:
       - 5555:5555
+    labels:
+      <<: *x-labels
+      service: task-monitoring
     depends_on:
       - redis
       - celery
