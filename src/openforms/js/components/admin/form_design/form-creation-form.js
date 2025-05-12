@@ -337,17 +337,12 @@ function reducer(draft, action) {
         if (draft.form.autoLoginAuthenticationBackend === pluginId) {
           draft.form.autoLoginAuthenticationBackend = '';
         }
-        // If plugin could have additional configuration, remove it from backend configs
-        if (
-          draft.availableAuthPlugins.find(backend => !!backend.schema && backend.id === pluginId)
-        ) {
-          draft.form.authBackends = draft.form.authBackends.filter(
-            authBackend => authBackend.backend !== pluginId
-          );
-        }
+        // If an auth plugin is unselected, remove its backend config
+        draft.form.authBackends = draft.form.authBackends.filter(
+          authBackend => authBackend.backend !== pluginId
+        );
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
-        // If plugin could have additional configuration, add it to backend config
         const plugin = draft.availableAuthPlugins.find(backend => backend.id === pluginId);
         draft.form.authBackends.push({
           backend: pluginId,
