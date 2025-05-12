@@ -112,11 +112,7 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
             response.url,
         )
 
-    @patch(
-        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="ONELOGIN_123456",
-    )
-    def test_authn_request_without_digid_authentication_backend(self, mock_id):
+    def test_authn_request_without_digid_authentication_backend(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(login_required=True)
         FormStepFactory.create(form_definition=form_definition, form=form)
@@ -130,6 +126,18 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         response = self.client.get(f"{login_url}?next={form_url}", follow=True)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(b"plugin not allowed", response.content)
+
+    def test_direct_digid_login_request_without_digid_authentication_backend(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse("digid:login")
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}"
+
+        response = self.client.get(f"{login_url}?next={form_url}", follow=True)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
