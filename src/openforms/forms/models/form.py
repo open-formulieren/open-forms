@@ -467,7 +467,7 @@ class Form(models.Model):
             for auth_backend in self.authentication_backends
         ]
 
-    get_authentication_backends_display.short_description = _("inloggen")
+    get_authentication_backends_display.short_description = _("logins")
 
     @cached_property
     def has_cosign_enabled(self) -> bool:
