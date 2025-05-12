@@ -706,7 +706,7 @@ class Submission(models.Model):
             Static variables values are *not* included.
         """
         values_state = self.load_submission_value_variables_state()
-        return values_state.get_data()
+        return values_state.get_data(convert_to_python=True)
 
     def get_co_signer(self) -> str | SubmissionCosignData:
         # Legacy cosign returns an empty string, cosign v2 returns SubmissionCosignData

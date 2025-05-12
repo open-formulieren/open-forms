@@ -61,18 +61,39 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
+    def get_data(
+        self,
+        *,
+        submission_step: SubmissionStep | None = None,
+        include_unsaved=False,
+        include_static_variables=False,
+        convert_to_python=False,
+    ) -> FormioData:
         """Return the values of the dynamic variables in the submission."""
-        submission_variables = self.saved_variables
+
+        variables = self.variables if include_unsaved else self.saved_variables
+
         if submission_step:
-            submission_variables = self.get_variables_in_submission_step(
-                submission_step, include_unsaved=False
+            configuration_wrapper = (
+                submission_step.form_step.form_definition.configuration_wrapper
             )
+            keys_in_step = list(configuration_wrapper.component_map.keys())
+            variables = {
+                variable_key: variable
+                for variable_key, variable in variables.items()
+                if variable.key in keys_in_step
+            }
 
         data = FormioData()
-        for variable_key, variable in submission_variables.items():
+        for key, variable in variables.items():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                data[variable_key] = variable.value
+                data[variable.key] = (
+                    variable.to_python() if convert_to_python else variable.value
+                )
+
+        if include_static_variables:
+            data.update(self.get_static_data())
+
         return data
 
     def get_variables_in_submission_step(
@@ -170,8 +191,6 @@ class SubmissionValueVariablesState:
             self._static_data = self._get_static_data()
         return self._static_data
 
-    static_data = get_static_data  # DeprecationWarning
-
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []
         for variable in self.variables.values():
@@ -229,7 +248,7 @@ class SubmissionValueVariablesState:
         dynamic_values = {
             key: variable.to_python() for key, variable in self.variables.items()
         }
-        static_values = self.static_data()
+        static_values = self.get_static_data()
         return FormioData({**dynamic_values, **static_values})
 
 

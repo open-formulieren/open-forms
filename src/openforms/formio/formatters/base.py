@@ -66,6 +66,9 @@ class FormatterBase[T: Component]:
         return formatted
 
     def __call__(self, component: T, value: Any) -> str:
+        # TODO-2324: with the conversion to python objects, value can also be a
+        #  time/date/datetime object, which classifies as unexpected. The formatters
+        #  need to support these objects
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 

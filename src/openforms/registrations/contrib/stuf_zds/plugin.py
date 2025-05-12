@@ -172,8 +172,12 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             RegistrationAttribute.initiator_geslachtsaanduiding,
             transform=_gender_choices,
         ),
+        # TODO-2343: is PartialData.parse necessary anymore? Also, does it even make sense
+        #  to add a FieldConf here, or should we decide to use non-python objects for this
+        #  plugin?
         "initiator.geboortedatum": FieldConf(
-            RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
+            RegistrationAttribute.initiator_geboortedatum,
+            transform=lambda date: PartialDate.parse(date.isoformat())
         ),
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         # Verblijfsadres for both Natuurlijk Persoon and Vestiging

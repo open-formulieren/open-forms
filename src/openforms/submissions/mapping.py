@@ -98,7 +98,8 @@ def apply_data_mapping[T: MutableMapping[str, Any]](
             attr_key_lookup[attribute] = key
 
     # grab submitted data
-    data = submission.data
+    state = submission.load_submission_value_variables_state()
+    data = state.get_data(convert_to_python=True)
 
     for target_path, conf in mapping_config.items():
         if isinstance(conf, str):
