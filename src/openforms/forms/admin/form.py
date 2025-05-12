@@ -122,6 +122,24 @@ class FormDeletedListFilter(admin.ListFilter):
         return [self.parameter_name]
 
 
+class IsLiveListFilter(admin.SimpleListFilter):
+    title = _("is live")
+    parameter_name = "is_live"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("true", _("Live")),
+            ("false", _("Not Live")),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "true":
+            return queryset.filter(active=True, _is_deleted=False)
+        elif self.value() == "false":
+            return queryset.filter(active=False, _is_deleted=False)
+        return queryset
+
+
 @admin.register(Form)
 class FormAdmin(
     FormioConfigMixin,
@@ -131,12 +149,8 @@ class FormAdmin(
 ):
     list_display = (
         "anno_name",
-        "active",
-        "maintenance_mode",
-        "translation_enabled",
-        "submission_limit",
+        "is_live",
         "get_authentication_backends_display",
-        "get_payment_backend_display",
         "get_registration_backend_display",
         "get_object_actions",
     )
@@ -148,7 +162,7 @@ class FormAdmin(
         "export_forms",
     ]
     list_filter = (
-        "active",
+        IsLiveListFilter,
         "maintenance_mode",
         "translation_enabled",
         FormDeletedListFilter,
@@ -269,6 +283,12 @@ class FormAdmin(
     @admin.display(description=_("name"), ordering="anno_name")
     def anno_name(self, obj: Form) -> str:
         return obj.admin_name
+
+    @admin.display(description=_("Live"))
+    def is_live(self, obj: Form) -> bool:
+        return obj.active and not obj._is_deleted
+
+    is_live.boolean = True
 
     def get_form(self, request, *args, **kwargs):
         # no actual changes to the fields are triggered, we're only ending up here

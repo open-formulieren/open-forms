@@ -440,7 +440,7 @@ class Form(models.Model):
             or "-"
         )
 
-    get_registration_backend_display.short_description = _("registration backend(s)")
+    get_registration_backend_display.short_description = _("registrations")
 
     def get_payment_backend_display(self):
         if not self.payment_backend:
@@ -467,9 +467,7 @@ class Form(models.Model):
             for auth_backend in self.authentication_backends
         ]
 
-    get_authentication_backends_display.short_description = _(
-        "authentication backend(s)"
-    )
+    get_authentication_backends_display.short_description = _("inloggen")
 
     @cached_property
     def has_cosign_enabled(self) -> bool:
