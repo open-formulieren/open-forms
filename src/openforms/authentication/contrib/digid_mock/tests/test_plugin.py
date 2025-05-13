@@ -20,7 +20,7 @@ class LoginTests(TestCase):
     def test_login(self):
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["digid-mock"],
+            form__authentication_backend="digid-mock",
             form_definition__login_required=True,
         )
         form = step.form
@@ -82,7 +82,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
-            form__authentication_backends=["digid-mock"],
+            form__authentication_backend="digid-mock",
         )
         self._add_submission_to_session(submission)
         form = submission.form

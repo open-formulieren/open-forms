@@ -105,7 +105,7 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
 
     @mock_digid_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
+        form = FormFactory.create(authentication_backend="digid_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="digid_oidc")
         # use shared session to maintain cookie state
         session = Session()
@@ -144,7 +144,7 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
 
     @mock_eherkenning_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eherkenning_oidc")
         # use shared session to maintain cookie state
         session = Session()
@@ -183,7 +183,7 @@ class DigiDMachtigenLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
 
     @mock_digid_machtigen_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         start_url = URLsHelper(form=form).get_auth_start(
             plugin_id="digid_machtigen_oidc"
         )
@@ -225,7 +225,7 @@ class EHerkenningBewindvoeringLogoutTests(LogoutTestsMixin, IntegrationTestsBase
     @mock_eherkenning_bewindvoering_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
+            authentication_backend="eherkenning_bewindvoering_oidc"
         )
         start_url = URLsHelper(form=form).get_auth_start(
             plugin_id="eherkenning_bewindvoering_oidc"

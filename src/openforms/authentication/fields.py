@@ -3,19 +3,18 @@ from django.db.models.fields import CharField
 
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.plugins.validators import PluginExistsValidator
-from openforms.utils.validators import UniqueValuesValidator
 
 from .registry import register
 
 
 class AuthenticationBackendMultiSelectField(ArrayField):
-    def __init__(self, *args, **kwargs):
-        self.registry = kwargs.pop("registry", register)
-        kwargs["base_field"] = BackendChoiceField(registry=self.registry)
-        kwargs.setdefault("default", list)
-        super().__init__(**kwargs)
-
-        self.validators.append(UniqueValuesValidator())
+    system_check_removed_details = {
+        "msg": (
+            "openforms.authentication.fields.AuthenticationBackendMultiSelectField has"
+            "been removed except for support in historical migrations."
+        ),
+        "id": "authentication.fields.E001",
+    }
 
 
 class BackendChoiceField(CharField):

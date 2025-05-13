@@ -15,7 +15,7 @@ class RegistratorSubjectInfoTests(E2ETestCase):
         @sync_to_async
         def setUpTestData():
             return FormFactory.create(
-                generate_minimal_setup=True, authentication_backends=["org-oidc"]
+                generate_minimal_setup=True, authentication_backend="org-oidc"
             )
 
         await create_superuser()

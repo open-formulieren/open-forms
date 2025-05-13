@@ -218,9 +218,7 @@ class SubmissionViewSet(
                 _("The submission must be completed before being able to co-sign it.")
             )
 
-        if not is_authenticated_with_an_allowed_plugin(
-            request, submission.form.authentication_backends
-        ):
+        if not is_authenticated_with_an_allowed_plugin(request, submission.form):
             raise PermissionDenied(
                 _(
                     "You need to be logged in with one of the allowed authentication backends to co-sign the submission."

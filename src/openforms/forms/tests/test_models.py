@@ -5,8 +5,11 @@ from django.utils.translation import gettext as _
 from hypothesis import given, strategies as st
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 
+from openforms.utils.tests.feature_flags import enable_feature_flag
+
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
+    FormAuthenticationBackendFactory,
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
@@ -542,3 +545,34 @@ class FormRegistrationBackendTests(TestCase):
         backend = FormRegistrationBackendFactory.build(backend="email")
 
         self.assertNotEqual(backend.get_backend_display(), "-")
+
+
+class FormAuthenticationBackendTests(TestCase):
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_string_contains_both_parts_of_the_relation(self):
+        form = FormFactory.create(name="zijn broer")
+        backend = FormAuthenticationBackendFactory.build(backend="demo", form=form)
+
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue("zijn broer" in str(backend))
+
+    def test_string_of_a_non_existent_form(self):
+        backend = FormAuthenticationBackendFactory.build(
+            backend="demo", form__name="zijn broer"
+        )
+
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))
+
+    def test_backend_display_of_bad_backend(self):
+        backend = FormAuthenticationBackendFactory.build(backend="open-kaboose")
+
+        self.assertTrue(_("unknown backend") in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))
+
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_backend_display_of_existing_backend(self):
+        backend = FormAuthenticationBackendFactory.build(backend="demo")
+
+        self.assertTrue("Demo BSN (test)" in str(backend))
+        self.assertTrue(_("(unsaved form)") in str(backend))

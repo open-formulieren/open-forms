@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import TypedDict
 
-from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
 
 from furl import furl
@@ -43,10 +42,12 @@ class CosignSlice(TypedDict):
     fields: JSONObject
 
 
-class BasePlugin(AbstractBasePlugin):
+class Options(TypedDict):
+    pass
+
+
+class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     provides_auth: AuthAttribute
-    supports_loa_override = False
-    assurance_levels: type[TextChoices] = TextChoices
     return_method = "GET"
     is_for_gemachtigde = False
 
@@ -123,12 +124,7 @@ class BasePlugin(AbstractBasePlugin):
         )
         return info
 
-    def get_assurance_levels(self) -> list[Choice]:
-        return [
-            Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
-        ]
-
-    def check_requirements(self, request: AnyRequest, config: dict) -> bool:
+    def check_requirements(self, request: AnyRequest, options: OptionsT) -> bool:
         "Check if the request meets requirements"
         return True
 

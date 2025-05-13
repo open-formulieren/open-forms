@@ -42,7 +42,7 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
     @mock_digid_config()
     def test_redirects_after_successful_auth(self):
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
+        form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
         start_response = self.app.get(start_url)
@@ -57,7 +57,7 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
     @mock_digid_config(bsn_claim=["absent-claim"])
     def test_failing_claim_verification(self):
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
+        form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
         start_response = self.app.get(start_url)
@@ -78,7 +78,7 @@ class DigiDCallbackTests(IntegrationTestsBase):
     @tag("gh-3656", "gh-3692")
     @mock_digid_config(oidc_rp_scopes_list=["badscope"])
     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
+        form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -113,7 +113,7 @@ class DigiDCallbackTests(IntegrationTestsBase):
     @mock_digid_config(oidc_rp_scopes_list=["badscope"])
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
         self.app.set_user(StaffUserFactory.create())
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
+        form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -145,7 +145,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
 
     @mock_eherkenning_config()
     def test_redirects_after_successful_auth(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         start_response = self.app.get(start_url)
@@ -161,7 +161,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
     @tag("gh-4627")
     @mock_eherkenning_config(acting_subject_claim=["does not exist"])
     def test_failure_with_missing_acting_subject_claim(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         start_response = self.app.get(start_url)
@@ -206,7 +206,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
     @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     @mock_eherkenning_config(acting_subject_claim=["does not exist"])
     def test_failure_with_missing_acting_subject_claim_strict_mode(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         start_response = self.app.get(start_url)
@@ -220,7 +220,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
 
     @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         start_response = self.app.get(start_url)
@@ -241,7 +241,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
     @tag("gh-3656", "gh-3692")
     @mock_eherkenning_config(oidc_rp_scopes_list=["badscope"])
     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -278,7 +278,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         self,
     ):
         self.app.set_user(StaffUserFactory.create())
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
+        form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -310,7 +310,7 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
 
     @mock_digid_machtigen_config()
     def test_redirects_after_successful_auth(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
         start_response = self.app.get(start_url)
@@ -332,7 +332,7 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
         authorizee_bsn_claim=["absent-claim"],
     )
     def test_failing_claim_verification(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
         start_response = self.app.get(start_url)
@@ -357,7 +357,7 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
     @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     @mock_digid_machtigen_config(mandate_service_id_claim=["absent-claim"])
     def test_failing_claim_verification_strict_mode(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
         start_response = self.app.get(start_url)
@@ -382,7 +382,7 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
     @tag("gh-3656", "gh-3692")
     @mock_digid_machtigen_config(oidc_rp_scopes_list=["badscope"])
     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -417,7 +417,7 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
     @mock_digid_machtigen_config(oidc_rp_scopes_list=["badscope"])
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
         self.app.set_user(StaffUserFactory.create())
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
         # initialize state, but don't actually log in - we have an invalid config and
@@ -450,7 +450,7 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
     @mock_eherkenning_bewindvoering_config()
     def test_redirects_after_successful_auth(self):
         form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
+            authentication_backend="eherkenning_bewindvoering_oidc"
         )
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(
@@ -476,7 +476,7 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
     )
     def test_failing_claim_verification(self):
         form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
+            authentication_backend="eherkenning_bewindvoering_oidc"
         )
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(
@@ -505,7 +505,7 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
     @mock_eherkenning_bewindvoering_config(oidc_rp_scopes_list=["badscope"])
     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
         form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
+            authentication_backend="eherkenning_bewindvoering_oidc"
         )
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(
@@ -546,7 +546,7 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
     ):
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
+            authentication_backend="eherkenning_bewindvoering_oidc"
         )
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(

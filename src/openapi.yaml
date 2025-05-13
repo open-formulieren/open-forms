@@ -1325,7 +1325,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1398,7 +1398,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1915,7 +1915,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -1994,7 +1994,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -2077,7 +2077,7 @@ paths:
 
         - `internalName`
         - `registrationBackends`
-        - `authenticationBackendOptions`
+        - `authBackends`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `priceVariableKey`
@@ -6936,42 +6936,15 @@ components:
           type: string
           title: Provides authentication attributes
           description: The authentication attribute provided by this plugin.
-        supportsLoaOverride:
-          type: boolean
-          description: Does the Identity Provider support overriding the minimum Level
-            of Assurance (LoA) through the authentication request?
-        assuranceLevels:
-          type: array
-          items:
-            $ref: '#/components/schemas/TextChoice'
-          title: Levels of assurance
-          description: The levels of assurance this plugin defines.
+        schema:
+          type: object
+          additionalProperties: {}
+          title: JSON schema
+          description: The generated JSON schema for the plugin options.
       required:
-      - assuranceLevels
       - id
       - label
       - providesAuth
-      - supportsLoaOverride
-    AuthenticationBackendsEnum:
-      enum:
-      - digid_oidc
-      - eherkenning_oidc
-      - digid_machtigen_oidc
-      - eherkenning_bewindvoering_oidc
-      - digid
-      - eherkenning
-      - eidas
-      - org-oidc
-      type: string
-      description: |-
-        * `digid_oidc` - DigiD
-        * `eherkenning_oidc` - eHerkenning
-        * `digid_machtigen_oidc` - DigiD Machtigen
-        * `eherkenning_bewindvoering_oidc` - eHerkenning bewindvoering
-        * `digid` - DigiD
-        * `eherkenning` - eHerkenning
-        * `eidas` - eIDAS
-        * `org-oidc` - OpenID Connect
     AvailableLanguagesEnum:
       enum:
       - nl
@@ -7257,41 +7230,6 @@ components:
       required:
       - configuration
       - index
-    CosignLoginInfo:
-      type: object
-      properties:
-        identifier:
-          type: string
-          readOnly: true
-        label:
-          type: string
-          readOnly: true
-          title: Button label
-          description: Button label
-        url:
-          type: string
-          format: uri
-          readOnly: true
-          title: Login URL
-          description: URL to start login flow, expects 'next' GET-parameter with
-            return url
-        logo:
-          allOf:
-          - $ref: '#/components/schemas/LoginLogo'
-          readOnly: true
-          title: Optional logo
-          description: Optional logo
-        isForGemachtigde:
-          type: boolean
-          readOnly: true
-          description: This authorization method can be used to log in on behalf of
-            another person or company
-      required:
-      - identifier
-      - isForGemachtigde
-      - label
-      - logo
-      - url
     DMNEvaluateAction:
       type: object
       properties:
@@ -7616,7 +7554,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7638,14 +7576,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
-        authenticationBackends:
+        authBackends:
           type: array
           items:
-            $ref: '#/components/schemas/AuthenticationBackendsEnum'
-          writeOnly: true
-        authenticationBackendOptions:
-          type: object
-          additionalProperties: {}
+            $ref: '#/components/schemas/FormAuthenticationBackend'
         loginOptions:
           type: array
           items:
@@ -7655,7 +7589,7 @@ components:
           type: string
           description: The authentication backend to which the user will be automatically
             redirected upon starting the form. The chosen backend must be present
-            in `authentication_backends`
+            in `auth_backends`
         paymentRequired:
           type: boolean
           readOnly: true
@@ -7842,11 +7776,6 @@ components:
           title: cosign request has links in email
           description: Indicates whether deep links are included in the cosign request
             emails or not.
-        cosignLoginInfo:
-          allOf:
-          - $ref: '#/components/schemas/CosignLoginInfo'
-          readOnly: true
-          deprecated: true
         submissionStatementsConfiguration:
           type: array
           items:
@@ -7884,7 +7813,6 @@ components:
           nullable: true
       required:
       - cosignHasLinkInEmail
-      - cosignLoginInfo
       - cosignLoginOptions
       - hideNonApplicableSteps
       - loginOptions
@@ -7927,6 +7855,18 @@ components:
       - isCreate
       - redirectUrl
       - submitAction
+    FormAuthenticationBackend:
+      type: object
+      properties:
+        backend:
+          type: string
+          title: Authentication backend
+          maxLength: 100
+        options:
+          nullable: true
+          title: authentication backend options
+      required:
+      - backend
     FormData:
       type: object
       properties:
@@ -8135,7 +8075,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8306,7 +8246,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -9233,7 +9173,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -9255,14 +9195,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
-        authenticationBackends:
+        authBackends:
           type: array
           items:
-            $ref: '#/components/schemas/AuthenticationBackendsEnum'
-          writeOnly: true
-        authenticationBackendOptions:
-          type: object
-          additionalProperties: {}
+            $ref: '#/components/schemas/FormAuthenticationBackend'
         loginOptions:
           type: array
           items:
@@ -9272,7 +9208,7 @@ components:
           type: string
           description: The authentication backend to which the user will be automatically
             redirected upon starting the form. The chosen backend must be present
-            in `authentication_backends`
+            in `auth_backends`
         paymentRequired:
           type: boolean
           readOnly: true
@@ -9459,11 +9395,6 @@ components:
           title: cosign request has links in email
           description: Indicates whether deep links are included in the cosign request
             emails or not.
-        cosignLoginInfo:
-          allOf:
-          - $ref: '#/components/schemas/CosignLoginInfo'
-          readOnly: true
-          deprecated: true
         submissionStatementsConfiguration:
           type: array
           items:
@@ -10461,16 +10392,6 @@ components:
       - size
       - submission
       - url
-    TextChoice:
-      type: object
-      properties:
-        value:
-          type: string
-        label:
-          type: string
-      required:
-      - label
-      - value
     Theme:
       type: object
       properties:

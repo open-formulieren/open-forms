@@ -108,7 +108,7 @@ def _get_encrypted_attribute(pseudo_id: str):
 class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
     def test_redirect_to_eIDAS_login(self):
         form = FormFactory.create(
-            authentication_backends=["eidas"],
+            authentication_backend="eidas",
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
         )
@@ -145,7 +145,7 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
     )
     def test_authn_request(self, mock_id):
         form = FormFactory.create(
-            authentication_backends=["eidas"],
+            authentication_backend="eidas",
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
         )
@@ -218,7 +218,7 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
             ),
         )
         form = FormFactory.create(
-            authentication_backends=["eidas"],
+            authentication_backend="eidas",
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
         )
@@ -257,7 +257,7 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
             content=_get_artifact_response("ArtifactResponseCancelLogin.xml"),
         )
         form = FormFactory.create(
-            authentication_backends=["eidas"],
+            authentication_backend="eidas",
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
         )
@@ -304,7 +304,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCas
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
-            form__authentication_backends=["eidas"],
+            form__authentication_backend="eidas",
         )
         self._add_submission_to_session(submission)
         form_url = "http://localhost:3000"
@@ -331,7 +331,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCas
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
-            form__authentication_backends=["eidas"],
+            form__authentication_backend="eidas",
         )
         self._add_submission_to_session(submission)
         auth_return_url = reverse(

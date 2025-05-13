@@ -37,6 +37,17 @@ def store_registrator_details(
     )
 
 
+def get_authentication_plugin(request: Request, form: Form) -> str:
+    try:
+        plugin = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
+        if not form.auth_backends.filter(backend=plugin).exists():
+            raise ValueError(f"Unexpected plugin {plugin} used")
+
+        return plugin
+    except KeyError as exc:
+        raise KeyError("Plugin cannot be retrieved from session") from exc
+
+
 def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool:
     try:
         return request.session[FORM_AUTH_SESSION_KEY]["plugin"] == expected_plugin
@@ -44,20 +55,20 @@ def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool
         return False
 
 
-def is_authenticated_with_an_allowed_plugin(
-    request: Request, allowed_plugins: list[str]
-) -> bool:
+def is_authenticated_with_an_allowed_plugin(request: Request, form: Form) -> bool:
     try:
-        return request.session[FORM_AUTH_SESSION_KEY]["plugin"] in allowed_plugins
-    except KeyError:
+        get_authentication_plugin(request, form)
+        return True
+    except (ValueError, KeyError):
         return False
 
 
-def meets_plugin_requirements(request: Request, config: dict) -> bool:
-    # called after is_authenticated_with_plugin so this is correct
-    plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
+def meets_plugin_requirements(request: Request, form: Form, plugin_id: str) -> bool:
+    # called after is_authenticated_with_plugin and get_authentication_plugin so this is
+    # correct and there is a FormAuthenticationBackend object
     plugin = auth_register[plugin_id]
-    return plugin.check_requirements(request, config.get(plugin_id, {}))
+    plugin_configuration = form.auth_backends.get(backend=plugin_id)
+    return plugin.check_requirements(request, plugin_configuration.options)
 
 
 def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:

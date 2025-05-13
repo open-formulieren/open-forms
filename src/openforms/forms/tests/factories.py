@@ -1,7 +1,8 @@
 import random
 
-import factory
+import factory.fuzzy
 
+from openforms.authentication.registry import register as authentication_registry
 from openforms.forms.constants import LogicActionTypes
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.registry import register as registration_registry
@@ -9,6 +10,10 @@ from openforms.variables.constants import FormVariableDataTypes, FormVariableSou
 
 from ..models import Form, FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
+
+
+def authentication_plugins():
+    return [p.identifier for p in authentication_registry.iter_enabled_plugins()]
 
 
 def random_registration_plugin():
@@ -45,6 +50,7 @@ class FormFactory(factory.django.DjangoModelFactory):
         )
         # prevent options passed to Form() and set a default
         registration_backend_options = {}
+        authentication_backend_options = {}
 
     @factory.lazy_attribute
     def registration_backend__options(backend_resolver):
@@ -64,6 +70,20 @@ class FormFactory(factory.django.DjangoModelFactory):
             # Let's anyway; maybe the constructor has side-effects; everything is possible.
             else FormRegistrationBackendFactory.build
         )(form=form, backend=extracted, **kwargs)
+
+    @factory.lazy_attribute
+    def authentication_backend__options(backend_resolver):
+        return backend_resolver.factory_parent.authentication_backend_options
+
+    @factory.post_generation
+    def authentication_backend(form, create, extracted, **kwargs):
+        if not extracted:
+            return
+
+        if not create:
+            raise ValueError("You must use a create strategy")
+
+        FormAuthenticationBackendFactory.create(form=form, backend=extracted, **kwargs)
 
     @factory.post_generation
     def price_logic(
@@ -113,6 +133,15 @@ class FormRegistrationBackendFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "forms.FormRegistrationBackend"
+
+
+class FormAuthenticationBackendFactory(factory.django.DjangoModelFactory):
+    backend = factory.fuzzy.FuzzyChoice(lambda: authentication_plugins())
+    form = factory.SubFactory(FormFactory)
+
+    class Meta:
+        model = "forms.FormAuthenticationBackend"
+        django_get_or_create = ("form", "backend")
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):

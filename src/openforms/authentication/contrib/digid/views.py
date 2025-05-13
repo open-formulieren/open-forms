@@ -1,3 +1,4 @@
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import resolve
@@ -13,7 +14,7 @@ from digid_eherkenning.views import (
 from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
-from openforms.forms.models import Form
+from openforms.forms.models import Form, FormAuthenticationBackend
 
 from .constants import (
     DIGID_AUTH_SESSION_AUTHN_CONTEXTS,
@@ -42,8 +43,15 @@ class DigiDLoginView(_DigiDLoginView):
         _, _, kwargs = resolve(return_path)
         form = get_object_or_404(Form, slug=kwargs.get("slug"))
 
-        loa = form.authentication_backend_options.get(PLUGIN_ID, {}).get("loa")
-        return loa if loa else DIGID_DEFAULT_LOA
+        # called after AuthenticationStartView.get(), which already checks if there is an
+        # FormAuthenticationBackend object for the plugin. Still, as this endpoint can be
+        # targeted directly, we should still handle non-existing
+        # FormAuthenticationBackend situations.
+        try:
+            auth_backend = form.auth_backends.get(backend=PLUGIN_ID)
+            return auth_backend.options["loa"] or DIGID_DEFAULT_LOA
+        except FormAuthenticationBackend.DoesNotExist:
+            raise SuspiciousOperation("plugin not allowed")
 
 
 class DigiDAssertionConsumerServiceView(

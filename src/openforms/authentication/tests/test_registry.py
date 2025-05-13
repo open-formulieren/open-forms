@@ -50,11 +50,12 @@ class RegistryTests(TestCase):
         request = factory.get("/xyz")
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
-        self.assertEqual(form.authentication_backends, ["plugin1"])
+        self.assertEqual(form.auth_backends.count(), 1)
+        self.assertEqual(form.auth_backends.get().backend, "plugin1")
 
         options = register.get_options(request, form)
         self.assertEqual(len(options), 1)
@@ -77,7 +78,7 @@ class RegistryTests(TestCase):
     def test_get_options_with_unknown_plugin_id(self):
         # get_options may not crash when a (legacy) plugin is specified on the form.
         # This could be from a custom extension that was removed.
-        form = FormFactory.build(authentication_backends=["some_old_value"])
+        form = FormFactory.create(authentication_backend="some_old_value")
 
         register = Registry()
         register("plugin1")(Plugin)
@@ -94,7 +95,7 @@ class RegistryTests(TestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form

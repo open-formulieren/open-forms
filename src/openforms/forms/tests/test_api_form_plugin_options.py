@@ -8,13 +8,15 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.models import User
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.authentication.base import BasePlugin as AuthenticationBasePlugin
+from openforms.authentication.registry import Registry as AuthenticationRegistry
 from openforms.payments.base import BasePlugin as PaymentBasePlugin
 from openforms.payments.registry import Registry as PaymentRegistry
 from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
 from openforms.registrations.registry import Registry as RegistrationRegistry
 from openforms.registrations.tests.utils import patch_registry
 
-from ..models import Form, FormRegistrationBackend
+from ..models import Form, FormAuthenticationBackend, FormRegistrationBackend
 from .factories import FormFactory, FormRegistrationBackendFactory
 
 
@@ -30,6 +32,10 @@ class RegistrationPlugin(RegistrationBasePlugin):
 
 
 class PaymentPlugin(PaymentBasePlugin):
+    configuration_options = EmailOptionsSerializer
+
+
+class AuthenticationPlugin(AuthenticationBasePlugin):
     configuration_options = EmailOptionsSerializer
 
 
@@ -157,6 +163,74 @@ class FormPluginOptionTest(APITestCase):
                 self.assertEqual(json["code"], "invalid")
                 self.assertEqual(
                     json["invalidParams"][0]["name"], "paymentBackendOptions.email"
+                )
+
+    def test_auth_backend_options(self):
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        model_field = FormAuthenticationBackend._meta.get_field("backend")
+
+        register = AuthenticationRegistry()
+        register("test")(AuthenticationPlugin)
+
+        patcher = patch(
+            "openforms.forms.api.serializers.form.auth_register", new=register
+        )
+        with patcher, patch_registry(model_field, register):
+            with self.subTest("blank"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "auth_backends": [],
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+                form.refresh_from_db()
+
+                self.assertEqual(form.auth_backends.count(), 0)
+
+            with self.subTest("valid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "auth_backends": [
+                            {
+                                "backend": "test",
+                                "options": {"email": "foo@bar.baz"},
+                            }
+                        ]
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+                form.refresh_from_db()
+                auth_backend = form.auth_backends.get()
+
+                self.assertEqual(auth_backend.backend, "test")
+                self.assertEqual(auth_backend.options, {"email": "foo@bar.baz"})
+
+            with self.subTest("invalid"):
+                response = self.client.patch(
+                    url,
+                    data={
+                        "auth_backends": [
+                            {
+                                "backend": "test",
+                                "options": {"email": "not_email_address"},
+                            }
+                        ]
+                    },
+                )
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+                json = response.json()
+
+                self.assertEqual(json["code"], "invalid")
+                self.assertEqual(
+                    json["invalidParams"][0]["name"],
+                    "authBackends.0.options.email",
                 )
 
     def test_overwrite_only_registration_email_subject_templates(self):

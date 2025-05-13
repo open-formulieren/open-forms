@@ -38,7 +38,7 @@ class PerformLoginMixin:
 
     def _login_and_start_form(self, plugin: str, *, username: str, password: str):
         host = f"http://{self.extra_environ['HTTP_HOST']}"
-        form = FormFactory.create(authentication_backends=[plugin])
+        form = FormFactory.create(authentication_backend=plugin)
         url_helper = URLsHelper(form=form, host=host)
         start_url = url_helper.get_auth_start(plugin_id=plugin)
         start_response = self.app.get(start_url)

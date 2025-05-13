@@ -1,11 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
-from furl import furl
 from rest_framework import serializers
-from rest_framework.reverse import reverse
 
-from openforms.authentication.base import LoginInfo
-from openforms.authentication.registry import register as auth_register
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
 from ..constants import LogoAppearance
@@ -23,17 +19,11 @@ class AuthPluginSerializer(PluginBaseSerializer):
         label=_("Provides authentication attributes"),
         help_text=_("The authentication attribute provided by this plugin."),
     )
-    supports_loa_override = serializers.BooleanField(
-        label=_("supports loa override"),
-        help_text=_(
-            "Does the Identity Provider support overriding the minimum "
-            "Level of Assurance (LoA) through the authentication request?"
-        ),
-    )
-    assurance_levels = serializers.ListField(
-        child=TextChoiceSerializer(),
-        label=_("Levels of assurance"),
-        help_text=_("The levels of assurance this plugin defines."),
+    schema = serializers.DictField(
+        source="configuration_options.display_as_jsonschema",
+        default=None,  # Return None for plugins that don't support configuration_options
+        label=_("JSON schema"),
+        help_text=_("The generated JSON schema for the plugin options."),
     )
 
 
@@ -89,42 +79,3 @@ class LoginOptionSerializer(serializers.Serializer):
         ),
         read_only=True,
     )
-
-
-class CosignLoginInfoSerializer(LoginOptionSerializer):
-    def get_attribute(self, form):
-        if not form.has_cosign_enabled:
-            return None
-
-        # cosign component but no auth backends is an invalid config that should
-        # display a warning in the UI, but we don't have backend constraints for that
-        # (yet).
-        if not form.authentication_backends:
-            return None
-
-        auth_plugin_id = form.authentication_backends[0]
-        auth_url = reverse(
-            "authentication:start",
-            kwargs={
-                "slug": form.slug,
-                "plugin_id": auth_plugin_id,
-            },
-            request=self.context["request"],
-        )
-        next_url = reverse(
-            "submissions:find-submission-for-cosign",
-            kwargs={"form_slug": form.slug},
-            request=self.context["request"],
-        )
-        auth_page = furl(auth_url)
-        auth_page.args.set("next", next_url)
-
-        auth_plugin = auth_register[auth_plugin_id]
-
-        return LoginInfo(
-            auth_plugin.identifier,
-            auth_plugin.get_label(),
-            url=auth_page.url,
-            logo=auth_plugin.get_logo(self.context["request"]),
-            is_for_gemachtigde=auth_plugin.is_for_gemachtigde,
-        )

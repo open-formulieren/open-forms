@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -11,7 +11,6 @@ from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
-from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
 from openforms.config.models import GlobalConfiguration, Theme
@@ -29,7 +28,7 @@ from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...constants import StatementCheckboxChoices
-from ...models import Category, Form, FormRegistrationBackend
+from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -53,6 +52,31 @@ class FormLiteralsSerializer(serializers.Serializer):
     begin_text = ButtonTextSerializer(raw_field="begin_text", required=False)
     change_text = ButtonTextSerializer(raw_field="change_text", required=False)
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
+
+
+class FormAuthenticationBackendSerializer(serializers.ModelSerializer):
+    options = serializers.JSONField(
+        label=_("authentication backend options"), allow_null=True, required=False
+    )
+
+    class Meta:
+        model = FormAuthenticationBackend
+        fields = ("backend", "options")
+
+    def validate(self, attrs):
+        plugin = auth_register[attrs["backend"]]
+        if not hasattr(plugin, "configuration_options"):
+            return attrs
+
+        options = get_from_serializer_data_or_instance("options", attrs, self)
+        serializer = plugin.configuration_options(
+            data=options, context=self.context, required=False, allow_null=True
+        )
+        if not serializer.is_valid():
+            raise serializers.ValidationError({"options": serializer.errors})
+        # serializer does some normalization, so make sure to update the data
+        attrs["options"] = serializer.validated_data
+        return attrs
 
 
 class FormRegistrationBackendSerializer(serializers.ModelSerializer):
@@ -96,11 +120,6 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
         return attrs
 
 
-@extend_schema_serializer(
-    deprecate_fields=[
-        "cosign_login_info",
-    ]
-)
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -115,13 +134,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     steps = MinimalFormStepSerializer(many=True, read_only=True, source="formstep_set")
 
-    authentication_backends = serializers.ListField(
-        child=serializers.ChoiceField(choices=[]),
-        write_only=True,
-        required=False,
-        default=list,
-    )
-    authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
     cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
     cosign_has_link_in_email = serializers.SerializerMethodField(
@@ -131,15 +143,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "or not."
         ),
     )
-    # TODO: deprecated, remove in 3.0.0
-    cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(
         required=False,
         allow_blank=True,
         help_text=_(
             "The authentication backend to which the user will be automatically "
             "redirected upon starting the form. The chosen backend must be present in "
-            "`authentication_backends`"
+            "`auth_backends`"
         ),
     )
 
@@ -220,6 +230,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     translations = ModelTranslationsSerializer()
 
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+    auth_backends = FormAuthenticationBackendSerializer(many=True, required=False)
 
     class Meta:
         model = Form
@@ -230,8 +241,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "login_required",
             "translation_enabled",
             "registration_backends",
-            "authentication_backends",
-            "authentication_backend_options",
+            "auth_backends",
             "login_options",
             "auto_login_authentication_backend",
             "payment_required",
@@ -275,7 +285,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "hide_non_applicable_steps",
             "cosign_login_options",
             "cosign_has_link_in_email",
-            "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
@@ -287,7 +296,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "introduction_page_content",
             "explanation_template",
             "login_required",
-            "authentication_backends",
             "auto_login_authentication_backend",
             "login_options",
             "payment_required",
@@ -311,7 +319,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "hide_non_applicable_steps",
             "cosign_login_options",
             "cosign_has_link_in_email",
-            "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
         )
@@ -335,6 +342,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "brp_personen_request_options", None
         )
         registration_backends = validated_data.pop("registration_backends", [])
+        auth_backends = validated_data.pop("auth_backends", [])
 
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -348,6 +356,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
         )
+        FormAuthenticationBackend.objects.bulk_create(
+            FormAuthenticationBackend(form=instance, **backend)
+            for backend in auth_backends
+        )
         return instance
 
     @transaction.atomic()
@@ -359,6 +371,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "brp_personen_request_options", None
         )
         registration_backends = validated_data.pop("registration_backends", None)
+        auth_backends = validated_data.pop("auth_backends", None)
 
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
@@ -368,24 +381,24 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             BRPPersonenRequestOptions.objects.update_or_create(
                 form=instance, defaults=brp_personen_request_options
             )
-        if registration_backends is None:
-            return instance
-
-        instance.registration_backends.all().delete()
-        FormRegistrationBackend.objects.bulk_create(
-            FormRegistrationBackend(form=instance, **backend)
-            for backend in registration_backends
-        )
+        if registration_backends is not None:
+            instance.registration_backends.all().delete()
+            FormRegistrationBackend.objects.bulk_create(
+                FormRegistrationBackend(form=instance, **backend)
+                for backend in registration_backends
+            )
+        if auth_backends is not None:
+            instance.auth_backends.all().delete()
+            FormAuthenticationBackend.objects.bulk_create(
+                FormAuthenticationBackend(form=instance, **backend_config)
+                for backend_config in auth_backends
+            )
 
         return instance
 
     def get_fields(self):
         fields = super().get_fields()
         # lazy set choices
-        if "authentication_backends" in fields:
-            fields[
-                "authentication_backends"
-            ].child.choices = auth_register.get_choices()
         if "payment_backend" in fields:
             fields["payment_backend"].choices = [
                 ("", "")
@@ -393,8 +406,61 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
         return fields
 
+    def _handle_import(self, attrs) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False) or not hasattr(
+            self, "initial_data"
+        ):
+            return
+
+        if (
+            "authentication_backends" not in self.initial_data
+            and "authentication_backend_options" not in self.initial_data
+        ):
+            return
+
+        # Make sure `auth_backends` exists
+        attrs["auth_backends"] = attrs.get("auth_backends", [])
+        auth_backends_map = {}
+
+        # Pre-fill the map with the `auth_backends` values
+        for auth_backend in attrs["auth_backends"]:
+            auth_backends_map[auth_backend["backend"]] = auth_backend
+
+        # Collect all the backends that should be transformed to `auth_backends`
+        if "authentication_backends" in self.initial_data:
+            for plugin in self.initial_data["authentication_backends"]:
+                # Add plugin if it's not already in the map
+                if plugin not in auth_backends_map:
+                    auth_backends_map[plugin] = {
+                        "backend": plugin,
+                        "options": None,
+                    }
+
+        if "authentication_backend_options" in self.initial_data:
+            for plugin, options in self.initial_data[
+                "authentication_backend_options"
+            ].items():
+                if plugin not in auth_backends_map:
+                    auth_backends_map[plugin] = {
+                        "backend": plugin,
+                        "options": options,
+                    }
+                    continue
+
+                if auth_backends_map[plugin]["options"] is None:
+                    auth_backends_map[plugin]["options"] = options
+
+        validated_auth_backends = []
+        for config in auth_backends_map.values():
+            validated_auth_backends.append(
+                FormAuthenticationBackendSerializer().validate(config)
+            )
+        attrs["auth_backends"] = validated_auth_backends
+
     def validate(self, attrs):
         super().validate(attrs)
+        self._handle_import(attrs)
 
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
@@ -434,19 +500,22 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         auto_login_backend = get_from_serializer_data_or_instance(
             field_name, attrs, self
         )
-        authentication_backends = get_from_serializer_data_or_instance(
-            "authentication_backends", attrs, self
+        auth_backends = get_from_serializer_data_or_instance(
+            "auth_backends", attrs, self
         )
 
         # If an auto login backend is supplied, it must be present in
-        # `authentication_backends`
-        if auto_login_backend and auto_login_backend not in authentication_backends:
+        # `auth_backends`
+        if auto_login_backend and not any(
+            auth_backend["backend"] == auto_login_backend
+            for auth_backend in auth_backends
+        ):
             raise serializers.ValidationError(
                 {
                     field_name: ErrorDetail(
                         _(
                             "The `auto_login_authentication_backend` must be one of "
-                            "the selected backends from `authentication_backends`"
+                            "the selected backends from `auth_backends`"
                         ),
                         code="invalid",
                     )
@@ -537,8 +606,6 @@ class FormExportSerializer(FormSerializer):
             del fields["login_options"]
         if "payment_options" in fields:
             del fields["payment_options"]
-        if "authentication_backends" in fields:
-            fields["authentication_backends"].write_only = False
         return fields
 
 

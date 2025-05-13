@@ -46,7 +46,7 @@ class AuthenticationFlowTests(APITestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
@@ -125,7 +125,7 @@ class AuthenticationFlowTests(APITestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
@@ -161,7 +161,7 @@ class AuthenticationFlowTests(APITestCase):
 
         step = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         )
         form = step.form
@@ -190,7 +190,7 @@ class AuthenticationFlowTests(APITestCase):
         FormFactory.create(
             generate_minimal_setup=True,
             slug="myform",
-            authentication_backends=["plugin1"],
+            authentication_backend="plugin1",
             formstep__form_definition__login_required=True,
         )
 
@@ -214,7 +214,7 @@ class AuthenticationFlowTests(APITestCase):
         FormFactory.create(
             generate_minimal_setup=True,
             slug="myform",
-            authentication_backends=["plugin1"],
+            authentication_backend="plugin1",
             formstep__form_definition__login_required=True,
         )
 
@@ -247,7 +247,7 @@ class AuthenticationFlowTests(APITestCase):
         FormFactory.create(
             generate_minimal_setup=True,
             slug="myform",
-            authentication_backends=["plugin1"],
+            authentication_backend="plugin1",
             formstep__form_definition__login_required=True,
         )
         # go through the full client to simulate actual sessions
@@ -287,7 +287,7 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
         cls.register = register
         cls.submission = SubmissionFactory.create(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__formstep__form_definition__slug="stap-1",
@@ -407,7 +407,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
 
         cls.form = FormStepFactory(
             form__slug="myform",
-            form__authentication_backends=["plugin1"],
+            form__authentication_backend="plugin1",
             form_definition__login_required=True,
         ).form
 

@@ -125,9 +125,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.Session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.substantial}
+                "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
         ).form
@@ -160,9 +160,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.substantial}
+                "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
         ).form
@@ -213,9 +213,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.substantial}
+                "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
         ).form
@@ -273,9 +273,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.substantial}
+                "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
         ).form
@@ -334,9 +334,9 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
+            form__authentication_backend=PLUGIN_ID,
             form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.substantial}
+                "loa": DigiDAssuranceLevels.substantial
             },
             form_definition__login_required=True,
         ).form
@@ -382,10 +382,8 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.high}  # new high loa
-            },
+            form__authentication_backend=PLUGIN_ID,
+            form__authentication_backend_options={"loa": DigiDAssuranceLevels.high},
             form_definition__login_required=True,
         ).form
         submission = SubmissionFactory.create(
@@ -431,13 +429,12 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form_step = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.middle}
-            },
+            form__authentication_backend=PLUGIN_ID,
+            form__authentication_backend_options={"loa": DigiDAssuranceLevels.middle},
             form_definition__login_required=True,
         )
         form = form_step.form
+        auth_backend = form.auth_backends.get()
         submission = SubmissionFactory.create(
             uuid="17399e4c-913f-47de-837a-d71a8308e0a8",  # part for the RelayState
             form=form,
@@ -484,9 +481,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         acs_url.remove(netloc=True, scheme=True)
 
         # but in the meanwhile the form designer goes all-in
-        form.authentication_backend_options[PLUGIN_ID]["loa"] = (
-            DigiDAssuranceLevels.high
-        )
+        auth_backend.options["loa"] = DigiDAssuranceLevels.high
         form.save()
         clear_caches()
 
@@ -538,10 +533,8 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": DigiDAssuranceLevels.base}
-            },
+            form__authentication_backend=PLUGIN_ID,
+            form__authentication_backend_options={"loa": DigiDAssuranceLevels.base},
             form_definition__login_required=True,
         ).form
 
