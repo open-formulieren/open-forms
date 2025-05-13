@@ -69,13 +69,12 @@ class HaalCentraalFindPersonTests:
         self.requests_mock.start()
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
-    def test_find_person_succesfully(self):
+    def test_find_person_succesfully(self, bsn):
         with get_brp_client() as client:
-            raw_data = client.find_person(
-                "999990676", attributes=self.attributes_to_query
-            )
+            raw_data = client.find_persons([bsn], attributes=self.attributes_to_query)
 
-        values = {attr: glom(raw_data, attr) for attr in self.attributes_to_query}
+        assert raw_data
+        values = {attr: glom(raw_data[bsn], attr) for attr in self.attributes_to_query}
         expected = {
             "naam.voornamen": "Cornelia Francisca",
             "naam.geslachtsnaam": "Wiegman",
@@ -84,8 +83,8 @@ class HaalCentraalFindPersonTests:
 
     def test_person_not_found(self):
         with get_brp_client() as client:
-            raw_data = client.find_person(
-                bsn="999990676", attributes=self.attributes_to_query
+            raw_data = client.find_persons(
+                bsns=["999990676"], attributes=self.attributes_to_query
             )
 
         self.assertIsNone(raw_data)  # type: ignore
@@ -98,8 +97,8 @@ class HaalCentraalFindPersonTests:
         )
 
         with get_brp_client() as client:
-            raw_data = client.find_person(
-                bsn="999990676", attributes=self.attributes_to_query
+            raw_data = client.find_persons(
+                bsns=["999990676"], attributes=self.attributes_to_query
             )
 
         self.assertIsNone(raw_data)  # type: ignore
@@ -113,9 +112,9 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(len(children), 1)  # type: ignore
         child = children[0]
         self.assertEqual(child.bsn, "999991863")  # type: ignore
-        self.assertEqual(child.name.voornamen, "Frieda")  # type: ignore
-        self.assertEqual(child.name.voorvoegsel, "")  # type: ignore
-        self.assertEqual(child.name.geslachtsnaam, "Kroket")  # type: ignore
+        self.assertEqual(child.first_names, "Frieda")  # type: ignore
+        self.assertEqual(child.affixes, "")  # type: ignore
+        self.assertEqual(child.lastname, "Kroket")  # type: ignore
 
     def test_get_kinderen_no_bsn(self):
         with get_brp_client() as client:
@@ -134,9 +133,9 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(len(partners), 1)  # type: ignore
         partner = partners[0]
         self.assertEqual(partner.bsn, "999991863")  # type: ignore
-        self.assertEqual(partner.name.voornamen, "Frieda")  # type: ignore
-        self.assertEqual(partner.name.voorvoegsel, "")  # type: ignore
-        self.assertEqual(partner.name.geslachtsnaam, "Kroket")  # type: ignore
+        self.assertEqual(partner.first_names, "Frieda")  # type: ignore
+        self.assertEqual(partner.affixes, "")  # type: ignore
+        self.assertEqual(partner.lastname, "Kroket")  # type: ignore
 
     def test_partner_without_bsn(self):
         with get_brp_client() as client:
@@ -157,16 +156,16 @@ class HaalCentraalFindPersonTests:
         child = family_members[0]
 
         self.assertEqual(child.bsn, "999991111")  # type: ignore
-        self.assertEqual(child.name.voornamen, "Fredo")  # type: ignore
-        self.assertEqual(child.name.voorvoegsel, "")  # type: ignore
-        self.assertEqual(child.name.geslachtsnaam, "Kroket")  # type: ignore
+        self.assertEqual(child.first_names, "Fredo")  # type: ignore
+        self.assertEqual(child.affixes, "")  # type: ignore
+        self.assertEqual(child.lastname, "Kroket")  # type: ignore
 
         partner = family_members[1]
 
         self.assertEqual(partner.bsn, "999992222")  # type: ignore
-        self.assertEqual(partner.name.voornamen, "Frieda")  # type: ignore
-        self.assertEqual(partner.name.voorvoegsel, "")  # type: ignore
-        self.assertEqual(partner.name.geslachtsnaam, "Kroket")  # type: ignore
+        self.assertEqual(partner.first_names, "Frieda")  # type: ignore
+        self.assertEqual(partner.affixes, "")  # type: ignore
+        self.assertEqual(partner.lastname, "Kroket")  # type: ignore
 
     def test_default_client_context(self):
         client = get_brp_client()
@@ -199,7 +198,7 @@ class HaalCentraalFindPersonTests:
         client = get_brp_client(submission_bsn)
 
         with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
-            client.find_person("999990676", attributes=self.attributes_to_query)
+            client.find_persons(["999990676"], attributes=self.attributes_to_query)
 
         self.assertEqual(mock.call_count, 1)  # 1 API calls expected
         context = mock.call_args.kwargs["context"]
@@ -209,13 +208,13 @@ class HaalCentraalFindPersonTests:
 class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
     version = BRPVersions.v13
 
-    def test_find_person_succesfully(self):
+    def test_find_person_succesfully(self, bsn=None):
         self.requests_mock.get(
             "https://personen/api/ingeschrevenpersonen/999990676",
             status_code=200,
             json=load_json_mock("ingeschrevenpersonen.v1.json"),
         )
-        super().test_find_person_succesfully()
+        super().test_find_person_succesfully("999990676")
 
     def test_person_not_found(self):
         self.requests_mock.get(
@@ -415,13 +414,13 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
 class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
     version = BRPVersions.v20
 
-    def test_find_person_succesfully(self):
+    def test_find_person_succesfully(self, bsn=None):
         self.requests_mock.post(
             "https://personen/api/personen",
             status_code=200,
             json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
         )
-        super().test_find_person_succesfully()
+        super().test_find_person_succesfully("999990676")
 
     def test_person_not_found(self):
         self.requests_mock.post("https://personen/api/personen", status_code=404)
@@ -521,6 +520,7 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
                                     "voornamen": "Frieda",  # Not all the names have voorvoegsels
                                     "geslachtsnaam": "Kroket",
                                     "voorletters": "F.",
+                                    "voorvoegsel": "",
                                 },
                             }
                         ],
@@ -568,6 +568,7 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
                                     "voornamen": "Frieda",  # Not all the names have voorvoegsels
                                     "geslachtsnaam": "Kroket",
                                     "voorletters": "F.",
+                                    "voorvoegsel": "",
                                 },
                             }
                         ],

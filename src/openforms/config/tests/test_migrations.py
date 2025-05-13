@@ -15,9 +15,12 @@ class FamilyMembersDataApiMigrationTest(TestMigrations):
         np_family_members_config.data_api = FamilyMembersDataAPIChoices.haal_centraal
         np_family_members_config.save()
 
+        GlobalConfigModel = apps.get_model("config", "GlobalConfiguration")
+        GlobalConfigModel.objects.get_or_create(id=1)
+
     def test_copy_data_api_setting_to_global_config(self):
         GlobalConfigModel = self.apps.get_model("config", "GlobalConfiguration")
-        config, _ = GlobalConfigModel.objects.get_or_create(id=1)
+        config = GlobalConfigModel.objects.first()
 
         self.assertEqual(
             config.family_members_data_api, FamilyMembersDataAPIChoices.haal_centraal

@@ -25,7 +25,7 @@ class ZakenClient(LoggingMixin, NLXClient):
         product_url: str = "",
         **overrides,
     ):
-        today = get_today()
+        today = get_today().isoformat()
         zaak_data = {
             "zaaktype": zaaktype,
             "bronorganisatie": bronorganisatie,

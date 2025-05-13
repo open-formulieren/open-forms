@@ -7,8 +7,7 @@ Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/ge
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
-from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
 
 import requests
 import structlog
@@ -18,27 +17,16 @@ from openforms.contrib.hal_client import HALMixin
 from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject
 
-from ..constants import BRPVersions
+from ..constants import (
+    DATE_OF_BIRTH_TYPE_MAPPINGS,
+    HC_CHILDREN_ATTRIBUTES,
+    HC_DECEASED_ATTRIBUTES,
+    HC_PARTNERS_ATTRIBUTES,
+    BRPVersions,
+)
+from ..data import Children, NaturalPersonDetails, Partners
 
 logger = structlog.stdlib.get_logger(__name__)
-
-# DATA MODEL DEFINITIONS
-
-
-@dataclass
-class Name:
-    voornamen: str
-    voorvoegsel: str
-    geslachtsnaam: str
-
-
-@dataclass
-class Person:
-    bsn: str
-    name: Name
-
-
-# CLIENT IMPLEMENTATIONS
 
 
 class BRPClient(PreRequestMixin, ABC, LoggingClient):
@@ -59,12 +47,14 @@ class BRPClient(PreRequestMixin, ABC, LoggingClient):
         self.headers["x-gebruiker"] = gebruiker
 
     @abstractmethod
-    def find_person(self, bsn: str, **kwargs) -> JSONObject | None: ...
+    def find_persons(
+        self, bsns: Sequence[str], **kwargs
+    ) -> Mapping[str, JSONObject] | None: ...
 
     @abstractmethod
     def get_family_members(
-        self, bsn: str, include_children: bool, include_partner: bool
-    ) -> list[Person]:
+        self, bsn: str, include_children: bool, include_partner: bool, **kwargs
+    ) -> list[NaturalPersonDetails]:
         """
         Look up the partner(s) and/or the children of the person with the given BSN.
         """
@@ -81,63 +71,82 @@ class V1Client(HALMixin, BRPClient):
     Hosted API Documentation: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc
     """
 
-    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
+    def find_persons(
+        self, bsns: Sequence[str], **kwargs
+    ) -> Mapping[str, JSONObject] | None:
+        # v1 does not support multiple BSNs so we grab the first one if multiple are provided
+        if len(bsns) > 1:
+            logger.warning(
+                "Further improvements to V1 are out of scope because we won't support it any longer"
+            )
+            logger.warning(
+                "multiple_bsns_provided",
+                plugin_id="haal_centraal",
+                version=CLIENT_CLS_FOR_VERSION[BRPVersions.v13],
+            )
         try:
-            response = self.get(f"ingeschrevenpersonen/{bsn}")
+            response = self.get(f"ingeschrevenpersonen/{bsns[0]}")
             response.raise_for_status()
         except requests.RequestException as exc:
             logger.exception("brp_request_failure", exc_info=exc)
             return None
 
-        return response.json()
+        data = response.json()
+        assert isinstance(data, dict)
 
-    def _get_children(self, bsn: str) -> list[Person]:
+        return {data["burgerservicenummer"]: data}
+
+    def _get_children(self, bsn: str) -> Children:
         response = self.get(f"ingeschrevenpersonen/{bsn}/kinderen")
         response.raise_for_status()
         response_data = response.json()["_embedded"]
 
-        persons = []
-        for kind in response_data["kinderen"]:
-            if "burgerservicenummer" not in kind:
-                continue
-
-            name_data = kind["naam"]
-            person = Person(
-                bsn=kind["burgerservicenummer"],
-                name=Name(
-                    voornamen=name_data["voornamen"],
-                    voorvoegsel=name_data["voorvoegsel"],
-                    geslachtsnaam=name_data["geslachtsnaam"],
+        children: Children = [
+            NaturalPersonDetails(
+                bsn=child.get("burgerservicenummer") or "",
+                first_names=child.get("naam", {}).get("voornamen") or "",
+                initials=child.get("naam", {}).get("voorletters") or "",
+                affixes=child.get("naam", {}).get("voorvoegsel") or "",
+                lastname=child.get("naam", {}).get("geslachtsnaam"),
+                date_of_birth=child.get("geboorte", {}).get("datum", {}).get("datum")
+                or "",
+                date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
+                    child.get("geboorte", {}).get("datum", {}).get("type")
                 ),
             )
-            persons.append(person)
-        return persons
+            for child in response_data["kinderen"]
+            if "burgerservicenummer" in child
+        ]
 
-    def _get_partners(self, bsn: str) -> list[Person]:
+        return children
+
+    def _get_partners(self, bsn: str) -> Partners:
         response = self.get(f"ingeschrevenpersonen/{bsn}/partners")
         response.raise_for_status()
         response_data = response.json()["_embedded"]
 
-        persons = []
-        for partner in response_data["partners"]:
-            if "burgerservicenummer" not in partner:
-                continue
-
-            name_data = partner["naam"]
-            person = Person(
-                bsn=partner["burgerservicenummer"],
-                name=Name(
-                    voornamen=name_data["voornamen"],
-                    voorvoegsel=name_data["voorvoegsel"],
-                    geslachtsnaam=name_data["geslachtsnaam"],
+        partners: Partners = [
+            NaturalPersonDetails(
+                bsn=partner.get("burgerservicenummer") or "",
+                first_names=partner.get("naam", {}).get("voornamen") or "",
+                initials=partner.get("naam", {}).get("voorletters") or "",
+                affixes=partner.get("naam", {}).get("voorvoegsel") or "",
+                lastname=partner.get("naam", {}).get("geslachtsnaam") or "",
+                date_of_birth=partner.get("geboorte", {}).get("datum", {}).get("datum")
+                or "",
+                date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
+                    partner.get("geboorte", {}).get("datum", {}).get("type")
                 ),
             )
-            persons.append(person)
-        return persons
+            for partner in response_data["partners"]
+            if "burgerservicenummer" in partner
+        ]
+
+        return partners
 
     def get_family_members(
-        self, bsn: str, include_children: bool, include_partner: bool
-    ) -> list[Person]:
+        self, bsn: str, include_children: bool, include_partner: bool, **kwargs
+    ) -> list[NaturalPersonDetails]:
         family_members = []
         if include_children:
             family_members += self._get_children(bsn)
@@ -164,13 +173,13 @@ class V2Client(BRPClient):
         # requests encodes the json kwarg as utf-8, no extra action needed
         self.headers["Content-Type"] = "application/json; charset=utf-8"
 
-    def find_person(
-        self, bsn: str, reraise_errors: bool = False, **kwargs
-    ) -> JSONObject | None:
+    def find_persons(
+        self, bsns: Sequence[str], reraise_errors: bool = False, **kwargs
+    ) -> Mapping[str, JSONObject] | None:
         attributes: Sequence[str] = kwargs.pop("attributes")
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
-            "burgerservicenummer": [bsn],
+            "burgerservicenummer": bsns,
             "fields": attributes,
         }
 
@@ -186,20 +195,25 @@ class V2Client(BRPClient):
         data = response.json()
         assert isinstance(data, dict)
 
-        if not (personen := data.get("personen", [])):
+        if not (persons := data.get("personen", [])):
             logger.debug("person_not_found")
             return None
 
-        return personen[0]
+        return {person["burgerservicenummer"]: person for person in persons}
 
     def get_family_members(
-        self, bsn: str, include_children: bool, include_partner: bool
-    ) -> list[Person]:
+        self,
+        bsn: str,
+        include_children: bool,
+        include_partner: bool,
+        include_deceased: bool = True,
+        **kwargs,
+    ) -> list[NaturalPersonDetails]:
         fields = []
         if include_children:
-            fields += ["kinderen.burgerservicenummer", "kinderen.naam"]
+            fields += HC_CHILDREN_ATTRIBUTES
         if include_partner:
-            fields += ["partners.burgerservicenummer", "partners.naam"]
+            fields += HC_PARTNERS_ATTRIBUTES
 
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
@@ -220,24 +234,42 @@ class V2Client(BRPClient):
         if include_partner:
             family_data += personen[0]["partners"]
 
-        family_members = [
-            Person(
-                bsn=family_member["burgerservicenummer"],
-                name=Name(
-                    voornamen=family_member["naam"]["voornamen"],
-                    voorvoegsel=family_member["naam"].get("voorvoegsel", ""),
-                    geslachtsnaam=family_member["naam"]["geslachtsnaam"],
-                ),
+        family_members_mappings: dict[str, NaturalPersonDetails] = {}
+        for member in family_data:
+            if "burgerservicenummer" in member:
+                family_members_mappings[member["burgerservicenummer"]] = (
+                    NaturalPersonDetails(
+                        bsn=member["burgerservicenummer"],
+                        first_names=member.get("naam", {}).get("voornamen") or "",
+                        initials=member.get("naam", {}).get("voorletters") or "",
+                        affixes=member.get("naam", {}).get("voorvoegsel") or "",
+                        lastname=member.get("naam", {}).get("geslachtsnaam") or "",
+                        date_of_birth=member.get("geboorte", {})
+                        .get("datum", {})
+                        .get("datum")
+                        or "",
+                        date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
+                            member.get("geboorte", {}).get("datum", {}).get("type")
+                        ),
+                    )
+                )
+
+        if family_members_mappings and not include_deceased:
+            bsns_to_check = list(family_members_mappings.keys())
+            deceased_persons = self.find_persons(
+                bsns_to_check, attributes=HC_DECEASED_ATTRIBUTES
             )
-            for family_member in family_data
-            if "burgerservicenummer" in family_member
-        ]
-        return family_members
+            if deceased_persons:
+                for person_bsn, person_data in deceased_persons.items():
+                    if "overlijden" in person_data:
+                        family_members_mappings.pop(person_bsn)
+
+        return list(family_members_mappings.values())
 
     def make_config_test_request(self):
         try:
-            self.find_person(
-                bsn="test",
+            self.find_persons(
+                bsns=["test"],
                 attributes=["burgerservicenummer"],
                 reraise_errors=True,
             )

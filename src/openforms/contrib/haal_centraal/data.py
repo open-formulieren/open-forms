@@ -1,0 +1,39 @@
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel
+
+from openforms.utils.date import get_today
+
+
+class NaturalPersonDetails(BaseModel):
+    bsn: str = ""
+    first_names: str = ""
+    initials: str = ""
+    affixes: str = ""
+    lastname: str = ""
+    date_of_birth: str = ""
+    date_of_birth_precision: Literal["date", "year_month", "year"] | None = None
+
+    @property
+    def age(self) -> int | None:
+        """Calculate age if precision allows and date_of_birth is available."""
+        if not self.date_of_birth:
+            return None
+
+        # only calculate age when full date is known.
+        if self.date_of_birth_precision not in (None, "date"):
+            return None
+
+        birth_date = datetime.strptime(self.date_of_birth, "%Y-%m-%d")
+        today = get_today()
+        age = today.year - birth_date.year
+
+        if (today.month, today.day) < (birth_date.month, birth_date.day):
+            age -= 1
+
+        return age
+
+
+type Partners = list[NaturalPersonDetails]
+type Children = list[NaturalPersonDetails]

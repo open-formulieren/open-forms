@@ -6,6 +6,9 @@ from rest_framework import serializers
 from openforms.authentication.service import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
+from openforms.submissions.models.submission_value_variable import (
+    SubmissionValueVariable,
+)
 from openforms.typing import JSONEncodable, JSONObject
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -88,6 +91,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         cls,
         submission: Submission,
         options: OptionsT,
+        submission_value_variable: SubmissionValueVariable,
     ) -> dict[str, JSONEncodable]:
         """
         Given the saved form variable, which contains the prefill_options, look up the appropriate
@@ -96,6 +100,8 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         :param submission: an active :class:`Submission` instance, which can supply
           the required initial data reference to fetch the correct prefill values.
         :param options: contains plugin-specific configuration options.
+        :param submission_value_variable: the submission value variable which is needed
+          in some prefill plugins.
         :return: a mapping where the keys are form variable keys, and the values are the
           initial/default values to assign to the matching form variable. The variable keys
           can point to both component and user defined variables.

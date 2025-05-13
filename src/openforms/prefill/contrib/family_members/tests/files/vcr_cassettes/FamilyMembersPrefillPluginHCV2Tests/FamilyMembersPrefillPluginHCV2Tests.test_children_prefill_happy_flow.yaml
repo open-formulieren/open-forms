@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970124"],
+      "fields": ["kinderen.burgerservicenummer", "kinderen.naam.voornamen", "kinderen.naam.voorletters",
+      "kinderen.naam.voorvoegsel", "kinderen.naam.geslachtsnaam", "kinderen.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDcxNDEyMjQsImV4cCI6MTc0NzE4NDQyNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.AwaQjtsuIWhPqxfX7gRRX8rq4zyZFTbEXk6IZcjFYZ8
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.2
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"kinderen":[{"burgerservicenummer":"999970409","naam":{"voornamen":"Pero","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2023-02-01","langFormaat":"1
+        februari 2023"}}},{"burgerservicenummer":"999970161","naam":{"voornamen":"Peet","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2018-12-01","langFormaat":"1
+        december 2018"}}},{"burgerservicenummer":"999970173","naam":{"voornamen":"Pelle","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2017-09-01","langFormaat":"1
+        september 2017"}}},{"burgerservicenummer":"999970185","naam":{"voornamen":"Pep","voorvoegsel":"van","geslachtsnaam":"Paassen","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"2016-05-01","langFormaat":"1
+        mei 2016"}}}]}]}'
+    headers:
+      Content-Length:
+      - '946'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 13 May 2025 13:00:23 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

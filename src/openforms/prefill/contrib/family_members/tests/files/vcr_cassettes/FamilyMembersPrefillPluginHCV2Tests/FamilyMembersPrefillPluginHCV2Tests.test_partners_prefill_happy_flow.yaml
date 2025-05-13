@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999970124"],
+      "fields": ["partners.burgerservicenummer", "partners.naam.voornamen", "partners.naam.voorletters",
+      "partners.naam.voorvoegsel", "partners.naam.geslachtsnaam", "partners.geboorte.datum"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDcxNDEyMjQsImV4cCI6MTc0NzE4NDQyNCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.AwaQjtsuIWhPqxfX7gRRX8rq4zyZFTbEXk6IZcjFYZ8
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.32.2
+      x-doelbinding:
+      - ''
+      x-gebruiker:
+      - BurgerZelf
+      x-origin-oin:
+      - ''
+      x-verwerking:
+      - ''
+    method: POST
+    uri: http://localhost:5010/haalcentraal/api/brp/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"partners":[{"burgerservicenummer":"999970136","naam":{"voornamen":"Pia","geslachtsnaam":"Pauw","voorletters":"P."},"geboorte":{"datum":{"type":"Datum","datum":"1989-04-01","langFormaat":"1
+        april 1989"}}}]}]}'
+    headers:
+      Content-Length:
+      - '263'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 13 May 2025 13:00:23 GMT
+      Server:
+      - Kestrel
+    status:
+      code: 200
+      message: OK
+version: 1

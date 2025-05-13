@@ -4,22 +4,22 @@ from unittest.mock import patch
 from django.test import TestCase, tag
 
 import requests_mock
-from requests import RequestException
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
+from stuf.stuf_bg.checks import is_empty_wrapped_response, is_object_not_found_response
 from stuf.stuf_bg.constants import FieldChoices
+from stuf.stuf_bg.exceptions import InvalidPluginConfiguration
 from stuf.stuf_bg.models import StufBGConfig
+from stuf.stuf_bg.tests.utils import (
+    get_mock_response_content,
+    get_mock_xml,
+    mock_stufbg_client,
+)
 from stuf.tests.factories import StufServiceFactory
 
-from ..plugin import (
-    StufBgPrefill,
-    is_empty_wrapped_response,
-    is_object_not_found_response,
-)
-from .utils import get_mock_response_content, get_mock_xml, mock_stufbg_client
+from ..plugin import StufBgPrefill
 
 
 @contextmanager
@@ -253,40 +253,6 @@ class StufBgPrefillTests(TestCase):
                 )
 
                 self.assertEqual(identifier_value, expected)
-
-
-class StufBgCheckTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.stuf_bg_service = StufServiceFactory.create()
-
-    def setUp(self) -> None:
-        super().setUp()
-
-        self.plugin = StufBgPrefill("test-plugin")
-
-        # mock out django-solo interface (we don't have to deal with caches then)
-        self.config = StufBGConfig(service=self.stuf_bg_service)
-        stufbg_config_patcher = patch(
-            "openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo",
-            return_value=self.config,
-        )
-        stufbg_config_patcher.start()
-        self.addCleanup(stufbg_config_patcher.stop)
-
-    def test_no_service_configured(self):
-        self.config.service = None
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            self.plugin.check_config()
-
-    def test_check_config_exception(self):
-        with patch(
-            "stuf.stuf_bg.client.Client.get_values_for_attributes",
-            side_effect=RequestException(),
-        ):
-            with self.assertRaises(InvalidPluginConfiguration):
-                self.plugin.check_config()
 
     @requests_mock.Mocker()
     def test_check_config_invalid_xml_returned(self, m):

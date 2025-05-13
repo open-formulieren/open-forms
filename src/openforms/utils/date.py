@@ -80,6 +80,6 @@ def datetime_in_amsterdam(value: datetime) -> datetime:
     return timezone.make_naive(value, timezone=TIMEZONE_AMS)
 
 
-def get_today() -> str:
+def get_today() -> date:
     now = datetime_in_amsterdam(timezone.now())
-    return now.date().isoformat()
+    return now.date()

@@ -3,16 +3,17 @@ from typing import Any
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-import requests
 import structlog
 from glom import GlomError, glom
 
 from openforms.authentication.service import AuthAttribute
+from openforms.contrib.haal_centraal.checks import (
+    check_config as check_haal_centraal_config,
+)
 from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import BRPClient
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
-from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -59,13 +60,14 @@ class HaalCentraalPrefill(BasePlugin):
         bsn: str,
         attributes: list[str],
     ) -> dict[str, Any]:
-        if not (data := client.find_person(bsn, attributes=attributes)):
+        if not (data := client.find_persons([bsn], attributes=attributes)):
             return {}
 
+        bsn_data = data[bsn]
         values = dict()
         for attr in attributes:
             try:
-                values[attr] = glom(data, attr)
+                values[attr] = glom(bsn_data, attr)
             except GlomError as exc:
                 logger.warning(
                     "missing_attribute_in_response", attribute=attr, exc_info=exc
@@ -171,26 +173,7 @@ class HaalCentraalPrefill(BasePlugin):
         )
 
     def check_config(self):
-        """
-        Check if the admin configuration is valid.
-
-        The purpose of this fuction is to simply check the connection to the
-        service, so we are using dummy data and an endpoint which does not exist.
-        We want to avoid calls to the national registration by using a (valid) BSN.
-        """
-        try:
-            with get_brp_client() as client:
-                client.make_config_test_request()
-        # Possibly no service or (valid) version is set.
-        except NoServiceConfigured as exc:
-            raise InvalidPluginConfiguration(_("Service not selected")) from exc
-        except RuntimeError as exc:
-            raise InvalidPluginConfiguration(exc.args[0]) from exc
-        # The request itself can error
-        except requests.RequestException as exc:
-            raise InvalidPluginConfiguration(
-                _("Client error: {exception}").format(exception=exc)
-            ) from exc
+        check_haal_centraal_config()
 
     def get_config_actions(self):
         return [

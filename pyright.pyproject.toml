@@ -16,6 +16,7 @@ include = [
     "src/openforms/prefill/base.py",
     "src/openforms/prefill/co_sign.py",
     "src/openforms/prefill/registry.py",
+    "src/openforms/prefill/contrib/family_members",
     "src/openforms/registrations/base.py",
     "src/openforms/registrations/registry.py",
     "src/openforms/validations/base.py",

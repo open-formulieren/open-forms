@@ -223,10 +223,6 @@
                 "domain"
             ],
             [
-                "np_family_members",
-                "familymemberstypeconfig"
-            ],
-            [
                 "prefill",
                 "prefillconfig"
             ],
