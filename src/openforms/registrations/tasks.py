@@ -82,12 +82,18 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         return
 
     registration_plugin = get_registration_plugin(submission)
-    log = log.bind(plugin=registration_plugin)
+    plugin_repr = (
+        None if registration_plugin is None else registration_plugin.identifier
+    )
+    log = log.bind(plugin=plugin_repr)
 
     with transaction.atomic():
         if not registration_plugin:
             log.info("generate_submission_reference")
             set_submission_reference(submission)
+            structlog.contextvars.bind_contextvars(
+                public_reference=submission.public_registration_reference
+            )
             submission.pre_registration_completed = True
             submission.save()
             return
@@ -111,7 +117,10 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             if not submission.registration_result:
                 submission.registration_result = {}
 
-            log.debug("store_temporary_internal_reference")
+            log.debug(
+                "store_temporary_internal_reference",
+                public_reference=submission.public_registration_reference,
+            )
             assign(
                 submission.registration_result,
                 "temporary_internal_reference",
@@ -146,6 +155,9 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         set_submission_reference(submission)
     else:
         submission.public_registration_reference = result.reference
+    structlog.contextvars.bind_contextvars(
+        public_reference=submission.public_registration_reference
+    )
 
     if not submission.registration_result:
         submission.registration_result = {}
@@ -189,10 +201,13 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         id=submission_id
     )
     form = submission.form
+    structlog.contextvars.bind_contextvars(
+        form=form.admin_name,
+        submission_uuid=str(submission.uuid),
+        public_reference=submission.public_registration_reference,
+    )
     log = logger.bind(
         action="registrations.main_registration",
-        form=form,
-        submission_uuid=str(submission.uuid),
         trigger=event,
     )
 
@@ -265,7 +280,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
 
     log.debug("resolve_plugin", plugin_id=backend)
     plugin = registry[backend]
-    log = log.bind(plugin=plugin)
+    log = log.bind(plugin=plugin.identifier)
 
     if not plugin.is_enabled:
         log.debug("registration_failure", reason="plugin_disabled")

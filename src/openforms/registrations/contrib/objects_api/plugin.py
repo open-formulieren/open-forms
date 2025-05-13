@@ -88,10 +88,15 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         """
 
         self.set_defaults(options)
+        log = logger.bind(
+            handler_version=options["version"],
+            public_reference=submission.public_registration_reference,
+        )
 
         handler = HANDLER_MAPPING[options["version"]]
 
         handler.save_registration_data(submission, options)
+        log.debug("registration_data_saved")
 
         record_data = handler.get_record_data(
             submission=submission,
@@ -101,6 +106,7 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
         with get_objecttypes_client(options["objects_api_group"]) as objecttypes_client:
             objecttype = objecttypes_client.get_objecttype(options["objecttype"])
             objecttype_url = objecttype["url"]
+            log.info("objecttype_resolved", objecttype_url=objecttype_url)
 
         with get_objects_client(options["objects_api_group"]) as objects_client:
             # update or create the object
@@ -120,11 +126,16 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
                     record_data=record_data,
                 )
             )
+            log.info(
+                "updating_object" if is_update else "creating_object",
+                object_id=submission.initial_data_reference if is_update else None,
+            )
             response = execute_unless_result_exists(
                 update_or_create,
                 submission,
                 "intermediate.objects_api_object",
             )
+            log.info("submission_registered", object_uuid=response["uuid"])
 
         return response
 

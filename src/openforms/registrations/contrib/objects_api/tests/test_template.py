@@ -1,12 +1,11 @@
 import textwrap
+from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, override_settings, tag
 
-import requests_mock
-import tablib
 from freezegun import freeze_time
 
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
@@ -16,17 +15,42 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..typing import RegistrationOptionsV1
+
+TEST_FILES = Path(__file__).parent / "files"
 
 
-class JSONTemplatingTests(TestCase):
+class JSONTemplatingTests(OFVCRMixin, TestCase):
     maxDiff = None
+    VCR_TEST_FILES = TEST_FILES
 
-    @requests_mock.Mocker()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # Make sure to bring up the objects API docker compose in ``docker/``!
+        cls.config_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+
+    def setUp(self):
+        super().setUp()
+
+        self.config = ObjectsAPIConfig(productaanvraag_type="terugbelnotitie")
+        config_patcher = patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=self.config,
+        )
+        self.mock_get_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
     @freeze_time("2022-09-12")
-    def test_default_template(self, m):
+    def test_default_template(self):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"type": "textfield", "key": "voorNaam"},
@@ -37,61 +61,63 @@ class JSONTemplatingTests(TestCase):
             form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__value="123456789",
             completed=True,
+            uuid=UUID("9b22e363-2268-4e9c-8d57-c1084d8a45a9"),
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
-        config = ObjectsAPIConfig(
-            productaanvraag_type="terugbelnotitie",
-        )
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-        )
-        m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        with (
-            patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
-                return_value={"url": "http://oz.nl/pdf-report"},
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_attachment_document",
-                return_value={"url": "http://oz.nl/attachment-url"},
-            ),
-        ):
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": config_group,
-                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                    "objecttype_version": 300,
-                    "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-                    "informatieobjecttype_attachment": "https://catalogi.nl/api/v1/informatieobjecttypen/2",
-                    "update_existing_object": False,
-                },
+            "iot_submission_csv": "",
+        }
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+
+        with self.subTest("metadata"):
+            self.assertEqual(
+                result["type"],
+                "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            self.assertIn("uuid", result)
+
+        with self.subTest("record data"):
+            record = result["record"]
+            attachments = record["data"]["attachments"]
+            self.assertEqual(len(attachments), 1)
+            self.assertTrue(
+                attachments[0].startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
+            )
+            pdf_url = record["data"]["pdf_url"]
+            self.assertTrue(
+                pdf_url.startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
             )
 
-        posted_object = m.last_request.json()
-        self.assertEqual(
-            posted_object,
-            {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-                "record": {
-                    "typeVersion": 300,
+            self.assertEqual(
+                record,
+                {
+                    "typeVersion": 1,
                     "data": {
-                        "attachments": ["http://oz.nl/attachment-url"],
+                        "attachments": attachments,
                         "bsn": "123456789",
                         "data": {
                             "test-step-tralala": {
@@ -100,8 +126,8 @@ class JSONTemplatingTests(TestCase):
                             }
                         },
                         "language_code": "nl",
-                        "pdf_url": "http://oz.nl/pdf-report",
-                        "submission_id": str(submission.uuid),
+                        "pdf_url": pdf_url,
+                        "submission_id": "9b22e363-2268-4e9c-8d57-c1084d8a45a9",
                         "type": "terugbelnotitie",
                         "payment": {
                             "completed": False,
@@ -109,42 +135,40 @@ class JSONTemplatingTests(TestCase):
                             "public_order_ids": [],
                         },
                     },
+                    "geometry": None,
+                    "correctedBy": None,
+                    "correctionFor": None,
                     "startAt": "2022-09-12",
+                    "registrationAt": record["registrationAt"],
+                    "endAt": None,
+                    "index": 1,
                 },
-            },
+            )
+
+    @freeze_time("2022-09-12")
+    def test_custom_template(self):
+        self.config.content_json = textwrap.dedent(
+            """
+            {
+                "bron": {
+                    "naam": "Open Formulieren",
+                    "kenmerk": "{{ submission.kenmerk }}"
+                },
+                "type": "{{ productaanvraag_type }}",
+                "aanvraaggegevens": {% json_summary %},
+                "taal": "{{ submission.language_code  }}",
+                "betrokkenen": [
+                    {
+                        "inpBsn" : "{{ variables.auth_bsn }}",
+                        "rolOmschrijvingGeneriek" : "initiator"
+                    }
+                ],
+                "pdf": "{{ submission.pdf_url }}",
+                "csv": "{{ submission.csv_url }}",
+                "bijlagen": {% uploaded_attachment_urls %}
+            }"""
         )
 
-    @requests_mock.Mocker()
-    @freeze_time("2022-09-12")
-    def test_custom_template(self, m):
-        config = ObjectsAPIConfig(
-            content_json=textwrap.dedent(
-                """
-                {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": "{{ submission.kenmerk }}"
-                    },
-                    "type": "{{ productaanvraag_type }}",
-                    "aanvraaggegevens": {% json_summary %},
-                    "taal": "{{ submission.language_code  }}",
-                    "betrokkenen": [
-                        {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
-                        }
-                    ],
-                    "pdf": "{{ submission.pdf_url }}",
-                    "csv": "{{ submission.csv_url }}",
-                    "bijlagen": {% uploaded_attachment_urls %}
-                }"""
-            ),
-        )
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-        )
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"type": "textfield", "key": "voorNaam"},
@@ -156,66 +180,77 @@ class JSONTemplatingTests(TestCase):
             auth_info__attribute="bsn",
             auth_info__value="123456789",
             completed=True,
+            uuid=UUID("9b22e363-2268-4e9c-8d57-c1084d8a45a9"),
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
-        m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        with (
-            patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "productaanvraag_type": "tralala-type",
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
-                return_value={"url": "http://oz.nl/pdf-report"},
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_attachment_document",
-                return_value={"url": "http://oz.nl/attachment-url"},
+            "iot_submission_csv": "",
+            "upload_submission_csv": True,
+            "informatieobjecttype_submission_csv": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_submission_export",
-                return_value=tablib.Dataset(),
-            ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_csv_document",
-                return_value={"url": "http://oz.nl/csv-report"},
-            ),
-        ):
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": config_group,
-                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                    "objecttype_version": 300,
-                    "productaanvraag_type": "tralala-type",
-                    "upload_submission_csv": True,
-                    "update_existing_object": False,
-                    "informatieobjecttype_submission_csv": "http://oz.nl/informatieobjecttype/1",
-                    "informatieobjecttype_submission_report": "http://oz.nl/informatieobjecttype/2",
-                    "informatieobjecttype_attachment": "http://oz.nl/informatieobjecttype/3",
-                },
+        }
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+
+        with self.subTest("metadata"):
+            self.assertEqual(
+                result["type"],
+                "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            self.assertIn("uuid", result)
+
+        with self.subTest("record data"):
+            record = result["record"]
+            attachments = record["data"]["bijlagen"]
+            self.assertEqual(len(attachments), 1)
+            self.assertTrue(
+                attachments[0].startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
+            )
+            pdf = record["data"]["pdf"]
+            self.assertTrue(
+                pdf.startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
+            )
+            csv = record["data"]["csv"]
+            self.assertTrue(
+                csv.startswith(
+                    "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+                )
             )
 
-        posted_object = m.last_request.json()
-        self.assertEqual(
-            posted_object,
-            {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-                "record": {
-                    "typeVersion": 300,
+            self.assertEqual(
+                record,
+                {
+                    "typeVersion": 1,
                     "data": {
                         "bron": {
                             "naam": "Open Formulieren",
-                            "kenmerk": str(submission.uuid),
+                            "kenmerk": "9b22e363-2268-4e9c-8d57-c1084d8a45a9",
                         },
                         "type": "tralala-type",
                         "aanvraaggegevens": {
@@ -231,115 +266,130 @@ class JSONTemplatingTests(TestCase):
                                 "rolOmschrijvingGeneriek": "initiator",
                             }
                         ],
-                        "pdf": "http://oz.nl/pdf-report",
-                        "csv": "http://oz.nl/csv-report",
-                        "bijlagen": ["http://oz.nl/attachment-url"],
+                        "pdf": pdf,
+                        "csv": csv,
+                        "bijlagen": attachments,
                     },
+                    "geometry": None,
+                    "correctedBy": None,
+                    "correctionFor": None,
                     "startAt": "2022-09-12",
+                    "registrationAt": record["registrationAt"],
+                    "endAt": None,
+                    "index": 1,
                 },
-            },
-        )
+            )
 
     @override_settings(MAX_UNTRUSTED_JSON_PARSE_SIZE=10)
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self):
+        self.config.content_json = textwrap.dedent(
+            """
+            {
+            "bron": {
+                "naam": "Open Formulieren",
+                "kenmerk": "{{ submission.kenmerk }}"
+            },
+            "type": "{{ productaanvraag_type }}",
+            "aanvraaggegevens": {% json_summary %},
+            "taal": "{{ submission.language_code  }}",
+            "betrokkenen": [
+            {
+            "inpBsn" : "{{ variables.auth_bsn }}",
+            "rolOmschrijvingGeneriek" : "initiator"
+            }
+            ],
+            "pdf": "{{ submission.pdf_url }}",
+            "csv": "{{ submission.csv_url }}",
+            "bijlagen": [
+            {% for attachment in submission.attachments %}
+            "{{ attachment }}"{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            ]
+            }"""
+        )
         submission = SubmissionFactory.create(with_report=True)
-        config = ObjectsAPIConfig(
-            content_json=textwrap.dedent(
-                """
-                {
-                "bron": {
-                    "naam": "Open Formulieren",
-                    "kenmerk": "{{ submission.kenmerk }}"
-                },
-                "type": "{{ productaanvraag_type }}",
-                "aanvraaggegevens": {% json_summary %},
-                "taal": "{{ submission.language_code  }}",
-                "betrokkenen": [
-                {
-                "inpBsn" : "{{ variables.auth_bsn }}",
-                "rolOmschrijvingGeneriek" : "initiator"
-                }
-                ],
-                "pdf": "{{ submission.pdf_url }}",
-                "csv": "{{ submission.csv_url }}",
-                "bijlagen": [
-                {% for attachment in submission.attachments %}
-                "{{ attachment }}"{% if not forloop.last %},{% endif %}
-                {% endfor %}
-                ]
-                }"""
-            ),
-        )
-
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        with (
-            patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
-                return_value={"url": "http://of.nl/pdf-report"},
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
             ),
+            "iot_submission_csv": "",
+        }
+
+        with self.assertRaises(
+            SuspiciousOperation,
+            msg="Templated out content JSON exceeds the maximum size 10\xa0bytes (it is 398\xa0bytes).",
         ):
-            with self.assertRaises(
-                SuspiciousOperation,
-                msg="Templated out content JSON exceeds the maximum size 10\xa0bytes (it is 398\xa0bytes).",
-            ):
-                plugin.register_submission(
-                    submission,
-                    {
-                        "version": 1,
-                        "objects_api_group": config_group,
-                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                        "objecttype_version": 300,
-                    },
-                )
+            plugin.register_submission(submission, options)
 
     def test_submission_with_objects_api_content_json_not_valid_json(self):
+        self.config.content_json = ('{"key": "value",}',)  # Invalid JSON,
         submission = SubmissionFactory.create(with_report=True)
-        config = ObjectsAPIConfig(
-            content_json='{"key": "value",}',  # Invalid JSON,
-        )
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        with (
-            patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25"
             ),
-            patch(
-                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
-                return_value={"url": "http://of.nl/pdf-report"},
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
             ),
-        ):
-            with self.assertRaises(RuntimeError):
-                plugin.register_submission(
-                    submission,
-                    {
-                        "version": 1,
-                        "objects_api_group": config_group,
-                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                        "objecttype_version": 300,
-                    },
-                )
+            "iot_submission_csv": "",
+        }
+
+        with self.assertRaises(RuntimeError):
+            plugin.register_submission(submission, options)
 
 
-class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
+class JSONTemplatingRegressionTests(OFVCRMixin, SubmissionsMixin, TestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # Make sure to bring up the objects API docker compose in ``docker/``!
+        cls.config_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            organisatie_rsin="000000000",
+        )
+
+    def setUp(self):
+        super().setUp()
+
+        self.config = ObjectsAPIConfig()
+        config_patcher = patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=self.config,
+        )
+        self.mock_get_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
     @tag("dh-673")
-    @requests_mock.Mocker()
-    def test_object_nulls_regression(self, m):
+    def test_object_nulls_regression(self):
+        self.config.content_json = "{% json_summary %}"
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -380,50 +430,26 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIConfig(
-            content_json="{% json_summary %}",
-        )
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        prefix = "openforms.registrations.contrib.objects_api"
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": "",
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": "",
+            "iot_submission_csv": "",
+            "upload_submission_csv": False,
+        }
 
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
+        result = plugin.register_submission(submission, options)
 
-        with (
-            patch(
-                f"{prefix}.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
-            ),
-            patch(f"{prefix}.plugin.get_objects_client") as mock_objects_client,
-        ):
-            _objects_client = mock_objects_client.return_value.__enter__.return_value
-            _objects_client.create_object.return_value = {"dummy": "response"}
-
-            plugin.register_submission(
-                submission,
-                {
-                    "version": 1,
-                    "objects_api_group": config_group,
-                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                    "objecttype_version": 300,
-                    # skip document uploads
-                    "informatieobjecttype_submission_report": "",
-                    "upload_submission_csv": False,
-                    "update_existing_object": False,
-                    "informatieobjecttype_attachment": "",
-                },
-            )
-
-        _objects_client.create_object.mock_assert_called_once()
-        record_data = _objects_client.create_object.call_args[1]["record_data"]["data"]
+        assert result is not None
+        record_data = result["record"]["data"]
         # for missing values, the empty value (depending on component type) must be used
         # Note that the input data was validated against the hidden/visible and
         # clearOnHide state - absence of the data implies that the component was not
@@ -442,8 +468,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
 
     @tag("dh-673", "gh-4140")
     @override_settings(DISABLE_SENDING_HIDDEN_FIELDS=True)
-    @requests_mock.Mocker()
-    def test_opt_out_of_sending_hidden_fields(self, m):
+    def test_opt_out_of_sending_hidden_fields(self):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -498,45 +523,27 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIGroupConfigFactory.create(
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objects_api_group": self.config_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "iot_submission_report": "",
+            "informatieobjecttype_submission_report": "",
+            "iot_attachment": "",
+            "informatieobjecttype_attachment": "",
+            "iot_submission_csv": "",
+            "upload_submission_csv": False,
+            "content_json": "{% json_summary %}",
+        }
 
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
+        result = plugin.register_submission(submission, options)
 
-        with (
-            patch(
-                "openforms.registrations.contrib.objects_api.plugin.get_objects_client"
-            ) as mock_objects_client,
-        ):
-            _objects_client = mock_objects_client.return_value.__enter__.return_value
-            _objects_client.create_object.return_value = {"dummy": "response"}
-
-            plugin.register_submission(
-                submission,
-                {
-                    "objects_api_group": config,
-                    "version": 1,
-                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                    "objecttype_version": 300,
-                    # skip document uploads
-                    "informatieobjecttype_submission_report": "",
-                    "upload_submission_csv": False,
-                    "update_existing_object": False,
-                    "informatieobjecttype_attachment": "",
-                    "content_json": "{% json_summary %}",
-                },
-            )
-
-        _objects_client.create_object.mock_assert_called_once()
-        record_data = _objects_client.create_object.call_args[1]["record_data"]["data"]
+        assert result is not None
+        record_data = result["record"]["data"]
         # for missing values, the empty value (depending on component type) must be used
         # Note that the input data was validated against the hidden/visible and
         # clearOnHide state - absence of the data implies that the component was not
