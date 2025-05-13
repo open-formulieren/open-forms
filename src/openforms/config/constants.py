@@ -97,3 +97,8 @@ class UploadFileType(models.TextChoices):
         "application/x-autocad.dwg,application/x-dwg.dwg,drawing/dwg.dwg,image/vnd.dwg,image/x-dwg.dwg",
         _(".dwg"),
     )
+
+
+class FamilyMembersDataAPIChoices(models.TextChoices):
+    haal_centraal = "haal_centraal", _("Haal Centraal")
+    stuf_bg = "stuf_bg", _("StufBg")
