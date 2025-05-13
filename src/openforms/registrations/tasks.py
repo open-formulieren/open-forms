@@ -201,10 +201,13 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         id=submission_id
     )
     form = submission.form
+    structlog.contextvars.bind_contextvars(
+        form=form.admin_name,
+        submission_uuid=str(submission.uuid),
+        public_reference=submission.public_registration_reference,
+    )
     log = logger.bind(
         action="registrations.main_registration",
-        form=form,
-        submission_uuid=str(submission.uuid),
         trigger=event,
     )
 
@@ -277,7 +280,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
 
     log.debug("resolve_plugin", plugin_id=backend)
     plugin = registry[backend]
-    log = log.bind(plugin=plugin)
+    log = log.bind(plugin=plugin.identifier)
 
     if not plugin.is_enabled:
         log.debug("registration_failure", reason="plugin_disabled")
