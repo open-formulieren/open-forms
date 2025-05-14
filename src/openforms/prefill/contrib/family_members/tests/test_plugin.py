@@ -540,6 +540,17 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
                     "date_of_birth": "1998-07-16",
                     "deceased": False,
                 },
+                # included because no age filter boundaries are provided, so even the
+                # children without known DOB are returned
+                {
+                    "bsn": "123456789",
+                    "first_names": "Billy",
+                    "initials": "K",
+                    "affixes": "van",
+                    "lastname": "Doe",
+                    "date_of_birth": "",
+                    "deceased": False,
+                },
             ]
         }
 
