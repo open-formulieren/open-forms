@@ -4,6 +4,13 @@ import LoAOverride from '../LoAOverride';
 import AdditionalScopesField from './AdditionalScopesField';
 import AuthenticationAttributeField from './AuthenticationAttributeField';
 
+const YiviBsnOptionsFields = ({name, plugin, authBackend, onChange}) => {
+  const {authenticationAttribute, loa} = authBackend.options;
+  const schema = plugin.schema.discriminator.mappings[authenticationAttribute];
+
+  return <LoAOverride name={`${name}.options.loa`} schema={schema} loa={loa} onChange={onChange} />;
+};
+
 const YiviOptionsForm = ({name, plugin, authBackend, onChange}) => {
   const {authenticationAttribute, additionalScopes, loa} = authBackend.options;
   return (
@@ -21,10 +28,10 @@ const YiviOptionsForm = ({name, plugin, authBackend, onChange}) => {
         onChange={onChange}
       />
       {authenticationAttribute === 'bsn' && (
-        <LoAOverride
-          name={`${name}.options.loa`}
-          schema={plugin.schema}
-          loa={loa}
+        <YiviBsnOptionsFields
+          name={name}
+          plugin={plugin}
+          authBackend={authBackend}
           onChange={onChange}
         />
       )}
@@ -67,12 +74,33 @@ YiviOptionsForm.propType = {
             enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
           }),
         }).isRequired,
-        loa: PropTypes.exact({
-          type: PropTypes.oneOf(['string']).isRequired,
-          title: PropTypes.string.isRequired,
-          description: PropTypes.string.isRequired,
-          enum: PropTypes.arrayOf(PropTypes.string).isRequired,
-          enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+      }),
+      anyOf: PropTypes.oneOfType([
+        PropTypes.shape({
+          type: PropTypes.oneOf(['object']).isRequired,
+          properties: PropTypes.shape({
+            loa: PropTypes.exact({
+              type: PropTypes.oneOf(['string']).isRequired,
+              title: PropTypes.string.isRequired,
+              description: PropTypes.string.isRequired,
+              enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+              enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+            }),
+          }),
+        }),
+      ]),
+      discriminator: PropTypes.shape({
+        bsn: PropTypes.shape({
+          type: PropTypes.oneOf(['object']).isRequired,
+          properties: PropTypes.shape({
+            loa: PropTypes.exact({
+              type: PropTypes.oneOf(['string']).isRequired,
+              title: PropTypes.string.isRequired,
+              description: PropTypes.string.isRequired,
+              enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+              enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+            }),
+          }),
         }),
       }),
     }),
