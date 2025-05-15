@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 
 import {BACKEND_OPTIONS_FORMS} from './authentication/index';
 
@@ -21,29 +21,27 @@ const AuthPluginOptions = ({name, authBackend, availableAuthPlugins, onChange}) 
   }
 
   return (
-    <Fieldset
-      title={
-        <FormattedMessage
-          defaultMessage="{plugin} plugin options"
-          description="Authentication plugin options configuration"
-          values={{
-            plugin: plugin.label,
-          }}
-        />
-      }
-    >
+    <FormRow>
       <OptionsFormComponent
         name={name}
+        label={
+          <FormattedMessage
+            defaultMessage="{plugin} plugin options"
+            description="Authentication plugin options configuration"
+            values={{
+              plugin: plugin.label,
+            }}
+          />
+        }
         plugin={plugin}
         authBackend={authBackend}
-        onChange={onChange}
+        onChange={({formData}) => onChange({target: {name, value: formData}})}
       />
-    </Fieldset>
+    </FormRow>
   );
 };
 
 AuthPluginOptions.propTypes = {
-  index: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   authBackend: PropTypes.shape({
     backend: PropTypes.string.isRequired, // Auth plugin id

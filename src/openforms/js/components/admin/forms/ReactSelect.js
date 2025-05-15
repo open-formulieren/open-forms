@@ -68,7 +68,8 @@ const getValue = (options, value) => {
   return null;
 };
 
-const getValues = (options, values) => values.map(value => getValue(options, value));
+const getValues = (options, values) =>
+  !!values ? values.map(value => getValue(options, value)) : [];
 
 export const ReactSelectContext = createContext({parentSelector: () => document.body});
 ReactSelectContext.displayName = 'ReactSelectContext';

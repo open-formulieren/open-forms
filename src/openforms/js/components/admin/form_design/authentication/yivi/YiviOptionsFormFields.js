@@ -1,47 +1,35 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {useContext} from 'react';
 
-import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
-import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
+import Fieldset from 'components/admin/forms/Fieldset';
+import {
+  ValidationErrorContext,
+  ValidationErrorsProvider,
+  filterErrors,
+} from 'components/admin/forms/ValidationErrors';
 
-import YiviOptionsFormFields from './YiviOptionsFormFields';
+import AdditionalScopesField from './AdditionalScopesField';
+import AuthenticationAttributeField from './AuthenticationAttributeField';
+import YiviOptionsFormBsnFields from './YiviOptionsFormBsnFields';
 
-const YiviOptionsForm = ({name, label, plugin, authBackend, onChange}) => {
+const YiviOptionsFormFields = ({name, plugin}) => {
   const validationErrors = useContext(ValidationErrorContext);
-  const numErrors = filterErrors(name, validationErrors).length;
+  const relevantErrors = filterErrors(name, validationErrors);
 
   return (
-    <ModalOptionsConfiguration
-      name={name}
-      label={label}
-      numErrors={numErrors}
-      modalTitle={
-        <FormattedMessage
-          description="Yivi authentication options modal title"
-          defaultMessage="Plugin configuration: Yivi"
-        />
-      }
-      initialFormData={{...authBackend.options}}
-      onSubmit={values => onChange({formData: values})}
-    >
-      <YiviOptionsFormFields name={name} plugin={plugin} />
-    </ModalOptionsConfiguration>
+    <ValidationErrorsProvider errors={relevantErrors}>
+      <Fieldset>
+        <AuthenticationAttributeField schema={plugin.schema} />
+        <AdditionalScopesField schema={plugin.schema} />
+
+        <YiviOptionsFormBsnFields plugin={plugin} />
+      </Fieldset>
+    </ValidationErrorsProvider>
   );
 };
 
-YiviOptionsForm.propType = {
+YiviOptionsFormFields.propType = {
   name: PropTypes.string.isRequired,
-  label: PropTypes.node.isRequired,
-  authBackend: PropTypes.shape({
-    backend: PropTypes.string.isRequired, // Auth plugin id
-    // Options configuration shape is specific to plugin
-    options: PropTypes.shape({
-      authenticationAttribute: PropTypes.string,
-      additionalScopes: PropTypes.arrayOf(PropTypes.string),
-      loa: PropTypes.string,
-    }),
-  }).isRequired,
   plugin: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
@@ -97,7 +85,6 @@ YiviOptionsForm.propType = {
       }),
     }),
   }),
-  onChange: PropTypes.func.isRequired,
 };
 
-export default YiviOptionsForm;
+export default YiviOptionsFormFields;

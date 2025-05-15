@@ -4,15 +4,19 @@ import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import Select from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
+import {getReactSelectOptionsFromSchema} from 'utils/json-schema';
 
-const LoAOverride = ({name, schema, loa, onChange}) => {
-  const {enum: enumValue, enumNames} = schema.properties.loa;
-  const LoaChoices = enumValue.map((value, index) => [value, enumNames[index] || '------']);
+const LoAOverride = ({schema}) => {
+  const LoaOptions = getReactSelectOptionsFromSchema(
+    schema.properties.loa.enum,
+    schema.properties.loa.enumNames,
+    '------'
+  );
   return (
     <FormRow>
       <Field
-        name={name}
+        name="loa"
         label={
           <FormattedMessage
             description="Minimal levels of assurance label"
@@ -26,16 +30,14 @@ const LoAOverride = ({name, schema, loa, onChange}) => {
           />
         }
       >
-        <Select value={loa} onChange={onChange} choices={LoaChoices} />
+        <ReactSelect name="loa" options={LoaOptions} />
       </Field>
     </FormRow>
   );
 };
 
 LoAOverride.propTypes = {
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  schema: PropTypes.exact({
+  schema: PropTypes.shape({
     type: PropTypes.oneOf(['object']).isRequired,
     properties: PropTypes.shape({
       loa: PropTypes.exact({
@@ -47,7 +49,6 @@ LoAOverride.propTypes = {
       }).isRequired,
     }),
   }).isRequired,
-  loa: PropTypes.string,
 };
 
 export default LoAOverride;

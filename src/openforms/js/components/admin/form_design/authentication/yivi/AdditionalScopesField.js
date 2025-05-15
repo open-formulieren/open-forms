@@ -5,7 +5,8 @@ import {components} from 'react-select';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {SelectWithoutFormik} from 'components/admin/forms/ReactSelect';
+import ReactSelect from 'components/admin/forms/ReactSelect';
+import {getReactSelectOptionsFromSchema} from 'utils/json-schema';
 
 const AdditionalScopeSelectorOption = props => {
   const {value, label} = props.data;
@@ -24,16 +25,15 @@ const AdditionalScopeSelectorValueLabel = props => {
   return <components.MultiValueLabel {...props}>{value}</components.MultiValueLabel>;
 };
 
-const AdditionalScopesField = ({name, schema, additionalScopes, onChange, ...props}) => {
-  const {enum: enumValue, enumNames} = schema.properties.additionalScopes.items;
-  const additionalScopesOptions = enumValue.map((value, index) => ({
-    label: enumNames[index],
-    value,
-  }));
+const AdditionalScopesField = ({schema}) => {
+  const additionalScopesOptions = getReactSelectOptionsFromSchema(
+    schema.properties.additionalScopes.items.enum,
+    schema.properties.additionalScopes.items.enumNames
+  );
   return (
     <FormRow>
       <Field
-        name={name}
+        name="additionalScopes"
         label={
           <FormattedMessage
             description="Additional scopes label"
@@ -47,18 +47,15 @@ const AdditionalScopesField = ({name, schema, additionalScopes, onChange, ...pro
           />
         }
       >
-        <SelectWithoutFormik
-          name={name}
-          onChange={newValue => onChange({target: {name, value: newValue}})}
+        <ReactSelect
+          name="additionalScopes"
           options={additionalScopesOptions}
-          value={additionalScopes}
           components={{
             Option: AdditionalScopeSelectorOption,
             MultiValueLabel: AdditionalScopeSelectorValueLabel,
           }}
           isMulti
           isClearable
-          {...props}
         />
       </Field>
     </FormRow>
@@ -66,9 +63,6 @@ const AdditionalScopesField = ({name, schema, additionalScopes, onChange, ...pro
 };
 
 AdditionalScopesField.propType = {
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  additionalScopes: PropTypes.arrayOf(PropTypes.string),
   schema: PropTypes.exact({
     type: PropTypes.oneOf(['object']).isRequired,
     properties: PropTypes.shape({

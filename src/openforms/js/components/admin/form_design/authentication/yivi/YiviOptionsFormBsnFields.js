@@ -1,47 +1,21 @@
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
 
-import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
-import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
+import LoAOverride from '../LoAOverride';
 
-import YiviOptionsFormFields from './YiviOptionsFormFields';
+const YiviOptionsFormBsnFields = ({plugin}) => {
+  const {
+    values: {authenticationAttribute},
+  } = useFormikContext();
+  if (authenticationAttribute !== 'bsn') {
+    return null;
+  }
 
-const YiviOptionsForm = ({name, label, plugin, authBackend, onChange}) => {
-  const validationErrors = useContext(ValidationErrorContext);
-  const numErrors = filterErrors(name, validationErrors).length;
-
-  return (
-    <ModalOptionsConfiguration
-      name={name}
-      label={label}
-      numErrors={numErrors}
-      modalTitle={
-        <FormattedMessage
-          description="Yivi authentication options modal title"
-          defaultMessage="Plugin configuration: Yivi"
-        />
-      }
-      initialFormData={{...authBackend.options}}
-      onSubmit={values => onChange({formData: values})}
-    >
-      <YiviOptionsFormFields name={name} plugin={plugin} />
-    </ModalOptionsConfiguration>
-  );
+  const schema = plugin.schema.discriminator.mappings[authenticationAttribute];
+  return <LoAOverride schema={schema} />;
 };
 
-YiviOptionsForm.propType = {
-  name: PropTypes.string.isRequired,
-  label: PropTypes.node.isRequired,
-  authBackend: PropTypes.shape({
-    backend: PropTypes.string.isRequired, // Auth plugin id
-    // Options configuration shape is specific to plugin
-    options: PropTypes.shape({
-      authenticationAttribute: PropTypes.string,
-      additionalScopes: PropTypes.arrayOf(PropTypes.string),
-      loa: PropTypes.string,
-    }),
-  }).isRequired,
+YiviOptionsFormBsnFields.propType = {
   plugin: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
@@ -97,7 +71,6 @@ YiviOptionsForm.propType = {
       }),
     }),
   }),
-  onChange: PropTypes.func.isRequired,
 };
 
-export default YiviOptionsForm;
+export default YiviOptionsFormBsnFields;
