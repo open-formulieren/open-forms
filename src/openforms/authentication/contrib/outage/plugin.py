@@ -15,10 +15,10 @@ class OutageAuthentication(BasePlugin):
     is_demo_plugin = True
     provides_auth = AuthAttribute.bsn
 
-    def start_login(self, request, form, form_url):
+    def start_login(self, request, form, form_url, options):
         raise Exception("simulated backend failure")
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         raise Exception("simulated backend failure")
 
 

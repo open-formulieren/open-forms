@@ -45,7 +45,7 @@ class AuthenticationBasePlugin(BasePlugin):
         return indices[self.identifier]
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self, request: HttpRequest, form: Form, form_url: str, options
     ) -> HttpResponseRedirect:
         """
         Redirect to the /eherkenning/login endpoint to start the authentication.
@@ -85,7 +85,7 @@ class AuthenticationBasePlugin(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request: HttpRequest, form: Form):
+    def handle_return(self, request: HttpRequest, form: Form, options):
         """
         Redirect (back) to form URL.
         """

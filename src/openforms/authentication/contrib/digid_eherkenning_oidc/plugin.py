@@ -75,7 +75,9 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     config_class: ClassVar[type[BaseConfig]]
     init_view: ClassVar[AuthInit]
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
+    ):
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -112,7 +114,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     def transform_claims(self, normalized_claims: T) -> FormAuth:
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
-    def handle_return(self, request: HttpRequest, form: Form):
+    def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
         """
         Redirect to form URL.
         """
