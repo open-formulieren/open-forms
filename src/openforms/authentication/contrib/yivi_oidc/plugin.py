@@ -46,7 +46,9 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     config_class = YiviOpenIDConnectConfig
     configuration_options = YiviOptionsSerializer
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: YiviOptions
+    ):
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
@@ -58,7 +60,7 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options: YiviOptions):
         """
         Redirect to form URL.
         """
