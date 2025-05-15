@@ -2050,6 +2050,12 @@
       "value": "Verstuur bevestigingsmail"
     }
   ],
+  "G+nriX": [
+    {
+      "type": 0,
+      "value": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+    }
+  ],
   "G1JHUM": [
     {
       "type": 0,
@@ -2700,6 +2706,12 @@
       "value": "Gegevensverwerking"
     }
   ],
+  "LrrxeL": [
+    {
+      "type": 0,
+      "value": "Additional scopes"
+    }
+  ],
   "Ltde29": [
     {
       "type": 0,
@@ -3074,6 +3086,12 @@
     {
       "type": 0,
       "value": "Alias"
+    }
+  ],
+  "Pvaekr": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Yivi"
     }
   ],
   "PwUKIe": [
@@ -6413,6 +6431,12 @@
       "value": "Bestemmingspad"
     }
   ],
+  "rtKM0k": [
+    {
+      "type": 0,
+      "value": "Specify which authentication attribute should be received from the login."
+    }
+  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -6561,6 +6585,12 @@
     {
       "type": 0,
       "value": "Bouw een logica-expressie door componenten en voorwaarden te selecteren in dropdowns."
+    }
+  ],
+  "tSeev4": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: DigiD"
     }
   ],
   "tU1UVF": [
@@ -6929,6 +6959,12 @@
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
+    }
+  ],
+  "xPAHZb": [
+    {
+      "type": 0,
+      "value": "Authentication attribute"
     }
   ],
   "xTfMk5": [

@@ -899,6 +899,11 @@
     "description": "Label of form field 'Send the confirmation email'",
     "originalDefault": "Send confirmation email"
   },
+  "G+nriX": {
+    "defaultMessage": "Additional scopes are used to request additional information from the user, which will become available as variables after login.",
+    "description": "Additional scopes help text",
+    "originalDefault": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+  },
   "G1JHUM": {
     "defaultMessage": "Annuleren",
     "description": "Cancel link help",
@@ -1314,6 +1319,11 @@
     "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
     "originalDefault": "Data extraction"
   },
+  "LrrxeL": {
+    "defaultMessage": "Additional scopes",
+    "description": "Additional scopes label",
+    "originalDefault": "Additional scopes"
+  },
   "Ltde29": {
     "defaultMessage": "haal de waarde op uit een externe registratie",
     "description": "action type \"fetch-from-service\" label",
@@ -1539,6 +1549,11 @@
     "description": "Manage process vars alias column title",
     "isTranslated": true,
     "originalDefault": "Alias"
+  },
+  "Pvaekr": {
+    "defaultMessage": "Plugin configuration: Yivi",
+    "description": "Yivi authentication options modal title",
+    "originalDefault": "Plugin configuration: Yivi"
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
@@ -3011,6 +3026,11 @@
     "description": "'JSON Schema target' label",
     "originalDefault": "JSON Schema target"
   },
+  "rtKM0k": {
+    "defaultMessage": "Specify which authentication attribute should be received from the login.",
+    "description": "Authentication attribute help text",
+    "originalDefault": "Specify which authentication attribute should be received from the login."
+  },
   "rzGuvz": {
     "defaultMessage": "(nog niet ingesteld)",
     "description": "DMN evaluation not configured yet message",
@@ -3080,6 +3100,11 @@
     "defaultMessage": "Bouw een logica-expressie door componenten en voorwaarden te selecteren in dropdowns.",
     "description": "Simple logic type info text",
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
+  },
+  "tSeev4": {
+    "defaultMessage": "Plugin configuration: DigiD",
+    "description": "DigiD authentication options modal title",
+    "originalDefault": "Plugin configuration: DigiD"
   },
   "tg+6bo": {
     "defaultMessage": "JSON-sjabloon voor de betaalstatus-update",
@@ -3255,6 +3280,11 @@
     "defaultMessage": "Sjabloon bevestigingspagina",
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
+  },
+  "xPAHZb": {
+    "defaultMessage": "Authentication attribute",
+    "description": "Authentication attribute label",
+    "originalDefault": "Authentication attribute"
   },
   "xTfMk5": {
     "defaultMessage": "Vertalingen ingeschakeld",

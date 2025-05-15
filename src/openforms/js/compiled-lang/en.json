@@ -2029,6 +2029,12 @@
       "value": "Send confirmation email"
     }
   ],
+  "G+nriX": [
+    {
+      "type": 0,
+      "value": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+    }
+  ],
   "G1JHUM": [
     {
       "type": 0,
@@ -2679,6 +2685,12 @@
       "value": "Data extraction"
     }
   ],
+  "LrrxeL": [
+    {
+      "type": 0,
+      "value": "Additional scopes"
+    }
+  ],
   "Ltde29": [
     {
       "type": 0,
@@ -3053,6 +3065,12 @@
     {
       "type": 0,
       "value": "Alias"
+    }
+  ],
+  "Pvaekr": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Yivi"
     }
   ],
   "PwUKIe": [
@@ -6391,6 +6409,12 @@
       "value": "JSON Schema target"
     }
   ],
+  "rtKM0k": [
+    {
+      "type": 0,
+      "value": "Specify which authentication attribute should be received from the login."
+    }
+  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -6543,6 +6567,12 @@
     {
       "type": 0,
       "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
+    }
+  ],
+  "tSeev4": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: DigiD"
     }
   ],
   "tU1UVF": [
@@ -6911,6 +6941,12 @@
     {
       "type": 0,
       "value": "Submission confirmation template"
+    }
+  ],
+  "xPAHZb": [
+    {
+      "type": 0,
+      "value": "Authentication attribute"
     }
   ],
   "xTfMk5": [
