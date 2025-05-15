@@ -210,6 +210,14 @@ class AuthInfo(BaseAuthInfo):
         null=True,
     )
 
+    additional_claims = models.JSONField(
+        verbose_name=_("additional claims"),
+        help_text=_(
+            "Additional claims, configurable in form OIDC configuration, returned by the authentication plugin."
+        ),
+        default=dict,
+    )
+
     identifying_attributes = BaseAuthInfo.identifying_attributes + (
         "acting_subject_identifier_value",
         "legal_subject_identifier_value",
