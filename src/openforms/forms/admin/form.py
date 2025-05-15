@@ -131,12 +131,8 @@ class FormAdmin(
 ):
     list_display = (
         "anno_name",
-        "active",
-        "maintenance_mode",
-        "translation_enabled",
-        "submission_limit",
+        "is_live",
         "get_authentication_backends_display",
-        "get_payment_backend_display",
         "get_registration_backend_display",
         "get_object_actions",
     )
@@ -269,6 +265,10 @@ class FormAdmin(
     @admin.display(description=_("name"), ordering="anno_name")
     def anno_name(self, obj: Form) -> str:
         return obj.admin_name
+
+    @admin.display(description=_("Live"), boolean=True)
+    def is_live(self, obj: Form) -> bool:
+        return obj.active and not obj._is_deleted
 
     def get_form(self, request, *args, **kwargs):
         # no actual changes to the fields are triggered, we're only ending up here
