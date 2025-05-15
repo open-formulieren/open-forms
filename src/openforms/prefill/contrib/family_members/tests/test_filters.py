@@ -19,29 +19,25 @@ class FamilyMembersFiltersTests(TestCase):
         self.assertEqual(filtered_results, [])
 
     def test_age_filter_with_missing_date_of_birth(self):
-        HC_DATA = [
-            HC_NaturalPersonDetails(
-                bsn="123456788",
-                first_names="Doe",
-                lastname="Pirsen",
-                date_of_birth="",
-                date_of_birth_precision="date",
-            )
-        ]
+        hc_item = HC_NaturalPersonDetails(
+            bsn="123456788",
+            first_names="Doe",
+            lastname="Pirsen",
+            date_of_birth="",
+            date_of_birth_precision="date",
+        )
 
-        STUF_BG_DATA = [
-            StUFBG_NaturalPersonDetails(
-                bsn="123456788",
-                first_names="Doe",
-                lastname="Pirsen",
-                date_of_birth="",
-            ),
-        ]
+        stuf_bg_item = StUFBG_NaturalPersonDetails(
+            bsn="123456788",
+            first_names="Doe",
+            lastname="Pirsen",
+            date_of_birth="",
+        )
 
-        for data in (HC_DATA, STUF_BG_DATA):
-            with self.subTest():
+        for item in (hc_item, stuf_bg_item):
+            with self.subTest(type(item)):
                 filtered_results = filter_members_by_age(
-                    results=data, min_age=18, max_age=30
+                    results=[item], min_age=18, max_age=30
                 )
                 self.assertEqual(filtered_results, [])
 

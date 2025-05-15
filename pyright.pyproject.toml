@@ -16,7 +16,6 @@ include = [
     "src/openforms/prefill/base.py",
     "src/openforms/prefill/co_sign.py",
     "src/openforms/prefill/registry.py",
-    "src/openforms/prefill/contrib/family_members",
     "src/openforms/registrations/base.py",
     "src/openforms/registrations/registry.py",
     "src/openforms/validations/base.py",
@@ -40,6 +39,8 @@ include = [
     # Logging
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
+    # Prefill
+    "src/openforms/prefill/contrib/family_members",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/",

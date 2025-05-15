@@ -1,16 +1,19 @@
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from .constants import FamilyMembersTypeChoices
 
 
-class FamilyMembersPartnerOptions(TypedDict):
+class PartnerOptions(TypedDict):
+    type: Literal[FamilyMembersTypeChoices.partners]
     mutable_data_form_variable: str
-    type: FamilyMembersTypeChoices
 
 
-class FamilyMembersChildOptions(TypedDict):
+class ChildOptions(TypedDict):
+    type: Literal[FamilyMembersTypeChoices.children]
     mutable_data_form_variable: str
-    type: FamilyMembersTypeChoices
     min_age: int | None
     max_age: int | None
     include_deceased: bool
+
+
+type FamilyMemberOptions = PartnerOptions | ChildOptions
