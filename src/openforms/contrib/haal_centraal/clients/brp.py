@@ -77,13 +77,11 @@ class V1Client(HALMixin, BRPClient):
         # v1 does not support multiple BSNs so we grab the first one if multiple are provided
         if len(bsns) > 1:
             logger.warning(
-                "Further improvements to V1 are out of scope because we won't support it any longer"
-            )
-            logger.warning(
                 "multiple_bsns_provided",
                 plugin_id="haal_centraal",
                 version=CLIENT_CLS_FOR_VERSION[BRPVersions.v13],
             )
+
         try:
             response = self.get(f"ingeschrevenpersonen/{bsns[0]}")
             response.raise_for_status()
