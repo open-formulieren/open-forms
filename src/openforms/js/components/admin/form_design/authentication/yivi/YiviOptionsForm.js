@@ -45,7 +45,7 @@ YiviOptionsForm.propType = {
   plugin: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
-    providesAuth: PropTypes.string,
+    providesAuth: PropTypes.arrayOf(PropTypes.string),
     schema: PropTypes.exact({
       type: PropTypes.oneOf(['object']).isRequired,
       properties: PropTypes.shape({
