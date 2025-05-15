@@ -10,8 +10,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-
-from ....registry import register
+from openforms.prefill.registry import register
 
 plugin = register["haalcentraal"]
 

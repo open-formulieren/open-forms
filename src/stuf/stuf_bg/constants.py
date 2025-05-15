@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -15,6 +17,9 @@ NAMESPACE_REPLACEMENTS = {
 
 # StUF-BG requires some expiry time to be given so we just give it 5 minutes.
 STUF_BG_EXPIRY_MINUTES = 5
+
+
+type DateOfBirthPrecisionType = Literal["date", "year_month", "year"]
 
 
 class FieldChoices(models.TextChoices):

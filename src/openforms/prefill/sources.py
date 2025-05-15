@@ -151,7 +151,7 @@ def fetch_prefill_values_from_options(
 
         try:
             new_values = plugin.get_prefill_values_from_options(
-                submission, plugin_options
+                submission, plugin_options, variable
             )
         except Exception as exc:
             log.exception("prefill.plugin.retrieve_failure")

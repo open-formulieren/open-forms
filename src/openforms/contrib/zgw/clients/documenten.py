@@ -34,7 +34,7 @@ class DocumentenClient(LoggingMixin, NLXClient):
         vertrouwelijkheidaanduiding: str = "",
     ):
         assert author, "author must be a non-empty string"
-        today = get_today()
+        today = get_today().isoformat()
         file_content = content.read()
         base64_body = b64encode(file_content).decode()
         data = {

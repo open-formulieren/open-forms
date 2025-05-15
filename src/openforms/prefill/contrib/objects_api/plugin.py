@@ -9,6 +9,9 @@ from openforms.contrib.objects_api.clients import get_objects_client
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
 from openforms.submissions.models import Submission
+from openforms.submissions.models.submission_value_variable import (
+    SubmissionValueVariable,
+)
 from openforms.typing import JSONEncodable, JSONObject
 
 from ...base import BasePlugin
@@ -53,6 +56,7 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
         cls,
         submission: Submission,
         options: ObjectsAPIOptions,
+        submission_value_variable: SubmissionValueVariable,
     ) -> dict[str, JSONEncodable]:
         with get_objects_client(options["objects_api_group"]) as client:
             obj = client.get_object(submission.initial_data_reference)

@@ -39,6 +39,8 @@ include = [
     # Logging
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
+    # Prefill
+    "src/openforms/prefill/contrib/family_members",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/email/",

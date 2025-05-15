@@ -721,9 +721,9 @@ class Submission(models.Model):
                 timestamp = co_sign_data.get("cosign_date")
                 _co_sign_data: SubmissionCosignData = {
                     **co_sign_data,
-                    "cosign_date": datetime.fromisoformat(timestamp)
-                    if timestamp
-                    else None,
+                    "cosign_date": (
+                        datetime.fromisoformat(timestamp) if timestamp else None
+                    ),
                 }
                 return _co_sign_data
 

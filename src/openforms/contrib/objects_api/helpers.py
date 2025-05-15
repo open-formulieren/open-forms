@@ -13,5 +13,5 @@ def prepare_data_for_registration(
     return {
         "typeVersion": objecttype_version,
         "data": data,
-        "startAt": get_today(),
+        "startAt": get_today().isoformat(),
     }

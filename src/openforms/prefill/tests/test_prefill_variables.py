@@ -241,7 +241,9 @@ class OwnershipCheckPassesPlugin(DemoPrefill):
             raise Exception("crash and burn")
 
     @classmethod
-    def get_prefill_values_from_options(cls, submission: Submission, options):
+    def get_prefill_values_from_options(
+        cls, submission: Submission, options, submission_value_variable
+    ):
         return {options["var_key"]: options["var_value"]}
 
 
@@ -255,7 +257,9 @@ class OwnershipCheckFailsPlugin(DemoPrefill):
         raise PermissionDenied("you shall not pass")
 
     @classmethod
-    def get_prefill_values_from_options(cls, submission: Submission, options):
+    def get_prefill_values_from_options(
+        cls, submission: Submission, options, submission_value_variable
+    ):
         return {options["var_key"]: options["var_value"]}
 
 

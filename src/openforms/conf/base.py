@@ -236,6 +236,7 @@ INSTALLED_APPS = [
     "openforms.prefill.contrib.haalcentraal_brp.apps.HaalCentraalBRPApp",
     "openforms.prefill.contrib.suwinet.apps.SuwinetApp",
     "openforms.prefill.contrib.objects_api.apps.ObjectsApiApp",
+    "openforms.prefill.contrib.family_members.apps.FamilyMembersApp",
     "openforms.authentication",
     "openforms.authentication.contrib.demo.apps.DemoApp",
     "openforms.authentication.contrib.outage.apps.DemoOutageApp",

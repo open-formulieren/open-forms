@@ -94,7 +94,7 @@ class DateFieldValidationTests(SimpleTestCase):
         with self.subTest("valid value"):
             # use localized date in Amsterdam, otherwise the test fails between midnight
             # and 1am/2am depending on DST
-            today = get_today()
+            today = get_today().isoformat()
             is_valid, _ = validate_formio_data(component, {"foo": today})
 
             self.assertTrue(is_valid)
