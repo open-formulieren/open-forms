@@ -3291,7 +3291,6 @@ paths:
         schema:
           type: string
           format: uri
-          default: ''
         description: Filter document types against this catalogue URL.
       - in: query
         name: objects_api_group
@@ -4093,7 +4092,6 @@ paths:
         schema:
           type: string
           format: uri
-          default: ''
         description: Filter document types against this catalogue URL.
       - in: query
         name: zgw_api_group
