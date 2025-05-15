@@ -10,6 +10,7 @@ from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .constants import PLUGIN_ID
+from .models import YiviOpenIDConnectConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
     expect_django_user: bool = False  # do NOT create real Django users
 
     _redirect_next: str
+    _config = YiviOpenIDConnectConfig
 
     def get(self, request: HttpRequest):
         # grab where the redirect next from the session and store it as a temporary

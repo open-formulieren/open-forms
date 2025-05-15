@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from django.contrib import auth
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
@@ -14,9 +14,10 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from ...typing import FormAuth
 from .config import YiviOptions, YiviOptionsPolymorphicSerializer
 from .constants import PLUGIN_ID
-from .models import YiviOpenIDConnectConfig
+from .models import AvailableScope, YiviOpenIDConnectConfig
 
 yivi_init = OIDCInit.as_view(
     config_class=YiviOpenIDConnectConfig,
@@ -28,11 +29,25 @@ class YiviClaims(TypedDict):
     """
     Processed Yivi claims structure.
 
-    See :attr:`openforms.authentication.yivi_oidc.models` for the source of this
+    See :attr:`openforms.authentication.yivi_oidc.models.CLAIMS_CONFIGURATION` for the source of this
     structure.
+
+    None of the claims can be required, as they depend on the authAttribute used by the
+    form.
     """
 
-    # @TODO
+    # Claims for auth attribute bsn
+    bsn_claim: NotRequired[str]
+
+    # Claims for auth attribute kvk
+    identifier_type_claim: NotRequired[str]
+    legal_subject_claim: NotRequired[str]
+    acting_subject_claim: NotRequired[str]
+    branch_number_claim: NotRequired[str]
+
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
 
 
 @register(PLUGIN_ID)
@@ -44,7 +59,7 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     session_key: str = "yivi_oidc"
     verbose_name = _("Yivi via OpenID Connect")
     # Yivi can provide a range of auth attributes, including bsn and kvk
-    provides_auth = AuthAttribute
+    provides_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
     config_class = YiviOpenIDConnectConfig
     configuration_options = YiviOptionsPolymorphicSerializer
 
@@ -62,6 +77,54 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
+    def transform_claims(
+        self, options: YiviOptions, normalized_claims: YiviClaims
+    ) -> FormAuth:
+        form_auth = {
+            "plugin": self.identifier,
+            "attribute": options["authentication_attribute"],
+            "additional_claims": {},
+        }
+
+        # Add claims resulted from additional scopes
+        if (additional_scopes := options["additional_scopes"]) and len(
+            additional_scopes
+        ):
+            claims_to_add = AvailableScope.objects.filter(
+                scope__in=additional_scopes
+            ).values_list("claims", flat=True)
+
+            for claim in claims_to_add:
+                form_auth["additional_claims"][claim] = (
+                    normalized_claims[claim] if claim in normalized_claims else None
+                )
+
+        # Add authentication_attribute specific form auth properties
+        match options["authentication_attribute"]:
+            case AuthAttribute.bsn:
+                # Coppied from digid_oidc
+                form_auth["value"] = normalized_claims.get("bsn_claim", "")
+                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+            case AuthAttribute.kvk:
+                # Coppied from eherkenning_oidc
+                form_auth["value"] = normalized_claims.get("legal_subject_claim", "")
+                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+                form_auth["acting_subject_identifier_type"] = "opaque"
+                form_auth["acting_subject_identifier_value"] = (
+                    normalized_claims.get("acting_subject_claim")
+                    or "dummy-set-by@openforms"
+                )
+
+                if service_restriction := normalized_claims.get(
+                    "branch_number_claim", ""
+                ):
+                    form_auth["legal_subject_service_restriction"] = service_restriction
+            case AuthAttribute.pseudo:
+                # @TODO implement yivi pseudo auth
+                pass
+
+        return form_auth
+
     def handle_return(self, request, form, options: YiviOptions):
         """
         Redirect to form URL.
@@ -75,14 +138,9 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
 
         normalized_claims: YiviClaims | None = request.session.get(self.session_key)
         if normalized_claims:
-            # @TODO set `value` dynamically
-            form_auth = {
-                "plugin": self.identifier,
-                "attribute": options["authentication_attribute"],
-                "value": "some yivi claim",
-                # @TODO add `additional_claims`
-            }
-            request.session[FORM_AUTH_SESSION_KEY] = form_auth
+            request.session[FORM_AUTH_SESSION_KEY] = self.transform_claims(
+                options, normalized_claims
+            )
 
         return HttpResponseRedirect(form_url)
 

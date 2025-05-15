@@ -23,7 +23,7 @@ class YiviOpenIDConnectConfig(AuthorizeeMixin, BaseConfig):
         verbose_name_plural = _("Yivi (OIDC)")
 
     get_callback_view = get_callback_view
-    of_oidcdb_required_claims = ["bsn_claim", "legal_subject_claim"]
+    of_oidcdb_required_claims = []
 
     bsn_claim = ClaimField(
         verbose_name=_("bsn claim"),
@@ -32,10 +32,12 @@ class YiviOpenIDConnectConfig(AuthorizeeMixin, BaseConfig):
     )
 
     CLAIMS_CONFIGURATION = (
-        {"field": "bsn_claim", "required": True},
+        # For bsn auth
+        {"field": "bsn_claim", "required": False},
+        # For kvk auth
         {"field": "identifier_type_claim", "required": False},
-        {"field": "legal_subject_claim", "required": True},
-        {"field": "acting_subject_claim", "required": True},
+        {"field": "legal_subject_claim", "required": False},
+        {"field": "acting_subject_claim", "required": False},
         {"field": "branch_number_claim", "required": False},
     )
 
