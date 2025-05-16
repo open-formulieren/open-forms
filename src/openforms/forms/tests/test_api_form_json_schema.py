@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
@@ -85,17 +86,24 @@ class FormJsonSchemaAPITests(APITestCase):
         )
 
         url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {
+            "registrationPluginId": "objects_api",
+            "variables": [
+                "firstName",
+                "select",
+                "selectboxes",
+                "radio",
+                "foo",
+            ],
+        }
 
+        # Note that lastName is not in this schema because it wasn't specified in the
+        # options
         expected_schema = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object",
             "properties": {
                 "firstName": {"title": "First Name", "type": "string"},
-                "lastName": {
-                    "title": "Last Name",
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
                 "select": {
                     "type": "array",
                     "items": {"type": "string", "enum": ["a", "b", ""]},
@@ -116,7 +124,6 @@ class FormJsonSchemaAPITests(APITestCase):
             },
             "required": [
                 "firstName",
-                "lastName",
                 "select",
                 "selectboxes",
                 "radio",
@@ -125,6 +132,6 @@ class FormJsonSchemaAPITests(APITestCase):
             "additionalProperties": False,
         }
 
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_schema)

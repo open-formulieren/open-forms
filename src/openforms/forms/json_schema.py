@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import uuid
 from collections import UserDict
-from typing import Iterator, Sequence
+from typing import Iterator, Sequence, cast
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     rewrite_formio_components,
 )
+from openforms.formio.typing import Component, EditGridComponent, SelectBoxesComponent
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
@@ -15,6 +16,7 @@ from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
+from ..registrations.contrib.objects_api.typing import RegistrationOptionsV2
 from .models import Form, FormVariable
 
 
@@ -41,6 +43,10 @@ def _iter_form_variables(
 def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
+    # TODO-5312: this should be the plugin key to enable fetching backend options
+    plugin_id: str,
+    # TODO-5312: this can be removed and fetched inside this function from the form
+    plugin_options: dict,
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
     submission: Submission | None = None,
 ) -> JSONObject:
@@ -79,9 +85,18 @@ def generate_json_schema(
         if variable.source == FormVariableSources.component:
             variable.form_definition.configuration = new_configuration.configuration
 
+        schema = generate_variable_schema(
+            variable,
+            plugin_id,
+            plugin_options,
+            submission.total_configuration_wrapper,
+        )
+
+        # TODO-5312: this might actually no be necessary for the objects api, as the
+        #  values of variables are mapped directly
         process_variable_schema_and_add_to_schema(
             variable.key,
-            variable.as_json_schema(),
+            schema,
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
@@ -194,3 +209,140 @@ class NestedDict(UserDict):
         except KeyError:
             return False
         return True
+
+
+def generate_variable_schema(
+    variable: FormVariable,
+    # TODO-5312: find better name
+    plugin_id: str,
+    plugin_options,
+    configuration_wrapper,
+) -> JSONObject:
+    """ """
+    schema = variable.as_json_schema()
+
+    if variable.source != FormVariableSources.component:
+        return schema
+
+    component = configuration_wrapper[variable.key]
+    assert component is not None
+
+    if plugin_id == "objects_api":
+        process_component_schema_objects_api(
+            component, schema, configuration_wrapper, plugin_options
+        )
+    else:
+        raise NotImplementedError()
+
+    return schema
+
+
+# TODO-5314: better to place this in the registrations.contrib.objects_api to keep
+#  everything plugin-related contained?
+def process_component_schema_objects_api(
+    component: Component,
+    schema: JSONObject,
+    configuration_wrapper,
+    plugin_options: RegistrationOptionsV2,
+):
+    """Process a component.
+
+    The following components need extra attention:
+    - File components: we send the content of the file encoded with base64, instead of
+      the output from the serializer.
+    - Selectboxes components: the selected options might need to be transformed to a
+      list
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param schema: JSON schema.
+    :param configuration_wrapper: Updated total configuration wrapper. This is required
+      for edit grid components, which need to fetch their children from it.
+    :param plugin_options: Plugin options
+    """
+    key = component["key"]
+
+    match component:
+        case {"type": "addressNL"}:
+            mapping = plugin_options["variables_mapping"]
+            map_ = {}
+            for map_ in mapping:
+                if map_["variable_key"] == key:
+                    break
+                return
+
+            if not map_.get("options"):
+                return
+
+            # TODO-5312: do processing. This might only be possible if the schema we
+            #  pass is the total schema instead of the component schema. This is because
+            #  the original component key will not be present in the submitted data, so
+            #  we need a way of removing it and moving the keys of the child components
+            #  one level up
+
+        case {"type": "file", "multiple": True}:
+            # If multiple is true, the value can be an empty list if no attachments are
+            # uploaded, and a list of urls when one or more attachments are uploaded
+            validate = component.get("validate", {})
+            schema["items"] = {"type": "string", "format": "uri"}
+            # TODO-5312: this can be moved to the component maybe? Also other components
+            #  can have this. For example, a required textfield can have a pattern
+            #  matching with one or more characters?
+            schema["minItems"] = int(validate.get("required", False))
+
+        case {"type": "file"}:  # multiple is False or missing
+            # If multiple is false, the value can be an empty string if no attachment is
+            # uploaded, and a single url if one attachment is uploaded
+            validate = component.get("validate", {})
+            schema["type"] = "string"
+            if validate.get("required", False):
+                schema["format"] = "uri"
+            else:
+                schema["oneOf"] = [{"format": "uri"}, {"pattern": "^$"}]
+            schema.pop("items")
+
+        case {"type": "selectboxes"} if key in plugin_options["transform_to_list"]:
+            component = cast(SelectBoxesComponent, component)
+            validate = component.get("validate", {})
+            for key_to_remove in ("properties", "required", "additionalProperties"):
+                schema.pop(key_to_remove)
+            schema["type"] = "array"
+            schema["items"] = {
+                "type": "string",
+                "enum": [options["value"] for options in component["values"]],
+            }
+            schema["minItems"] = int(validate.get("required", False))
+
+        case {"type": "editgrid"}:
+            component = cast(EditGridComponent, component)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                # Note that we can't pass the child component directly, as it is not
+                # updated during rewriting of formio components
+                # TODO-5312: perhaps we can actually, because a selectboxes component
+                #  in an edit grid will never be processed, as it cannot be selected
+                #  to be transformed to a list
+                process_component_schema_objects_api(
+                    component=configuration_wrapper[child_key],
+                    schema=schema["items"]["properties"][child_key],
+                    configuration_wrapper=configuration_wrapper,
+                    plugin_options=plugin_options,
+                )
+
+        case _:
+            pass
+
+
+"""
+Generic JSON schema:
+ - file:
+    * `None` when there are no uploads and multiple=False
+    * An object with file name and content encoded using base64 when there is one upload for multiple=False
+    * A list with an empty object when there are no uploads and multiple=True
+    * A list of objects with file name and content encoded using base64 for multiple=True
+ - selectboxes:
+    * Empty dict when it was hidden (is this true? See TODO in code)
+    * Processed when transformed to a list. Can we get this setting when generating a
+      schema? Or do we need to do an oneOf/anyOf?
+"""

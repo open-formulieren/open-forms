@@ -27,10 +27,11 @@ from openforms.variables.service import get_static_variables
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
 from .config import GenericJSONOptions, GenericJSONOptionsSerializer
+from .constants import PLUGIN_ID
 from .registration_variables import register as variables_registry
 
 
-@register("json_dump")
+@register(PLUGIN_ID)
 class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
@@ -241,6 +242,12 @@ def process_component(
         case {"type": "selectboxes"}:
             component = cast(SelectBoxesComponent, component)
 
+            # TODO-5312: is this true? Might have been a bug because of a defaultValue
+            #  set to None, and the backend overriding this value with an empty dict
+            #  during logic evaluation.
+            #  Looks like this is the case when it is hidden AND DOESN'T use a manual
+            #  data source. This makes sense, as the default values will not be
+            #  available for variable and reference-list data sources
             # If the select boxes component was hidden, the submitted data of this
             # component is an empty dict, so set the required to an empty list.
             if not values[key]:
