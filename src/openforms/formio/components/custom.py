@@ -59,6 +59,11 @@ GEO_JSON_TYPE_TO_INTERACTION = {
     GeoJsonGeometryTypes.line_string: "polyline",
 }
 
+POSTCODE_REGEX = r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"
+HOUSE_NUMBER_REGEX = r"^\d{1,5}$"
+HOUSE_LETTER_REGEX = r"^[a-zA-Z]$"
+HOUSE_NUMBER_ADDITION_REGEX = r"^[a-zA-Z0-9]{1,4}$"
+
 
 class FormioDateField(serializers.DateField):
     def validate_empty_values(self, data):
@@ -339,11 +344,15 @@ class Postcode(BasePlugin[Component]):
 
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
-        # TODO-4923: add a regex
         label = component.get("label", "Postcode")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
-        base = {"title": label, "type": "string"}
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": validate.get("pattern", POSTCODE_REGEX),
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -479,22 +488,20 @@ class BSN(BasePlugin[Component]):
         base = {
             "title": label,
             "type": "string",
-            "pattern": "^\\d{9}",
+            "pattern": r"^\d{9}$",
             "format": "nl-bsn",
         }
         return to_multiple(base) if multiple else base
 
 
 class AddressValueSerializer(serializers.Serializer):
-    postcode = serializers.RegexField(
-        "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+    postcode = serializers.RegexField(POSTCODE_REGEX)
+    houseNumber = serializers.RegexField(HOUSE_NUMBER_REGEX)
+    houseLetter = serializers.RegexField(
+        HOUSE_LETTER_REGEX, required=False, allow_blank=True
     )
-    houseNumber = serializers.RegexField(
-        r"^\d{1,5}$",
-    )
-    houseLetter = serializers.RegexField("^[a-zA-Z]$", required=False, allow_blank=True)
     houseNumberAddition = serializers.RegexField(
-        "^([a-z,A-Z,0-9]){1,4}$",
+        HOUSE_NUMBER_ADDITION_REGEX,
         required=False,
         allow_blank=True,
     )
@@ -602,19 +609,32 @@ class AddressNL(BasePlugin[AddressNLComponent]):
     @staticmethod
     def as_json_schema(component: AddressNLComponent) -> JSONObject:
         label = component.get("label", "Address NL")
+        components = component.get("openForms", {}).get("components", {})
+        postcode_validate = components.get("postcode", {}).get("validate", {})
+        city_validate = components.get("city", {}).get("validate", {})
+
         base = {
             "title": label,
             "type": "object",
             "properties": {
                 "city": {"type": "string"},
-                "houseLetter": {"type": "string"},
-                "houseNumber": {"type": "string"},
-                "houseNumberAddition": {"type": "string"},
-                "postcode": {"type": "string"},
+                "houseLetter": {"type": "string", "pattern": HOUSE_LETTER_REGEX},
+                "houseNumber": {"type": "string", "pattern": HOUSE_NUMBER_REGEX},
+                "houseNumberAddition": {
+                    "type": "string",
+                    "pattern": HOUSE_NUMBER_ADDITION_REGEX,
+                },
+                "postcode": {
+                    "type": "string",
+                    "pattern": postcode_validate.get("pattern", POSTCODE_REGEX),
+                },
                 "streetName": {"type": "string"},
             },
             "required": ["houseNumber", "postcode"],
         }
+
+        if city_pattern := city_validate.get("pattern"):
+            base["properties"]["city"]["pattern"] = city_pattern
 
         return base
 
@@ -663,7 +683,12 @@ class Iban(BasePlugin):
         label = component.get("label", "IBAN")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "type": "string"}
+        # Reference: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Structure
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": r"^[A-Z]{2}[0-9]{2}[A-Z0-9]{30}$",
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -709,5 +734,11 @@ class LicensePlate(BasePlugin):
         label = component.get("label", "License plate")
         multiple = component.get("multiple", False)
 
-        base = {"title": label, "type": "string"}
+        # NOTE: the pattern does not take into account letters that are not allowed
+        # by the government.
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": r"^[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}-[a-zA-Z0-9]{1,3}$",
+        }
         return to_multiple(base) if multiple else base

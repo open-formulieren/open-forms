@@ -29,7 +29,6 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.constants import DataSrcOptions
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.models import EmailVerification
 from openforms.typing import JSONObject
@@ -143,8 +142,14 @@ class TextField(BasePlugin[TextFieldComponent]):
     def as_json_schema(component: TextFieldComponent) -> JSONObject:
         label = component.get("label", "Text")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "string"}
+        if pattern := validate.get("pattern"):
+            base["pattern"] = pattern
+        if validate.get("maxLength"):
+            base["maxLength"] = validate["maxLength"]
+
         return to_multiple(base) if multiple else base
 
 
@@ -358,8 +363,13 @@ class PhoneNumber(BasePlugin):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Phone number")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
-        base = {"title": label, "type": "string"}
+        base = {
+            "title": label,
+            "type": "string",
+            "pattern": validate.get("pattern", r"^\+?[\d\s]+$"),
+        }
         return to_multiple(base) if multiple else base
 
 
@@ -540,8 +550,14 @@ class TextArea(BasePlugin[Component]):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Text area")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "string"}
+        if pattern := validate.get("pattern"):
+            base["pattern"] = pattern
+        if validate.get("maxLength"):
+            base["maxLength"] = validate["maxLength"]
+
         return to_multiple(base) if multiple else base
 
 
@@ -579,8 +595,14 @@ class Number(BasePlugin):
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Number")
         multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
 
         base = {"title": label, "type": "number"}
+        if min_value := validate.get("min"):
+            base["minimum"] = min_value
+        if max_value := validate.get("max"):
+            base["maximum"] = max_value
+
         return to_multiple(base) if multiple else base
 
 
@@ -704,13 +726,13 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     @staticmethod
     def as_json_schema(component: SelectBoxesComponent) -> JSONObject:
         label = component.get("label", "Select boxes")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["values"]
 
         base = {"title": label, "type": "object"}
-        if data_src != DataSrcOptions.variable:
-            # Only add properties if the data source IS NOT another variable, because
-            # component[values] is not updated when it IS. So it does not make sense to
-            # add properties in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             properties = {
                 options["value"]: {"type": "boolean"} for options in component["values"]
             }
@@ -779,13 +801,13 @@ class Select(BasePlugin[SelectComponent]):
     def as_json_schema(component: SelectComponent) -> JSONObject:
         multiple = component.get("multiple", False)
         label = component.get("label", "Select")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["data"]["values"]
 
         base = {"type": "string"}
-        if data_src != DataSrcOptions.variable:
-            # Only add properties if the data source IS NOT another variable, because
-            # component[data][values] is not updated when it IS. So it does not make
-            # sense to add properties in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             choices = [options["value"] for options in component["data"]["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices
@@ -825,8 +847,13 @@ class Currency(BasePlugin[Component]):
     @staticmethod
     def as_json_schema(component: Component) -> JSONObject:
         label = component.get("label", "Currency")
-        base = {"title": label, "type": "number"}
+        validate = component.get("validate", {})
 
+        base = {"title": label, "type": "number"}
+        if min_value := validate.get("min"):
+            base["minimum"] = min_value
+        if max_value := validate.get("max"):
+            base["maximum"] = max_value
         return base
 
 
@@ -867,13 +894,13 @@ class Radio(BasePlugin[RadioComponent]):
     @staticmethod
     def as_json_schema(component: RadioComponent) -> JSONObject:
         label = component.get("label", "Radio")
-        data_src = component.get("openForms", {}).get("dataSrc")
+        values = component["values"]
 
         base = {"title": label, "type": "string"}
-        if data_src != DataSrcOptions.variable:
-            # Only add enum if the data source IS NOT another variable, because
-            # component[values] is not updated when it IS. So it does not make sense to
-            # add a list of choices to the enum in that case.
+        # Note: the 'values' will be a list with a single empty option if the data
+        # source is another variable or reference lists, AND the configuration was not
+        # updated before generating the schema.
+        if not (len(values) == 1 and values[0]["label"] == ""):
             choices = [options["value"] for options in component["values"]]
             choices.append("")  # Take into account an unfilled field
             base["enum"] = choices
@@ -1044,6 +1071,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
     @staticmethod
     def as_json_schema(component: EditGridComponent) -> JSONObject:
         label = component.get("label", "Edit grid")
+        validate = component.get("validate", {})
 
         # Build the edit grid object properties by iterating over the child components
         properties = {
@@ -1060,5 +1088,7 @@ class EditGrid(BasePlugin[EditGridComponent]):
                 "additionalProperties": False,
             },
         }
+        if max_length := validate.get("maxLength"):
+            base["maxItems"] = max_length
 
         return base

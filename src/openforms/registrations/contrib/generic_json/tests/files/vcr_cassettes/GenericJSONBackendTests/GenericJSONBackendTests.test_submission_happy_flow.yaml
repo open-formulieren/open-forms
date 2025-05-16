@@ -5,25 +5,25 @@ interactions:
       {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
       "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
       the authenticated person. This value follows the rules for Dutch social security
-      numbers.", "type": "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "firstName":
-      {"title": "Firstname", "type": "string"}, "file": {"title": "File", "type":
-      "object", "properties": {"file_name": {"type": "string"}, "content": {"type":
-      "string", "format": "base64"}}, "required": ["file_name", "content"], "additionalProperties":
-      false}}, "required": ["auth_bsn", "firstName", "file"], "additionalProperties":
-      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object", "properties": {}, "required": [], "additionalProperties":
-      false}}'
+      numbers.", "type": "string", "pattern": "^\\d{9}$|^$", "format": "nl-bsn"},
+      "firstName": {"title": "Firstname", "type": "string"}, "file": {"title": "File",
+      "type": "object", "properties": {"file_name": {"type": "string"}, "content":
+      {"type": "string", "format": "base64"}}, "required": ["file_name", "content"],
+      "additionalProperties": false}}, "required": ["auth_bsn", "firstName", "file"],
+      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {}, "required": [], "additionalProperties": false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY2MTU0MzUsImV4cCI6MTc0NjY1ODYzNSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.wW3o7Z2ia3KICzo_WbWRxFAO3u-EbRLBhWX5HVpvmdM
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDY3Nzg0NjAsImV4cCI6MTc0NjgyMTY2MCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.gnJBDjfOZoePABKYdLL2gS-zMydJHwUYQ0l63dAi_50
       Connection:
       - keep-alive
       Content-Length:
-      - '1004'
+      - '1007'
       User-Agent:
       - python-requests/2.32.2
       content-type:
@@ -42,7 +42,7 @@ interactions:
         \     \"additionalProperties\": false,\n      \"properties\": {\n        \"auth_bsn\":
         {\n          \"description\": \"Uniquely identifies the authenticated person.
         This value follows the rules for Dutch social security numbers.\",\n          \"format\":
-        \"nl-bsn\",\n          \"pattern\": \"^\\\\d{9}$\",\n          \"title\":
+        \"nl-bsn\",\n          \"pattern\": \"^\\\\d{9}$|^$\",\n          \"title\":
         \"BSN\",\n          \"type\": \"string\"\n        },\n        \"file\": {\n
         \         \"additionalProperties\": false,\n          \"properties\": {\n
         \           \"content\": {\n              \"format\": \"base64\",\n              \"type\":
@@ -57,13 +57,13 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '1545'
+      - '1548'
       Content-Type:
       - application/json
       Date:
-      - Wed, 07 May 2025 10:57:15 GMT
+      - Fri, 09 May 2025 08:14:20 GMT
       Server:
-      - Werkzeug/3.1.3 Python/3.12.8
+      - Werkzeug/3.1.3 Python/3.12.10
     status:
       code: 201
       message: CREATED
