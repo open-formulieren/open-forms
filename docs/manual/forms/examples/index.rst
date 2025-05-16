@@ -14,6 +14,7 @@ Voorbeelden
    appointment_form
    prefill
    objects_prefill
+   family_members_prefill
    calculations
    auth_static_variables
    repeating_groups
