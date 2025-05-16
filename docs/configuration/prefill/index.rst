@@ -13,3 +13,4 @@ Prefill plugins
    stuf_bg
    suwinet
    objects_api
+   family_members
