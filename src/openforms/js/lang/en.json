@@ -2484,6 +2484,11 @@
     "description": "Manage complex process vars configure column title",
     "originalDefault": "Configure"
   },
+  "huzndE": {
+    "defaultMessage": "Children",
+    "description": "Label for children option",
+    "originalDefault": "Children"
+  },
   "hxssl8": {
     "defaultMessage": "Objects API integration",
     "description": "ZGW APIs registration: Objects API fieldset title",
@@ -2903,16 +2908,6 @@
     "defaultMessage": "Value",
     "description": "JSON editor: 'value' header label",
     "originalDefault": "Value"
-  },
-  "personType.children": {
-    "defaultMessage": "Children",
-    "description": "Label for children option",
-    "originalDefault": "Children"
-  },
-  "personType.partners": {
-    "defaultMessage": "Partners",
-    "description": "Label for partners option",
-    "originalDefault": "Partners"
   },
   "piUWzT": {
     "defaultMessage": "Select registration backend",
@@ -3338,6 +3333,11 @@
     "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
+  },
+  "yTBZ6U": {
+    "defaultMessage": "Partners",
+    "description": "Label for partners option",
+    "originalDefault": "Partners"
   },
   "yTfQNG": {
     "defaultMessage": "Objecttype",

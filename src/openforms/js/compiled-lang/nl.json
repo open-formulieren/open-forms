@@ -5265,6 +5265,12 @@
       "value": "Configureren"
     }
   ],
+  "huzndE": [
+    {
+      "type": 0,
+      "value": "Children"
+    }
+  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -6247,18 +6253,6 @@
       "value": "Begin focuspunt"
     }
   ],
-  "personType.children": [
-    {
-      "type": 0,
-      "value": "Children"
-    }
-  ],
-  "personType.partners": [
-    {
-      "type": 0,
-      "value": "Partners"
-    }
-  ],
   "pfdsz9": [
     {
       "type": 0,
@@ -7125,6 +7119,12 @@
     {
       "type": 0,
       "value": "Selecteer een databron voor de keuzeopties."
+    }
+  ],
+  "yTBZ6U": [
+    {
+      "type": 0,
+      "value": "Partners"
     }
   ],
   "yTfQNG": [

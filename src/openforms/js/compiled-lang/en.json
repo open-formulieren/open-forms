@@ -5243,6 +5243,12 @@
       "value": "Configure"
     }
   ],
+  "huzndE": [
+    {
+      "type": 0,
+      "value": "Children"
+    }
+  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -6225,18 +6231,6 @@
       "value": "Initial focus"
     }
   ],
-  "personType.children": [
-    {
-      "type": 0,
-      "value": "Children"
-    }
-  ],
-  "personType.partners": [
-    {
-      "type": 0,
-      "value": "Partners"
-    }
-  ],
   "pfdsz9": [
     {
       "type": 0,
@@ -7107,6 +7101,12 @@
     {
       "type": 0,
       "value": "How to specify the available options."
+    }
+  ],
+  "yTBZ6U": [
+    {
+      "type": 0,
+      "value": "Partners"
     }
   ],
   "yTfQNG": [
