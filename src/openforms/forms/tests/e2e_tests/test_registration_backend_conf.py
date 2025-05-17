@@ -94,6 +94,10 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
         def collect_requests(request):
             url = furl(request.url)
+            # ignore about:* URLs
+            if url.scheme == "about":
+                return
+
             try:
                 match = resolve(str(url.path))
             except Resolver404:
@@ -226,6 +230,10 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
 
         def collect_requests(request):
             url = furl(request.url)
+            # ignore about:* URLs
+            if url.scheme == "about":
+                return
+
             try:
                 match = resolve(str(url.path))
             except Resolver404:
