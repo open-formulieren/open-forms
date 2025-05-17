@@ -171,6 +171,10 @@ export default {
           ],
         },
       },
+      {
+        id: 'family_members',
+        label: 'Family members',
+      },
     ],
     onChange: fn(),
     onAdd: fn(),
@@ -1374,6 +1378,212 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
         },
         {timeout: 5000}
       );
+    });
+  },
+};
+
+export const ConfigurePrefillFamilyMembersPartners = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined mutable',
+        key: 'userDefinedMutable',
+        source: 'user_defined',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined immutable',
+        key: 'userDefinedImmutable',
+        source: 'user_defined',
+        prefillPlugin: 'family_members',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        prefillOptions: {
+          type: 'partners',
+          mutableDataFormVariable: 'userDefinedMutable',
+        },
+      },
+    ],
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined mutable',
+        key: 'userDefinedMutable',
+        source: 'user_defined',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined 3',
+        key: 'userDefined3',
+        source: 'user_defined',
+        prefillPlugin: 'family_members',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        prefillOptions: {
+          type: 'partners',
+          mutableDataFormVariable: 'userDefinedMutable',
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+      // open modal for configuration
+      const editIcons = canvas.getAllByTitle('Prefill instellen');
+      await userEvent.click(editIcons[0]);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Family members prefill for partners', async () => {
+      const modal = within(await canvas.findByRole('dialog'));
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Family members');
+      // check person type
+      const personTypeSelect = await canvas.findByText('Type');
+      expect(personTypeSelect).toBeVisible();
+      expect(modal.getByText('Partners')).toBeVisible();
+      // check mutable form variable
+      const mutableDataFormVariableSelect = await canvas.findByText(
+        'Data destination form variable'
+      );
+      expect(mutableDataFormVariableSelect).toBeVisible();
+      expect(modal.getByText('User defined mutable')).toBeVisible();
+      // check no filters
+      const filters = canvas.queryByText('Filters');
+      expect(filters).not.toBeInTheDocument();
+    });
+  },
+};
+
+export const ConfigurePrefillFamilyMembersChildren = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined mutable',
+        key: 'userDefinedMutable',
+        source: 'user_defined',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined immutable',
+        key: 'userDefinedImmutable',
+        source: 'user_defined',
+        prefillPlugin: 'family_members',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        prefillOptions: {
+          type: 'children',
+          mutableDataFormVariable: 'userDefinedMutable',
+        },
+      },
+    ],
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined mutable',
+        key: 'userDefinedMutable',
+        source: 'user_defined',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined 3',
+        key: 'userDefined3',
+        source: 'user_defined',
+        prefillPlugin: 'family_members',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        prefillOptions: {
+          type: 'children',
+          mutableDataFormVariable: 'userDefinedMutable',
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    await step('Open configuration modal', async () => {
+      const userDefinedVarsTab = await canvas.findByRole('tab', {name: /Gebruikersvariabelen/});
+      expect(userDefinedVarsTab).toBeVisible();
+      await userEvent.click(userDefinedVarsTab);
+      // open modal for configuration
+      const editIcons = canvas.getAllByTitle('Prefill instellen');
+      await userEvent.click(editIcons[0]);
+      expect(await canvas.findByRole('dialog')).toBeVisible();
+    });
+
+    await step('Configure Family members prefill for partners', async () => {
+      const modal = within(await canvas.findByRole('dialog'));
+      const pluginDropdown = await canvas.findByLabelText('Plugin');
+      expect(pluginDropdown).toBeVisible();
+      await userEvent.selectOptions(pluginDropdown, 'Family members');
+      // check person type
+      const personTypeSelect = await canvas.findByText('Type');
+      expect(personTypeSelect).toBeVisible();
+      expect(modal.getByText('Children')).toBeVisible();
+      // check mutable form variable
+      const mutableDataFormVariableSelect = await canvas.findByText(
+        'Data destination form variable'
+      );
+      expect(mutableDataFormVariableSelect).toBeVisible();
+      expect(modal.getByText('User defined mutable')).toBeVisible();
+    });
+
+    await step('Filters', async () => {
+      const minAge = await canvas.findByLabelText('Minimum age');
+      const maxAge = await canvas.findByLabelText('Maximum age');
+      const includeDeceased = await canvas.findByLabelText('Include deceased');
+      expect(minAge).toBeVisible();
+      expect(maxAge).toBeVisible();
+      expect(includeDeceased).toBeVisible();
     });
   },
 };

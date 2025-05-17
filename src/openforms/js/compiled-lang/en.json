@@ -161,6 +161,12 @@
       "value": "Receives confirmation email"
     }
   ],
+  "0PhQl9": [
+    {
+      "type": 0,
+      "value": "If enabled, any deceased children will be displayed too."
+    }
+  ],
   "0RXE97": [
     {
       "type": 0,
@@ -427,6 +433,12 @@
     {
       "type": 0,
       "value": "Maximum value"
+    }
+  ],
+  "36qdVW": [
+    {
+      "type": 0,
+      "value": "The minimum age used to determine which children will be displayed. Leave blank to show all children."
     }
   ],
   "3FxzLm": [
@@ -847,6 +859,12 @@
     {
       "type": 0,
       "value": "Relative to variable"
+    }
+  ],
+  "7Lk/+w": [
+    {
+      "type": 0,
+      "value": "Type"
     }
   ],
   "7RVZYq": [
@@ -3169,6 +3187,12 @@
       "value": "You need to configure both longitude and latitude."
     }
   ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
+    }
+  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3211,6 +3235,12 @@
       },
       "type": 5,
       "value": "viewMode"
+    }
+  ],
+  "RGU2G5": [
+    {
+      "type": 0,
+      "value": "The data will be retrieved for the selected type of person."
     }
   ],
   "RN628y": [
@@ -3557,6 +3587,12 @@
     {
       "type": 0,
       "value": "All Submissions Removal Limit"
+    }
+  ],
+  "ULsbyd": [
+    {
+      "type": 0,
+      "value": "Include deceased"
     }
   ],
   "UlVtQd": [
@@ -3921,12 +3957,6 @@
       "value": "Maximum width"
     }
   ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
-    }
-  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4147,6 +4177,12 @@
     {
       "type": 0,
       "value": "Set the registration backend to use for the submission"
+    }
+  ],
+  "ZfLhiZ": [
+    {
+      "type": 0,
+      "value": "Maximum age"
     }
   ],
   "ZiARkY": [
@@ -5207,6 +5243,12 @@
       "value": "Configure"
     }
   ],
+  "huzndE": [
+    {
+      "type": 0,
+      "value": "Children"
+    }
+  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -5563,6 +5605,12 @@
       "value": "Subject of the email sent to the registration backend to notify a change in the payment status."
     }
   ],
+  "kckipT": [
+    {
+      "type": 0,
+      "value": "Data destination form variable"
+    }
+  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -5779,6 +5827,12 @@
     {
       "type": 0,
       "value": "Line"
+    }
+  ],
+  "mWHMvR": [
+    {
+      "type": 0,
+      "value": "Data destination form variable"
     }
   ],
   "mWuCXv": [
@@ -6231,6 +6285,12 @@
       "value": "Product & payment"
     }
   ],
+  "qUgKOB": [
+    {
+      "type": 0,
+      "value": "Filters"
+    }
+  ],
   "qXbHf5": [
     {
       "type": 0,
@@ -6433,10 +6493,40 @@
       "value": "Manually fill in"
     }
   ],
+  "sXz08G": [
+    {
+      "type": 0,
+      "value": "Minimum age"
+    }
+  ],
   "sgmcmf": [
     {
       "type": 0,
       "value": "Plugin attribute"
+    }
+  ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "smPv/m": [
@@ -6647,30 +6737,6 @@
       "value": "Error"
     }
   ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
-    }
-  ],
   "uiliGe": [
     {
       "type": 0,
@@ -6865,6 +6931,12 @@
       "value": "ID of the drive to use. If left empty, the default drive will be used."
     }
   ],
+  "wowXBp": [
+    {
+      "type": 0,
+      "value": "The maximum age used to determine which children will be displayed. Leave blank to show all children."
+    }
+  ],
   "wqCiwc": [
     {
       "type": 0,
@@ -7029,6 +7101,12 @@
     {
       "type": 0,
       "value": "How to specify the available options."
+    }
+  ],
+  "yTBZ6U": [
+    {
+      "type": 0,
+      "value": "Partners"
     }
   ],
   "yTfQNG": [

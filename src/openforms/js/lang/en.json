@@ -69,6 +69,11 @@
     "description": "DMN variable label",
     "originalDefault": "DMN variable"
   },
+  "0PhQl9": {
+    "defaultMessage": "If enabled, any deceased children will be displayed too.",
+    "description": "Family members filters: include deceased helpText",
+    "originalDefault": "If enabled, any deceased children will be displayed too."
+  },
   "0RXE97": {
     "defaultMessage": "Literals",
     "description": "Form literals tab title",
@@ -198,6 +203,11 @@
     "defaultMessage": "The process definition for which to start a process instance.",
     "description": "Camunda 'process definition' help text",
     "originalDefault": "The process definition for which to start a process instance."
+  },
+  "36qdVW": {
+    "defaultMessage": "The minimum age used to determine which children will be displayed. Leave blank to show all children.",
+    "description": "Family members filters: minimum age help text",
+    "originalDefault": "The minimum age used to determine which children will be displayed. Leave blank to show all children."
   },
   "3FxzLm": {
     "defaultMessage": "When {desc}",
@@ -363,6 +373,11 @@
     "defaultMessage": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration.",
     "description": "literals.beginText help text",
     "originalDefault": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
+  },
+  "7Lk/+w": {
+    "defaultMessage": "Type",
+    "description": "Family members options: 'Type' label",
+    "originalDefault": "Type"
   },
   "7RVZYq": {
     "defaultMessage": "Unique identifier for the form",
@@ -1594,6 +1609,11 @@
     "description": "Toggle icon for JSON logic presentation mode.",
     "originalDefault": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}"
   },
+  "RGU2G5": {
+    "defaultMessage": "The data will be retrieved for the selected type of person.",
+    "description": "Family members options: 'Type' helpText",
+    "originalDefault": "The data will be retrieved for the selected type of person."
+  },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
     "description": "Form name field help text",
@@ -1748,6 +1768,11 @@
     "defaultMessage": "All Submissions Removal Limit",
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
+  },
+  "ULsbyd": {
+    "defaultMessage": "Include deceased",
+    "description": "Family members filters: include deceased label",
+    "originalDefault": "Include deceased"
   },
   "Uq9Hbx": {
     "defaultMessage": "-",
@@ -1978,6 +2003,11 @@
     "defaultMessage": "Set the registration backend to use for the submission",
     "description": "action type \"set-registration-backend\" label",
     "originalDefault": "Set the registration backend to use for the submission"
+  },
+  "ZfLhiZ": {
+    "defaultMessage": "Maximum age",
+    "description": "Family members filters: maximum age field label",
+    "originalDefault": "Maximum age"
   },
   "ZiARkY": {
     "defaultMessage": "Any configuration option specified here overrides the matching option of the selected API group.",
@@ -2454,6 +2484,11 @@
     "description": "Manage complex process vars configure column title",
     "originalDefault": "Configure"
   },
+  "huzndE": {
+    "defaultMessage": "Children",
+    "description": "Label for children option",
+    "originalDefault": "Children"
+  },
   "hxssl8": {
     "defaultMessage": "Objects API integration",
     "description": "ZGW APIs registration: Objects API fieldset title",
@@ -2619,6 +2654,11 @@
     "description": "Email registration options 'emailPaymentSubject' helpText",
     "originalDefault": "Subject of the email sent to the registration backend to notify a change in the payment status."
   },
+  "kckipT": {
+    "defaultMessage": "Data destination form variable",
+    "description": "Family members options: accessible label for (form) variable dropdown",
+    "originalDefault": "Data destination form variable"
+  },
   "klKZV5": {
     "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead.",
     "description": "Objects API registration: updateExistingObject helpText",
@@ -2693,6 +2733,11 @@
     "defaultMessage": "Steps and fields",
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
+  },
+  "mWHMvR": {
+    "defaultMessage": "Data destination form variable",
+    "description": "Family members options: data destination form variable label",
+    "originalDefault": "Data destination form variable"
   },
   "mXJbc8": {
     "defaultMessage": "Easy to understand description",
@@ -2899,6 +2944,11 @@
     "description": "Product & payments tab title",
     "originalDefault": "Product & payment"
   },
+  "qUgKOB": {
+    "defaultMessage": "Filters",
+    "description": "Family members filters: fieldset title",
+    "originalDefault": "Filters"
+  },
   "qXbHf5": {
     "defaultMessage": "Property",
     "description": "Column title for case property that a variable is mapped to",
@@ -3013,6 +3063,11 @@
     "defaultMessage": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
     "originalDefault": "Enable to attach file uploads to the registration email. If set, this overrides the global default. Form designers should take special care to ensure that the total file upload sizes do not exceed the email size limit."
+  },
+  "sXz08G": {
+    "defaultMessage": "Minimum age",
+    "description": "Family members filters: minimum age field label",
+    "originalDefault": "Minimum age"
   },
   "sokfvf": {
     "defaultMessage": "The service to send the data to.",
@@ -3199,6 +3254,11 @@
     "description": "MS Graph registration options 'driveId' help text",
     "originalDefault": "ID of the drive to use. If left empty, the default drive will be used."
   },
+  "wowXBp": {
+    "defaultMessage": "The maximum age used to determine which children will be displayed. Leave blank to show all children.",
+    "description": "Family members filters: maximum age help text",
+    "originalDefault": "The maximum age used to determine which children will be displayed. Leave blank to show all children."
+  },
   "wqCiwc": {
     "defaultMessage": "Indication of the level to which extend the dossier of the ZAAK is meant to be public. This is set on the documents created for the ZAAK.",
     "description": "StUF-ZDS registration options 'zdsZaakdocVertrouwelijkheid' helpText",
@@ -3273,6 +3333,11 @@
     "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
+  },
+  "yTBZ6U": {
+    "defaultMessage": "Partners",
+    "description": "Label for partners option",
+    "originalDefault": "Partners"
   },
   "yTfQNG": {
     "defaultMessage": "Objecttype",
