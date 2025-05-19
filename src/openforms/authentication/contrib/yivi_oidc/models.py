@@ -3,8 +3,7 @@ from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import DigiDAssuranceLevels
-from digid_eherkenning.oidc.models import BaseConfig
-from digid_eherkenning.oidc.models.base import default_loa_choices
+from digid_eherkenning.oidc.models.base import BaseConfig, default_loa_choices
 from digid_eherkenning.oidc.models.eherkenning import AuthorizeeMixin
 from django_jsonform.models.fields import ArrayField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
