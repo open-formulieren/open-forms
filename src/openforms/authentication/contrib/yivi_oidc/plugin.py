@@ -10,6 +10,7 @@ from mozilla_django_oidc_db.views import OIDCInit
 from openforms.accounts.models import User
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
+from ..generic_oidc.plugin import OFOIDCPlugin
 
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
@@ -51,7 +52,7 @@ class YiviClaims(TypedDict):
 
 
 @register(PLUGIN_ID)
-class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
+class YiviOIDCAuthentication(OFOIDCPlugin[YiviOptions]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """

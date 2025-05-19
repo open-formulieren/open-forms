@@ -3,11 +3,12 @@ from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import DigiDAssuranceLevels
-from digid_eherkenning.oidc.models import BaseConfig
 from digid_eherkenning.oidc.models.base import default_loa_choices
 from digid_eherkenning.oidc.models.eherkenning import AuthorizeeMixin
 from django_jsonform.models.fields import ArrayField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
+
+from openforms.authentication.contrib.generic_oidc.models import OFOpenIDConnectConfig
 
 
 def get_callback_view(self):
@@ -17,7 +18,7 @@ def get_callback_view(self):
 
 
 @default_loa_choices(DigiDAssuranceLevels)
-class YiviOpenIDConnectConfig(AuthorizeeMixin, BaseConfig):
+class YiviOpenIDConnectConfig(AuthorizeeMixin, OFOpenIDConnectConfig):
     class Meta:
         verbose_name = _("Yivi (OIDC)")
         verbose_name_plural = _("Yivi (OIDC)")

@@ -24,6 +24,7 @@ from openforms.contrib.digid_eherkenning.utils import (
 from openforms.forms.models import Form
 from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
+from ..generic_oidc.plugin import OFOIDCPlugin
 
 from ...base import BasePlugin, CosignSlice, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -68,7 +69,7 @@ class OptionsT(TypedDict):
 
 # can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
 # assignable... :(
-class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
+class OIDCAuthentication[T, OptionsT](OFOIDCPlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
