@@ -90,7 +90,7 @@ class YiviOptionsPolymorphicSerializerTest(TestCase):
 
         self.assertTrue(serializer.is_valid())
 
-    def test_invalid_options_with_additional_scopes(self):
+    def test_invalid_options_with_additional_scope_containing_spaces(self):
         serializer = YiviOptionsPolymorphicSerializer(
             data={
                 "authentication_attribute": YiviAuthenticationAttributes.bsn,
@@ -103,8 +103,4 @@ class YiviOptionsPolymorphicSerializerTest(TestCase):
             self.assertFalse(serializer.is_valid())
 
         self.assertTrue("additional_scopes" in serializer.errors)
-        self.assertEqual(serializer.errors["additional_scopes"][0][0].code, "invalid")
-        self.assertEqual(
-            serializer.errors["additional_scopes"][0][0],
-            _("The scope name cannot contain spaces."),
-        )
+        self.assertEqual(serializer.errors["additional_scopes"][0][0].code, "invalid_choice")
