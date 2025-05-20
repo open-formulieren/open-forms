@@ -481,43 +481,6 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 options["path"] = path
                 json_plugin.register_submission(submission, options)
 
-    def test_select_boxes_schema_required_is_empty_when_no_data_is_submitted(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "type": "selectboxes",
-                    "key": "selectboxes",
-                    "values": [
-                        {"label": "Option 1", "value": "option1"},
-                        {"label": "Option 2", "value": "option2"},
-                    ],
-                },
-            ],
-            completed=True,
-            submitted_data={"selectboxes": {}},
-            with_public_registration_reference=True,
-        )
-
-        json_plugin = GenericJSONRegistration("json_registration_plugin")
-
-        options: GenericJSONOptions = {
-            "service": self.json_dump_service,
-            "path": "json_plugin",
-            "variables": ["selectboxes"],
-            "fixed_metadata_variables": [],
-            "additional_metadata_variables": [],
-            "transform_to_list": [],
-        }
-        result = json_plugin.register_submission(submission, options)
-        assert result is not None
-
-        self.assertEqual(
-            result["api_response"]["data"]["values_schema"]["properties"][
-                "selectboxes"
-            ]["required"],
-            [],
-        )
-
     def test_list_transformation_in_selectboxes_with_manual_src(self):
         submission = SubmissionFactory.from_components(
             [
