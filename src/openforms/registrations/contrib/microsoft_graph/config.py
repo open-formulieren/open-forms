@@ -1,4 +1,5 @@
 from pathlib import PurePosixPath
+from typing import TypedDict
 
 from django.utils.translation import gettext_lazy as _
 
@@ -38,4 +39,10 @@ class MicrosoftGraphOptionsSerializer(
         ),
         required=False,
         allow_blank=True,
+        default="",
     )
+
+
+class MicrosoftGraphOptions(TypedDict):
+    folder_path: str
+    drive_id: str

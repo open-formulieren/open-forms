@@ -9,5 +9,5 @@ class MSGraphServiceFactory(factory.django.DjangoModelFactory):
     client_id = factory.Sequence(lambda n: "client_id-{n}")
     secret = factory.Sequence(lambda n: "secret-{n}")
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = MSGraphService

@@ -32,6 +32,7 @@ include = [
     "src/openforms/payments/",
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
+    "src/openforms/contrib/microsoft/",
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
     # Emails
@@ -46,6 +47,7 @@ include = [
     "src/openforms/registrations/contrib/demo/",
     "src/openforms/registrations/contrib/email/",
     "src/openforms/registrations/contrib/generic_json/",
+    "src/openforms/registrations/contrib/microsoft_graph/",
     "src/openforms/registrations/contrib/stuf_zds/options.py",
     "src/openforms/registrations/contrib/stuf_zds/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/typing.py",

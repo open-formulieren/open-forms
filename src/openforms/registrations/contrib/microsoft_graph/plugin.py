@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
 from pathlib import PurePosixPath
 
 from django.urls import reverse
@@ -5,9 +8,9 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.contrib.microsoft.client import (
     MSGraphClient,
-    MSGraphOptions,
     MSGraphUploadHelper,
 )
 from openforms.contrib.microsoft.exceptions import MSAuthenticationError
@@ -21,17 +24,18 @@ from openforms.template import render_from_string
 from ...base import BasePlugin
 from ...exceptions import RegistrationFailed
 from ...registry import register
-from .config import MicrosoftGraphOptionsSerializer
+from .config import MicrosoftGraphOptions, MicrosoftGraphOptionsSerializer
 
 
 @register("microsoft-graph")
-class MSGraphRegistration(BasePlugin):
+class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
     verbose_name = _("Microsoft Graph (OneDrive/SharePoint)")
     configuration_options = MicrosoftGraphOptionsSerializer
 
+    @staticmethod
     def _get_folder_name(
-        self, submission: Submission, options: MSGraphOptions
-    ) -> "PurePosixPath":
+        submission: Submission, options: MicrosoftGraphOptions
+    ) -> PurePosixPath:
         now_utc = timezone.now()
         date = timezone.localtime(now_utc).date()
         folder_path = render_from_string(
@@ -49,7 +53,9 @@ class MSGraphRegistration(BasePlugin):
             submission.public_registration_reference,
         )
 
-    def register_submission(self, submission: Submission, options: dict) -> None:
+    def register_submission(
+        self, submission: Submission, options: MicrosoftGraphOptions
+    ) -> None:
         config = MSGraphRegistrationConfig.get_solo()
         if not config.service:
             raise RegistrationFailed("No service configured.")
@@ -76,7 +82,9 @@ class MSGraphRegistration(BasePlugin):
 
         self._set_payment(uploader, submission, folder_name)
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(
+        self, submission: "Submission", options: MicrosoftGraphOptions
+    ):
         config = MSGraphRegistrationConfig.get_solo()
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client, options)
@@ -108,13 +116,14 @@ class MSGraphRegistration(BasePlugin):
             try:
                 storage = client.account.storage()
                 drive = storage.get_default_drive()
+                assert drive is not None
                 drive.get_root_folder()
             except Exception as e:
                 raise InvalidPluginConfiguration(
                     _("Could not access root folder: {exception}").format(exception=e)
                 )
 
-    def get_config_actions(self):
+    def get_config_actions(self) -> Sequence[Action]:
         return [
             (
                 _("Configuration"),

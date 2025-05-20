@@ -12,11 +12,11 @@ import json
 import os
 from io import BytesIO
 from pathlib import PurePosixPath
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from O365 import Account
+from O365.drive import Folder
 
-from .constants import ConflictHandling
 from .exceptions import MSAuthenticationError
 from .models import MSGraphService
 
@@ -51,9 +51,12 @@ class MSGraphClient:
         return self.account.is_authenticated
 
 
-class MSGraphOptions(TypedDict):
+class UploadHelperOptions(TypedDict):
     folder_path: str
-    drive_id: str | None
+    drive_id: str
+
+
+type ConflictHandling = Literal["fail", "replace", "rename"]
 
 
 class MSGraphUploadHelper:
@@ -63,22 +66,24 @@ class MSGraphUploadHelper:
     - upload various objects in stream mode to support large files
     """
 
+    conflict_handling: ConflictHandling = "replace"
+
     # TODO wrap upload_()-variations in single function and auto-detect object type
 
-    def __init__(self, client: MSGraphClient, options: MSGraphOptions):
+    def __init__(self, client: MSGraphClient, options: UploadHelperOptions):
         self.client = client
 
         self.storage = self.client.account.storage()
 
-        if drive_id := options.get("drive_id"):
+        if drive_id := options["drive_id"]:
             self.drive = self.storage.get_drive(drive_id)
         else:
             self.drive = self.storage.get_default_drive()
 
-        self.root_folder = self.drive.get_root_folder()
-
+        assert self.drive is not None
+        root_folder = self.drive.get_root_folder()
         # lets start from root and use subfolders in the remote_path so we don't have to manage folders
-        self.target_folder = self.root_folder
+        self.target_folder = root_folder
 
     def upload_disk_file(self, input_path: str, remote_path: PurePosixPath | None):
         stream_size = os.path.getsize(input_path)
@@ -106,6 +111,7 @@ class MSGraphUploadHelper:
     def upload_stream(
         self, stream, stream_size: int, remote_path: PurePosixPath | None
     ):
+        assert isinstance(self.target_folder, Folder)
         return self.target_folder.upload_file(
             None,
             # upload_file says it accepts strings or Path objects
@@ -113,5 +119,5 @@ class MSGraphUploadHelper:
             str(remote_path),
             stream=stream,
             stream_size=stream_size,
-            conflict_handling=ConflictHandling.replace,
+            conflict_handling=self.conflict_handling,
         )

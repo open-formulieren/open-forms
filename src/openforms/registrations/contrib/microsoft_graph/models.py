@@ -22,8 +22,9 @@ class MSGraphRegistrationConfig(SingletonModel):
         blank=True,
         null=True,
     )
+    service_id: int | None
 
     objects = MSGraphRegistrationConfigManager()
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Microsoft Graph registration")
