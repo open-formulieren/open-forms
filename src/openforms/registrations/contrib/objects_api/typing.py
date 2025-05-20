@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
+from typing import Literal, NotRequired, Required, TypedDict
 from uuid import UUID
 
-if TYPE_CHECKING:
-    from .models import ObjectsAPIGroupConfig
-
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 
 type ConfigVersion = Literal[1, 2]
 

@@ -4,13 +4,12 @@ from rest_framework import serializers
 from zgw_consumers.client import build_client
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.api.filters import (
     DocumentTypesFilter,
     ProvidesCatalogiClientQueryParamsSerializer,
 )
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
-
-from ..models import ObjectsAPIGroupConfig
 
 
 class ObjectsAPIGroupMixin(serializers.Serializer):

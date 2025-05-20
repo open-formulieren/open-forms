@@ -14,13 +14,13 @@ from openforms.contrib.objects_api.clients import (
     get_catalogi_client,
     get_objecttypes_client,
 )
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.serializers import CatalogueSerializer
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
-from .models import ObjectsAPIGroupConfig
 from .typing import RegistrationOptions
 
 
