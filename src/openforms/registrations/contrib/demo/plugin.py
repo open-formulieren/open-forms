@@ -7,21 +7,21 @@ from openforms.submissions.models import Submission
 from ...base import BasePlugin
 from ...exceptions import RegistrationFailed
 from ...registry import register
-from .config import DemoOptionsSerializer
+from .config import DemoOptions, DemoOptionsSerializer
 
 
 @register("demo")
-class DemoRegistration(BasePlugin):
+class DemoRegistration(BasePlugin[DemoOptions]):
     verbose_name = _("Demo - print to console")
     configuration_options = DemoOptionsSerializer
     is_demo_plugin = True
 
-    def register_submission(self, submission: Submission, options: dict) -> None:
+    def register_submission(self, submission: Submission, options: DemoOptions) -> None:
         print(submission)
-        if options.get("extra_line"):
-            print(options["extra_line"])
+        if extra_line := options.get("extra_line"):
+            print(extra_line)
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: "Submission", options: DemoOptions):
         print(submission)
 
     def check_config(self):
@@ -32,15 +32,17 @@ class DemoRegistration(BasePlugin):
 
 
 @register("failing-demo")
-class DemoFailRegistration(BasePlugin):
+class DemoFailRegistration(BasePlugin[DemoOptions]):
     verbose_name = _("Demo - fail registration")
     configuration_options = DemoOptionsSerializer
     is_demo_plugin = True
 
-    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
+    def register_submission(
+        self, submission: Submission, options: DemoOptions
+    ) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: "Submission", options: DemoOptions):
         pass
 
     def check_config(self):
@@ -51,15 +53,17 @@ class DemoFailRegistration(BasePlugin):
 
 
 @register("exception-demo")
-class DemoExceptionRegistration(BasePlugin):
+class DemoExceptionRegistration(BasePlugin[DemoOptions]):
     verbose_name = _("Demo - exception during registration")
     configuration_options = DemoOptionsSerializer
     is_demo_plugin = True
 
-    def register_submission(self, submission: Submission, options: dict) -> NoReturn:
+    def register_submission(
+        self, submission: Submission, options: DemoOptions
+    ) -> NoReturn:
         raise Exception("Demo exception registration")
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: "Submission", options: DemoOptions):
         pass
 
     def check_config(self):
