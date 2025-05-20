@@ -193,9 +193,17 @@ def get_component_empty_value(component):
 
     if component["type"] == "selectboxes":
         # Issue 2838
-        # Component selectboxes is of 'object' type, which would return a {} for an empty component.
-        # However, the empty value is with all the options not selected (ex. {"a": False, "b": False})
-        return component.get("defaultValue", {})
+        # Component selectboxes is of 'object' type, which would return a {} for an
+        # empty component. However, the empty value is with all the options not selected
+        # (ex. {"a": False, "b": False})
+        # Additionally, the `defaultValue` will be empty if the component uses another
+        # variable or reference lists as a data source. We can generate a correct empty
+        # value from the `values` if the formio configuration was updated dynamically.
+        if not (empty_value := component.get("defaultValue", {})):
+            values = component.get("values", {})
+            if not (len(values) == 1 and values[0]["label"] == ""):
+                empty_value = {item["label"]: False for item in values}
+        return empty_value
 
     if component["type"] == "map":
         # Issue 5151
