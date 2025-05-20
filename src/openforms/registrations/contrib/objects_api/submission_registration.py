@@ -1,16 +1,11 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import contextmanager
-from datetime import datetime
-from decimal import Decimal
 from typing import (
     Any,
-    Generic,
     Iterator,
     Literal,
-    TypeVar,
     assert_never,
-    cast,
     override,
 )
 
@@ -20,7 +15,6 @@ from django.db.models.functions import Coalesce, NullIf
 
 import structlog
 
-from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.clients import (
     CatalogiClient,
     DocumentenClient,
@@ -49,17 +43,17 @@ from openforms.submissions.models import (
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
-from openforms.typing import JSONObject, VariableValue
+from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from .handlers.v1 import get_payment_context_data, render_template
 from .handlers.v2 import AssignmentSpec, OutputSpec, process_mapped_variable
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import (
     PAYMENT_VARIABLE_NAMES,
-    get_cosign_value,
     register as variables_registry,
 )
 from .typing import (
@@ -251,12 +245,9 @@ def save_and_raise(
         ObjectsAPISubmissionAttachment.objects.bulk_create(submission_attachments)
 
 
-OptionsT = TypeVar(
-    "OptionsT", RegistrationOptionsV1, RegistrationOptionsV2, contravariant=True
-)
-
-
-class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
+class ObjectsAPIRegistrationHandler[
+    OptionsT: (RegistrationOptionsV1, RegistrationOptionsV2)
+](ABC):
     """Provide the registration data to be sent to the Objects API.
 
     When registering a submission to the Objects API, the following happens:
@@ -358,32 +349,6 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
 class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     """Provide the registration data for legacy (v1) registration options, using JSON templates."""
 
-    @staticmethod
-    def get_payment_context_data(submission: Submission) -> dict[str, Any]:
-        price = submission.price
-        amount = Decimal(price).quantize(Decimal("0.01")) if price is not None else 0
-        return {
-            "completed": submission.payment_user_has_paid,
-            "amount": str(amount),
-            "public_order_ids": submission.payments.get_completed_public_order_ids(),
-            "provider_payment_ids": submission.payments.get_completed_provider_payment_ids(),
-        }
-
-    @staticmethod
-    def get_cosign_context_data(
-        submission: Submission,
-    ) -> dict[str, str | datetime] | None:
-        if not (cosign := submission.cosign_state).is_signed:
-            return None
-
-        cosign_date = cosign.signing_details.get("cosign_date")
-        return {
-            "bsn": get_cosign_value(submission, AuthAttribute.bsn),
-            "kvk": get_cosign_value(submission, AuthAttribute.kvk),
-            "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
-            "date": datetime.fromisoformat(cosign_date) if cosign_date else "",
-        }
-
     @override
     def get_record_data(
         self, submission: Submission, options: RegistrationOptionsV1
@@ -399,42 +364,26 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             submission=submission
         )
 
-        objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
+        attachment_urls = ObjectsAPISubmissionAttachment.objects.filter(
             submission_file_attachment__submission_step__submission=submission
+        ).values_list("document_url", flat=True)
+
+        data = render_template(
+            submission=submission,
+            template=options["content_json"],
+            product_request_type=options["productaanvraag_type"],
+            uploaded_attachment_urls=list(attachment_urls),
+            pdf_url=registration_data.pdf_url,
+            csv_url=registration_data.csv_url,
         )
 
-        context = {
-            "_submission": submission,
-            "productaanvraag_type": options["productaanvraag_type"],
-            "payment": self.get_payment_context_data(submission),
-            "cosign_data": self.get_cosign_context_data(submission),
-            "variables": get_variables_for_context(submission),
-            # Github issue #661, nested for namespacing note: other templates and context expose all submission
-            # variables in the top level namespace, but that is due for refactor
-            "submission": {
-                "public_reference": submission.public_registration_reference,
-                "kenmerk": str(submission.uuid),
-                "language_code": submission.language_code,
-                "uploaded_attachment_urls": list(
-                    objects_api_attachments.values_list("document_url", flat=True)
-                ),
-                "pdf_url": registration_data.pdf_url,
-                "csv_url": registration_data.csv_url,
-            },
-        }
-
-        object_mapping = {
-            "geometry": FieldConf(RegistrationAttribute.locatie_coordinaat),
-        }
-
-        data = cast(dict[str, Any], render_to_json(options["content_json"], context))
         record_data = prepare_data_for_registration(
             data=data,
             objecttype_version=options["objecttype_version"],
         )
         record_data = apply_data_mapping(
             submission,
-            object_mapping,
+            {"geometry": FieldConf(RegistrationAttribute.locatie_coordinaat)},
             REGISTRATION_ATTRIBUTE,
             record_data,  # pyright: ignore[reportArgumentType]
         )
@@ -454,13 +403,11 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
         context = {
             "variables": get_variables_for_context(submission),
-            "payment": self.get_payment_context_data(submission),
+            "payment": get_payment_context_data(submission),
         }
 
-        data = cast(
-            JSONObject, render_to_json(options["payment_status_update_json"], context)
-        )
-
+        data = render_to_json(options["payment_status_update_json"], context)
+        assert isinstance(data, dict)
         return prepare_data_for_registration(
             data=data,
             objecttype_version=options["objecttype_version"],

@@ -53,6 +53,8 @@ include = [
     "src/openforms/registrations/contrib/stuf_zds/typing.py",
     "src/openforms/registrations/contrib/objects_api/api/",
     "src/openforms/registrations/contrib/objects_api/handlers/",
+    "src/openforms/registrations/contrib/objects_api/migrations/",
+    "src/openforms/registrations/contrib/objects_api/templatetags/",
     "src/openforms/registrations/contrib/objects_api/plugin.py",
     "src/openforms/registrations/contrib/objects_api/registration_variables.py",
     "src/openforms/registrations/contrib/objects_api/submission_registration.py",

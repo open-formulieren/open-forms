@@ -8,6 +8,8 @@ from openforms.formio.rendering.structured import render_json
 from openforms.registrations.contrib.objects_api.utils import html_escape_json
 from openforms.typing import JSONEncodable
 
+from .....handlers.v1 import SubmissionContext
+
 register = template.Library()
 
 
@@ -16,7 +18,10 @@ def uploaded_attachment_urls(context: template.Context) -> SafeString:
     """
     Output a sequence of attachment URLs as a JSON-serialized list.
     """
-    attachments = context.get("submission", {}).get("uploaded_attachment_urls", [])
+    submission_context: SubmissionContext | None = context.get("submission")
+    attachments = (
+        submission_context["uploaded_attachment_urls"] if submission_context else []
+    )
     return as_json(attachments)
 
 
