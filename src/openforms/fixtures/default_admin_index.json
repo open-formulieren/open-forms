@@ -203,6 +203,10 @@
                 "ofeherkenningconfig"
             ],
             [
+                "digid_eherkenning_oidc",
+                "ofeidasconfig"
+            ],
+            [
                 "yivi_oidc",
                 "yiviopenidconnectconfig"
             ],

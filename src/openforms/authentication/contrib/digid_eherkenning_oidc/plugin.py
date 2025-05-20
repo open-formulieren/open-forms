@@ -20,23 +20,29 @@ from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
+    get_eidas_logo,
 )
 
 from ...base import LoginLogo
 from ...constants import AuthAttribute
+from ...models import AuthInfo
 from ...registry import register
+from ...types import EIDASContext
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from .constants import EIDAS_PLUGIN_ID
 from .models import (
     OFDigiDConfig,
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASConfig,
 )
 from .views import (
     digid_init,
     digid_machtigen_init,
     eherkenning_bewindvoering_init,
     eherkenning_init,
+    eidas_init,
 )
 
 
@@ -173,6 +179,170 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
         if service_restriction := normalized_claims.get("branch_number_claim", ""):
             form_auth["legal_subject_service_restriction"] = service_restriction
         return form_auth
+
+
+class EIDASClaims(TypedDict):
+    """
+    Processed eIDAS claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.OFEIDASConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    person_identifier_claim: str
+    person_identifier_type_claim: NotRequired[str]
+    mandate_service_id_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+    first_name_claim: str
+    family_name_claim: str
+    date_of_birth_claim: str
+
+    # As the Signicat simulator only returns natural person information, we don't exactly
+    # know how this is returned.
+    company_name_claim: NotRequired[str]
+    company_legal_identifier_claim: NotRequired[str]
+    company_identifier_claim: NotRequired[str]
+    company_identifier_type_claim: NotRequired[str]
+
+
+@register(EIDAS_PLUGIN_ID)
+class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
+    verbose_name = _("eIDAS via OpenID Connect")
+    provides_auth = (
+        AuthAttribute.bsn,
+        AuthAttribute.national_id,
+        AuthAttribute.pseudo,
+    )
+    session_key = "eidas_oidc"
+    config_class = OFEIDASConfig
+    init_view = staticmethod(eidas_init)
+    manage_auth_context = True
+    provides_multiple_auth_attributes = True
+
+    def get_label(self) -> str:
+        return "eIDAS"
+
+    def get_logo(self, request) -> LoginLogo | None:
+        return LoginLogo(title=self.get_label(), **get_eidas_logo(request))
+
+    def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASContext:
+        is_person_legal_subject = self.acting_subject_identifier_value == ""
+
+        person_info = {
+            "firstName": self.additional_claims["first_name"],
+            "familyName": self.additional_claims["family_name"],
+            "dateOfBirth": self.additional_claims["date_of_birth"],
+        }
+
+        if is_person_legal_subject:
+            # Authentication as natural person
+            legal_subject = {
+                "identifierType": self.legal_subject_identifier_type,
+                "identifier": self.legal_subject_identifier_value,
+                **person_info,
+            }
+            authorizee = {"legalSubject": legal_subject}
+        else:
+            # Authentication as company
+            legal_subject = {
+                "identifierType": self.legal_subject_identifier_type,
+                "identifier": self.legal_subject_identifier_value,
+                "companyName": self.additional_claims["company_name"],
+            }
+            acting_subject = {
+                "identifierType": self.acting_subject_identifier_type,
+                "identifier": self.acting_subject_identifier_value,
+                **person_info,
+            }
+            authorizee = {
+                "legalSubject": legal_subject,
+                "actingSubject": acting_subject,
+            }
+
+        return {
+            "source": "eidas",
+            "levelOfAssurance": self.loa,
+            "authorizee": authorizee,
+        }
+
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EIDASClaims
+    ) -> FormAuth:
+        person_identifier_value = normalized_claims["person_identifier_claim"]
+
+        # If person_identifier_type isn't provided, or is unknown, fallback to pseudo.
+        if (
+            person_identifier_type := normalized_claims.get(
+                "person_identifier_type_claim"
+            )
+        ) not in AuthAttribute:
+            person_identifier_type = AuthAttribute.pseudo
+
+        is_person_legal_subject = (
+            normalized_claims.get("company_identifier_claim", None) is None
+        )
+
+        loa_value = str(normalized_claims.get("loa_claim", ""))
+
+        mandate_context = {}
+        if "mandate_service_id_claim" in normalized_claims:
+            mandate_context["services"] = [
+                {"id": normalized_claims["mandate_service_id_claim"]}
+            ]
+
+        # Authentication for natural person
+        if is_person_legal_subject:
+            return {
+                "plugin": self.identifier,
+                "loa": loa_value,
+                "attribute": person_identifier_type,
+                "value": person_identifier_value,
+                "legal_subject_identifier_value": person_identifier_value,
+                "legal_subject_identifier_type": person_identifier_type,
+                "mandate_context": mandate_context,
+                "additional_claims": {
+                    "first_name": normalized_claims["first_name_claim"],
+                    "family_name": normalized_claims["family_name_claim"],
+                    "date_of_birth": normalized_claims["date_of_birth_claim"],
+                },
+            }
+
+        company_identifier_value = normalized_claims["company_identifier_claim"]
+        return {
+            "plugin": self.identifier,
+            "loa": loa_value,
+            "attribute": AuthAttribute.pseudo,
+            "value": company_identifier_value,
+            "legal_subject_identifier_value": company_identifier_value,
+            "legal_subject_identifier_type": "opaque",
+            "acting_subject_identifier_value": person_identifier_value,
+            "acting_subject_identifier_type": person_identifier_type,
+            "mandate_context": mandate_context,
+            "additional_claims": {
+                "first_name": normalized_claims["first_name_claim"],
+                "family_name": normalized_claims["family_name_claim"],
+                "date_of_birth": normalized_claims["date_of_birth_claim"],
+                "company_name": normalized_claims["company_name_claim"],
+            },
+        }
+
+    def strict_mode(self, request: HttpRequest) -> bool:
+        return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
+
+    def failure_url_error_message(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        match error, error_description:
+            case ("access_denied", "The user cancelled"):
+                eIDAS_message_parameter = EH_MESSAGE_PARAMETER % {
+                    "plugin_id": self.identifier.split("_")[0]
+                }
+                return (eIDAS_message_parameter, LOGIN_CANCELLED)
+
+            case _:
+                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
 
 
 class DigiDmachtigenClaims(TypedDict):

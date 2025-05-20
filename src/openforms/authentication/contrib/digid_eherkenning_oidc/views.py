@@ -8,6 +8,7 @@ from .models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASConfig,
 )
 
 
@@ -29,5 +30,6 @@ eherkenning_init = init_view(config_class=OFEHerkenningConfig)
 eherkenning_bewindvoering_init = init_view(
     config_class=OFEHerkenningBewindvoeringConfig
 )
+eidas_init = init_view(config_class=OFEIDASConfig)
 
 callback_view = OIDCAuthenticationCallbackView.as_view()

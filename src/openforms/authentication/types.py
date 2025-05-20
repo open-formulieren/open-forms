@@ -125,3 +125,29 @@ class YiviContext(TypedDict):
         "unknown",
     ]
     authorizee: YiviAuthorizee
+
+
+class EIDASLegalSubject(TypedDict):
+    identifierType: Literal["bsn"]
+    identifier: str
+
+
+class EIDASActingSubject(TypedDict):
+    identifierType: Literal["opaque"]
+    identifier: str
+
+
+class EIDASAuthorizee(TypedDict):
+    legalSubject: NotRequired[EIDASLegalSubject]
+    actingSubject: EIDASActingSubject
+
+
+class EIDASContext(TypedDict):
+    source: Literal["eidas"]
+    levelOfAssurance: Literal[
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+    ]
+    authorizee: EIDASAuthorizee

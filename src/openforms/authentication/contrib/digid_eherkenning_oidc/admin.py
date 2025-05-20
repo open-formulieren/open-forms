@@ -6,6 +6,7 @@ from digid_eherkenning.oidc.admin import (
     EHerkenningBewindvoeringConfigAdmin as _EHerkenningBewindvoeringConfigAdmin,
     EHerkenningConfigAdmin as _EHerkenningConfigAdmin,
     admin_modelform_factory,
+    fieldsets_factory,
 )
 from digid_eherkenning.oidc.models import (
     DigiDConfig,
@@ -13,6 +14,7 @@ from digid_eherkenning.oidc.models import (
     EHerkenningBewindvoeringConfig,
     EHerkenningConfig,
 )
+from solo.admin import SingletonModelAdmin
 
 from openforms.contrib.auth_oidc.admin import OIDCConfigForm
 
@@ -21,6 +23,7 @@ from .models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASConfig,
 )
 
 # unregister the default app admins so we can add in our own behaviour
@@ -49,4 +52,28 @@ class EHerkenningConfigAdmin(_EHerkenningConfigAdmin):
 class EHerkenningBewindvoeringConfigAdmin(_EHerkenningBewindvoeringConfigAdmin):
     form = admin_modelform_factory(
         OFEHerkenningBewindvoeringConfig, form=OIDCConfigForm
+    )
+
+
+@admin.register(OFEIDASConfig)
+class EIDASConfigAdmin(SingletonModelAdmin):
+    """
+    Configuration for eIDAS authentication via OpenID connect.
+    """
+
+    form = admin_modelform_factory(OFEIDASConfig, form=OIDCConfigForm)
+    fieldsets = fieldsets_factory(
+        claim_mapping_fields=[
+            "person_identifier_claim",
+            "person_identifier_type_claim",
+            "first_name_claim",
+            "family_name_claim",
+            "date_of_birth_claim",
+            "company_identifier_claim",
+            "company_name_claim",
+            "mandate_service_id_claim",
+            "loa_claim",
+            "default_loa",
+            "loa_value_mapping",
+        ]
     )
