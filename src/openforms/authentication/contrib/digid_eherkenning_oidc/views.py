@@ -22,6 +22,7 @@ from .models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASConfig,
 )
 
 
@@ -56,6 +57,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
             DigiDOIDCAuthentication,
             EHerkenningBewindvoeringOIDCAuthentication,
             eHerkenningOIDCAuthentication,
+            eIDASOIDCAuthentication,
             get_config_to_plugin,
         )
 
@@ -76,7 +78,8 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
                 "access_denied",
                 "The user cancelled",
                 eHerkenningOIDCAuthentication()
-                | EHerkenningBewindvoeringOIDCAuthentication(),
+                | EHerkenningBewindvoeringOIDCAuthentication()
+                | eIDASOIDCAuthentication(),
             ):
                 eh_message_parameter = EH_MESSAGE_PARAMETER % {
                     "plugin_id": plugin.identifier.split("_")[0]
@@ -123,6 +126,10 @@ eherkenning_init = OIDCInit.as_view(
 )
 eherkenning_bewindvoering_init = OIDCInit.as_view(
     config_class=OFEHerkenningBewindvoeringConfig,
+    allow_next_from_query=False,
+)
+eidas_init = OIDCInit.as_view(
+    config_class=OFEIDASConfig,
     allow_next_from_query=False,
 )
 

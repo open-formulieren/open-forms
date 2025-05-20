@@ -207,6 +207,10 @@
                 "yiviopenidconnectconfig"
             ],
             [
+                "digid_eherkenning_oidc",
+                "ofeidasconfig"
+            ],
+            [
                 "django_camunda",
                 "camundaconfig"
             ],

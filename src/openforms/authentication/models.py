@@ -22,6 +22,7 @@ from .types import (
     DigiDMachtigenContext,
     EHerkenningContext,
     EHerkenningMachtigenContext,
+    EIDASContext,
     EmployeeContext,
     YiviContext,
 )
@@ -267,6 +268,7 @@ class AuthInfo(BaseAuthInfo):
         | EHerkenningContext
         | EHerkenningMachtigenContext
         | EmployeeContext
+        | EIDASContext
     ):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
@@ -389,6 +391,38 @@ class AuthInfo(BaseAuthInfo):
                     },
                 }
                 return employee_context
+
+            # eIDAS - Person with bsn
+            case (AuthAttribute.pseudo, LegalSubjectIdentifierType.bsn):
+                eidas_context: EIDASContext = {
+                    "source": "eidas",
+                    "levelOfAssurance": self.loa,
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "bsn",
+                            "identifier": self.legal_subject_identifier_value,
+                        },
+                        "actingSubject": {
+                            "identifierType": self.acting_subject_identifier_type,
+                            "identifier": self.acting_subject_identifier_value,
+                        },
+                    },
+                }
+                return eidas_context
+
+            # eIDAS - Person without bsn
+            case (AuthAttribute.pseudo, ""):
+                eidas_context: EIDASContext = {
+                    "source": "eidas",
+                    "levelOfAssurance": self.loa,
+                    "authorizee": {
+                        "actingSubject": {
+                            "identifierType": self.acting_subject_identifier_type,
+                            "identifier": self.acting_subject_identifier_value,
+                        },
+                    },
+                }
+                return eidas_context
 
             case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")

@@ -17,3 +17,11 @@ def get_eherkenning_logo(request) -> dict[str, str]:
         "href": "https://www.eherkenning.nl/",
         "appearance": LogoAppearance.light,
     }
+
+
+def get_eidas_logo(request) -> dict[str, str]:
+    return {
+        "image_src": request.build_absolute_uri(static("img/eidas.png")),
+        "href": "https://digital-strategy.ec.europa.eu/en/policies/eu-trust-mark",
+        "appearance": LogoAppearance.light,
+    }
