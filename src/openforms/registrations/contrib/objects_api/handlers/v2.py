@@ -111,7 +111,11 @@ def process_mapped_variable(
             # apply the more specific mappings rather than mapping the whole object
             if detailed_mappings := mapping.get("options"):
                 return [
-                    AssignmentSpec(destination=Path(*target_path_bits), value=_value)
+                    AssignmentSpec(
+                        # the typeddict union of keys/values is lost when looping over them
+                        destination=Path(*target_path_bits),  # pyright: ignore[reportGeneralTypeIssues]
+                        value=_value,
+                    )
                     for key, target_path_bits in detailed_mappings.items()
                     if target_path_bits
                     # TODO

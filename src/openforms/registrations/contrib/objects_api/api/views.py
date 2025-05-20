@@ -1,5 +1,3 @@
-from typing import Any
-
 from drf_spectacular.utils import extend_schema
 from rest_framework import authentication, permissions, views
 from rest_framework.request import Request
@@ -22,7 +20,7 @@ class TargetPathsListView(views.APIView):
     @extend_schema(
         request=TargetPathsInputSerializer, responses={200: TargetPathsSerializer}
     )
-    def post(self, request: Request, *args: Any, **kwargs: Any):
+    def post(self, request: Request, *args, **kwargs):
         input_serializer = TargetPathsInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
