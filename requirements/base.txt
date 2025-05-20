@@ -533,7 +533,7 @@ tinycss2==1.1.0
     #   bleach
     #   cssselect2
     #   weasyprint
-tornado==6.4.2
+tornado==6.5
     # via flower
 typing-extensions==4.12.2
     # via

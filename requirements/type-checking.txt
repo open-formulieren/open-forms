@@ -1100,7 +1100,7 @@ tinycss2==1.1.0
     #   -r requirements/ci.txt
     #   cssselect2
     #   weasyprint
-tornado==6.4.2
+tornado==6.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
