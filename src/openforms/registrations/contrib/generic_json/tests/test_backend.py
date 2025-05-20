@@ -20,7 +20,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 from openforms.utils.tests.cache import clear_caches
-from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
 from ..config import GenericJSONOptions
@@ -29,7 +28,7 @@ from ..plugin import GenericJSONRegistration
 VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
-class GenericJSONBackendTests(OFVCRMixin, TestCase):
+class GenericJSONBackendTests(TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
     @classmethod
@@ -434,7 +433,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                             "file_name": {"type": "string"},
                             "content": {"type": "string", "format": "base64"},
                         },
-                        "required": [],
+                        "required": ["file_name", "content"],
                         "additionalProperties": False,
                     },
                 }

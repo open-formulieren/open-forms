@@ -21,6 +21,7 @@ from openforms.variables.service import get_static_variables
 from ...base import BasePlugin
 from ...registry import register
 from .config import ObjectsAPIOptionsSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .models import ObjectsAPIConfig
 from .registration_variables import register as variables_registry
 from .submission_registration import HANDLER_MAPPING
@@ -32,7 +33,6 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-PLUGIN_IDENTIFIER = "objects_api"
 
 logger = structlog.stdlib.get_logger(__name__)
 

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import {React, useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -11,6 +11,8 @@ import Select from 'components/admin/forms/Select';
 import {DeleteIcon} from 'components/admin/icons';
 
 import {BACKEND_OPTIONS_FORMS} from './registrations';
+import {FormContext} from './Context';
+import {FORM_ENDPOINT} from './constants';
 
 const BackendType = PropTypes.shape({
   id: PropTypes.string.isRequired,
@@ -71,10 +73,15 @@ BackendOptionsFormRow.propTypes = {
 
 const BackendFields = ({index = 0, backend, availableBackends = [], onChange, onDelete}) => {
   const intl = useIntl();
+  const {form} = useContext(FormContext);
 
   const backendChoices = availableBackends.map(backend => [backend.id, backend.label]);
   const selectedBackend = backend.backend || '';
   const selectedBackendType = availableBackends.find(choice => choice.id === selectedBackend);
+
+  const showSchemaButton = ['json_dump', 'objects_api'].includes(backend.backend);
+  const params = new URLSearchParams({registration_backend_key: backend.key})
+  const json_schema_url = `${FORM_ENDPOINT}/${form.uuid}/json_schema?${params}`;
 
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
@@ -117,16 +124,29 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
             />
           }
         >
-          <Select
-            choices={backendChoices}
-            value={selectedBackend}
-            onChange={event => {
-              onChange(event);
-              // Clear options when changing backend
-              onChange({target: {name: `form.registrationBackends.${index}.options`, value: {}}});
-            }}
-            allowBlank={true}
-          />
+          {/* TODO-5312: changing the value of select doesn't work inside a div/span for some reason */}
+          <div style={{display: 'flex', alignItems: 'left', flexDirection: 'column', gap: '10px'}}>
+            <Select
+              choices={backendChoices}
+              value={selectedBackend}
+              onChange={event => {
+                onChange(event);
+                // Clear options when changing backend
+                onChange({target: {name: `form.registrationBackends.${index}.options`, value: {}}});
+              }}
+              allowBlank={true}
+            />
+
+            {showSchemaButton && <a href={json_schema_url} target="_blank">
+              <FormattedMessage
+                description="Link label to generate JSON schema of registration backend"
+                defaultMessage="Generate JSON schema"
+              />
+            </a>
+            }
+
+          </div>
+
         </Field>
       </FormRow>
 

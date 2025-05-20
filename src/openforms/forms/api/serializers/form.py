@@ -20,6 +20,7 @@ from openforms.contrib.haal_centraal.api.serializers import (
 from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.formio.typing import Component
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
@@ -612,4 +613,30 @@ class FormExportSerializer(FormSerializer):
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
+    )
+
+
+# TODO-5312: extend this serializer to take a form as context and check if the backend
+#  key exists for the form and if the backend is of type Objects API or Generic JSON
+class FormJsonSchemaOptionsSerializer(serializers.Serializer):
+    # registration_plugin_id = serializers.ChoiceField(
+    #     label=_("Registration Plugin ID"),
+    #     choices=[GENERIC_JSON, OBJECTS_API],
+    #     help_text=_("Plugin identifier for which to generate the schema."),
+    #     required=True,
+    #     allow_null=False,
+    # )
+    registration_backend_key = serializers.CharField(
+        label=_("key"),
+        max_length=50,
+        help_text=_("The key to use to refer to this configuration in form logic."),
+        required=True,
+        allow_null=False,
+    )
+    variables = serializers.ListField(
+        child=FormioVariableKeyField(),
+        label=_("Variable key list"),
+        help_text=_("A list of variables to use generate the schema for."),
+        required=False,
+        allow_null=True,
     )

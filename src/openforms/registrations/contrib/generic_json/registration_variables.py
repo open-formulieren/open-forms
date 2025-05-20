@@ -7,13 +7,15 @@ from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.static_variables.static_variables import Now
 
+from .constants import PLUGIN_IDENTIFIER
+
 
 class Registry(BaseRegistry[BaseStaticVariable]):
     """
     A registry for the Generic JSON registration variables.
     """
 
-    module = "json_dump"
+    module = PLUGIN_IDENTIFIER
 
 
 register = Registry()

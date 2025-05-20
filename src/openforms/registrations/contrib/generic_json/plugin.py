@@ -14,23 +14,23 @@ from zgw_consumers.client import build_client
 from openforms.formio.typing import (
     Component,
     FileComponent,
-    SelectBoxesComponent,
 )
 from openforms.forms.json_schema import generate_json_schema
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
 from openforms.typing import JSONObject
-from openforms.utils.json_schema import to_multiple
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
-from .config import GenericJSONOptions, GenericJSONOptionsSerializer
+from .config import GenericJSONOptionsSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .registration_variables import register as variables_registry
+from .typing import GenericJSONOptions
 
 
-@register("json_dump")
+@register(PLUGIN_IDENTIFIER)
 class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
@@ -58,7 +58,11 @@ class GenericJSONRegistration(BasePlugin):
             if key in options["variables"]
         }
         values_schema = generate_json_schema(
-            submission.form, list(values.keys()), submission=submission
+            submission.form,
+            list(values.keys()),
+            plugin_id=PLUGIN_IDENTIFIER,
+            plugin_options=options,
+            submission=submission,
         )
         transform_to_list = options["transform_to_list"]
         post_process(values, values_schema, submission, transform_to_list)
@@ -76,6 +80,8 @@ class GenericJSONRegistration(BasePlugin):
         metadata_schema = generate_json_schema(
             submission.form,
             metadata_variables,
+            plugin_id=PLUGIN_IDENTIFIER,
+            plugin_options=options,
             additional_variables_registry=variables_registry,
         )
 
@@ -161,7 +167,7 @@ def post_process(
             or variable.form_variable is None
             or variable.form_variable.source == FormVariableSources.user_defined
         ):
-            # None for static variables, and processing user defined variables is
+            # None for static variables, and processing user-defined variables is
             # not relevant here
             continue
 
@@ -218,51 +224,29 @@ def process_component(
 
     match component:
         case {"type": "file", "multiple": True}:
-            attachment_list, base_schema = get_attachments_and_base_schema(
+            values[key] = get_attachments(
                 cast(FileComponent, component), attachments, key_prefix
             )
-            values[key] = attachment_list
-            schema["properties"][key] = to_multiple(base_schema)
 
         case {"type": "file"}:  # multiple is False or missing
-            attachment_list, base_schema = get_attachments_and_base_schema(
+            attachment_list = get_attachments(
                 cast(FileComponent, component), attachments, key_prefix
             )
 
+            # TODO-5312: if we are OK with schema["type"] always being ["object", "null"],
+            #  independent of the number of uploaded attachments, we can remove the
+            #  schema completely from this function :)
             assert (n_attachments := len(attachment_list)) <= 1  # sanity check
             if n_attachments == 0:
-                value = None
-                base_schema = {"title": component["label"], "type": "null"}
+                values[key] = None
+                schema["properties"][key]["type"] = "null"
+                for key_to_remove in ("properties", "required", "additionalProperties"):
+                    schema["properties"][key].pop(key_to_remove)
             else:
-                value = attachment_list[0]
-            values[key] = value
-            schema["properties"][key] = base_schema  # pyright: ignore[reportArgumentType]
+                values[key] = attachment_list[0]
+                schema["properties"][key]["type"] = "object"
 
-        case {"type": "selectboxes"}:
-            component = cast(SelectBoxesComponent, component)
-
-            # If the select boxes component was hidden, the submitted data of this
-            # component is an empty dict, so set the required to an empty list.
-            if not values[key]:
-                schema["properties"][key]["required"] = []  # type: ignore
-
-            if key not in transform_to_list:
-                return
-
-            # Convert the values to a list and update the schema accordingly
-            choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
-            base_schema = {
-                "type": "array",
-                "items": {"type": "string", "enum": choices},
-            }
-            _properties = schema["properties"][key]
-            assert isinstance(_properties, dict)
-            _properties.update(base_schema)
-
-            keys_to_remove = ("properties", "required", "additionalProperties")
-            for k in keys_to_remove:
-                _properties.pop(k, None)
-
+        case {"type": "selectboxes"} if key in transform_to_list:
             values[key] = [
                 option
                 for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
@@ -296,12 +280,12 @@ def process_component(
             pass
 
 
-def get_attachments_and_base_schema(
+def get_attachments(
     component: FileComponent,
     attachments: dict[str, list[SubmissionFileAttachment]],
     key_prefix: str = "",
-) -> tuple[list[JSONObject], JSONObject]:
-    """Return list of encoded attachments and the base schema.
+) -> list[JSONObject]:
+    """Return list of encoded attachments.
 
     :param component: FileComponent
     :param attachments: Mapping from component submission data path to list of
@@ -311,42 +295,18 @@ def get_attachments_and_base_schema(
       submitted data list of the edit grid component.
 
     :return encoded_attachments: List of encoded attachments for this file component.
-    :return base_schema: JSON schema describing the entries of ``encoded_attachments``.
     """
     key = f"{key_prefix}.{component['key']}" if key_prefix else component["key"]
 
-    encoded_attachments: list[JSONObject] = [
+    def encode_attachment(attachment: SubmissionFileAttachment) -> str:
+        with attachment.content.open("rb") as f:
+            f.seek(0)
+            return base64.b64encode(f.read()).decode()
+
+    return [
         {
             "file_name": attachment.original_name,
             "content": encode_attachment(attachment),
         }
         for attachment in attachments.get(key, [])
     ]
-
-    base_schema: JSONObject = {
-        "title": component["label"],
-        "type": "object",
-        "properties": {
-            "file_name": {"type": "string"},
-            "content": {"type": "string", "format": "base64"},
-        },
-        "required": (
-            ["file_name", "content"] if len(encoded_attachments) != 0 else []
-            # No required properties when there are no attachments
-        ),
-        "additionalProperties": False,
-    }
-
-    return encoded_attachments, base_schema
-
-
-def encode_attachment(attachment: SubmissionFileAttachment) -> str:
-    """Encode an attachment using base64.
-
-    :param attachment: Attachment to encode.
-
-    :returns: Encoded base64 data as a string.
-    """
-    with attachment.content.open("rb") as f:
-        f.seek(0)
-        return base64.b64encode(f.read()).decode()

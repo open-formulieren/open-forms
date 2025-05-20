@@ -625,6 +625,121 @@ class GenerateJsonSchemaReferenceListsTests(OFVCRMixin, TestCase):
             schema["properties"]["radio"]["enum"], ["option2", "option1", ""]
         )
 
+    def test_file_schema_for_objects_api(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        from pprint import pprint
+
+        for multiple, required in ("00", "01", "10", "11"):
+            # TODO-5312: why doesn't assigning like this work? Because it fetches the
+            #  configuration through the `FormVariable.form_definition` foreign key
+            form_def.configuration = {
+                "components": [
+                    {
+                        "key": "file",
+                        "type": "file",
+                        "label": "File",
+                        "multiple": bool(multiple),
+                        "validate": {"required": bool(required)},
+                    },
+                ]
+            }
+
+            schema = generate_json_schema(
+                form,
+                ["file"],
+                "objects_api",
+                {"variables_mapping": {}, "transform_to_list": []},
+            )
+            pprint(schema)
+
+    def test_select_boxes_schema_for_objects_api(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "label": "Selectboxes",
+                        "values": [
+                            {"label": "a", "value": "a"},
+                            {"label": "b", "value": "b"},
+                        ],
+                        "validate": {"required": False},
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        schema = generate_json_schema(
+            form,
+            ["selectboxes"],
+            "objects_api",
+            {"variables_mapping": {}, "transform_to_list": ["selectboxes"]},
+        )
+
+        expected_property = {
+            "items": {"enum": ["a", "b"], "type": "string"},
+            "minItems": 0,
+            "title": "Selectboxes",
+            "type": "array",
+        }
+        self.assertEqual(schema["properties"]["selectboxes"], expected_property)
+
+    def test_file_in_edit_grid_schema_for_objects_api(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "editgrid",
+                        "type": "editgrid",
+                        "label": "Editgrid",
+                        "components": [
+                            {
+                                "key": "file",
+                                "type": "file",
+                                "label": "File",
+                                "multiple": True,
+                                "validate": {"required": False},
+                            },
+                        ],
+                    }
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        schema = generate_json_schema(
+            form,
+            ["editgrid"],
+            "objects_api",
+            {"variables_mapping": {}, "transform_to_list": []},
+        )
+
+        expected_property = {
+            "title": "Editgrid",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "title": "File",
+                        "type": "array",
+                        "items": {"type": "string", "format": "uri"},
+                        "minItems": 0,
+                    }
+                },
+                "required": ["file"],
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema["properties"]["editgrid"], expected_property)
+
 
 class FormVariableAsJsonSchemaTests(TestCase):
     def test_component(self):

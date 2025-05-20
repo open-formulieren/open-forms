@@ -53,6 +53,7 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
+from .serializers.form import FormJsonSchemaOptionsSerializer
 from .serializers.logic.form_logic import FormLogicListSerializer
 
 
@@ -389,7 +390,7 @@ class FormViewSet(viewsets.ModelViewSet):
         summary=_("Export form"),
         tags=["forms"],
         parameters=[UUID_OR_SLUG_PARAMETER],
-        request=None,
+        request=FormJsonSchemaOptionsSerializer,
         responses={
             (
                 status.HTTP_200_OK,
@@ -616,13 +617,27 @@ class FormViewSet(viewsets.ModelViewSet):
         request=None,
         responses={status.HTTP_200_OK: OpenApiTypes.OBJECT},
     )
-    @action(detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,))
+    @action(
+        detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,)
+    )
     def json_schema(self, request, *args, **kwargs):
+        serializer = FormJsonSchemaOptionsSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+
         form = self.get_object()
+        registration_backend = get_object_or_404(
+            form.registration_backends,
+            key=serializer.validated_data["registration_backend_key"]
+        )
+
+        if not (limit_to_variables := serializer.validated_data.get("variables")):
+            limit_to_variables = form.formvariable_set.values_list("key", flat=True)
 
         schema = generate_json_schema(
-            form,
-            limit_to_variables=form.formvariable_set.values_list("key", flat=True),
+            form=form,
+            limit_to_variables=limit_to_variables,
+            plugin_id=registration_backend.backend,
+            plugin_options=registration_backend.options,
         )
 
         return Response(schema)

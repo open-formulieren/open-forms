@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
@@ -7,6 +8,7 @@ from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -23,7 +25,8 @@ class FormJsonSchemaAPITests(APITestCase):
         super().setUp()
         self.client.force_authenticate(user=self.user)
 
-    def test_happy_flow(self):
+    # TODO-5312: probably worth testing with attachments
+    def test_objects_api(self):
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
@@ -84,18 +87,33 @@ class FormJsonSchemaAPITests(APITestCase):
             initial_value=["A", "B", "C"],
         )
 
-        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="objects_api",
+            key="foo",
+            options={"transform_to_list": []}
+        )
 
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {
+            # "registrationPluginId": "objects_api",
+            "registrationBackendKey": "foo",
+            "variables": [
+                "firstName",
+                "select",
+                "selectboxes",
+                "radio",
+                "foo",
+            ],
+        }
+
+        # Note that lastName is not in this schema because it wasn't specified in the
+        # options
         expected_schema = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object",
             "properties": {
                 "firstName": {"title": "First Name", "type": "string"},
-                "lastName": {
-                    "title": "Last Name",
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
                 "select": {
                     "type": "array",
                     "items": {"type": "string", "enum": ["a", "b", ""]},
@@ -116,7 +134,6 @@ class FormJsonSchemaAPITests(APITestCase):
             },
             "required": [
                 "firstName",
-                "lastName",
                 "select",
                 "selectboxes",
                 "radio",
@@ -125,6 +142,129 @@ class FormJsonSchemaAPITests(APITestCase):
             "additionalProperties": False,
         }
 
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_schema)
+
+        # TODO-5312: probably worth testing with attachments
+    def test_generic_json(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "firstName", "type": "textfield",
+                     "label": "First Name"},
+                    {
+                        "key": "lastName",
+                        "type": "textfield",
+                        "multiple": True,
+                        "label": "Last Name",
+                    },
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "data": {
+                            "values": [
+                                {"label": "A", "value": "a"},
+                                {"label": "B", "value": "b"},
+                            ],
+                            "dataSrc": DataSrcOptions.manual,
+                            "json": "",
+                            "url": "",
+                            "resource": "",
+                            "custom": "",
+                        },
+                        "type": "select",
+                        "multiple": True,
+                    },
+                    {
+                        "type": "selectboxes",
+                        "key": "selectboxes",
+                        "values": [
+                            {"label": "Option 1", "value": "option1"},
+                            {"label": "Option 2", "value": "option2"},
+                        ],
+                    },
+                    {
+                        "label": "Radio",
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                        "dataSrc": DataSrcOptions.manual,
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        FormVariableFactory.create(
+            form=form,
+            name="Foo",
+            key="foo",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="json_dump",
+            key="foo",
+            options={"transform_to_list": []}
+        )
+
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {
+            # "registrationPluginId": "json_dump",
+            "registrationBackendKey": "foo",
+            "variables": [
+                "firstName",
+                "select",
+                "selectboxes",
+                "radio",
+                "foo",
+            ],
+        }
+
+        # Note that lastName is not in this schema because it wasn't specified in the
+        # options
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "firstName": {"title": "First Name", "type": "string"},
+                "select": {
+                    "type": "array",
+                    "items": {"type": "string", "enum": ["a", "b", ""]},
+                    "title": "Select",
+                },
+                "selectboxes": {
+                    "title": "Select boxes",
+                    "type": "object",
+                    "properties": {
+                        "option1": {"type": "boolean"},
+                        "option2": {"type": "boolean"},
+                    },
+                    "required": ["option1", "option2"],
+                    "additionalProperties": False,
+                },
+                "radio": {"title": "Radio", "type": "string",
+                          "enum": ["a", "b", ""]},
+                "foo": {"type": "array", "title": "Foo"},
+            },
+            "required": [
+                "firstName",
+                "select",
+                "selectboxes",
+                "radio",
+                "foo",
+            ],
+            "additionalProperties": False,
+        }
+
+        response = self.client.post(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_schema)
