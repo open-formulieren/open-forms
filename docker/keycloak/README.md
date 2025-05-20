@@ -53,6 +53,12 @@ VCR.py). The primary reason this setup exists, is for automated testing reasons.
 - `admin` / `admin`, intended to create as django user (can be made staff). The email address is
   `admin@example.com`. Should get the `employeeId` claim (See below for how to add the custom
   claim).
+- `eidas-person` / `eidas-person`, has the `person_identifier`, `person_identifier_type`,
+  `first_name`, `family_name`, `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS
+  with natural person)
+- `eidas-company` / `eidas-company`, has the `person_identifier`, `person_identifier_type`,
+  `company_identifier`, `company_identifier_type`, `company_name`, `first_name`, `family_name`,
+  `birthdate`, `service_id` and `service_uuid` attributes (for eIDAS with company)
 
 ## Adding a custom claim to Keycloak
 
@@ -70,8 +76,8 @@ to the admin page of Keycloak and on the left side bar (_Realm settings_) you ca
    - Name: _employeeId_
    - User Attribute: _employeeId_
    - Token Claim Name: _employeeId_
-   - Add to ID token: _on_ 
-   - Add to access token: _on_ 
+   - Add to ID token: _on_
+   - Add to access token: _on_
    - Add to userinfo: _on_
 7. Click Save
 8. Go to the _Clients_ > _client ID_ (`testid`) > _Client scopes_ > _Add client scope_
