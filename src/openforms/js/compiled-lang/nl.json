@@ -164,7 +164,7 @@
   "0PhQl9": [
     {
       "type": 0,
-      "value": "If enabled, any deceased children will be displayed too."
+      "value": "Indien aangevinkt, dan worden overleden kinderen ook weergegeven."
     }
   ],
   "0RXE97": [
@@ -438,7 +438,7 @@
   "36qdVW": [
     {
       "type": 0,
-      "value": "The minimum age used to determine which children will be displayed. Leave blank to show all children."
+      "value": "De minimale leeftijd die wordt gebruikt om te bepalen welke kinderen worden weergegeven. Laat het veld leeg om alle kinderen weer te geven."
     }
   ],
   "3FxzLm": [
@@ -3049,7 +3049,7 @@
     },
     {
       "type": 0,
-      "value": " plugin options"
+      "value": " plugin-instellingen"
     }
   ],
   "PRNizF": [
@@ -3204,12 +3204,6 @@
       "value": "Je moet latitude en longitude allebei instellen."
     }
   ],
-  "R25Vbr": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3257,7 +3251,7 @@
   "RGU2G5": [
     {
       "type": 0,
-      "value": "The data will be retrieved for the selected type of person."
+      "value": "De gegevens worden opgehaald voor het geselecteerde persoonstype."
     }
   ],
   "RN628y": [
@@ -3609,7 +3603,7 @@
   "ULsbyd": [
     {
       "type": 0,
-      "value": "Include deceased"
+      "value": "Inclusief overledenen"
     }
   ],
   "UlVtQd": [
@@ -3974,6 +3968,12 @@
       "value": "Maximale breedte"
     }
   ],
+  "Y7QwvZ": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4200,7 +4200,7 @@
   "ZfLhiZ": [
     {
       "type": 0,
-      "value": "Maximum age"
+      "value": "Maximale leeftijd"
     }
   ],
   "ZiARkY": [
@@ -5268,7 +5268,7 @@
   "huzndE": [
     {
       "type": 0,
-      "value": "Children"
+      "value": "Kinderen"
     }
   ],
   "hwsnj9": [
@@ -5630,7 +5630,7 @@
   "kckipT": [
     {
       "type": 0,
-      "value": "Data destination form variable"
+      "value": "Bestemmings-variabele"
     }
   ],
   "kg/eh1": [
@@ -5854,7 +5854,7 @@
   "mWHMvR": [
     {
       "type": 0,
-      "value": "Data destination form variable"
+      "value": "Bestemmings-variabele"
     }
   ],
   "mWuCXv": [
@@ -6346,7 +6346,7 @@
   "qxmsAZ": [
     {
       "type": 0,
-      "value": "Plugin configuration: Generic JSON"
+      "value": "Plugin-instellingen: Generieke JSON"
     }
   ],
   "qzISfx": [
@@ -6518,37 +6518,13 @@
   "sXz08G": [
     {
       "type": 0,
-      "value": "Minimum age"
+      "value": "Minimale leeftijd"
     }
   ],
   "sgmcmf": [
     {
       "type": 0,
       "value": "Pluginattribuut"
-    }
-  ],
-  "sjnifH": [
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "smPv/m": [
@@ -6755,6 +6731,30 @@
       "value": "Fout"
     }
   ],
+  "ucbVst": [
+    {
+      "type": 1,
+      "value": "naam"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "uiliGe": [
     {
       "type": 0,
@@ -6952,7 +6952,7 @@
   "wowXBp": [
     {
       "type": 0,
-      "value": "The maximum age used to determine which children will be displayed. Leave blank to show all children."
+      "value": "De maximale leeftijd die wordt gebruikt om te bepalen welke kinderen worden weergegeven. Laat het veld leeg om alle kinderen weer te geven."
     }
   ],
   "wqCiwc": [
