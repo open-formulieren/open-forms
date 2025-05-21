@@ -11,7 +11,7 @@ assignees: sergei-maertens
 - [ ] Re-generate VCR cassettes (delete the old ones and then) for API tests (see instructions on
       Taiga). You can find all test cases with `grep OFVCRMixin -r src`
   - [ ] Accounts (`openforms.accounts.tests.test_oidc`)
-  - Appoinments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
+  - Appointments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
   - Authentication plugins
     - [ ] DigiD (Signicat): `openforms.authentication.contrib.digid.tests.test_signicat_integration`
     - [ ] eHerkenning
@@ -32,12 +32,14 @@ assignees: sergei-maertens
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
   - Prefill
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
+    - [ ] Family members: `openforms.prefill.contrib.family_members.tests.test_plugin`
     - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
           be reinstated)
   - ReferenceLists:
     - [ ] `openforms.contrib.reference_lists`
     - [ ] `openforms.emails.tests.test_tasks_integration`
     - [ ] `openforms.formio.dynamic_config.tests.test_reference_lists_config`
+    - [ ] `openforms.forms.tests.test_generate_json_schema`
   - Registration plugins:
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
