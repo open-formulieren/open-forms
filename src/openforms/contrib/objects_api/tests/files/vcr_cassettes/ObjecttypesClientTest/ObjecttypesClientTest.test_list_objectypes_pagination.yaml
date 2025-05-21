@@ -16,21 +16,20 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":6,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
-        everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]}]}'
+      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204","uuid":"ac49bcc6-ed49-478d-84d4-a9e61fc97204","name":"Form","namePlural":"Forms","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-05-16","modifiedAt":"2025-05-19","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '733'
+      - '706'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 23 Apr 2025 09:10:01 GMT
+      - Wed, 21 May 2025 09:11:56 GMT
       Referrer-Policy:
       - same-origin
       Server:
