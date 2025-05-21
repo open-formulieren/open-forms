@@ -75,7 +75,6 @@ exclude = [
     "src/openforms/registrations/contrib/objects_api/tests/test_backend_v2.py",
     "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v1.py",
     "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v2.py",
-    "src/openforms/registrations/contrib/objects_api/tests/test_utils.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
 ]

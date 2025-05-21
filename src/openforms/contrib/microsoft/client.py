@@ -12,7 +12,7 @@ import json
 import os
 from io import BytesIO
 from pathlib import PurePosixPath
-from typing import Literal, TypedDict
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 from O365 import Account
 from O365.drive import Folder
@@ -111,7 +111,8 @@ class MSGraphUploadHelper:
     def upload_stream(
         self, stream, stream_size: int, remote_path: PurePosixPath | None
     ):
-        assert isinstance(self.target_folder, Folder)
+        if TYPE_CHECKING:
+            assert isinstance(self.target_folder, Folder)
         return self.target_folder.upload_file(
             None,
             # upload_file says it accepts strings or Path objects
