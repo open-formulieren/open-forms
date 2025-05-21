@@ -110,16 +110,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Generate OAS
-        run: ./bin/generate_oas.sh openapi.yaml
-
-      - name: Store generated OAS
-        uses: actions/upload-artifact@v4
-        with:
-          name: open-forms-oas
-          path: openapi.yaml
-          retention-days: 1
-
   tests-reverse:
     name: Run the Django test suite in reverse
     runs-on: ubuntu-latest
@@ -475,104 +465,21 @@ jobs:
           # ensure local image gets used
           TAG: ${{ needs.docker_build_setup.outputs.version }}
 
-  oas-up-to-date:
-    needs: tests
-    name: Check for unexepected OAS changes
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Check for OAS changes
-        run: |
-          diff openapi.yaml src/openapi.yaml
-      - name: Write failure markdown
-        if: ${{ failure() }}
-        run: |
-          echo 'Run the following command locally and commit the changes' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo './bin/generate_oas.sh' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-  oas-lint:
-    needs: oas-up-to-date
-    name: Validate OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install spectral
-        run: npm install -g @stoplight/spectral@5.9.2
-      - name: Run OAS linter
-        run: spectral lint ./openapi.yaml
-
-  oas-postman:
-    needs: oas-up-to-date
-    name: Generate Postman collection from OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm install -g openapi-to-postmanv2
-      - name: Create tests folder
-        run: mkdir -p ./tests/postman
-      - name: Generate Postman collection
-        run: openapi2postmanv2 -s ./openapi.yaml -o ./tests/postman/collection.json --pretty
-
-  oas-generate-sdks:
-    needs: oas-up-to-date
-    name: Generate SDKs from OAS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download generated OAS
-        uses: actions/download-artifact@v4
-        with:
-          name: open-forms-oas
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install dependencies
-        run: npm install -g @openapitools/openapi-generator-cli@2.4.2
-      - name: Validate schema
-        run: openapi-generator-cli validate -i ./openapi.yaml
-      - name: Generate Java client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/java -g java
-          --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
-      - name: Generate .NET Full Framework client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/net -g csharp
-          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
-      - name: Generate Python client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/python -g python
-          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
+  oas:
+    name: OAS
+    uses: maykinmedia/open-api-workflows/.github/workflows/oas.yml@v5
+    with:
+      python-version: '3.12'
+      apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
+      django-settings-module: openforms.conf.ci
+      oas-generate-command: ./bin/generate_oas.sh
+      schema-path: src/openapi.yaml
+      oas-artifact-name: open-forms-oas
+      node-version-file: '.nvmrc'
+      spectral-version: '^6.15.0'
+      openapi-to-postman-version: '^5.0.0'
+      postman-artifact-name: open-forms-postman-collection
+      openapi-generator-version: '^2.20.0'
 
   docker_push:
     needs:
@@ -580,9 +487,7 @@ jobs:
       - e2etests
       - docker_build_setup
       - docker_build
-      - oas-lint
-      - oas-postman
-      - oas-generate-sdks
+      - oas
 
     name: Push Docker image
     runs-on: ubuntu-latest
