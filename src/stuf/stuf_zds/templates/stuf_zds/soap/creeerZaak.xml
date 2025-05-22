@@ -160,6 +160,7 @@
                     <ZKN:identificatie>{{ registrator.medewerker.identificatie }}</ZKN:identificatie>
                 </ZKN:medewerker>
             </ZKN:gerelateerde>
+            <ZKN:omschrijving>registrator</ZKN:omschrijving>
         </ZKN:heeftAlsOverigBetrokkene>
         {% endif %}
         {% if zds_zaaktype_status_code or zds_zaaktype_status_omschrijving %}
