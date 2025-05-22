@@ -27,18 +27,19 @@ variables each time).
     .. image:: _assets/family_members_form_authentication.png
        :alt: Screenshot of form authentication.
 
-#. Create a user defined variable with the name **partners** and data type ``array`` (the
-   data type should always be an ``array`` otherwise it will not work). This variable will
-   be used to hold the retrieved data and can be modified/updated during the submission.
-#. Create a user defined variable with the name **partners-initial** and data type ``string``.
+#. Add a component **partners** from the special fields and configure it according to your
+   needs. This will automatically create a form variable which will be used to store the
+   (updated) data during the submission.
+#. Create a user defined variable with the name **partners-configuration** and data type ``string``.
    This variable will hold all the necessary configuration for the plugin and the retrieved
    data, but it **should not be modified**, it's meant to be immutable.
-#. Click the pencil icon in the "Prefill" column of the **partners-initial** variable. You can 
-   now set the options.
+#. Click the pencil icon in the "Prefill" column of the **partners-configuration** variable. 
+   You can now set the options.
 
     * In the **Plugin** select "Family members". There are now extra options in the modal.
     * For **Type** select partners.
-    * For **Data destination form variable**, select the variable we created (**partners**)
+    * For **Data destination form variable**, select the variable that was created by the
+      component's creation (**partners**)
     * Click "Save" to save the settings.
 
       *The above configuration should resemble the screenshot below*:
@@ -55,14 +56,15 @@ variables each time).
 
 **Children**
 
-#. Repeat steps 2 and 3 from above to add the necessary variables, but this time change
-   the variable names to **children** and **children-initial**.
-#. Click the pencil icon in the "Prefill" column of the **children-initial** variable. You can 
-   now set the options.
+#. Repeat steps 2 and 3 from above to add the necessary variables, but this time select
+   the component **children** and **children-configuration** for the user defined variable's name.
+#. Click the pencil icon in the "Prefill" column of the **children-configuration** variable. 
+   You can now set the options.
 
     * In the **Plugin** select "Family members". There are now extra options in the modal.
     * For **Type** select children.
-    * For **Data destination form variable**, select the variable we created (**children**)
+    * For **Data destination form variable**, select the variable that was created by the
+      component's creation (**children**)
     * Apply any filters that you desire. By default all the children will be retrieved if
       you do not specify/modify any of the available filters.
     * Click "Save" to save the settings.
