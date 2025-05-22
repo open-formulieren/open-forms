@@ -2,7 +2,6 @@ import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -81,9 +80,7 @@ const PersonFields = ({type, mutableDataFormVariable}) => {
                 defaultMessage="Data destination form variable"
               />
             }
-            filter={variable =>
-              variable.source === VARIABLE_SOURCES.userDefined && variable.dataType === 'array'
-            }
+            filter={variable => variable.dataType === 'array'}
           />
         </Field>
       </FormRow>
