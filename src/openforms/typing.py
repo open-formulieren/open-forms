@@ -3,7 +3,8 @@ from __future__ import annotations
 import datetime
 import decimal
 import uuid
-from typing import TYPE_CHECKING, Any, NewType, Protocol, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, NewType, Protocol
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase

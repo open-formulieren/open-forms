@@ -32,6 +32,7 @@ include = [
     "src/openforms/payments/",
     # Interaction with the outside world
     "src/openforms/contrib/zgw/service.py",
+    "src/openforms/contrib/microsoft/",
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
     # Emails
@@ -43,16 +44,14 @@ include = [
     "src/openforms/prefill/contrib/family_members",
     # Registrations
     "src/openforms/registrations/tasks.py",
+    "src/openforms/registrations/contrib/demo/",
     "src/openforms/registrations/contrib/email/",
-    "src/openforms/registrations/contrib/json_dump/",
+    "src/openforms/registrations/contrib/generic_json/",
+    "src/openforms/registrations/contrib/microsoft_graph/",
+    "src/openforms/registrations/contrib/objects_api/",
     "src/openforms/registrations/contrib/stuf_zds/options.py",
     "src/openforms/registrations/contrib/stuf_zds/plugin.py",
     "src/openforms/registrations/contrib/stuf_zds/typing.py",
-    "src/openforms/registrations/contrib/objects_api/handlers/",
-    "src/openforms/registrations/contrib/objects_api/plugin.py",
-    "src/openforms/registrations/contrib/objects_api/registration_variables.py",
-    "src/openforms/registrations/contrib/objects_api/submission_registration.py",
-    "src/openforms/registrations/contrib/objects_api/typing.py",
     "src/openforms/registrations/contrib/zgw_apis/",
     # core submissions app
     "src/openforms/submissions/api/validation.py",
@@ -72,6 +71,10 @@ exclude = [
     "src/openforms/payments/tests/",
     "src/openforms/payments/contrib/demo/tests/",
     "src/openforms/payments/contrib/ogone/tests/",
+    "src/openforms/registrations/contrib/objects_api/tests/test_backend_v1.py",
+    "src/openforms/registrations/contrib/objects_api/tests/test_backend_v2.py",
+    "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v1.py",
+    "src/openforms/registrations/contrib/objects_api/tests/test_update_payment_status_v2.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_backend_partial_failure.py",
     "src/openforms/registrations/contrib/zgw_apis/tests/test_utils.py",
 ]

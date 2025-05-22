@@ -13,10 +13,6 @@ from privates.test import temp_private_root
 from openforms.contrib.microsoft.tests.factories import MSGraphServiceFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
-from openforms.registrations.contrib.microsoft_graph.models import (
-    MSGraphRegistrationConfig,
-)
-from openforms.registrations.contrib.microsoft_graph.plugin import MSGraphRegistration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
@@ -26,6 +22,12 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 from openforms.utils.tests.cache import clear_caches
+
+from ..config import MicrosoftGraphOptions
+from ..models import (
+    MSGraphRegistrationConfig,
+)
+from ..plugin import MSGraphRegistration
 
 
 class MockFolder:
@@ -44,10 +46,9 @@ class MSGraphRegistrationBackendTests(TestCase):
         cls.msgraph_config_patcher = patch(
             "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
             return_value=MSGraphRegistrationConfig(
-                service=MSGraphServiceFactory.create()
+                service=MSGraphServiceFactory.build()
             ),
         )
-        cls.options = dict(folder_path="/open-forms/")
 
     def setUp(self):
         super().setUp()
@@ -101,12 +102,16 @@ class MSGraphRegistrationBackendTests(TestCase):
 
         set_submission_reference(submission)
 
+        options: MicrosoftGraphOptions = {
+            "folder_path": "/open-forms/",
+            "drive_id": "",
+        }
         with (
             patch.object(Account, "is_authenticated", True),
             patch.object(Drive, "get_root_folder", return_value=MockFolder()),
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
-            graph_submission.register_submission(submission, self.options)
+            graph_submission.register_submission(submission, options)
 
         # made the calls
         self.assertEqual(upload_mock.call_count, 5)
@@ -177,12 +182,16 @@ class MSGraphRegistrationBackendTests(TestCase):
             submission, status=PaymentStatus.completed
         )
 
+        options: MicrosoftGraphOptions = {
+            "folder_path": "/open-forms/",
+            "drive_id": "",
+        }
         with (
             patch.object(Account, "is_authenticated", True),
             patch.object(Drive, "get_root_folder", return_value=MockFolder()),
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
-            graph_submission.update_payment_status(submission, self.options)
+            graph_submission.update_payment_status(submission, options)
 
         # got the reference
         self.assertNotEqual(submission.public_registration_reference, "")
@@ -211,7 +220,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
         cls.msgraph_config_patcher = patch(
             "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
             return_value=MSGraphRegistrationConfig(
-                service=MSGraphServiceFactory.create()
+                service=MSGraphServiceFactory.build()
             ),
         )
 
@@ -242,8 +251,10 @@ class MSGraphRegistrationOptionsTests(TestCase):
             form__internal_name="Internal Test Form (with extra)",
             form__registration_backend="microsoft-graph",
         )
-
-        registration_options = dict(folder_path="/sites/my-site/open-forms/")
+        registration_options: MicrosoftGraphOptions = {
+            "folder_path": "/sites/my-site/open-forms/",
+            "drive_id": "",
+        }
 
         set_submission_reference(submission)
 
@@ -290,10 +301,10 @@ class MSGraphRegistrationOptionsTests(TestCase):
             file_name="my-foo.bin",
             content_type="application/foo",
         )
-
-        registration_options = dict(
-            folder_path="/open-forms/{{ year }}-{{ month }}-{{ day }}",
-        )
+        registration_options: MicrosoftGraphOptions = {
+            "folder_path": "/open-forms/{{ year }}-{{ month }}-{{ day }}",
+            "drive_id": "",
+        }
 
         set_submission_reference(submission)
 
@@ -338,10 +349,14 @@ class MSGraphRegistrationBackendFailureTests(TestCase):
         )
         SubmissionReportFactory.create(submission=submission)
 
+        options: MicrosoftGraphOptions = {
+            "folder_path": "/open-forms/",
+            "drive_id": "",
+        }
         with self.assertRaises(RegistrationFailed):
             with (
                 patch.object(Account, "is_authenticated", True),
                 patch.object(Drive, "get_root_folder", return_value=MockFolder()),
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
-                graph_submission.register_submission(submission, {})
+                graph_submission.register_submission(submission, options)

@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
-from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig  # noqa
 from openforms.template.validators import DjangoTemplateValidator
 
 
@@ -61,7 +60,7 @@ class ObjectsAPIConfig(SingletonModel):
         ),
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Objects API configuration")
 
 

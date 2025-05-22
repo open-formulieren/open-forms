@@ -1,7 +1,7 @@
 import json
 import sys
+from collections.abc import Mapping
 from contextlib import contextmanager
-from typing import Any
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -30,7 +30,7 @@ def check_size_stringyfied_json_not_above_limit(content: str) -> None:
         )
 
 
-def render_to_json(template: str, context: dict[str, Any]) -> JSONValue:
+def render_to_json(template: str, context: Mapping[str, object]) -> JSONValue:
     """Render the provided template and context into a JSON serializable object"""
 
     # FIXME: replace with better suited alternative dealing with JSON specifically

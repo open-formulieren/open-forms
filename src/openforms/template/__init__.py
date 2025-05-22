@@ -13,6 +13,7 @@ Possible future features:
 * ...
 """
 
+from collections.abc import Mapping
 from typing import Iterator
 
 from django.template.backends.django import Template as DjangoTemplate
@@ -39,7 +40,7 @@ def parse(source: str, backend=sandbox_backend) -> DjangoTemplate:
 
 def render_from_string(
     source: str,
-    context: dict,
+    context: Mapping[str, object],
     backend=sandbox_backend,
     disable_autoescape: bool = False,
 ) -> SafeString:
@@ -57,6 +58,7 @@ def render_from_string(
     if disable_autoescape:
         source = f"{{% autoescape off %}}{source}{{% endautoescape %}}"
     template = parse(source, backend=backend)
+    assert isinstance(context, dict)
     res = template.render(context)
     return res
 

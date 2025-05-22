@@ -13,7 +13,7 @@ class CatalogueSerializer(serializers.Serializer):
     Certain configuration models also define default fields like ``catalogue_domain``
     and ``catalogue_rsin`` to fall back on, such as:
 
-    - :class:`openforms.registrations.contrib.objects_api.models.ObjectsAPIGroupConfig`
+    - :class:`openforms.contrib.objects_api.models.ObjectsAPIGroupConfig`
     - :class:`openforms.registrations.contrib.zgw_apis.models.ZGWApiGroupConfig`
 
     Use this serializer to persist the catalogue selection in registration backend

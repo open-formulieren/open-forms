@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, NotRequired, Required, TypedDict
+from typing import Literal, NotRequired, Required, TypedDict
 from uuid import UUID
 
-if TYPE_CHECKING:
-    from .models import ObjectsAPIGroupConfig
-
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 
 type ConfigVersion = Literal[1, 2]
+
+type TargetPath = list[str]
 
 
 class CatalogueOption(TypedDict):
@@ -27,7 +27,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     objecttype: Required[UUID]
     objecttype_version: Required[int]
     update_existing_object: Required[bool]
-    auth_attribute_path: Required[list[str]]
+    auth_attribute_path: Required[TargetPath]
 
     # metadata of documents created in the documents API
     upload_submission_csv: bool
@@ -51,18 +51,18 @@ class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):
     payment_status_update_json: str
 
 
-class AddressNLObjecttypeVariableMapping(TypedDict):
-    postcode: NotRequired[list[str]]
-    house_letter: NotRequired[list[str]]
-    house_number: NotRequired[list[str]]
-    house_number_addition: NotRequired[list[str]]
-    city: NotRequired[list[str]]
-    street_name: NotRequired[list[str]]
+class AddressNLObjecttypeVariableMapping(TypedDict, total=False):
+    postcode: TargetPath
+    house_letter: TargetPath
+    house_number: TargetPath
+    house_number_addition: TargetPath
+    city: TargetPath
+    street_name: TargetPath
 
 
 class ObjecttypeVariableMapping(TypedDict):
     variable_key: str
-    target_path: NotRequired[list[str]]
+    target_path: NotRequired[TargetPath]
     options: NotRequired[AddressNLObjecttypeVariableMapping]
 
 

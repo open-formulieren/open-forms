@@ -65,6 +65,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
+            "transform_to_list": [],
         }
 
         result = plugin.verify_initial_data_ownership(submission, options)
@@ -101,6 +102,7 @@ class DataOwnershipCheckTests(OFVCRMixin, TestCase):
             "iot_submission_report": "",
             "iot_submission_csv": "",
             "iot_attachment": "",
+            "transform_to_list": [],
         }
 
         with self.subTest("other BSN used"):

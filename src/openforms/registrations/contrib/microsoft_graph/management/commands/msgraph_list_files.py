@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
         storage = client.account.storage()
         drive = storage.get_default_drive()
+        assert drive is not None
         root_folder = drive.get_root_folder()
 
         self.print_folder(root_folder)

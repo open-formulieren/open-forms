@@ -6,10 +6,10 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
 from django.utils.translation import gettext as _
 
+from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIGroupConfig
 from ..utils import apply_defaults_to
 
 VCR_TEST_FILES = Path(__file__).parent / "files"

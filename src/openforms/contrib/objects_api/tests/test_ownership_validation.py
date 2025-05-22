@@ -7,15 +7,15 @@ from django.test import TestCase, override_settings, tag
 from requests.exceptions import HTTPError, RequestException
 
 from openforms.authentication.service import AuthAttribute
-from openforms.contrib.objects_api.clients import get_objects_client
-from openforms.contrib.objects_api.helpers import prepare_data_for_registration
-from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.objects_api.plugin import ObjectsAPIRegistration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin, with_setup_test_data_vcr
 
+from ..clients import get_objects_client
+from ..helpers import prepare_data_for_registration
 from ..ownership_validation import validate_object_ownership
+from .factories import ObjectsAPIGroupConfigFactory
 
 TEST_FILES = (Path(__file__).parent / "files").resolve()
 
