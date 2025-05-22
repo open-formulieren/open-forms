@@ -6,10 +6,12 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.0.8 (2025-05-??)
+3.0.8 (2025-05-23)
 ==================
 
-(unreleased)
+Regular bugfix release.
+
+**Minor security improvements**
 
 On request the low severity security patches from 3.1.0 are backported.
 
@@ -20,6 +22,15 @@ On request the low severity security patches from 3.1.0 are backported.
 * The form preview seen by form designers in the admin now applies extra HTML sanitation
   on the client side. The backend already properly escaped this and the public UI was
   never affected.
+
+**Bugfixes**
+
+* [:backend:`5289`] Fixed crash in fix-script.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registraton email templates.
+
+**Project maintenance**
+
+* Upgraded django to 4.2.21 with the latest security patches.
 
 3.0.7 (2025-04-16)
 ===================
