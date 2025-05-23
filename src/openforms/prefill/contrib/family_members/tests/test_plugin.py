@@ -36,6 +36,9 @@ VCR_TEST_FILES = Path(__file__).parent / "files"
 class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
     """This test case requires the HaalCentraal BRP API to be running.
     See the relevant Docker compose in the ``docker/`` folder.
+
+    Note: please ensure that all patches to the test data have been applied. See the
+    README.md file of the relevant container.
     """
 
     VCR_TEST_FILES = VCR_TEST_FILES
