@@ -30,11 +30,11 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 13 May 2025 09:58:33 GMT
+      - Wed, 21 May 2025 09:33:46 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.27.4
       Vary:
       - origin
       X-Content-Type-Options:
@@ -47,7 +47,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"stepwithnulls": {"radio": "2"}}, "startAt":
-      "2025-05-13"}}'
+      "2025-05-21"}}'
     headers:
       Accept:
       - '*/*'
@@ -69,7 +69,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/81224301-d4a2-43fe-8357-4622526cb4e7","uuid":"81224301-d4a2-43fe-8357-4622526cb4e7","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2"}},"geometry":null,"startAt":"2025-05-13","endAt":null,"registrationAt":"2025-05-13","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/9305fe13-f89b-457c-a60e-8a49891d095b","uuid":"9305fe13-f89b-457c-a60e-8a49891d095b","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"stepwithnulls":{"radio":"2"}},"geometry":null,"startAt":"2025-05-21","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -84,13 +84,13 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Tue, 13 May 2025 09:58:33 GMT
+      - Wed, 21 May 2025 09:33:46 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/81224301-d4a2-43fe-8357-4622526cb4e7
+      - http://localhost:8002/api/v2/objects/9305fe13-f89b-457c-a60e-8a49891d095b
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.5
+      - nginx/1.27.4
       Vary:
       - origin
       X-Content-Type-Options:
