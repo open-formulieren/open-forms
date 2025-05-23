@@ -1470,9 +1470,7 @@ export const ConfigurePrefillFamilyMembersPartners = {
       expect(personTypeSelect).toBeVisible();
       expect(modal.getByText('Partners')).toBeVisible();
       // check mutable form variable
-      const mutableDataFormVariableSelect = await canvas.findByText(
-        'Data destination form variable'
-      );
+      const mutableDataFormVariableSelect = await canvas.findByText('Bestemmings-variabele');
       expect(mutableDataFormVariableSelect).toBeVisible();
       expect(modal.getByText('User defined mutable')).toBeVisible();
       // check no filters
@@ -1568,19 +1566,17 @@ export const ConfigurePrefillFamilyMembersChildren = {
       // check person type
       const personTypeSelect = await canvas.findByText('Type');
       expect(personTypeSelect).toBeVisible();
-      expect(modal.getByText('Children')).toBeVisible();
+      expect(modal.getByText('Kinderen')).toBeVisible();
       // check mutable form variable
-      const mutableDataFormVariableSelect = await canvas.findByText(
-        'Data destination form variable'
-      );
+      const mutableDataFormVariableSelect = await canvas.findByText('Bestemmings-variabele');
       expect(mutableDataFormVariableSelect).toBeVisible();
       expect(modal.getByText('User defined mutable')).toBeVisible();
     });
 
     await step('Filters', async () => {
-      const minAge = await canvas.findByLabelText('Minimum age');
-      const maxAge = await canvas.findByLabelText('Maximum age');
-      const includeDeceased = await canvas.findByLabelText('Include deceased');
+      const minAge = await canvas.findByLabelText('Minimale leeftijd');
+      const maxAge = await canvas.findByLabelText('Maximale leeftijd');
+      const includeDeceased = await canvas.findByLabelText('Inclusief overledenen');
       expect(minAge).toBeVisible();
       expect(maxAge).toBeVisible();
       expect(includeDeceased).toBeVisible();

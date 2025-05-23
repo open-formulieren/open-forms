@@ -43,6 +43,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    ================ =================== ===================
    SDK version      minimum API version maximum API version
    ================ =================== ===================
+   3.2.0-alpha.1    3.2.0-alpha.1       n/a
    3.2.0-alpha.0    3.2.0-alpha.0       n/a
    3.1.0            3.1.0               n/a
    3.0.0            3.0.0               n/a

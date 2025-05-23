@@ -6,6 +6,64 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+
+3.2.0-alpha.1 (2025-05-23)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+.. warning::
+
+   The Camunda registration backend will be removed in Open Forms 4.0. There is no
+   replacement scheduled - if you rely on this plugin, please get in touch.
+
+.. warning::
+
+    For the generic JSON registration plugin, we changed the way that the data is generated.
+    In case of key conflicts between static, component, and user-defined variables,
+    the static variables will take precedence. Previously, the component and user-defined
+    variables would override the static variables. Our validation guards against the use of
+    keys that are already present in the static variables, but this does not cover old forms
+    and newly-added static variables.
+
+**New features**
+
+* [:backend:`5285`] Improved the logs emitted by the application to better integrate with observability tooling like
+  Grafana.
+* [:backend:`5140`] Reworked the authentication module architecture to make it possible to add support for
+  new plugins based on the OpenID Connect protocol (Yivi and eIDAS).
+* [:backend:`5283`] Cleaned up the displayed columns in the admin form list to improve the UX.
+* [:backend:`5254`] Added new family-members prefill plugin.
+
+    - The data can be retrieved from "Haal Centraal BRP personen bevragen" (version 2) or "StUF-BG" (version 3.1).
+    - Partners or children of the authenticated user can be stored in a user-defined variable.
+    - The retrieved data of children can be filtered by age and whether they are deceased.
+
+* [:backend:`4923`] Added support for JSON schema generation of a form in the API.
+
+    - The schema represents the submission data and includes all user-defined and component variables.
+    - The component schemas include validation rules and a description when available.
+
+**Bugfixes**
+
+* [:backend:`5300`] Fixed a regression in the previous alpha release where nested submission data was not being saved.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registraton email templates.
+
+**Project maintenance**
+
+* [:backend:`5252`] Renamed JSON Dump plugin to Generic JSON registration.
+* Enabled most of bugbear linter rules.
+* Fixed test flakiness.
+* Fixed type checking.
+* Replaced OAS checks in CI with a re-usable workflow.
+* Updated backend dependencies:
+
+    - Bumped h11 to 0.16.0.
+    - Bumped httpcore to 1.0.9.
+    - Bumped django to 4.2.21.
+    - Bumped tornado to 6.5.
+
+
 3.2.0-alpha.0 (2025-04-25)
 ==========================
 
