@@ -6,6 +6,22 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+
+3.0.8 (2025-05-23)
+==================
+
+Regular bugfix release.
+
+**Bugfixes**
+
+* [:backend:`5289`] Fixed crash in fix-script.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registraton email templates.
+
+**Project maintenance**
+
+* Upgraded django to 4.2.21 with the latest security patches.
+
+
 3.1.1 (2025-04-16)
 ===================
 
