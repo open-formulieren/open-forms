@@ -283,7 +283,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     log = log.bind(plugin=plugin.identifier)
 
     if not plugin.is_enabled:
-        log.debug("registration_failure", reason="plugin_disabled")
+        log.info("registration_failure", reason="plugin_disabled")
         exc = RegistrationFailed("Registration plugin is not enabled")
         submission.save_registration_status(
             RegistrationStatuses.failed,
@@ -327,7 +327,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             raise exc
         return
     except Exception as exc:
-        log.exception("unexpected_registration_failure", exc_info=exc)
+        log.exception("registration_failure", exc_info=exc)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
