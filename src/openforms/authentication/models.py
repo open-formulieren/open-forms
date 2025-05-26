@@ -15,6 +15,7 @@ from .constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
+from .contrib.yivi_oidc.constants import PLUGIN_ID as YiviPluginID
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 from .types import (
     DigiDContext,
@@ -22,6 +23,7 @@ from .types import (
     EHerkenningContext,
     EHerkenningMachtigenContext,
     EmployeeContext,
+    YiviContext,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -265,9 +267,24 @@ class AuthInfo(BaseAuthInfo):
         | EHerkenningContext
         | EHerkenningMachtigenContext
         | EmployeeContext
+        | YiviContext
     ):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
+
+        if self.plugin == YiviPluginID:
+            yivi_context: YiviContext = {
+                "source": "yivi",
+                "levelOfAssurance": self.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.attribute,
+                        "identifier": self.value,
+                        "additionalInformation": self.additional_claims,
+                    }
+                },
+            }
+            return yivi_context
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate
