@@ -107,6 +107,12 @@
       "value": "The maximum value this field can have before the form can be submitted."
     }
   ],
+  "/kZu2e": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -2419,6 +2425,12 @@
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
     }
   ],
+  "JKnHMC": [
+    {
+      "type": 0,
+      "value": "Lastname"
+    }
+  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -2713,6 +2725,12 @@
     {
       "type": 0,
       "value": "Change text"
+    }
+  ],
+  "M2+MHj": [
+    {
+      "type": 0,
+      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -3185,6 +3203,12 @@
     {
       "type": 0,
       "value": "You need to configure both longitude and latitude."
+    }
+  ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
     }
   ],
   "R7XVbR": [
@@ -3951,12 +3975,6 @@
       "value": "Maximum width"
     }
   ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
-    }
-  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4171,6 +4189,12 @@
     {
       "type": 0,
       "value": "TITLE parameter"
+    }
+  ],
+  "ZYWsHs": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "ZdZ2Mb": [
@@ -5235,6 +5259,12 @@
     {
       "type": 0,
       "value": "If left blank, then the most recent version is used."
+    }
+  ],
+  "hkXaC1": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "huHjRm": [
@@ -6505,6 +6535,30 @@
       "value": "Plugin attribute"
     }
   ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6711,30 +6765,6 @@
     {
       "type": 0,
       "value": "Error"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [

@@ -61,6 +61,7 @@ const getBuilderOptions = () => {
           map: true,
           editgrid: true,
           addressNL: true,
+          partners: true,
         },
       },
       custom_layout: {
