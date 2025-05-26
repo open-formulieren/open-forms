@@ -7,7 +7,8 @@
     {"$ref": "#/$defs/digid/schemas/withoutMandate"},
     {"$ref": "#/$defs/digid/schemas/withMandate"},
     {"$ref": "#/$defs/eherkenning/schemas/withoutMandate"},
-    {"$ref": "#/$defs/eherkenning/schemas/withMandate"}
+    {"$ref": "#/$defs/eherkenning/schemas/withMandate"},
+    {"$ref": "#/$defs/yivi/schemas/base"}
   ],
   "$defs": {
     "naturalPerson": {
@@ -463,6 +464,26 @@
             {"$ref": "#/$defs/eherkenning/mandate:company"}
           ],
           "unevaluatedProperties": false
+        }
+      }
+    },
+
+    // @TODO update with real schema
+    "yivi": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate Yivi authentication.",
+        "const": "yivi"
+      },
+      "schemas": {
+        "base": {
+          "title": "Authentication context data schema for Yivi",
+          "type": "object",
+          "required": ["source"],
+          "properties": {
+            "source": {"$ref": "#/$defs/digid/source"}
+          },
+          "additionalProperties": true
         }
       }
     }

@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from mozilla_django_oidc_db.views import OIDCInit
 
-from openforms.accounts.models import User
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
 
@@ -80,9 +79,10 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     def transform_claims(
         self, options: YiviOptions, normalized_claims: YiviClaims
     ) -> FormAuth:
+        auth_attribute = options["authentication_attribute"]
         form_auth = {
             "plugin": self.identifier,
-            "attribute": options["authentication_attribute"],
+            "attribute": auth_attribute,
             "additional_claims": {},
         }
 
@@ -94,13 +94,11 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
                 scope__in=additional_scopes
             ).values_list("claims", flat=True)
 
-            for claim in claims_to_add:
-                form_auth["additional_claims"][claim] = (
-                    normalized_claims[claim] if claim in normalized_claims else None
-                )
+            for claim in sum(claims_to_add, []):
+                form_auth["additional_claims"][claim] = normalized_claims.get(claim, "")
 
         # Add authentication_attribute specific form auth properties
-        match options["authentication_attribute"]:
+        match auth_attribute:
             case AuthAttribute.bsn:
                 # Coppied from digid_oidc
                 form_auth["value"] = normalized_claims.get("bsn_claim", "")
@@ -129,9 +127,6 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         """
         Redirect to form URL.
         """
-        assert request.user.is_authenticated
-        assert isinstance(request.user, User)
-
         form_url = request.GET.get("next")
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
