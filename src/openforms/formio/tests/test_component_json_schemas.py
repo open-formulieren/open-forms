@@ -61,8 +61,8 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "html": "ASDF",
             "type": "content",
         }
-        with self.assertRaises(NotImplementedError):
-            as_json_schema(component)
+        schema = as_json_schema(component)
+        self.assertIsNone(schema)
 
     def test_currency(self):
         component: Component = {
