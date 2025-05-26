@@ -27,6 +27,22 @@ mock_digid_config = partial(
     default_loa=DigiDAssuranceLevels.middle,
 )
 
+mock_eidas_config = partial(
+    mock_config,
+    model="OFEIDASConfig",
+    oidc_rp_scopes_list=["openid", "eidas"],
+    loa_claim=["authsp_level"],
+    first_name_claim=["first_name"],
+    family_name_claim=["family_name"],
+    date_of_birth_claim=["birthdate"],
+    mandate_service_id_claim=["service_id"],
+    person_identifier_claim=["person_identifier"],
+    person_identifier_type_claim=["person_identifier_type"],
+    company_identifier_claim=["company_identifier"],
+    company_name_claim=["company_name"],
+    default_loa=AssuranceLevels.low,
+)
+
 mock_eherkenning_config = partial(
     mock_config,
     model="OFEHerkenningConfig",

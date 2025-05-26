@@ -48,6 +48,7 @@ from .base import (
     mock_digid_machtigen_config,
     mock_eherkenning_bewindvoering_config,
     mock_eherkenning_config,
+    mock_eidas_config,
 )
 
 
@@ -172,6 +173,45 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         # now, initiate the logout, which must trigger the OP logout too
         try:
             self._do_plugin_logout("eherkenning_oidc")
+        except Exception as exc:
+            raise self.failureException(
+                "Logout with empty session unexpectedly crashed"
+            ) from exc
+
+
+class EIDASLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
+    """
+    Test the (RP-initiated) logout flow for the eIDAS plugin.
+    """
+
+    @mock_eidas_config()
+    def test_logout_also_logs_out_user_in_openid_provider(self):
+        form = FormFactory.create(authentication_backend="eidas_oidc")
+        start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_oidc")
+        # use shared session to maintain cookie state
+        session = Session()
+        self.addCleanup(session.close)
+        callback_url = self._do_keycloak_login(
+            session, start_url, username="eidas-person", password="eidas-person"
+        )
+        # proceed by completing the login flow
+        callback_response = self.app.get(callback_url, auto_follow=True)
+        assert callback_response.status_code == 200
+        assert OIDC_ID_TOKEN_SESSION_KEY in self.app.session
+
+        # now, initiate the logout, which must trigger the OP logout too
+        self._do_plugin_logout("eidas_oidc")
+
+        self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
+        self.assertNotLoggedInToKeycloak(session, start_url)
+
+    @mock_eidas_config()
+    def test_logout_with_empty_session(self):
+        assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
+
+        # now, initiate the logout, which must trigger the OP logout too
+        try:
+            self._do_plugin_logout("eidas_oidc")
         except Exception as exc:
             raise self.failureException(
                 "Logout with empty session unexpectedly crashed"

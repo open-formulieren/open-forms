@@ -29,6 +29,7 @@ from .base import (
     mock_digid_machtigen_config,
     mock_eherkenning_bewindvoering_config,
     mock_eherkenning_config,
+    mock_eidas_config,
 )
 
 
@@ -87,6 +88,128 @@ class DigiDAuthContextTests(
         self.assertEqual(
             auth_context["authorizee"]["legalSubject"],
             {"identifierType": "bsn", "identifier": "000000000"},
+        )
+
+
+@override_settings(ALLOWED_HOSTS=["*"])
+class EIDASAuthContextTests(
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+):
+    csrf_checks = False
+    extra_environ = {
+        "HTTP_HOST": "localhost:8000",
+    }
+
+    @mock_eidas_config()
+    def test_record_auth_context_for_eidas_natural_person_authentication(self):
+        self._login_and_start_form(
+            "eidas_oidc", username="eidas-person", password="eidas-person"
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eidas")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "bsn",
+                "identifier": "123456789",
+                "firstName": "John",
+                "familyName": "Doe",
+                "dateOfBirth": "1946-01-25",
+            },
+        )
+
+    @mock_eidas_config(person_identifier_type_claim=["invalid-claim"])
+    def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_person_identifier_type_claim(
+        self,
+    ):
+        self._login_and_start_form(
+            "eidas_oidc", username="eidas-person", password="eidas-person"
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eidas")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "opaque",
+                "identifier": "123456789",
+                "firstName": "John",
+                "familyName": "Doe",
+                "dateOfBirth": "1946-01-25",
+            },
+        )
+
+    @mock_eidas_config()
+    def test_record_auth_context_for_eidas_company_authentication(self):
+        self._login_and_start_form(
+            "eidas_oidc", username="eidas-company", password="eidas-company"
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eidas")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "opaque",
+                "identifier": "012345678",
+                "companyName": "example company BV",
+            },
+        )
+        self.assertEqual(
+            auth_context["authorizee"]["actingSubject"],
+            {
+                "identifierType": "bsn",
+                "identifier": "123456789",
+                "firstName": "John",
+                "familyName": "Doe",
+                "dateOfBirth": "1946-01-25",
+            },
+        )
+
+    @mock_eidas_config(person_identifier_type_claim=["invalid-claim"])
+    def test_record_auth_context_for_eidas_company_authentication_with_missing_person_identifier_type_claim(
+        self,
+    ):
+        self._login_and_start_form(
+            "eidas_oidc", username="eidas-company", password="eidas-company"
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eidas")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "opaque",
+                "identifier": "012345678",
+                "companyName": "example company BV",
+            },
+        )
+        self.assertEqual(
+            auth_context["authorizee"]["actingSubject"],
+            {
+                "identifierType": "opaque",
+                "identifier": "123456789",
+                "firstName": "John",
+                "familyName": "Doe",
+                "dateOfBirth": "1946-01-25",
+            },
         )
 
 

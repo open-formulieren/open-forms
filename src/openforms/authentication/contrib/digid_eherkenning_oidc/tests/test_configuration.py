@@ -8,6 +8,7 @@ from ..models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASConfig,
 )
 
 
@@ -23,6 +24,7 @@ class CallbackURLConfigurationTests(TestCase):
         self.addCleanup(OFEHerkenningConfig.clear_cache)
         self.addCleanup(OFDigiDMachtigenConfig.clear_cache)
         self.addCleanup(OFEHerkenningBewindvoeringConfig.clear_cache)
+        self.addCleanup(OFEIDASConfig.clear_cache)
 
     @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
     def test_legacy_settings(self):
@@ -34,6 +36,7 @@ class CallbackURLConfigurationTests(TestCase):
                 OFEHerkenningBewindvoeringConfig,
                 "/eherkenning-bewindvoering-oidc/callback/",
             ),
+            (OFEIDASConfig, "/eidas-oidc/callback/"),
         )
 
         for config_cls, expected_url in cases:
@@ -52,6 +55,7 @@ class CallbackURLConfigurationTests(TestCase):
             OFEHerkenningConfig,
             OFDigiDMachtigenConfig,
             OFEHerkenningBewindvoeringConfig,
+            OFEIDASConfig,
         )
 
         for config_cls in cases:
