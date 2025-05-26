@@ -5,8 +5,8 @@ Family members
 ==============
 
 The **Family members** prefill plugin stores data records for partners and children based
-on a person's BSN. These records can be used to pre-fill (user defined) form variables 
-if a set of specific variables is configured accordingly.
+on a person's BSN. These records can be used to pre-fill form variables if a set of specific 
+variables is configured accordingly.
 
 Currently, we support only `Haal Centraal BRP bevragen API`_ (v2) and `StUF-BG`_ (version 3.1).
 
@@ -41,25 +41,25 @@ source that has been selected. For both sources the user has to follow the same 
 order to configure/enable the plugin.
 
 In order to enable the plugin you need to complete the configuration above. Next step is
-to define two separate **user defined** form variables:
+to add the relevant component and a **user defined** form variable:
 
-  * The first one is the variable that we call `immutable` since this is not intended for 
-    modifications/updates. This is used for configuring the plugin and holding the retrieved
-    data. It should not be modified because it's used as a prototype for the initial data
-    we get from the selected service.
+  * The component you need to add to the form is either "partners" or "children" from
+    the special fields. This will automatically create a form variable of data type ``array``.
+    This form variable will hold the data each time something is updated (`mutable` variable).
 
-  * A second variable is needed in order to be able to hold the same data, but in the same
-    time we want to be able to modify it (for example with a logic rule) during the submission.
-    This variable should always be of data type ``array``, since what we save in it is an
-    array of persons (always). 
+  * Next step is to add a user defined variable that we call `immutable` since this is not 
+    intended for modifications/updates. This is used for configuring the plugin and holding
+    the original retrieved data. The data of this should not be modified because it's used
+    as a prototype for the initial data we get from the selected service.
 
 .. note::
    
    You can see the configuration of these two variables in detail in the :ref:`Family members form guide <examples_family_members_prefill>`
 
-As a conclusion, you always need two variables for storing data for the partners and two
-variables for the children. You can configure a form that handles both the partners and 
-the children so in this case you need four variables (two for each type of person).
+As a conclusion, you always need two variables (one from the component's creation and one
+user defined) for storing data for the partners and two variables for the children. You 
+can configure a form that handles both the partners and the children so in this case you
+need four variables (two for each type of person).
 
 Technical
 =========
