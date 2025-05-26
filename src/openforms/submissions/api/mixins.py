@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.utils import timezone
 
+import structlog
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -12,6 +13,8 @@ from ..signals import submission_complete
 from ..tasks import on_post_submission_event
 from ..tokens import submission_status_token_generator
 from ..utils import persist_user_defined_variables, remove_submission_from_session
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class SubmissionCompletionMixin:
@@ -48,6 +51,11 @@ class SubmissionCompletionMixin:
         transaction.on_commit(
             lambda: on_post_submission_event(
                 submission.pk, PostSubmissionEvents.on_completion
+            )
+        )
+        transaction.on_commit(
+            lambda: logger.info(
+                "submission_completed", submission_uuid=str(submission.uuid)
             )
         )
 
