@@ -1015,7 +1015,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.38.0
+zgw-consumers @ git+https://github.com/maykinmedia/zgw-consumers.git@e807980e9131fbe9aaba1351eaeb5b2d2b63a6ac
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
