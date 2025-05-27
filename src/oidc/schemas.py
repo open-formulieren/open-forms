@@ -129,12 +129,12 @@ DIGID_MACHTIGEN_OPTIONS_SCHEMA = {
             "description": _("DigiD Machtigen settings."),
             "type": "object",
             "required": [
-                "representee_claim_path",
-                "authorizee_claim_path",
+                "representee_bsn_claim_path",
+                "authorizee_bsn_claim_path",
                 "mandate_service_id_claim_path",
             ],
             "properties": {
-                "representee_claim_path": {
+                "representee_bsn_claim_path": {
                     "description": _(
                         "Path to the claim value holding the BSN of the represented user."
                     ),
@@ -144,7 +144,7 @@ DIGID_MACHTIGEN_OPTIONS_SCHEMA = {
                         "type": "string",
                     },
                 },
-                "authorizee_claim_path": {
+                "authorizee_bsn_claim_path": {
                     "description": _(
                         "Path to the claim value holding the BSN of the authorised user."
                     ),
