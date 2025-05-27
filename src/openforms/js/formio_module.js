@@ -19,6 +19,7 @@ import LicensePlate from './components/form/licenseplate';
 import Map from './components/form/map';
 import NpFamilyMembers from './components/form/np-family-members';
 import NumberField from './components/form/number';
+import Partners from './components/form/partners';
 import PhoneNumberField from './components/form/phoneNumber';
 import PostcodeField from './components/form/postcode';
 import RadioField from './components/form/radio';
@@ -64,6 +65,7 @@ const FormIOModule = {
     datamap: Datamap,
     addressNL: AddressNL,
     softRequiredErrors: SoftRequiredErrors,
+    partners: Partners,
   },
   builders: {
     webform: WebformBuilder,

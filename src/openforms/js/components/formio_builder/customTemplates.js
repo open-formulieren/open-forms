@@ -5,6 +5,7 @@ import columnsTemplate from './templates/columns.ejs';
 import componentTemplate from './templates/component.ejs';
 import fieldTemplate from './templates/field.ejs';
 import fieldsetTemplate from './templates/fieldset.ejs';
+import partners from './templates/partners';
 
 const TEMPLATES = {
   builderSidebar: {form: builderSidebar},
@@ -14,6 +15,7 @@ const TEMPLATES = {
   columns: {form: columnsTemplate},
   component: {form: componentTemplate},
   fieldset: {form: fieldsetTemplate},
+  partners: {form: partners},
 };
 
 export default TEMPLATES;

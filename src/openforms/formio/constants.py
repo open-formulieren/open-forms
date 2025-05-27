@@ -12,6 +12,7 @@ COMPONENT_DATATYPES = {
     "map": "object",
     "editgrid": "array",
     "datetime": "datetime",
+    "partners": "array",
 }
 
 
