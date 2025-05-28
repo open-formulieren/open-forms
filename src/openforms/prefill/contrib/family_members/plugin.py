@@ -16,7 +16,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.models.submission_value_variable import (
     SubmissionValueVariable,
 )
-from openforms.typing import JSONEncodable, JSONObject
+from openforms.typing import JSONEncodable, JSONValue
 from stuf.stuf_bg.checks import check_config as check_stuf_bg_config
 
 from ...base import BasePlugin
@@ -32,7 +32,7 @@ PLUGIN_IDENTIFIER = "family_members"
 
 
 class HasDictDump(Protocol):
-    def model_dump(self, *args, **kwargs) -> JSONObject: ...
+    def model_dump(self, *args, **kwargs) -> JSONValue: ...
 
 
 class Handler(Protocol):
@@ -79,9 +79,10 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
         bsn = submission.auth_info.value
 
         handler = get_handler()
-        results: JSONObject = {
-            str(options["type"]): [item.model_dump() for item in handler(bsn, options)]
-        }
+        results: Sequence[JSONValue] = [
+            item.model_dump(by_alias=True) for item in handler(bsn, options)
+        ]
+
         # we need to update both variables (the one that contains the initial data and the
         # prefill configuration and the mutable one) with the data that we have retrieved
         return {
