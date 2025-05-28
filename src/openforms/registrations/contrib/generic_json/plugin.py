@@ -27,10 +27,11 @@ from openforms.variables.service import get_static_variables
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
 from .config import GenericJSONOptions, GenericJSONOptionsSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .registration_variables import register as variables_registry
 
 
-@register("json_dump")
+@register(PLUGIN_IDENTIFIER)
 class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
