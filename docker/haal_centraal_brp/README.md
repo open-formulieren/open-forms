@@ -21,40 +21,58 @@ This brings up the service and you can now make API calls by using
 http://localhost:5010/haalcentraal/api/brp/personen. Of course these calls have to be according to
 the specification (https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc).
 
+Note: before running the related tests in the code, please make sure to apply all patches from
+_open-forms/patches/haal_centraal_brp_ to the test data. See below for more detailed instructions on
+how to create and apply patches.
+
 ### Test data
 
 Inside the container in `/app/Data/` directory you can find a json file with the initial test data
 that the API provides. This file is part of the docker container itself and it can be modified
-according to our needs. Trying to put unknown attributes/parameters will work as expected with a
-validation error (400).
+according to our needs by using patches. Trying to put unknown attributes/parameters will work as
+expected with a validation error (400).
 
-#### Please make sure you follow the correct steps when adding new/modifying test data:
+#### Adding a new patch to modify test data:
 
-- copy the _/app/Data/test-data.json_ file into your local machine
+- Copy the _/app/Data/test-data.json_ file into your local machine. Ensure it is placed inside a
+  folder that is tracked by `git`.
 
   `docker cp <container_id>:/app/Data/test-data.json /desired_path/test-data.json`
 
-- modify the data of the local file according to your needs
-- create a patch file (_some-change-bsnNumber.patch_) and save it to open-forms/patches directory by
-  using the last commit (with the changes ou made)
+- Make sure you first apply all the available patches until now, that are located in the patches
+  folder. See below ("Applying an existing patch") for more details.
+- Commit the file to ensure changes are being tracked.
+- Modify the data of the local file according to your needs.
+- Create a patch file (_some-change-bsnNumber.patch_) and save it to
+  _open-forms/patches/haal_centraal_brp_ directory by using the last commit (with the changes you
+  made).
 
-  `git format-patch -1`
+  `git diff --no-color > /path/to/open-forms/patches/haal_centraal_brp_/some-change-bsnNumber.patch`
 
-- copy the new json file into the container
+- Copy the new json file into the container.
 
-  `docker cp /path/to/test-data.json <container_id>:/app/Data/test-data.json`
+  `docker cp /desired_path/test-data.json <container_id>:/app/Data/test-data.json`
 
-- restart the container and you can test your new test cases
+- Restart the container and you can test your new test cases.
 
-#### In case you want to apply a new patch you follow these steps:
+When you are done testing:
 
-- apply the patch to your local json file
+- Commit and push the patch file for others to use (if applicable).
 
-  `git am some-change-bsnNumber.patch`
+#### Applying an existing patch:
 
-- copy the updated file into the container
+- If not done already, copy the _/app/Data/test-data.json_ file into your local machine. This must
+  be the initial file, without any changes/patches already applied and inside a directory tracked by
+  git.
 
-  `docker cp /path/to/test-data.json <container_id>:/app/Data/test-data.json `
+  `docker cp <container_id>:/app/Data/test-data.json /desired_path/test-data.json`
+
+- Apply the patches to your local json file by running the script with the necessary local directory
+  (contains the local json file).
+
+  `./patches/haal_centraal_brp/apply_patch_and_copy.sh /desired_path`
+
+The script should now have applied all patches and copied the updated file into the container.
 
 ### Extras
 
