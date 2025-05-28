@@ -174,7 +174,11 @@ class V2Client(BRPClient):
     def find_persons(
         self, bsns: Sequence[str], reraise_errors: bool = False, **kwargs
     ) -> Mapping[str, JSONObject] | None:
-        attributes: Sequence[str] = ["burgerservicenummer"] + kwargs.pop("attributes")
+        attributes: Sequence[str] = [
+            "burgerservicenummer",
+            *list(kwargs.pop("attributes", []) or []),
+        ]
+
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
             "burgerservicenummer": bsns,
