@@ -13,6 +13,7 @@ from zgw_consumers.client import build_client
 
 from openforms.formio.typing import (
     Component,
+    EditGridComponent,
     FileComponent,
     SelectBoxesComponent,
 )
@@ -26,11 +27,13 @@ from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin  # openforms.registrations.base
 from ...registry import register  # openforms.registrations.registry
-from .config import GenericJSONOptions, GenericJSONOptionsSerializer
+from .config import GenericJSONOptionsSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .registration_variables import register as variables_registry
+from .typing import GenericJSONOptions
 
 
-@register("json_dump")
+@register(PLUGIN_IDENTIFIER)
 class GenericJSONRegistration(BasePlugin):
     verbose_name = _("Generic JSON registration")
     configuration_options = GenericJSONOptionsSerializer
@@ -58,7 +61,11 @@ class GenericJSONRegistration(BasePlugin):
             if key in options["variables"]
         }
         values_schema = generate_json_schema(
-            submission.form, list(values.keys()), submission=submission
+            submission.form,
+            list(values.keys()),
+            backend_id=PLUGIN_IDENTIFIER,
+            backend_options=options,  # pyright: ignore[reportArgumentType]
+            submission=submission,
         )
         transform_to_list = options["transform_to_list"]
         post_process(values, values_schema, submission, transform_to_list)
@@ -76,6 +83,8 @@ class GenericJSONRegistration(BasePlugin):
         metadata_schema = generate_json_schema(
             submission.form,
             metadata_variables,
+            backend_id=PLUGIN_IDENTIFIER,
+            backend_options=options,  # pyright: ignore[reportArgumentType]
             additional_variables_registry=variables_registry,
         )
 
@@ -109,6 +118,93 @@ class GenericJSONRegistration(BasePlugin):
 
     def get_variables(self) -> list[FormVariable]:  # pragma: no cover
         return get_static_variables(variables_registry=variables_registry)
+
+    @staticmethod
+    def allows_json_schema_generation(options: GenericJSONOptions) -> bool:
+        return True
+
+    def process_variable_schema(
+        self,
+        component: Component,
+        schema: JSONObject,
+        options: GenericJSONOptions,
+    ):
+        """Process a variable schema for the Generic JSON format.
+
+        The following components need extra attention:
+        - File components: we send the content of the file encoded with base64, instead of
+          the output from the serializer.
+        - Selectboxes components: the selected options could be transformed to a list.
+        - Edit grid components: layout component with other components as children, which
+          (potentially) need to be processed.
+
+        :param component: Component
+        :param schema: JSON schema.
+        :param backend_options: Backend options, needed for the transform-to-list option of
+          selectboxes components.
+        """
+        transform_to_list = options["transform_to_list"]
+
+        match component:
+            case {"type": "file", "multiple": True}:
+                # If multiple is true, the value will be an empty list if no attachments are
+                # uploaded, or a list of objects with file name and content as properties
+                # when one or more attachments are uploaded
+                schema["items"] = {
+                    "type": "object",
+                    "properties": {
+                        "file_name": {"type": "string"},
+                        "content": {"type": "string", "format": "base64"},
+                    },
+                    "required": ["file_name", "content"],
+                    "additionalProperties": False,
+                }
+
+            case {"type": "file"}:
+                # If multiple is false, the value will be None if no attachment is uploaded,
+                # or an object with file name and content as properties when one attachment
+                # is uploaded
+                del schema["items"]
+                new_schema = {
+                    "type": ["null", "object"],
+                    "properties": {
+                        "file_name": {"type": "string"},
+                        "content": {"type": "string", "format": "base64"},
+                    },
+                    "required": ["file_name", "content"],
+                    "additionalProperties": False,
+                }
+                schema.update(new_schema)
+
+            case {"type": "selectboxes"} if component["key"] in transform_to_list:
+                assert isinstance(schema["properties"], dict)
+
+                # If the component is transformed to a list, we need to adjust the schema
+                # accordingly
+                schema["type"] = "array"
+                schema["items"] = {"type": "string", "enum": list(schema["properties"])}
+
+                for prop in ("properties", "required", "additionalProperties"):
+                    schema.pop(prop)
+
+            case {"type": "editgrid"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                component = cast(EditGridComponent, component)
+                for child_component in component["components"]:
+                    child_key = child_component["key"]
+                    child_schema = _properties[child_key]
+                    assert isinstance(child_schema, dict)
+                    self.process_variable_schema(
+                        child_component,
+                        child_schema,
+                        options,
+                    )
+
+            case _:
+                pass
 
 
 def post_process(

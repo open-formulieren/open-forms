@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any, cast, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -15,12 +15,15 @@ from openforms.contrib.objects_api.clients import (
     get_objecttypes_client,
 )
 from openforms.contrib.objects_api.ownership_validation import validate_object_ownership
+from openforms.formio.typing import Component, EditGridComponent
 from openforms.registrations.utils import execute_unless_result_exists
+from openforms.typing import JSONObject
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin
 from ...registry import register
 from .config import ObjectsAPIOptionsSerializer
+from .constants import PLUGIN_IDENTIFIER
 from .models import ObjectsAPIConfig
 from .registration_variables import register as variables_registry
 from .submission_registration import HANDLER_MAPPING
@@ -31,8 +34,6 @@ if TYPE_CHECKING:
     from openforms.forms.models import FormVariable
     from openforms.submissions.models import Submission
 
-
-PLUGIN_IDENTIFIER = "objects_api"
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -201,3 +202,81 @@ class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     @override
     def get_variables(self) -> list[FormVariable]:
         return get_static_variables(variables_registry=variables_registry)
+
+    @staticmethod
+    def allows_json_schema_generation(options: RegistrationOptions) -> bool:
+        return options["version"] == 2
+
+    def process_variable_schema(
+        self, component: Component, schema: JSONObject, options: RegistrationOptions
+    ):
+        """Process a variable schema for the Objects API format.
+
+        The following components need extra attention:
+        - File components: we send a url or list of urls, instead of the output from the
+          serializer.
+        - Selectboxes components: the selected options could be transformed to a list.
+        - Edit grid components: layout component with other components as children,
+          which (potentially) need to be processed.
+
+        :param component: Component
+        :param schema: JSON schema.
+        :param options: Backend options, needed for the transform-to-list option of
+          selectboxes components.
+        """
+        assert options["version"] == 2
+        transform_to_list = options["transform_to_list"]
+
+        match component:
+            case {"type": "addressNL"}:
+                # In the Objects API there exists an option to map the individual fields
+                # of the addressNL component. Unlike the transform-to-list option for
+                # selectboxes components, this is not a checkbox, but rather a mapping from
+                # a variable to a JSON schema property. This creates the problem that this
+                # option cannot be set without the 'contract' already being present in the
+                # Objecttypes API, and essentially means we are trying to fetch contract
+                # options (whether to map the complete object or individual subfields) from
+                # the contract we are currently generating. Therefore, we just default to
+                # the schema of a complete addressNL object.
+                pass
+
+            case {"type": "file", "multiple": True}:
+                # If multiple is true, the value will be an empty list if no attachments are
+                # uploaded, or a list of urls when one or more attachments are uploaded.
+                schema["items"] = {"type": "string", "format": "uri"}
+
+            case {"type": "file"}:  # multiple is False or missing
+                # If multiple is false, the value will be an empty string if no attachment
+                # is uploaded, or a single url if one attachment is uploaded.
+                schema["type"] = "string"
+                schema["oneOf"] = [{"format": "uri"}, {"pattern": "^$"}]
+                schema.pop("items")
+
+            case {"type": "selectboxes"} if component["key"] in transform_to_list:
+                assert isinstance(schema["properties"], dict)
+
+                # If the component is transformed to a list, we need to adjust the schema
+                # accordingly
+                schema["type"] = "array"
+                schema["items"] = {"type": "string", "enum": list(schema["properties"])}
+
+                for prop in ("properties", "required", "additionalProperties"):
+                    schema.pop(prop)
+
+            case {"type": "editgrid"}:
+                assert isinstance(schema["items"], dict)
+                _properties = schema["items"]["properties"]
+                assert isinstance(_properties, dict)
+
+                component = cast(EditGridComponent, component)
+                for child_component in component["components"]:
+                    child_key = child_component["key"]
+                    child_schema = _properties[child_key]
+                    assert isinstance(child_schema, dict)
+                    self.process_variable_schema(
+                        child_component,
+                        child_schema,
+                        options,
+                    )
+            case _:
+                pass
