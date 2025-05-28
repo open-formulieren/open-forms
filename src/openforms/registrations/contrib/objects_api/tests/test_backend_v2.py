@@ -22,8 +22,9 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
+from ..constants import PLUGIN_IDENTIFIER
 from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
-from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..plugin import ObjectsAPIRegistration
 from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2

@@ -2,13 +2,22 @@ from __future__ import annotations
 
 import uuid
 from collections import UserDict
-from typing import Iterator, Sequence
+from typing import Iterator, Sequence, cast
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     rewrite_formio_components,
 )
+from openforms.formio.typing import Component, EditGridComponent
 from openforms.plugins.registry import BaseRegistry
+from openforms.registrations.contrib.generic_json.constants import (
+    PLUGIN_IDENTIFIER as GENERIC_JSON,
+)
+from openforms.registrations.contrib.generic_json.typing import GenericJSONOptions
+from openforms.registrations.contrib.objects_api.constants import (
+    PLUGIN_IDENTIFIER as OBJECTS_API,
+)
+from openforms.registrations.contrib.objects_api.typing import RegistrationOptionsV2
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.base import BaseStaticVariable
@@ -16,6 +25,10 @@ from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
 from .models import Form, FormVariable
+
+
+class InvalidBackendIdError(Exception):
+    pass
 
 
 def _iter_form_variables(
@@ -41,6 +54,8 @@ def _iter_form_variables(
 def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
+    backend_id: str = "",
+    backend_options: RegistrationOptionsV2 | GenericJSONOptions | None = None,
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
     submission: Submission | None = None,
 ) -> JSONObject:
@@ -51,6 +66,9 @@ def generate_json_schema(
 
     :param form: The form to generate JSON schema for.
     :param limit_to_variables: Variables that will be included in the schema.
+    :param backend_id: Optional registration backend identifier for which to generate
+      the schema.
+    :param backend_options: Optional registration backend options.
     :param additional_variables_registry: Optional extra registry of static variables.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
@@ -79,9 +97,16 @@ def generate_json_schema(
         if variable.source == FormVariableSources.component:
             variable.form_definition.configuration = new_configuration.configuration
 
-        process_variable_schema_and_add_to_schema(
+        schema = generate_variable_schema(
+            variable,
+            submission.total_configuration_wrapper,
+            backend_id,
+            backend_options,
+        )
+
+        process_variable_schema_and_add_to_complete_schema(
             variable.key,
-            variable.as_json_schema(),
+            schema,
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
@@ -98,7 +123,54 @@ def generate_json_schema(
     return schema
 
 
-def process_variable_schema_and_add_to_schema(
+def generate_variable_schema(
+    variable: FormVariable,
+    configuration_wrapper: FormioConfigurationWrapper,
+    backend_id: str = "",
+    backend_options: RegistrationOptionsV2 | GenericJSONOptions | None = None,
+) -> JSONObject:
+    """Generate the schema for a form variable.
+
+    To ensure the schema represents the submission data that is sent through different
+    registration backends, we need to perform some processing.
+
+    :param variable: The form variable.
+    :param configuration_wrapper: Updated total configuration wrapper. This is used to
+      get the component from.
+    :param backend_id: The registration backend identifier. If an empty string is
+      passed, no processing of the schema is performed, meaning it will represent the
+      formio submission data.
+    :param backend_options: Optional registration backend options. If ``backend_id`` was
+      provided, this cannot be ``None``.
+
+    :return: Schema for the variable.
+    """
+    schema = variable.as_json_schema()
+
+    if variable.source != FormVariableSources.component:
+        return schema
+
+    component = configuration_wrapper[variable.key]
+    assert component is not None
+
+    if backend_id == OBJECTS_API:
+        assert backend_options is not None
+        process_variable_schema_objects_api(component, schema, backend_options)
+    elif backend_id == GENERIC_JSON:
+        assert backend_options is not None
+        process_variable_schema_generic_json(component, schema, backend_options)
+    elif backend_id == "":
+        pass
+    else:
+        raise InvalidBackendIdError(
+            f"Processing a variable schema for registration backend '{backend_id}' is "
+            f"not supported."
+        )
+
+    return schema
+
+
+def process_variable_schema_and_add_to_complete_schema(
     key: str,
     variable_schema: JSONObject,
     total_schema: NestedDict,
@@ -126,7 +198,7 @@ def process_variable_schema_and_add_to_schema(
     ):
         edit_grid_schema = NestedDict()
         for child_key, child_schema in variable_schema["items"]["properties"].items():
-            process_variable_schema_and_add_to_schema(
+            process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
                 edit_grid_schema,
@@ -194,3 +266,151 @@ class NestedDict(UserDict):
         except KeyError:
             return False
         return True
+
+
+# TODO-5312: does it make sense to put this to
+#  openforms.registrations.contrib.objects_api.json_schema?
+def process_variable_schema_objects_api(
+    component: Component,
+    schema: JSONObject,
+    backend_options: RegistrationOptionsV2,
+):
+    """Process a variable schema for the Objects API format.
+
+    The following components need extra attention:
+    - File components: we send a url or list of urls, instead of the output from the
+      serializer.
+    - Selectboxes components: the selected options could be transformed to a list.
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param schema: JSON schema.
+    :param backend_options: Backend options, needed for the transform-to-list option of
+      selectboxes components.
+    """
+    transform_to_list = backend_options["transform_to_list"]
+
+    match component:
+        case {"type": "addressNL"}:
+            # In the Objects API there exists an option to map the individual fields
+            # of the addressNL component. Unlike the transform-to-list option for
+            # selectboxes components, this is not a checkbox, but rather a mapping from
+            # a variable to a JSON schema property. The creates the problem that this
+            # option cannot be set without the 'contract' already being present in the
+            # Objecttypes API. Which essentially means we are trying to fetch contract
+            # options (whether to map the complete object or individual subfields) from
+            # the contract we are currently generating. Therefore, we just default to
+            # the schema of a complete addressNL object.
+            pass
+
+        case {"type": "file", "multiple": True}:
+            # If multiple is true, the value will be an empty list if no attachments are
+            # uploaded, or a list of urls when one or more attachments are uploaded.
+            schema["items"] = {"type": "string", "format": "uri"}
+
+        case {"type": "file"}:  # multiple is False or missing
+            # If multiple is false, the value will be an empty string if no attachment
+            # is uploaded, or a single url if one attachment is uploaded.
+            schema["type"] = "string"
+            schema["oneOf"] = [{"format": "uri"}, {"pattern": "^$"}]
+            schema.pop("items")
+
+        case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            # If the component is transformed to a list, we need to adjust the schema
+            # accordingly
+            schema["type"] = "array"
+            schema["items"] = {"type": "string", "enum": list(schema["properties"])}
+
+            for prop in ("properties", "required", "additionalProperties"):
+                schema.pop(prop)
+
+        case {"type": "editgrid"}:
+            component = cast(EditGridComponent, component)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                process_variable_schema_objects_api(
+                    child_component,
+                    schema["items"]["properties"][child_key],
+                    backend_options,
+                )
+
+        case _:
+            pass
+
+
+# TODO-5312: does it make sense to put this to
+#  openforms.registrations.contrib.generic_json.json_schema?
+def process_variable_schema_generic_json(
+    component: Component,
+    schema: JSONObject,
+    backend_options: GenericJSONOptions,
+):
+    """Process a variable schema for the Generic JSON format.
+
+    The following components need extra attention:
+    - File components: we send the content of the file encoded with base64, instead of
+      the output from the serializer.
+    - Selectboxes components: the selected options could be transformed to a list.
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param schema: JSON schema.
+    :param backend_options: Backend options, needed for the transform-to-list option of
+      selectboxes components.
+    """
+    transform_to_list = backend_options["transform_to_list"]
+
+    match component:
+        case {"type": "file", "multiple": True}:
+            # If multiple is true, the value will be an empty list if no attachments are
+            # uploaded, or a list of objects with file name and content as properties
+            # when one or more attachments are uploaded
+            schema["items"] = {
+                "type": "object",
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "content": {"type": "string", "format": "base64"},
+                },
+                "required": ["file_name", "content"],
+                "additionalProperties": False,
+            }
+
+        case {"type": "file"}:
+            # If multiple is false, the value will be None if no attachment is uploaded,
+            # or an object with file name and content as properties when one attachment
+            # is uploaded
+            del schema["items"]
+            new_schema = {
+                "type": ["null", "object"],
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "content": {"type": "string", "format": "base64"},
+                },
+                "required": ["file_name", "content"],
+                "additionalProperties": False,
+            }
+            schema.update(new_schema)
+
+        case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            # If the component is transformed to a list, we need to adjust the schema
+            # accordingly
+            schema["type"] = "array"
+            schema["items"] = {"type": "string", "enum": list(schema["properties"])}
+
+            for prop in ("properties", "required", "additionalProperties"):
+                schema.pop(prop)
+
+        case {"type": "editgrid"}:
+            component = cast(EditGridComponent, component)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                process_variable_schema_generic_json(
+                    child_component,
+                    schema["items"]["properties"][child_key],
+                    backend_options,
+                )
+
+        case _:
+            pass
