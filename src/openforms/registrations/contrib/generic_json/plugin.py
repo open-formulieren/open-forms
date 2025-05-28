@@ -15,13 +15,11 @@ from openforms.formio.typing import (
     Component,
     EditGridComponent,
     FileComponent,
-    SelectBoxesComponent,
 )
 from openforms.forms.json_schema import generate_json_schema
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
 from openforms.typing import JSONObject
-from openforms.utils.json_schema import to_multiple
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
@@ -314,51 +312,30 @@ def process_component(
 
     match component:
         case {"type": "file", "multiple": True}:
-            attachment_list, base_schema = get_attachments_and_base_schema(
+            values[key] = get_attachments(
                 cast(FileComponent, component), attachments, key_prefix
             )
-            values[key] = attachment_list
-            schema["properties"][key] = to_multiple(base_schema)
 
         case {"type": "file"}:  # multiple is False or missing
-            attachment_list, base_schema = get_attachments_and_base_schema(
+            attachment_list = get_attachments(
                 cast(FileComponent, component), attachments, key_prefix
             )
+
+            variable_schema = schema["properties"][key]
+            assert isinstance(variable_schema, dict)
 
             assert (n_attachments := len(attachment_list)) <= 1  # sanity check
             if n_attachments == 0:
-                value = None
-                base_schema = {"title": component["label"], "type": "null"}
+                values[key] = None
+
+                variable_schema["type"] = "null"
+                for key_to_remove in ("properties", "required", "additionalProperties"):
+                    variable_schema.pop(key_to_remove)
             else:
-                value = attachment_list[0]
-            values[key] = value
-            schema["properties"][key] = base_schema  # pyright: ignore[reportArgumentType]
+                values[key] = attachment_list[0]
+                variable_schema["type"] = "object"
 
-        case {"type": "selectboxes"}:
-            component = cast(SelectBoxesComponent, component)
-
-            # If the select boxes component was hidden, the submitted data of this
-            # component is an empty dict, so set the required to an empty list.
-            if not values[key]:
-                schema["properties"][key]["required"] = []  # type: ignore
-
-            if key not in transform_to_list:
-                return
-
-            # Convert the values to a list and update the schema accordingly
-            choices = [options["value"] for options in component["values"]]  # type: ignore[reportTypedDictNotRequiredAccess]
-            base_schema = {
-                "type": "array",
-                "items": {"type": "string", "enum": choices},
-            }
-            _properties = schema["properties"][key]
-            assert isinstance(_properties, dict)
-            _properties.update(base_schema)
-
-            keys_to_remove = ("properties", "required", "additionalProperties")
-            for k in keys_to_remove:
-                _properties.pop(k, None)
-
+        case {"type": "selectboxes"} if key in transform_to_list:
             values[key] = [
                 option
                 for option, is_selected in values[key].items()  # pyright: ignore[reportAttributeAccessIssue,reportOptionalMemberAccess]
@@ -392,12 +369,12 @@ def process_component(
             pass
 
 
-def get_attachments_and_base_schema(
+def get_attachments(
     component: FileComponent,
     attachments: dict[str, list[SubmissionFileAttachment]],
     key_prefix: str = "",
-) -> tuple[list[JSONObject], JSONObject]:
-    """Return list of encoded attachments and the base schema.
+) -> list[JSONObject]:
+    """Return list of encoded attachments.
 
     :param component: FileComponent
     :param attachments: Mapping from component submission data path to list of
@@ -407,33 +384,16 @@ def get_attachments_and_base_schema(
       submitted data list of the edit grid component.
 
     :return encoded_attachments: List of encoded attachments for this file component.
-    :return base_schema: JSON schema describing the entries of ``encoded_attachments``.
     """
     key = f"{key_prefix}.{component['key']}" if key_prefix else component["key"]
 
-    encoded_attachments: list[JSONObject] = [
+    return [
         {
             "file_name": attachment.original_name,
             "content": encode_attachment(attachment),
         }
         for attachment in attachments.get(key, [])
     ]
-
-    base_schema: JSONObject = {
-        "title": component["label"],
-        "type": "object",
-        "properties": {
-            "file_name": {"type": "string"},
-            "content": {"type": "string", "format": "base64"},
-        },
-        "required": (
-            ["file_name", "content"] if len(encoded_attachments) != 0 else []
-            # No required properties when there are no attachments
-        ),
-        "additionalProperties": False,
-    }
-
-    return encoded_attachments, base_schema
 
 
 def encode_attachment(attachment: SubmissionFileAttachment) -> str:
