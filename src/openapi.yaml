@@ -2265,6 +2265,12 @@ paths:
         required: true
       tags:
       - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormJsonSchemaOptions'
+        required: true
       security:
       - tokenAuth: []
       responses:
@@ -8183,6 +8189,19 @@ components:
             steps.
       required:
       - file
+    FormJsonSchemaOptions:
+      type: object
+      properties:
+        registrationPluginId:
+          allOf:
+          - $ref: '#/components/schemas/RegistrationPluginIdEnum'
+          description: |-
+            Plugin identifier for which to generate the schema.
+
+            * `json_dump` - json_dump
+            * `objects_api` - objects_api
+      required:
+      - registrationPluginId
     FormLiterals:
       type: object
       properties:
@@ -9828,6 +9847,14 @@ components:
       - id
       - label
       - schema
+    RegistrationPluginIdEnum:
+      enum:
+      - json_dump
+      - objects_api
+      type: string
+      description: |-
+        * `json_dump` - json_dump
+        * `objects_api` - objects_api
     ResultEnum:
       enum:
       - failed
