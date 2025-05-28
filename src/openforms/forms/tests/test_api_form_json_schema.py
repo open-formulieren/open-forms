@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
@@ -7,6 +8,7 @@ from openforms.formio.constants import DataSrcOptions
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -14,6 +16,8 @@ from openforms.variables.constants import FormVariableDataTypes
 
 
 class FormJsonSchemaAPITests(APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -23,50 +27,25 @@ class FormJsonSchemaAPITests(APITestCase):
         super().setUp()
         self.client.force_authenticate(user=self.user)
 
-    def test_happy_flow(self):
+    def test_objects_api(self):
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
                 "components": [
                     {"key": "firstName", "type": "textfield", "label": "First Name"},
                     {
-                        "key": "lastName",
+                        "key": "last.Name",
                         "type": "textfield",
                         "multiple": True,
                         "label": "Last Name",
                     },
-                    {
-                        "label": "Select",
-                        "key": "select",
-                        "data": {
-                            "values": [
-                                {"label": "A", "value": "a"},
-                                {"label": "B", "value": "b"},
-                            ],
-                            "dataSrc": DataSrcOptions.manual,
-                            "json": "",
-                            "url": "",
-                            "resource": "",
-                            "custom": "",
-                        },
-                        "type": "select",
-                        "multiple": True,
-                    },
+                    {"key": "file", "type": "file", "label": "File", "multiple": False},
                     {
                         "type": "selectboxes",
                         "key": "selectboxes",
                         "values": [
                             {"label": "Option 1", "value": "option1"},
                             {"label": "Option 2", "value": "option2"},
-                        ],
-                    },
-                    {
-                        "label": "Radio",
-                        "key": "radio",
-                        "type": "radio",
-                        "values": [
-                            {"label": "A", "value": "a"},
-                            {"label": "B", "value": "b"},
                         ],
                         "dataSrc": DataSrcOptions.manual,
                     },
@@ -84,22 +63,38 @@ class FormJsonSchemaAPITests(APITestCase):
             initial_value=["A", "B", "C"],
         )
 
+        FormRegistrationBackendFactory.create(
+            key="backend1",
+            name="Objects API",
+            backend="objects_api",
+            form=form,
+            options={"version": 2, "transform_to_list": []},
+        )
+
         url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {"registration_backend_key": "backend1"}
 
         expected_schema = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object",
             "properties": {
                 "firstName": {"title": "First Name", "type": "string"},
-                "lastName": {
-                    "title": "Last Name",
-                    "type": "array",
-                    "items": {"type": "string"},
+                "last": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "title": "Last Name",
+                            "type": "array",
+                            "items": {"type": "string"},
+                        }
+                    },
+                    "required": ["Name"],
+                    "additionalProperties": False,
                 },
-                "select": {
-                    "type": "array",
-                    "items": {"type": "string", "enum": ["a", "b", ""]},
-                    "title": "Select",
+                "file": {
+                    "title": "File",
+                    "type": "string",
+                    "oneOf": [{"format": "uri"}, {"pattern": "^$"}],
                 },
                 "selectboxes": {
                     "title": "Select boxes",
@@ -111,20 +106,208 @@ class FormJsonSchemaAPITests(APITestCase):
                     "required": ["option1", "option2"],
                     "additionalProperties": False,
                 },
-                "radio": {"title": "Radio", "type": "string", "enum": ["a", "b", ""]},
                 "foo": {"type": "array", "title": "Foo"},
             },
             "required": [
                 "firstName",
-                "lastName",
-                "select",
+                "last",
                 "selectboxes",
-                "radio",
+                "file",
                 "foo",
             ],
             "additionalProperties": False,
         }
 
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_schema)
+        response = self.client.get(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        schema = response.json()
+
+        # Note: convert the required list to a set to counteract test flakiness. The
+        # order of this list can change because we iterate over the variables from the
+        # database when generating the schema.
+        schema["required"] = set(schema["required"])
+        expected_schema["required"] = set(expected_schema["required"])
+
+        self.assertEqual(schema, expected_schema)
+
+    def test_generic_json(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "firstName", "type": "textfield", "label": "First Name"},
+                    {
+                        "key": "last.Name",
+                        "type": "textfield",
+                        "multiple": True,
+                        "label": "Last Name",
+                    },
+                    {"key": "file", "type": "file", "label": "File", "multiple": False},
+                    {
+                        "type": "selectboxes",
+                        "key": "selectboxes",
+                        "values": [
+                            {"label": "Option 1", "value": "option1"},
+                            {"label": "Option 2", "value": "option2"},
+                        ],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        FormVariableFactory.create(
+            form=form,
+            name="Foo",
+            key="foo",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+            initial_value=["A", "B", "C"],
+        )
+
+        FormRegistrationBackendFactory.create(
+            key="backend1",
+            name="Generic JSON",
+            backend="json_dump",
+            form=form,
+            options={"transform_to_list": []},
+        )
+
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {"registration_backend_key": "backend1"}
+
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+                "firstName": {"title": "First Name", "type": "string"},
+                "last": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "title": "Last Name",
+                            "type": "array",
+                            "items": {"type": "string"},
+                        }
+                    },
+                    "required": ["Name"],
+                    "additionalProperties": False,
+                },
+                "file": {
+                    "title": "File",
+                    "type": ["null", "object"],
+                    "properties": {
+                        # TODO-5312: I would want this to be 'file_name', but it is
+                        #  converted to 'fileName'
+                        "file_name": {"type": "string"},
+                        "content": {"type": "string", "format": "base64"},
+                    },
+                    "required": ["file_name", "content"],
+                    "additionalProperties": False,
+                },
+                "selectboxes": {
+                    "title": "Select boxes",
+                    "type": "object",
+                    "properties": {
+                        "option1": {"type": "boolean"},
+                        "option2": {"type": "boolean"},
+                    },
+                    "required": ["option1", "option2"],
+                    "additionalProperties": False,
+                },
+                "foo": {"type": "array", "title": "Foo"},
+            },
+            "required": [
+                "firstName",
+                "last",
+                "selectboxes",
+                "file",
+                "foo",
+            ],
+            "additionalProperties": False,
+        }
+
+        response = self.client.get(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        schema = response.json()
+
+        # Note: convert the required list to a set to counteract test flakiness. The
+        # order of this list can change because we iterate over the variables from the
+        # database when generating the schema.
+        schema["required"] = set(schema["required"])
+        expected_schema["required"] = set(expected_schema["required"])
+
+        self.assertEqual(schema, expected_schema)
+
+    def test_backend_that_should_not_allow_schema_generation(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {"key": "firstName", "type": "textfield", "label": "First Name"},
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        FormRegistrationBackendFactory.create(
+            key="backend1",
+            name="Email",
+            backend="email",
+            form=form,
+            options={"to_emails": ["foo@example.com"]},
+        )
+
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {"registration_backend_key": "backend1"}
+
+        response = self.client.get(url, options)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        errors = response.json()["invalidParams"]
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(
+            errors[0],
+            {
+                "name": "registrationBackendKey",
+                "code": "invalid",
+                "reason": "Backend with id 'email' does not allow JSON schema generation",
+            },
+        )
+
+    def test_backend_that_does_not_exist(self):
+        form = FormFactory.create(name="Form 1")
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "selectboxes",
+                        "key": "selectboxes",
+                        "values": [
+                            {"label": "Option a", "value": "option_a"},
+                            {"label": "Option b", "value": "option_b"},
+                        ],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {"registration_backend_key": "backend1"}
+
+        response = self.client.get(url, options)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        errors = response.json()["invalidParams"]
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(
+            errors[0],
+            {
+                "name": "registrationBackendKey",
+                "code": "invalid",
+                "reason": "Backend with key 'backend1' does not exist for form 'Form 1'",
+            },
+        )

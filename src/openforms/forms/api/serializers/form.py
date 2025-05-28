@@ -3,12 +3,15 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import OpenApiParameter, extend_schema_field
 from rest_framework import serializers
-from rest_framework.exceptions import ErrorDetail
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
-from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.api.utils import (
+    get_from_serializer_data_or_instance,
+    underscore_to_camel,
+)
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
@@ -23,9 +26,12 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
+from openforms.registrations.service import plugin_allows_json_schema_generation
 from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.typing import RegistrationBackendKey
 
 from ...constants import StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
@@ -613,3 +619,67 @@ class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+
+
+class FormJsonSchemaOptionsSerializer(serializers.Serializer):
+    registration_backend_key: RegistrationBackendKey = serializers.CharField(
+        label=_("Registration backend key"),
+        max_length=50,
+        help_text=_("The registration backend key for which to generate the schema."),
+        required=True,
+        allow_null=False,
+    )
+    backend = serializers.CharField(
+        label=_("Registration backend identifier"),
+        max_length=UNIQUE_ID_MAX_LENGTH,
+        read_only=True,
+    )
+    options = serializers.JSONField(
+        label=_("Registration backend options"),
+        read_only=True,
+    )
+
+    def validate_registration_backend_key(self, value):
+        form = self.context["form"]
+
+        # Note that a backend is unique by its key for each form
+        try:
+            backend = form.registration_backends.get(key=value)
+        except FormRegistrationBackend.DoesNotExist as exc:
+            raise ValidationError(
+                _("Backend with key '{key}' does not exist for form '{form}'").format(
+                    key=value, form=form
+                )
+            ) from exc
+
+        if not plugin_allows_json_schema_generation(backend.backend, backend.options):
+            raise ValidationError(
+                _(
+                    "Backend with id '{backend}' does not allow JSON schema generation"
+                ).format(backend=backend.backend)
+            )
+
+        self.context["backend"] = backend
+
+        return value
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        backend = self.context["backend"]
+        attrs["backend"] = backend.backend
+        attrs["options"] = backend.options
+
+        return attrs
+
+    @classmethod
+    def as_openapi_params(cls):
+        instance = cls()
+        field = instance.fields["registration_backend_key"]
+        return [
+            OpenApiParameter(
+                underscore_to_camel(str(field.field_name)),
+                OpenApiTypes.STR,
+                description=str(field.help_text),
+            )
+        ]
