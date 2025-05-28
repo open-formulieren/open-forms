@@ -2069,6 +2069,11 @@
     "description": "Objects registration: document types",
     "originalDefault": "Document types"
   },
+  "b0tRq+": {
+    "defaultMessage": "Form JSON schema: {backendLabel}",
+    "description": "Generate JSON schema modal title",
+    "originalDefault": "Form JSON schema: {backendLabel}"
+  },
   "b9D64D": {
     "defaultMessage": "Is sensitive",
     "description": "Is sensitive icon title",
@@ -2618,6 +2623,11 @@
     "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
     "description": "Registration validation errors icon next to button to configure options",
     "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
+  },
+  "k2G5xb": {
+    "defaultMessage": "Before generating a schema, ensure the options are configured and the complete form is saved.",
+    "description": "Form JSON schema help text",
+    "originalDefault": "Before generating a schema, ensure the options are configured and the complete form is saved."
   },
   "k34Vke": {
     "defaultMessage": "Then",
@@ -3304,6 +3314,11 @@
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
   },
+  "xgcUQF": {
+    "defaultMessage": "Generate JSON schema",
+    "description": "Link label to generate JSON schema of registration backend",
+    "originalDefault": "Generate JSON schema"
+  },
   "xxyIg/": {
     "defaultMessage": "Indicates whether appointments are enabled for this form.",
     "description": "Form appointment enabled field help text",
@@ -3393,6 +3408,11 @@
     "defaultMessage": "Submission settings",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zu8ntq": {
+    "defaultMessage": "An error occurred during schema generation",
+    "description": "Form schema generation error message",
+    "originalDefault": "An error occurred during schema generation"
   },
   "zwOwrD": {
     "defaultMessage": "Select a property from the object type",

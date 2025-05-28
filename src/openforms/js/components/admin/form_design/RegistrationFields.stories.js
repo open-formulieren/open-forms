@@ -24,6 +24,7 @@ import {
 import {rsSelect} from 'utils/storybookTestHelpers';
 
 import RegistrationFields from './RegistrationFields';
+import {mockFormJsonSchemaGet} from './mocks';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
@@ -923,6 +924,101 @@ export const ObjectsAPI = {
 
     // re-open modal for visual regression testing snapshots
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+  },
+};
+
+export const ObjectsAPIJsonSchema = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend4',
+        name: 'Objects API',
+        backend: 'objects_api',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
+          objecttypeVersion: 1,
+          updateExistingObject: false,
+          informatieobjecttypeSubmissionReport: '',
+          uploadSubmissionCsv: false,
+          informatieobjecttypeSubmissionCsv: '',
+          informatieobjecttypeAttachment: '',
+          organisatieRsin: '',
+          variablesMapping: [],
+          geometryVariableKey: '',
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: {
+        jsonSchemaMocks: [mockFormJsonSchemaGet({type: 'string', title: 'Text field'})],
+      },
+    },
+  },
+
+  play: async ({canvasElement, step, args}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText('Generate JSON schema'));
+
+    const modalForm = await screen.findByRole('dialog');
+    expect(modalForm).toBeVisible();
+    const modal = within(modalForm);
+
+    expect(
+      await modal.getByRole('heading', {name: 'Form JSON schema: Objects API registration'})
+    ).toBeVisible();
+    // The json editor can be slow to load, so include a larger timeout to counteract test flakiness
+    expect(await modal.findByText(/string/, undefined, {timeout: 5000})).toBeVisible();
+    expect(await modal.findByText(/Text field/, undefined, {timeout: 5000})).toBeVisible();
+  },
+};
+
+export const ObjectsAPIJsonSchemaError = {
+  args: {
+    configuredBackends: [
+      {
+        key: 'backend4',
+        name: 'Objects API',
+        backend: 'objects_api',
+        options: {
+          version: 2,
+          objectsApiGroup: 1,
+          objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
+          objecttypeVersion: 1,
+          updateExistingObject: false,
+          informatieobjecttypeSubmissionReport: '',
+          uploadSubmissionCsv: false,
+          informatieobjecttypeSubmissionCsv: '',
+          informatieobjecttypeAttachment: '',
+          organisatieRsin: '',
+          variablesMapping: [],
+          geometryVariableKey: '',
+        },
+      },
+    ],
+  },
+  parameters: {
+    msw: {
+      handlers: {
+        jsonSchemaMocks: [mockFormJsonSchemaGet()],
+      },
+    },
+  },
+
+  play: async ({canvasElement, step, args}) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByText('Generate JSON schema'));
+
+    const modalForm = await screen.findByRole('dialog');
+    expect(modalForm).toBeVisible();
+    const modal = within(modalForm);
+
+    expect(await modal.findByText('An error occurred during schema generation')).toBeVisible();
   },
 };
 
