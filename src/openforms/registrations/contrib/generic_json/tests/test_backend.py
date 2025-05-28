@@ -434,7 +434,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                             "file_name": {"type": "string"},
                             "content": {"type": "string", "format": "base64"},
                         },
-                        "required": [],
+                        "required": ["file_name", "content"],
                         "additionalProperties": False,
                     },
                 }
