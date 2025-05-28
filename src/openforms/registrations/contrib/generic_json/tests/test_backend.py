@@ -23,8 +23,8 @@ from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 
-from ..config import GenericJSONOptions
 from ..plugin import GenericJSONRegistration
+from ..typing import GenericJSONOptions
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
 

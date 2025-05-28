@@ -2,7 +2,8 @@ from django.test import TestCase
 
 from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
 
-from ..config import GenericJSONOptions, GenericJSONOptionsSerializer
+from ..config import GenericJSONOptionsSerializer
+from ..typing import GenericJSONOptions
 
 
 class GenericJSONConfig(TestCase):
