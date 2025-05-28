@@ -30,7 +30,9 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
     def _check_candidate_backend(self) -> bool:
         # if we're dealing with a mozilla-django-oidc-db config that is *not* a
         # OF config, then don't bother.
-        if issubclass(self.config_class, BaseConfig):
+        if issubclass(self.config_class, BaseConfig) or issubclass(
+            self.config_class, YiviOpenIDConnectConfig
+        ):
             return super()._check_candidate_backend()
         return False
 
@@ -69,9 +71,33 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
             or isinstance(self._config, YiviOpenIDConnectConfig)
         )
 
+        # Because Yivi has loa config for BSN and KVK, we need to set the "global" loa config dynamically based on which data is presented.
+        # Will be moved after oidc-db changes
+        if issubclass(self.config_class, YiviOpenIDConnectConfig):
+            # Check if the claims contain the claim for BSN.
+            # If so then the authentication is for BSN
+
+            # Set the "global" loa config based on the used authentication method
+            match (
+                claims.get(YiviOpenIDConnectConfig.bsn_claim),
+                claims.get(YiviOpenIDConnectConfig.identifier_type_claim),
+            ):
+                case str(), None:
+                    self._config.loa_claim = self._config.bsn_loa_claim
+                    self._config.default_loa = self._config.bsn_default_loa
+                    self._config.loa_value_mapping = self._config.bsn_loa_value_mapping
+                case None, str():
+                    self._config.loa_claim = self._config.kvk_loa_claim
+                    self._config.default_loa = self._config.kvk_default_loa
+                    self._config.loa_value_mapping = self._config.kvk_loa_value_mapping
+                case _:
+                    self._config.loa_claim = None
+                    self._config.default_loa = None
+                    self._config.loa_value_mapping = None
+
         strict_mode = False
         # Strict mode is only applicable for DigiD and eHerkenning via OIDC.
-        if not isinstance(self.config_class, YiviOpenIDConnectConfig):
+        if not issubclass(self.config_class, YiviOpenIDConnectConfig):
             strict_mode = flag_enabled(
                 "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
             )

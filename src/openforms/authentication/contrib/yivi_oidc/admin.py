@@ -1,10 +1,13 @@
+from typing import Sequence
+
 from django import forms
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.oidc.admin import (
+    ATTRIBUTES_MAPPING_TITLE,
+    COMMON_FIELDSETS,
     admin_modelform_factory,
-    fieldsets_factory,
 )
 from mozilla_django_oidc_db.forms import OpenIDConnectConfigForm
 from solo.admin import SingletonModelAdmin
@@ -52,19 +55,54 @@ class AvailableScopeInline(admin.TabularInline):
     extra = 1
 
 
+def yivi_fieldsets_factory(
+    bsn_claim_mapping_fields: Sequence[str], kvk_claim_mapping_fields: Sequence[str]
+):
+    """
+    A custom Yivi implementation for applying the shared fieldsets configuration with the
+    model-specific overrides.
+
+    This Yivi specific implementation replaces the ATTRIBUTES_MAPPING_TITLE with separate
+    BSN and KVK mappings. Adding more overview and structure to the Yivi configuration
+    view.
+    """
+
+    _fieldsets = {}
+    for key, value in COMMON_FIELDSETS.items():
+        if key is ATTRIBUTES_MAPPING_TITLE:
+            _fieldsets[_("Attributes to extract from bsn claims")] = {
+                "fields": tuple(bsn_claim_mapping_fields)
+            }
+            _fieldsets[_("Attributes to extract from kvk claims")] = {
+                "fields": tuple(kvk_claim_mapping_fields)
+            }
+        else:
+            # Any other fieldset is just copied
+            _fieldsets[key] = value
+
+    return tuple((label, config) for label, config in _fieldsets.items())
+
+
 @admin.register(YiviOpenIDConnectConfig)
 class DigiDConfigAdmin(SingletonModelAdmin):
     form = admin_modelform_factory(YiviOpenIDConnectConfig, form=OIDCConfigForm)
-    fieldsets = fieldsets_factory(
-        claim_mapping_fields=[
+    fieldsets = yivi_fieldsets_factory(
+        bsn_claim_mapping_fields=[
+            "bsn_scope",
             "bsn_claim",
+            "bsn_loa_claim",
+            "bsn_default_loa",
+            "bsn_loa_value_mapping",
+        ],
+        kvk_claim_mapping_fields=[
+            "kvk_scope",
             "identifier_type_claim",
             "legal_subject_claim",
             "branch_number_claim",
             "acting_subject_claim",
-            "loa_claim",
-            "default_loa",
-            "loa_value_mapping",
-        ]
+            "kvk_loa_claim",
+            "kvk_default_loa",
+            "kvk_loa_value_mapping",
+        ],
     )
     inlines = [AvailableScopeInline]

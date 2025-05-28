@@ -44,6 +44,8 @@ class YiviClaims(TypedDict):
     acting_subject_claim: NotRequired[str]
     branch_number_claim: NotRequired[str]
 
+    # The loa claim is determined by validating the bsn loa config OR the kvk loa config,
+    # based on which authentication the end-user chose.
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]
