@@ -1074,9 +1074,19 @@ class EditGrid(BasePlugin[EditGridComponent]):
         validate = component.get("validate", {})
 
         # Build the edit grid object properties by iterating over the child components
-        properties = {
-            child["key"]: as_json_schema(child) for child in component["components"]
-        }
+        properties = {}
+        for child in component["components"]:
+            schema = as_json_schema(child)
+
+            match child["type"]:
+                case "content" | "softRequiredErrors":
+                    continue
+                case "fieldset" | "columns":
+                    assert isinstance(schema, list)
+                    for child_schema in schema:
+                        properties.update(child_schema)
+                case _:
+                    properties[child["key"]] = schema
 
         base = {
             "title": label,

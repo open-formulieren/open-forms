@@ -11,7 +11,7 @@ apps/packages:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import elasticapm
 
@@ -26,8 +26,17 @@ from .dynamic_config import (
 )
 from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
-from .typing import Component
-from .utils import iter_components, iterate_data_with_components, recursive_apply
+from .typing import (
+    Column,
+    ColumnsComponent,
+    Component,
+    FieldsetComponent,
+)
+from .utils import (
+    iter_components,
+    iterate_data_with_components,
+    recursive_apply,
+)
 from .variables import inject_variables
 
 if TYPE_CHECKING:
@@ -114,19 +123,61 @@ def build_serializer(
 
 def as_json_schema(
     component: Component, _register: ComponentRegistry | None = None
-) -> JSONObject:
+) -> JSONObject | list[JSONObject] | None:
     """Return a JSON schema of a component.
 
     A description will be added if it is available.
 
+    Layout components require some extra attention:
+      - Content and softRequiredErrors components do not have any values, so a
+        schema does not exist: returns ``None``
+      - Columns and fieldset components contain other components for which a JSON schema
+        needs to be generated: returns a list of JSON objects with the child component
+        key as key and the child component JSON schema as value.
+
     :param component: Component
-    :param _register: ComponentRegistry | None
-    :returns: JSONObject
+    :param _register: Optional component registry to use. If no registry was provided,
+      the default registry will be used.
+    :returns: None for content and softRequiredErrors components, list of JSON objects
+      for columns and fieldsets, and a JSON object otherwise.
     """
     registry = _register or register
 
-    component_plugin = registry[component["type"]]
-    schema = component_plugin.as_json_schema(component)
-    if description := component.get("description"):
-        schema["description"] = description
-    return schema
+    match component["type"]:
+        case "content" | "softRequiredErrors":
+            return None
+        case "columns":
+            component = cast(ColumnsComponent, component)
+            schemas = []
+            for column in component["columns"]:
+                _add_child_schemas_to_schema_list(column, schemas)
+            return schemas
+        case "fieldset":
+            component = cast(FieldsetComponent, component)
+            schemas = []
+            _add_child_schemas_to_schema_list(component, schemas)
+            return schemas
+        case _:
+            component_plugin = registry[component["type"]]
+            schema = component_plugin.as_json_schema(component)
+            if description := component.get("description"):
+                schema["description"] = description
+            return schema
+
+
+def _add_child_schemas_to_schema_list(
+    nested_component_with_children: FieldsetComponent | Column,
+    schema_list: list[JSONObject],
+):
+    """Generate and add the children's schemas to the passed schema list."""
+    for child in nested_component_with_children.get("components", []):
+        child_schema = as_json_schema(child)
+        if child_schema is None:
+            # None for content and softRequiredErrors components
+            continue
+        if isinstance(child_schema, list):
+            # Columns and fieldset components return a list of children
+            schema_list.extend(child_schema)
+        else:
+            # Other components get added to the list as a dict with their key
+            schema_list.append({child["key"]: child_schema})
