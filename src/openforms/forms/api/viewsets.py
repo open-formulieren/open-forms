@@ -4,11 +4,13 @@ from uuid import UUID
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Prefetch
+from django.http import HttpResponseBadRequest
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
@@ -25,9 +27,15 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.utils.urls import is_admin_request
 from openforms.variables.constants import FormVariableSources
 
-from ..json_schema import generate_json_schema
+from ..json_schema import InvalidBackendIdError, generate_json_schema
 from ..messages import add_success_message
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models import (
+    Form,
+    FormDefinition,
+    FormRegistrationBackend,
+    FormStep,
+    FormVersion,
+)
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
@@ -53,7 +61,10 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
+from .serializers.form import FormJsonSchemaOptionsSerializer
 from .serializers.logic.form_logic import FormLogicListSerializer
+
+logger = structlog.get_logger(__name__)
 
 
 @extend_schema(
@@ -389,7 +400,7 @@ class FormViewSet(viewsets.ModelViewSet):
         summary=_("Export form"),
         tags=["forms"],
         parameters=[UUID_OR_SLUG_PARAMETER],
-        request=None,
+        request=FormJsonSchemaOptionsSerializer,
         responses={
             (
                 status.HTTP_200_OK,
@@ -613,17 +624,36 @@ class FormViewSet(viewsets.ModelViewSet):
         summary=_("JSON schema"),
         description=_("Generate the JSON schema for a form."),
         parameters=[UUID_OR_SLUG_PARAMETER],
-        request=None,
-        responses={status.HTTP_200_OK: OpenApiTypes.OBJECT},
+        request=FormJsonSchemaOptionsSerializer,
+        responses={
+            status.HTTP_200_OK: OpenApiTypes.OBJECT,
+            status.HTTP_400_BAD_REQUEST: ExceptionSerializer,
+        },
     )
     @action(detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,))
     def json_schema(self, request, *args, **kwargs):
+        serializer = FormJsonSchemaOptionsSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+
         form = self.get_object()
 
-        schema = generate_json_schema(
-            form,
-            limit_to_variables=form.formvariable_set.values_list("key", flat=True),
+        # Note that a backend is unique by its key and corresponding form
+        backend = get_object_or_404(
+            FormRegistrationBackend,
+            key=serializer.validated_data["registration_backend_key"],
+            form=form.id,
         )
+
+        try:
+            schema = generate_json_schema(
+                form=form,
+                limit_to_variables=form.formvariable_set.values_list("key", flat=True),
+                backend_id=backend.backend,
+                backend_options=backend.options,
+            )
+        except InvalidBackendIdError as exc:
+            logger.error("invalid_backend_id", exc_info=exc)
+            return HttpResponseBadRequest("Invalid backend id")
 
         return Response(schema)
 
