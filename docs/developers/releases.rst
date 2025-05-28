@@ -41,6 +41,11 @@ script that automates this as much as possible:
 This extracts the backend translations in the appropriate ``.po`` files and the
 JavaScript translations into the ``src/openforms/js/lang/[locale].json`` files.
 
+For the backend translations, you can use `Django Rosetta <https://django-rosetta.readthedocs.io/>`_,
+which is located at ``http://localhost:8000/admin/rosetta``. You can filter on untranslated labels
+and add a translation. Make sure to also filter on 'fuzzy' and check if the generated translations
+make sense. Adjust them if needed and deselect the fuzzy checkbox when they are checked.
+
 You can use the script ``python ./bin/find_untranslated_js.py`` to scan for (likely)
 missing JS translations.
 
