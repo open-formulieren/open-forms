@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import {React, useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -7,6 +7,7 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import ModalJsonSchemaGeneration from 'components/admin/forms/ModalJsonSchemaGeneration';
 import Select from 'components/admin/forms/Select';
 import {DeleteIcon} from 'components/admin/icons';
 
@@ -76,6 +77,8 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
   const selectedBackend = backend.backend || '';
   const selectedBackendType = availableBackends.find(choice => choice.id === selectedBackend);
 
+  const showSchemaButton = ['json_dump', 'objects_api'].includes(backend.backend);
+
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
     defaultMessage: 'Add another',
@@ -109,7 +112,7 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
       </FormRow>
       <FormRow>
         <Field
-          name={`form.registrationBackends.${index}.backend`}
+          name={`form.registrationBackends.${index}.field`}
           label={
             <FormattedMessage
               defaultMessage="Select registration backend"
@@ -117,16 +120,40 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
             />
           }
         >
-          <Select
-            choices={backendChoices}
-            value={selectedBackend}
-            onChange={event => {
-              onChange(event);
-              // Clear options when changing backend
-              onChange({target: {name: `form.registrationBackends.${index}.options`, value: {}}});
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              flexDirection: 'column',
+              gap: '10px',
             }}
-            allowBlank={true}
-          />
+          >
+            <Select
+              name={`form.registrationBackends.${index}.backend`}
+              id={`form.registrationBackends.${index}.backend`}
+              choices={backendChoices}
+              value={selectedBackend}
+              onChange={event => {
+                onChange(event);
+                // Clear options when changing backend
+                onChange({target: {name: `form.registrationBackends.${index}.options`, value: {}}});
+              }}
+              allowBlank={true}
+            />
+
+            {showSchemaButton && (
+              <ModalJsonSchemaGeneration
+                modalTitle={
+                  <FormattedMessage
+                    description="Generate JSON schema modal title"
+                    defaultMessage={`Form JSON schema: {backendLabel}`}
+                    values={{backendLabel: selectedBackendType.label}}
+                  />
+                }
+                pluginId={backend.backend}
+              />
+            )}
+          </div>
         </Field>
       </FormRow>
 

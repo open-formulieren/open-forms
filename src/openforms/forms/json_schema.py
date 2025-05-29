@@ -2,13 +2,20 @@ from __future__ import annotations
 
 import uuid
 from collections import UserDict
-from typing import Iterator, Sequence
+from typing import Iterator, Sequence, assert_never, cast
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     rewrite_formio_components,
 )
+from openforms.formio.typing import Component, EditGridComponent
 from openforms.plugins.registry import BaseRegistry
+from openforms.registrations.contrib.generic_json.constants import (
+    PLUGIN_IDENTIFIER as GENERIC_JSON,
+)
+from openforms.registrations.contrib.objects_api.constants import (
+    PLUGIN_IDENTIFIER as OBJECTS_API,
+)
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.base import BaseStaticVariable
@@ -41,6 +48,7 @@ def _iter_form_variables(
 def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
+    plugin_id: str = "",
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
     submission: Submission | None = None,
 ) -> JSONObject:
@@ -51,12 +59,16 @@ def generate_json_schema(
 
     :param form: The form to generate JSON schema for.
     :param limit_to_variables: Variables that will be included in the schema.
+    :param plugin_id: Optional registration plugin identifier for which to generate the
+     schema.
     :param additional_variables_registry: Optional extra registry of static variables.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
 
     :returns: A JSON schema representing the form variables.
     """
+    assert plugin_id in (OBJECTS_API, GENERIC_JSON, "")
+
     if submission is None:
         # Note: we generate a 'fake' submission here to get the total component
         # configuration
@@ -79,9 +91,15 @@ def generate_json_schema(
         if variable.source == FormVariableSources.component:
             variable.form_definition.configuration = new_configuration.configuration
 
-        process_variable_schema_and_add_to_schema(
+        schema = generate_variable_schema(
+            variable,
+            submission.total_configuration_wrapper,
+            plugin_id,
+        )
+
+        process_variable_schema_and_add_to_complete_schema(
             variable.key,
-            variable.as_json_schema(),
+            schema,
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
@@ -98,7 +116,45 @@ def generate_json_schema(
     return schema
 
 
-def process_variable_schema_and_add_to_schema(
+def generate_variable_schema(
+    variable: FormVariable,
+    configuration_wrapper: FormioConfigurationWrapper,
+    plugin_id: str = "",
+) -> JSONObject:
+    """Generate the schema for a form variable.
+
+    To ensure the schema represents the submission data that is sent through different
+    plugins, we need to perform some processing.
+
+    :param variable: The form variable.
+    :param configuration_wrapper: Updated total configuration wrapper. This is used to
+      get the component from.
+    :param plugin_id: The plugin identifier. If an empty string is passed, no processing
+      of the schema is performed, meaning it will represent the formio submission data.
+
+    :return: Schema for the variable.
+    """
+    schema = variable.as_json_schema()
+
+    if variable.source != FormVariableSources.component:
+        return schema
+
+    component = configuration_wrapper[variable.key]
+    assert component is not None
+
+    if plugin_id == OBJECTS_API:
+        process_variable_schema_objects_api(component, schema)
+    elif plugin_id == GENERIC_JSON:
+        process_variable_schema_generic_json(component, schema)
+    elif plugin_id == "":
+        pass
+    else:
+        assert_never(plugin_id)
+
+    return schema
+
+
+def process_variable_schema_and_add_to_complete_schema(
     key: str,
     variable_schema: JSONObject,
     total_schema: NestedDict,
@@ -126,7 +182,7 @@ def process_variable_schema_and_add_to_schema(
     ):
         edit_grid_schema = NestedDict()
         for child_key, child_schema in variable_schema["items"]["properties"].items():
-            process_variable_schema_and_add_to_schema(
+            process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
                 edit_grid_schema,
@@ -194,3 +250,164 @@ class NestedDict(UserDict):
         except KeyError:
             return False
         return True
+
+
+# TODO-5312: does it make sense to put this to
+#  openforms.registrations.contrib.objects_api.json_schema?
+def process_variable_schema_objects_api(
+    component: Component,
+    schema: JSONObject,
+    is_child: bool = False,
+):
+    """Process a variable schema for the Objects API format.
+
+    The following components need extra attention:
+    - File components: we send a url or list of urls, instead of the output from the
+      serializer.
+    - Selectboxes components: the selected options could be transformed to a list
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param schema: JSON schema.
+    :param is_child: Whether the component is a child component.
+    """
+    match component:
+        case {"type": "addressNL"}:
+            # In the Objects API there exists an option to map the individual fields
+            # of the addressNL component. Even if we would have the plugin options
+            # available here, the problem is that this option cannot be set without the
+            # 'contract' already being present in the Objecttypes API. This essentially
+            # means we are trying to fetch contract options (whether to map the complete
+            # object or individual subfields) from the contract we are currently
+            # generating. Therefore, we just default to the schema of a complete
+            # addressNL object.
+            pass
+
+        case {"type": "file", "multiple": True}:
+            # If multiple is true, the value will be an empty list if no attachments are
+            # uploaded, or a list of urls when one or more attachments are uploaded.
+            schema["items"] = {"type": "string", "format": "uri"}
+
+        case {"type": "file"}:  # multiple is False or missing
+            # If multiple is false, the value will be an empty string if no attachment
+            # is uploaded, or a single url if one attachment is uploaded.
+            schema["type"] = "string"
+            schema["oneOf"] = [{"format": "uri"}, {"pattern": "^$"}]
+            schema.pop("items")
+
+        case {"type": "selectboxes"} if not is_child:
+            # Without the plugin options, we can't determine if the component will be
+            # sent as an object or a list. Also, select boxes inside an edit grid
+            # cannot be converted, so we can skip this schema modification.
+            options = list(schema["properties"])
+            object_schema = {
+                k: schema.pop(k)
+                for k in ("type", "properties", "required", "additionalProperties")
+            }
+            list_schema = {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": options,
+                },
+            }
+
+            schema["oneOf"] = [object_schema, list_schema]
+
+        case {"type": "editgrid"}:
+            component = cast(EditGridComponent, component)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                process_variable_schema_objects_api(
+                    component=child_component,
+                    schema=schema["items"]["properties"][child_key],
+                    is_child=True,
+                )
+
+        case _:
+            pass
+
+
+# TODO-5312: does it make sense to put this to
+#  openforms.registrations.contrib.generic_json.json_schema?
+def process_variable_schema_generic_json(
+    component: Component,
+    schema: JSONObject,
+    is_child: bool = False,
+):
+    """Process a variable schema for the Generic JSON format.
+
+    The following components need extra attention:
+    - File components: we send the content of the file encoded with base64, instead of
+      the output from the serializer.
+    - Selectboxes components: the selected options could be transformed to a list
+    - Edit grid components: layout component with other components as children, which
+      (potentially) need to be processed.
+
+    :param component: Component
+    :param schema: JSON schema.
+    :param is_child: Whether the component is a child component.
+    """
+    match component:
+        case {"type": "file", "multiple": True}:
+            # If multiple is true, the value will be an empty list if no attachments are
+            # uploaded, or a list of objects with file name and content as properties
+            # when one or more attachments are uploaded
+            schema["items"] = {
+                "type": "object",
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "content": {"type": "string", "format": "base64"},
+                },
+                "required": ["file_name", "content"],
+                "additionalProperties": False,
+            }
+
+        case {"type": "file"}:
+            # If multiple is false, the value will be None if no attachment is uploaded,
+            # or an object with file name and content as properties when one attachment
+            # is uploaded
+            del schema["items"]
+            new_schema = {
+                "type": ["null", "object"],
+                "properties": {
+                    "file_name": {"type": "string"},
+                    "content": {"type": "string", "format": "base64"},
+                },
+                "required": ["file_name", "content"],
+                "additionalProperties": False,
+            }
+            schema.update(new_schema)
+
+        case {"type": "selectboxes"} if not is_child:
+            # Without the plugin options, we can't determine if the component will be
+            # sent as an object or a list. Also, select boxes inside an edit grid
+            # cannot be converted, so we can skip this schema modification.
+            options = list(schema["properties"])
+            object_schema = {
+                k: schema.pop(k)
+                for k in ("type", "properties", "required", "additionalProperties")
+            }
+            list_schema = {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": options,
+                },
+            }
+
+            schema["oneOf"] = [object_schema, list_schema]
+
+        case {"type": "editgrid"}:
+            component = cast(EditGridComponent, component)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                process_variable_schema_generic_json(
+                    component=child_component,
+                    schema=schema["items"]["properties"][child_key],
+                    is_child=True,
+                )
+
+        case _:
+            pass
