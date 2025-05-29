@@ -34,6 +34,7 @@ from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
+    FormJSONSchemaRenderer,
     FormVariableJSONParser,
     FormVariableJSONRenderer,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -617,7 +618,12 @@ class FormViewSet(viewsets.ModelViewSet):
         request=FormJsonSchemaOptionsSerializer,
         responses={status.HTTP_200_OK: OpenApiTypes.OBJECT},
     )
-    @action(detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,))
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=(permissions.IsAdminUser,),
+        renderer_classes=(FormJSONSchemaRenderer,),
+    )
     def json_schema(self, request, *args, **kwargs):
         serializer = FormJsonSchemaOptionsSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
