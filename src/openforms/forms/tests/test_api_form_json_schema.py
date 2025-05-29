@@ -198,8 +198,6 @@ class FormJsonSchemaAPITests(APITestCase):
                     "title": "File",
                     "type": ["null", "object"],
                     "properties": {
-                        # TODO-5312: I would want this to be 'file_name', but it is
-                        #  converted to 'fileName'
                         "file_name": {"type": "string"},
                         "content": {"type": "string", "format": "base64"},
                     },
@@ -311,3 +309,52 @@ class FormJsonSchemaAPITests(APITestCase):
                 "reason": "Backend with key 'backend1' does not exist for form 'Form 1'",
             },
         )
+
+    def test_properties_should_not_be_converted_to_camel_case(self):
+        form = FormFactory.create()
+        form_def = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "selectboxes",
+                        "key": "selectboxes",
+                        "values": [
+                            {"label": "Option a", "value": "option_a"},
+                            {"label": "Option b", "value": "option_b"},
+                        ],
+                    },
+                ]
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_def)
+
+        FormRegistrationBackendFactory.create(
+            key="backend1",
+            name="Objects API",
+            backend="objects_api",
+            form=form,
+            options={"version": 2, "transform_to_list": []},
+        )
+
+        url = reverse("api:form-json-schema", kwargs={"uuid_or_slug": form.uuid})
+        options = {"registration_backend_key": "backend1"}
+
+        expected_properties = {
+            "selectboxes": {
+                "title": "Select boxes",
+                "type": "object",
+                "properties": {
+                    "option_a": {"type": "boolean"},
+                    "option_b": {"type": "boolean"},
+                },
+                "required": ["option_a", "option_b"],
+                "additionalProperties": False,
+            },
+        }
+
+        response = self.client.get(url, options)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        schema = response.json()
+
+        self.assertEqual(schema["properties"], expected_properties)
