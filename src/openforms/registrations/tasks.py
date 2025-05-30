@@ -225,7 +225,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         return
 
     if submission.cosign_state.is_waiting:
-        log.debug("skipped_registration", reason="cosign_required", outcome="skip")
+        log.info("skipped_registration", reason="cosign_required", outcome="skip")
         logevent.skipped_registration_cosign_required(submission)
         return
 
@@ -235,7 +235,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         and submission.payment_required
         and not submission.payment_user_has_paid
     ):
-        log.debug("skipped_registration", reason="payment_not_received", outcome="skip")
+        log.info("skipped_registration", reason="payment_not_received", outcome="skip")
         logevent.registration_skipped_not_yet_paid(submission)
         return
 
