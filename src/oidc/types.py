@@ -17,3 +17,6 @@ class ClaimProcessingInstructions(TypedDict):
     always_required_claims: list[ClaimPathWithLegacy]
     # Claims that if missing will raise an error only in strict mode
     strict_required_claims: list[ClaimPathWithLegacy]
+
+class ErrorMessagesMap(TypedDict):
+    access_denied: tuple[str, str]
