@@ -96,19 +96,17 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "partners": [
-                {
-                    "bsn": "999970136",
-                    "first_names": "Pia",
-                    "initials": "P.",
-                    "affixes": "",
-                    "lastname": "Pauw",
-                    "date_of_birth": "1989-04-01",
-                    "date_of_birth_precision": "date",
-                }
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "999970136",
+                "firstNames": "Pia",
+                "initials": "P.",
+                "affixes": "",
+                "lastname": "Pauw",
+                "dateOfBirth": "1989-04-01",
+                "dateOfBirthPrecision": "date",
+            }
+        ]
 
         self.assertEqual(
             state.variables["hc_prefill_partners_immutable"].value, expected_data
@@ -145,46 +143,44 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         prefill_variables(submission=submission)
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "999970409",
-                    "first_names": "Pero",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2023-02-01",
-                    "date_of_birth_precision": "date",
-                },
-                {
-                    "bsn": "999970161",
-                    "first_names": "Peet",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2018-12-01",
-                    "date_of_birth_precision": "date",
-                },
-                {
-                    "bsn": "999970173",
-                    "first_names": "Pelle",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2017-09-01",
-                    "date_of_birth_precision": "date",
-                },
-                {
-                    "bsn": "999970185",
-                    "first_names": "Pep",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2016-05-01",
-                    "date_of_birth_precision": "date",
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "999970409",
+                "firstNames": "Pero",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2023-02-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970161",
+                "firstNames": "Peet",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2018-12-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970173",
+                "firstNames": "Pelle",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2017-09-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970185",
+                "firstNames": "Pep",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2016-05-01",
+                "dateOfBirthPrecision": "date",
+            },
+        ]
 
         self.assertEqual(
             state.variables["hc_prefill_children_mutable"].value, expected_data
@@ -223,19 +219,17 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "999970185",
-                    "first_names": "Pep",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2016-05-01",
-                    "date_of_birth_precision": "date",
-                }
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "999970185",
+                "firstNames": "Pep",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2016-05-01",
+                "dateOfBirthPrecision": "date",
+            }
+        ]
 
         self.assertEqual(
             state.variables["hc_prefill_children_mutable"].value, expected_data
@@ -275,37 +269,35 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "999970409",
-                    "first_names": "Pero",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2023-02-01",
-                    "date_of_birth_precision": "date",
-                },
-                {
-                    "bsn": "999970161",
-                    "first_names": "Peet",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2018-12-01",
-                    "date_of_birth_precision": "date",
-                },
-                {
-                    "bsn": "999970185",
-                    "first_names": "Pep",
-                    "initials": "P.",
-                    "affixes": "van",
-                    "lastname": "Paassen",
-                    "date_of_birth": "2016-05-01",
-                    "date_of_birth_precision": "date",
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "999970409",
+                "firstNames": "Pero",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2023-02-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970161",
+                "firstNames": "Peet",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2018-12-01",
+                "dateOfBirthPrecision": "date",
+            },
+            {
+                "bsn": "999970185",
+                "firstNames": "Pep",
+                "initials": "P.",
+                "affixes": "van",
+                "lastname": "Paassen",
+                "dateOfBirth": "2016-05-01",
+                "dateOfBirthPrecision": "date",
+            },
+        ]
 
         self.assertEqual(
             state.variables["hc_prefill_children_mutable"].value, expected_data
@@ -378,19 +370,17 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "partners": [
-                {
-                    "bsn": "123123123",
-                    "first_names": "Belly",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1985-06-15",
-                    "deceased": None,
-                }
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "123123123",
+                "firstNames": "Belly",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1985-06-15",
+                "deceased": None,
+            }
+        ]
 
         self.assertEqual(
             state.variables["stuf_bg_partners_mutable"].value, expected_data
@@ -436,46 +426,44 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             prefill_variables(submission=submission)
 
         state = submission.load_submission_value_variables_state()
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "456789123",
-                    "first_names": "Bolly",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1999-06-15",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "789123456",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1998-07-16",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "123456789",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "789123543",
-                    "first_names": "Other",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doens",
-                    "date_of_birth": "1998-07-16",
-                    "deceased": True,
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "456789123",
+                "firstNames": "Bolly",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1999-06-15",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123456",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1998-07-16",
+                "deceased": False,
+            },
+            {
+                "bsn": "123456789",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123543",
+                "firstNames": "Other",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doens",
+                "dateOfBirth": "1998-07-16",
+                "deceased": True,
+            },
+        ]
 
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
@@ -523,39 +511,37 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "456789123",
-                    "first_names": "Bolly",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1999-06-15",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "789123456",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1998-07-16",
-                    "deceased": False,
-                },
-                # included because no age filter boundaries are provided, so even the
-                # children without known DOB are returned
-                {
-                    "bsn": "123456789",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "",
-                    "deceased": False,
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "456789123",
+                "firstNames": "Bolly",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1999-06-15",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123456",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1998-07-16",
+                "deceased": False,
+            },
+            # included because no age filter boundaries are provided, so even the
+            # children without known DOB are returned
+            {
+                "bsn": "123456789",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "",
+                "deceased": False,
+            },
+        ]
 
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
@@ -564,7 +550,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
         )
 
-    def test_children_with_incomplete_date_of_birth_are_shown_when_no_filter(self):
+    def test_children_with_incomplete_dateOfBirth_are_shown_when_no_filter(self):
         """
         Children with incomplete data for date of birth.
         All the children should be sent to the frontend when there is no filtering on age
@@ -609,46 +595,44 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "456789123",
-                    "first_names": "Bolly",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1999-06-15",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "789123456",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1985",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "123456788",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1985-03",
-                    "deceased": False,
-                },
-                {
-                    "bsn": "167556788",
-                    "first_names": "Billy",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "",
-                    "deceased": False,
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "456789123",
+                "firstNames": "Bolly",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1999-06-15",
+                "deceased": False,
+            },
+            {
+                "bsn": "789123456",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1985",
+                "deceased": False,
+            },
+            {
+                "bsn": "123456788",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1985-03",
+                "deceased": False,
+            },
+            {
+                "bsn": "167556788",
+                "firstNames": "Billy",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "",
+                "deceased": False,
+            },
+        ]
 
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
@@ -657,7 +641,7 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             state.variables["stuf_bg_prefill_children_immutable"].value, expected_data
         )
 
-    def test_children_with_incomplete_date_of_birth_are_not_shown_when_filter(self):
+    def test_children_with_incomplete_dateOfBirth_are_not_shown_when_filter(self):
         """
         Children with incomplete data for date of birth.
         Only the children that have a complete (ISO 8601) date should be filtered and sent
@@ -703,19 +687,17 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
 
         state = submission.load_submission_value_variables_state()
 
-        expected_data = {
-            "children": [
-                {
-                    "bsn": "456789123",
-                    "first_names": "Bolly",
-                    "initials": "K",
-                    "affixes": "van",
-                    "lastname": "Doe",
-                    "date_of_birth": "1999-06-15",
-                    "deceased": False,
-                },
-            ]
-        }
+        expected_data = [
+            {
+                "bsn": "456789123",
+                "firstNames": "Bolly",
+                "initials": "K",
+                "affixes": "van",
+                "lastname": "Doe",
+                "dateOfBirth": "1999-06-15",
+                "deceased": False,
+            },
+        ]
 
         self.assertEqual(
             state.variables["stuf_bg_prefill_children_mutable"].value, expected_data
