@@ -79,9 +79,10 @@ class FamilyMembersPrefill(BasePlugin[FamilyMemberOptions]):
         bsn = submission.auth_info.value
 
         handler = get_handler()
-        results: JSONObject = {
-            str(options["type"]): [item.model_dump() for item in handler(bsn, options)]
-        }
+        results: Sequence[JSONObject] = [
+            item.model_dump(by_alias=True) for item in handler(bsn, options)
+        ]
+
         # we need to update both variables (the one that contains the initial data and the
         # prefill configuration and the mutable one) with the data that we have retrieved
         return {
