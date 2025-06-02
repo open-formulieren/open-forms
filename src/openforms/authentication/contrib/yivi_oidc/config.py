@@ -2,8 +2,7 @@ from typing import List, Literal, TypedDict
 
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
-from drf_polymorphic.serializers import PolymorphicSerializer
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from rest_framework import serializers
 
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -16,58 +15,54 @@ class YiviOptions(TypedDict):
     """
     Shape of the DigiD authentication plugin options.
 
-    This describes the shape of :attr:`YiviOptionsPolymorphicSerializer.validated_data`, after
+    This describes the shape of :attr:`YiviOptionsSerializer.validated_data`, after
     the input data has been cleaned/validated.
     """
 
-    authentication_attribute: YiviAuthenticationAttributes
+    authentication_options: List[YiviAuthenticationAttributes]
     additional_scopes: List[str]
-    loa: DigiDAssuranceLevels | Literal[""] | None
+    bsn_loa: DigiDAssuranceLevels | Literal[""] | None
+    kvk_loa: AssuranceLevels | Literal[""] | None
 
 
-class YiviPseudoOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    pass
-
-
-class YiviKvkOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    pass
-
-
-class YiviBSNOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    loa = serializers.ChoiceField(
-        label=_("options LoA"),
-        help_text=_("The minimal LoA for authentication."),
-        choices=DigiDAssuranceLevels.choices,
-        default=DigiDAssuranceLevels.middle,
+class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    authentication_options = serializers.ListField(
+        child=serializers.ChoiceField(choices=YiviAuthenticationAttributes.choices),
+        label=_("Authentication options"),
+        help_text=_(
+            "Available authentication options that the user can choice from. The user must chose one of the options. If no options are specified, a pseudo value will be used as identifier."
+        ),
+        default=[],
         required=False,
-        allow_blank=True,
-    )
-
-
-class YiviOptionsPolymorphicSerializer(
-    JsonSchemaSerializerMixin, PolymorphicSerializer, serializers.Serializer
-):
-    authentication_attribute = serializers.ChoiceField(
-        label=_("Authentication attribute"),
-        help_text=_("The authentication attribute that will be fetched."),
-        choices=YiviAuthenticationAttributes.choices,
-        required=True,
+        allow_empty=True,
     )
     additional_scopes = serializers.ListField(
         child=serializers.ChoiceField(choices=[]),  # Choices are dynamically defined
         label=_("Additional scopes"),
-        help_text=_("Additional scopes to use for authentication."),
+        help_text=_(
+            "Additional scopes to use for authentication. The user can choice whether they provide this information or not."
+        ),
         default=[],
         required=False,
         allow_empty=True,
     )
 
-    discriminator_field = "authentication_attribute"
-    serializer_mapping = {
-        YiviAuthenticationAttributes.bsn: YiviBSNOptionsSerializer,
-        YiviAuthenticationAttributes.kvk: YiviKvkOptionsSerializer,
-        YiviAuthenticationAttributes.pseudo: YiviPseudoOptionsSerializer,
-    }
+    bsn_loa = serializers.ChoiceField(
+        label=_("options bsn LoA"),
+        help_text=_("The minimal LoA for bsn authentication."),
+        choices=DigiDAssuranceLevels.choices,
+        default=DigiDAssuranceLevels.middle,
+        required=False,
+        allow_blank=True,
+    )
+    kvk_loa = serializers.ChoiceField(
+        label=_("options kvk LoA"),
+        help_text=_("The minimal LoA for kvk authentication."),
+        choices=AssuranceLevels.choices,
+        default=AssuranceLevels.substantial,
+        required=False,
+        allow_blank=True,
+    )
 
     def get_fields(self):
         fields = super().get_fields()

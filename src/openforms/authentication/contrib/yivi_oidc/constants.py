@@ -7,6 +7,5 @@ PLUGIN_ID = "yivi_oidc"
 
 
 class YiviAuthenticationAttributes(models.TextChoices):
-    bsn = AuthAttribute.bsn, _("BSN")
-    kvk = AuthAttribute.kvk, _("KvK number")
-    pseudo = AuthAttribute.pseudo, _("Pseudo ID")
+    bsn = AuthAttribute.bsn.value, _("BSN")
+    kvk = AuthAttribute.kvk.value, _("KvK number")

@@ -56,7 +56,9 @@ class AvailableScopeInline(admin.TabularInline):
 
 
 def yivi_fieldsets_factory(
-    bsn_claim_mapping_fields: Sequence[str], kvk_claim_mapping_fields: Sequence[str]
+    bsn_claim_mapping_fields: Sequence[str],
+    kvk_claim_mapping_fields: Sequence[str],
+    pseudo_claim_mapping_fields: Sequence[str],
 ):
     """
     A custom Yivi implementation for applying the shared fieldsets configuration with the
@@ -75,6 +77,9 @@ def yivi_fieldsets_factory(
             }
             _fieldsets[_("Attributes to extract from kvk claims")] = {
                 "fields": tuple(kvk_claim_mapping_fields)
+            }
+            _fieldsets[_("Attributes to extract from pseudo (anonymous) claims")] = {
+                "fields": tuple(pseudo_claim_mapping_fields)
             }
         else:
             # Any other fieldset is just copied
@@ -103,6 +108,9 @@ class DigiDConfigAdmin(SingletonModelAdmin):
             "kvk_loa_claim",
             "kvk_default_loa",
             "kvk_loa_value_mapping",
+        ],
+        pseudo_claim_mapping_fields=[
+            "pseudo_claim",
         ],
     )
     inlines = [AvailableScopeInline]

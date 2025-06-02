@@ -152,6 +152,16 @@ class YiviOpenIDConnectConfig(AuthorizeeMixin, OpenIDConnectConfigBase):
         ),
     )
 
+    pseudo_claim = ClaimField(
+        verbose_name=_("pseudo identifier claim"),
+        default=ClaimFieldDefault("subject"),
+        help_text=_(
+            "Name of the claim holding the (opaque) identifier of the user. "
+            "This claim will be used when the plugin is set to anonymous authentication "
+            "(when neither bsn or kvk are selected as authentication options)."
+        ),
+    )
+
     CLAIMS_CONFIGURATION = (
         # For bsn auth
         {"field": "bsn_claim", "required": False},
@@ -162,6 +172,8 @@ class YiviOpenIDConnectConfig(AuthorizeeMixin, OpenIDConnectConfigBase):
         {"field": "legal_subject_claim", "required": False},
         {"field": "acting_subject_claim", "required": False},
         {"field": "branch_number_claim", "required": False},
+        # For anonymous/pseudo auth
+        {"field": "pseudo_claim", "required": False},
     )
 
     def get_fields(self):
