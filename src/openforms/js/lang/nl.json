@@ -1224,6 +1224,11 @@
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
   },
+  "KjG6+9": {
+    "defaultMessage": "Yivi plugin options for bsn",
+    "description": "Yivi plugin options for bsn fieldset title",
+    "originalDefault": "Yivi plugin options for bsn"
+  },
   "Kl9yvd": {
     "defaultMessage": "Pad",
     "description": "JSON registration options 'path' label",
@@ -1328,6 +1333,11 @@
     "defaultMessage": "haal de waarde op uit een externe registratie",
     "description": "action type \"fetch-from-service\" label",
     "originalDefault": "fetch the value for a variable from a service"
+  },
+  "M/1wxK": {
+    "defaultMessage": "Authentication options",
+    "description": "Authentication options label",
+    "originalDefault": "Authentication options"
   },
   "M0kOz9": {
     "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
@@ -2395,6 +2405,11 @@
     "description": "Logic action warning icon text",
     "originalDefault": "Detected some problems in this action: {problems}."
   },
+  "giZzWX": {
+    "defaultMessage": "Specify which authentication options are available for users.",
+    "description": "Authentication options help text",
+    "originalDefault": "Specify which authentication options are available for users."
+  },
   "gpiYPI": {
     "defaultMessage": "Accepteren",
     "description": "Confirmation modal confirm button",
@@ -3026,11 +3041,6 @@
     "description": "'JSON Schema target' label",
     "originalDefault": "JSON Schema target"
   },
-  "rtKM0k": {
-    "defaultMessage": "Specify which authentication attribute should be received from the login.",
-    "description": "Authentication attribute help text",
-    "originalDefault": "Specify which authentication attribute should be received from the login."
-  },
   "rzGuvz": {
     "defaultMessage": "(nog niet ingesteld)",
     "description": "DMN evaluation not configured yet message",
@@ -3281,11 +3291,6 @@
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
   },
-  "xPAHZb": {
-    "defaultMessage": "Authentication attribute",
-    "description": "Authentication attribute label",
-    "originalDefault": "Authentication attribute"
-  },
   "xTfMk5": {
     "defaultMessage": "Vertalingen ingeschakeld",
     "description": "Form translation enabled field label",
@@ -3351,6 +3356,11 @@
     "defaultMessage": "Zaaktypeomschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
+  },
+  "zItxZ9": {
+    "defaultMessage": "Yivi plugin options for kvk",
+    "description": "Yivi plugin options for kvk fieldset title",
+    "originalDefault": "Yivi plugin options for kvk"
   },
   "zQE4f2": {
     "defaultMessage": "n.v.t.",

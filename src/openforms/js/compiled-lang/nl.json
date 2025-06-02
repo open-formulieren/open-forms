@@ -2568,6 +2568,12 @@
       "value": "Handmatig ingesteld"
     }
   ],
+  "KjG6+9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for bsn"
+    }
+  ],
   "Kl9yvd": [
     {
       "type": 0,
@@ -2716,6 +2722,12 @@
     {
       "type": 0,
       "value": "haal de waarde op uit een externe registratie"
+    }
+  ],
+  "M/1wxK": [
+    {
+      "type": 0,
+      "value": "Authentication options"
     }
   ],
   "M0kOz9": [
@@ -3202,6 +3214,12 @@
     {
       "type": 0,
       "value": "Je moet latitude en longitude allebei instellen."
+    }
+  ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
     }
   ],
   "R7XVbR": [
@@ -3954,12 +3972,6 @@
     {
       "type": 0,
       "value": "Maximale breedte"
-    }
-  ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
     }
   ],
   "Y8cmP1": [
@@ -5087,6 +5099,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "giZzWX": [
+    {
+      "type": 0,
+      "value": "Specify which authentication options are available for users."
     }
   ],
   "gpiYPI": [
@@ -6431,12 +6449,6 @@
       "value": "Bestemmingspad"
     }
   ],
-  "rtKM0k": [
-    {
-      "type": 0,
-      "value": "Specify which authentication attribute should be received from the login."
-    }
-  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -6483,6 +6495,30 @@
     {
       "type": 0,
       "value": "Pluginattribuut"
+    }
+  ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "smPv/m": [
@@ -6693,30 +6729,6 @@
     {
       "type": 0,
       "value": "Fout"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6961,12 +6973,6 @@
       "value": "Sjabloon bevestigingspagina"
     }
   ],
-  "xPAHZb": [
-    {
-      "type": 0,
-      "value": "Authentication attribute"
-    }
-  ],
   "xTfMk5": [
     {
       "type": 0,
@@ -7137,6 +7143,12 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
+    }
+  ],
+  "zItxZ9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for kvk"
     }
   ],
   "zQE4f2": [

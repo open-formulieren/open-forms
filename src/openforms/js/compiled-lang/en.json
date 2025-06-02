@@ -2547,6 +2547,12 @@
       "value": "Manually defined"
     }
   ],
+  "KjG6+9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for bsn"
+    }
+  ],
   "Kl9yvd": [
     {
       "type": 0,
@@ -2695,6 +2701,12 @@
     {
       "type": 0,
       "value": "fetch the value for a variable from a service"
+    }
+  ],
+  "M/1wxK": [
+    {
+      "type": 0,
+      "value": "Authentication options"
     }
   ],
   "M0kOz9": [
@@ -3185,6 +3197,12 @@
     {
       "type": 0,
       "value": "You need to configure both longitude and latitude."
+    }
+  ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Reference lists API"
     }
   ],
   "R7XVbR": [
@@ -3937,12 +3955,6 @@
     {
       "type": 0,
       "value": "Maximum width"
-    }
-  ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
     }
   ],
   "Y8cmP1": [
@@ -5065,6 +5077,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "giZzWX": [
+    {
+      "type": 0,
+      "value": "Specify which authentication options are available for users."
     }
   ],
   "gpiYPI": [
@@ -6409,12 +6427,6 @@
       "value": "JSON Schema target"
     }
   ],
-  "rtKM0k": [
-    {
-      "type": 0,
-      "value": "Specify which authentication attribute should be received from the login."
-    }
-  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -6461,6 +6473,30 @@
     {
       "type": 0,
       "value": "Plugin attribute"
+    }
+  ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (no longer valid)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
     }
   ],
   "smPv/m": [
@@ -6675,30 +6711,6 @@
     {
       "type": 0,
       "value": "Error"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [
@@ -6943,12 +6955,6 @@
       "value": "Submission confirmation template"
     }
   ],
-  "xPAHZb": [
-    {
-      "type": 0,
-      "value": "Authentication attribute"
-    }
-  ],
   "xTfMk5": [
     {
       "type": 0,
@@ -7119,6 +7125,12 @@
     {
       "type": 0,
       "value": "Use globally configured map component settings"
+    }
+  ],
+  "zItxZ9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for kvk"
     }
   ],
   "zQE4f2": [
