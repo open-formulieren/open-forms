@@ -7,15 +7,22 @@ import {
   filterErrors,
 } from 'components/admin/forms/ValidationErrors';
 
+import {getReactSelectOptionsFromSchema} from '../../../../../utils/json-schema';
 import LoAOverride from '../LoAOverride';
 
 const DigidOptionsFormFields = ({name, plugin}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const relevantErrors = filterErrors(name, validationErrors);
 
+  const loaOptions = getReactSelectOptionsFromSchema(
+    plugin.schema.properties.loa.enum,
+    plugin.schema.properties.loa.enumNames,
+    '------'
+  );
+
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
-      <LoAOverride schema={plugin.schema} />
+      <LoAOverride name="loa" options={loaOptions} />
     </ValidationErrorsProvider>
   );
 };

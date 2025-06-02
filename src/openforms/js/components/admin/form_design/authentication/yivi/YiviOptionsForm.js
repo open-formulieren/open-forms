@@ -10,6 +10,7 @@ import YiviOptionsFormFields from './YiviOptionsFormFields';
 const YiviOptionsForm = ({name, label, plugin, authBackend, onChange}) => {
   const validationErrors = useContext(ValidationErrorContext);
   const numErrors = filterErrors(name, validationErrors).length;
+  console.log({name, label, plugin, authBackend, onChange});
 
   return (
     <ModalOptionsConfiguration
@@ -37,9 +38,10 @@ YiviOptionsForm.propType = {
     backend: PropTypes.string.isRequired, // Auth plugin id
     // Options configuration shape is specific to plugin
     options: PropTypes.shape({
-      authenticationAttribute: PropTypes.string,
+      authenticationOptions: PropTypes.arrayOf(PropTypes.string),
       additionalScopes: PropTypes.arrayOf(PropTypes.string),
-      loa: PropTypes.string,
+      bsnLoa: PropTypes.string,
+      kvkLoa: PropTypes.string,
     }),
   }).isRequired,
   plugin: PropTypes.shape({
@@ -49,12 +51,15 @@ YiviOptionsForm.propType = {
     schema: PropTypes.exact({
       type: PropTypes.oneOf(['object']).isRequired,
       properties: PropTypes.shape({
-        authenticationAttribute: PropTypes.exact({
-          type: PropTypes.oneOf(['string']).isRequired,
+        authenticationOptions: PropTypes.exact({
+          type: PropTypes.oneOf(['array']).isRequired,
           title: PropTypes.string.isRequired,
           description: PropTypes.string.isRequired,
-          enum: PropTypes.arrayOf(PropTypes.string).isRequired,
-          enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+          items: PropTypes.exact({
+            type: PropTypes.oneOf(['string']).isRequired,
+            enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+            enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+          }),
         }).isRequired,
         additionalScopes: PropTypes.exact({
           type: PropTypes.oneOf(['array']).isRequired,
@@ -66,33 +71,19 @@ YiviOptionsForm.propType = {
             enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
           }),
         }).isRequired,
-      }),
-      anyOf: PropTypes.oneOfType([
-        PropTypes.shape({
-          type: PropTypes.oneOf(['object']).isRequired,
-          properties: PropTypes.shape({
-            loa: PropTypes.exact({
-              type: PropTypes.oneOf(['string']).isRequired,
-              title: PropTypes.string.isRequired,
-              description: PropTypes.string.isRequired,
-              enum: PropTypes.arrayOf(PropTypes.string).isRequired,
-              enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-            }),
-          }),
+        bsnLoa: PropTypes.exact({
+          type: PropTypes.oneOf(['string']).isRequired,
+          title: PropTypes.string.isRequired,
+          description: PropTypes.string.isRequired,
+          enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+          enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
         }),
-      ]),
-      discriminator: PropTypes.shape({
-        bsn: PropTypes.shape({
-          type: PropTypes.oneOf(['object']).isRequired,
-          properties: PropTypes.shape({
-            loa: PropTypes.exact({
-              type: PropTypes.oneOf(['string']).isRequired,
-              title: PropTypes.string.isRequired,
-              description: PropTypes.string.isRequired,
-              enum: PropTypes.arrayOf(PropTypes.string).isRequired,
-              enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-            }),
-          }),
+        kvkLoa: PropTypes.exact({
+          type: PropTypes.oneOf(['string']).isRequired,
+          title: PropTypes.string.isRequired,
+          description: PropTypes.string.isRequired,
+          enum: PropTypes.arrayOf(PropTypes.string).isRequired,
+          enumNames: PropTypes.arrayOf(PropTypes.string).isRequired,
         }),
       }),
     }),

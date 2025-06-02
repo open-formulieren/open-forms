@@ -8,19 +8,19 @@ import {getReactSelectOptionsFromSchema} from 'utils/json-schema';
 
 import LoAOverride from '../LoAOverride';
 
-const YiviOptionsFormBsnFields = ({plugin}) => {
+const YiviOptionsFormKvkFields = ({plugin}) => {
   const {
     values: {authenticationOptions = []},
   } = useFormikContext();
 
-  // Only show the bsn options fields if bsn is selected for authentication
-  if (!authenticationOptions.includes('bsn')) {
+  // Only show the kvk options fields if kvk is selected for authentication
+  if (!authenticationOptions.includes('kvk')) {
     return null;
   }
 
   const loaOptions = getReactSelectOptionsFromSchema(
-    plugin.schema.properties.bsnLoa.enum,
-    plugin.schema.properties.bsnLoa.enumNames,
+    plugin.schema.properties.kvkLoa.enum,
+    plugin.schema.properties.kvkLoa.enumNames,
     '------'
   );
 
@@ -28,17 +28,17 @@ const YiviOptionsFormBsnFields = ({plugin}) => {
     <Fieldset
       title={
         <FormattedMessage
-          defaultMessage="Yivi plugin options for bsn"
-          description="Yivi plugin options for bsn fieldset title"
+          defaultMessage="Yivi plugin options for kvk"
+          description="Yivi plugin options for kvk fieldset title"
         />
       }
     >
-      <LoAOverride name="bsnLoa" options={loaOptions} />
+      <LoAOverride name="kvkLoa" options={loaOptions} />
     </Fieldset>
   );
 };
 
-YiviOptionsFormBsnFields.propType = {
+YiviOptionsFormKvkFields.propType = {
   plugin: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
@@ -46,7 +46,7 @@ YiviOptionsFormBsnFields.propType = {
     schema: PropTypes.exact({
       type: PropTypes.oneOf(['object']).isRequired,
       properties: PropTypes.shape({
-        bsnLoa: PropTypes.exact({
+        kvkLoa: PropTypes.exact({
           type: PropTypes.oneOf(['string']).isRequired,
           title: PropTypes.string.isRequired,
           description: PropTypes.string.isRequired,
@@ -58,4 +58,4 @@ YiviOptionsFormBsnFields.propType = {
   }),
 };
 
-export default YiviOptionsFormBsnFields;
+export default YiviOptionsFormKvkFields;
