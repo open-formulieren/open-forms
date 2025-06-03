@@ -7,12 +7,15 @@
     {"$ref": "#/$defs/digid/schemas/withoutMandate"},
     {"$ref": "#/$defs/digid/schemas/withMandate"},
     {"$ref": "#/$defs/eherkenning/schemas/withoutMandate"},
-    {"$ref": "#/$defs/eherkenning/schemas/withMandate"}
+    {"$ref": "#/$defs/eherkenning/schemas/withMandate"},
+    {"$ref": "#/$defs/yivi/schemas/withNaturalPerson"},
+    {"$ref": "#/$defs/yivi/schemas/withCompany"},
+    {"$ref": "#/$defs/yivi/schemas/withPseudo"}
   ],
   "$defs": {
-    "naturalPerson": {
-      "title": "Natural Person",
-      "description": "JSON schema to describe a reference to a natural person.",
+    "_naturalPerson:base": {
+      "title": "Base Natural Person",
+      "description": "reusable JSON schema to describe a reference to a natural person.",
       "type": "object",
       "required": [
         "identifierType",
@@ -31,8 +34,13 @@
           "pattern": "^[0-9]{9}$",
           "format": "nl-bsn"
         }
-      },
-      "additionalProperties": false
+      }
+    },
+    "naturalPerson": {
+      "title": "Natural Person",
+      "description": "JSON schema to describe a reference to a natural person.",
+      "$ref": "#/$defs/_naturalPerson:base",
+      "unevaluatedProperties": false
     },
 
     "_company:kvk": {
@@ -463,6 +471,154 @@
             {"$ref": "#/$defs/eherkenning/mandate:company"}
           ],
           "unevaluatedProperties": false
+        }
+      }
+    },
+
+    "yivi": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate Yivi authentication.",
+        "const": "yivi"
+      },
+      "loa:bsn": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "Logius defines the available levels of assurance *and* prescribes what the minimum level must be.",
+        "type": "string",
+        "enum": [
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI"
+        ]
+      },
+      "loa:kvk": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "afsprakenstelsel.etoegang.nl defines the available levels of assurance *and* prescribes what the minimum level must be. Note that a minimum of loa2plus is required these days.",
+        "type": "string",
+        "enum": [
+          "urn:etoegang:core:assurance-class:loa1",
+          "urn:etoegang:core:assurance-class:loa2",
+          "urn:etoegang:core:assurance-class:loa2plus",
+          "urn:etoegang:core:assurance-class:loa3",
+          "urn:etoegang:core:assurance-class:loa4"
+        ]
+      },
+
+      "schemas": {
+        "withNaturalPerson": {
+          "title": "Authentication context data schema for Yivi authentication of a natural person with bsn.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/yivi/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/yivi/loa:bsn"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The authorized user.",
+              "type": "object",
+              "required": [
+                "legalSubject"
+              ],
+              "properties": {
+                "legalSubject": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/_naturalPerson:base"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "additionalInformation": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withCompany": {
+          "title": "Authentication context data schema for Yivi authentication of a company with kvk.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/yivi/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/yivi/loa:kvk"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The authorized user.",
+              "type": "object",
+              "required": [
+                "legalSubject"
+              ],
+              "properties": {
+                "legalSubject": {
+                  "type": "object",
+                  "allOf": [
+                    {"oneOf": [
+                      {"$ref": "#/$defs/_company:kvk"},
+                      {"$ref": "#/$defs/_company:rsin"}
+                    ]}
+                  ],
+                  "properties": {
+                    "additionalInformation": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withPseudo": {
+          "title": "Authentication context data schema for Yivi authentication of a person with pseudonym.",
+          "type": "object",
+          "required": [
+            "source",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/yivi/source"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The authorized user.",
+              "type": "object",
+              "required": [
+                "legalSubject"
+              ],
+              "properties": {
+                "legalSubject": {
+                  "identifierType": {
+                    "description": "The identifier is always some encrypted form, specific to the service provider. I.e. the same physical person gets different identifier values when authenting with different service providers.",
+                    "const": "opaque"
+                  },
+                  "identifier": {
+                    "type": "string"
+                  },
+                  "additionalInformation": {
+                    "type": "object"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
         }
       }
     }
