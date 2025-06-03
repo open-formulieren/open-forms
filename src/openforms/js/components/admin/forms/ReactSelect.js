@@ -68,6 +68,9 @@ const getValue = (options, value) => {
   return null;
 };
 
+const getValues = (options, values) =>
+  values && Array.isArray(values) ? values.map(value => getValue(options, value)) : [];
+
 export const ReactSelectContext = createContext({parentSelector: () => document.body});
 ReactSelectContext.displayName = 'ReactSelectContext';
 
@@ -126,13 +129,12 @@ const SelectWithFormik = ({name, options, className, ...props}) => {
       menuPortalTarget={parentSelector()}
       options={options}
       {...fieldProps}
-      value={getValue(options, value)}
+      value={props.isMulti ? getValues(options, value) : getValue(options, value)}
       onChange={selectedOption => {
-        // clear the value
-        if (selectedOption == null) {
-          setValue(undefined);
+        if (props.isMulti) {
+          setValue(selectedOption.map(option => option.value));
         } else {
-          setValue(selectedOption.value);
+          setValue(selectedOption == null ? undefined : selectedOption.value);
         }
       }}
       {...props}
