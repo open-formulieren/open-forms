@@ -52,7 +52,7 @@ AuthPluginOptions.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       label: PropTypes.string,
-      providesAuth: PropTypes.string,
+      providesAuth: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     })
   ),
   onChange: PropTypes.func.isRequired,

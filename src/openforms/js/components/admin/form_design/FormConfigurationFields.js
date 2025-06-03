@@ -741,7 +741,7 @@ FormConfigurationFields.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       label: PropTypes.string,
-      providesAuth: PropTypes.string,
+      providesAuth: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
       schema: PropTypes.object,
     })
   ),

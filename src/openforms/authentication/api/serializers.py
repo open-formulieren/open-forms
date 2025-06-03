@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from openforms.plugins.api.serializers import PluginBaseSerializer
@@ -13,9 +14,21 @@ class TextChoiceSerializer(serializers.Serializer):
     label = serializers.CharField()  # type: ignore  # djangorestframework-stubs#158
 
 
+@extend_schema_field(
+    {
+        "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}},
+        ]
+    }
+)
+class ProvidesAuthJSONField(serializers.JSONField):
+    pass
+
+
 class AuthPluginSerializer(PluginBaseSerializer):
     # serializer for form builder
-    provides_auth = serializers.CharField(
+    provides_auth = ProvidesAuthJSONField(
         label=_("Provides authentication attributes"),
         help_text=_("The authentication attribute provided by this plugin."),
     )
