@@ -38,3 +38,16 @@
     text-align: end;
   }
 }
+
+.form-additional-scopes-dropdown-option {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 10px;
+  row-gap: 4px;
+
+  @include bem.element('key') {
+    text-align: end;
+  }
+}
