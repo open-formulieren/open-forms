@@ -14,6 +14,7 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from .config import YiviOptions, YiviOptionsSerializer
 from .constants import PLUGIN_ID
 from .models import YiviOpenIDConnectConfig
 
@@ -33,7 +34,7 @@ class YiviClaims(TypedDict):
 
 
 @register(PLUGIN_ID)
-class YiviOIDCAuthentication(BasePlugin):
+class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     """
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
@@ -43,6 +44,7 @@ class YiviOIDCAuthentication(BasePlugin):
     # Yivi can provide a range of auth attributes, including bsn and kvk
     provides_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
     config_class = YiviOpenIDConnectConfig
+    configuration_options = YiviOptionsSerializer
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: YiviOptions
