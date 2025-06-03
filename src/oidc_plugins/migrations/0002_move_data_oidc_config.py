@@ -185,7 +185,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         (
-            "oidc",
+            "oidc_plugins",
             "0001_initial"
         ),
         (
@@ -194,6 +194,10 @@ class Migration(migrations.Migration):
         ),
         (
             "digid_eherkenning_oidc",
+            "0001_initial"
+        ),
+        (
+            "authentication_org_oidc",
             "0001_initial"
         ),
         

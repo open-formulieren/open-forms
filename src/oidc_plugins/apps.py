@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class OIDCAppConfig(AppConfig):
-    name = "oidc"
+    name = "oidc_plugins"
 
     def ready(self) -> None:
         from . import plugins  # noqa
