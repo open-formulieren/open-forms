@@ -223,7 +223,7 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
         }
     
 @register(OIDC_EH_IDENTIFIER)
-class OIDCeHerkenningMachtigenPlugin(BaseDigiDeHerkenningPlugin):
+class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
     def get_schema(self) -> JSONObject:
         return EHERKENNING_OPTIONS_SCHEMA
     

@@ -259,7 +259,7 @@ INSTALLED_APPS = [
     "openforms.variables.static_variables.apps.StaticVariables",
     "openforms.authentication.static_variables.apps.AuthStaticVariables",
     # Other project modules
-    "oidc",
+    "oidc_plugins",
 ]
 
 _log_requests_via_middleware = config("LOG_REQUESTS", default=True)

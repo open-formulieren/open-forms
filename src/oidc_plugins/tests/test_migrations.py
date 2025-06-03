@@ -4,7 +4,7 @@ from django.db import connections
 from mozilla_django_oidc_db.models import UserInformationClaimsSources
 from solo.models import DEFAULT_SINGLETON_INSTANCE_ID
 
-from oidc.constants import (
+from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
