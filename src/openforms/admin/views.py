@@ -9,6 +9,8 @@ from django.views.generic import RedirectView
 
 from maykin_2fa.views import AdminLoginView
 
+from openforms.accounts.models import User
+
 
 class ClassicAdminLoginView(AdminLoginView):
     def get_prefix(self, request, *args, **kwargs):
@@ -38,7 +40,11 @@ class AdminLoginRedirectView(RedirectView):
         redirect_to = redirect_to if url_is_safe else default
 
         # user already logged in and MFA verified -> send to the final destination
-        if self.request.user.is_authenticated and self.request.user.is_verified():
+        user = self.request.user
+        if user.is_authenticated and user.is_verified():
+            assert isinstance(user, User)
+            if not user.is_staff:
+                return resolve_url("admin-mfa-login")
             return redirect_to
 
         redirect_to_name = (
