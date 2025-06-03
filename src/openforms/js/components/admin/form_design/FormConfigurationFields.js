@@ -243,8 +243,7 @@ const AuthenticationFields = ({
       {authBackends.map((authBackend, index) => (
         <AuthPluginOptions
           key={authBackend.backend}
-          index={index}
-          name={`form.authBackends.${index}`}
+          name={`form.authBackends.${index}.options`}
           authBackend={authBackend}
           availableAuthPlugins={availableAuthPlugins}
           onChange={onChange}
