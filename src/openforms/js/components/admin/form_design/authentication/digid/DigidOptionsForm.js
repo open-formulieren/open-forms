@@ -1,18 +1,38 @@
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {FormattedMessage} from 'react-intl';
 
-import LoAOverride from 'components/admin/form_design/authentication/LoAOverride';
+import ModalOptionsConfiguration from 'components/admin/forms/ModalOptionsConfiguration';
+import {ValidationErrorContext, filterErrors} from 'components/admin/forms/ValidationErrors';
 
-const DigidOptionsForm = ({name, plugin, authBackend, onChange}) => (
-  <LoAOverride
-    name={`${name}.options.loa`}
-    plugin={plugin}
-    loa={authBackend.options.loa}
-    onChange={onChange}
-  />
-);
+import DigidOptionsFormFields from './DigidOptionsFormFields';
+
+const DigidOptionsForm = ({name, label, plugin, authBackend, onChange}) => {
+  const validationErrors = useContext(ValidationErrorContext);
+  const numErrors = filterErrors(name, validationErrors).length;
+
+  return (
+    <ModalOptionsConfiguration
+      name={name}
+      label={label}
+      numErrors={numErrors}
+      modalTitle={
+        <FormattedMessage
+          description="DigiD authentication options modal title"
+          defaultMessage="Plugin configuration: DigiD"
+        />
+      }
+      initialFormData={{...authBackend.options}}
+      onSubmit={values => onChange({formData: values})}
+    >
+      <DigidOptionsFormFields name={name} plugin={plugin} />
+    </ModalOptionsConfiguration>
+  );
+};
 
 DigidOptionsForm.propType = {
   name: PropTypes.string.isRequired,
+  label: PropTypes.node.isRequired,
   authBackend: PropTypes.shape({
     backend: PropTypes.string.isRequired, // Auth plugin id
     options: PropTypes.shape({
