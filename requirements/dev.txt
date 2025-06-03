@@ -375,7 +375,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.6.0
+django-setup-configuration==0.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
