@@ -14,9 +14,10 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
+from ...typing import FormAuth
 from .config import YiviOptions, YiviOptionsSerializer
 from .constants import PLUGIN_ID
-from .models import YiviOpenIDConnectConfig
+from .models import AvailableScope, YiviOpenIDConnectConfig
 
 yivi_init = OIDCInit.as_view(
     config_class=YiviOpenIDConnectConfig,
@@ -24,13 +25,30 @@ yivi_init = OIDCInit.as_view(
 )
 
 
-class YiviClaims(TypedDict):
+class YiviClaims(TypedDict, total=False):
     """
     Processed Yivi claims structure.
 
     See :attr:`openforms.authentication.yivi_oidc.models` for the source of this
     structure.
+
+    All attributes are optional, as some attributes are only present when user
+    login using certain authentication methods (i.e. only when the user logs in
+    using bsn, is the bsn claim available).
     """
+
+    # Claims for auth attribute bsn
+    bsn_claim: str
+
+    # Claims for auth attribute kvk
+    kvk_claim: str
+
+    # Claims for anonymous/pseudo authentication
+    pseudo_claim: str
+
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: str | int | float
 
 
 @register(PLUGIN_ID)
@@ -45,6 +63,74 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     provides_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
     config_class = YiviOpenIDConnectConfig
     configuration_options = YiviOptionsSerializer
+
+    @staticmethod
+    def _get_user_chosen_authentication_attribute(
+        authentication_options: list[AuthAttribute],
+        normalized_claims: YiviClaims,
+    ) -> AuthAttribute:
+        """
+        Return the user chosen authentication attribute.
+        User chosen authentication attribute is defined based on the provided claims. To
+        make sure that the plugin allows the specific authentication attribute, the
+        defined authentication_options must contain the presumed authentication
+        attribute.
+        """
+
+        bsn = bool(normalized_claims.get("bsn_claim"))
+        kvk = bool(normalized_claims.get("kvk_claim"))
+
+        if AuthAttribute.bsn in authentication_options and bsn:
+            return AuthAttribute.bsn
+        elif AuthAttribute.kvk in authentication_options and kvk:
+            return AuthAttribute.kvk
+        else:
+            return AuthAttribute.pseudo
+
+    def transform_claims(
+        self, options: YiviOptions, normalized_claims: YiviClaims
+    ) -> FormAuth:
+        authentication_options = options["authentication_options"]
+        authentication_attribute = self._get_user_chosen_authentication_attribute(
+            authentication_options, normalized_claims
+        )
+
+        form_auth = {
+            "attribute": authentication_attribute,
+            "plugin": self.identifier,
+            "additional_claims": {},
+        }
+
+        # Add claims resulted from additional scopes
+        if (additional_scopes := options["additional_scopes"]) and len(
+            additional_scopes
+        ):
+            claims_to_add = AvailableScope.objects.filter(
+                scope__in=additional_scopes
+            ).values_list("claims", flat=True)
+
+            for claim in sum(claims_to_add, []):
+                form_auth["additional_claims"][claim] = normalized_claims.get(claim, "")
+
+        # Set form authentication values based on the used authentication option
+        match authentication_attribute:
+            case AuthAttribute.bsn:
+                # Copied from digid_oidc
+                form_auth["value"] = normalized_claims.get("bsn_claim", "")
+                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+
+            case AuthAttribute.kvk:
+                # Copied from eherkenning_oidc
+                form_auth["value"] = normalized_claims.get("kvk_claim", "")
+                form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
+
+            case AuthAttribute.pseudo:
+                form_auth["value"] = (
+                    normalized_claims.get("pseudo_claim", "")
+                    or "dummy-set-by@openforms"
+                )
+
+        return form_auth
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: YiviOptions
@@ -73,12 +159,9 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
 
         normalized_claims: YiviClaims | None = request.session.get(self.session_key)
         if normalized_claims:
-            form_auth = {
-                "plugin": self.identifier,
-                "attribute": AuthAttribute,
-                "value": "some yivi claim",
-            }
-            request.session[FORM_AUTH_SESSION_KEY] = form_auth
+            request.session[FORM_AUTH_SESSION_KEY] = self.transform_claims(
+                options, normalized_claims
+            )
 
         return HttpResponseRedirect(form_url)
 
