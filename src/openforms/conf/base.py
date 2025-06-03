@@ -537,7 +537,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     # Put the fake backend first, as it (on success) only puts information in the session
     # and it's quite easy to shortcut.
-    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.DigiDEHerkenningOIDCBackend",
+    "openforms.contrib.auth_oidc.backends.GenericOIDCBackend",
     # Real backends
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
