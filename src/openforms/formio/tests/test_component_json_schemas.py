@@ -61,8 +61,8 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "html": "ASDF",
             "type": "content",
         }
-        with self.assertRaises(NotImplementedError):
-            as_json_schema(component)
+        schema = as_json_schema(component)
+        self.assertIsNone(schema)
 
     def test_currency(self):
         component: Component = {
@@ -734,6 +734,8 @@ class CurrencyTests(SimpleTestCase):
 
 
 class EditGridTests(SimpleTestCase):
+    maxDiff = None
+
     def test_generate_schema(self):
         component: EditGridComponent = {
             "key": "repeatingGroup",
@@ -812,6 +814,211 @@ class EditGridTests(SimpleTestCase):
 
         schema = as_json_schema(component)
         self.assertEqual(schema["maxItems"], 10)
+
+    def test_textfield_inside_fieldset_inside_editgrid(self):
+        component: EditGridComponent = {
+            "key": "editgrid",
+            "label": "editgrid",
+            "type": "editgrid",
+            "components": [
+                {
+                    "key": "fieldset",
+                    "label": "fieldset",
+                    "type": "fieldset",
+                    "components": [
+                        {
+                            "key": "textfield",
+                            "label": "Text field",
+                            "type": "textfield",
+                        },
+                    ],
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "editgrid",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"textfield": {"title": "Text field", "type": "string"}},
+                "required": ["textfield"],
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_textfields_inside_columns_inside_editgrid(self):
+        component: EditGridComponent = {
+            "key": "editgrid",
+            "label": "editgrid",
+            "type": "editgrid",
+            "components": [
+                {
+                    "type": "columns",
+                    "key": "columns",
+                    "label": "Columns",
+                    "columns": [
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield1",
+                                    "label": "textfield1",
+                                }
+                            ],
+                        },
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield2",
+                                    "label": "textfield2",
+                                }
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "editgrid",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "textfield1": {"title": "textfield1", "type": "string"},
+                    "textfield2": {"title": "textfield2", "type": "string"},
+                },
+                "required": ["textfield1", "textfield2"],
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_textfield_and_content_inside_editgrid(self):
+        component: EditGridComponent = {
+            "key": "editgrid",
+            "label": "editgrid",
+            "type": "editgrid",
+            "components": [
+                {
+                    "type": "content",
+                    "key": "content",
+                    "label": "Content",
+                    "html": "<p>Some content</p>",
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Text field",
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "editgrid",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"textfield": {"title": "Text field", "type": "string"}},
+                "required": ["textfield"],
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_content_inside_fieldset_inside_editgrid(self):
+        component: EditGridComponent = {
+            "key": "editgrid",
+            "label": "editgrid",
+            "type": "editgrid",
+            "components": [
+                {
+                    "type": "fieldset",
+                    "key": "fieldset",
+                    "label": "Fieldset",
+                    "components": [
+                        {
+                            "type": "content",
+                            "key": "content",
+                            "label": "Content",
+                            "html": "<p>Some content</p>",
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "Text field",
+                        },
+                    ],
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "editgrid",
+            "type": "array",
+            "items": {
+                "properties": {"textfield": {"title": "Text field", "type": "string"}},
+                "required": ["textfield"],
+                "type": "object",
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
+
+    def test_textfield_inside_fieldset_inside_fieldset_inside_editgrid(self):
+        component: EditGridComponent = {
+            "key": "editgrid",
+            "label": "editgrid",
+            "type": "editgrid",
+            "components": [
+                {
+                    "type": "fieldset",
+                    "key": "fieldset1",
+                    "label": "Fieldset1",
+                    "components": [
+                        {
+                            "type": "fieldset",
+                            "key": "fieldset2",
+                            "label": "Fieldset2",
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "textfield",
+                                    "label": "Text field",
+                                }
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }
+
+        schema = as_json_schema(component)
+
+        expected_schema = {
+            "title": "editgrid",
+            "type": "array",
+            "items": {
+                "properties": {"textfield": {"title": "Text field", "type": "string"}},
+                "required": ["textfield"],
+                "type": "object",
+                "additionalProperties": False,
+            },
+        }
+        self.assertEqual(schema, expected_schema)
 
 
 class AddressNLTests(SimpleTestCase):

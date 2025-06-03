@@ -9,6 +9,7 @@ from django.db.models import CheckConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+import structlog
 
 from openforms.formio.utils import (
     get_component_datatype,
@@ -46,6 +47,9 @@ UPSERT_ATTRIBUTES_TO_COMPARE: tuple[str, ...] = (
     "data_type",
     "initial_value",
 )
+
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 class FormVariableManager(models.Manager["FormVariable"]):
@@ -390,7 +394,13 @@ class FormVariable(models.Model):
                     self.key
                 ]
                 self.json_schema = as_json_schema(component)
-            except (AttributeError, KeyError):  # pragma: no cover
+                assert isinstance(self.json_schema, dict)
+            except (AttributeError, KeyError) as exc:  # pragma: no cover
+                logger.error(
+                    "component_json_schema_generation_failed",
+                    key=self.key,
+                    exc_info=exc,
+                )
                 pass
 
         if self.json_schema is None:
