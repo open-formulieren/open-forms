@@ -259,7 +259,9 @@ const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}
   );
 
   // first, sort the variables alphabetically
-  const sortedVariables = variables.toSorted((var1, var2) => var1.name.localeCompare(var2.name));
+  const sortedVariables = !editable
+    ? variables.toSorted((var1, var2) => var1.name.localeCompare(var2.name))
+    : variables;
   // then, group the variables by their step so that we display them grouped in the table,
   // which cuts down on the number of columns to display
   const variablesGroupedByFormStep = groupBy(

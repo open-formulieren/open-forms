@@ -1413,23 +1413,6 @@ export const ConfigurePrefillFamilyMembersPartners = {
           mutableDataFormVariable: 'userDefinedMutable',
         },
       },
-      {
-        form: 'http://localhost:8000/api/v2/forms/36612390',
-        formDefinition: undefined,
-        name: 'User defined 3',
-        key: 'userDefined3',
-        source: 'user_defined',
-        prefillPlugin: 'family_members',
-        dataType: 'string',
-        dataFormat: undefined,
-        isSensitiveData: false,
-        serviceFetchConfiguration: undefined,
-        initialValue: [],
-        prefillOptions: {
-          type: 'partners',
-          mutableDataFormVariable: 'userDefinedMutable',
-        },
-      },
     ],
   },
   play: async ({canvasElement, step}) => {
@@ -1441,7 +1424,7 @@ export const ConfigurePrefillFamilyMembersPartners = {
       await userEvent.click(userDefinedVarsTab);
       // open modal for configuration
       const editIcons = canvas.getAllByTitle('Prefill instellen');
-      await userEvent.click(editIcons[0]);
+      await userEvent.click(editIcons[1]);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
@@ -1497,23 +1480,6 @@ export const ConfigurePrefillFamilyMembersChildren = {
           mutableDataFormVariable: 'userDefinedMutable',
         },
       },
-      {
-        form: 'http://localhost:8000/api/v2/forms/36612390',
-        formDefinition: undefined,
-        name: 'User defined 3',
-        key: 'userDefined3',
-        source: 'user_defined',
-        prefillPlugin: 'family_members',
-        dataType: 'string',
-        dataFormat: undefined,
-        isSensitiveData: false,
-        serviceFetchConfiguration: undefined,
-        initialValue: [],
-        prefillOptions: {
-          type: 'children',
-          mutableDataFormVariable: 'userDefinedMutable',
-        },
-      },
     ],
   },
   play: async ({canvasElement, step}) => {
@@ -1525,7 +1491,7 @@ export const ConfigurePrefillFamilyMembersChildren = {
       await userEvent.click(userDefinedVarsTab);
       // open modal for configuration
       const editIcons = canvas.getAllByTitle('Prefill instellen');
-      await userEvent.click(editIcons[0]);
+      await userEvent.click(editIcons[1]);
       expect(await canvas.findByRole('dialog')).toBeVisible();
     });
 
