@@ -60,5 +60,6 @@ Available plugin components
    prefill_plugins
    appointment_plugins
    payment_plugins
+   authentication_plugins
 
 

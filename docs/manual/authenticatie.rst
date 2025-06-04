@@ -22,12 +22,13 @@ onder te verdelen in:
 * DigiD
 * eHerkenning/eIDAS
 * Medewerkerlogin (als ambtenaar bij de gemeente, bijvoorbeeld)
+* Persoonlijke gegevenskluis (biedt gebruikers volledige controle over hun gegevens)
 
 Hiervan zijn verschillende smaken beschikbaar, en elke inlogmethode geeft aan wat voor
 identificatiegegeven beschikbaar komt, zoals BSN of KVK-nummer.
 
 Machtigen/vertegenwoordiging
-=============================
+============================
 
 Machtigingen (vrijwillig dan wel niet-vrijwillig) komen voor als varianten van
 DigiD/eHerkenning inlogmethoden en kunnen verwarrend zijn. De verschillende
@@ -72,3 +73,30 @@ vertegenwoordigde wordt geïdentificeerd op basis van hun BSN.
 Ook hier is er nog steeds sprake van een handelende persoon die het bedrijf
 vertegenwoordigt, en het bedrijf vertegenwoordigt op zijn beurt weer de persoon waarover
 bewind gevoerd wordt.
+
+Persoonlijke gegevenskluizen
+============================
+
+Persoonlijke gegevenskluizen (*identity wallets*) geven gebruikers volledige controle
+over welke gegevens zij delen met een applicatie. Dankzij de verschillende manieren
+waarop gegevens kunnen worden opgeslagen en gebruikt voor authenticatie via
+gegevenskluizen, zijn deze methoden ook geschikt voor gebruikers zonder BSN of
+KvK-nummer.
+
+Op het moment ondersteunt Open Formulieren uitsluitend de persoonlijke gegevenskluis
+`Yivi <https://yivi.app/>`_, in combinatie met de identity provider
+`Signicat <https://www.signicat.com/nl>`_.
+
+Yivi
+----
+
+Yivi is een persoonlijke gegevenskluis (*identity wallet*) waarmee gebruikers zelf
+bepalen welke gegevens zij wel en niet delen met Open Formulieren. Met Yivi kunnen
+gebruikers inloggen met hun BSN, als bedrijf, of uitsluitend via een versleutelde
+identificatie (pseudoniem).
+
+Daarnaast kunnen met Yivi aanvullende persoons- en/of bedrijfsgegevens worden opgevraagd.
+De gebruiker bepaalt daarbij telkens zelf of deze gegevens gedeeld worden.
+
+.. note:: Technische opmerking: Yivi is vooralsnog alleen beschikbaar via het OpenID
+   Connect-protocol van Signicat.
