@@ -13,13 +13,13 @@ import VariablesTable from './VariablesTable';
 import {VARIABLE_SOURCES, VARIABLE_SOURCES_GROUP_LABELS} from './constants';
 import {variableHasErrors} from './utils';
 
-const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) => {
+const VariablesEditor = ({onAdd, onDelete, onChange, onFieldChange}) => {
   const intl = useIntl();
-  const {staticVariables} = useContext(FormContext);
-  const userDefinedVariables = variables.filter(
+  const {staticVariables, formVariables} = useContext(FormContext);
+  const userDefinedVariables = formVariables.filter(
     variable => variable.source === VARIABLE_SOURCES.userDefined
   );
-  const componentVariables = variables.filter(
+  const componentVariables = formVariables.filter(
     variable => variable.source === VARIABLE_SOURCES.component
   );
 

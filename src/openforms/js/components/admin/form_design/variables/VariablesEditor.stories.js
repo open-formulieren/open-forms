@@ -122,7 +122,6 @@ export default {
   component: VariablesEditor,
   decorators: [FormDecorator],
   args: {
-    variables: VARIABLES,
     availableFormVariables: VARIABLES,
     availableStaticVariables: [
       {
@@ -409,7 +408,7 @@ export const WithObjectsAPIRegistrationBackends = {
 
 export const WithObjectsAPIRegistrationBackendsTransformToList = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
@@ -557,7 +556,7 @@ export const WithObjectsAPIRegistrationBackendsTransformToList = {
 
 export const WithObjectsAPIRegistrationBackendsGeometryField = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'unsaved-step',
@@ -662,7 +661,7 @@ export const EmptyUserDefinedVariableWithObjectsAPIRegistration = {
         },
       },
     ],
-    variables: [
+    availableFormVariables: [
       // add a variable as if the user clicked "add new user defined variable"
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -1046,7 +1045,7 @@ export const WithGenericJSONRegistrationBackend = {
 
 export const WithGenericJSONRegistrationBackendTransformToList = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
@@ -1384,7 +1383,7 @@ export const ConfigurePrefillObjectsAPIWithCopyButton = {
 
 export const ConfigurePrefillFamilyMembersPartners = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: undefined,
@@ -1413,20 +1412,6 @@ export const ConfigurePrefillFamilyMembersPartners = {
           type: 'partners',
           mutableDataFormVariable: 'userDefinedMutable',
         },
-      },
-    ],
-    availableFormVariables: [
-      {
-        form: 'http://localhost:8000/api/v2/forms/36612390',
-        formDefinition: undefined,
-        name: 'User defined mutable',
-        key: 'userDefinedMutable',
-        source: 'user_defined',
-        dataType: 'array',
-        dataFormat: undefined,
-        isSensitiveData: false,
-        serviceFetchConfiguration: undefined,
-        initialValue: [],
       },
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -1482,7 +1467,7 @@ export const ConfigurePrefillFamilyMembersPartners = {
 
 export const ConfigurePrefillFamilyMembersChildren = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: undefined,
@@ -1511,20 +1496,6 @@ export const ConfigurePrefillFamilyMembersChildren = {
           type: 'children',
           mutableDataFormVariable: 'userDefinedMutable',
         },
-      },
-    ],
-    availableFormVariables: [
-      {
-        form: 'http://localhost:8000/api/v2/forms/36612390',
-        formDefinition: undefined,
-        name: 'User defined mutable',
-        key: 'userDefinedMutable',
-        source: 'user_defined',
-        dataType: 'array',
-        dataFormat: undefined,
-        isSensitiveData: false,
-        serviceFetchConfiguration: undefined,
-        initialValue: [],
       },
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -1586,7 +1557,7 @@ export const ConfigurePrefillFamilyMembersChildren = {
 
 export const WithValidationErrors = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
@@ -1641,7 +1612,7 @@ export const WithValidationErrors = {
 
 export const ConfigurePrefillObjectsAPIWithValidationErrors = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: undefined,
@@ -1707,7 +1678,7 @@ export const ConfigurePrefillObjectsAPIWithValidationErrors = {
 
 export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
@@ -1835,7 +1806,7 @@ export const AddressNLMappingSpecificTargetsNoDeriveAddress = {
 
 export const AddressNLMappingSpecificTargetsDeriveAddress = {
   args: {
-    variables: [
+    availableFormVariables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
         formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
