@@ -25,7 +25,7 @@ def get_np_name(person: NaturalPersonDetails) -> str:
     bits = [
         person.first_names,
         person.affixes,
-        person.lastname,
+        person.last_name,
     ]
     relevant_bits = [bit for bit in bits if bit]
     return " ".join(relevant_bits).strip()

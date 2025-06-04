@@ -20,7 +20,7 @@ class NaturalPersonDetails(BaseModel):
     first_names: str = ""
     initials: str = ""
     affixes: str = ""
-    lastname: str = ""
+    last_name: str = ""
     date_of_birth: str = ""
     date_of_birth_precision: Literal["date", "year_month", "year"] | None = None
 

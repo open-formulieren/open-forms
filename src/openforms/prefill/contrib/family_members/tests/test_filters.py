@@ -22,7 +22,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="",
             date_of_birth_precision="date",
         )
@@ -30,7 +30,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="",
         )
 
@@ -45,7 +45,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-01-19",
             date_of_birth_precision="date",
         )
@@ -53,7 +53,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-01-19",
         )
 
@@ -66,7 +66,7 @@ class FamilyMembersFiltersTests(TestCase):
                     HC_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-01-19",
                         date_of_birth_precision="date",
                     ),
@@ -82,7 +82,7 @@ class FamilyMembersFiltersTests(TestCase):
                     StUFBG_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-01-19",
                     ),
                 ],
@@ -92,7 +92,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2017-01-19",
             date_of_birth_precision="date",
         )
@@ -100,7 +100,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2017-01-19",
         )
 
@@ -113,7 +113,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-01-19",
             date_of_birth_precision="date",
         )
@@ -121,7 +121,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-01-19",
         )
 
@@ -134,7 +134,7 @@ class FamilyMembersFiltersTests(TestCase):
                     HC_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-01-19",
                         date_of_birth_precision="date",
                     ),
@@ -150,7 +150,7 @@ class FamilyMembersFiltersTests(TestCase):
                     StUFBG_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-01-19",
                     ),
                 ],
@@ -160,7 +160,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="1986-01-19",
             date_of_birth_precision="date",
         )
@@ -168,7 +168,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="1986-01-19",
         )
 
@@ -182,7 +182,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-26",
             date_of_birth_precision="date",
         )
@@ -190,7 +190,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-26",
         )
 
@@ -203,7 +203,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-24",
             date_of_birth_precision="date",
         )
@@ -211,7 +211,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-24",
         )
 
@@ -224,7 +224,7 @@ class FamilyMembersFiltersTests(TestCase):
                     HC_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-04-24",
                         date_of_birth_precision="date",
                     )
@@ -242,7 +242,7 @@ class FamilyMembersFiltersTests(TestCase):
                     StUFBG_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-04-24",
                     )
                 ],
@@ -253,7 +253,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-26",
             date_of_birth_precision="date",
         )
@@ -261,7 +261,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2007-04-26",
         )
 
@@ -274,7 +274,7 @@ class FamilyMembersFiltersTests(TestCase):
                     HC_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-04-26",
                         date_of_birth_precision="date",
                     )
@@ -292,7 +292,7 @@ class FamilyMembersFiltersTests(TestCase):
                     StUFBG_NaturalPersonDetails(
                         bsn="123456788",
                         first_names="Doe",
-                        lastname="Pirsen",
+                        last_name="Pirsen",
                         date_of_birth="2007-04-26",
                     )
                 ],
@@ -302,7 +302,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2006-04-24",
             date_of_birth_precision="date",
         )
@@ -310,7 +310,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="2006-04-24",
         )
 
@@ -323,7 +323,7 @@ class FamilyMembersFiltersTests(TestCase):
         hc_item = HC_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="",
             date_of_birth_precision="date",
         )
@@ -331,7 +331,7 @@ class FamilyMembersFiltersTests(TestCase):
         stuf_bg_item = StUFBG_NaturalPersonDetails(
             bsn="123456788",
             first_names="Doe",
-            lastname="Pirsen",
+            last_name="Pirsen",
             date_of_birth="",
         )
 
@@ -348,7 +348,7 @@ class FamilyMembersFiltersTests(TestCase):
             hc_item = HC_NaturalPersonDetails(
                 bsn="123456788",
                 first_names="Doe",
-                lastname="Pirsen",
+                last_name="Pirsen",
                 date_of_birth="2002-01",
                 date_of_birth_precision="year_month",
             )
@@ -361,7 +361,7 @@ class FamilyMembersFiltersTests(TestCase):
             hc_item = HC_NaturalPersonDetails(
                 bsn="123456788",
                 first_names="Doe",
-                lastname="Pirsen",
+                last_name="Pirsen",
                 date_of_birth="2002",
                 date_of_birth_precision="year",
             )
@@ -375,7 +375,7 @@ class FamilyMembersFiltersTests(TestCase):
             stuf_bg_item = StUFBG_NaturalPersonDetails(
                 bsn="123456788",
                 first_names="Doe",
-                lastname="Pirsen",
+                last_name="Pirsen",
                 date_of_birth="2002-01",
             )
 
@@ -389,7 +389,7 @@ class FamilyMembersFiltersTests(TestCase):
             stuf_bg_item = StUFBG_NaturalPersonDetails(
                 bsn="123456788",
                 first_names="Doe",
-                lastname="Pirsen",
+                last_name="Pirsen",
                 date_of_birth="2002",
             )
 
