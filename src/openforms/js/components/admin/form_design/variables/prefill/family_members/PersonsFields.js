@@ -1,5 +1,4 @@
 import {useFormikContext} from 'formik';
-import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -10,7 +9,7 @@ import VariableSelection from 'components/admin/forms/VariableSelection';
 
 import {PERSON_TYPE_CHOICES} from './constants';
 
-const PersonFields = ({type, mutableDataFormVariable}) => {
+const PersonFields = () => {
   const intl = useIntl();
   const {getFieldProps, setValues} = useFormikContext();
 
@@ -23,7 +22,7 @@ const PersonFields = ({type, mutableDataFormVariable}) => {
     <Fieldset>
       <FormRow>
         <Field
-          name="type"
+          name="options.type"
           label={
             <FormattedMessage
               description="Family members options: 'Type' label"
@@ -39,10 +38,9 @@ const PersonFields = ({type, mutableDataFormVariable}) => {
           required
         >
           <ReactSelect
-            name="type"
+            name="options.type"
             required
             options={availableOptions}
-            value={availableOptions.find(opt => opt.value === type)}
             onChange={selectedOption => {
               const newValue = selectedOption ? selectedOption.value : null;
               // make sure the options have the right values when the type changes
@@ -72,8 +70,7 @@ const PersonFields = ({type, mutableDataFormVariable}) => {
           required
         >
           <VariableSelection
-            {...getFieldProps(mutableDataFormVariable)}
-            value={mutableDataFormVariable}
+            {...getFieldProps('options.mutableDataFormVariable')}
             aria-label={
               <FormattedMessage
                 description="Family members options: accessible label for (form) variable dropdown"
@@ -86,11 +83,6 @@ const PersonFields = ({type, mutableDataFormVariable}) => {
       </FormRow>
     </Fieldset>
   );
-};
-
-PersonFields.propTypes = {
-  type: PropTypes.string,
-  mutableDataFormVariable: PropTypes.string,
 };
 
 export default PersonFields;

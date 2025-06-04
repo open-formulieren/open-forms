@@ -29,7 +29,11 @@ const TextArea = ({name, rows = 5, cols = 10, ...extraProps}) => {
   return <textarea name={name} rows={rows} cols={cols} {...extraProps} />;
 };
 
-const NumberInput = props => <Input type="number" {...props} />;
+const NumberInput = ({value, ...props}) => {
+  // don't pass null or undefined values!
+  const normalizedValue = value == null ? '' : value;
+  return <Input type="number" value={normalizedValue} {...props} />;
+};
 
 const DateInput = props => <Input type="date" {...props} />;
 
