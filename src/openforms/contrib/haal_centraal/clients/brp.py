@@ -105,7 +105,7 @@ class V1Client(HALMixin, BRPClient):
                 first_names=child.get("naam", {}).get("voornamen") or "",
                 initials=child.get("naam", {}).get("voorletters") or "",
                 affixes=child.get("naam", {}).get("voorvoegsel") or "",
-                lastname=child.get("naam", {}).get("geslachtsnaam"),
+                last_name=child.get("naam", {}).get("geslachtsnaam"),
                 date_of_birth=child.get("geboorte", {}).get("datum", {}).get("datum")
                 or "",
                 date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
@@ -129,7 +129,7 @@ class V1Client(HALMixin, BRPClient):
                 first_names=partner.get("naam", {}).get("voornamen") or "",
                 initials=partner.get("naam", {}).get("voorletters") or "",
                 affixes=partner.get("naam", {}).get("voorvoegsel") or "",
-                lastname=partner.get("naam", {}).get("geslachtsnaam") or "",
+                last_name=partner.get("naam", {}).get("geslachtsnaam") or "",
                 date_of_birth=partner.get("geboorte", {}).get("datum", {}).get("datum")
                 or "",
                 date_of_birth_precision=DATE_OF_BIRTH_TYPE_MAPPINGS.get(
@@ -245,7 +245,7 @@ class V2Client(BRPClient):
                         first_names=member.get("naam", {}).get("voornamen") or "",
                         initials=member.get("naam", {}).get("voorletters") or "",
                         affixes=member.get("naam", {}).get("voorvoegsel") or "",
-                        lastname=member.get("naam", {}).get("geslachtsnaam") or "",
+                        last_name=member.get("naam", {}).get("geslachtsnaam") or "",
                         date_of_birth=member.get("geboorte", {})
                         .get("datum", {})
                         .get("datum")

@@ -144,7 +144,7 @@ class Client(BaseClient):
                     initials=member["gerelateerde"].get("voorletters") or "",
                     affixes=member["gerelateerde"].get("voorvoegselGeslachtsnaam")
                     or "",
-                    lastname=member["gerelateerde"].get("geslachtsnaam") or "",
+                    last_name=member["gerelateerde"].get("geslachtsnaam") or "",
                     date_of_birth=(
                         normalize_date_of_birth(
                             member["gerelateerde"].get("geboortedatum")

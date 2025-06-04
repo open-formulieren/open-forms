@@ -114,7 +114,7 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(child.bsn, "999991863")  # type: ignore
         self.assertEqual(child.first_names, "Frieda")  # type: ignore
         self.assertEqual(child.affixes, "")  # type: ignore
-        self.assertEqual(child.lastname, "Kroket")  # type: ignore
+        self.assertEqual(child.last_name, "Kroket")  # type: ignore
 
     def test_get_kinderen_no_bsn(self):
         with get_brp_client() as client:
@@ -135,7 +135,7 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(partner.bsn, "999991863")  # type: ignore
         self.assertEqual(partner.first_names, "Frieda")  # type: ignore
         self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.lastname, "Kroket")  # type: ignore
+        self.assertEqual(partner.last_name, "Kroket")  # type: ignore
 
     def test_partner_without_bsn(self):
         with get_brp_client() as client:
@@ -158,14 +158,14 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(child.bsn, "999991111")  # type: ignore
         self.assertEqual(child.first_names, "Fredo")  # type: ignore
         self.assertEqual(child.affixes, "")  # type: ignore
-        self.assertEqual(child.lastname, "Kroket")  # type: ignore
+        self.assertEqual(child.last_name, "Kroket")  # type: ignore
 
         partner = family_members[1]
 
         self.assertEqual(partner.bsn, "999992222")  # type: ignore
         self.assertEqual(partner.first_names, "Frieda")  # type: ignore
         self.assertEqual(partner.affixes, "")  # type: ignore
-        self.assertEqual(partner.lastname, "Kroket")  # type: ignore
+        self.assertEqual(partner.last_name, "Kroket")  # type: ignore
 
     def test_default_client_context(self):
         client = get_brp_client()
