@@ -5,8 +5,6 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from mozilla_django_oidc_db.views import OIDCInit
-
 from openforms.accounts.models import User
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
@@ -18,8 +16,9 @@ from ...typing import FormAuth
 from .config import YiviOptions, YiviOptionsSerializer
 from .constants import PLUGIN_ID
 from .models import AvailableScope, YiviOpenIDConnectConfig
+from .views import OIDCAuthenticationInitView
 
-yivi_init = OIDCInit.as_view(
+yivi_init = OIDCAuthenticationInitView.as_view(
     config_class=YiviOpenIDConnectConfig,
     allow_next_from_query=False,
 )
@@ -142,7 +141,7 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
             query={"next": form_url},
         )
 
-        response = yivi_init(request, return_url=return_url)
+        response = yivi_init(request, return_url=return_url, options=options)
         assert isinstance(response, HttpResponseRedirect)
         return response
 
