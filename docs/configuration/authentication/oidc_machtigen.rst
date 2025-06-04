@@ -53,12 +53,26 @@ Claim-eisen
 Configureren van OIDC-provider
 ------------------------------
 
-De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`.
+Contacteer de IAM beheerders in je organisatie om een *Client* aan te
+maken in de omgeving van de OpenID Connect provider.
 
-.. warning:: Indien je de legacy **Redirect URI** gebruikt, dan is de waarde
-   ``https://open-formulieren.gemeente.nl/digid-machtigen-oidc/callback/``.
+**Redirect URI (vanaf Open Formulieren 2.7.0)**
 
-Aan het eind van dit proces moet u de volgende gegevens hebben:
+.. versionchanged:: 3.0
+
+    Open Forms no longer uses the legacy endpoints by default.
+
+Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/auth/oidc/callback/`` in,
+waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
+
+**Redirect URI (legacy)**
+
+Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/digid-machtigen-oidc/callback/`` in,
+waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
+
+**Gegevens**
+
+Aan het eind van dit proces moet je de volgende gegevens hebben:
 
 * Server adres, bijvoorbeeld ``login.gemeente.nl``
 * Client ID, bijvoorbeeld ``a7d14516-8b20-418f-b34e-25f53c930948``

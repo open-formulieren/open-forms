@@ -1,0 +1,33 @@
+.. _developers_authentication_plugins:
+
+======================
+Authentication plugins
+======================
+
+Open Forms has a plugin system for the authentication module. The authentication module
+is invoked when a user wants to login on a form. In the form builder, it's possible to
+specify which plugins are available for authentication. Some plugins allow additional
+form-specific configuration.
+
+Public Python API
+=================
+
+Authentication plugins should inherit from the base plugin.
+
+Plugins that use the OpenID Connect (OIDC) protocol should inherit from the generic OIDC
+plugin (which, in turn, inherits from the base plugin).
+
+**Plugin base class**
+
+.. autoclass:: openforms.authentication.base.BasePlugin
+   :members:
+
+**Plugin Generic OIDC class**
+
+.. autoclass:: openforms.authentication.contrib.generic_oidc.OIDCAuthentication
+   :members:
+
+**Module documentation**
+
+.. automodule:: openforms.authentication
+   :members:
