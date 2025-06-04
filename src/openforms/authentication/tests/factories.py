@@ -7,6 +7,7 @@ from ..constants import (
     LegalSubjectIdentifierType,
 )
 from ..contrib.digid.constants import DIGID_DEFAULT_LOA
+from ..contrib.yivi_oidc.models import AttributeGroup, YiviOpenIDConnectConfig
 from ..models import AuthInfo, RegistratorInfo
 
 
@@ -90,3 +91,16 @@ class RegistratorInfoFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = RegistratorInfo
+
+
+class YiviOpenIDConnectConfigFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = YiviOpenIDConnectConfig
+        django_get_or_create = ["id"]
+
+    id = factory.Faker("id")
+
+
+class AttributeGroupFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = AttributeGroup
