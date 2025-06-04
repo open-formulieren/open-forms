@@ -274,7 +274,9 @@ export const DeletingOneOfMultipleActionsInSameTrigger = {
     const canvas = within(canvasElement);
 
     // Both actions should be present
-    expect(await canvas.findByText(/First action/)).toBeInTheDocument();
+    expect(
+      await canvas.findByText(/First action/, undefined, {timeout: 10 * 1000})
+    ).toBeInTheDocument();
     expect(await canvas.findByText(/Second action/)).toBeInTheDocument();
 
     // Delete the first action

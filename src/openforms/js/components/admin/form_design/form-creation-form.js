@@ -1419,7 +1419,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl, outgoingRequestsUr
           {!isAppointment && (
             <TabPanel>
               <VariablesEditor
-                variables={state.formVariables}
                 onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
                 onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
                 onChange={onUserDefinedVariableChange}
