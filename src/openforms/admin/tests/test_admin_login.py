@@ -136,6 +136,16 @@ class AlreadyLoggedInTests(WebTest):
 
         self.assertRedirects(login_page, "/admin/", fetch_redirect_response=False)
 
+    @tag("gh-4401")
+    def test_non_staff_user(self):
+        user = SuperUserFactory.create(is_staff=False)
+
+        login_page = self.app.get(LOGIN_URL, user=user, auto_follow=True)
+
+        self.assertEqual(login_page.status_code, 200)
+        self.assertTemplateUsed(login_page, "maykin_2fa/login.html")
+        self.assertTemplateUsed(login_page, "admin/login.html")
+
 
 @override_settings(
     USE_OIDC_FOR_ADMIN_LOGIN=False,
