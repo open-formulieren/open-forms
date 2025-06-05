@@ -24,6 +24,12 @@ from openforms.formio.typing import Component
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
+from openforms.registrations.contrib.generic_json.constants import (
+    PLUGIN_IDENTIFIER as GENERIC_JSON,
+)
+from openforms.registrations.contrib.objects_api.constants import (
+    PLUGIN_IDENTIFIER as OBJECTS_API,
+)
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
@@ -612,4 +618,14 @@ class FormExportSerializer(FormSerializer):
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
+    )
+
+
+class FormJsonSchemaOptionsSerializer(serializers.Serializer):
+    registration_plugin_id = serializers.ChoiceField(
+        label=_("Registration Plugin ID"),
+        choices=[GENERIC_JSON, OBJECTS_API],
+        help_text=_("Plugin identifier for which to generate the schema."),
+        required=True,
+        allow_null=False,
     )
