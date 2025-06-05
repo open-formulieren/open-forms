@@ -1,5 +1,4 @@
 import {useFormikContext} from 'formik';
-import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -7,8 +6,8 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, NumberInput} from 'components/admin/forms/Inputs';
 
-const ChildrenFiltersFields = ({minAge, maxAge, includeDeceased}) => {
-  const {setFieldValue} = useFormikContext();
+const ChildrenFiltersFields = () => {
+  const {getFieldProps} = useFormikContext();
 
   return (
     <Fieldset
@@ -37,12 +36,9 @@ const ChildrenFiltersFields = ({minAge, maxAge, includeDeceased}) => {
           }
         >
           <NumberInput
-            value={minAge ?? ''}
+            {...getFieldProps({name: 'options.minAge', type: 'number'})}
             min={0}
             step={1}
-            onChange={e => {
-              setFieldValue('options.minAge', e.target.value);
-            }}
           />
         </Field>
       </FormRow>
@@ -64,17 +60,15 @@ const ChildrenFiltersFields = ({minAge, maxAge, includeDeceased}) => {
           }
         >
           <NumberInput
-            value={maxAge ?? ''}
+            {...getFieldProps({name: 'options.maxAge', type: 'number'})}
             min={0}
             step={1}
-            onChange={e => {
-              setFieldValue('options.maxAge', e.target.value);
-            }}
           />
         </Field>
       </FormRow>
       <FormRow>
         <Checkbox
+          {...getFieldProps({name: 'options.includeDeceased', type: 'checkbox'})}
           name="options.includeDeceased"
           label={
             <FormattedMessage
@@ -88,20 +82,10 @@ const ChildrenFiltersFields = ({minAge, maxAge, includeDeceased}) => {
               defaultMessage={`If enabled, any deceased children will be displayed too.`}
             />
           }
-          checked={includeDeceased ?? true}
-          onChange={event => {
-            setFieldValue('options.includeDeceased', event.target.checked);
-          }}
         />
       </FormRow>
     </Fieldset>
   );
-};
-
-ChildrenFiltersFields.propTypes = {
-  minAge: PropTypes.string,
-  maxAge: PropTypes.string,
-  includeDeceased: PropTypes.bool,
 };
 
 export default ChildrenFiltersFields;

@@ -12,7 +12,7 @@ const FamilyMembersFields = () => {
   const {values, setFieldValue} = useFormikContext();
 
   const {
-    options: {mutableDataFormVariable, type, minAge, maxAge, includeDeceased},
+    options: {type},
   } = values;
 
   const errors = Object.fromEntries(useContext(ValidationErrorContext));
@@ -39,10 +39,8 @@ const FamilyMembersFields = () => {
 
   return (
     <ValidationErrorsProvider errors={optionsErrors}>
-      <PersonFields type={type} mutableDataFormVariable={mutableDataFormVariable} />
-      {showFilters && (
-        <ChildrenFiltersFields minAge={minAge} maxAge={maxAge} includeDeceased={includeDeceased} />
-      )}
+      <PersonFields />
+      {showFilters && <ChildrenFiltersFields />}
     </ValidationErrorsProvider>
   );
 };
