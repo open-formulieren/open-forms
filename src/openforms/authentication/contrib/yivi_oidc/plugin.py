@@ -5,7 +5,6 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from openforms.accounts.models import User
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
 
@@ -149,9 +148,6 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         """
         Redirect to form URL.
         """
-        assert request.user.is_authenticated
-        assert isinstance(request.user, User)
-
         form_url = request.GET.get("next")
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
