@@ -639,6 +639,69 @@ class AddressNL(BasePlugin[AddressNLComponent]):
         return base
 
 
+class PartnerSerializer(serializers.Serializer):
+    bsn = serializers.CharField(
+        label=_("bsn"),
+        max_length=9,
+        help_text=_("The BSN of the partner"),
+        validators=[BSNValidator()],
+    )
+    initials = serializers.CharField(
+        label=_("initials"),
+        help_text=_("The initials of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    affixes = serializers.CharField(
+        label=_("affixes"),
+        help_text=_("The affixes of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    lastName = serializers.CharField(
+        label=_("last name"),
+        help_text=_("The last name of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    dateOfBirth = serializers.CharField(
+        label=_("date of birth"),
+        help_text=_("The date of birth of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+
+
+@register("partners")
+class Partners(BasePlugin[Component]):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.ListField:
+        return serializers.ListField(child=PartnerSerializer())
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Partners")
+        schema = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["bsn"],
+                "properties": {
+                    "bsn": {"type": "string", "maxLength": 9},
+                    "initials": {"type": "string"},
+                    "affixes": {"type": "string"},
+                    "lastName": {"type": "string"},
+                    "dateOfBirth": {"type": "string", "format": "date"},
+                },
+                "additionalProperties": False,
+            },
+        }
+
+        return schema
+
+
 @register("cosign")
 class Cosign(BasePlugin):
     formatter = CosignFormatter

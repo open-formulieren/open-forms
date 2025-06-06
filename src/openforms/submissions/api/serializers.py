@@ -40,7 +40,11 @@ from .fields import (
     PrivacyPolicyAcceptedField,
     TruthDeclarationAcceptedField,
 )
-from .validators import FormMaintenanceModeValidator, ValidatePrefillData
+from .validators import (
+    FormMaintenanceModeValidator,
+    ValidateFamilyMembersPrefillData,
+    ValidatePrefillData,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -233,7 +237,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         label=_("data"),
         required=False,
         allow_null=True,
-        validators=[ValidatePrefillData()],
+        validators=[ValidatePrefillData(), ValidateFamilyMembersPrefillData()],
     )
 
     parent_lookup_kwargs = {

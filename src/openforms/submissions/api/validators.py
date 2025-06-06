@@ -7,6 +7,10 @@ from rest_framework.serializers import JSONField
 
 from openforms.formio.service import normalize_value_for_component
 from openforms.forms.models import Form
+from openforms.prefill.contrib.family_members.plugin import (
+    PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
+)
+from openforms.variables.constants import FormVariableSources
 
 from ..exceptions import FormMaintenance
 from ..models import SubmissionStep
@@ -52,6 +56,47 @@ class ValidatePrefillData:
                 errors[component_key] = serializers.ErrorDetail(
                     self.default_message, code=self.code
                 )
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+
+class ValidateFamilyMembersPrefillData:
+    code = "invalidFamilyMembersPrefilledField"
+    default_message = _("The family members prefill data may not be altered.")
+    requires_context = True
+
+    def __call__(self, submitted_data: dict, field: JSONField):
+        instance: SubmissionStep = field.parent.instance
+        submission = instance.submission
+        prefill_data = submission.get_prefilled_data()
+
+        errors = {}
+
+        for component in instance.form_step.iter_components():
+            if not (component_key := component.get("key")):
+                continue
+
+            fm_immutable_variables = submission.form.formvariable_set.filter(
+                source=FormVariableSources.user_defined,
+                prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            ).exclude(prefill_options={})
+
+            for immutable_var in fm_immutable_variables:
+                if (
+                    immutable_var.prefill_options["mutable_data_form_variable"]
+                    == component_key
+                ):
+                    if (
+                        prefill_data[immutable_var.key]
+                        and prefill_data[immutable_var.key]
+                        != submitted_data[
+                            immutable_var.prefill_options["mutable_data_form_variable"]
+                        ]
+                    ):
+                        errors[component_key] = serializers.ErrorDetail(
+                            self.default_message, code=self.code
+                        )
 
         if errors:
             raise serializers.ValidationError(errors)
