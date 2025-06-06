@@ -28,6 +28,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
+from ...authentication.tests.factories import AttributeGroupFactory
 from ..constants import EXPORT_META_KEY
 from ..models import (
     Form,
@@ -1591,6 +1592,50 @@ class ImportExportTests(TempdirMixin, TestCase):
         error_detail = exc.exception.args[0].detail["auth_backends"][0]["backend"][0]
 
         self.assertEqual(error_detail.code, "invalid")
+
+    def test_import_form_with_yivi_auth_backend_with_unknown_additional_attributes_groups(
+        self,
+    ):
+        AttributeGroupFactory(name="some_known_scope")
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "test-form",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "auth_backends": [
+                        {
+                            "backend": "yivi_oidc",
+                            "options": {
+                                "additional_attributes_groups": [
+                                    "some_unknown_scope",
+                                    "some_known_scope",
+                                ]
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get(slug="test-form")
+        authentication_backends = imported_form.auth_backends.all()
+        assert len(authentication_backends) == 1
+
+        auth_backend = authentication_backends[0]
+
+        # Expect only the known scope to be present
+        self.assertEqual(
+            auth_backend.options["additional_attributes_groups"], ["some_known_scope"]
+        )
 
 
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
