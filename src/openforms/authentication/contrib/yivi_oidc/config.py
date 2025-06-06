@@ -66,6 +66,24 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_blank=True,
     )
 
+    def _handle_before_import(self, data) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        # Pre-process 'additional_scopes' before DRF validates it
+        scopes = data.get("additional_scopes", [])
+        valid_choices = AvailableScope.objects.all().values_list("scope", flat=True)
+
+        # Filter out invalid scopes
+        data["additional_scopes"] = [
+            scope for scope in scopes if scope in valid_choices
+        ]
+
+    def to_internal_value(self, data: YiviOptions) -> YiviOptions:
+        self._handle_before_import(data)
+        return super().to_internal_value(data)
+
     def get_fields(self):
         fields = super().get_fields()
         fields[
