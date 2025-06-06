@@ -7,7 +7,7 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
-3.0.8 (2025-05-23)
+3.1.2 (2025-05-23)
 ==================
 
 Regular bugfix release.
