@@ -244,6 +244,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
     "openforms.authentication.contrib.digid_eherkenning_oidc.apps.DigiDEHerkenningOIDCApp",
+    "openforms.authentication.contrib.yivi_oidc.apps.YiviOIDCApp",
     "openforms.authentication.contrib.org_oidc.apps.OrgOIDCApp",
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
@@ -536,7 +537,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     # Put the fake backend first, as it (on success) only puts information in the session
     # and it's quite easy to shortcut.
-    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.DigiDEHerkenningOIDCBackend",
+    "openforms.authentication.contrib.generic_oidc.backends.GenericOIDCBackend",
     # Real backends
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
