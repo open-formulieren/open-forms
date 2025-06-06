@@ -6,6 +6,16 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.3 (2025-06-06)
+==================
+
+Hotfix addressing a backport issue.
+
+* [:backend:`5193`] Fixed missing backport of the zgw-consumers upgrade, causing a crash
+  when editing services.
+* [:backend:`5303`] Fixed user defined variables jumping around because of the auto-sort.
+* Upgraded Django to the latest security release.
+
 
 3.1.2 (2025-05-23)
 ==================
