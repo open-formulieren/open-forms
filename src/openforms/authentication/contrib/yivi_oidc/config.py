@@ -73,6 +73,24 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_blank=True,
     )
 
+    def _handle_before_import(self, data) -> None:
+        # we're not importing, nothing to do
+        if not self.context.get("is_import", False):
+            return
+
+        # Pre-process 'additional_attributes_groups' before DRF validates it
+        attribute_groups = data.get("additional_attributes_groups", [])
+        valid_choices = AttributeGroup.objects.all().values_list("name", flat=True)
+
+        # Filter out invalid attribute groups
+        data["additional_attributes_groups"] = [
+            group for group in attribute_groups if group in valid_choices
+        ]
+
+    def to_internal_value(self, data: YiviOptions) -> YiviOptions:
+        self._handle_before_import(data)
+        return super().to_internal_value(data)
+
     def get_fields(self):
         fields = super().get_fields()
         view = self.context.get("view")
