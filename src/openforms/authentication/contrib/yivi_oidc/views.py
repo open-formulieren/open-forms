@@ -7,6 +7,8 @@ from django.http import HttpRequest
 from django.http.response import HttpResponseRedirect
 
 import structlog
+
+from openforms.authentication.constants import AuthAttribute
 from digid_eherkenning.oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
     OIDCInit as _OIDCInit,
@@ -16,7 +18,7 @@ from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .config import YiviOptions
-from .constants import PLUGIN_ID, YiviAuthenticationAttributes
+from .constants import PLUGIN_ID
 from .models import AttributeGroup, YiviOpenIDConnectConfig
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -128,13 +130,21 @@ class OIDCAuthenticationInitView(_OIDCInit):
         """
 
         condiscon_items = []
+        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
 
         # Add authentication scopes
         if len(options["authentication_options"]):
             authentication_condiscon = []
             for option in options["authentication_options"]:
-                authentication_condiscon.append([option])
+                if option == AuthAttribute.bsn:
+                    authentication_condiscon.append([yivi_global_config.bsn_claim])
+                elif option == AuthAttribute.kvk:
+                    authentication_condiscon.append(
+                        [yivi_global_config.legal_subject_claim]
+                    )
             condiscon_items.append(authentication_condiscon)
+        else:
+            condiscon_items.append([yivi_global_config.pseudo_claim])
 
         # Add additional groups, as optional
         attributes_groups = AttributeGroup.objects.filter(
