@@ -82,7 +82,7 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
             # Set the "global" loa config based on the used authentication method
             match (
                 claims.get(YiviOpenIDConnectConfig.bsn_claim),
-                claims.get(YiviOpenIDConnectConfig.identifier_type_claim),
+                claims.get(YiviOpenIDConnectConfig.legal_subject_claim),
             ):
                 case str(), None:
                     self._config.loa_claim = self._config.bsn_loa_claim

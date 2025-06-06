@@ -13,6 +13,7 @@ from digid_eherkenning.oidc.views import (
 from furl import furl
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
+from ...constants import AuthAttribute
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .config import YiviOptions
 from .constants import PLUGIN_ID
@@ -127,12 +128,16 @@ class OIDCAuthenticationInitView(_OIDCInit):
         """
 
         condiscon_items = []
+        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
 
         # Add authentication scopes
         if len(options["authentication_options"]):
             authentication_condiscon = []
             for option in options["authentication_options"]:
-                authentication_condiscon.append([option])
+                if option == AuthAttribute.bsn:
+                    authentication_condiscon.append([yivi_global_config.bsn_scope])
+                elif option == AuthAttribute.kvk:
+                    authentication_condiscon.append([yivi_global_config.kvk_scope])
             condiscon_items.append(authentication_condiscon)
 
         # Add additional scopes, as optional
