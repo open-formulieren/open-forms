@@ -34,6 +34,7 @@ from openforms.utils.redirect import allow_redirect_url
 from .base import BasePlugin
 from .constants import (
     CO_SIGN_PARAMETER,
+    FORM_AUTH_BACKEND_SESSION_KEY,
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
@@ -211,6 +212,9 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
             try:
                 authentication_backend = FormAuthenticationBackend.objects.get(
                     form=form, backend=plugin.identifier
+                )
+                request.session[FORM_AUTH_BACKEND_SESSION_KEY] = str(
+                    authentication_backend.id
                 )
                 response = plugin.start_login(
                     request,

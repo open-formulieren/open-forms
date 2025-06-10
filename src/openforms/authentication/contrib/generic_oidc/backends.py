@@ -1,8 +1,9 @@
 from typing import override
 
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import HttpRequest
+from django.utils.translation import gettext_lazy as _
 
 import structlog
 from digid_eherkenning.oidc.claims import process_claims
@@ -12,9 +13,11 @@ from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
+from openforms.forms.models import FormAuthenticationBackend
 from openforms.typing import JSONObject
 
-from ..yivi_oidc.models import YiviOpenIDConnectConfig
+from ...constants import FORM_AUTH_BACKEND_SESSION_KEY
+from ..yivi_oidc.models import AttributeGroup, YiviOpenIDConnectConfig
 from .plugin import get_config_to_plugin
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -137,6 +140,33 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
 
         return True
 
+    def _extract_additional_claims_for_auth_backend(
+        self, auth_backend_id: str, claims: JSONObject
+    ) -> JSONObject:
+        try:
+            auth_backend = FormAuthenticationBackend.objects.get(id=auth_backend_id)
+        except FormAuthenticationBackend.DoesNotExist:
+            raise ValidationError(
+                _(
+                    "The form authentication backend with identifier {auth_backend_id} does not exist"
+                ).format(auth_backend_id=auth_backend_id),
+                code="not_found",
+            )
+
+        claims_to_extract = {}
+        match auth_backend.backend:
+            case "yivi_oidc":
+                attributes_to_add = AttributeGroup.objects.filter(
+                    name__in=auth_backend.options.get(
+                        "additional_attributes_groups", []
+                    )
+                ).values_list("attributes", flat=True)
+
+                for attribute in sum(attributes_to_add, []):
+                    claims_to_extract[attribute] = claims.get(attribute, "")
+
+        return claims_to_extract
+
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
         """
         Extract the claims configured on the config and store them in the session.
@@ -145,5 +175,13 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
         assert self.config_class and self.config_class in config_to_plugin
         session_key = config_to_plugin[self.config_class].session_key
         procssed_claims = self._process_claims(claims)
+
+        if auth_backend_id := self.request.session[FORM_AUTH_BACKEND_SESSION_KEY]:
+            procssed_claims["additional_claims"] = (
+                self._extract_additional_claims_for_auth_backend(
+                    auth_backend_id, claims
+                )
+            )
+
         assert self.request
         self.request.session[session_key] = procssed_claims
