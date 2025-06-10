@@ -31,6 +31,9 @@ class InvalidBackendIdError(Exception):
     pass
 
 
+type BackendOptions = RegistrationOptionsV2 | GenericJSONOptions | None
+
+
 def _iter_form_variables(
     form: Form,
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
@@ -48,14 +51,14 @@ def _iter_form_variables(
             variables_registry=additional_variables_registry
         )
     # Handle form variables holding dynamic data (component and user defined)
-    yield from form.formvariable_set.all()
+    yield from form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
     backend_id: str = "",
-    backend_options: RegistrationOptionsV2 | GenericJSONOptions | None = None,
+    backend_options: BackendOptions = None,
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
     submission: Submission | None = None,
 ) -> JSONObject:
@@ -68,7 +71,9 @@ def generate_json_schema(
     :param limit_to_variables: Variables that will be included in the schema.
     :param backend_id: Optional registration backend identifier for which to generate
       the schema.
-    :param backend_options: Optional registration backend options.
+    :param backend_options: Optional registration backend options. Note: there is
+      currently no check if the options correspond to the provided ``backend_id``, so
+      please ensure that they do.
     :param additional_variables_registry: Optional extra registry of static variables.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
@@ -127,7 +132,7 @@ def generate_variable_schema(
     variable: FormVariable,
     configuration_wrapper: FormioConfigurationWrapper,
     backend_id: str = "",
-    backend_options: RegistrationOptionsV2 | GenericJSONOptions | None = None,
+    backend_options: BackendOptions = None,
 ) -> JSONObject:
     """Generate the schema for a form variable.
 
@@ -141,7 +146,8 @@ def generate_variable_schema(
       passed, no processing of the schema is performed, meaning it will represent the
       formio submission data.
     :param backend_options: Optional registration backend options. If ``backend_id`` was
-      provided, this cannot be ``None``.
+      provided, this cannot be ``None``. Note: there is currently no check if the
+      options correspond to the provided ``backend_id``, so please ensure that they do.
 
     :return: Schema for the variable.
     """
@@ -155,9 +161,16 @@ def generate_variable_schema(
 
     if backend_id == OBJECTS_API:
         assert backend_options is not None
+        # Technically it is not completely safe to cast here, because the options could
+        # be from another backend, but schema generation is performed (in the API and
+        # Generic JSON backend) in the context of a single backend so we do it anyway.
+        # Pydantic models of the options might be useful here in the future...
+        backend_options = cast(RegistrationOptionsV2, backend_options)
         process_variable_schema_objects_api(component, schema, backend_options)
     elif backend_id == GENERIC_JSON:
         assert backend_options is not None
+        # See comment about casting above
+        backend_options = cast(GenericJSONOptions, backend_options)
         process_variable_schema_generic_json(component, schema, backend_options)
     elif backend_id == "":
         pass
@@ -196,8 +209,12 @@ def process_variable_schema_and_add_to_complete_schema(
         key in configuration_wrapper
         and configuration_wrapper[key]["type"] == "editgrid"
     ):
+        assert isinstance(variable_schema["items"], dict)
+        assert isinstance(variable_schema["items"]["properties"], dict)
+
         edit_grid_schema = NestedDict()
         for child_key, child_schema in variable_schema["items"]["properties"].items():
+            assert isinstance(child_schema, dict)
             process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
@@ -241,6 +258,7 @@ class NestedDict(UserDict):
         """
         value = self.data
         for k in key.split("."):
+            assert isinstance(value, dict)
             value = value[k]
         return value
 
@@ -251,16 +269,19 @@ class NestedDict(UserDict):
         data = self.data
         key_list = key.split(".")
         for k in key_list[:-1]:
+            assert isinstance(data, dict)
             child = data.get(k, None)
             if child is None:
                 data[k] = {}
             data = data[k]
+        assert isinstance(data, dict)
         data[key_list[-1]] = value
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
         """Check if a key is present in the internal dictionary. Gets called via
         ``NestedData().get(...)``.
         """
+        assert isinstance(key, str)
         try:
             self[key]
         except KeyError:
@@ -317,6 +338,8 @@ def process_variable_schema_objects_api(
             schema.pop("items")
 
         case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            assert isinstance(schema["properties"], dict)
+
             # If the component is transformed to a list, we need to adjust the schema
             # accordingly
             schema["type"] = "array"
@@ -326,15 +349,20 @@ def process_variable_schema_objects_api(
                 schema.pop(prop)
 
         case {"type": "editgrid"}:
+            assert isinstance(schema["items"], dict)
+            _properties = schema["items"]["properties"]
+            assert isinstance(_properties, dict)
+
             component = cast(EditGridComponent, component)
             for child_component in component["components"]:
                 child_key = child_component["key"]
+                child_schema = _properties[child_key]
+                assert isinstance(child_schema, dict)
                 process_variable_schema_objects_api(
                     child_component,
-                    schema["items"]["properties"][child_key],
+                    child_schema,
                     backend_options,
                 )
-
         case _:
             pass
 
@@ -394,6 +422,8 @@ def process_variable_schema_generic_json(
             schema.update(new_schema)
 
         case {"type": "selectboxes"} if component["key"] in transform_to_list:
+            assert isinstance(schema["properties"], dict)
+
             # If the component is transformed to a list, we need to adjust the schema
             # accordingly
             schema["type"] = "array"
@@ -403,12 +433,18 @@ def process_variable_schema_generic_json(
                 schema.pop(prop)
 
         case {"type": "editgrid"}:
+            assert isinstance(schema["items"], dict)
+            _properties = schema["items"]["properties"]
+            assert isinstance(_properties, dict)
+
             component = cast(EditGridComponent, component)
             for child_component in component["components"]:
                 child_key = child_component["key"]
+                child_schema = _properties[child_key]
+                assert isinstance(child_schema, dict)
                 process_variable_schema_generic_json(
                     child_component,
-                    schema["items"]["properties"][child_key],
+                    child_schema,
                     backend_options,
                 )
 

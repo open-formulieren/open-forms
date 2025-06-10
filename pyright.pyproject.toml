@@ -61,6 +61,8 @@ include = [
     "src/openforms/template",
     # generic typing helpers
     "src/openforms/typing.py",
+    # JSON schema generation
+    "src/openforms/forms/json_schema.py"
 ]
 exclude = [
     "**/__pycache__",
