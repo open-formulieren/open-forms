@@ -36,7 +36,7 @@ def _iter_form_variables(
             variables_registry=additional_variables_registry
         )
     # Handle form variables holding dynamic data (component and user defined)
-    yield from form.formvariable_set.all()
+    yield from form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def generate_json_schema(
@@ -56,7 +56,9 @@ def generate_json_schema(
     :param limit_to_variables: Variables that will be included in the schema.
     :param backend_id: Optional registration backend identifier for which to generate
       the schema.
-    :param backend_options: Optional registration backend options.
+    :param backend_options: Optional registration backend options. Note: there is
+      currently no check if the options correspond to the provided ``backend_id``, so
+      please ensure that they do.
     :param additional_variables_registry: Optional extra registry of static variables.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
@@ -129,7 +131,8 @@ def generate_variable_schema(
       passed, no processing of the schema is performed, meaning it will represent the
       formio submission data.
     :param backend_options: Optional registration backend options. If ``backend_id`` was
-      provided, this cannot be ``None``.
+      provided, this cannot be ``None``. Note: there is currently no check if the
+      options correspond to the provided ``backend_id``, so please ensure that they do.
 
     :return: Schema for the variable.
     """
@@ -174,8 +177,12 @@ def process_variable_schema_and_add_to_complete_schema(
         key in configuration_wrapper
         and configuration_wrapper[key]["type"] == "editgrid"
     ):
+        assert isinstance(variable_schema["items"], dict)
+        assert isinstance(variable_schema["items"]["properties"], dict)
+
         edit_grid_schema = NestedDict()
         for child_key, child_schema in variable_schema["items"]["properties"].items():
+            assert isinstance(child_schema, dict)
             process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
@@ -219,6 +226,7 @@ class NestedDict(UserDict):
         """
         value = self.data
         for k in key.split("."):
+            assert isinstance(value, dict)
             value = value[k]
         return value
 
@@ -229,16 +237,19 @@ class NestedDict(UserDict):
         data = self.data
         key_list = key.split(".")
         for k in key_list[:-1]:
+            assert isinstance(data, dict)
             child = data.get(k, None)
             if child is None:
                 data[k] = {}
             data = data[k]
+        assert isinstance(data, dict)
         data[key_list[-1]] = value
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
         """Check if a key is present in the internal dictionary. Gets called via
         ``NestedData().get(...)``.
         """
+        assert isinstance(key, str)
         try:
             self[key]
         except KeyError:
