@@ -1,9 +1,10 @@
 from typing import TypedDict
 
-from django.contrib import auth
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
+
+from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
@@ -14,7 +15,7 @@ from ...registry import register
 from ...typing import FormAuth
 from .config import YiviOptions, YiviOptionsSerializer
 from .constants import PLUGIN_ID
-from .models import AvailableScope, YiviOpenIDConnectConfig
+from .models import YiviOpenIDConnectConfig
 from .views import OIDCAuthenticationInitView
 
 yivi_init = OIDCAuthenticationInitView.as_view(
@@ -33,6 +34,16 @@ class YiviClaims(TypedDict, total=False):
     All attributes are optional, as some attributes are only present when user
     login using certain authentication methods (i.e. only when the user logs in
     using bsn, is the bsn claim available).
+
+    `additional_claims` could contain additional attributes received during login.
+    This depends on the used Yivi `AdditionalAttributes` by the form, and which
+    attributes the user decided to provide.
+    The names of these additional attributes/claims are unpredictable: when defining
+    the Yivi `AdditionalAttributes`, the admins can assign any attribute they want
+    (as different municipalities probably will use different Yivi attribute-sets).
+    The names of these attributes will also be used for the claims, so
+    `additional_claims` could contain a claim named
+    "irma-demo.gemeente.personalData.fullname".
     """
 
     # Claims for auth attribute bsn
@@ -47,6 +58,9 @@ class YiviClaims(TypedDict, total=False):
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: str | int | float
+
+    # Mapping for additionally fetched claims
+    additional_claims: dict[str, str]
 
 
 @register(PLUGIN_ID)
@@ -96,19 +110,8 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         form_auth = {
             "attribute": authentication_attribute,
             "plugin": self.identifier,
-            "additional_claims": {},
+            "additional_claims": normalized_claims.get("additional_claims", {}),
         }
-
-        # Add claims resulted from additional scopes
-        if (additional_scopes := options["additional_scopes"]) and len(
-            additional_scopes
-        ):
-            claims_to_add = AvailableScope.objects.filter(
-                scope__in=additional_scopes
-            ).values_list("claims", flat=True)
-
-            for claim in sum(claims_to_add, []):
-                form_auth["additional_claims"][claim] = normalized_claims.get(claim, "")
 
         # Set form authentication values based on the used authentication option
         match authentication_attribute:
@@ -161,18 +164,15 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
-        # @TODO not sure if this is all
-        for key in (
+        keys_to_delete = (
             "oidc_id_token",
             "oidc_login_next",
             self.session_key,
-        ):
+            _RETURN_URL_SESSION_KEY,
+        )
+        for key in keys_to_delete:
             if key in request.session:
                 del request.session[key]
-
-        if request.user.is_authenticated:
-            auth.logout(request)
-            assert not request.user.is_authenticated
 
     def get_label(self):
         return "Yivi"

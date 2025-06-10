@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import override
 
 from django.contrib.auth.models import AnonymousUser
@@ -15,7 +16,8 @@ from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from openforms.authentication.contrib.yivi_oidc.models import YiviOpenIDConnectConfig
+from openforms.authentication.contrib.yivi_oidc.constants import PLUGIN_ID as YIVI_PLUGIN_ID
+from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup, YiviOpenIDConnectConfig
 from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.typing import JSONObject
 
@@ -145,9 +147,18 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
     def _extract_additional_claims_for_auth_backend(
         auth_backend: FormAuthenticationBackend, claims: JSONObject
     ) -> JSONObject:
-        # The first plugin that will use this is Yivi.
-        # Adding the method as preparation for upcoming logic.
         claims_to_extract = {}
+        if auth_backend.backend == YIVI_PLUGIN_ID:
+            attributes_to_add = AttributeGroup.objects.filter(
+                name__in=auth_backend.options.get("additional_attributes_groups", [])
+            ).values_list("attributes", flat=True)
+
+            claims_to_extract = {
+                attribute: claims[attribute]
+                for attribute in list(chain.from_iterable(attributes_to_add))
+                if attribute in claims
+            }
+
         return claims_to_extract
 
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
