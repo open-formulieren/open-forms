@@ -140,7 +140,7 @@ def evaluate_form_logic(
         if original_value is empty or original_value == empty_value:
             continue
 
-        if not component.get("clearOnHide", False):
+        if not component.get("clearOnHide", True):
             continue
 
         # clear the value

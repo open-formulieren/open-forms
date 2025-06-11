@@ -41,6 +41,7 @@ CONFIGURATION = {
             "label": "Enable {{ text1|default:'' }}?",
             "defaultValue": False,
             "hidden": True,
+            "clearOnHide": False,
         },
         {
             "type": "content",
