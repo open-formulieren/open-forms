@@ -36,7 +36,7 @@ class DigidAuthentication(BasePlugin[DigidOptions]):
     configuration_options = DigidOptionsSerializer
 
     def start_login(
-        self, request: HttpRequest, form: Form, form_url: str
+        self, request: HttpRequest, form: Form, form_url: str, options: DigidOptions
     ) -> HttpResponseRedirect:
         """Redirect to the /digid/login endpoint to start step 2 of the authentication
 
@@ -69,7 +69,7 @@ class DigidAuthentication(BasePlugin[DigidOptions]):
             "fields": {},
         }
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options: DigidOptions):
         """Redirect to form URL.
 
         This is called after step 7 of the authentication is finished
