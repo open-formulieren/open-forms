@@ -18,4 +18,5 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    examples/index
    export_import
    cosign_flow
+   json_schema
    faq
