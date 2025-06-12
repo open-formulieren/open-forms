@@ -2265,6 +2265,12 @@ paths:
         required: true
       tags:
       - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormJsonSchemaOptions'
+        required: true
       security:
       - tokenAuth: []
       responses:
@@ -2318,6 +2324,21 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -8183,6 +8204,15 @@ components:
             steps.
       required:
       - file
+    FormJsonSchemaOptions:
+      type: object
+      properties:
+        registrationBackendKey:
+          type: string
+          description: The registration backend key for which to generate the schema.
+          maxLength: 50
+      required:
+      - registrationBackendKey
     FormLiterals:
       type: object
       properties:

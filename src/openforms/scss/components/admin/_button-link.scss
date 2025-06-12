@@ -1,0 +1,11 @@
+.button-link {
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  color: var(--link-fg);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

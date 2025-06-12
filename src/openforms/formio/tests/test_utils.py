@@ -7,8 +7,8 @@ from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
 from ..datastructures import FormioData
-from ..typing import Component
-from ..utils import is_visible_in_frontend
+from ..typing import Component, SelectBoxesComponent
+from ..utils import get_component_empty_value, is_visible_in_frontend
 
 
 class FormioUtilsTest(SimpleTestCase):
@@ -99,3 +99,54 @@ class FormioUtilsTest(SimpleTestCase):
             is_visible_in_frontend(component, data)
         except Exception:
             self.fail("Visibility check unexpectedly crashed")
+
+
+class GetComponentEmptyValueTests(SimpleTestCase):
+    def test_selectboxes_default_value(self):
+        component: SelectBoxesComponent = {
+            "key": "selectboxes",
+            "type": "selectboxes",
+            "label": "Select Boxes",
+            "values": [
+                {"label": "a", "value": "a"},
+                {"label": "b", "value": "b"},
+                {"label": "c", "value": "c"},
+            ],
+            "defaultValue": {"a": False, "b": False, "c": False},
+        }
+
+        empty_value = get_component_empty_value(component)
+        self.assertEqual(empty_value, {"a": False, "b": False, "c": False})
+
+    def test_selectboxes_configuration_updated_and_no_default_value(self):
+        # This is the situation when the data source is another variable or reference
+        # lists, AND the configuration was dynamically updated
+        component: SelectBoxesComponent = {
+            "key": "selectboxes",
+            "type": "selectboxes",
+            "label": "Select Boxes",
+            "values": [
+                {"label": "a", "value": "a"},
+                {"label": "b", "value": "b"},
+                {"label": "c", "value": "c"},
+            ],
+            "defaultValue": {},
+        }
+
+        empty_value = get_component_empty_value(component)
+        self.assertEqual(empty_value, {"a": False, "b": False, "c": False})
+
+    def test_selectboxes_configruation_not_updated_and_no_default_value(self):
+        # If the configuration was not updated, the 'values' list has one entry with
+        # the 'label' and 'value' an empty string.
+        component: SelectBoxesComponent = {
+            "key": "selectboxes",
+            "type": "selectboxes",
+            "label": "Select Boxes",
+            "values": [
+                {"label": "", "value": ""},
+            ],
+        }
+
+        empty_value = get_component_empty_value(component)
+        self.assertEqual(empty_value, {})
