@@ -40,7 +40,10 @@ from .fields import (
     PrivacyPolicyAcceptedField,
     TruthDeclarationAcceptedField,
 )
-from .validators import FormMaintenanceModeValidator, ValidatePrefillData
+from .validators import (
+    FormMaintenanceModeValidator,
+    ValidatePrefillData,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
