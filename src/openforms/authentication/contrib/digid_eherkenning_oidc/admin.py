@@ -23,7 +23,7 @@ class OFOIDCClientAdmin(OIDCClientAdmin):
         """
         result_form = super().get_form(request, obj, change, **kwargs)
 
-        def clean_enabled(form):
+        def clean_enabled(form: forms.Form) -> bool:
             """
             Scan the (live) forms to see if any might be using this backend.
             Disabling a backend while it is being used as a plugin on a live form would
