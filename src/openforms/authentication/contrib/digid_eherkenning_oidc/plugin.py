@@ -1,40 +1,50 @@
 from __future__ import annotations
 
-from typing import ClassVar, NotRequired, Protocol, TypedDict
+from typing import ClassVar, Protocol, TypedDict
 
 from django.http import (
     HttpRequest,
     HttpResponseBadRequest,
-    HttpResponseBase,
     HttpResponseRedirect,
 )
+from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
+from mozilla_django_oidc_db.registry import register as oidc_registry
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from openforms.authentication.constants import LegalSubjectIdentifierType
-from openforms.authentication.typing import FormAuth
+from oidc_plugins.constants import (
+    OIDC_DIGID_IDENTIFIER,
+    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
+    OIDC_EH_IDENTIFIER,
+)
+from oidc_plugins.types import (
+    DigiDClaims,
+    DigiDmachtigenClaims,
+    EHBewindvoeringClaims,
+    EHClaims,
+)
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
 )
-from openforms.forms.models import Form
+from openforms.forms.models.form import Form
 from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin, CosignSlice, LoginLogo
-from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+    LegalSubjectIdentifierType,
+)
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .models import (
-    OFDigiDConfig,
-    OFDigiDMachtigenConfig,
-    OFEHerkenningBewindvoeringConfig,
-    OFEHerkenningConfig,
-)
+from ...typing import FormAuth
 from .views import (
     digid_init,
     digid_machtigen_init,
@@ -43,17 +53,6 @@ from .views import (
 )
 
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
-
-
-def get_config_to_plugin() -> dict[type[BaseConfig], OIDCAuthentication]:
-    """
-    Get the mapping of config class to plugin identifier from the registry.
-    """
-    return {
-        plugin.config_class: plugin
-        for plugin in register
-        if isinstance(plugin, OIDCAuthentication)
-    }
 
 
 class AuthInit(Protocol):
@@ -72,10 +71,10 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
-    config_class: ClassVar[type[BaseConfig]]
+    oidc_plugin_identifier: ClassVar[str]
     init_view: ClassVar[AuthInit]
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(self, request: HttpRequest, form: Form, form_url: str) -> HttpResponseRedirect:
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -129,7 +128,9 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
 
     def logout(self, request: HttpRequest):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
-            config = self.config_class.get_solo()
+            oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
+            config = oidc_plugin.get_config()
+            
             do_op_logout(config, id_token)
 
         keys_to_delete = (
@@ -143,27 +144,14 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
                 del request.session[key]
 
 
-class DigiDClaims(TypedDict):
-    """
-    Processed DigiD claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.DigiDConfig.CLAIMS_CONFIGURATION` for the
-    source of this structure.
-    """
-
-    bsn_claim: str
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-
 
 @register("digid_oidc")
 class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_oidc:bsn"
-    config_class = OFDigiDConfig
-    init_view = staticmethod(digid_init)
+    oidc_plugin_identifier = OIDC_DIGID_IDENTIFIER
+    init_view = digid_init
 
     def get_label(self) -> str:
         return "DigiD"
@@ -180,30 +168,13 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
         }
 
 
-class EHClaims(TypedDict):
-    """
-    Processed EH claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.EHerkenningConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    identifier_type_claim: NotRequired[str]
-    legal_subject_claim: str
-    acting_subject_claim: NotRequired[str]
-    branch_number_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-
-
 @register("eherkenning_oidc")
 class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
-    config_class = OFEHerkenningConfig
-    init_view = staticmethod(eherkenning_init)
+    oidc_plugin_identifier = OIDC_EH_IDENTIFIER
+    init_view = eherkenning_init
 
     def get_label(self) -> str:
         return "eHerkenning"
@@ -241,23 +212,6 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
         return form_auth
 
 
-class DigiDmachtigenClaims(TypedDict):
-    """
-    Processed DigiD Machtigen claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.DigiDMachtigenConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    representee_bsn_claim: str
-    authorizee_bsn_claim: str
-    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
-    mandate_service_id_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-
-
 @register("digid_machtigen_oidc")
 class DigiDMachtigenOIDCAuthentication(
     OIDCAuthentication[DigiDmachtigenClaims, OptionsT]
@@ -265,8 +219,8 @@ class DigiDMachtigenOIDCAuthentication(
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
-    config_class = OFDigiDMachtigenConfig
-    init_view = staticmethod(digid_machtigen_init)
+    oidc_config_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
+    init_view = digid_machtigen_init
     is_for_gemachtigde = True
 
     def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
@@ -293,26 +247,6 @@ class DigiDMachtigenOIDCAuthentication(
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
-class EHBewindvoeringClaims(TypedDict):
-    """
-    Processed EH claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.EHerkenningBewindvoeringConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    identifier_type_claim: NotRequired[str]
-    legal_subject_claim: str
-    acting_subject_claim: str
-    branch_number_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-    representee_claim: str
-    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
-    mandate_service_id_claim: NotRequired[str]
-    mandate_service_uuid_claim: NotRequired[str]
-
 
 _EH_IDENTIFIER_TYPE_MAP = {
     "urn:etoegang:1.9:EntityConcernedID:KvKnr": LegalSubjectIdentifierType.kvk,
@@ -329,8 +263,8 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     # told)
     provides_auth = AuthAttribute.bsn
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
-    config_class = OFEHerkenningBewindvoeringConfig
-    init_view = staticmethod(eherkenning_bewindvoering_init)
+    oidc_plugin_identifier = OIDC_EH_BEWINDVOERING_IDENTIFIER
+    init_view = eherkenning_bewindvoering_init
     is_for_gemachtigde = True
 
     def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:

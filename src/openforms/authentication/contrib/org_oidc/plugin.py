@@ -3,8 +3,9 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext, gettext_lazy as _
 
-from mozilla_django_oidc_db.views import OIDCInit
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
+from oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from openforms.accounts.models import User
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
@@ -12,12 +13,11 @@ from openforms.utils.urls import reverse_plus
 from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
-from .models import OrgOpenIDConnectConfig
 
 PLUGIN_IDENTIFIER = "org-oidc"
 
-oidc_init = OIDCInit.as_view(
-    config_class=OrgOpenIDConnectConfig,
+org_oidc_init = OIDCAuthenticationRequestInitView.as_view(
+    identifier=OIDC_ORG_IDENTIFIER,
     allow_next_from_query=False,
 )
 
@@ -46,7 +46,8 @@ class OIDCAuthentication(BasePlugin):
             # instead of session data
             auth.logout(request)
 
-        response = oidc_init(request, return_url=return_url)
+        response = org_oidc_init(request, return_url=return_url)
+
         assert isinstance(response, HttpResponseRedirect)
         return response
 
