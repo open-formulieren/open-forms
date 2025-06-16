@@ -15,6 +15,7 @@ tblib
 hypothesis  # property-based testing
 vcrpy  # record HTTP fixtures
 zgw-consumers[testutils]
+zgw-consumers-oas
 
 # Code formatting
 ruff
