@@ -1,9 +1,6 @@
-from pathlib import Path
-
 from django.test import TestCase
 
 import requests_mock
-from factory.django import FileField
 from freezegun import freeze_time
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
@@ -25,9 +22,6 @@ class ServiceFetchWithActionsTest(TestCase):
             api_type=APITypes.orc,
             api_root="https://httpbin.org/",
             auth_type=AuthTypes.no_auth,
-            oas_file=FileField(
-                from_path=str(Path(__file__).parent.parent / "files" / "openapi.yaml")
-            ),
         )
 
     @requests_mock.Mocker(case_sensitive=True)
