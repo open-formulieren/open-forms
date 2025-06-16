@@ -228,32 +228,44 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
         return LoginLogo(title=self.get_label(), **get_eidas_logo(request))
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASContext:
-        is_person_legal_subject = self.acting_subject_identifier_value == ""
+        is_person_legal_subject = auth_info.acting_subject_identifier_value == ""
 
         person_info = {
-            "firstName": self.additional_claims["first_name"],
-            "familyName": self.additional_claims["family_name"],
-            "dateOfBirth": self.additional_claims["date_of_birth"],
+            "firstName": auth_info.additional_claims["first_name"],
+            "familyName": auth_info.additional_claims["family_name"],
+            "dateOfBirth": auth_info.additional_claims["date_of_birth"],
         }
 
         if is_person_legal_subject:
             # Authentication as natural person
+            person_identifier_type = (
+                auth_info.legal_subject_identifier_type
+                if auth_info.legal_subject_identifier_type != AuthAttribute.pseudo
+                else "opaque"
+            )
+
             legal_subject = {
-                "identifierType": self.legal_subject_identifier_type,
-                "identifier": self.legal_subject_identifier_value,
+                "identifierType": person_identifier_type,
+                "identifier": auth_info.legal_subject_identifier_value,
                 **person_info,
             }
             authorizee = {"legalSubject": legal_subject}
         else:
             # Authentication as company
             legal_subject = {
-                "identifierType": self.legal_subject_identifier_type,
-                "identifier": self.legal_subject_identifier_value,
-                "companyName": self.additional_claims["company_name"],
+                "identifierType": "opaque",
+                "identifier": auth_info.legal_subject_identifier_value,
+                "companyName": auth_info.additional_claims["company_name"],
             }
+
+            person_identifier_type = (
+                auth_info.acting_subject_identifier_type
+                if auth_info.acting_subject_identifier_type != AuthAttribute.pseudo
+                else "opaque"
+            )
             acting_subject = {
-                "identifierType": self.acting_subject_identifier_type,
-                "identifier": self.acting_subject_identifier_value,
+                "identifierType": person_identifier_type,
+                "identifier": auth_info.acting_subject_identifier_value,
                 **person_info,
             }
             authorizee = {
@@ -263,7 +275,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
 
         return {
             "source": "eidas",
-            "levelOfAssurance": self.loa,
+            "levelOfAssurance": auth_info.loa,
             "authorizee": authorizee,
         }
 

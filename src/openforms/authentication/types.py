@@ -127,19 +127,27 @@ class YiviContext(TypedDict):
     authorizee: YiviAuthorizee
 
 
-class EIDASLegalSubject(TypedDict):
-    identifierType: Literal["bsn"]
+class EIDASNaturalPersonSubject(TypedDict):
+    identifierType: Literal["bsn", "national_id", "opaque"]
     identifier: str
+    firstName: str
+    familyName: str
+    dateOfBirth: str
 
 
-class EIDASActingSubject(TypedDict):
+class EIDASCompanySubject(TypedDict):
     identifierType: Literal["opaque"]
     identifier: str
+    companyName: str
 
 
-class EIDASAuthorizee(TypedDict):
-    legalSubject: NotRequired[EIDASLegalSubject]
-    actingSubject: EIDASActingSubject
+class EIDASNaturalPersonAuthorizee(TypedDict):
+    legalSubject: EIDASNaturalPersonSubject
+
+
+class EIDASCompanyAuthorizee(TypedDict):
+    legalSubject: EIDASCompanySubject
+    actingSubject: EIDASNaturalPersonSubject
 
 
 class EIDASContext(TypedDict):
@@ -150,4 +158,4 @@ class EIDASContext(TypedDict):
         "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
         "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
     ]
-    authorizee: EIDASAuthorizee
+    authorizee: EIDASNaturalPersonAuthorizee | EIDASCompanyAuthorizee

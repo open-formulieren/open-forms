@@ -17,6 +17,9 @@ class AuthAttribute(models.TextChoices):
     pseudo = "pseudo", _("Pseudo ID")
     employee_id = "employee_id", _("Employee ID")
 
+    # For eIDAS (via OIDC) we support additional ID types for the legal subject
+    national_id = "national_id", _("National ID")
+
 
 class LogoAppearance(models.TextChoices):
     dark = "dark", _("Dark")
@@ -32,8 +35,16 @@ class ModeChoices(models.TextChoices):
 class ActingSubjectIdentifierType(models.TextChoices):
     opaque = "opaque", _("Opaque")
 
+    # For eIDAS (via OIDC) we support additional ID types for the acting subject
+    national_id = "national_id", _("National ID")
+    bsn = "bsn", _("BSN")
+
 
 class LegalSubjectIdentifierType(models.TextChoices):
     bsn = "bsn", _("BSN")
     kvk = "kvk", _("KvK number")
     rsin = "rsin", _("RSIN")
+
+    # For eIDAS (via OIDC) we support additional ID types for the legal subject
+    national_id = "national_id", _("National ID")
+    opaque = "opaque", _("Opaque")

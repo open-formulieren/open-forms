@@ -10,7 +10,9 @@
     {"$ref": "#/$defs/eherkenning/schemas/withMandate"},
     {"$ref": "#/$defs/yivi/schemas/withNaturalPerson"},
     {"$ref": "#/$defs/yivi/schemas/withCompany"},
-    {"$ref": "#/$defs/yivi/schemas/withPseudo"}
+    {"$ref": "#/$defs/yivi/schemas/withPseudo"},
+    {"$ref": "#/$defs/eidas/schemas/withoutCompany"},
+    {"$ref": "#/$defs/eidas/schemas/withCompany"}
   ],
   "$defs": {
     "_naturalPerson:base": {
@@ -621,6 +623,143 @@
                     "type": "string"
                   },
                   "additionalInformation": {"$ref": "#/$defs/yivi/additionalInformation"}
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+
+    "eidas": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate eIDAS authentication.",
+        "const": "eidas"
+      },
+      "loa": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "afsprakenstelsel.etoegang.nl defines the available levels of assurance *and* prescribes what the minimum level must be. Note that a minimum of loa2plus is required these days.",
+        "type": "string",
+        "enum": [
+          "urn:etoegang:core:assurance-class:loa1",
+          "urn:etoegang:core:assurance-class:loa2",
+          "urn:etoegang:core:assurance-class:loa2plus",
+          "urn:etoegang:core:assurance-class:loa3",
+          "urn:etoegang:core:assurance-class:loa4"
+        ]
+      },
+
+      "naturalPerson": {
+        "title": "Properties for an eIDAS natural person",
+        "type": "object",
+        "required": ["identifierType", "identifier", "firstName", "familyName", "dateOfBirth"],
+        "properties": {
+          "identifierType": {
+            "description": "A natural person can be identified by a range of identification values.",
+            "type": "string",
+            "enum": [
+              "bsn",
+              "national_id",
+              "opaque"
+            ]
+          },
+          "identifier": {
+            "description": "The identifier could be a bsn, pseudonym or any other european person identification, so we cannot apply some sort detailed specification or validation.",
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "familyName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+
+      "company": {
+        "title": "Properties for an eIDAS company",
+        "type": "object",
+        "required": ["identifierType", "identifier", "companyName"],
+        "properties": {
+          "identifierType": {
+            "description": "A company can be identified by a range of european identification values.",
+            "type": "string",
+            "enum": [
+              "kvk",
+              "rsin",
+              "vat",
+              "lei",
+              "eori",
+              "ntr",
+              "opaque"
+            ]
+          },
+          "identifier": {
+            "description": "A company could be identified by multiple different values, including: kvk, rsin, or any other european identification.",
+            "type": "string"
+          },
+          "companyName": {
+            "type": "string"
+          }
+        }
+      },
+
+      "schemas": {
+        "withoutCompany": {
+          "title": "Authentication context data schema for eIDAS representing a natural person without company information.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/eidas/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/eidas/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The user that is authorized.",
+              "type": "object",
+              "required": ["legalSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/eidas/naturalPerson"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withCompany": {
+          "title": "Authentication context data schema for eIDAS representing a natural person with company information.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/eidas/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/eidas/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The user that is authorized.",
+              "type": "object",
+              "required": ["legalSubject", "actingSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/eidas/company"
+                },
+                "actingSubject": {
+                  "$ref": "#/$defs/eidas/naturalPerson"
                 }
               },
               "additionalProperties": false
