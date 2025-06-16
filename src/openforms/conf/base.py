@@ -1055,7 +1055,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 #
-# ZGW Consumers
+# zgw-consumers-oas
 #
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     DJANGO_PROJECT_DIR / "registrations" / "contrib" / "zgw_apis" / "tests" / "files",
@@ -1067,8 +1067,6 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     / "files",
     DJANGO_PROJECT_DIR / "contrib" / "haal_centraal" / "tests" / "files",
 ]
-
-ZGW_CONSUMERS_IGNORE_OAS_FIELDS = True
 
 #
 # Django Solo

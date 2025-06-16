@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 from unittest import skip
 from urllib.parse import unquote
@@ -7,7 +6,6 @@ from django.core.exceptions import SuspiciousOperation
 from django.test import SimpleTestCase, tag
 
 import requests_mock
-from factory.django import FileField
 from furl import furl
 from hypothesis import assume, example, given, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -43,9 +41,6 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             api_type=APITypes.orc,
             api_root="https://httpbin.org/",
             auth_type=AuthTypes.no_auth,
-            oas_file=FileField(
-                from_path=str(Path(__file__).parent.parent / "files" / "openapi.yaml")
-            ),
         )
 
     @requests_mock.Mocker()

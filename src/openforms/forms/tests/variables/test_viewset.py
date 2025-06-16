@@ -1,11 +1,8 @@
-from pathlib import Path
 from unittest.mock import patch
 
-from django.conf import settings
 from django.test import override_settings, tag
 from django.utils.translation import gettext_lazy as _
 
-from factory.django import FileField
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -71,9 +68,6 @@ class FormVariableViewsetTest(APITestCase):
             api_type=APITypes.orc,
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
-            oas_file=FileField(
-                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
-            ),
         )
         form = FormFactory.create(generate_minimal_setup=True)
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -134,9 +128,6 @@ class FormVariableViewsetTest(APITestCase):
             api_type=APITypes.orc,
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
-            oas_file=FileField(
-                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
-            ),
         )
         form = FormFactory.create(generate_minimal_setup=True)
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -206,9 +197,6 @@ class FormVariableViewsetTest(APITestCase):
             api_type=APITypes.orc,
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
-            oas_file=FileField(
-                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
-            ),
         )
         form = FormFactory.create(generate_minimal_setup=True)
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})

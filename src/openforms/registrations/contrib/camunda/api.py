@@ -4,13 +4,20 @@ from django.utils.translation import gettext_lazy as _
 from django_camunda.api import get_process_definitions
 from django_camunda.camunda_models import ProcessDefinition
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import authentication, permissions, views
-from zgw_consumers.drf.serializers import APIModelSerializer
+from rest_framework import authentication, permissions, serializers, views
 
 from openforms.api.views import ListMixin
 
 
-class ProcessDefinitionSerializer(APIModelSerializer):
+class ProcessDefinitionSerializer(serializers.Serializer):
+    def to_representation(self, instance):
+        return {
+            "id": instance.id,
+            "key": instance.key,
+            "name": instance.name,
+            "version": instance.version,
+        }
+
     class Meta:
         model = ProcessDefinition
         fields = ("id", "key", "name", "version")
