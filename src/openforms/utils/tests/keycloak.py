@@ -97,3 +97,16 @@ def mock_oidc_db_config(app_label: str, model: str, **overrides):
         ),
     ):
         yield
+
+
+@contextmanager
+def mock_get_random_string():
+    """Mock the state & nonce random value generation
+
+    Needed so that we get predictable URLs to match with VCR.
+    """
+    with patch(
+        "mozilla_django_oidc.views.get_random_string",
+        return_value="not-a-random-string",
+    ):
+        yield
