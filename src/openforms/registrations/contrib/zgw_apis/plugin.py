@@ -457,9 +457,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                     "informatieobjecttype": iot,
                     "organisatie_rsin": bronorganisatie,
                     "auteur": options["auteur"],
-                    "doc_vertrouwelijkheidaanduiding": options[
-                        "doc_vertrouwelijkheidaanduiding"
-                    ],
+                    "doc_vertrouwelijkheidaanduiding": vertrouwelijkheidaanduiding,
                     "titel": titel,
                 }
 
@@ -469,11 +467,6 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 doc_options["ontvangstdatum"] = (
                     datetime_in_amsterdam(submission.completed_on).date().isoformat()
                 )
-
-                if vertrouwelijkheidaanduiding:
-                    doc_options["doc_vertrouwelijkheidaanduiding"] = (
-                        vertrouwelijkheidaanduiding
-                    )
 
                 attachment_document = execute_unless_result_exists(
                     partial(
