@@ -15,6 +15,7 @@ from .constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
+from .contrib.digid_eherkenning_oidc.constants import EIDAS_PLUGIN_ID as EIDASPluginID
 from .contrib.yivi_oidc.constants import PLUGIN_ID as YiviPluginID
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 from .types import (
@@ -288,6 +289,45 @@ class AuthInfo(BaseAuthInfo):
                 yivi_context["levelOfAssurance"] = self.loa
             return yivi_context
 
+        # eIDAS authentication for natural person
+        if self.plugin == EIDASPluginID and self.acting_subject_identifier_value == "":
+            eidas_context: EIDASContext = {
+                "source": "eidas",
+                "levelOfAssurance": self.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.legal_subject_identifier_type,
+                        "identifier": self.legal_subject_identifier_value,
+                        "firstName": self.additional_claims["first_name"],
+                        "familyName": self.additional_claims["family_name"],
+                        "dateOfBirth": self.additional_claims["date_of_birth"],
+                    },
+                },
+            }
+            return eidas_context
+
+        # eIDAS authentication for company
+        if self.plugin == EIDASPluginID:
+            eidas_context: EIDASContext = {
+                "source": "eidas",
+                "levelOfAssurance": self.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.legal_subject_identifier_type,
+                        "identifier": self.legal_subject_identifier_value,
+                        "companyName": self.additional_claims["company_name"],
+                    },
+                    "actingSubject": {
+                        "identifierType": self.acting_subject_identifier_type,
+                        "identifier": self.acting_subject_identifier_value,
+                        "firstName": self.additional_claims["first_name"],
+                        "familyName": self.additional_claims["family_name"],
+                        "dateOfBirth": self.additional_claims["date_of_birth"],
+                    },
+                },
+            }
+            return eidas_context
+
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate
             case (AuthAttribute.bsn, ""):
@@ -391,38 +431,6 @@ class AuthInfo(BaseAuthInfo):
                     },
                 }
                 return employee_context
-
-            # eIDAS - Person with bsn
-            case (AuthAttribute.pseudo, LegalSubjectIdentifierType.bsn):
-                eidas_context: EIDASContext = {
-                    "source": "eidas",
-                    "levelOfAssurance": self.loa,
-                    "authorizee": {
-                        "legalSubject": {
-                            "identifierType": "bsn",
-                            "identifier": self.legal_subject_identifier_value,
-                        },
-                        "actingSubject": {
-                            "identifierType": self.acting_subject_identifier_type,
-                            "identifier": self.acting_subject_identifier_value,
-                        },
-                    },
-                }
-                return eidas_context
-
-            # eIDAS - Person without bsn
-            case (AuthAttribute.pseudo, ""):
-                eidas_context: EIDASContext = {
-                    "source": "eidas",
-                    "levelOfAssurance": self.loa,
-                    "authorizee": {
-                        "actingSubject": {
-                            "identifierType": self.acting_subject_identifier_type,
-                            "identifier": self.acting_subject_identifier_value,
-                        },
-                    },
-                }
-                return eidas_context
 
             case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
