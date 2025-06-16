@@ -6,7 +6,7 @@ from uuid import UUID
 from django.test import TestCase
 
 import requests_mock
-from zgw_consumers.test import generate_oas_component
+from zgw_consumers_oas.component_generation import generate_oas_component
 
 from openforms.contrib.objects_api.clients import (
     get_documents_client,

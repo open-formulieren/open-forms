@@ -25,7 +25,6 @@ def load_json_mock(name: TestFileNames):
 
 KVK_SERVICE = ServiceFactory.build(
     api_root="https://api.kvk.nl/test/api/",
-    oas="https://api.kvk.nl/test/api/",  # ignored/unused
     api_type=APITypes.orc,
     auth_type=AuthTypes.api_key,
     header_key="apikey",

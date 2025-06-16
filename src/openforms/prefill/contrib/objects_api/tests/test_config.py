@@ -42,7 +42,6 @@ class ObjectsAPIPrefillPluginConfigTests(OFVCRMixin, APITestCase):
         objects_service = ServiceFactory.create(
             api_root="http://localhost:8002/api/v2/invalid",
             api_type=APITypes.orc,
-            oas="https://example.com/",
             header_key="Authorization",
             header_value="Token INVALID",
             auth_type=AuthTypes.api_key,

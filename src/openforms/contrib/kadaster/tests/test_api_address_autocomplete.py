@@ -169,7 +169,6 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         m_get_solo.return_value = KadasterApiConfig(
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
-                oas="https://bag/api/schema/openapi.yaml",
             )
         )
         endpoint = reverse("api:geo:address-autocomplete")
