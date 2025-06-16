@@ -13,7 +13,10 @@ from django.utils.translation import gettext_lazy as _
 from flags.state import flag_enabled
 from mozilla_django_oidc_db.registry import register as oidc_registry
 from mozilla_django_oidc_db.utils import do_op_logout
-from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
+from mozilla_django_oidc_db.views import (
+    _RETURN_URL_SESSION_KEY,
+    OIDCAuthenticationRequestInitView,
+)
 
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -70,11 +73,12 @@ class OptionsT(TypedDict):
 class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
-    session_key: str = ""
     oidc_plugin_identifier: ClassVar[str]
     init_view: ClassVar[AuthInit]
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str) -> HttpResponseRedirect:
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str
+    ) -> HttpResponseRedirect:
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -96,7 +100,13 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         #
         # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
         # start_view and gets handled there.
-        response = self.init_view(request, return_url=return_url)
+
+        # TODO: using self.init_view passes "self" as first argument, workaround
+        init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=self.oidc_plugin_identifier,
+            allow_next_from_query=False,
+        )
+        response = init_view(request, return_url=return_url)
         assert isinstance(response, HttpResponseRedirect)
         return response
 
@@ -119,7 +129,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        normalized_claims: T | None = request.session.get(self.session_key)
+        normalized_claims: T | None = request.session.get(self.oidc_plugin_identifier)
         if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
             form_auth = self.transform_claims(normalized_claims)
             request.session[FORM_AUTH_SESSION_KEY] = form_auth
@@ -130,7 +140,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
             oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
             config = oidc_plugin.get_config()
-            
+
             do_op_logout(config, id_token)
 
         keys_to_delete = (
@@ -144,12 +154,10 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
                 del request.session[key]
 
 
-
 @register("digid_oidc")
 class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    session_key = "digid_oidc:bsn"
     oidc_plugin_identifier = OIDC_DIGID_IDENTIFIER
     init_view = digid_init
 
@@ -172,7 +180,6 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
 class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
-    session_key = "eherkenning_oidc:kvk"
     oidc_plugin_identifier = OIDC_EH_IDENTIFIER
     init_view = eherkenning_init
 
@@ -218,8 +225,7 @@ class DigiDMachtigenOIDCAuthentication(
 ):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    session_key = "digid_machtigen_oidc:machtigen"
-    oidc_config_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
+    oidc_plugin_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
     init_view = digid_machtigen_init
     is_for_gemachtigde = True
 
@@ -247,7 +253,6 @@ class DigiDMachtigenOIDCAuthentication(
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
-
 _EH_IDENTIFIER_TYPE_MAP = {
     "urn:etoegang:1.9:EntityConcernedID:KvKnr": LegalSubjectIdentifierType.kvk,
     "urn:etoegang:1.9:EntityConcernedID:RSIN": LegalSubjectIdentifierType.rsin,
@@ -262,7 +267,6 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
     # told)
     provides_auth = AuthAttribute.bsn
-    session_key = "eherkenning_bewindvoering_oidc:machtigen"
     oidc_plugin_identifier = OIDC_EH_BEWINDVOERING_IDENTIFIER
     init_view = eherkenning_bewindvoering_init
     is_for_gemachtigde = True
