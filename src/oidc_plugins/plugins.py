@@ -15,13 +15,7 @@ from mozilla_django_oidc_db.schemas import ADMIN_OPTIONS_SCHEMA
 from mozilla_django_oidc_db.typing import JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
-from openforms.authentication.contrib.digid.views import (
-    DIGID_MESSAGE_PARAMETER,
-    LOGIN_CANCELLED,
-)
-from openforms.authentication.contrib.eherkenning.views import (
-    MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
-)
+
 from openforms.authentication.contrib.org_oidc.views import callback_view
 
 from .constants import (
@@ -37,7 +31,7 @@ from .schemas import (
     EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA,
     EHERKENNING_OPTIONS_SCHEMA,
 )
-from .types import ClaimPathWithLegacy, ClaimProcessingInstructions, ErrorMessagesMap
+from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
 from .utils import process_claims
 from .views import anon_user_callback_view
 
@@ -48,11 +42,6 @@ class BaseDigiDeHerkenningPlugin(OIDCBasePlugin):
     @abstractmethod
     def _get_legacy_callback(self) -> str:
         """Get the django URL name of the callback URL."""
-        ...
-
-    @abstractmethod
-    def get_error_messages(self) -> ErrorMessagesMap:
-        """Return the message code and the error description for a failed login."""
         ...
 
     def get_setting(self, attr: str, *args) -> Any:
@@ -190,9 +179,6 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin):
             "optional_claims": [],
         }
 
-    def get_error_messages(self) -> ErrorMessagesMap:
-        return {"access_denied": (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)}
-
 
 @register(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
 class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
@@ -238,9 +224,6 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
             config.options["identity_settings"]["representee_bsn_claim_path"],
             config.options["identity_settings"]["authorizee_bsn_claim_path"],
         ]
-
-    def get_error_messages(self) -> ErrorMessagesMap:
-        return {"access_denied": (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)}
 
 
 @register(OIDC_EH_IDENTIFIER)
@@ -294,10 +277,6 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
             sensitive_claims.append(branch_number_claim_path)
 
         return sensitive_claims
-
-    def get_error_messages(self) -> ErrorMessagesMap:
-        eh_message_parameter = EH_MESSAGE_PARAMETER % {"plugin_id": self.identifier}
-        return {"access_denied": (eh_message_parameter, LOGIN_CANCELLED)}
 
 
 @register(OIDC_EH_BEWINDVOERING_IDENTIFIER)
@@ -371,10 +350,6 @@ class OIDCeHerkenningBewindvoeringPlugin(BaseDigiDeHerkenningPlugin):
 
         return sensitive_claims
 
-    def get_error_messages(self) -> ErrorMessagesMap:
-        eh_message_parameter = EH_MESSAGE_PARAMETER % {"plugin_id": self.identifier}
-        return {"access_denied": (eh_message_parameter, LOGIN_CANCELLED)}
-
 
 @register(OIDC_ORG_IDENTIFIER)
 class OIDCOrgPlugin(OIDCAdminPlugin):
@@ -384,5 +359,5 @@ class OIDCOrgPlugin(OIDCAdminPlugin):
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
         return callback_view(request)
 
-    def _get_legacy_callback(self) -> str:
+    def _get_legacy_callback(self, error: str, error_description: str) -> str:
         return "org-oidc-callback"

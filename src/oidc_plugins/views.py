@@ -9,6 +9,16 @@ from mozilla_django_oidc_db.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
 
+from openforms.authentication.contrib.digid.views import GENERIC_LOGIN_ERROR
+from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
+    OIDCAuthentication,
+)
+from openforms.authentication.registry import register as _of_auth_registry
+
+
+class NoAuthPluginFound(Exception):
+    pass
+
 
 class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
     """
@@ -22,6 +32,7 @@ class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
     Instead, the authentication backend receives all the necessary information and *is*
     the right place to implement this logic.
     """
+
     user: AnonymousUser  # set on succesful auth/code exchange
 
     _redirect_next: str
@@ -48,11 +59,14 @@ class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
     ) -> tuple[str, str]:
         """
         Return a tuple of the parameter type and the problem code.
-        """
-        configuration = lookup_config(self.request)
-        plugin = registry[configuration.identifier]
 
-        return plugin.get_error_messages()
+        Using the OF auth plugin, generate the error messages. This does not use the
+        OIDC plugin, since the SDK expects the error codes to contain the identifiers
+        of the OF auth plugin, and the OIDC plugins have no knowledge of these.
+        """
+        of_auth_plugin = self._get_of_auth_plugin()
+
+        return of_auth_plugin.get_error_message_parameters(error, error_description)
 
     @property
     def failure_url(self) -> str:
@@ -75,5 +89,19 @@ class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
         )
         form_url.args[parameter] = problem_code
         return form_url.url
+
+    def _get_of_auth_plugin(self) -> OIDCAuthentication:
+        configuration = lookup_config(self.request)
+
+        for _identifier, plugin in _of_auth_registry.items():
+            if not hasattr(plugin, "oidc_plugin_identifier"):
+                continue
+
+            assert isinstance(plugin, OIDCAuthentication)
+            if plugin.oidc_plugin_identifier == configuration.identifier:
+                return plugin
+        else:
+            raise NoAuthPluginFound()
+
 
 anon_user_callback_view = OIDCAuthAnonUserCallbackView.as_view()

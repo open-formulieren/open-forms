@@ -9,7 +9,10 @@ from django.http import (
 )
 from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
-
+from openforms.authentication.contrib.eherkenning.views import (
+    MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
+    LOGIN_CANCELLED as EH_LOGIN_CANCELLED,
+)
 from flags.state import flag_enabled
 from mozilla_django_oidc_db.registry import register as oidc_registry
 from mozilla_django_oidc_db.utils import do_op_logout
@@ -30,6 +33,12 @@ from oidc_plugins.types import (
     EHBewindvoeringClaims,
     EHClaims,
 )
+from openforms.authentication.contrib.digid.views import (
+    DIGID_MESSAGE_PARAMETER,
+    LOGIN_CANCELLED as DIGID_LOGIN_CANCELLED,
+)
+from openforms.authentication.types import OIDCErrors
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
@@ -145,13 +154,29 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
 
         keys_to_delete = (
             "oidc_login_next",  # from upstream library
-            self.session_key,
+            self.oidc_plugin_identifier,
             _RETURN_URL_SESSION_KEY,
             OIDC_ID_TOKEN_SESSION_KEY,
         )
         for key in keys_to_delete:
             if key in request.session:
                 del request.session[key]
+
+    def get_error_message_parameters(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        """Return the message code and the error description for a failed login."""
+        errors = self.get_error_codes()
+        if (
+            error == "access_denied"
+            and error_description == "The user cancelled"
+            and "access_denied" in errors
+        ):
+            return errors["access_denied"]
+        return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def get_error_codes(self) -> OIDCErrors:
+        raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
 
 @register("digid_oidc")
@@ -174,6 +199,9 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
             "value": normalized_claims["bsn_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
         }
+
+    def get_error_codes(self) -> OIDCErrors:
+        return {"access_denied": (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)}
 
 
 @register("eherkenning_oidc")
@@ -218,6 +246,12 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
             form_auth["legal_subject_service_restriction"] = service_restriction
         return form_auth
 
+    def get_error_codes(self) -> OIDCErrors:
+        eh_message_parameter = EH_MESSAGE_PARAMETER % {
+            "plugin_id": self.identifier.split("_")[0]
+        }
+        return {"access_denied": (eh_message_parameter, EH_LOGIN_CANCELLED)}
+
 
 @register("digid_machtigen_oidc")
 class DigiDMachtigenOIDCAuthentication(
@@ -251,6 +285,9 @@ class DigiDMachtigenOIDCAuthentication(
 
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
+
+    def get_error_codes(self) -> OIDCErrors:
+        return {"access_denied": (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)}
 
 
 _EH_IDENTIFIER_TYPE_MAP = {
@@ -323,3 +360,9 @@ class EHerkenningBewindvoeringOIDCAuthentication(
 
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
+
+    def get_error_codes(self) -> OIDCErrors:
+        eh_message_parameter = EH_MESSAGE_PARAMETER % {
+            "plugin_id": self.identifier.split("_")[0]
+        }
+        return {"access_denied": (eh_message_parameter, EH_LOGIN_CANCELLED)}
