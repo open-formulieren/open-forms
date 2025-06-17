@@ -1,5 +1,6 @@
 from typing import List, Literal, TypedDict
 
+from django.db.utils import OperationalError, ProgrammingError
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -90,7 +91,12 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         if getattr(view, "swagger_fake_view", False):
             return fields
 
-        fields["additional_attributes_groups"].child.choices = list(
-            AttributeGroup.objects.all().values_list("name", "description")
-        )
+        try:
+            fields[
+                "additional_attributes_groups"
+            ].child.choices = AttributeGroup.objects.values_list("name", "description")
+        except (OperationalError, ProgrammingError):
+            # Early check without DB connection
+            fields["additional_attributes_groups"].child.choices = []
+
         return fields
