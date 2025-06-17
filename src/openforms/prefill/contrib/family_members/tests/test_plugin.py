@@ -18,7 +18,6 @@ from openforms.prefill.service import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
 from openforms.utils.tests.vcr import OFVCRMixin
-from openforms.variables.constants import FormVariableDataTypes
 from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
@@ -72,13 +71,13 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="hc_prefill_partners_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "hc_prefill_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="hc_prefill_partners_immutable",
@@ -109,23 +108,23 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         ]
 
         self.assertEqual(
-            state.variables["hc_prefill_partners_immutable"].value, expected_data
+            state.variables["hc_prefill_partners_mutable"].value, expected_data
         )
         self.assertEqual(
-            state.variables["hc_prefill_partners_mutable"].value, expected_data
+            state.variables["hc_prefill_partners_immutable"].value, expected_data
         )
 
     def test_children_prefill_happy_flow(self):
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="hc_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "hc_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="hc_prefill_children_immutable",
@@ -193,13 +192,13 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="hc_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "hc_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="hc_prefill_children_immutable",
@@ -242,13 +241,13 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="999970124",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="hc_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "hc_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="hc_prefill_children_immutable",
@@ -335,13 +334,13 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="stuf_bg_partners_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "stuf_bg_partners_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="stuf_bg_partners_immutable",
@@ -393,13 +392,13 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="stuf_bg_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "stuf_bg_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="stuf_bg_prefill_children_immutable",
@@ -476,13 +475,13 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="stuf_bg_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "stuf_bg_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="stuf_bg_prefill_children_immutable",
@@ -559,13 +558,13 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="stuf_bg_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "stuf_bg_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="stuf_bg_prefill_children_immutable",
@@ -650,13 +649,13 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
         submission = SubmissionFactory.from_components(
             auth_info__value="111222333",
             auth_info__attribute=AuthAttribute.bsn,
-            components_list=[],
-        )
-        FormVariableFactory.create(
-            key="stuf_bg_prefill_children_mutable",
-            form=submission.form,
-            user_defined=True,
-            data_type=FormVariableDataTypes.array,
+            components_list=[
+                {
+                    "key": "stuf_bg_prefill_children_mutable",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
         )
         FormVariableFactory.create(
             key="stuf_bg_prefill_children_immutable",
