@@ -117,12 +117,12 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         match authentication_attribute:
             case AuthAttribute.bsn:
                 # Copied from digid_oidc
-                form_auth["value"] = normalized_claims.get("bsn_claim", "")
+                form_auth["value"] = normalized_claims["bsn_claim"]
                 form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
 
             case AuthAttribute.kvk:
                 # Copied from eherkenning_oidc
-                form_auth["value"] = normalized_claims.get("kvk_claim", "")
+                form_auth["value"] = normalized_claims["kvk_claim"]
                 form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
 
             case AuthAttribute.pseudo:
