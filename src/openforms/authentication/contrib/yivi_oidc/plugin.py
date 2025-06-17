@@ -77,7 +77,7 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
     def _get_user_chosen_authentication_attribute(
         authentication_options: list[YiviAuthenticationAttributes],
         normalized_claims: YiviClaims,
-    ) -> AuthAttribute:
+    ) -> YiviAuthenticationAttributes:
         """
         Return the user chosen authentication attribute.
         User chosen authentication attribute is defined based on the provided claims. To
@@ -90,11 +90,11 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
         kvk = bool(normalized_claims.get("legal_subject_claim"))
 
         if YiviAuthenticationAttributes.bsn in authentication_options and bsn:
-            return AuthAttribute.bsn
+            return YiviAuthenticationAttributes.bsn
         elif YiviAuthenticationAttributes.kvk in authentication_options and kvk:
-            return AuthAttribute.kvk
+            return YiviAuthenticationAttributes.kvk
         else:
-            return AuthAttribute.pseudo
+            return YiviAuthenticationAttributes.pseudo
 
     def transform_claims(
         self, options: YiviOptions, normalized_claims: YiviClaims
@@ -112,16 +112,16 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
 
         # Set form authentication values based on the used authentication option
         match authentication_attribute:
-            case AuthAttribute.bsn:
+            case YiviAuthenticationAttributes.bsn:
                 # Copied from digid_oidc
                 form_auth["attribute"] = authentication_attribute
-                form_auth["value"] = normalized_claims.get("bsn_claim", "")
+                form_auth["value"] = normalized_claims["bsn_claim"]
                 form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
 
-            case AuthAttribute.kvk:
+            case YiviAuthenticationAttributes.kvk:
                 # Copied from eherkenning_oidc
                 form_auth["attribute"] = authentication_attribute
-                form_auth["value"] = normalized_claims.get("legal_subject_claim", "")
+                form_auth["value"] = normalized_claims["legal_subject_claim"]
                 form_auth["loa"] = str(normalized_claims.get("loa_claim", ""))
                 form_auth["acting_subject_identifier_type"] = "opaque"
                 form_auth["acting_subject_identifier_value"] = (
@@ -134,7 +134,7 @@ class YiviOIDCAuthentication(BasePlugin[YiviOptions]):
                 ):
                     form_auth["legal_subject_service_restriction"] = service_restriction
 
-            case AuthAttribute.pseudo:
+            case YiviAuthenticationAttributes.pseudo:
                 form_auth["attribute"] = authentication_attribute
                 form_auth["value"] = (
                     normalized_claims.get("pseudo_claim") or "dummy-set-by@openforms"

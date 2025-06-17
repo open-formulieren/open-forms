@@ -133,15 +133,20 @@ class OIDCAuthenticationInitView(_OIDCInit):
         if len(options["authentication_options"]):
             authentication_condiscon = []
             for option in options["authentication_options"]:
-                if option == YiviAuthenticationAttributes.bsn:
-                    authentication_condiscon.append([yivi_global_config.bsn_claim])
-                elif option == YiviAuthenticationAttributes.kvk:
-                    authentication_condiscon.append(
-                        [yivi_global_config.legal_subject_claim]
-                    )
+                match option:
+                    case YiviAuthenticationAttributes.bsn:
+                        authentication_condiscon.append(
+                            [".".join(yivi_global_config.bsn_claim)]
+                        )
+                    case YiviAuthenticationAttributes.kvk:
+                        authentication_condiscon.append(
+                            [".".join(yivi_global_config.legal_subject_claim)]
+                        )
+                    case YiviAuthenticationAttributes.pseudo:
+                        # Leave this empty, to allow "anonymous" authentication
+                        authentication_condiscon.append([])
+
             condiscon_items.append(authentication_condiscon)
-        else:
-            condiscon_items.append([yivi_global_config.pseudo_claim])
 
         # Add additional groups, as optional
         attributes_groups = AttributeGroup.objects.filter(
@@ -151,14 +156,16 @@ class OIDCAuthenticationInitView(_OIDCInit):
             # documentation: https://irma.app/docs/condiscon/#other-features
             condiscon_items.append(
                 [
-                    [],  # The "empty" choice for this additional scope
-                    attributes_group["attributes"],
+                    [],  # By adding a "empty" choice, this attribute becomes optional.
+                    attributes_group.attributes,
                 ]
             )
 
         # Turn condiscon list into a string, and base64 encode it
         condiscon_string = json.dumps(condiscon_items)
 
+        # Create a signicat param scope with the base64 condiscon string.
+        # https://developer.signicat.com/broker/signicat-identity-broker/authentication-providers/yivi.html#example-of-adding-condiscon-parameter-in-your-oidc-request
         base64_bytes = base64.b64encode(condiscon_string.encode("ascii"))
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
