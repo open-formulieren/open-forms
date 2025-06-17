@@ -228,6 +228,7 @@ def send_confirmation_email(submission: Submission) -> None:
             "payment_complete_confirmation_email_sent",
         )
     )
+    logger.info("confirmation_email_flag_updated")
 
     logevent.confirmation_email_success(submission)
 

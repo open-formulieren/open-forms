@@ -344,6 +344,103 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         submission.payments.mark_registered()
         log.info("marked_payments_registered")
 
+    # TODO-4877: might need to move this to `finalise_registration` and leave the status
+    #  set to 'in_progress'.
     submission.save_registration_status(RegistrationStatuses.success, result or {})
     logevent.registration_success(submission, plugin)
     log.info("done")
+
+
+# QueueOnce to ensure it is only done once at a time
+@app.task(
+    base=QueueOnce,
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
+)
+# TODO-4877: do we need event here as well?
+def finalise_registration(submission_id):
+    # TODO-4877: add logevents?
+
+    log = logger.bind(action="registrations.finalise_registration")
+
+    # TODO-4877: need a select_related?
+    submission = Submission.objects.get(id=submission_id)
+
+    # Check number of attempts
+    config = GlobalConfiguration.get_solo()
+    if (num_attempts := submission.registration_attempts) >= (
+        max_num := config.registration_attempt_limit
+    ):
+        log.debug(
+            "max_registration_attempts_exceeded",
+            num_attempts=num_attempts,
+            max_num=max_num,
+            outcome="skip_finalising_registration",
+        )
+        return
+
+    # Check plugin
+    plugin = get_registration_plugin(submission)
+    if (
+        plugin is None
+        # TODO-4877: can't do this check here, because we should set the status to
+        #  'failed' when anything goes wrong inside this function. With this check,
+        #  it implies it will never be tried again. Probably need an additional flag on
+        #  the submission, 'main_registration_completed' or something. OR add an
+        #  additional status 'finalised', but that might be confusing, because 'success'
+        #  kinda implies everything was executed and went smoothly
+        or submission.registration_status != RegistrationStatuses.success
+    ):
+        log.info("registration_finalised", reason="no_registration_plugin_configured")
+        return
+
+    log = log.bind(plugin=plugin.identifier)
+    if not plugin.is_enabled:
+        log.debug("finalise_registration_failure", reason="plugin_disabled")
+        # Note: no need to set the registration status here as that has already been
+        # done during main registration
+        return
+
+    # Check backend options
+    backend = submission.registration_backend
+    assert backend is not None
+    options_serializer = plugin.configuration_options(
+        data=backend.options,
+        context={"validate_business_logic": False},
+    )
+
+    # TODO-4877: is the try-except even necessary, given that it won't be executed if
+    #  main registration has failed?
+    try:
+        options_serializer.is_valid(raise_exception=True)
+    except ValidationError as exc:
+        log.warning(
+            "finalise_registration_failure", reason="invalid_options", exc_info=exc
+        )
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+        # logevent.registration_failure(submission, exc, plugin)
+        # if event == PostSubmissionEvents.on_retry:
+        #     raise exc
+        return
+
+    # Finalise registration
+    try:
+        log.info("finalising_registration")
+        result = plugin.finalise_registration(
+            submission, options_serializer.validated_data
+        )
+    except (RegistrationFailed, Exception) as exc:
+        log.warning("finalise_registration_failure", exc_info=exc)
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+        # logevent.registration_failure(submission, exc, plugin)
+        # if event == PostSubmissionEvents.on_retry:
+        #     raise exc
+        return
+
+    if result is not None:
+        # TODO-4877: what status should this be?
+        submission.save_registration_status(RegistrationStatuses.success, result)

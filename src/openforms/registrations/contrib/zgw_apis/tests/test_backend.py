@@ -26,7 +26,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 from openforms.utils.tests.feature_flags import enable_feature_flag
-from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
 from ..client import get_documents_client, get_zaken_client
@@ -1219,7 +1218,7 @@ class ZGWBackendTests(TestCase):
 
 
 @temp_private_root()
-class ZGWBackendVCRTests(OFVCRMixin, TestCase):
+class ZGWBackendVCRTests(TestCase):
     VCR_TEST_FILES = TEST_FILES
 
     @classmethod
@@ -2096,3 +2095,77 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "second property": "a value",
             },
         )
+
+    def test_confirmation_email_is_attached_when_creating_zaak_with_case_identification_reference(
+        self,
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={
+                "someText": "Foo",
+            },
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case type version
+            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            confirmation_email_sent=True,
+            language_code="en",
+        )
+        catalogi_root = self.zgw_group.ztc_service.api_root
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "case_type_identification": "",
+            "document_type_description": "",
+            "zaaktype": f"{catalogi_root}zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+            # TODO-4877: this option is deprecated and should be replaced by
+            #  'document_type_description'
+            "informatieobjecttype": f"{catalogi_root}informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "zaak_vertrouwelijkheidaanduiding": "openbaar",
+            "doc_vertrouwelijkheidaanduiding": "openbaar",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+
+        plugin = ZGWRegistration("zgw")
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+
+        # Pre-registration
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # Full registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        # Finalise registration
+        result = plugin.finalise_registration(submission, options)
+        assert result is not None
+
+        with self.subTest("verify confirmation email document"):
+            zios = client.get(
+                "zaakinformatieobjecten", params={"zaak": result["zaak"]["url"]}
+            ).json()
+            # One for the submission report pdf and one for the confirmation email
+            self.assertEqual(len(zios), 2)
+
+            with get_documents_client(self.zgw_group) as documents_client:
+                document_data = documents_client.get(zios[0]["informatieobject"]).json()
+
+                self.assertEqual(document_data["bronorganisatie"], "000000000")
+                self.assertEqual(document_data["formaat"], "application/pdf")
+                self.assertEqual(
+                    document_data["vertrouwelijkheidaanduiding"], "openbaar"
+                )
+                self.assertEqual(document_data["taal"], "eng")
+                self.assertEqual(document_data["titel"], "Confirmation email")

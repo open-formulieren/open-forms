@@ -20,6 +20,7 @@ from .payments import *
 from .pdf import *
 from .registration import *
 from .user_uploads import *
+from ...registrations.tasks import finalise_registration
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -150,6 +151,16 @@ def finalise_completion(submission_id: int) -> None:
 
     schedule_emails_task = schedule_emails.si(submission_id)
     schedule_emails_task.delay()
+
+    # TODO-4877: with the payment timeout set on the confirmation email, the
+    #  `finalise_completion` task is not triggered again once the email was sent. So
+    #  the `finalise_registration` task never gets called again.
+    # TODO-4877: is this the best way to solve this?
+    # Delay for one second to ensure database is updated
+    finalise_registration.apply_async(
+        args=(submission_id,),
+        countdown=1,
+    )
 
     hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
         submission_id

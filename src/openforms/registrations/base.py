@@ -103,3 +103,10 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
         Return the static variables for this registration plugin.
         """
         return []
+
+    # TODO-4877: does it make sense to have this return a custom dataclass, similar to
+    #  `pre_register_submission`? Or is the `submission.registration_result` sufficient?
+    def finalise_registration(
+        self, submission: Submission, options: OptionsT
+    ) -> dict | None:
+        return None

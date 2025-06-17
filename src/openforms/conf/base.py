@@ -364,7 +364,7 @@ SENDFILE_URL = PRIVATE_MEDIA_URL
 #
 # Sending EMAIL
 #
-EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config(
     "EMAIL_PORT", default=25
@@ -453,7 +453,7 @@ LOGGING = {
     "loggers": {
         "openforms": {
             "handlers": ["json_file"] if not LOG_STDOUT else ["console"],
-            "level": "INFO",
+            "level": "DEBUG",
             "propagate": True,
         },
         "stuf": {
@@ -1093,7 +1093,7 @@ MOZILLA_DJANGO_OIDC_DB_CACHE = "solo"
 #
 # Email / payment
 #
-PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
+PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60
 
 #
 # Django CSP settings
