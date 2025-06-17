@@ -20,12 +20,17 @@ from openforms.api.geojson import (
 from openforms.authentication.service import AuthAttribute
 from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration, MapTileLayer
+from openforms.forms.models import FormVariable
+from openforms.prefill.contrib.family_members.plugin import (
+    PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
+)
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject
 from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
 from openforms.utils.json_schema import GEO_JSON_COORDINATE_SCHEMAS, to_multiple
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
+from openforms.variables.constants import FormVariableSources
 
 from ..datastructures import FormioData
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -637,6 +642,131 @@ class AddressNL(BasePlugin[AddressNLComponent]):
             base["properties"]["city"]["pattern"] = city_pattern
 
         return base
+
+
+class PartnerSerializer(serializers.Serializer):
+    bsn = serializers.CharField(
+        label=_("bsn"),
+        max_length=9,
+        help_text=_("The BSN of the partner"),
+        validators=[BSNValidator()],
+    )
+    initials = serializers.CharField(
+        label=_("initials"),
+        help_text=_("The initials of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    affixes = serializers.CharField(
+        label=_("affixes"),
+        help_text=_("The affixes of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    lastName = serializers.CharField(
+        label=_("last name"),
+        help_text=_("The last name of the partner"),
+        required=False,
+        allow_blank=True,
+    )
+    dateOfBirth = serializers.DateField(
+        label=_("date of birth"),
+        help_text=_("The date of birth of the partner"),
+        required=False,
+    )
+
+    def __init__(self, **kwargs):
+        self.component = kwargs.pop("component", None)
+        super().__init__(**kwargs)
+
+
+class PartnerListField(serializers.Field):
+    def __init__(self, component, **kwargs):
+        self.component = component
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if not isinstance(data, list):
+            raise serializers.ValidationError("Expected a list of partners.")
+
+        serializer = PartnerSerializer(
+            data=data,
+            many=True,
+            component=self.component,
+        )
+        serializer.is_valid(raise_exception=True)
+
+        validated = serializer.validated_data
+        self.validate_list(validated)
+        return validated
+
+    def to_representation(self, value):
+        return PartnerSerializer(value, many=True, component=self.component).data
+
+    def validate_list(self, partners):
+        component_key = self.component["key"]
+        submission = self.context["submission"]
+        prefill_data = submission.get_prefilled_data()
+
+        fm_immutable_variable = FormVariable.objects.filter(
+            source=FormVariableSources.user_defined,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options__mutable_data_form_variable=component_key,
+        ).first()
+        if fm_immutable_variable:
+            # we do not receive these fields from the frontend (since they are not used
+            # for now) so we have to exclude them from the data that needs validation
+            initial_value = [
+                {
+                    key: (
+                        datetime.strptime(value, "%Y-%m-%d").date()
+                        if key == "dateOfBirth"
+                        else value
+                    )
+                    for key, value in partner.items()
+                    if key not in ("dateOfBirthPrecision", "firstNames")
+                }
+                for partner in prefill_data[fm_immutable_variable.key]
+            ]
+
+            if initial_value and initial_value != partners:
+                raise serializers.ValidationError(
+                    "The family members prefill data may not be altered."
+                )
+
+
+@register("partners")
+class Partners(BasePlugin[Component]):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(self, component: Component) -> PartnerListField:
+        return PartnerListField(component=component)
+
+    @staticmethod
+    def as_json_schema(component: Component) -> JSONObject:
+        label = component.get("label", "Partners")
+        schema = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["bsn"],
+                "properties": {
+                    "bsn": {
+                        "type": "string",
+                        "pattern": r"^\d{9}$",
+                        "format": "nl-bsn",
+                    },
+                    "initials": {"type": "string"},
+                    "affixes": {"type": "string"},
+                    "lastName": {"type": "string"},
+                    "dateOfBirth": {"type": "string", "format": "date"},
+                },
+                "additionalProperties": False,
+            },
+        }
+
+        return schema
 
 
 @register("cosign")
