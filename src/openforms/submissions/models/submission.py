@@ -191,6 +191,13 @@ class Submission(models.Model):
             "Indicates whether the pre-registration task completed successfully."
         ),
     )
+    main_registration_completed = models.BooleanField(
+        _("main registration completed"),
+        default=False,
+        help_text=_(
+            "Indicates whether the main registration task completed successfully."
+        ),
+    )
     public_registration_reference = models.CharField(
         _("public registration reference"),
         max_length=100,
@@ -289,6 +296,9 @@ class Submission(models.Model):
         ),
     )
 
+    # TODO-4877: is this outdated? The retry chain is the same as the original. It is
+    #  used in the admin in the submissions overview, check if its value is consistent
+    #  with the other values in the column
     needs_on_completion_retry = models.BooleanField(
         _("needs on_completion retry"),
         default=False,
@@ -336,6 +346,7 @@ class Submission(models.Model):
                 name="unique_public_registration_reference",
                 condition=~models.Q(public_registration_reference=""),
             ),
+            # TODO-4877: add such a check for main/finalise registration?
             models.CheckConstraint(
                 check=~(
                     models.Q(registration_status=RegistrationStatuses.success)

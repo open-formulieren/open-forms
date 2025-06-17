@@ -211,7 +211,10 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         trigger=event,
     )
 
-    if submission.registration_status == RegistrationStatuses.success:
+    if (
+        submission.registration_status == RegistrationStatuses.success
+        or submission.main_registration_completed
+    ):
         # if it's already successfully registered, do not overwrite that.
         return
 
@@ -257,6 +260,10 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
 
     submission.last_register_date = timezone.now()
     submission.registration_status = RegistrationStatuses.in_progress
+    # TODO-4877: this probably needs to be moved, either to pre-registration or
+    #  finalise registration. Because currently, it can get stuck in an infinite loop of
+    #  retrying when the main registration has succeeded and the finalise registration
+    #  has failed.
     submission.registration_attempts += 1
     submission.save(
         update_fields=[
@@ -272,6 +279,8 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     if not backend_config or not backend_config.backend:
         log.info("registration_completed", reason="no_registration_plugin_configured")
         submission.save_registration_status(RegistrationStatuses.success, None)
+        submission.main_registration_completed = True
+        submission.save(update_fields=["main_registration_completed"])
         logevent.registration_skip(submission)
         return
 
@@ -336,13 +345,88 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             raise exc
         return
 
-    log.info("registration_success")
+    log.info("main_registration_success")
     if (
         config.wait_for_payment_to_register
         and event == PostSubmissionEvents.on_payment_complete
     ):
         submission.payments.mark_registered()
         log.info("marked_payments_registered")
+
+    submission.main_registration_completed = True
+    submission.save_registration_status(RegistrationStatuses.in_progress, result or {})
+    submission.save(
+        update_fields=["registration_status", "main_registration_completed"]
+    )
+    log.info("completed")
+
+
+@app.task(
+    # base=QueueOnce,  # to ensure only one task is scheduled at a time
+    ignore_result=False,
+    once={"graceful": True},  # do not spam error monitoring
+)
+def finalise_registration(submission_id, event):
+    log = logger.bind(action="registrations.finalise_registration")
+
+    submission = Submission.objects.get(id=submission_id)
+
+    if submission.registration_status == RegistrationStatuses.success:
+        # if it's already successfully registered, do not overwrite that.
+        return
+
+    # Check main registration
+    if not submission.main_registration_completed:
+        log.info("main_registration_not_completed", outcome="skip")
+        return
+
+    # Check number of attempts
+    config = GlobalConfiguration.get_solo()
+    if (num_attempts := submission.registration_attempts) >= (
+        max_num := config.registration_attempt_limit
+    ):
+        log.debug(
+            "max_registration_attempts_exceeded",
+            num_attempts=num_attempts,
+            max_num=max_num,
+            outcome="skip_finalising_registration",
+        )
+        logevent.registration_attempts_limited(submission)
+
+    # TODO-4877: add error handling on the following checks? They are already checked
+    #  in ``register_submission``, and will not be executed here if there were any
+    #  failures in the main registration
+    # Check plugin
+    plugin = get_registration_plugin(submission)
+
+    # Check backend options
+    backend = submission.registration_backend
+    assert backend is not None
+    options_serializer = plugin.configuration_options(
+        data=backend.options,
+        context={"validate_business_logic": False},
+    )
+    options_serializer.is_valid(raise_exception=True)
+
+    # Finalise registration
+    log.info("finalising_registration")
+    try:
+        result = plugin.finalise_register_submission(
+            submission, options_serializer.validated_data
+        )
+    except (RegistrationFailed, Exception) as exc:
+        log.warning("finalise_registration_failure", exc_info=exc)
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+        logevent.registration_failure(submission, exc, plugin)
+        if event == PostSubmissionEvents.on_retry:
+            raise exc
+        return
+
+    log.debug("clear_error_information")
+    if "traceback" in submission.registration_result:
+        del submission.registration_result["traceback"]
 
     submission.save_registration_status(RegistrationStatuses.success, result or {})
     logevent.registration_success(submission, plugin)

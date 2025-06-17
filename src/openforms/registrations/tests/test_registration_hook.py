@@ -55,6 +55,7 @@ class RegistrationHookTests(TestCase):
                 "string": "some-option",
                 "service": cls.service.id,
             },
+            main_registration_completed=False,
         )
 
     @freeze_time("2021-08-04T12:00:00+02:00")
@@ -84,8 +85,9 @@ class RegistrationHookTests(TestCase):
 
         self.submission.refresh_from_db()
         self.assertEqual(
-            self.submission.registration_status, RegistrationStatuses.success
+            self.submission.registration_status, RegistrationStatuses.in_progress
         )
+        self.assertTrue(self.submission.main_registration_completed)
         self.assertEqual(
             self.submission.registration_result,
             {"result": "ok"},
@@ -123,6 +125,7 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
+        self.assertFalse(self.submission.main_registration_completed)
         self.assertTrue(self.submission.needs_on_completion_retry)
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
@@ -167,6 +170,7 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
+        self.assertFalse(self.submission.main_registration_completed)
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
         self.assertEqual(self.submission.last_register_date, timezone.now())
@@ -214,6 +218,7 @@ class RegistrationHookTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+        self.assertTrue(submission.main_registration_completed)
         self.assertEqual(submission.last_register_date, last_register_date)
 
     @freeze_time("2021-08-04T12:00:00+02:00")
@@ -222,6 +227,7 @@ class RegistrationHookTests(TestCase):
             completed=True,
             form__registration_backend="",
             form__registration_backend_options={},
+            main_registration_completed=False,
         )
 
         # call the hook for the submission, while patching the model field registry
@@ -237,6 +243,7 @@ class RegistrationHookTests(TestCase):
             submission_no_registration_backend.registration_status,
             RegistrationStatuses.success,
         )
+        self.assertTrue(submission_no_registration_backend.main_registration_completed)
         self.assertIsNone(
             submission_no_registration_backend.registration_result,
         )
@@ -288,6 +295,7 @@ class RegistrationHookTests(TestCase):
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
+        self.assertFalse(self.submission.main_registration_completed)
         self.assertTrue(self.submission.needs_on_completion_retry)
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Registration plugin is not enabled", tb)
@@ -308,6 +316,7 @@ class RegistrationHookTests(TestCase):
 
             submission.refresh_from_db()
             self.assertTrue(submission.needs_on_completion_retry)
+            self.assertFalse(submission.main_registration_completed)
 
         with (
             self.subTest("On retry - does raise"),
@@ -322,6 +331,7 @@ class RegistrationHookTests(TestCase):
             with_completed_payment=True,
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["registration@test.nl"]},
+            main_registration_completed=False,
         )
 
         with patch(
@@ -334,7 +344,10 @@ class RegistrationHookTests(TestCase):
 
         submission.refresh_from_db()
 
-        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+        self.assertEqual(
+            submission.registration_status, RegistrationStatuses.in_progress
+        )
+        self.assertTrue(submission.main_registration_completed)
 
     @tag("gh-4425")
     def test_registration_hook_with_failed_and_completed_payments(self):
@@ -398,6 +411,7 @@ class NumRegistrationsTest(TestCase):
             self.assertEqual(
                 submission.registration_status, RegistrationStatuses.failed
             )
+            self.assertFalse(submission.main_registration_completed)
             self.assertEqual(submission.registration_attempts, 1)
             # marked for retry
             self.assertTrue(submission.needs_on_completion_retry)
@@ -425,6 +439,7 @@ class NumRegistrationsTest(TestCase):
             self.assertEqual(
                 submission.registration_status, RegistrationStatuses.failed
             )
+            self.assertFalse(submission.main_registration_completed)
             self.assertEqual(submission.registration_attempts, TEST_NUM_ATTEMPTS)
 
             # added log

@@ -42,7 +42,8 @@ class UpdatePaymentTests(TestCase):
     def create_payment(self, **kwargs):
         good_kwargs = dict(
             # these together would update
-            submission__registration_status=RegistrationStatuses.success,
+            submission__registration_status=RegistrationStatuses.in_progress,
+            submission__main_registration_completed=True,
             submission__pre_registration_completed=True,
             submission__form__registration_backend="registration1",
             submission__form__payment_backend="payment1",
@@ -101,6 +102,7 @@ class UpdatePaymentTests(TestCase):
         bad_factory_kwargs = dict(
             # all of these would individually block the update
             submission__registration_status=RegistrationStatuses.failed,
+            submission__main_registration_completed=False,
             submission__form__registration_backend="",
             submission__form__payment_backend="",
             submission__form__product__price=Decimal("0"),
@@ -134,7 +136,8 @@ class TestPaymentRaceCondition(TransactionTestCase):
 
     def test_update_payment_registration(self):
         payment = SubmissionPaymentFactory.create(
-            submission__registration_status=RegistrationStatuses.success,
+            submission__registration_status=RegistrationStatuses.in_progress,
+            submission__main_registration_completed=True,
             submission__pre_registration_completed=True,
             submission__form__registration_backend="registration1",
             submission__form__payment_backend="payment1",

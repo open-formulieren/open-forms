@@ -24,6 +24,7 @@ from ....tasks import register_submission
 from .factories import ZGWApiGroupConfigFactory
 
 
+# TODO-4877: add some tests here?
 @tag("gh-1183")
 @temp_private_root()
 class PartialRegistrationFailureTests(TestCase):

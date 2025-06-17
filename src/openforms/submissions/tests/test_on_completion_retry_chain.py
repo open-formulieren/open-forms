@@ -154,7 +154,10 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
     """
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
-    def test_backend_registration_still_fails(self, mock_update_payment):
+    @patch("openforms.registrations.tasks.finalise_registration")
+    def test_backend_registration_still_fails(
+        self, mock_finalise_registration, mock_update_payment
+    ):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
@@ -187,12 +190,16 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         mock_register.assert_called_once()
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_not_called()
+        mock_finalise_registration.assert_not_called()
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.needs_on_completion_retry)
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
-    def test_backend_preregistration_still_fails(self, mock_update_payment):
+    @patch("openforms.registrations.tasks.finalise_registration")
+    def test_backend_preregistration_still_fails(
+        self, mock_finalise_registration, mock_update_payment
+    ):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             needs_on_completion_retry=True,
@@ -230,13 +237,19 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         mock_register.assert_not_called()
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_not_called()
+        mock_finalise_registration.assert_not_called()
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.needs_on_completion_retry)
 
     @patch(
         "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.update_payment_status"
     )
-    def test_backend_registration_succeeds(self, mock_update_payment):
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.finalise_register_submission"
+    )
+    def test_backend_registration_succeeds(
+        self, mock_finalise_register_submission, mock_update_payment
+    ):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
@@ -288,6 +301,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "product_url": "http://example.com",
             },
         )
+        mock_finalise_register_submission.assert_called_once()
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertFalse(submission.needs_on_completion_retry)

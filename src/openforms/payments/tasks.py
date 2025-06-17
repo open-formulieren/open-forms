@@ -39,7 +39,11 @@ def update_submission_payment_status(
 
     should_skip = config.wait_for_payment_to_register or any(
         (
-            submission.registration_status != RegistrationStatuses.success,
+            # Note: just checking whether the main registration has completed should be
+            # sufficient, but perform an additional check on the registration status
+            # to be safe.
+            not submission.main_registration_completed,
+            submission.registration_status == RegistrationStatuses.failed,
             not submission.payment_required,
             submission.payment_registered,
             submission.registration_attempts >= config.registration_attempt_limit,

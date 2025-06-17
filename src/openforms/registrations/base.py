@@ -103,3 +103,8 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
         Return the static variables for this registration plugin.
         """
         return []
+
+    def finalise_register_submission(
+        self, submission: Submission, options: OptionsT
+    ) -> dict | None:
+        return None

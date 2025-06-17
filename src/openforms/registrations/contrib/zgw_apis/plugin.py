@@ -348,6 +348,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 )
                 informatieobjecttype_url = options["informatieobjecttype"]
 
+            result["informatieobjecttype_url"] = informatieobjecttype_url
+
             # Upload the summary PDF
             pdf_options: DocumentOptions = {
                 "informatieobjecttype": informatieobjecttype_url,
@@ -654,3 +656,95 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
             return response
+
+    @wrap_api_errors
+    def finalise_register_submission(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> dict | None:
+        # TODO-4877: might be good to add a setting to the backend options whether to
+        #  attach a confirmation email to a case
+        logger.info("zgw_finalise_registration_started", options=options)
+        if not submission.confirmation_email_sent:
+            logger.warning(
+                "zgw_finalise_registration_aborted",
+                reason="confirmation_email_not_sent",
+            )
+            raise RegistrationFailed("Confirmation email was not sent")
+
+        result = submission.registration_result
+        assert result
+        # Should be set during registration
+        assert "informatieobjecttype_url" in result
+
+        zgw: ZGWApiGroupConfig = options["zgw_api_group"]
+        zgw.apply_defaults_to(options)
+        assert "organisatie_rsin" in options
+        assert "doc_vertrouwelijkheidaanduiding" in options
+        assert "auteur" in options
+
+        assert submission.completed_on is not None
+        datum = datetime_in_amsterdam(submission.completed_on).date().isoformat()
+
+        # Generate email
+        from io import BytesIO
+
+        content = BytesIO(b"This is generated email content")
+
+        # TODO-4877: better to save the email to the database? Besides passing it as an
+        #  argument, seems like the only way to guarantee it is exactly the same...
+        #  Also, the full html template is not generated until `send_mail_html`
+        #  The email is also saved in the django yubin Message model. Perhaps it is
+        #  possible to fetch the message data from there?
+        # `send_confirmation_email`:
+        # subject_template, content_template = get_confirmation_email_templates(submission)
+        # context = get_confirmation_email_context_data(submission)
+        # html_content = render_email_template(content_template, context)
+        # `send_mail_html`:
+        # template = get_template("emails/wrapper.html")
+        # wrapper_context = get_wrapper_context(html_content, theme=submission.form.theme)
+        # html_message = template.render(wrapper_context)
+
+        # Create a document
+        result_attachment = {}
+        with get_documents_client(zgw) as documents_client:
+            logger.debug("creating_confirmation_email_document")
+            result_attachment["document"] = execute_unless_result_exists(
+                partial(
+                    documents_client.create_document,
+                    informatieobjecttype=result["informatieobjecttype_url"],
+                    bronorganisatie=options["organisatie_rsin"],
+                    title="Bevestigingsemail",
+                    author=options["auteur"],
+                    language=submission.language_code,
+                    format="application/pdf",
+                    content=content,
+                    status="definitief",
+                    filename="bevestigingsemail.pdf",
+                    description=(
+                        "De bevestigingsmail die naar de initiator is verstuurd."
+                    ),
+                    received_date=datum,
+                    vertrouwelijkheidaanduiding=(
+                        options["doc_vertrouwelijkheidaanduiding"]
+                    ),
+                ),
+                submission,
+                "intermediate.documents.confirmation_email.document",
+            )
+
+        # Relate the document to the zaak
+        with get_zaken_client(zgw) as zaken_client:
+            logger.debug("relating_confirmation_email_document")
+            result_attachment["relation"] = execute_unless_result_exists(
+                partial(
+                    zaken_client.relate_document,
+                    zaak=submission.registration_result["zaak"],
+                    document=result_attachment["document"],
+                ),
+                submission,
+                "intermediate.documents.confirmation_email.relation",
+            )
+
+        result["confirmation_email"] = result_attachment
+
+        return result
