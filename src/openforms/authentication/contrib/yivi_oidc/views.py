@@ -108,8 +108,8 @@ class OIDCAuthenticationInitView(_OIDCInit):
         """
         Return the yivi condiscon scope as a Signicat additional parameter.
 
-        To allow end-users to choice which information they want to provide, we need to
-        pass the Yivi scopes as condiscon. With condiscon's we can create logic like;
+        To allow end-users to choose which information they want to provide, we need to
+        pass the Yivi scopes as condiscon. With condiscons we can create logic like;
         "the user must provide bsn OR kvk information.".
 
         Signicat has some documentation about how the scope should be shaped:
@@ -125,8 +125,8 @@ class OIDCAuthenticationInitView(_OIDCInit):
         If no authentication_options are defined, then we don't add an authentication
         scope (this will result into anonymous/pseudo authentication).
 
-        All the additional_attributes_groups are optional, meaning that the end-user can choose
-        which information they want to provide.
+        All the `additional_attributes_groups` are optional, meaning that the end-user
+        can choose which information they want to provide.
         """
 
         condiscon_items = []
@@ -136,15 +136,32 @@ class OIDCAuthenticationInitView(_OIDCInit):
         if len(options["authentication_options"]):
             authentication_condiscon = []
             for option in options["authentication_options"]:
-                if option == AuthAttribute.bsn:
-                    authentication_condiscon.append([yivi_global_config.bsn_claim])
-                elif option == AuthAttribute.kvk:
-                    authentication_condiscon.append(
-                        [yivi_global_config.legal_subject_claim]
-                    )
+                match option:
+                    case AuthAttribute.bsn:
+                        bsn_attributes = [".".join(yivi_global_config.bsn_claim)]
+
+                        if len(yivi_global_config.bsn_loa_claim):
+                            bsn_attributes.append(
+                                ".".join(yivi_global_config.bsn_loa_claim)
+                            )
+
+                        authentication_condiscon.append(bsn_attributes)
+
+                    case AuthAttribute.kvk:
+                        kvk_attributes = [".".join(yivi_global_config.kvk_claim)]
+
+                        if len(yivi_global_config.kvk_loa_claim):
+                            kvk_attributes.append(
+                                ".".join(yivi_global_config.kvk_loa_claim)
+                            )
+
+                        authentication_condiscon.append(kvk_attributes)
+
+                    case AuthAttribute.pseudo:
+                        # Leave this empty, to allow "anonymous" authentication
+                        authentication_condiscon.append([])
+
             condiscon_items.append(authentication_condiscon)
-        else:
-            condiscon_items.append([yivi_global_config.pseudo_claim])
 
         # Add additional groups, as optional
         attributes_groups = AttributeGroup.objects.filter(
@@ -154,14 +171,19 @@ class OIDCAuthenticationInitView(_OIDCInit):
             # documentation: https://irma.app/docs/condiscon/#other-features
             condiscon_items.append(
                 [
-                    [],  # The "empty" choice for this additional scope
-                    attributes_group["attributes"],
+                    attributes_group.attributes,
+                    # By adding an "empty" choice, this attribute becomes optional.
+                    # The empty choice needs to be placed as last, otherwise it doesn't
+                    # work (see https://dashboard.signicat.com/contact-us/tickets/207907)
+                    [],
                 ]
             )
 
         # Turn condiscon list into a string, and base64 encode it
         condiscon_string = json.dumps(condiscon_items)
 
+        # Create a signicat param scope with the base64 condiscon string.
+        # https://developer.signicat.com/broker/signicat-identity-broker/authentication-providers/yivi.html#example-of-adding-condiscon-parameter-in-your-oidc-request
         base64_bytes = base64.b64encode(condiscon_string.encode("ascii"))
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
