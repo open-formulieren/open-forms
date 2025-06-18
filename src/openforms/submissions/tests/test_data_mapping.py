@@ -264,7 +264,11 @@ class MappingTests(TestCase):
             ],
             submitted_data={"voornaam": "Foo", "bijnaam": "Bar"},
         )
-        actual = get_unmapped_data(submission, mapping, "mapping_attr")
+
+        state = submission.load_submission_value_variables_state()
+
+        actual = get_unmapped_data(submission, mapping, "mapping_attr", state)
+
         expected = {
             "bijnaam": "Bar",
         }

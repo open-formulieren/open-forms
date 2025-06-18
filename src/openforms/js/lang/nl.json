@@ -551,6 +551,11 @@
     "description": "Display main website link field label",
     "originalDefault": "Display main website link"
   },
+  "A5KjOb": {
+    "defaultMessage": "The description for the object included in StUF-ZDS. In case this is empty the value is taken from the variable's key by default.",
+    "description": "StUF-ZDS registration: zaakbetrokkeneOmschrijving help text.",
+    "originalDefault": "The description for the object included in StUF-ZDS. In case this is empty the value is taken from the variable's key by default."
+  },
   "ADAp0E": {
     "defaultMessage": "Gelieve opnieuw in te loggen om door te gaan.",
     "description": "Call to action to log in again",
@@ -656,6 +661,10 @@
     "description": "\"+\" operator description",
     "isTranslated": true,
     "originalDefault": "plus"
+  },
+  "ByEUPo": {
+    "defaultMessage": "Registered as {type}",
+    "originalDefault": "Registered as {type}"
   },
   "C+91tl": {
     "defaultMessage": "Gegevensverwerking",
@@ -1661,6 +1670,11 @@
     "description": "Session expiry notice",
     "originalDefault": "Session expires {expiresToday, select, true {{relativeTimeToExpiry}} other {on {expiryDate} at {expiryTime}}}"
   },
+  "SEVJHC": {
+    "defaultMessage": "Description",
+    "description": "StUF-ZDS registration: zaakbetrokkeneOmschrijving label",
+    "originalDefault": "Description"
+  },
   "SX2HTA": {
     "defaultMessage": "wijzig een attribuut van een veld/component.",
     "description": "action type \"property\" label",
@@ -1680,6 +1694,11 @@
     "defaultMessage": "Toelichting",
     "description": "Start page explanation text label",
     "originalDefault": "Explanation"
+  },
+  "Sig0F9": {
+    "defaultMessage": "Register as zaakbetrokkene",
+    "description": "StUF-ZDS registration: register as zaakbetrokkene option",
+    "originalDefault": "Register as zaakbetrokkene"
   },
   "SjbNyf": {
     "defaultMessage": "Variabele toevoegen",
@@ -2180,6 +2199,11 @@
     "defaultMessage": "{numDuplicated, plural, =1 {Een sleutel is niet uniek:} other {{numDuplicated} sleutels zijn niet uniek:} } <duplicatedKeys></duplicatedKeys>",
     "description": "Warning message for duplicated keys",
     "originalDefault": "{numDuplicated, plural, =1 {A key is duplicated:} other {{numDuplicated} keys are duplicated:} } <duplicatedKeys></duplicatedKeys>"
+  },
+  "cl/Tuf": {
+    "defaultMessage": "Register as",
+    "description": "StUF-ZDS registration: registerAs label",
+    "originalDefault": "Register as"
   },
   "cpJErE": {
     "defaultMessage": "Geheel getal (integer)",
@@ -3183,6 +3207,11 @@
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
+  "uJg92y": {
+    "defaultMessage": "Type of registration field help text",
+    "description": "StUF-ZDS registration: select the type of registration.",
+    "originalDefault": "Type of registration field help text"
+  },
   "uUf7cu": {
     "defaultMessage": "Pad relatief aan de Service API basisurl.",
     "description": "JSON registration options 'path' helpText",
@@ -3357,6 +3386,11 @@
     "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
+  },
+  "yNuTBl": {
+    "defaultMessage": "Register as extraElementen",
+    "description": "StUF-ZDS registration: register as extraElementen option",
+    "originalDefault": "Register as extraElementen"
   },
   "yTBZ6U": {
     "defaultMessage": "Partners",

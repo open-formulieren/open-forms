@@ -1,0 +1,56 @@
+{% if partners_zaakbetrokkene %}
+    {% for partner in partners_zaakbetrokkene %}
+        <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde>
+                <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                {% if partner.bsn %}
+                    <BG:inp.bsn>{{ partner.bsn }}</BG:inp.bsn>
+                    <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                {% endif %}
+                {% if partner.lastName %}
+                    <BG:geslachtsnaam>{{ partner.lastName }}</BG:geslachtsnaam>
+                {% endif %}
+                {% if partner.affixes %}
+                    <BG:voorvoegselGeslachtsnaam>{{ partner.affixes }}</BG:voorvoegselGeslachtsnaam>
+                {% endif %}
+                {% if partner.initials %}
+                    <BG:voorletters>{{ partner.initials }}</BG:voorletters>
+                {% endif %}
+                {% if partner.firstNames %}
+                    <BG:voornamen>{{ partner.firstNames }}</BG:voornamen>
+                {% endif %}
+                {% if partner.dateOfBirth %}
+                    <BG:geboortedatum StUF:indOnvolledigeDatum="V">{{ partner.dateOfBirth }}</BG:geboortedatum>
+                {% endif %}
+                </ZKN:natuurlijkPersoon>
+            </ZKN:gerelateerde>
+            <ZKN:omschrijving StUF:exact="true">{{ partner.description }}</ZKN:omschrijving>
+        </ZKN:heeftAlsOverigBetrokkene>
+    {% endfor %}
+{% endif %}
+
+{% if partners_extraElementen %}
+    {% for partner in partners_extraElementen %}
+        <StUF:extraElementen>
+            {% if partner.bsn %}
+                <StUF:extraElement naam="bsn">{{ partner.bsn }}</StUF:extraElement>
+            {% endif %}
+            {% if partner.firstNames %}
+                <StUF:extraElement naam="voornamen">{{ partner.firstNames }}</StUF:extraElement>
+            {% endif %}
+            {% if partner.initials %}
+                <StUF:extraElement naam="voorletters">{{ partner.initials }}</StUF:extraElement>
+            {% endif %}
+            {% if partner.affixes %}
+                <StUF:extraElement naam="voorvoegselGeslachtsnaam">{{ partner.affixes }}</StUF:extraElement>
+            {% endif %}
+            {% if partner.lastName %}
+                <StUF:extraElement naam="geslachtsnaam">{{ partner.lastName }}</StUF:extraElement>
+            {% endif %}
+            {% if partner.dateOfBirth %}
+                <StUF:extraElement naam="geboortedatum">{{ partner.dateOfBirth }}</StUF:extraElement>
+            {% endif %}
+            <StUF:extraElement naam="omschrijving">{{ partner.description }}</StUF:extraElement>
+        </StUF:extraElementen>
+    {% endfor %}
+{% endif %}

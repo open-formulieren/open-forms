@@ -261,6 +261,102 @@ class StufZDSClientTests(StUFZDSTestBase):
             1,
         )
 
+    def test_create_zaak_with_partners(self, m):
+        client = StufZDSClient(self.service, self.options)
+        self.options.update(
+            {
+                "cosigner": "123456782",
+                "variables_mapping": [
+                    {
+                        "variable_key": "partners_variable",
+                        "register_as": "zaakbetrokkene",
+                        "description": "",
+                    },
+                    {
+                        "variable_key": "another_partners_variable",
+                        "register_as": "extraElementen",
+                        "description": "extra element",
+                    },
+                ],
+            }
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        client.create_zaak(
+            "foo",
+            {
+                "bsn": "111222333",
+                "betalings_indicatie": PaymentStatus.NOT_YET,
+                "partners_zaakbetrokkene": [
+                    {
+                        "bsn": "123456781",
+                        "firstNames": "Man",
+                        "affixes": "J",
+                        "initials": "K",
+                        "lastName": "Nirthas",
+                        "dateOfBirth": "1986-01-09",
+                        "description": "",
+                    },
+                ],
+                "partners_extraElementen": [
+                    {
+                        "bsn": "123456788",
+                        "firstNames": "Vas",
+                        "affixes": "",
+                        "initials": "",
+                        "lastName": "Listendith",
+                        "dateOfBirth": "1980-01-09",
+                        "description": "a description",
+                    },
+                ],
+            },
+            {},
+        )
+
+        request = m.request_history[0]
+        self.assertEqual(
+            request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/zkn/0310/creeerZaak_Lk01",
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathExists(xml_doc, "//zkn:zakLk01")
+        self.assertStuurgegevens(xml_doc)
+
+        # we have one BSN for the person and one for his partner
+        self.assertXPathCount(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            2,
+        )
+
+        expected_paths = [
+            # betrokkene
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum",
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:omschrijving",
+            # extraElementen
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='bsn']",
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='geslachtsnaam']",
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='bsn']",
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='voornamen']",
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='geboortedatum']",
+            "//zkn:object/stuf:extraElementen/stuf:extraElement[@naam='omschrijving']",
+        ]
+
+        for path in expected_paths:
+            self.assertXPathExists(xml_doc, path)
+
     def test_set_zaak_payment(self, m):
         client = StufZDSClient(self.service, self.options)
         m.post(

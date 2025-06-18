@@ -1,4 +1,5 @@
 import CamundaOptionsForm from './camunda';
+import {FORM_COMPONENTS_CONFIGURABLE_FROM_VARIABLES} from './constants';
 import DemoOptionsForm from './demo';
 import EmailOptionsForm from './email';
 import {
@@ -17,9 +18,12 @@ import {
   onZGWStepEdit,
 } from './stepEditHandlers';
 import StufZDSOptionsForm from './stufzds';
+import StufZDSSummaryHandler from './stufzds/StufZDSSummaryHandler';
+import {StufZDSVariableConfigurationEditor} from './stufzds/StufZDSVariableConfigurationEditor';
 import {
   onGenericJSONUserDefinedVariableEdit,
   onObjectsAPIUserDefinedVariableEdit,
+  onStufZDSUserDefinedVariableEdit,
 } from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 
@@ -44,7 +48,7 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ObjectsApiOptionsForm,
     onStepEdit: onObjectsAPIStepEdit,
     onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
-    configurableFromVariables: options => options.version === 2,
+    configurableFromVariables: (options, formVariable) => options.version === 2,
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
@@ -57,6 +61,11 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'stuf-zds-create-zaak': {
     form: StufZDSOptionsForm,
+    configurableFromVariables: (options, formVariable) =>
+      FORM_COMPONENTS_CONFIGURABLE_FROM_VARIABLES.includes(formVariable?.key),
+    summaryHandler: StufZDSSummaryHandler,
+    variableConfigurationEditor: StufZDSVariableConfigurationEditor,
+    onUserDefinedVariableEdit: onStufZDSUserDefinedVariableEdit,
   },
   'microsoft-graph': {form: MSGraphOptionsForm},
   json_dump: {

@@ -943,6 +943,77 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
   },
 };
 
+export const WithStufZDSRegistrationBackend = {
+  args: {
+    availableFormVariables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'Partners',
+        key: 'partners',
+        type: 'partners',
+        source: 'component',
+        isSensitiveData: true,
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'unsaved-step',
+        name: 'A textbox',
+        key: 'textbox',
+        type: 'textbox',
+        source: 'component',
+      },
+    ],
+    availableComponents: {
+      partners: {
+        type: 'partners',
+        key: 'partners',
+      },
+      textbox: {
+        type: 'textbox',
+        key: 'textbox',
+      },
+    },
+    registrationBackends: [
+      {
+        backend: 'stuf-zds-create-zaak',
+        key: 'test_zds',
+        name: 'Example ZDS registration',
+        options: {
+          variablesMapping: [
+            {
+              variableKey: 'partners',
+              registerAs: 'zaakbetrokkene',
+              description: '',
+            },
+          ],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement, step}) => {
+    const canvas = within(canvasElement);
+
+    const editIcons = canvas.getAllByTitle('Registratie-instellingen bewerken');
+    // only specific component types can have registration settings available
+    expect(editIcons).toHaveLength(1);
+
+    await step('partners registerAs settings', async () => {
+      await userEvent.click(editIcons[0]);
+
+      const radios = canvas.getAllByRole('radio');
+      const description = canvas.getByRole('textbox', {name: 'Description'});
+
+      expect(radios[0]).toBeChecked();
+      expect(radios[1]).not.toBeChecked();
+      expect(description).toHaveValue('');
+
+      const saveButton = canvas.getByRole('button', {name: 'Opslaan'});
+      await userEvent.click(saveButton);
+    });
+  },
+};
+
 export const WithGenericJSONRegistrationBackend = {
   args: {
     registrationBackends: [

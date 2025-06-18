@@ -134,12 +134,15 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
 
   for (const [backendIndex, backend] of filteredRegistrationBackends.entries()) {
     const backendInfo = BACKEND_OPTIONS_FORMS[backend.backend];
+    const formVariable = formContext.formVariables.find(
+      formVariable => formVariable.key === variable.key
+    );
 
     // Check if the registration backend can be configured from the variables tab...
     const configurableFromVariables = backendInfo?.configurableFromVariables;
     if (
       (typeof configurableFromVariables === 'function' &&
-        !configurableFromVariables(backend.options)) ||
+        !configurableFromVariables(backend.options, formVariable)) ||
       !configurableFromVariables
     )
       continue;

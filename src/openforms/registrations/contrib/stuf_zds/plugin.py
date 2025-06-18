@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any, Mapping, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +25,15 @@ from openforms.submissions.mapping import (
     get_component,
     get_unmapped_data,
 )
-from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models import (
+    Submission,
+    SubmissionReport,
+)
+from openforms.submissions.models.submission_value_variable import (
+    SubmissionValueVariablesState,
+)
+from openforms.typing import VariableValue
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from stuf.stuf_zds.client import (
     NoServiceConfigured,
@@ -38,7 +47,7 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .options import ZaakOptionsSerializer
 from .registration_variables import register as variables_registry
-from .typing import RegistrationOptions
+from .typing import RegistrationOptions, VariablesMapping
 from .utils import flatten_data
 
 if TYPE_CHECKING:
@@ -213,11 +222,60 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         return PreRegistrationResult(reference=zaak_id)
 
     def get_extra_data(
-        self, submission: Submission, options: RegistrationOptions
+        self,
+        submission: Submission,
+        options: RegistrationOptions,
+        state: SubmissionValueVariablesState,
     ) -> dict[str, Any]:
-        data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
+        data = get_unmapped_data(
+            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE, state
+        )
         payment_extra = _get_extra_payment_variables(submission, options)
         return {**data, **payment_extra}
+
+    def process_variables_mapping(
+        self,
+        submission: Submission,
+        variables_mapping: list[VariablesMapping],
+        state: SubmissionValueVariablesState,
+    ) -> Mapping[str, VariableValue]:
+        log = logger.bind(submission_uuid=str(submission.uuid))
+
+        all_values = state.get_data()
+
+        data: dict[str, list[dict]] = defaultdict(list)
+        for mapping in variables_mapping:
+            key = mapping["variable_key"]
+            variable = state.variables.get(key)
+            value = all_values.get(key)
+
+            log = log.bind(action="process_variable_mapping", key=key, mapping=mapping)
+
+            if not (
+                variable
+                and variable.form_variable
+                and variable.form_variable.source == FormVariableSources.component
+            ):
+                continue
+
+            component = variable.form_variable.form_definition.configuration_wrapper.component_map.get(
+                variable.key
+            )
+
+            if component and component.get("type") == "partners":
+                if not isinstance(value, list):
+                    continue
+
+                value_with_description = [
+                    {**partner, "description": mapping.get("description")}
+                    for partner in value
+                    if isinstance(partner, dict)
+                ]
+                data[f"partners_{mapping['register_as']}"].extend(
+                    value_with_description
+                )
+
+        return data
 
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
@@ -242,6 +300,8 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             ),
         }
 
+        state = submission.load_submission_value_variables_state()
+
         with get_client(options=zaak_options) as client:
             # Zaak ID reserved during the pre-registration phase
             zaak_id = submission.public_registration_reference
@@ -258,7 +318,16 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 assert component is not None
                 zaak_data["locatie"]["key"] = component["key"]
 
-            extra_data = self.get_extra_data(submission, options)
+            # apply data mappings according to the component type
+            # for now this is only relevant for the partners component and this is guaranteed
+            # on the frontend as well
+            if variables_mapping := zaak_options.get("variables_mapping"):
+                variables_mapping_data = self.process_variables_mapping(
+                    submission, variables_mapping, state
+                )
+                zaak_data.update(**variables_mapping_data)
+
+            extra_data = self.get_extra_data(submission, options, state)
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
 
@@ -351,8 +420,10 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     def update_payment_status(
         self, submission: Submission, options: RegistrationOptions
     ):
+        state = submission.load_submission_value_variables_state()
+
         # The extraElement tag of StUF-ZDS expects primitive types
-        extra_data = flatten_data(self.get_extra_data(submission, options))
+        extra_data = flatten_data(self.get_extra_data(submission, options, state))
 
         zaak_options: ZaakOptions = {
             **options,
@@ -377,6 +448,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
             "zds_zaaktype_status_code": "test",
             "zds_zaaktype_status_omschrijving": "test",
             "zds_documenttype_omschrijving_inzending": "test",
+            "variables_mapping": [],
         }  # type: ignore
         try:
             client = get_client(options)

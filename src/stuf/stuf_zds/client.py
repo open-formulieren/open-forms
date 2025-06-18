@@ -75,6 +75,12 @@ def xml_value(xml, xpath, namespaces=nsmap):
         raise ValueError(f"xpath not found {xpath}")
 
 
+class VariablesMapping(TypedDict):
+    variable_key: str
+    register_as: Literal["zaakbetrokkene", "extraElementen"]
+    description: NotRequired[str]
+
+
 class ZaakOptions(TypedDict):
     # from stuf_zds.plugin.ZaakOptionsSerializer
     zds_zaaktype_code: str
@@ -95,6 +101,7 @@ class ZaakOptions(TypedDict):
     # extra's
     omschrijving: str
     cosigner: NotRequired[str]  # identifier of the cosigner (BSN)
+    variables_mapping: NotRequired[list[VariablesMapping]]
 
 
 class NoServiceConfigured(RuntimeError):

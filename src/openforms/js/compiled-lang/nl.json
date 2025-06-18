@@ -1253,6 +1253,12 @@
       "value": "Link naar hoofdwebsite weergeven"
     }
   ],
+  "A5KjOb": [
+    {
+      "type": 0,
+      "value": "The description for the object included in StUF-ZDS. In case this is empty the value is taken from the variable's key by default."
+    }
+  ],
   "AClYLf": [
     {
       "type": 0,
@@ -1487,6 +1493,16 @@
     {
       "type": 0,
       "value": "Decimalen"
+    }
+  ],
+  "ByEUPo": [
+    {
+      "type": 0,
+      "value": "Registered as "
+    },
+    {
+      "type": 1,
+      "value": "type"
     }
   ],
   "C+91tl": [
@@ -3384,6 +3400,12 @@
       "value": "expiresToday"
     }
   ],
+  "SEVJHC": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
   "SEXqhC": [
     {
       "type": 0,
@@ -3424,6 +3446,12 @@
     {
       "type": 0,
       "value": "Toelichting"
+    }
+  ],
+  "Sig0F9": [
+    {
+      "type": 0,
+      "value": "Register as zaakbetrokkene"
     }
   ],
   "SjbNyf": [
@@ -4571,6 +4599,12 @@
     {
       "type": 0,
       "value": "Plugin"
+    }
+  ],
+  "cl/Tuf": [
+    {
+      "type": 0,
+      "value": "Register as"
     }
   ],
   "cpJErE": [
@@ -6773,6 +6807,12 @@
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "uJg92y": [
+    {
+      "type": 0,
+      "value": "Type of registration field help text"
+    }
+  ],
   "uUf7cu": [
     {
       "type": 0,
@@ -7131,6 +7171,12 @@
     {
       "type": 0,
       "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt."
+    }
+  ],
+  "yNuTBl": [
+    {
+      "type": 0,
+      "value": "Register as extraElementen"
     }
   ],
   "yQUV3M": [
