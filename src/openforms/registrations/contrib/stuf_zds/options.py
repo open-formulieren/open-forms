@@ -1,7 +1,9 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 
@@ -29,6 +31,11 @@ def default_payment_status_update_mapping() -> list[MappingItem]:
     ]
 
 
+class RegisterAsTypes(models.TextChoices):
+    zaakbetrokkene = "zaakbetrokkene", _("As zaakbetrokkene")
+    extraElementen = "extraElementen", _("As extraElementen")
+
+
 class MappingSerializer(serializers.Serializer):
     form_variable = serializers.CharField(
         help_text=_("The name of the form variable to be mapped")
@@ -37,6 +44,37 @@ class MappingSerializer(serializers.Serializer):
         help_text=_("The name in StUF-ZDS to which the form variable should be mapped"),
         label=_("StUF-ZDS name"),
     )
+
+
+class RegistrationMappingSerializer(serializers.Serializer):
+    variable_key = FormioVariableKeyField(
+        label=_("variable"),
+        help_text=_(
+            "The 'dotted' path to a form variable key that should be used to get the data "
+            "that will be sent to StUF-ZDS."
+        ),
+    )
+    register_as = serializers.ChoiceField(
+        choices=RegisterAsTypes.choices,
+        default=RegisterAsTypes.extraElementen,
+        help_text=_(
+            "The type of registration of the data in StUF-ZDS. This can be as zaakbetrokkene"
+            "or as extraElementen. By default extraElementen will be used."
+        ),
+    )
+    description = serializers.CharField(
+        required=False,
+        help_text=_(
+            "The description of the data added. By default the value is taken from the variable's key."
+        ),
+    )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        if not attrs.get("description"):
+            attrs["description"] = attrs["variable_key"]
+        return attrs
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -87,6 +125,11 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "that is sent to StUF-ZDS. Those keys and the values belonging to them in "
             "the submission data are included in extraElementen."
         ),
+        required=False,
+    )
+    variables_mapping = RegistrationMappingSerializer(
+        label=_("variables mapping"),
+        many=True,
         required=False,
     )
 

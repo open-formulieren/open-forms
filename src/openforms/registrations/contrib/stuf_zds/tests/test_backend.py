@@ -3465,3 +3465,208 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
                     value,
                 )
+
+
+class StufZDSPluginVariablesMappingVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+            "variables_mapping": [
+                {
+                    "variable_key": "partners",
+                    "register_as": "zaakbetrokkene",
+                    "description": "some text",
+                }
+            ],
+        }
+
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={
+                "partners": [
+                    {
+                        "bsn": "999970136",
+                        "affixes": "",
+                        "initials": "P.",
+                        "lastName": "Pauw",
+                        "firstNames": "Pia",
+                        "dateOfBirth": "1989-04-01",
+                        "dateOfBirthPrecision": "date",
+                    }
+                ],
+            },
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+
+    def test_create_zaak_with_partners_as_betrokkene(self):
+        self.plugin.register_submission(self.submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "999970136",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Pia",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "P.",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Pauw",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "1989-04-01",
+            },
+        )
+
+    def test_create_zaak_with_partners_as_extraElementen(self):
+        self.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+            "variables_mapping": [
+                {
+                    "variable_key": "partners",
+                    "register_as": "extraElementen",
+                    "description": "some text",
+                }
+            ],
+        }
+
+        self.plugin.register_submission(self.submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='bsn']": "999970136",
+                "//stuf:extraElementen/stuf:extraElement[@naam='voornamen']": "Pia",
+                "//stuf:extraElementen/stuf:extraElement[@naam='voorletters']": "P.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='geslachtsnaam']": "Pauw",
+                "//stuf:extraElementen/stuf:extraElement[@naam='geboortedatum']": "1989-04-01",
+                "//stuf:extraElementen/stuf:extraElement[@naam='omschrijving']": "some text",
+            },
+        )
+
+    def test_create_zaak_with_no_variables_mapping(self):
+        options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+            "variables_mapping": [],
+        }
+
+        self.plugin.register_submission(self.submission, options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+
+    def test_create_zaak_with_no_partners(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={},
+            language_code="en",
+            public_registration_reference="cba123",
+            registration_result={"zaak": "4321"},
+        )
+
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+
+    def test_create_zaak_with_no_variable(self):
+        submission = SubmissionFactory.from_components(
+            [],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={},
+            language_code="en",
+            public_registration_reference="bgh123",
+            registration_result={"zaak": "8979"},
+        )
+
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+
+    def test_create_zaak_with_partners_not_a_list(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            bsn="111222333",
+            submitted_data={"partners": "invalid"},
+            language_code="en",
+            public_registration_reference="cba123",
+            registration_result={"zaak": "4321"},
+        )
+
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[0]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )

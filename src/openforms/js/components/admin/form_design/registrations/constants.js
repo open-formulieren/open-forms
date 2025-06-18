@@ -1,0 +1,1 @@
+export const FORM_COMPONENTS_CONFIGURABLE_FROM_VARIABLES = ['partners'];

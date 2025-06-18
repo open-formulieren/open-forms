@@ -6,6 +6,12 @@ class MappingItem(TypedDict):
     stuf_name: str
 
 
+class VariablesMapping(TypedDict):
+    variable_key: str
+    register_as: Literal["zaakbetrokkene", "extraElementen"]
+    description: NotRequired[str]
+
+
 class RegistrationOptions(TypedDict):
     zds_zaaktype_code: str
     zds_zaaktype_omschrijving: NotRequired[str]
@@ -23,3 +29,4 @@ class RegistrationOptions(TypedDict):
         "OPENBAAR",
     ]
     payment_status_update_mapping: NotRequired[list[MappingItem]]
+    variables_mapping: NotRequired[list[VariablesMapping]]

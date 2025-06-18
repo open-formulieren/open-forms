@@ -5,6 +5,9 @@ from typing import Any, Callable, Mapping
 from glom import Assign, glom
 
 from openforms.submissions.models import Submission
+from openforms.submissions.models.submission_value_variable import (
+    SubmissionValueVariablesState,
+)
 
 NOT_SET = object()
 SKIP = object()
@@ -134,6 +137,7 @@ def get_unmapped_data(
     submission,
     mapping_config: Mapping[str, str | FieldConf],
     component_attribute: str,
+    state: SubmissionValueVariablesState,
 ):
     """
     companion to apply_data_mapping() returns data not mapped to RegistrationAttributes
@@ -143,13 +147,32 @@ def get_unmapped_data(
     attr_key_lookup = dict()
 
     for component in submission.form.iter_components(recursive=True):
-        key = component.get("key")
+        component_key = component.get("key")
+        component_type = component.get("type")
+
+        submission_variables = state.variables
+
+        # we are dealing with the family members prefill plugin in a different place so
+        # we do not want to handle it as it's unmapped data
+
+        # remove the data that is coming from the 'immutable' user defined variables
+        for var_key, var in submission_variables.items():
+            if (
+                var.form_variable.source == "user_defined"
+                and var.form_variable.prefill_plugin == "family_members"
+            ):
+                data.pop(var_key)
+
+        # remove the data that is coming from the partners component
+        if component_key in data and component_type == "partners":
+            data.pop(component_key)
+
         attribute = glom(component, component_attribute, default=None)
-        if key and attribute:
+        if component_key and attribute:
             # NOTE we could delete from data here, BUT
             #  it would also remove fields that have the attribute but
             #  aren't setup in the actual mapping structure
-            attr_key_lookup[attribute] = key
+            attr_key_lookup[attribute] = component_key
 
     for conf in mapping_config.values():
         if isinstance(conf, str):
