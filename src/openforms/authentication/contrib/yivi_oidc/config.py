@@ -27,12 +27,24 @@ class YiviOptions(TypedDict):
 
 class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     authentication_options = serializers.ListField(
-        child=serializers.ChoiceField(choices=YiviAuthenticationAttributes.choices),
+        child=serializers.ChoiceField(
+            # TODO use all YiviAuthenticationAttributes choices, when optional attributes
+            # work: https://github.com/open-formulieren/open-forms/pull/5363#issuecomment-2983336804
+            choices=[
+                (
+                    YiviAuthenticationAttributes.bsn.value,
+                    YiviAuthenticationAttributes.bsn.label,
+                ),
+                (
+                    YiviAuthenticationAttributes.kvk.value,
+                    YiviAuthenticationAttributes.kvk.label,
+                ),
+            ]
+        ),
         label=_("Authentication options"),
         help_text=_(
-            "Authentication options that can be used by end-users. The pseudo option "
-            "makes this field optional. If left empty, a pseudo value will be used as "
-            "identifier."
+            "Authentication options that can be used by end-users. If left empty, a "
+            "pseudo value will be used as identifier."
         ),
         default=[],
         required=False,
@@ -41,10 +53,7 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     additional_attributes_groups = serializers.ListField(
         child=serializers.ChoiceField(choices=[]),  # Choices are dynamically defined
         label=_("Additional attributes groups"),
-        help_text=_(
-            "Additional attributes groups to use for authentication. The end-user can "
-            "choice per group whether they provide these attributes or not."
-        ),
+        help_text=_("Additional attributes groups to use for authentication."),
         default=[],
         required=False,
         allow_empty=True,

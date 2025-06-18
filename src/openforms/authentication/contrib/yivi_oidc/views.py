@@ -156,7 +156,9 @@ class OIDCAuthenticationInitView(_OIDCInit):
             # documentation: https://irma.app/docs/condiscon/#other-features
             condiscon_items.append(
                 [
-                    [],  # By adding a "empty" choice, this attribute becomes optional.
+                    # TODO un-comment the empty array, when optional attributes work:
+                    # https://github.com/open-formulieren/open-forms/pull/5363#issuecomment-2983336804
+                    # [],  # By adding a "empty" choice, this attribute becomes optional.
                     attributes_group.attributes,
                 ]
             )
