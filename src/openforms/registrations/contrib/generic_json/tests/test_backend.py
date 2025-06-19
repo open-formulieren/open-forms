@@ -1578,6 +1578,90 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 result["api_response"]["data"]["values_schema"], expected_schema
             )
 
+    def test_partners_components_schema(self):
+        submission = SubmissionFactory.from_components(
+            [{"key": "partners", "type": "partners"}],
+            completed=True,
+            submitted_data={
+                "partners": [
+                    {
+                        "bsn": "999970136",
+                        "affixes": "",
+                        "initials": "P.",
+                        "lastName": "Pauw",
+                        "firstNames": "Pia",
+                        "dateOfBirth": "1989-04-01",
+                        "dateOfBirthPrecision": "date",
+                    }
+                ]
+            },
+            bsn="123456789",
+            with_public_registration_reference=True,
+        )
+
+        options: GenericJSONOptions = {
+            "service": self.json_dump_service,
+            "path": "json_plugin",
+            "variables": ["partners"],
+            "fixed_metadata_variables": [],
+            "additional_metadata_variables": [],
+            "transform_to_list": [],
+        }
+        json_plugin = GenericJSONRegistration("json_registration_plugin")
+
+        expected_values = {
+            "partners": [
+                {
+                    "bsn": "999970136",
+                    "affixes": "",
+                    "initials": "P.",
+                    "lastName": "Pauw",
+                    "firstNames": "Pia",
+                    "dateOfBirth": "1989-04-01",
+                    "dateOfBirthPrecision": "date",
+                }
+            ]
+        }
+        expected_schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "additionalProperties": False,
+            "properties": {
+                "partners": {
+                    "items": {
+                        "additionalProperties": False,
+                        "properties": {
+                            "affixes": {"type": "string"},
+                            "bsn": {
+                                "format": "nl-bsn",
+                                "pattern": "^\\d{9}$",
+                                "type": "string",
+                            },
+                            "dateOfBirth": {"format": "date", "type": "string"},
+                            "initials": {"type": "string"},
+                            "lastName": {"type": "string"},
+                        },
+                        "required": ["bsn"],
+                        "type": "object",
+                    },
+                    "title": "Partners",
+                    "type": "array",
+                }
+            },
+            "required": ["partners"],
+            "type": "object",
+        }
+
+        result = json_plugin.register_submission(submission, options)
+        assert result is not None
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"], expected_schema
+            )
+
 
 class GenericJSONRequestTests(TestCase):
     def test_data_is_encoded_to_json_once(self):
