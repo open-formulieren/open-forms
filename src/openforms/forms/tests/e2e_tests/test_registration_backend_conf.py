@@ -43,20 +43,14 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
             zgw_api_1 = ZGWApiGroupConfigFactory.create(
                 name="Group 1",
                 zrc_service__api_root="https://zaken-1.nl/api/v1/",
-                zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
                 drc_service__api_root="https://documenten-1.nl/api/v1/",
-                drc_service__oas="https://documenten-1.nl/api/v1/schema/openapi.yaml",
                 ztc_service__api_root="https://catalogus-1.nl/api/v1/",
-                ztc_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
             )
             zgw_api_2 = ZGWApiGroupConfigFactory.create(
                 name="Group 2",
                 zrc_service__api_root="https://zaken-2.nl/api/v1/",
-                zrc_service__oas="https://zaken-2.nl/api/v1/schema/openapi.yaml",
                 drc_service__api_root="https://documenten-2.nl/api/v1/",
-                drc_service__oas="https://documenten-2.nl/api/v1/schema/openapi.yaml",
                 ztc_service__api_root="https://catalogus-2.nl/api/v1/",
-                ztc_service__oas="https://catalogus-2.nl/api/v1/schema/openapi.yaml",
             )
             form = FormFactory.create(
                 name="Configure registration test",
