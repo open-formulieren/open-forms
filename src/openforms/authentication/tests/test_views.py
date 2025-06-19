@@ -65,24 +65,28 @@ class AuthenticationFlowTests(APITestCase):
 
         with self.subTest("start ok"):
             request = factory.get(url, {"next": next_url})
+            request.session = {}
             response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"start")
             self.assertEqual(response.status_code, 200)
 
         with self.subTest("start missing next"):
             request = factory.get(url)
+            request.session = {}
             response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"missing 'next' parameter")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad plugin"):
             request = factory.get(url, {"next": next_url})
+            request.session = {}
             response = start_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad redirect"):
             request = factory.get(url, {"next": bad_url})
+            request.session = {}
             response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"redirect not allowed")
             self.assertEqual(response.status_code, 400)
@@ -94,12 +98,14 @@ class AuthenticationFlowTests(APITestCase):
 
         with self.subTest("return ok"):
             request = factory.get(url, {"next": next_url})
+            request.session = {}
             response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
         with self.subTest("return bad method"):
             request = factory.post(f"{url}?next={next_url}")
+            request.session = {}
             response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 405)
@@ -107,12 +113,14 @@ class AuthenticationFlowTests(APITestCase):
 
         with self.subTest("return bad plugin"):
             request = factory.get(url, {"next": next_url})
+            request.session = {}
             response = return_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("return bad redirect"):
             request = factory.get(url, {"next": bad_url})
+            request.session = {}
             response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"redirect not allowed")
             self.assertEqual(response.status_code, 400)

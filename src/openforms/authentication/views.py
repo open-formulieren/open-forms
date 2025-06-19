@@ -24,7 +24,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 
 from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
-from openforms.forms.models import Form
+from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.cosigning import CosignData
 from openforms.submissions.models import Submission
@@ -34,6 +34,7 @@ from openforms.utils.redirect import allow_redirect_url
 from .base import BasePlugin
 from .constants import (
     CO_SIGN_PARAMETER,
+    FORM_AUTH_BACKEND_SESSION_KEY,
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
@@ -209,7 +210,20 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
             logger.info("authentication.call_plugin")
             try:
-                response = plugin.start_login(request, form, form_url)
+                authentication_backend = FormAuthenticationBackend.objects.get(
+                    form=form, backend=plugin.identifier
+                )
+                request.session[FORM_AUTH_BACKEND_SESSION_KEY] = str(
+                    authentication_backend.id
+                )
+                response = plugin.start_login(
+                    request,
+                    form,
+                    form_url,
+                    authentication_backend.options or {},
+                )
+            except FormAuthenticationBackend.DoesNotExist:
+                return HttpResponseBadRequest("unknown authentication backend")
             except Exception as exc:
                 logger.exception("authentication.start_failure", exc_info=exc)
                 # append failure parameter and return to form
@@ -342,7 +356,17 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 return HttpResponseBadRequest("plugin returned invalid data")
             except InvalidCoSignData as exc:
                 return HttpResponseBadRequest(exc.args[0])
-            response = plugin.handle_return(request, form)
+            try:
+                authentication_backend = FormAuthenticationBackend.objects.get(
+                    form=form, backend=plugin.identifier
+                )
+                response = plugin.handle_return(
+                    request,
+                    form,
+                    authentication_backend.options or {},
+                )
+            except FormAuthenticationBackend.DoesNotExist:
+                return HttpResponseBadRequest("unknown authentication backend")
 
             if response.status_code in (301, 302):
                 location = response.get("Location", "")
