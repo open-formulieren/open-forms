@@ -96,3 +96,79 @@ class EmployeeContext(TypedDict):
     source: Literal["custom"]
     levelOfAssurance: Literal["unknown"]
     authorizee: EmployeeAuthorizee
+
+
+class YiviPseudoLegalSubject(TypedDict):
+    identifierType: Literal["pseudo"]
+    identifier: str
+    additionalInformation: dict  # For the additional scoped claims
+
+
+class YiviKVKLegalSubject(TypedDict):
+    identifierType: Literal["kvk"]
+    identifier: str
+    additionalInformation: dict  # For the additional scoped claims
+
+
+class YiviBSNLegalSubject(TypedDict):
+    identifierType: Literal["bsn"]
+    identifier: str
+    additionalInformation: dict  # For the additional scoped claims
+
+
+class YiviAuthorizee(TypedDict):
+    legalSubject: YiviKVKLegalSubject | YiviBSNLegalSubject | YiviPseudoLegalSubject
+
+
+# This type definition is highly experimental, and will most definitely change
+class YiviContext(TypedDict):
+    source: Literal["yivi"]
+    # The levelOfAssurance changes based on the used configured auth attribute
+    levelOfAssurance: NotRequired[
+        Literal[
+            "urn:etoegang:core:assurance-class:loa1",
+            "urn:etoegang:core:assurance-class:loa2",
+            "urn:etoegang:core:assurance-class:loa2plus",
+            "urn:etoegang:core:assurance-class:loa3",
+            "urn:etoegang:core:assurance-class:loa4",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+        ]
+    ]
+    authorizee: YiviAuthorizee
+
+
+class EIDASNaturalPersonSubject(TypedDict):
+    identifierType: Literal["bsn", "national id", "opaque"]
+    identifier: str
+    firstName: str
+    familyName: str
+    dateOfBirth: str
+
+
+class EIDASCompanySubject(TypedDict):
+    identifierType: Literal["kvk", "rsin", "vat", "lei", "eori", "ntr", "opaque"]
+    identifier: str
+    companyName: str
+
+
+class EIDASNaturalPersonAuthorizee(TypedDict):
+    legalSubject: EIDASNaturalPersonSubject
+
+
+class EIDASCompanyAuthorizee(TypedDict):
+    legalSubject: EIDASCompanySubject
+    actingSubject: EIDASNaturalPersonSubject
+
+
+class EIDASContext(TypedDict):
+    source: Literal["eidas"]
+    levelOfAssurance: Literal[
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+    ]
+    authorizee: EIDASNaturalPersonAuthorizee | EIDASCompanyAuthorizee
