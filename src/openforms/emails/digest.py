@@ -36,6 +36,11 @@ from openforms.forms.models.form_registration_backend import FormRegistrationBac
 from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.contrib.family_members.service import (
+    check_hc_config_for_partners,
+    check_unmatched_variables,
+)
+from openforms.prefill.contrib.stufbg.service import check_stufbg_config_for_partners
 from openforms.registrations.registry import register
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
@@ -266,21 +271,23 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
 def collect_broken_configurations() -> list[BrokenConfiguration]:
     check_brk_configuration = check_brk_config_for_addressNL()
     check_bag_configuration = check_bag_config_for_address_fields()
+    check_hc_configuration = check_hc_config_for_partners()
+    check_stufbg_configuration = check_stufbg_config_for_partners()
+    check_variables_configuration = check_unmatched_variables()
 
-    broken_configurations = []
-    if check_brk_configuration:
-        broken_configurations.append(
-            BrokenConfiguration(
-                config_name=_("BRK Client"), exception_message=check_brk_configuration
-            )
-        )
+    configurations = {
+        _("BRK Client"): check_brk_configuration,
+        _("BAG Client"): check_bag_configuration,
+        _("Haal centraal Client"): check_hc_configuration,
+        _("StUF-BG Client"): check_stufbg_configuration,
+        _("User defined Variables"): check_variables_configuration,
+    }
 
-    if check_bag_configuration:
-        broken_configurations.append(
-            BrokenConfiguration(
-                config_name=_("BAG Client"), exception_message=check_bag_configuration
-            )
-        )
+    broken_configurations = [
+        BrokenConfiguration(config_name=name, exception_message=message)
+        for name, message in configurations.items()
+        if message
+    ]
 
     return broken_configurations
 

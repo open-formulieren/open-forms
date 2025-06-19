@@ -12,8 +12,12 @@ from rest_framework import serializers
 from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.config.constants import FamilyMembersDataAPIChoices
+from openforms.config.models import GlobalConfiguration
 from openforms.contrib.brk.models import BRKConfig
 from openforms.contrib.brk.tests.base import BRK_SERVICE, INVALID_BRK_SERVICE
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -31,8 +35,10 @@ from openforms.registrations.registry import register as register_register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableDataTypes
 from stuf.stuf_bg.client import NoServiceConfigured
+from stuf.stuf_bg.models import StufBGConfig
 
 from ..digest import (
     InvalidLogicRule,
@@ -613,6 +619,337 @@ class BrokenConfigurationTests(TestCase):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(len(broken_configuration), 0)
+
+    @patch(
+        "stuf.stuf_bg.client.StufBGConfig.get_solo",
+        return_value=StufBGConfig(service=None),
+    )
+    @patch(
+        "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
+        ),
+    )
+    def test_partners_with_no_stufbg_service_collected(self, m, n):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "partners",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertEqual(broken_configuration[0].config_name, "StUF-BG Client")
+
+    @patch(
+        "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(family_members_data_api=""),
+    )
+    def test_partners_and_no_client_for_partners_configured_not_collected(self, m):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "partners",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    def test_no_partners_component_with_immutable_variable_collected(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                    }
+                ],
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration[0].config_name, "User defined Variables")
+
+    @patch(
+        "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
+        ),
+    )
+    def test_stufbg_partners_component_without_immutable_variable_not_collected(
+        self, m
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "Partners",
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    def test_partners_component_with_immutable_variable_not_collected(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "Partners",
+                    }
+                ],
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+
+@override_settings(LANGUAGE_CODE="en")
+class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
+    """This test case requires the HaalCentraal BRP API to be running.
+    See the relevant Docker compose in the ``docker/`` folder.
+
+    Note: please ensure that all patches to the test data have been applied. See the
+    README.md file of the relevant container.
+    """
+
+    VCR_TEST_FILES = TEST_FILES
+
+    def setUp(self):
+        super().setUp()
+
+        self.hc_config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        )
+        hc_config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=self.hc_config,
+        )
+        global_config = GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        )
+        global_config_patcher = patch(
+            "openforms.config.models.GlobalConfiguration.get_solo",
+            return_value=global_config,
+        )
+        hc_config_patcher.start()
+        global_config_patcher.start()
+        self.addCleanup(hc_config_patcher.stop)
+        self.addCleanup(global_config_patcher.stop)
+
+    def test_partners_with_no_hc_service_collected(self):
+        self.hc_config.brp_personen_service = None
+        self.hc_config.brp_personen_version = ""
+        self.hc_config.save()
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "partners",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertEqual(broken_configuration[0].config_name, "Haal centraal Client")
+
+    def test_partners_with_hc_and_immutable_variable_not_collected(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "partners",
+                    }
+                ],
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    def test_partners_with_hc_and_no_immutable_variable_not_collected(self):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "partners",
+                        "type": "partners",
+                        "label": "partners",
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
 
 
 @override_settings(LANGUAGE_CODE="en")

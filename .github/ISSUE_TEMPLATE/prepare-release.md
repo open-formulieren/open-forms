@@ -25,6 +25,9 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.kvk`
     - [ ] `openforms.contrib.objects_api.tests`
     - `suwinet.tests.test_client` (testenv access has been retracted and won't be reinstated)
+  - Family members
+    - [ ] `openforms.prefill.contrib.family_members.tests.test_plugin`
+    - [ ] `openforms.emails.tests.test_digest_functions`
   - Forms
     - [ ] `openforms.forms.tests.test_import_export`
     - [ ] `openforms.forms.tests.e2e_tests.test_registration_backend_conf`
@@ -32,7 +35,6 @@ assignees: sergei-maertens
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
   - Prefill
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
-    - [ ] Family members: `openforms.prefill.contrib.family_members.tests.test_plugin`
     - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
           be reinstated)
   - ReferenceLists:
