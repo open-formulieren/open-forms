@@ -26,6 +26,7 @@ from rest_framework.reverse import reverse
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
 )
 from openforms.accounts.tests.factories import StaffUserFactory
@@ -489,249 +490,315 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
+    @mock_get_random_string()
+    def test_failing_claim_verification(self):
+        make_client(
+            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.representee_bsn_claim_path": [
+                    "absent-claim"
+                ],
+                "options.identity_settings.authorizee_bsn_claim_path": ["absent-claim"],
+            },
+        )
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        start_response = self.app.get(start_url)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="digid-machtigen",
+            password="digid-machtigen",
+        )
 
-#     @mock_digid_machtigen_config(
-#         representee_bsn_claim=["absent-claim"],
-#         authorizee_bsn_claim=["absent-claim"],
-#     )
-#     def test_failing_claim_verification(self):
-#         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
-#         start_response = self.app.get(start_url)
-#         # simulate login to Keycloak
-#         redirect_uri = keycloak_login(
-#             start_response["Location"],
-#             username="digid-machtigen",
-#             password="digid-machtigen",
-#         )
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
 
-#         # complete the login flow on our end
-#         callback_response = self.app.get(redirect_uri, auto_follow=True)
+        # XXX: shouldn't this be "digid" so that the correct error message is rendered?
+        # Query: ?_digid-message=error
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "digid_machtigen_oidc"}
+        )
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
 
-#         # XXX: shouldn't this be "digid" so that the correct error message is rendered?
-#         # Query: ?_digid-message=error
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {BACKEND_OUTAGE_RESPONSE_PARAMETER: "digid_machtigen_oidc"}
-#         )
-#         self.assertEqual(callback_response.request.url, str(expected_url))
-#         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
+    @mock_get_random_string()
+    def test_failing_claim_verification_strict_mode(self):
+        make_client(
+            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.mandate_service_id_claim_path": [
+                    "absent-claim"
+                ],
+            },
+        )
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        start_response = self.app.get(start_url)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="digid-machtigen",
+            password="digid-machtigen",
+        )
 
-#     @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
-#     @mock_digid_machtigen_config(mandate_service_id_claim=["absent-claim"])
-#     def test_failing_claim_verification_strict_mode(self):
-#         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
-#         start_response = self.app.get(start_url)
-#         # simulate login to Keycloak
-#         redirect_uri = keycloak_login(
-#             start_response["Location"],
-#             username="digid-machtigen",
-#             password="digid-machtigen",
-#         )
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
 
-#         # complete the login flow on our end
-#         callback_response = self.app.get(redirect_uri, auto_follow=True)
+        # XXX: shouldn't this be "digid" so that the correct error message is rendered?
+        # Query: ?_digid-message=error
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "digid_machtigen_oidc"}
+        )
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
 
-#         # XXX: shouldn't this be "digid" so that the correct error message is rendered?
-#         # Query: ?_digid-message=error
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {BACKEND_OUTAGE_RESPONSE_PARAMETER: "digid_machtigen_oidc"}
-#         )
-#         self.assertEqual(callback_response.request.url, str(expected_url))
-#         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+    @tag("gh-3656", "gh-3692")
+    @mock_get_random_string()
+    def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
+        make_client(
+            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "oidc_rp_scopes_list": ["badscope"],
+            },
+        )
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        # modify the error parameters - there doesn't seem to be an obvious way to trigger
+        # this via keycloak itself.
+        # Note: this is an example of a specific provider. It may differ when a
+        # different provider is used. According to
+        # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
+        # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
+        # error we expect from OIDC.
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
 
-#     @tag("gh-3656", "gh-3692")
-#     @mock_digid_machtigen_config(oidc_rp_scopes_list=["badscope"])
-#     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-#         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
-#         # initialize state, but don't actually log in - we have an invalid config and
-#         # keycloak redirects back to our callback URL with error parameters.
-#         start_response = self.app.get(start_url)
-#         auth_response = requests.get(start_response["Location"], allow_redirects=False)
-#         # check out assumptions/expectations before proceeding
-#         callback_url = furl(auth_response.headers["Location"])
-#         assert callback_url.netloc == "testserver"
-#         assert "state" in callback_url.args
-#         # modify the error parameters - there doesn't seem to be an obvious way to trigger
-#         # this via keycloak itself.
-#         # Note: this is an example of a specific provider. It may differ when a
-#         # different provider is used. According to
-#         # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
-#         # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
-#         # error we expect from OIDC.
-#         callback_url.args.update(
-#             {"error": "access_denied", "error_description": "The user cancelled"}
-#         )
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
 
-#         callback_response = self.app.get(str(callback_url), auto_follow=True)
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_digid-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
 
-#         self.assertEqual(callback_response.status_code, 200)
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {"_digid-message": "login-cancelled"}
-#         )
-#         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
-#         self.assertEqual(callback_response.request.url, str(expected_url))
+    @tag("gh-3656", "gh-3692")
+    @mock_get_random_string()
+    def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
+        make_client(
+            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "oidc_rp_scopes_list": ["badscope"],
+            },
+        )
+        self.app.set_user(StaffUserFactory.create())
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
 
-#     @tag("gh-3656", "gh-3692")
-#     @mock_digid_machtigen_config(oidc_rp_scopes_list=["badscope"])
-#     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
-#         self.app.set_user(StaffUserFactory.create())
-#         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
-#         # initialize state, but don't actually log in - we have an invalid config and
-#         # keycloak redirects back to our callback URL with error parameters.
-#         start_response = self.app.get(start_url)
-#         auth_response = requests.get(start_response["Location"], allow_redirects=False)
-#         # check out assumptions/expectations before proceeding
-#         callback_url = furl(auth_response.headers["Location"])
-#         assert callback_url.netloc == "testserver"
-#         assert "state" in callback_url.args
-#         callback_url.args.update(
-#             {"error": "access_denied", "error_description": "The user cancelled"}
-#         )
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
 
-#         callback_response = self.app.get(str(callback_url), auto_follow=True)
-
-#         self.assertEqual(callback_response.status_code, 200)
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {"_digid-message": "login-cancelled"}
-#         )
-#         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
-#         self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_digid-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-# class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
-#     """
-#     Test the return/callback side after authenticating with the identity provider.
-#     """
+class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
+    """
+    Test the return/callback side after authenticating with the identity provider.
+    """
 
-#     @mock_eherkenning_bewindvoering_config()
-#     def test_redirects_after_successful_auth(self):
-#         form = FormFactory.create(
-#             authentication_backend="eherkenning_bewindvoering_oidc"
-#         )
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(
-#             plugin_id="eherkenning_bewindvoering_oidc"
-#         )
-#         start_response = self.app.get(start_url)
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
 
-#         # simulate login to Keycloak
-#         redirect_uri = keycloak_login(
-#             start_response["Location"],
-#             username="eherkenning-bewindvoering",
-#             password="eherkenning-bewindvoering",
-#         )
+        cls.provider = OIDCProviderFactory.create(
+            identifier="keycloak-provider",
+            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
+            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
+            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
+            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
+            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
+        )
 
-#         # complete the login flow on our end
-#         callback_response = self.app.get(redirect_uri, auto_follow=True)
+    @mock_get_random_string()
+    def test_redirects_after_successful_auth(self):
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+        )
+        form = FormFactory.create(
+            authentication_backend="eherkenning_bewindvoering_oidc"
+        )
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="eherkenning_bewindvoering_oidc"
+        )
+        start_response = self.app.get(start_url)
 
-#         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eherkenning-bewindvoering",
+            password="eherkenning-bewindvoering",
+        )
 
-#     @mock_eherkenning_bewindvoering_config(
-#         legal_subject_claim=["absent-claim"],
-#         representee_claim=["absent-claim"],
-#     )
-#     def test_failing_claim_verification(self):
-#         form = FormFactory.create(
-#             authentication_backend="eherkenning_bewindvoering_oidc"
-#         )
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(
-#             plugin_id="eherkenning_bewindvoering_oidc"
-#         )
-#         start_response = self.app.get(start_url)
-#         # simulate login to Keycloak
-#         redirect_uri = keycloak_login(
-#             start_response["Location"],
-#             username="eherkenning-bewindvoering",
-#             password="eherkenning-bewindvoering",
-#         )
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
 
-#         # complete the login flow on our end
-#         callback_response = self.app.get(redirect_uri, auto_follow=True)
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-#         # XXX: shouldn't this be "eherkenning" so that the correct error message is rendered?
-#         # Query: ?_eherkenning-message=error
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {BACKEND_OUTAGE_RESPONSE_PARAMETER: "eherkenning_bewindvoering_oidc"}
-#         )
-#         self.assertEqual(callback_response.request.url, str(expected_url))
-#         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+    @mock_get_random_string()
+    def test_failing_claim_verification(self):
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.legal_subject_claim_path": ["absent-claim"],
+                "options.identity_settings.representee_claim_path": ["absent-claim"],
+            },
+        )
 
-#     @tag("gh-3656", "gh-3692")
-#     @mock_eherkenning_bewindvoering_config(oidc_rp_scopes_list=["badscope"])
-#     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
-#         form = FormFactory.create(
-#             authentication_backend="eherkenning_bewindvoering_oidc"
-#         )
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(
-#             plugin_id="eherkenning_bewindvoering_oidc"
-#         )
-#         # initialize state, but don't actually log in - we have an invalid config and
-#         # keycloak redirects back to our callback URL with error parameters.
-#         start_response = self.app.get(start_url)
-#         auth_response = requests.get(start_response["Location"], allow_redirects=False)
-#         # check out assumptions/expectations before proceeding
-#         callback_url = furl(auth_response.headers["Location"])
-#         assert callback_url.netloc == "testserver"
-#         assert "state" in callback_url.args
-#         # modify the error parameters - there doesn't seem to be an obvious way to trigger
-#         # this via keycloak itself.
-#         # Note: this is an example of a specific provider. It may differ when a
-#         # different provider is used. According to
-#         # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
-#         # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
-#         # error we expect from OIDC.
-#         callback_url.args.update(
-#             {"error": "access_denied", "error_description": "The user cancelled"}
-#         )
+        form = FormFactory.create(
+            authentication_backend="eherkenning_bewindvoering_oidc"
+        )
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="eherkenning_bewindvoering_oidc"
+        )
+        start_response = self.app.get(start_url)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eherkenning-bewindvoering",
+            password="eherkenning-bewindvoering",
+        )
 
-#         callback_response = self.app.get(str(callback_url), auto_follow=True)
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
 
-#         self.assertEqual(callback_response.status_code, 200)
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {"_eherkenning-message": "login-cancelled"}
-#         )
-#         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
-#         self.assertEqual(callback_response.request.url, str(expected_url))
+        # XXX: shouldn't this be "eherkenning" so that the correct error message is rendered?
+        # Query: ?_eherkenning-message=error
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "eherkenning_bewindvoering_oidc"}
+        )
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
 
-#     @tag("gh-3656", "gh-3692")
-#     @mock_eherkenning_bewindvoering_config(oidc_rp_scopes_list=["badscope"])
-#     def test_eherkenning_error_reported_for_cancelled_login_with_staff_django_user(
-#         self,
-#     ):
-#         self.app.set_user(StaffUserFactory.create())
-#         form = FormFactory.create(
-#             authentication_backend="eherkenning_bewindvoering_oidc"
-#         )
-#         url_helper = URLsHelper(form=form)
-#         start_url = url_helper.get_auth_start(
-#             plugin_id="eherkenning_bewindvoering_oidc"
-#         )
-#         # initialize state, but don't actually log in - we have an invalid config and
-#         # keycloak redirects back to our callback URL with error parameters.
-#         start_response = self.app.get(start_url)
-#         auth_response = requests.get(start_response["Location"], allow_redirects=False)
-#         # check out assumptions/expectations before proceeding
-#         callback_url = furl(auth_response.headers["Location"])
-#         assert callback_url.netloc == "testserver"
-#         assert "state" in callback_url.args
-#         callback_url.args.update(
-#             {"error": "access_denied", "error_description": "The user cancelled"}
-#         )
+    @tag("gh-3656", "gh-3692")
+    @mock_get_random_string()
+    def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "oidc_rp_scopes_list": ["badscope"],
+            },
+        )
+        form = FormFactory.create(
+            authentication_backend="eherkenning_bewindvoering_oidc"
+        )
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="eherkenning_bewindvoering_oidc"
+        )
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        # modify the error parameters - there doesn't seem to be an obvious way to trigger
+        # this via keycloak itself.
+        # Note: this is an example of a specific provider. It may differ when a
+        # different provider is used. According to
+        # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
+        # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
+        # error we expect from OIDC.
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
 
-#         callback_response = self.app.get(str(callback_url), auto_follow=True)
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
 
-#         self.assertEqual(callback_response.status_code, 200)
-#         expected_url = furl(url_helper.frontend_start).add(
-#             {"_eherkenning-message": "login-cancelled"}
-#         )
-#         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
-#         self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_eherkenning-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
+
+    @tag("gh-3656", "gh-3692")
+    @mock_get_random_string()
+    def test_eherkenning_error_reported_for_cancelled_login_with_staff_django_user(
+        self,
+    ):
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "oidc_rp_scopes_list": ["badscope"],
+            },
+        )
+        self.app.set_user(StaffUserFactory.create())
+        form = FormFactory.create(
+            authentication_backend="eherkenning_bewindvoering_oidc"
+        )
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="eherkenning_bewindvoering_oidc"
+        )
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
+
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_eherkenning-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
