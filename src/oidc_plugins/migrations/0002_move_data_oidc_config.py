@@ -67,7 +67,6 @@ def move_data_forward(apps, schema_editor):
         "authentication_org_oidc", "OrgOpenIDConnectConfig"
     )
 
-
     # Solo model, there should be only one
     digid_config_old = OFDigiDConfig.objects.first()
     if digid_config_old:
@@ -182,37 +181,21 @@ def move_data_backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        (
-            "oidc_plugins",
-            "0001_initial"
-        ),
+        ("oidc_plugins", "0001_initial"),
         (
             "mozilla_django_oidc_db",
             "0006_oidcprovider_oidcclient",
         ),
-        (
-            "digid_eherkenning_oidc",
-            "0001_initial"
-        ),
-        (
-            "authentication_org_oidc",
-            "0001_initial"
-        ),
-        
+        ("digid_eherkenning_oidc", "0001_initial"),
+        ("authentication_org_oidc", "0001_initial"),
     ]
     run_before = [
         (
             "digid_eherkenning_oidc_generics",
-            "0011_delete_digidconfig_delete_digidmachtigenconfig_and_more"
+            "0011_delete_digidconfig_delete_digidmachtigenconfig_and_more",
         ),
-        (
-            "mozilla_django_oidc_db",
-            "0008_delete_openidconnectconfig"
-        )
+        ("mozilla_django_oidc_db", "0008_delete_openidconnectconfig"),
     ]
 
-    operations = [
-        migrations.RunPython(move_data_forward, move_data_backwards)
-    ]
+    operations = [migrations.RunPython(move_data_forward, move_data_backwards)]

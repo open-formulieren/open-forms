@@ -4,23 +4,22 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('digid_eherkenning_oidc', '0001_initial'),
-        ('oidc_plugins', '0002_move_data_oidc_config'),
+        ("digid_eherkenning_oidc", "0001_initial"),
+        ("oidc_plugins", "0002_move_data_oidc_config"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='OFDigiDConfig',
+            name="OFDigiDConfig",
         ),
         migrations.DeleteModel(
-            name='OFDigiDMachtigenConfig',
+            name="OFDigiDMachtigenConfig",
         ),
         migrations.DeleteModel(
-            name='OFEHerkenningBewindvoeringConfig',
+            name="OFEHerkenningBewindvoeringConfig",
         ),
         migrations.DeleteModel(
-            name='OFEHerkenningConfig',
+            name="OFEHerkenningConfig",
         ),
     ]
