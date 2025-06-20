@@ -3,13 +3,11 @@ from django.http import HttpRequest, HttpResponseRedirect
 
 from furl import furl
 from mozilla_django_oidc_db.config import lookup_config
-from mozilla_django_oidc_db.registry import register as registry
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
 
-from openforms.authentication.contrib.digid.views import GENERIC_LOGIN_ERROR
 from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
     OIDCAuthentication,
 )

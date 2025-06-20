@@ -30,6 +30,7 @@ class OIDCAuthentication(BasePlugin):
 
     verbose_name = _("Organization via OpenID Connect")
     provides_auth = AuthAttribute.employee_id
+    oidc_plugin_identifier = OIDC_ORG_IDENTIFIER
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
         return_url = reverse_plus(

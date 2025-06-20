@@ -179,30 +179,6 @@
                 "configcertificate"
             ],
             [
-                "digid_eherkenning",
-                "digidconfiguration"
-            ],
-            [
-                "digid_eherkenning",
-                "eherkenningconfiguration"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofdigidconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofdigidmachtigenconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningbewindvoeringconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningconfig"
-            ],
-            [
                 "django_camunda",
                 "camundaconfig"
             ],

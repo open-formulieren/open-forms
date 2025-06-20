@@ -15,7 +15,6 @@ from mozilla_django_oidc_db.schemas import ADMIN_OPTIONS_SCHEMA
 from mozilla_django_oidc_db.typing import JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
-
 from openforms.authentication.contrib.org_oidc.views import callback_view
 
 from .constants import (
@@ -359,5 +358,20 @@ class OIDCOrgPlugin(OIDCAdminPlugin):
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
         return callback_view(request)
 
-    def _get_legacy_callback(self, error: str, error_description: str) -> str:
+    def _get_legacy_callback(self) -> str:
         return "org-oidc-callback"
+
+    def get_setting(self, attr: str, *args) -> Any:
+        attr_lower = attr.lower()
+
+        if attr_lower == "oidc_authentication_callback_url":
+            if settings.USE_LEGACY_ORG_OIDC_ENDPOINTS:
+                warnings.warn(
+                    "Legacy OIDC callback endpoints will be removed in 4.0",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                return self._get_legacy_callback()
+            return "oidc_authentication_callback"
+
+        return super().get_setting(attr, *args)
