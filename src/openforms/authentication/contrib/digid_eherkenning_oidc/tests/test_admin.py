@@ -8,16 +8,17 @@ from django.utils.translation import gettext
 from django_jsonform.models.fields import JSONField
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
+from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.tests.factories import (
     OIDCProviderFactory,
 )
-from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 
 from oidc_plugins.constants import OIDC_DIGID_IDENTIFIER
 from openforms.accounts.tests.factories import SuperUserFactory
-from .base import make_client
 from openforms.forms.tests.factories import FormFactory
+
+from .base import make_client
 
 
 # disable django solo cache to prevent test isolation breakage

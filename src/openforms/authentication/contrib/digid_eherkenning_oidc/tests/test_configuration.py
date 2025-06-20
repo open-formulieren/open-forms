@@ -1,14 +1,14 @@
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from mozilla_django_oidc_db.registry import register as registry
+
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
 )
-
-from mozilla_django_oidc_db.registry import register as registry
 
 
 class CallbackURLConfigurationTests(TestCase):

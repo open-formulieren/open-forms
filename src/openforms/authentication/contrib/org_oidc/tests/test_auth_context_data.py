@@ -29,7 +29,7 @@ from openforms.utils.tests.keycloak import (
     mock_get_random_string,
 )
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 class PerformLoginMixin:

@@ -17,7 +17,6 @@ import requests
 from furl import furl
 from rest_framework.reverse import reverse
 
-
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,

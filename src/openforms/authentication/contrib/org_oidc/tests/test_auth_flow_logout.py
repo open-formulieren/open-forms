@@ -33,7 +33,7 @@ from openforms.utils.tests.keycloak import (
 )
 
 from ..plugin import PLUGIN_IDENTIFIER
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")
