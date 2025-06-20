@@ -17,7 +17,6 @@ from furl import furl
 from mozilla_django_oidc_db.tests.factories import (
     OIDCProviderFactory,
 )
-from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL
 
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -28,7 +27,11 @@ from oidc_plugins.constants import (
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import KeycloakProviderMixin, mock_get_random_string
+from openforms.utils.tests.keycloak import (
+    KEYCLOAK_BASE_URL,
+    KeycloakProviderMixin,
+    mock_get_random_string,
+)
 
 from .base import (
     IntegrationTestsBase,

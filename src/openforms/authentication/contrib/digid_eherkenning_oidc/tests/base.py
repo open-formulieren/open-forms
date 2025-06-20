@@ -1,19 +1,20 @@
 from pathlib import Path
 
 from django.test import override_settings
-from glom import assign
+
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from django_webtest import WebTest
-from digid_eherkenning.choices import DigiDAssuranceLevels, AssuranceLevels
-from mozilla_django_oidc_db.models import OIDCClient, OIDCProvider
+from glom import assign
 from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
+from mozilla_django_oidc_db.models import OIDCClient, OIDCProvider
 
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_ORG_IDENTIFIER,
 )
-
 from openforms.typing import JSONObject
 from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -150,13 +151,33 @@ CLIENT_DEFAULT_OPTIONS = {
             "mandate_service_uuid_claim_path": ["service_uuid"],
         },
     },
+    OIDC_ORG_IDENTIFIER: {
+        "user_settings": {
+            "claim_mappings": {
+                "username": ["preferred_username"],
+                "email": ["email"],
+                "employee_id": ["employeeId"],
+            },
+            "username_case_sensitive": True,
+            "sensitive_claims": [],
+        },
+        "groups_settings": {
+            "claim_mapping": ["groups"],
+            "sync": True,
+            "sync_pattern": "*",
+            "make_users_staff": False,
+            "superuser_group_names": [],
+            "default_groups": [],
+        },
+    },
 }
 CLIENT_DEFAULT_SCOPES = {
     OIDC_DIGID_IDENTIFIER: ["openid", "bsn"],
     OIDC_DIGID_MACHTIGEN_IDENTIFIER: ["openid", "bsn"],
     OIDC_EH_IDENTIFIER: ["openid", "kvk"],
     OIDC_EH_BEWINDVOERING_IDENTIFIER: ["openid", "bsn"],
-    OIDC_ADMIN_CONFIG_IDENTIFIER: ["email", "profile"],
+    OIDC_ADMIN_CONFIG_IDENTIFIER: ["email", "profile", "openid"],
+    OIDC_ORG_IDENTIFIER: ["openid", "email", "profile", "employeeId"],
 }
 
 

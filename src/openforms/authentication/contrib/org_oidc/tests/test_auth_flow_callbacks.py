@@ -32,7 +32,7 @@ from openforms.utils.tests.keycloak import (
 )
 from openforms.utils.urls import reverse_plus
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")

@@ -15,10 +15,10 @@ from django.contrib.auth import get_user
 from django.urls import reverse, reverse_lazy
 
 from furl import furl
-from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL
 from mozilla_django_oidc_db.tests.factories import (
     OIDCProviderFactory,
 )
+
 from oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.contrib.digid_eherkenning_oidc.tests.base import (
@@ -27,9 +27,13 @@ from openforms.authentication.contrib.digid_eherkenning_oidc.tests.base import (
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import KeycloakProviderMixin, mock_get_random_string
+from openforms.utils.tests.keycloak import (
+    KEYCLOAK_BASE_URL,
+    KeycloakProviderMixin,
+    mock_get_random_string,
+)
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 class OrgOIDCInitTests(KeycloakProviderMixin, IntegrationTestsBase):

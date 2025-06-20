@@ -13,6 +13,9 @@ from unittest.mock import patch
 
 from django.apps import apps
 
+from mozilla_django_oidc_db.tests.factories import (
+    OIDCProviderFactory,
+)
 from pyquery import PyQuery as pq
 from requests import Session
 
@@ -110,3 +113,18 @@ def mock_get_random_string():
         return_value="not-a-random-string",
     ):
         yield
+
+
+class KeycloakProviderMixin:
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.provider = OIDCProviderFactory.create(
+            identifier="keycloak-provider",
+            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
+            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
+            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
+            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
+            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
+        )
