@@ -5,6 +5,17 @@ SUBMISSIONS_SESSION_KEY = "form-submissions"
 
 IMAGE_COMPONENTS = ["signature"]
 
+NESTED_COMPONENT_MAPPINGS = {
+    "initiator_partners": {
+        "bsn": "betrokkeneIdentificatie.inpBsn",
+        "affixes": "betrokkeneIdentificatie.voorvoegselGeslachtsnaam",
+        "initials": "betrokkeneIdentificatie.voorletters",
+        "lastName": "betrokkeneIdentificatie.geslachtsnaam",
+        "firstNames": "betrokkeneIdentificatie.voornamen",
+        "dateOfBirth": "betrokkeneIdentificatie.geboortedatum",
+    }
+}
+
 
 class RegistrationStatuses(models.TextChoices):
     pending = "pending", _("Pending (not registered yet)")
