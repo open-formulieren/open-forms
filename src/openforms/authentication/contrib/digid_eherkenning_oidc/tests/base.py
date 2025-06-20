@@ -5,6 +5,7 @@ from glom import assign
 from django_webtest import WebTest
 from digid_eherkenning.choices import DigiDAssuranceLevels, AssuranceLevels
 from mozilla_django_oidc_db.models import OIDCClient, OIDCProvider
+from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -12,6 +13,7 @@ from oidc_plugins.constants import (
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
 )
+
 from openforms.typing import JSONObject
 from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -79,6 +81,26 @@ class IntegrationTestsBase(OFVCRMixin, WebTest):
 
 
 CLIENT_DEFAULT_OPTIONS = {
+    OIDC_ADMIN_CONFIG_IDENTIFIER: {
+        "user_settings": {
+            "claim_mappings": {
+                "username": ["sub"],
+                "first_name": [],
+                "last_name": [],
+                "email": [],
+            },
+            "username_case_sensitive": True,
+            "sensitive_claims": [],
+        },
+        "groups_settings": {
+            "claim_mapping": ["groups"],
+            "sync": True,
+            "sync_pattern": "*",
+            "make_users_staff": False,
+            "superuser_group_names": [],
+            "default_groups": [],
+        },
+    },
     OIDC_DIGID_IDENTIFIER: {
         "loa_settings": {
             "claim_path": ["authsp_level"],
@@ -133,7 +155,8 @@ CLIENT_DEFAULT_SCOPES = {
     OIDC_DIGID_IDENTIFIER: ["openid", "bsn"],
     OIDC_DIGID_MACHTIGEN_IDENTIFIER: ["openid", "bsn"],
     OIDC_EH_IDENTIFIER: ["openid", "kvk"],
-    OIDC_EH_BEWINDVOERING_IDENTIFIER: ["openid", "kvk"],
+    OIDC_EH_BEWINDVOERING_IDENTIFIER: ["openid", "bsn"],
+    OIDC_ADMIN_CONFIG_IDENTIFIER: ["email", "profile"],
 }
 
 
