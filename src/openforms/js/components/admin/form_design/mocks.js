@@ -6,6 +6,7 @@ import {
   DMN_DECISION_DEFINITIONS_LIST,
   DMN_DECISION_DEFINITIONS_PARAMS_LIST,
   DMN_DECISION_DEFINITIONS_VERSIONS_LIST,
+  FORM_ENDPOINT,
   SERVICES_ENDPOINT,
 } from './constants';
 
@@ -68,3 +69,12 @@ export const mockObjectsAPIPrefillPropertiesGet = pluginProperties =>
       return HttpResponse.json(propertyList);
     }
   );
+
+export const mockFormJsonSchemaGet = schema =>
+  http.get(`${API_BASE_URL}/api/v2/forms/:uuid/json_schema`, () => {
+    if (schema === undefined) {
+      return new HttpResponse(null, {status: 500, statusText: 'Schema generation error'});
+    } else {
+      return HttpResponse.json(schema);
+    }
+  });

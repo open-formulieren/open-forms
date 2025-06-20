@@ -26,6 +26,7 @@ from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.typing import RegistrationBackendKey
 
 from ...constants import StatementCheckboxChoices
 from ...models import Category, Form, FormAuthenticationBackend, FormRegistrationBackend
@@ -612,4 +613,14 @@ class FormExportSerializer(FormSerializer):
 class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
+    )
+
+
+class FormJsonSchemaOptionsSerializer(serializers.Serializer):
+    registration_backend_key: RegistrationBackendKey = serializers.CharField(
+        label=_("Registration backend key"),
+        max_length=50,
+        help_text=_("The registration backend key for which to generate the schema."),
+        required=True,
+        allow_null=False,
     )

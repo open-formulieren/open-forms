@@ -143,9 +143,6 @@ voorinvullen:
 
 Hier gebruik je het UUID van het Object dat de brongegevens bevat.
 
-.. todo:: Fix https://github.com/open-formulieren/open-forms/issues/4918 as these URLs
-   aren't currently working as intended.
-
 Bonus: registreren in de Objecten API
 =====================================
 
