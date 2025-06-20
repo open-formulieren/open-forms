@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication_org_oidc', '0001_initial'),
-        ('oidc_plugins', '0002_move_data_oidc_config'),
+        ("authentication_org_oidc", "0001_initial"),
+        ("oidc_plugins", "0002_move_data_oidc_config"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='OrgOpenIDConnectConfig',
+            name="OrgOpenIDConnectConfig",
         ),
     ]
