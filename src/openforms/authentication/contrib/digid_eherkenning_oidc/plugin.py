@@ -9,10 +9,7 @@ from django.http import (
 )
 from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
-from openforms.authentication.contrib.eherkenning.views import (
-    MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
-    LOGIN_CANCELLED as EH_LOGIN_CANCELLED,
-)
+
 from flags.state import flag_enabled
 from mozilla_django_oidc_db.registry import register as oidc_registry
 from mozilla_django_oidc_db.utils import do_op_logout
@@ -37,6 +34,10 @@ from openforms.authentication.contrib.digid.views import (
     DIGID_MESSAGE_PARAMETER,
     LOGIN_CANCELLED as DIGID_LOGIN_CANCELLED,
 )
+from openforms.authentication.contrib.eherkenning.views import (
+    LOGIN_CANCELLED as EH_LOGIN_CANCELLED,
+    MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
+)
 from openforms.authentication.types import OIDCErrors
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.contrib.digid_eherkenning.utils import (
@@ -57,12 +58,6 @@ from ...constants import (
 from ...exceptions import InvalidCoSignData
 from ...registry import register
 from ...typing import FormAuth
-from .views import (
-    digid_init,
-    digid_machtigen_init,
-    eherkenning_bewindvoering_init,
-    eherkenning_init,
-)
 
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
 
@@ -83,7 +78,6 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     oidc_plugin_identifier: ClassVar[str]
-    init_view: ClassVar[AuthInit]
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str
@@ -120,7 +114,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         return response
 
     def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
-        if not (claim := request.session.get(self.session_key)):
+        if not (claim := request.session.get(self.oidc_plugin_identifier)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {
             "identifier": claim,
@@ -184,7 +178,6 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     oidc_plugin_identifier = OIDC_DIGID_IDENTIFIER
-    init_view = digid_init
 
     def get_label(self) -> str:
         return "DigiD"
@@ -209,7 +202,6 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     oidc_plugin_identifier = OIDC_EH_IDENTIFIER
-    init_view = eherkenning_init
 
     def get_label(self) -> str:
         return "eHerkenning"
@@ -260,7 +252,6 @@ class DigiDMachtigenOIDCAuthentication(
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     oidc_plugin_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
-    init_view = digid_machtigen_init
     is_for_gemachtigde = True
 
     def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
@@ -305,7 +296,6 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     # told)
     provides_auth = AuthAttribute.bsn
     oidc_plugin_identifier = OIDC_EH_BEWINDVOERING_IDENTIFIER
-    init_view = eherkenning_bewindvoering_init
     is_for_gemachtigde = True
 
     def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:

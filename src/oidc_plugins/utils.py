@@ -3,7 +3,7 @@ from glom import Path, PathAccessError, assign, glom
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.typing import JSONObject
 
-from .types import ClaimProcessingInstructions
+from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -12,7 +12,13 @@ class NoLOAClaim(Exception):
     pass
 
 
-def process_claims(claims: JSONObject, config: OIDCClient, claim_processing_instructions: ClaimProcessingInstructions, strict: bool = True, legacy: bool = False) -> JSONObject:
+def process_claims(
+    claims: JSONObject,
+    config: OIDCClient,
+    claim_processing_instructions: ClaimProcessingInstructions,
+    strict: bool = True,
+    legacy: bool = False,
+) -> JSONObject:
     """
     Given the raw claims, process them using the provided config.
 
@@ -58,18 +64,18 @@ def process_claims(claims: JSONObject, config: OIDCClient, claim_processing_inst
             return {
                 "always_required_claims": [
                     {
-                        "path": config.options["bsn_path"], 
+                        "path": config.options["bsn_path"],
                         "legacy": "bsn_claim"
                     }
                 ],
                 "strict_required_claims": [
                     {
-                        "path": config.options["user_info"]["pet_path"], 
+                        "path": config.options["user_info"]["pet_path"],
                         "legacy": "pet"
                     }
                 ],
             }
-    
+
     The resulting processed claim will be (in non-legacy mode):
 
     .. code:: json
@@ -94,6 +100,14 @@ def process_claims(claims: JSONObject, config: OIDCClient, claim_processing_inst
     """
     processed_claims = {}
 
+    def add_to_claims(
+        processed_claims: dict, claim_path: ClaimPathWithLegacy, value: JSONObject
+    ) -> None:
+        path_in_processed_claim = (
+            Path(claim_path["legacy"]) if legacy else Path(*claim_path["path"])
+        )
+        assign(processed_claims, path_in_processed_claim, value)
+
     # Check claims that are required also in lax mode
     for claim_path in claim_processing_instructions["always_required_claims"]:
         try:
@@ -102,8 +116,7 @@ def process_claims(claims: JSONObject, config: OIDCClient, claim_processing_inst
             claim_repr = " > ".join(claim_path["path"])
             raise ValueError(f"Required claim '{claim_repr}' not found") from exc
 
-        path_in_processed_claim = Path(claim_path["legacy"]) if legacy else Path(*claim_path["path"])
-        assign(processed_claims, path_in_processed_claim, value)
+        add_to_claims(processed_claims, claim_path, value)
 
     # Check the other required claims, here we only raise an error if we are running in strict mode
     for claim_path in claim_processing_instructions["strict_required_claims"]:
@@ -115,8 +128,16 @@ def process_claims(claims: JSONObject, config: OIDCClient, claim_processing_inst
             claim_repr = " > ".join(claim_path["path"])
             raise ValueError(f"Required claim '{claim_repr}' not found") from exc
 
-        path_in_processed_claim = Path(claim_path["legacy"]) if legacy else Path(*claim_path["path"])
-        assign(processed_claims, path_in_processed_claim, value)
+        add_to_claims(processed_claims, claim_path, value)
+
+    # Now process any optional claim
+    for claim_path in claim_processing_instructions["optional_claims"]:
+        try:
+            value = glom(claims, Path(*claim_path["path"]))
+        except PathAccessError:
+            continue
+
+        add_to_claims(processed_claims, claim_path, value)
 
     # Add LoA claims
     loa_claim_path = config.options["loa_settings"]["claim_path"]
