@@ -18,17 +18,24 @@ from django.urls import reverse
 
 from django_webtest import DjangoTestApp
 
+from oidc_plugins.constants import (
+    OIDC_DIGID_IDENTIFIER,
+    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
+    OIDC_EH_IDENTIFIER,
+)
 from openforms.authentication.tests.utils import AuthContextAssertMixin, URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    KeycloakProviderMixin,
+    keycloak_login,
+    mock_get_random_string,
+)
 
 from .base import (
     IntegrationTestsBase,
-    mock_digid_config,
-    mock_digid_machtigen_config,
-    mock_eherkenning_bewindvoering_config,
-    mock_eherkenning_config,
+    make_client,
 )
 
 
@@ -65,15 +72,20 @@ class PerformLoginMixin:
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class DigiDAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_digid_config()
+    @mock_get_random_string()
     def test_record_auth_context(self):
+        make_client(identifier=OIDC_DIGID_IDENTIFIER, provider=self.provider)
+
         self._login_and_start_form(
             "digid_oidc", username="testuser", password="testuser"
         )
@@ -92,15 +104,20 @@ class DigiDAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class EHerkenningAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_eherkenning_config()
+    @mock_get_random_string()
     def test_record_auth_context(self):
+        make_client(identifier=OIDC_EH_IDENTIFIER, provider=self.provider)
+
         self._login_and_start_form(
             "eherkenning_oidc", username="testuser", password="testuser"
         )
@@ -122,8 +139,16 @@ class EHerkenningAuthContextTests(
         )
         self.assertNotIn("representee", auth_context)
 
-    @mock_eherkenning_config(branch_number_claim=["vestiging"])
+    @mock_get_random_string()
     def test_record_vestiging_restriction(self):
+        make_client(
+            identifier=OIDC_EH_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.branch_number_claim_path": ["vestiging"],
+            },
+        )
+
         self._login_and_start_form(
             "eherkenning_oidc",
             username="eherkenning-vestiging",
@@ -148,15 +173,20 @@ class EHerkenningAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class DigiDMachtigenAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_digid_machtigen_config()
+    @mock_get_random_string()
     def test_record_auth_context(self):
+        make_client(identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER, provider=self.provider)
+
         self._login_and_start_form(
             "digid_machtigen_oidc",
             username="digid-machtigen",
@@ -179,7 +209,7 @@ class DigiDMachtigenAuthContextTests(
             {"identifierType": "bsn", "identifier": "999999999"},
         )
 
-    @mock_digid_machtigen_config(mandate_service_id_claim=["required-but-absent-claim"])
+    @mock_get_random_string()
     def test_new_required_claims_are_backwards_compatible(self):
         """
         Test that the legacy configuration without additional claims still works.
@@ -195,6 +225,16 @@ class DigiDMachtigenAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
+        make_client(
+            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.mandate_service_id_claim_path": [
+                    "required-but-absent-claim"
+                ]
+            },
+        )
+
         self._login_and_start_form(
             "digid_machtigen_oidc",
             username="digid-machtigen",
@@ -220,15 +260,20 @@ class DigiDMachtigenAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class EHerkenningBewindvoeringAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_eherkenning_bewindvoering_config()
+    @mock_get_random_string()
     def test_record_auth_context(self):
+        make_client(identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER, provider=self.provider)
+
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
             username="eherkenning-bewindvoering",
@@ -268,10 +313,7 @@ class EHerkenningBewindvoeringAuthContextTests(
             },
         )
 
-    @mock_eherkenning_bewindvoering_config(
-        mandate_service_id_claim=["required-but-absent-claim1"],
-        mandate_service_uuid_claim=["required-but-absent-claim2"],
-    )
+    @mock_get_random_string()
     def test_new_required_claims_are_backwards_compatible(self):
         """
         Test that the legacy configuration without additional claims still works.
@@ -287,6 +329,19 @@ class EHerkenningBewindvoeringAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.mandate_service_id_claim_path": [
+                    "required-but-absent-claim1"
+                ],
+                "options.identity_settings.mandate_service_uuid_claim_path": [
+                    "required-but-absent-claim2"
+                ],
+            },
+        )
+
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
             username="eherkenning-bewindvoering",
@@ -318,8 +373,19 @@ class EHerkenningBewindvoeringAuthContextTests(
             {"role": "bewindvoerder", "services": []},
         )
 
-    @mock_eherkenning_bewindvoering_config(branch_number_claim=["vestiging"])
+    @mock_get_random_string()
     def test_record_vestiging_restriction(self):
+        make_client(
+            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.branch_number_claim_path": ["vestiging"],
+                "options.identity_settings.legal_subject_claim_path": [
+                    "legalSubjectID"
+                ],
+            },
+        )
+
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
             username="eherkenning-vestiging",

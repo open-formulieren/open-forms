@@ -16,19 +16,27 @@ from django.test import override_settings
 
 from furl import furl
 
+from oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from openforms.accounts.models import User
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.contrib.digid_eherkenning_oidc.tests.base import (
+    make_client,
+)
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    KeycloakProviderMixin,
+    keycloak_login,
+    mock_get_random_string,
+)
 from openforms.utils.urls import reverse_plus
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")
-class OrgOIDCCallbackTests(IntegrationTestsBase):
+class OrgOIDCCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
@@ -42,8 +50,10 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
             "Group with required permissions is missing"
         )
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
     def test_redirects_after_successful_auth(self):
+        make_client(identifier=OIDC_ORG_IDENTIFIER, provider=self.provider)
+
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
@@ -82,8 +92,16 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         self.assertEqual(s["attribute"], AuthAttribute.employee_id)
         self.assertEqual(s["value"], "9999")
 
-    @mock_org_oidc_config(username_claim=["absent-claim"])
+    @mock_get_random_string()
     def test_failing_claim_verification(self):
+        make_client(
+            identifier=OIDC_ORG_IDENTIFIER,
+            provider=self.provider,
+            overrides={
+                "options.user_settings.claim_mappings.username": ["absent-claim"]
+            },
+        )
+
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
