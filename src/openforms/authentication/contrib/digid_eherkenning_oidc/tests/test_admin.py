@@ -12,9 +12,11 @@ from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.tests.factories import (
     OIDCProviderFactory,
 )
+from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 
 from oidc_plugins.constants import OIDC_DIGID_IDENTIFIER
 from openforms.accounts.tests.factories import SuperUserFactory
+from .base import make_client
 from openforms.forms.tests.factories import FormFactory
 
 
@@ -54,37 +56,11 @@ class DigiDConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        FormFactory.create(authentication_backend="other-backend")
-
-        config, _ = OIDCClient.objects.update_or_create(
-            identifier="admin-oidc",
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testclient",
-                "oidc_rp_client_secret": "secret",
-                "oidc_provider": self.provider,
-                "options": {
-                    "user_settings": {
-                        "claim_mappings": {
-                            "username": ["sub"],
-                            "first_name": [],
-                            "last_name": [],
-                            "email": [],
-                        },
-                        "username_case_sensitive": True,
-                        "sensitive_claims": [],
-                    },
-                    "groups_settings": {
-                        "claim_mapping": ["groups"],
-                        "sync": True,
-                        "sync_pattern": "*",
-                        "make_users_staff": False,
-                        "superuser_group_names": [],
-                        "default_groups": [],
-                    },
-                },
-            },
+        config = make_client(
+            identifier=OIDC_ADMIN_CONFIG_IDENTIFIER, provider=self.provider
         )
+
+        FormFactory.create(authentication_backend="other-backend")
 
         change_page = self.app.get(
             reverse(
@@ -108,27 +84,13 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertFalse(config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        FormFactory.create(authentication_backend="digid_oidc")
-
-        config, _ = OIDCClient.objects.update_or_create(
+        config = make_client(
             identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testclient",
-                "oidc_rp_client_secret": "secret",
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["loa"],
-                        "default": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
-                    },
-                },
-            },
+            provider=self.provider,
+            overrides={"enabled": True},
         )
+
+        FormFactory.create(authentication_backend="digid_oidc")
 
         change_page = self.app.get(
             reverse(
@@ -157,26 +119,13 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertTrue(config.enabled)
 
     def test_leave_enabled(self):
-        FormFactory.create(authentication_backend="other-backend")
-        config, _ = OIDCClient.objects.update_or_create(
+        config = make_client(
             identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testclient",
-                "oidc_rp_client_secret": "secret",
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["loa"],
-                        "default": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
-                    },
-                },
-            },
+            provider=self.provider,
+            overrides={"enabled": True},
         )
+
+        FormFactory.create(authentication_backend="other-backend")
 
         change_page = self.app.get(
             reverse(

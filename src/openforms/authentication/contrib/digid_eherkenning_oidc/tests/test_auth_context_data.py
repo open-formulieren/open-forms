@@ -16,12 +16,7 @@ import warnings
 from django.test import override_settings
 from django.urls import reverse
 
-from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from django_webtest import DjangoTestApp
-from mozilla_django_oidc_db.models import OIDCClient
-from mozilla_django_oidc_db.tests.factories import (
-    OIDCProviderFactory,
-)
 
 from oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -33,17 +28,14 @@ from openforms.authentication.tests.utils import AuthContextAssertMixin, URLsHel
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 from openforms.utils.tests.keycloak import (
-    KEYCLOAK_BASE_URL,
+    KeycloakProviderMixin,
     keycloak_login,
     mock_get_random_string,
 )
 
 from .base import (
     IntegrationTestsBase,
-    # mock_digid_config,
-    # mock_digid_machtigen_config,
-    # mock_eherkenning_bewindvoering_config,
-    # mock_eherkenning_config,
+    make_client,
 )
 
 
@@ -80,7 +72,10 @@ class PerformLoginMixin:
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class DigiDAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
@@ -89,35 +84,7 @@ class DigiDAuthContextTests(
 
     @mock_get_random_string()
     def test_record_auth_context(self):
-        provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
-        OIDCClient.objects.update_or_create(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
-                    },
-                },
-            },
-        )
+        make_client(identifier=OIDC_DIGID_IDENTIFIER, provider=self.provider)
 
         self._login_and_start_form(
             "digid_oidc", username="testuser", password="testuser"
@@ -137,51 +104,19 @@ class DigiDAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class EHerkenningAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
-
     @mock_get_random_string()
     def test_record_auth_context(self):
-        OIDCClient.objects.update_or_create(
-            identifier=OIDC_EH_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "kvk"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "identifier_type_claim_path": ["name_qualifier"],
-                        "legal_subject_claim_path": ["legalSubjectID"],
-                        "acting_subject_claim_path": ["actingSubjectID"],
-                    },
-                },
-            },
-        )
+        make_client(identifier=OIDC_EH_IDENTIFIER, provider=self.provider)
 
         self._login_and_start_form(
             "eherkenning_oidc", username="testuser", password="testuser"
@@ -206,28 +141,11 @@ class EHerkenningAuthContextTests(
 
     @mock_get_random_string()
     def test_record_vestiging_restriction(self):
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_EH_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "kvk"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "identifier_type_claim_path": ["name_qualifier"],
-                        "legal_subject_claim_path": ["legalSubjectID"],
-                        "acting_subject_claim_path": ["actingSubjectID"],
-                        "branch_number_claim_path": ["vestiging"],
-                    },
-                },
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.branch_number_claim_path": ["vestiging"],
             },
         )
 
@@ -255,51 +173,19 @@ class EHerkenningAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class DigiDMachtigenAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
-
     @mock_get_random_string()
     def test_record_auth_context(self):
-        OIDCClient.objects.update_or_create(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "representee_bsn_claim_path": ["aanvrager.bsn"],
-                        "authorizee_bsn_claim_path": ["gemachtigde.bsn"],
-                        "mandate_service_id_claim_path": ["service_id"],
-                    },
-                },
-            },
-        )
+        make_client(identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER, provider=self.provider)
 
         self._login_and_start_form(
             "digid_machtigen_oidc",
@@ -339,27 +225,13 @@ class DigiDMachtigenAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "representee_bsn_claim_path": ["aanvrager.bsn"],
-                        "authorizee_bsn_claim_path": ["gemachtigde.bsn"],
-                        "mandate_service_id_claim_path": ["required-but-absent-claim"],
-                    },
-                },
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.mandate_service_id_claim_path": [
+                    "required-but-absent-claim"
+                ]
             },
         )
 
@@ -388,54 +260,19 @@ class DigiDMachtigenAuthContextTests(
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class EHerkenningBewindvoeringAuthContextTests(
-    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+    KeycloakProviderMixin,
+    PerformLoginMixin,
+    AuthContextAssertMixin,
+    IntegrationTestsBase,
 ):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
     }
 
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
-
     @mock_get_random_string()
     def test_record_auth_context(self):
-        OIDCClient.objects.update_or_create(
-            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "identifier_type_claim_path": ["name_qualifier"],
-                        "legal_subject_claim_path": ["aanvrager.kvk"],
-                        "acting_subject_claim_path": ["actingSubjectID"],
-                        "representee_claim_path": ["representeeBSN"],
-                        "mandate_service_id_claim_path": ["service_id"],
-                        "mandate_service_uuid_claim_path": ["service_uuid"],
-                    },
-                },
-            },
-        )
+        make_client(identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER, provider=self.provider)
 
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
@@ -492,34 +329,19 @@ class EHerkenningBewindvoeringAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "identifier_type_claim_path": ["name_qualifier"],
-                        "legal_subject_claim_path": ["aanvrager.kvk"],
-                        "acting_subject_claim_path": ["actingSubjectID"],
-                        "representee_claim_path": ["representeeBSN"],
-                        "mandate_service_id_claim_path": ["required-but-absent-claim1"],
-                        "mandate_service_uuid_claim_path": [
-                            "required-but-absent-claim2"
-                        ],
-                    },
-                },
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.mandate_service_id_claim_path": [
+                    "required-but-absent-claim1"
+                ],
+                "options.identity_settings.mandate_service_uuid_claim_path": [
+                    "required-but-absent-claim2"
+                ],
             },
         )
+
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
             username="eherkenning-bewindvoering",
@@ -553,31 +375,14 @@ class EHerkenningBewindvoeringAuthContextTests(
 
     @mock_get_random_string()
     def test_record_vestiging_restriction(self):
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "identifier_type_claim_path": ["name_qualifier"],
-                        "legal_subject_claim_path": ["legalSubjectID"],
-                        "acting_subject_claim_path": ["actingSubjectID"],
-                        "representee_claim_path": ["representeeBSN"],
-                        "mandate_service_id_claim_path": ["service_id"],
-                        "mandate_service_uuid_claim_path": ["service_uuid"],
-                        "branch_number_claim_path": ["vestiging"],
-                    },
-                },
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.branch_number_claim_path": ["vestiging"],
+                "options.identity_settings.legal_subject_claim_path": [
+                    "legalSubjectID"
+                ],
             },
         )
 

@@ -14,12 +14,7 @@ to bring up a Keycloak instance.
 from django.test import override_settings, tag
 
 import requests
-from digid_eherkenning.choices import DigiDAssuranceLevels, AssuranceLevels
 from furl import furl
-from mozilla_django_oidc_db.models import OIDCClient
-from mozilla_django_oidc_db.tests.factories import (
-    OIDCProviderFactory,
-)
 from rest_framework.reverse import reverse
 
 
@@ -37,7 +32,7 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models.submission import Submission
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import (
-    KEYCLOAK_BASE_URL,
+    KeycloakProviderMixin,
     keycloak_login,
     mock_get_random_string,
 )
@@ -48,23 +43,10 @@ from .base import (
 )
 
 
-class DigiDCallbackTests(IntegrationTestsBase):
+class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
 
     @mock_get_random_string()
     def test_redirects_after_successful_auth(self):
@@ -85,25 +67,11 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
     @mock_get_random_string()
     def test_failing_claim_verification(self):
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
-                "oidc_rp_scopes_list": ["openid", "bsn"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["absent-claim"],
-                    },
-                },
+            provider=self.provider,
+            overrides={
+                "options.identity_settings.bsn_claim_path": ["absent-claim"],
             },
         )
 
@@ -128,27 +96,14 @@ class DigiDCallbackTests(IntegrationTestsBase):
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
+            provider=self.provider,
+            overrides={
                 "oidc_rp_scopes_list": ["badscope"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
-                    },
-                },
             },
         )
+
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -183,27 +138,14 @@ class DigiDCallbackTests(IntegrationTestsBase):
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
-        OIDCClient.objects.update_or_create(
+        make_client(
             identifier=OIDC_DIGID_IDENTIFIER,
-            defaults={
-                "enabled": True,
-                "oidc_rp_client_id": "testid",
-                "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
-                "oidc_rp_sign_algo": "RS256",
+            provider=self.provider,
+            overrides={
                 "oidc_rp_scopes_list": ["badscope"],
-                "oidc_provider": self.provider,
-                "options": {
-                    "loa_settings": {
-                        "claim_path": ["authsp_level"],
-                        "default": DigiDAssuranceLevels.middle,
-                        "value_mapping": [],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
-                    },
-                },
             },
         )
+
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
@@ -230,23 +172,10 @@ class DigiDCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class EHerkenningCallbackTests(IntegrationTestsBase):
+class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
 
     @mock_get_random_string()
     def test_redirects_after_successful_auth(self):
@@ -449,23 +378,10 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class DigiDMachtigenCallbackTests(IntegrationTestsBase):
+class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
 
     @mock_get_random_string()
     def test_redirects_after_successful_auth(self):
@@ -635,23 +551,12 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
+class EHerkenningBewindvoeringCallbackTests(
+    KeycloakProviderMixin, IntegrationTestsBase
+):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
-
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.provider = OIDCProviderFactory.create(
-            identifier="keycloak-provider",
-            oidc_op_jwks_endpoint=f"{KEYCLOAK_BASE_URL}/certs",
-            oidc_op_authorization_endpoint=f"{KEYCLOAK_BASE_URL}/auth",
-            oidc_op_token_endpoint=f"{KEYCLOAK_BASE_URL}/token",
-            oidc_op_user_endpoint=f"{KEYCLOAK_BASE_URL}/userinfo",
-            oidc_op_logout_endpoint=f"{KEYCLOAK_BASE_URL}/logout",
-        )
 
     @mock_get_random_string()
     def test_redirects_after_successful_auth(self):
