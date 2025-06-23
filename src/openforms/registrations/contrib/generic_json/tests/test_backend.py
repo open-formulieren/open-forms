@@ -1,5 +1,4 @@
 import json
-import unittest
 from base64 import b64decode
 from pathlib import Path
 
@@ -30,6 +29,8 @@ VCR_TEST_FILES = Path(__file__).parent / "files"
 
 
 class GenericJSONBackendTests(OFVCRMixin, TestCase):
+    maxDiff = None
+
     VCR_TEST_FILES = VCR_TEST_FILES
 
     @classmethod
@@ -1194,16 +1195,77 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                 ["A", "B", "C"],
             )
 
-    @unittest.expectedFailure
+    @tag("gh-5041")
     def test_nested_component_key(self):
-        # TODO: will be fixed with issue 5041
         submission = SubmissionFactory.from_components(
             [
-                {"key": "foo.bar", "type": "textfield", "label": "Nested key"},
+                {
+                    "key": "nested.text",
+                    "type": "textfield",
+                    "label": "Nested text field",
+                },
+                {"key": "nested.file", "type": "file", "label": "Nested file"},
+                {
+                    "key": "editgrid",
+                    "label": "Edit grid",
+                    "type": "editgrid",
+                    "components": [
+                        {
+                            "key": "nested.file2",
+                            "label": "File upload",
+                            "type": "file",
+                            "multiple": False,
+                        },
+                    ],
+                },
             ],
             completed=True,
-            submitted_data={"foo": {"bar": "baz"}},
+            submitted_data={
+                "nested": {
+                    "text": "foo",
+                    "file": [
+                        {
+                            "url": "some://url",
+                            "name": "file1.txt",
+                            "type": "application/text",
+                            "originalName": "file1.txt",
+                        }
+                    ],
+                },
+                "editgrid": [
+                    {
+                        "nested": {
+                            "file2": {
+                                "url": "some://url",
+                                "name": "file2.txt",
+                                "type": "application/text",
+                                "originalName": "file2.txt",
+                            }
+                        }
+                    }
+                ],
+            },
             with_public_registration_reference=True,
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="nested.file",
+            submission_step=submission.steps[0],
+            file_name="file1.txt",
+            original_name="file1.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_data_path="nested.file",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            form_key="editgrid",
+            submission_step=submission.steps[0],
+            file_name="file2.txt",
+            original_name="file2.txt",
+            content_type="application/text",
+            content__data=b"This is example content.",
+            _component_data_path="editgrid.0.nested.file2",
         )
 
         json_plugin = GenericJSONRegistration("json_registration_plugin")
@@ -1211,7 +1273,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         options: GenericJSONOptions = {
             "service": self.json_dump_service,
             "path": "json_plugin",
-            "variables": ["foo.bar"],
+            "variables": ["nested.text", "nested.file", "editgrid"],
             "fixed_metadata_variables": [],
             "additional_metadata_variables": [],
             "transform_to_list": [],
@@ -1220,13 +1282,85 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
         result = json_plugin.register_submission(submission, options)
         assert result is not None
 
-        self.assertEqual(result["api_response"]["data"]["values"]["foo.bar"], "baz")
-        self.assertEqual(
-            result["api_response"]["data"]["values_schema"]["properties"]["foo.bar"][
-                "type"
+        expected_values = {
+            "nested": {
+                "text": "foo",
+                "file": {
+                    "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
+                    "file_name": "file1.txt",
+                },
+            },
+            "editgrid": [
+                {
+                    "nested": {
+                        "file2": {
+                            "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu",
+                            "file_name": "file2.txt",
+                        }
+                    }
+                },
             ],
-            "string",
-        )
+        }
+        expected_properties = {
+            "editgrid": {
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "nested": {
+                            "type": "object",
+                            "properties": {
+                                "file2": {
+                                    "title": "File upload",
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "format": "base64",
+                                            "type": "string",
+                                        },
+                                        "file_name": {"type": "string"},
+                                    },
+                                    "required": ["file_name", "content"],
+                                    "additionalProperties": False,
+                                }
+                            },
+                            "required": ["file2"],
+                            "additionalProperties": False,
+                        }
+                    },
+                    "required": ["nested"],
+                    "additionalProperties": False,
+                },
+                "title": "Edit grid",
+                "type": "array",
+            },
+            "nested": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "title": "Nested file",
+                        "type": "object",
+                        "properties": {
+                            "content": {"format": "base64", "type": "string"},
+                            "file_name": {"type": "string"},
+                        },
+                        "required": ["file_name", "content"],
+                        "additionalProperties": False,
+                    },
+                    "text": {"title": "Nested text field", "type": "string"},
+                },
+                "required": ["text", "file"],
+                "additionalProperties": False,
+            },
+        }
+
+        with self.subTest("values"):
+            self.assertEqual(result["api_response"]["data"]["values"], expected_values)
+
+        with self.subTest("schema_properties"):
+            self.assertEqual(
+                result["api_response"]["data"]["values_schema"]["properties"],
+                expected_properties,
+            )
 
     @freeze_time("2025-01-30T13:05:00Z")
     def test_metadata(self):
@@ -1627,6 +1761,8 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
 
 
 class GenericJSONRequestTests(TestCase):
+    maxDiff = None
+
     def test_data_is_encoded_to_json_once(self):
         submission = SubmissionFactory.from_components(
             [
@@ -1654,8 +1790,8 @@ class GenericJSONRequestTests(TestCase):
 
         expected_data_sent = {
             "values": {
-                "firstName": "We Are",
                 "auth_bsn": "123456789",
+                "firstName": "We Are",
             },
             "values_schema": {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",

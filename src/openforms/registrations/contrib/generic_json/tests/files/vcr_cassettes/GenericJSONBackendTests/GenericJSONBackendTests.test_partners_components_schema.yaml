@@ -17,13 +17,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTAzMjMxOTEsImV4cCI6MTc1MDM2NjM5MSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.g5Rl_pS5IJcpmOiTz3iG2Rk9x9ricrcnjMwKPByRLfQ
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEwMjkzODksImV4cCI6MTc1MTA3MjU4OSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.-dJ17cRmWjCb512k8wYlfXyqor9M6wpT9HX6Ynkjb4c
       Connection:
       - keep-alive
       Content-Length:
       - '898'
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
       content-type:
       - application/json
     method: POST
@@ -59,7 +59,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 19 Jun 2025 08:53:11 GMT
+      - Fri, 27 Jun 2025 13:03:09 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.10
     status:

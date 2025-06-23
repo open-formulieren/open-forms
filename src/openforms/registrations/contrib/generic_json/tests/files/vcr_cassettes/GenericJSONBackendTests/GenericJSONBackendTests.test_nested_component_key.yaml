@@ -1,8 +1,22 @@
 interactions:
 - request:
-    body: '{"values": {}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object", "properties": {}, "required": [], "additionalProperties":
-      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+    body: '{"values": {"nested": {"text": "foo", "file": {"file_name": "file1.txt",
+      "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}}, "editgrid": [{"nested": {"file2":
+      {"file_name": "file2.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}}}]},
+      "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"nested": {"properties": {"text": {"title":
+      "Nested text field", "type": "string"}, "file": {"title": "Nested file", "type":
+      "object", "properties": {"file_name": {"type": "string"}, "content": {"type":
+      "string", "format": "base64"}}, "required": ["file_name", "content"], "additionalProperties":
+      false}}, "type": "object", "additionalProperties": false, "required": ["text",
+      "file"]}, "editgrid": {"title": "Edit grid", "type": "array", "items": {"type":
+      "object", "properties": {"nested": {"properties": {"file2": {"title": "File
+      upload", "type": "object", "properties": {"file_name": {"type": "string"}, "content":
+      {"type": "string", "format": "base64"}}, "required": ["file_name", "content"],
+      "additionalProperties": false}}, "type": "object", "additionalProperties": false,
+      "required": ["file2"]}}, "required": ["nested"], "additionalProperties": false}}},
+      "required": ["nested", "editgrid"], "additionalProperties": false}, "metadata":
+      {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object", "properties": {}, "required": [], "additionalProperties":
       false}}'
     headers:
@@ -11,13 +25,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDk1NjAyNzgsImV4cCI6MTc0OTYwMzQ3OCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.xgzcMfVi1Yyp1GEGV62pYkE8gpFx9r3aneSrAV2wHEA
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEwMjkzODksImV4cCI6MTc1MTA3MjU4OSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.-dJ17cRmWjCb512k8wYlfXyqor9M6wpT9HX6Ynkjb4c
       Connection:
       - keep-alive
       Content-Length:
-      - '354'
+      - '1453'
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
       content-type:
       - application/json
     method: POST
@@ -27,19 +41,52 @@ interactions:
       string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
         \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
         false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
-        \"object\"\n    },\n    \"values\": {},\n    \"values_schema\": {\n      \"$schema\":
-        \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
-        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
-        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+        \"object\"\n    },\n    \"values\": {\n      \"editgrid\": [\n        {\n
+        \         \"nested\": {\n            \"file2\": {\n              \"content\":
+        \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\",\n              \"file_name\": \"file2.txt\"\n
+        \           }\n          }\n        }\n      ],\n      \"nested\": {\n        \"file\":
+        {\n          \"content\": \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\",\n          \"file_name\":
+        \"file1.txt\"\n        },\n        \"text\": \"foo\"\n      }\n    },\n    \"values_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"editgrid\":
+        {\n          \"items\": {\n            \"additionalProperties\": false,\n
+        \           \"properties\": {\n              \"nested\": {\n                \"additionalProperties\":
+        false,\n                \"properties\": {\n                  \"file2\": {\n
+        \                   \"additionalProperties\": false,\n                    \"properties\":
+        {\n                      \"content\": {\n                        \"format\":
+        \"base64\",\n                        \"type\": \"string\"\n                      },\n
+        \                     \"file_name\": {\n                        \"type\":
+        \"string\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"file_name\",\n                      \"content\"\n
+        \                   ],\n                    \"title\": \"File upload\",\n
+        \                   \"type\": \"object\"\n                  }\n                },\n
+        \               \"required\": [\n                  \"file2\"\n                ],\n
+        \               \"type\": \"object\"\n              }\n            },\n            \"required\":
+        [\n              \"nested\"\n            ],\n            \"type\": \"object\"\n
+        \         },\n          \"title\": \"Edit grid\",\n          \"type\": \"array\"\n
+        \       },\n        \"nested\": {\n          \"additionalProperties\": false,\n
+        \         \"properties\": {\n            \"file\": {\n              \"additionalProperties\":
+        false,\n              \"properties\": {\n                \"content\": {\n
+        \                 \"format\": \"base64\",\n                  \"type\": \"string\"\n
+        \               },\n                \"file_name\": {\n                  \"type\":
+        \"string\"\n                }\n              },\n              \"required\":
+        [\n                \"file_name\",\n                \"content\"\n              ],\n
+        \             \"title\": \"Nested file\",\n              \"type\": \"object\"\n
+        \           },\n            \"text\": {\n              \"title\": \"Nested
+        text field\",\n              \"type\": \"string\"\n            }\n          },\n
+        \         \"required\": [\n            \"text\",\n            \"file\"\n          ],\n
+        \         \"type\": \"object\"\n        }\n      },\n      \"required\": [\n
+        \       \"nested\",\n        \"editgrid\"\n      ],\n      \"type\": \"object\"\n
+        \   }\n  },\n  \"message\": \"Data received\"\n}\n"
     headers:
       Connection:
       - close
       Content-Length:
-      - '491'
+      - '2926'
       Content-Type:
       - application/json
       Date:
-      - Tue, 10 Jun 2025 12:57:58 GMT
+      - Fri, 27 Jun 2025 13:03:09 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.10
     status:
