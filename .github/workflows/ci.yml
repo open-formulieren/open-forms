@@ -85,6 +85,7 @@ jobs:
           --concurrency=multiprocessing \
           --parallel-mode \
           src/manage.py test src \
+            --force-color \
             --parallel 4 \
             --exclude-tag=e2e \
             --verbosity 2
@@ -165,6 +166,7 @@ jobs:
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           src/manage.py test src \
+            --force-color \
             --parallel 4 \
             --exclude-tag=e2e \
             --reverse
@@ -267,7 +269,7 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          src/manage.py test src --tag=e2e
+          src/manage.py test src --force-color --tag=e2e
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
@@ -342,6 +344,8 @@ jobs:
           make SPHINXOPTS="-W" html
           make linkcheck
         working-directory: open-forms/docs
+        env:
+          FORCE_COLOR: "1"
 
   # see https://github.com/orgs/community/discussions/26671
   docker_build_setup:
