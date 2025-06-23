@@ -185,7 +185,7 @@ diff-match-patch==20230430
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-import-export
-django==4.2.22
+django==4.2.23
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -924,7 +924,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.32.2
+requests==2.32.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1190,7 +1190,7 @@ uritemplate==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-urllib3==2.2.2
+urllib3==2.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
