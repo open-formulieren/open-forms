@@ -20,16 +20,13 @@ from django.test import override_settings
 from rest_framework.test import APIRequestFactory
 
 from oidc_plugins.constants import OIDC_ORG_IDENTIFIER
-from openforms.authentication.contrib.digid_eherkenning_oidc.tests.base import (
-    make_client,
-)
 from openforms.authentication.registry import register
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import (
-    KeycloakProviderMixin,
     keycloak_login,
     mock_get_random_string,
+    mock_oidc_client,
 )
 
 from ..plugin import PLUGIN_IDENTIFIER
@@ -37,7 +34,7 @@ from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")
-class OrgOIDCCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
+class OrgOIDCCallbackTests(IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
@@ -63,9 +60,8 @@ class OrgOIDCCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
             request.session.save()
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_logout_clears_session(self):
-        make_client(identifier=OIDC_ORG_IDENTIFIER, provider=self.provider)
-
         form = FormFactory.create(authentication_backend=PLUGIN_IDENTIFIER)
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id=PLUGIN_IDENTIFIER)
@@ -80,9 +76,8 @@ class OrgOIDCCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertFalse(auth.get_user(self.app).is_authenticated)  # type: ignore
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_logout_without_any_session(self):
-        make_client(identifier=OIDC_ORG_IDENTIFIER, provider=self.provider)
-
         self._do_plugin_logout(user=AnonymousUser())
 
         session = self.app.session

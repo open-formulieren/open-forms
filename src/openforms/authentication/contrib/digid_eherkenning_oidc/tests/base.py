@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 
 from django.test import override_settings
@@ -22,11 +23,11 @@ from openforms.utils.tests.vcr import OFVCRMixin
 TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 
-def mock_config(model: str, **overrides):
-    overrides.setdefault("oidc_op_logout_endpoint", f"{KEYCLOAK_BASE_URL}/logout")
-    return mock_oidc_db_config(
-        app_label="digid_eherkenning_oidc", model=model, **overrides
-    )
+# def mock_config(model: str, **overrides):
+#     overrides.setdefault("oidc_op_logout_endpoint", f"{KEYCLOAK_BASE_URL}/logout")
+#     return mock_oidc_db_config(
+#         app_label="digid_eherkenning_oidc", model=model, **overrides
+#     )
 
 
 # mock_digid_config = partial(
@@ -189,9 +190,9 @@ def make_client(
         "oidc_rp_client_id": "testid",
         "oidc_rp_client_secret": "7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I",
         "oidc_rp_sign_algo": "RS256",
-        "oidc_rp_scopes_list": CLIENT_DEFAULT_SCOPES[identifier],
+        "oidc_rp_scopes_list": copy.deepcopy(CLIENT_DEFAULT_SCOPES[identifier]),
         "oidc_provider": provider,
-        "options": CLIENT_DEFAULT_OPTIONS[identifier],
+        "options": copy.deepcopy(CLIENT_DEFAULT_OPTIONS[identifier]),
     }
     if overrides:
         for override_path, override_value in overrides.items():

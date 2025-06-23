@@ -31,26 +31,24 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models.submission import Submission
 from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import (
-    KeycloakProviderMixin,
     keycloak_login,
     mock_get_random_string,
+    mock_oidc_client,
 )
 
 from .base import (
     IntegrationTestsBase,
-    make_client,
 )
 
 
-class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
+class DigiDCallbackTests(IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
-        make_client(identifier=OIDC_DIGID_IDENTIFIER, provider=self.provider)
-
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -65,15 +63,13 @@ class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_IDENTIFIER,
+        overrides={
+            "options.identity_settings.bsn_claim_path": ["absent-claim"],
+        },
+    )
     def test_failing_claim_verification(self):
-        make_client(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.bsn_claim_path": ["absent-claim"],
-            },
-        )
-
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -94,15 +90,13 @@ class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-        make_client(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
-
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -136,15 +130,13 @@ class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
-        make_client(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
-
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
@@ -171,18 +163,14 @@ class DigiDCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
+class EHerkenningCallbackTests(IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-        )
-
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -198,17 +186,13 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-4627")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_IDENTIFIER,
+        overrides={
+            "options.identity_settings.acting_subject_claim_path": ["does not exist"]
+        },
+    )
     def test_failure_with_missing_acting_subject_claim(self):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.acting_subject_claim_path": [
-                    "does not exist"
-                ]
-            },
-        )
-
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -253,16 +237,13 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
     @tag("gh-4627")
     @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_IDENTIFIER,
+        overrides={
+            "options.identity_settings.acting_subject_claim_path": ["does not exist"]
+        },
+    )
     def test_failure_with_missing_acting_subject_claim_strict_mode(self):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.acting_subject_claim_path": [
-                    "does not exist"
-                ]
-            },
-        )
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -276,14 +257,13 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertIn("of-auth-problem", response.request.GET)
 
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_IDENTIFIER,
+        overrides={
+            "options.identity_settings.legal_subject_claim_path": ["does not exist"]
+        },
+    )
     def test_failing_claim_verification(self):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.legal_subject_claim_path": ["does not exist"]
-            },
-        )
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -304,12 +284,11 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_IDENTIFIER,
+        overrides={"oidc_rp_scopes_list": ["badscope"]},
+    )
     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-            overrides={"oidc_rp_scopes_list": ["badscope"]},
-        )
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -343,14 +322,13 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_IDENTIFIER,
+        overrides={"oidc_rp_scopes_list": ["badscope"]},
+    )
     def test_eherkenning_error_reported_for_cancelled_login_with_staff_django_user(
         self,
     ):
-        make_client(
-            identifier=OIDC_EH_IDENTIFIER,
-            provider=self.provider,
-            overrides={"oidc_rp_scopes_list": ["badscope"]},
-        )
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
@@ -377,17 +355,14 @@ class EHerkenningCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
+class DigiDMachtigenCallbackTests(IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
-        make_client(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            provider=self.provider,
-        )
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -406,17 +381,14 @@ class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+        overrides={
+            "options.identity_settings.representee_bsn_claim_path": ["absent-claim"],
+            "options.identity_settings.authorizee_bsn_claim_path": ["absent-claim"],
+        },
+    )
     def test_failing_claim_verification(self):
-        make_client(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.representee_bsn_claim_path": [
-                    "absent-claim"
-                ],
-                "options.identity_settings.authorizee_bsn_claim_path": ["absent-claim"],
-            },
-        )
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -441,16 +413,13 @@ class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+        overrides={
+            "options.identity_settings.mandate_service_id_claim_path": ["absent-claim"],
+        },
+    )
     def test_failing_claim_verification_strict_mode(self):
-        make_client(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.mandate_service_id_claim_path": [
-                    "absent-claim"
-                ],
-            },
-        )
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -475,14 +444,13 @@ class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_digid_error_reported_for_cancelled_login_anon_django_user(self):
-        make_client(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -516,14 +484,13 @@ class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_digid_error_reported_for_cancelled_login_with_staff_django_user(self):
-        make_client(
-            identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
@@ -550,19 +517,14 @@ class DigiDMachtigenCallbackTests(KeycloakProviderMixin, IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
 
 
-class EHerkenningBewindvoeringCallbackTests(
-    KeycloakProviderMixin, IntegrationTestsBase
-):
+class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
     """
     Test the return/callback side after authenticating with the identity provider.
     """
 
     @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_BEWINDVOERING_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
-        make_client(
-            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            provider=self.provider,
-        )
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -585,16 +547,14 @@ class EHerkenningBewindvoeringCallbackTests(
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_BEWINDVOERING_IDENTIFIER,
+        overrides={
+            "options.identity_settings.legal_subject_claim_path": ["absent-claim"],
+            "options.identity_settings.representee_claim_path": ["absent-claim"],
+        },
+    )
     def test_failing_claim_verification(self):
-        make_client(
-            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "options.identity_settings.legal_subject_claim_path": ["absent-claim"],
-                "options.identity_settings.representee_claim_path": ["absent-claim"],
-            },
-        )
-
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -623,14 +583,13 @@ class EHerkenningBewindvoeringCallbackTests(
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_BEWINDVOERING_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_eherkenning_error_reported_for_cancelled_login_anon_django_user(self):
-        make_client(
-            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -668,16 +627,15 @@ class EHerkenningBewindvoeringCallbackTests(
 
     @tag("gh-3656", "gh-3692")
     @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EH_BEWINDVOERING_IDENTIFIER,
+        overrides={
+            "oidc_rp_scopes_list": ["badscope"],
+        },
+    )
     def test_eherkenning_error_reported_for_cancelled_login_with_staff_django_user(
         self,
     ):
-        make_client(
-            identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            provider=self.provider,
-            overrides={
-                "oidc_rp_scopes_list": ["badscope"],
-            },
-        )
         self.app.set_user(StaffUserFactory.create())
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
