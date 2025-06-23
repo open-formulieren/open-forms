@@ -63,7 +63,7 @@ source_suffix = [".rst", ".md"]
 
 intersphinx_mapping = {
     "requests": (
-        "https://docs.python-requests.org/en/latest/",
+        "https://requests.readthedocs.io/en/latest/",
         None,
     ),
     "ape_pie": (
