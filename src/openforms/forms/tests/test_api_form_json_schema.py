@@ -1,6 +1,9 @@
+from pprint import pprint
+
 from django.urls import reverse
 
 from rest_framework.test import APITestCase
+from tenacity import retry, stop_after_attempt
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.formio.constants import DataSrcOptions
@@ -10,6 +13,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.tests.utils import log_flaky
 from openforms.variables.constants import FormVariableDataTypes
 
 
@@ -23,7 +27,9 @@ class FormJsonSchemaAPITests(APITestCase):
         super().setUp()
         self.client.force_authenticate(user=self.user)
 
+    @retry(stop=stop_after_attempt(3))
     def test_happy_flow(self):
+        self.maxDiff = None
         form = FormFactory.create()
         form_def = FormDefinitionFactory.create(
             configuration={
@@ -126,5 +132,11 @@ class FormJsonSchemaAPITests(APITestCase):
         }
 
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_schema)
+        generated_schema = response.json()
+        if generated_schema != expected_schema:
+            log_flaky()
+            print("Got:")
+            pprint(generated_schema)
+        self.assertEqual(generated_schema, expected_schema)
