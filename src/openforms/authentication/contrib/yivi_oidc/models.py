@@ -163,15 +163,15 @@ class YiviOpenIDConnectConfig(AuthorizeeMixin, OpenIDConnectConfigBase):
     CLAIMS_CONFIGURATION = (
         # For bsn auth
         {"field": "bsn_claim", "required": False},
-        {"field": "bsn_loa_claim", "required": False},
         # For kvk auth
-        {"field": "kvk_loa_claim", "required": False},
         {"field": "identifier_type_claim", "required": False},
         {"field": "legal_subject_claim", "required": False},
         {"field": "acting_subject_claim", "required": False},
         {"field": "branch_number_claim", "required": False},
         # For anonymous/pseudo auth
         {"field": "pseudo_claim", "required": False},
+        # General claim
+        {"field": "loa_claim", "required": False},
     )
 
     @classproperty

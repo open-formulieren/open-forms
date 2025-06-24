@@ -19,6 +19,7 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..constants import (
     CO_SIGN_PARAMETER,
+    FORM_AUTH_BACKEND_SESSION_KEY,
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
@@ -42,6 +43,7 @@ class AuthenticationFlowTests(APITestCase):
         """
         register = Registry()
         register("plugin1")(Plugin)
+        register("plugin2")(Plugin)
         plugin = register["plugin1"]
 
         step = FormStepFactory(
@@ -69,6 +71,10 @@ class AuthenticationFlowTests(APITestCase):
             response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
             self.assertEqual(response.content, b"start")
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                int(request.session[FORM_AUTH_BACKEND_SESSION_KEY]),
+                form.auth_backends.get().id,
+            )
 
         with self.subTest("start missing next"):
             request = factory.get(url)
@@ -82,6 +88,13 @@ class AuthenticationFlowTests(APITestCase):
             request.session = {}
             response = start_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("start bad authentication backend"):
+            request = factory.get(url, {"next": next_url})
+            request.session = {}
+            response = start_view(request, slug=form.slug, plugin_id="plugin2")
+            self.assertEqual(response.content, b"plugin not allowed")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("start bad redirect"):
@@ -116,6 +129,13 @@ class AuthenticationFlowTests(APITestCase):
             request.session = {}
             response = return_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("return bad authentication backend"):
+            request = factory.get(url, {"next": next_url})
+            request.session = {}
+            response = return_view(request, slug=form.slug, plugin_id="plugin2")
+            self.assertEqual(response.content, b"plugin not allowed")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("return bad redirect"):

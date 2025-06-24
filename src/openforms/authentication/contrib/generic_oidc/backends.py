@@ -9,6 +9,7 @@ import structlog
 from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
+from glom import Path, glom
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
@@ -84,8 +85,8 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
 
             # Set the "global" loa config based on the used authentication method
             match (
-                claims.get(YiviOpenIDConnectConfig.bsn_claim),
-                claims.get(YiviOpenIDConnectConfig.legal_subject_claim),
+                glom(claims, Path(*self._config.bsn_claim), default=None),
+                glom(claims, Path(*self._config.legal_subject_claim), default=None),
             ):
                 case str(), None:
                     self._config.loa_claim = self._config.bsn_loa_claim
@@ -96,7 +97,7 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
                     self._config.default_loa = self._config.kvk_default_loa
                     self._config.loa_value_mapping = self._config.kvk_loa_value_mapping
                 case _:
-                    self._config.loa_claim = None
+                    self._config.loa_claim = [""]
                     self._config.default_loa = None
                     self._config.loa_value_mapping = None
 

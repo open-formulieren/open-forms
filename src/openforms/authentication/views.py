@@ -184,7 +184,9 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
             if not plugin.is_enabled:
                 return HttpResponseBadRequest("authentication plugin not enabled")
 
-            if not form.auth_backends.filter(backend=plugin_id).exists():
+            try:
+                auth_backend = form.auth_backends.get(backend=plugin_id)
+            except FormAuthenticationBackend.DoesNotExist:
                 return HttpResponseBadRequest("plugin not allowed")
 
             # demo plugins should require admin authentication to protect against random
@@ -210,20 +212,13 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
             logger.info("authentication.call_plugin")
             try:
-                authentication_backend = FormAuthenticationBackend.objects.get(
-                    form=form, backend=plugin.identifier
-                )
-                request.session[FORM_AUTH_BACKEND_SESSION_KEY] = str(
-                    authentication_backend.id
-                )
+                request.session[FORM_AUTH_BACKEND_SESSION_KEY] = str(auth_backend.id)
                 response = plugin.start_login(
                     request,
                     form,
                     form_url,
-                    authentication_backend.options or {},
+                    auth_backend.options or {},
                 )
-            except FormAuthenticationBackend.DoesNotExist:
-                return HttpResponseBadRequest("unknown authentication backend")
             except Exception as exc:
                 logger.exception("authentication.start_failure", exc_info=exc)
                 # append failure parameter and return to form
@@ -337,7 +332,9 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             self._plugin = plugin
             structlog.contextvars.bind_contextvars(plugin=type(plugin))
 
-            if not form.auth_backends.filter(backend=plugin_id).exists():
+            try:
+                auth_backend = form.auth_backends.get(backend=plugin_id)
+            except FormAuthenticationBackend.DoesNotExist:
                 return HttpResponseBadRequest("plugin not allowed")
 
             if plugin.return_method.upper() != request.method.upper():
@@ -356,17 +353,12 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 return HttpResponseBadRequest("plugin returned invalid data")
             except InvalidCoSignData as exc:
                 return HttpResponseBadRequest(exc.args[0])
-            try:
-                authentication_backend = FormAuthenticationBackend.objects.get(
-                    form=form, backend=plugin.identifier
-                )
-                response = plugin.handle_return(
-                    request,
-                    form,
-                    authentication_backend.options or {},
-                )
-            except FormAuthenticationBackend.DoesNotExist:
-                return HttpResponseBadRequest("unknown authentication backend")
+
+            response = plugin.handle_return(
+                request,
+                form,
+                auth_backend.options or {},
+            )
 
             if response.status_code in (301, 302):
                 location = response.get("Location", "")
