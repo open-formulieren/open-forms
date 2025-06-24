@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import override
+from typing import assert_never, override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -11,6 +11,7 @@ from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
 from furl import furl
+from glom import Path, glom
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
@@ -87,10 +88,10 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
 
             # Set the "global" loa config based on the used authentication method
             match (
-                claims.get(YiviOpenIDConnectConfig.bsn_claim),
-                claims.get(YiviOpenIDConnectConfig.kvk_claim),
+                glom(claims, Path(*self._config.bsn_claim), default=None),
+                glom(claims, Path(*self._config.kvk_claim), default=None),
             ):
-                case str(), None:
+                case str(), _:
                     self._config.loa_claim = self._config.bsn_loa_claim
                     self._config.default_loa = self._config.bsn_default_loa
                     self._config.loa_value_mapping = self._config.bsn_loa_value_mapping
@@ -98,10 +99,12 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
                     self._config.loa_claim = self._config.kvk_loa_claim
                     self._config.default_loa = self._config.kvk_default_loa
                     self._config.loa_value_mapping = self._config.kvk_loa_value_mapping
-                case _:
-                    self._config.loa_claim = None
+                case None, None:
+                    self._config.loa_claim = [""]
                     self._config.default_loa = None
                     self._config.loa_value_mapping = None
+                case _:
+                    assert_never(claims)
 
         strict_mode = False
         # Strict mode is only applicable for DigiD and eHerkenning via OIDC.
