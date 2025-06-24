@@ -549,7 +549,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 {
                     "document": summary_pdf_document,
                     "status": status,
-                    "rolllen": rollen_results,
+                    "rollen": rollen_results,
                 }
             )
 

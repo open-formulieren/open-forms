@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field
 from collections.abc import MutableMapping
-from typing import Any, Callable, Mapping, TYPE_CHECKING
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from glom import Assign, glom
 
