@@ -1,19 +1,27 @@
-import dataclasses
 from collections.abc import MutableMapping
-from typing import Any, Callable, Mapping
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from glom import Assign, glom
 
 from openforms.submissions.models import Submission
 
+from .constants import NESTED_COMPONENT_MAPPINGS
+
+if TYPE_CHECKING:
+    from openforms.registrations.constants import RegistrationAttribute
+
 NOT_SET = object()
 SKIP = object()
 
 
-@dataclasses.dataclass()
+@dataclass()
 class FieldConf:
     # value from RegistrationAttribute
     attribute: str = ""
+
+    # value with multiple mappings from RegistrationAttribute
+    nested_attributes: dict[str, "RegistrationAttribute"] = field(default_factory=dict)
 
     # transform value (eg: dates/times etc)
     transform: Callable[[Any], Any] | None = None
@@ -36,6 +44,36 @@ class FieldConf:
 
 
 type MappingConfig = Mapping[str, str | FieldConf]
+
+
+def apply_nested_data_mapping[T: MutableMapping[str, Any]](
+    nested_attributes: dict[str, "RegistrationAttribute"],
+    component_mappings: dict[str, str],
+    value: Any,
+    target_dict: T,
+) -> T:
+    """
+    Apply data mapping according to the parent attribute.
+
+    Some components have complicated data (nested objects etc.) and need special treatment.
+    Based on the parent attribute we get the nested structure and map all the data to the
+    correct fields for the external destination.
+    """
+    result = []
+    # this is relevant only for the partners component for now. In the future we can add
+    # cases for each component type.
+    for partner in value:
+        partner_mappings = {}
+        for partner_key, partner_value in partner.items():
+            if (attribute := component_mappings.get(partner_key)) in nested_attributes:
+                glom(
+                    partner_mappings,
+                    Assign(attribute, partner_value, missing=dict),
+                )
+        result.append(partner_mappings)
+
+    target_dict["multiple_rollen"] = result
+    return target_dict
 
 
 def apply_data_mapping[T: MutableMapping[str, Any]](
@@ -65,7 +103,7 @@ def apply_data_mapping[T: MutableMapping[str, Any]](
 
         # the actual mapping sets a path into a nested dictionary and the meta-attribute
         mapping = {
-            # map path into structure witha meta-attribute
+            # map path into structure with a meta-attribute
             "person.name.first": XYZ.persoon_voornaam,
 
             # or for options use wrap it in FieldConf
@@ -125,7 +163,18 @@ def apply_data_mapping[T: MutableMapping[str, Any]](
             if value is SKIP:
                 continue
 
-        glom(target_dict, Assign(target_path, value, missing=dict))
+        if not (nested_attributes := conf.nested_attributes):
+            glom(target_dict, Assign(target_path, value, missing=dict))
+
+        else:
+            parent_attribute = conf.attribute
+            component_mappings = NESTED_COMPONENT_MAPPINGS[parent_attribute]
+            apply_nested_data_mapping(
+                nested_attributes,
+                component_mappings,
+                value,
+                target_dict,
+            )
 
     return target_dict
 

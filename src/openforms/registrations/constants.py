@@ -14,6 +14,10 @@ class RegistrationAttribute(models.TextChoices):
     initiator_voornamen = "initiator_voornamen", _("Initiator > Voornamen")
     initiator_geslachtsnaam = "initiator_geslachtsnaam", _("Initiator > Geslachtsnaam")
     initiator_tussenvoegsel = "initiator_tussenvoegsel", _("Initiator > Tussenvoegsel")
+    initiator_voorvoegselGeslachtsnaam = (
+        "initiator_voorvoegselGeslachtsnaam",
+        _("Initiator > VoorvoegselGeslachtsnaam"),
+    )
     initiator_geslachtsaanduiding = (
         "initiator_geslachtsaanduiding",
         _("Initiator > Geslachtsaanduiding"),
@@ -23,6 +27,10 @@ class RegistrationAttribute(models.TextChoices):
         "initiator_aanschrijfwijze",
         _("Initiator > Aanschrijfwijze"),
     )
+
+    # Partner
+    initiator_partners = "initiator_partners", _("Initiator > Partners")
+    partner_bsn = "partner_bsn", _("Partner > BSN")
 
     # Verblijfsadres for both Natuurlijk Persoon and Vestiging
     initiator_straat = "initiator_straat", _("Initiator > Straat")

@@ -4,7 +4,13 @@ import {FormattedMessage} from 'react-intl';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
-import {ConfidentialityLevel, MedewerkerRoltype, OrganisationRSIN, ProductSelect} from './fields';
+import {
+  ConfidentialityLevel,
+  OrganisationRSIN,
+  PartnerRoltype,
+  ProductSelect,
+  RoltypeFields,
+} from './fields';
 
 const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) => {
   return (
@@ -19,6 +25,7 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
         'organisatieRsin',
         'zaakVertrouwelijkheidaanduiding',
         'medewerkerRoltype',
+        'partnerRoltype',
         'productUrl',
       ]}
     >
@@ -42,7 +49,7 @@ const OptionalOptionsFieldset = ({confidentialityLevelChoices, catalogueUrl}) =>
           />
         }
       >
-        <MedewerkerRoltype catalogueUrl={catalogueUrl} />
+        <RoltypeFields catalogueUrl={catalogueUrl} />
       </ErrorBoundary>
 
       <ErrorBoundary

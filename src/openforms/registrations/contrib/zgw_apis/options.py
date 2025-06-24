@@ -132,6 +132,13 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         allow_blank=True,
     )
+    partner_roltype = serializers.CharField(
+        required=False,
+        help_text=_(
+            "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
+        ),
+        allow_blank=True,
+    )
 
     # Objects API
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
@@ -306,8 +313,8 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
 
     3. Validate that the configured case properties ("eigenschappen") exist on the
        specified case type.
-    4. Validate that the employee role type ("medewerkerroltype") exists on the
-       specified case type.
+    4. Validate that the employee ("medewerkerroltype") and the partner role partnerroltype
+       types exist on the specified case type.
     """
     with get_catalogi_client(attrs["zgw_api_group"]) as client:
         # validate the catalogue itself - the queryset in the field guarantees that
@@ -324,7 +331,7 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         _validate_case_type_properties(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
-        _validate_medewerker_roltype(
+        _validate_medewerker_and_partner_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
 
@@ -547,7 +554,7 @@ def _validate_case_type_properties(
         )
 
 
-def _validate_medewerker_roltype(
+def _validate_medewerker_and_partner_roltype(
     client: CatalogiClient,
     attrs: RegistrationOptions,
     iter_case_type_versions: CaseTypeVersionsIterator | None,

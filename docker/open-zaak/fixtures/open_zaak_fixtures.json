@@ -73,6 +73,22 @@
     }
 },
 {
+    "model": "catalogi.catalogus",
+    "pk": 4,
+    "fields": {
+        "_etag": "2db74c8e144a4f336dbca8757ed25cad",
+        "naam": "Test catalog 3",
+        "uuid": "f27e8ac9-3626-45c6-95ad-caac35f3eeec",
+        "domein": "PARTN",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "Test partners",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
     "model": "catalogi.eigenschapspecificatie",
     "pk": 1,
     "fields": {
@@ -550,6 +566,36 @@
     }
 },
 {
+    "model": "catalogi.resultaattype",
+    "pk": 7,
+    "fields": {
+        "_etag": "8f591c39bf2a96bb1d11127bed27847a",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "2ed97d82-f7d6-4995-9b42-de5dd104eb89",
+        "zaaktype": 8,
+        "omschrijving": "Done",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/43ac0469-e0c0-4985-a6ce-8ec285d2df47",
+        "omschrijving_generiek": "Vastgesteld",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
     "model": "catalogi.roltype",
     "pk": 1,
     "fields": {
@@ -703,6 +749,19 @@
         "omschrijving": "Baliemedewerker",
         "omschrijving_generiek": "klantcontacter",
         "zaaktype": 7
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 15,
+    "fields": {
+        "_etag": "cf6f206fc8e7d2b832ac35edfdfe4248",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "522c0956-c1e5-44ed-9fd6-524425e80799",
+        "omschrijving": "partner",
+        "omschrijving_generiek": "belanghebbende",
+        "zaaktype": 8
     }
 },
 {
@@ -879,6 +938,42 @@
         "statustype_omschrijving": "Afgerond",
         "statustype_omschrijving_generiek": "",
         "statustypevolgnummer": 5,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 13,
+    "fields": {
+        "_etag": "51d4786357662f58668335bd305f2e5a",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "2ac4d3aa-ae81-49f7-a33e-f1d414049465",
+        "zaaktype": 8,
+        "statustype_omschrijving": "Ontvangen",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 14,
+    "fields": {
+        "_etag": "36af0a5b40ba871d879e5bb42a8de6f7",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "9f912d7f-5abe-44f6-b31a-0369e0401990",
+        "zaaktype": 8,
+        "statustype_omschrijving": "Afgerond",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 2,
         "doorlooptijd": null,
         "informeren": false,
         "statustekst": "",
@@ -1158,6 +1253,52 @@
         "bronzaaktype_identificatie": "",
         "bronzaaktype_omschrijving": "",
         "catalogus": 2,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 8,
+    "fields": {
+        "_etag": "12bf3924ae7a20f3423dfaf595068fba",
+        "datum_begin_geldigheid": "2020-06-20",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "c2fc6011-33b4-4ba7-bc6d-8744ac6cee68",
+        "identificatie": "ZTP-001",
+        "zaaktype_omschrijving": "Case type for partners",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "intern",
+        "doel": "Testing",
+        "aanleiding": "Test",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Formulier indienen",
+        "onderwerp": "Testformulier",
+        "handeling_behandelaar": "Controleren",
+        "doorlooptijd_behandeling": "P1Y",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2020-06-20",
+        "verantwoordelijke": "Ontwikkelaar",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Testen",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 4,
         "deelzaaktypen": []
     }
 }

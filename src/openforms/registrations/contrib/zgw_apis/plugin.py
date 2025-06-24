@@ -178,6 +178,17 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             RegistrationAttribute.initiator_geslachtsaanduiding,
             transform=_gender_choices,
         ),
+        "partners": FieldConf(
+            attribute=RegistrationAttribute.initiator_partners,
+            nested_attributes={
+                "betrokkeneIdentificatie.inpBsn": RegistrationAttribute.partner_bsn,
+                "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
+                "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_voorvoegselGeslachtsnaam,
+                "betrokkeneIdentificatie.voorletters": RegistrationAttribute.initiator_voorletters,
+                "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
+                "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
+            },
+        ),
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         # Verblijfsadres for both Natuurlijk Persoon and Vestiging
         "betrokkeneIdentificatie.verblijfsadres.wplWoonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
@@ -381,16 +392,53 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.documents.report.relation",
             )
 
-            rol = execute_unless_result_exists(
-                partial(
-                    zaken_client.create_rol,
-                    catalogi_client=catalogi_client,
-                    zaak=zaak,
-                    betrokkene=rol_data,
-                ),
-                submission,
-                "intermediate.rol",
-            )
+            # We may have multiple roles that need to be created, check the flag we set
+            # in the function apply_data_mapping
+            rollen_results = None
+            if not (multiple_rollen := rol_data.get("multiple_rollen")):
+                rol = execute_unless_result_exists(
+                    partial(
+                        zaken_client.create_rol,
+                        catalogi_client=catalogi_client,
+                        zaak=zaak,
+                        betrokkene=rol_data,
+                    ),
+                    submission,
+                    "intermediate.rol",
+                )
+                rollen_results = rol
+            else:
+                rollen = []
+                for index, data in enumerate(multiple_rollen):
+                    # for now this is happening only for the partners component
+                    partner_roltype_omschrijving = options.get("partner_roltype")
+                    assert partner_roltype_omschrijving
+
+                    roltypen = catalogi_client.list_roltypen(
+                        zaaktype=zaak["zaaktype"],
+                        matcher=omschrijving_matcher(partner_roltype_omschrijving),
+                    )
+                    roltype = roltypen[0]
+
+                    data.update(
+                        {
+                            "roltype": roltype["url"],
+                            "betrokkeneType": rol_data["betrokkeneType"],
+                        }
+                    )
+
+                    rol = execute_unless_result_exists(
+                        partial(
+                            zaken_client.create_rol,
+                            catalogi_client=catalogi_client,
+                            zaak=zaak,
+                            betrokkene=data,
+                        ),
+                        submission,
+                        f"intermediate.rol.{index}",
+                    )
+                    rollen.append(rol)
+                rollen_results = rollen
 
             medewerker_rol: dict[str, Any] | None = None
             if submission.has_registrator:
@@ -501,7 +549,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 {
                     "document": summary_pdf_document,
                     "status": status,
-                    "rol": rol,
+                    "rollen": rollen_results,
                 }
             )
 

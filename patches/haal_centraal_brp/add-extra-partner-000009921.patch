@@ -1,0 +1,56 @@
+diff --git a/test-data.json b/test-data.json
+index 23afaad..102de1d 100644
+--- a/test-data.json
++++ b/test-data.json
+@@ -864,6 +864,44 @@
+         "ontbindingHuwelijkPartnerschap": {
+           "datum": "19730812"
+         }
++      },
++      {
++        "burgerservicenummer": "123456782",
++        "geslacht": {
++          "code": "V",
++          "omschrijving": "vrouw"
++        },
++        "soortVerbintenis": {
++          "code": "H",
++          "omschrijving": "huwelijk"
++        },
++        "naam": {
++          "voornamen": "Test second partner",
++          "geslachtsnaam": "Test"
++        },
++        "geboorte": {
++          "land": {
++            "code": "6030",
++            "omschrijving": "Nederland"
++          },
++          "plaats": {
++            "code": "0947",
++            "omschrijving": "Neer"
++          },
++          "datum": "19450418"
++        },
++        "aangaanHuwelijkPartnerschap": {
++          "datum": "19650812",
++          "land": {
++            "code": "6030",
++            "omschrijving": "Nederland"
++          },
++          "plaats": {
++            "code": "0599",
++            "omschrijving": "Rotterdam"
++          }
++        },
++        "ontbindingHuwelijkPartnerschap": { "datum": "19730812" }
+       }
+     ]
+   },
+@@ -143015,4 +143053,4 @@
+       }
+     ]
+   }
+-]
+\ No newline at end of file
++]
