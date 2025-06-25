@@ -18,7 +18,6 @@ class ConfigCheckTests(SimpleTestCase):
         self.config = KadasterApiConfig(
             search_service=ServiceFactory.build(
                 api_root="https://kadaster/",
-                oas="https://kadaster/api/schema/openapi.yaml",
             )
         )
         config_patcher = patch(

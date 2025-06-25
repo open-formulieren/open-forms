@@ -12,7 +12,7 @@ import requests_mock
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
-from zgw_consumers.test import generate_oas_component
+from zgw_consumers_oas.component_generation import generate_oas_component
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
