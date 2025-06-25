@@ -79,6 +79,12 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
                 ],
             },
         )
+        is_yivi = factory.Trait(
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=DigiDAssuranceLevels.substantial,
+        )
 
 
 class RegistratorInfoFactory(factory.django.DjangoModelFactory):
