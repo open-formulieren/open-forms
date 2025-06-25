@@ -1,3 +1,4 @@
+import json
 from collections.abc import Collection
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
@@ -83,12 +84,17 @@ class BaseAuthInfo(models.Model):
 
         for field_name in self.identifying_attributes:
             field = self._meta.get_field(field_name)
-            assert isinstance(field, models.CharField)
+            assert isinstance(field, models.CharField | models.JSONField)
             _value = getattr(self, field_name)
             # empty fields that are not required can be left empty - we don't need to
             # hash those.
             if not _value and field.blank:
                 continue
+
+            if isinstance(field, models.JSONField):
+                # Make sure json values are cast to string
+                _value = json.dumps(_value)
+
             hashed_value = get_salted_hash(_value)
             setattr(self, field_name, hashed_value)
 
@@ -223,6 +229,7 @@ class AuthInfo(BaseAuthInfo):
     identifying_attributes = BaseAuthInfo.identifying_attributes + (
         "acting_subject_identifier_value",
         "legal_subject_identifier_value",
+        "additional_claims",
     )
 
     class Meta:
