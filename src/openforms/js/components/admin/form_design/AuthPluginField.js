@@ -33,7 +33,11 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
                 <FormattedMessage
                   description="Auth plugin provided attributes suffix"
                   defaultMessage="(provides {attrs})"
-                  values={{attrs: plugin.providesAuth}}
+                  values={{
+                    attrs: Array.isArray(plugin.providesAuth)
+                      ? plugin.providesAuth.join(', ')
+                      : plugin.providesAuth,
+                  }}
                 />
               </>
             }

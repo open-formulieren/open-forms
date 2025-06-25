@@ -36,6 +36,17 @@ urlpatterns = [
         ),
     ),
     path(
+        "eidas-oidc/",
+        include(
+            (
+                [
+                    path("callback/", oidc_callback, name="callback"),
+                ],
+                "eidas_oidc",
+            )
+        ),
+    ),
+    path(
         "digid-machtigen-oidc/",
         include(
             (

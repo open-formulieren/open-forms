@@ -15,13 +15,17 @@ from .constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
+from .contrib.digid_eherkenning_oidc.constants import EIDAS_PLUGIN_ID as EIDASPluginID
+from .contrib.yivi_oidc.constants import PLUGIN_ID as YiviPluginID
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 from .types import (
     DigiDContext,
     DigiDMachtigenContext,
     EHerkenningContext,
     EHerkenningMachtigenContext,
+    EIDASContext,
     EmployeeContext,
+    YiviContext,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -210,6 +214,14 @@ class AuthInfo(BaseAuthInfo):
         null=True,
     )
 
+    additional_claims = models.JSONField(
+        verbose_name=_("additional claims"),
+        help_text=_(
+            "Additional claims, configurable in form OIDC configuration, returned by the authentication plugin."
+        ),
+        default=dict,
+    )
+
     identifying_attributes = BaseAuthInfo.identifying_attributes + (
         "acting_subject_identifier_value",
         "legal_subject_identifier_value",
@@ -257,9 +269,64 @@ class AuthInfo(BaseAuthInfo):
         | EHerkenningContext
         | EHerkenningMachtigenContext
         | EmployeeContext
+        | EIDASContext
     ):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
+
+        if self.plugin == YiviPluginID:
+            yivi_context: YiviContext = {
+                "source": "yivi",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.attribute,
+                        "identifier": self.value,
+                        "additionalInformation": self.additional_claims,
+                    }
+                },
+            }
+            if self.attribute is not AuthAttribute.pseudo:
+                yivi_context["levelOfAssurance"] = self.loa
+            return yivi_context
+
+        # eIDAS authentication for natural person
+        if self.plugin == EIDASPluginID and self.acting_subject_identifier_value == "":
+            eidas_context: EIDASContext = {
+                "source": "eidas",
+                "levelOfAssurance": self.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.legal_subject_identifier_type,
+                        "identifier": self.legal_subject_identifier_value,
+                        "firstName": self.additional_claims["first_name"],
+                        "familyName": self.additional_claims["family_name"],
+                        "dateOfBirth": self.additional_claims["date_of_birth"],
+                    },
+                },
+            }
+            return eidas_context
+
+        # eIDAS authentication for company
+        if self.plugin == EIDASPluginID:
+            eidas_context: EIDASContext = {
+                "source": "eidas",
+                "levelOfAssurance": self.loa,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": self.legal_subject_identifier_type,
+                        "identifier": self.legal_subject_identifier_value,
+                        "companyName": self.additional_claims["company_name"],
+                    },
+                    "actingSubject": {
+                        "identifierType": self.acting_subject_identifier_type,
+                        "identifier": self.acting_subject_identifier_value,
+                        "firstName": self.additional_claims["first_name"],
+                        "familyName": self.additional_claims["family_name"],
+                        "dateOfBirth": self.additional_claims["date_of_birth"],
+                    },
+                },
+            }
+            return eidas_context
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate
