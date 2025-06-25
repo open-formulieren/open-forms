@@ -65,6 +65,7 @@ class Auth(BaseStaticVariable):
             plugin=submission.auth_info.plugin,
             attribute=submission.auth_info.attribute,
             value=submission.auth_info.value,
+            additional_claims=submission.auth_info.additional_claims,
         )
 
         return auth_data
@@ -159,6 +160,24 @@ class AuthPseudo(BaseStaticVariable):
 
     def as_json_schema(self):
         return {"title": "Pseudo", "type": "string"}
+
+
+@register_static_variable("auth_additional_claims")
+class AuthContextAdditionalClaims(BaseStaticVariable):
+    name = _("Authentication additional claims")
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(self, submission: Submission | None = None):
+        if submission is None or not submission.is_authenticated:
+            return None
+        return submission.auth_info.additional_claims
+
+    def as_json_schema(self):
+        return {
+            "title": "Authentication additional claims",
+            "description": "Additional claims returned by the authentication backend.",
+            "type": ["object", "null"],
+        }
 
 
 @register_static_variable("auth_context")
