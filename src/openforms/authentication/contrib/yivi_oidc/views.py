@@ -120,10 +120,10 @@ class OIDCAuthenticationInitView(_OIDCInit):
         The scopes-to-add are fetched from the plugin options `authentication_options`
         and `additional_attributes_groups`.
 
-        We require the user to choose one of the authentication_options, if multiple are
-        defined. Otherwise, if only one is defined, then that one becomes required.
-        If no authentication_options are defined, then we don't add an authentication
-        scope (this will result into anonymous/pseudo authentication).
+        When multiple `authentication_options` are defined, the user can choose which one
+        to use. Otherwise, if only one is defined, then that one becomes required. When
+        no `authentication_options` are defined we fallback to the pseudo authentication
+        option.
 
         All the `additional_attributes_groups` are optional, meaning that the end-user
         can choose which information they want to provide.
@@ -159,9 +159,14 @@ class OIDCAuthenticationInitView(_OIDCInit):
 
                     case AuthAttribute.pseudo:
                         # Leave this empty, to allow "anonymous" authentication
-                        authentication_condiscon.append([])
+                        authentication_condiscon.append(
+                            [".".join(yivi_global_config.pseudo_claim)]
+                        )
 
             condiscon_items.append(authentication_condiscon)
+        else:
+            # If no authentication options are selected, fallback to the pseudo_claim
+            condiscon_items.append([[".".join(yivi_global_config.pseudo_claim)]])
 
         # Add additional groups, as optional
         attributes_groups = AttributeGroup.objects.filter(

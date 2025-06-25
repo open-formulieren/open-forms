@@ -32,13 +32,13 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             choices=(
                 (AuthAttribute.bsn.value, AuthAttribute.bsn.label),
                 (AuthAttribute.kvk.value, AuthAttribute.kvk.label),
+                (AuthAttribute.pseudo.value, AuthAttribute.pseudo.label),
             )
         ),
         label=_("Authentication options"),
         help_text=_(
-            "Authentication options that can be used by end-users. The pseudo option "
-            "makes this field optional. If left empty, a pseudo value will be used as "
-            "identifier."
+            "Authentication options that can be used by end-users. If left empty, a "
+            "pseudo value will be used as identifier."
         ),
         default=list,
         required=False,
