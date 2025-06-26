@@ -17,7 +17,6 @@ from oidc_plugins.constants import (
     OIDC_ORG_IDENTIFIER,
 )
 from openforms.typing import JSONObject
-from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
 from openforms.utils.tests.vcr import OFVCRMixin
 
 TEST_FILES = (Path(__file__).parent / "data").resolve()

@@ -8,17 +8,20 @@ from django.utils.translation import gettext
 from django_jsonform.models.fields import JSONField
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
-from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 from mozilla_django_oidc_db.models import OIDCClient
+from mozilla_django_oidc_db.plugins import OIDCAdminPlugin
+from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.tests.factories import (
+    OIDCClientFactory,
     OIDCProviderFactory,
 )
 
-from oidc_plugins.constants import OIDC_DIGID_IDENTIFIER
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
+    DigiDOIDCAuthentication,
+)
+from openforms.authentication.registry import register as auth_register
 from openforms.forms.tests.factories import FormFactory
-
-from .base import make_client
 
 
 # disable django solo cache to prevent test isolation breakage
@@ -57,8 +60,15 @@ class DigiDConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        config = make_client(
-            identifier=OIDC_ADMIN_CONFIG_IDENTIFIER, provider=self.provider
+        @oidc_register("test-can-disable-oidc-plugin")
+        class TestOIDCPlugin(OIDCAdminPlugin):
+            pass
+
+        config = OIDCClientFactory.create(
+            identifier="test-can-disable-oidc-plugin",
+            oidc_provider=self.provider,
+            enabled=True,
+            with_admin_options=True,
         )
 
         FormFactory.create(authentication_backend="other-backend")
@@ -85,13 +95,22 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertFalse(config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        config = make_client(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            provider=self.provider,
-            overrides={"enabled": True},
+        @oidc_register("test-cannot-disable-oidc-plugin")
+        class TestOIDCPlugin(OIDCAdminPlugin):
+            pass
+
+        @auth_register("test-auth-backend")
+        class TestAuthPlugin(DigiDOIDCAuthentication):
+            oidc_plugin_identifier = "test-cannot-disable-oidc-plugin"
+
+        config = OIDCClientFactory.create(
+            identifier="test-cannot-disable-oidc-plugin",
+            oidc_provider=self.provider,
+            enabled=True,
+            with_admin_options=True,
         )
 
-        FormFactory.create(authentication_backend="digid_oidc")
+        FormFactory.create(authentication_backend="test-auth-backend")
 
         change_page = self.app.get(
             reverse(
@@ -120,10 +139,15 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertTrue(config.enabled)
 
     def test_leave_enabled(self):
-        config = make_client(
-            identifier=OIDC_DIGID_IDENTIFIER,
-            provider=self.provider,
-            overrides={"enabled": True},
+        @oidc_register("test-can-leave-enabled-oidc-plugin")
+        class TestOIDCPlugin(OIDCAdminPlugin):
+            pass
+
+        config = OIDCClientFactory.create(
+            identifier="test-can-leave-enabled-oidc-plugin",
+            oidc_provider=self.provider,
+            enabled=True,
+            with_admin_options=True,
         )
 
         FormFactory.create(authentication_backend="other-backend")

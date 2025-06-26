@@ -14,10 +14,11 @@ from unittest.mock import patch
 
 from django.apps import apps
 
+import faker
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from glom import assign
 from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
-from mozilla_django_oidc_db.models import OIDCClient, OIDCProvider
+from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.tests.factories import (
     OIDCProviderFactory,
 )
@@ -219,10 +220,12 @@ CLIENT_DEFAULT_SCOPES = {
 @contextmanager
 def mock_oidc_client(
     identifier: str,
+    *,
+    provider_identifier: str = "",
     overrides: JSONObject | None = None,
     provider_overrides: JSONObject | None = None,
 ):
-    provider_defaults = {
+    provider_data = {
         "oidc_op_jwks_endpoint": f"{KEYCLOAK_BASE_URL}/certs",
         "oidc_op_authorization_endpoint": f"{KEYCLOAK_BASE_URL}/auth",
         "oidc_op_token_endpoint": f"{KEYCLOAK_BASE_URL}/token",
@@ -230,11 +233,17 @@ def mock_oidc_client(
         "oidc_op_logout_endpoint": f"{KEYCLOAK_BASE_URL}/logout",
     }
     if provider_overrides:
-        provider_defaults = {**provider_defaults, **provider_overrides}
+        provider_data = {
+            "identifier": provider_identifier,
+            **provider_data,
+            **provider_overrides,
+        }
 
-    provider, _ = OIDCProvider.objects.update_or_create(
-        identifier="keycloak-provider", defaults=provider_defaults
-    )
+    if not provider_identifier:
+        fake = faker.Faker()
+        provider_data["identifier"] = fake.slug()
+
+    provider = OIDCProviderFactory.create(**provider_data)
 
     defaults = {
         "enabled": True,
