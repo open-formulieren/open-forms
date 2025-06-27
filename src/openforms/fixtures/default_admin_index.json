@@ -179,6 +179,22 @@
                 "configcertificate"
             ],
             [
+                "digid_eherkenning",
+                "digidconfiguration"
+            ],
+            [
+                "digid_eherkenning",
+                "eherkenningconfiguration"
+            ],
+            [
+                "mozilla_django_oidc_db",
+                "OIDCProvider"
+            ],
+            [
+                "mozilla_django_oidc_db",
+                "OIDCClient"
+            ],
+            [
                 "django_camunda",
                 "camundaconfig"
             ],
