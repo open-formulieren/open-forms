@@ -274,7 +274,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.21.0
+django-digid-eherkenning @ git+https://github.com/maykinmedia/django-digid-eherkenning.git@531ca363d2cd30cb927a52649bec44b14cd760c6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

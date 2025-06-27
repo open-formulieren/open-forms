@@ -162,7 +162,7 @@ django-csp==3.8
     # via -r requirements/base.in
 django-csp-reports==1.8.1
     # via -r requirements/base.in
-django-digid-eherkenning==0.21.0
+django-digid-eherkenning @ git+https://github.com/maykinmedia/django-digid-eherkenning.git@531ca363d2cd30cb927a52649bec44b14cd760c6
     # via -r requirements/base.in
 django-filter==24.2
     # via -r requirements/base.in
@@ -343,9 +343,7 @@ maykin-python3-saml==1.16.1
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
 mozilla-django-oidc-db @ git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@5932f51cf708e76dddd588b7abf9f7b5e5699e84
-    # via
-    #   -r requirements/base.in
-    #   django-digid-eherkenning
+    # via -r requirements/base.in
 o365==2.0.31
     # via -r requirements/base.in
 oauthlib==3.2.2

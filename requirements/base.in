@@ -44,7 +44,8 @@ django-capture-tag
 django-colorfield
 django-cookie-consent
 django-cors-headers
-django-digid-eherkenning[oidc]
+# django-digid-eherkenning[oidc]
+git+https://github.com/maykinmedia/django-digid-eherkenning.git@531ca363d2cd30cb927a52649bec44b14cd760c6
 django-flags
 django-hijack
 django-import-export
