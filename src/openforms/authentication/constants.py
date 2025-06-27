@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 FORM_AUTH_SESSION_KEY = "form_auth"
+FORM_AUTH_BACKEND_SESSION_KEY = "form_auth_backend"
 REGISTRATOR_SUBJECT_SESSION_KEY = "registrator_subject"
 
 CO_SIGN_PARAMETER = "coSignSubmission"
