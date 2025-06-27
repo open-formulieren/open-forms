@@ -61,7 +61,8 @@ django-tinymce
 django-treebeard
 django-upgrade-check
 django-yubin
-mozilla-django-oidc-db[setup-configuration]
+# mozilla-django-oidc-db[setup-configuration]
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@5932f51cf708e76dddd588b7abf9f7b5e5699e84
 maykin-2fa
 django-timeline-logger
 django-csp

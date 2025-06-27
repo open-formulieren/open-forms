@@ -207,9 +207,7 @@ django-sendfile2==0.7.1
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
 django-setup-configuration==0.8.1
-    # via
-    #   mozilla-django-oidc-db
-    #   zgw-consumers
+    # via zgw-consumers
 django-simple-certmanager==2.4.1
     # via
     #   -r requirements/base.in
@@ -344,7 +342,7 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.22.0
+mozilla-django-oidc-db @ git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@5932f51cf708e76dddd588b7abf9f7b5e5699e84
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
