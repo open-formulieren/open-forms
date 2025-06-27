@@ -241,6 +241,13 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
                 {"path": branch_number_claim_path, "legacy": "branch_number_claim"}
             )
 
+        if identifier_type_claim_path := config.options["identity_settings"].get(
+            "identifier_type_claim_path"
+        ):
+            optional_claims.append(
+                {"path": identifier_type_claim_path, "legacy": "identifier_type_claim"}
+            )
+
         return {
             "always_required_claims": [
                 {
@@ -292,6 +299,13 @@ class OIDCeHerkenningBewindvoeringPlugin(BaseDigiDeHerkenningPlugin):
         ):
             optional_claims.append(
                 {"path": branch_number_claim_path, "legacy": "branch_number_claim"}
+            )
+
+        if identifier_type_claim_path := config.options["identity_settings"].get(
+            "identifier_type_claim_path"
+        ):
+            optional_claims.append(
+                {"path": identifier_type_claim_path, "legacy": "identifier_type_claim"}
             )
 
         return {
