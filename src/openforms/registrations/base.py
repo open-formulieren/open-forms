@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Generic, TypedDict, TypeVar
 
 from rest_framework import serializers
 
+from openforms.formio.typing import Component
 from openforms.plugins.plugin import AbstractBasePlugin
+from openforms.typing import JSONObject
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 if TYPE_CHECKING:
@@ -103,3 +105,14 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
         Return the static variables for this registration plugin.
         """
         return []
+
+    def process_variable_schema(
+        self, component: Component, schema: JSONObject, options: OptionsT
+    ):
+        """Process a variable schema for this registration plugin."""
+        raise NotImplementedError()
+
+    @staticmethod
+    def allows_json_schema_generation(options: OptionsT) -> bool:
+        """Indicate whether the plugin allows generating a JSON schema."""
+        return False

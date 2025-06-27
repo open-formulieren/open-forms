@@ -29,6 +29,18 @@
   @include bem.modifier('center') {
     text-align: center;
   }
+
+  @include bem.modifier('link') {
+    background: none;
+    border: none;
+    text-decoration: none;
+    color: var(--link-fg);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .button-container {

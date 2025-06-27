@@ -9,6 +9,7 @@ from openforms.formio.service import (
     rewrite_formio_components,
 )
 from openforms.plugins.registry import BaseRegistry
+from openforms.registrations.service import process_variable_schema
 from openforms.submissions.models import Submission
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.base import BaseStaticVariable
@@ -35,12 +36,14 @@ def _iter_form_variables(
             variables_registry=additional_variables_registry
         )
     # Handle form variables holding dynamic data (component and user defined)
-    yield from form.formvariable_set.all()
+    yield from form.formvariable_set.all()  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def generate_json_schema(
     form: Form,
     limit_to_variables: Sequence[str],
+    backend_id: str = "",
+    backend_options: dict | None = None,
     additional_variables_registry: BaseRegistry[BaseStaticVariable] | None = None,
     submission: Submission | None = None,
 ) -> JSONObject:
@@ -51,6 +54,11 @@ def generate_json_schema(
 
     :param form: The form to generate JSON schema for.
     :param limit_to_variables: Variables that will be included in the schema.
+    :param backend_id: Optional registration backend identifier for which to generate
+      the schema.
+    :param backend_options: Optional registration backend options. Note: there is
+      currently no check if the options correspond to the provided ``backend_id``, so
+      please ensure that they do.
     :param additional_variables_registry: Optional extra registry of static variables.
     :param submission: Optional submission to use for dynamic data. If not provided, a
       fake submission will be created.
@@ -79,9 +87,16 @@ def generate_json_schema(
         if variable.source == FormVariableSources.component:
             variable.form_definition.configuration = new_configuration.configuration
 
-        process_variable_schema_and_add_to_schema(
+        schema = generate_variable_schema(
+            variable,
+            submission.total_configuration_wrapper,
+            backend_id,
+            backend_options,
+        )
+
+        process_variable_schema_and_add_to_complete_schema(
             variable.key,
-            variable.as_json_schema(),
+            schema,
             requested_variables_schema,
             submission.total_configuration_wrapper,
         )
@@ -98,7 +113,45 @@ def generate_json_schema(
     return schema
 
 
-def process_variable_schema_and_add_to_schema(
+def generate_variable_schema(
+    variable: FormVariable,
+    configuration_wrapper: FormioConfigurationWrapper,
+    backend_id: str = "",
+    backend_options: dict | None = None,
+) -> JSONObject:
+    """Generate the schema for a form variable.
+
+    To ensure the schema represents the submission data that is sent through different
+    registration backends, we need to perform some processing.
+
+    :param variable: The form variable.
+    :param configuration_wrapper: Updated total configuration wrapper. This is used to
+      get the component from.
+    :param backend_id: The registration backend identifier. If an empty string is
+      passed, no processing of the schema is performed, meaning it will represent the
+      formio submission data.
+    :param backend_options: Optional registration backend options. If ``backend_id`` was
+      provided, this cannot be ``None``. Note: there is currently no check if the
+      options correspond to the provided ``backend_id``, so please ensure that they do.
+
+    :return: Schema for the variable.
+    """
+    schema = variable.as_json_schema()
+
+    if variable.source != FormVariableSources.component:
+        return schema
+
+    component = configuration_wrapper[variable.key]
+    assert component is not None
+
+    if backend_id:
+        assert backend_options is not None
+        process_variable_schema(component, schema, backend_id, backend_options)
+
+    return schema
+
+
+def process_variable_schema_and_add_to_complete_schema(
     key: str,
     variable_schema: JSONObject,
     total_schema: NestedDict,
@@ -124,9 +177,13 @@ def process_variable_schema_and_add_to_schema(
         key in configuration_wrapper
         and configuration_wrapper[key]["type"] == "editgrid"
     ):
+        assert isinstance(variable_schema["items"], dict)
+        assert isinstance(variable_schema["items"]["properties"], dict)
+
         edit_grid_schema = NestedDict()
         for child_key, child_schema in variable_schema["items"]["properties"].items():
-            process_variable_schema_and_add_to_schema(
+            assert isinstance(child_schema, dict)
+            process_variable_schema_and_add_to_complete_schema(
                 child_key,
                 child_schema,
                 edit_grid_schema,
@@ -169,6 +226,7 @@ class NestedDict(UserDict):
         """
         value = self.data
         for k in key.split("."):
+            assert isinstance(value, dict)
             value = value[k]
         return value
 
@@ -179,16 +237,19 @@ class NestedDict(UserDict):
         data = self.data
         key_list = key.split(".")
         for k in key_list[:-1]:
+            assert isinstance(data, dict)
             child = data.get(k, None)
             if child is None:
                 data[k] = {}
             data = data[k]
+        assert isinstance(data, dict)
         data[key_list[-1]] = value
 
-    def __contains__(self, key: str) -> bool:
+    def __contains__(self, key: object) -> bool:
         """Check if a key is present in the internal dictionary. Gets called via
         ``NestedData().get(...)``.
         """
+        assert isinstance(key, str)
         try:
             self[key]
         except KeyError:

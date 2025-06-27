@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
+import structlog
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
@@ -27,13 +28,19 @@ from openforms.variables.constants import FormVariableSources
 
 from ..json_schema import generate_json_schema
 from ..messages import add_success_message
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..models import (
+    Form,
+    FormDefinition,
+    FormStep,
+    FormVersion,
+)
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
+    FormJSONSchemaRenderer,
     FormVariableJSONParser,
     FormVariableJSONRenderer,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -53,7 +60,10 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
+from .serializers.form import FormJsonSchemaOptionsSerializer
 from .serializers.logic.form_logic import FormLogicListSerializer
+
+logger = structlog.get_logger(__name__)
 
 
 @extend_schema(
@@ -612,17 +622,36 @@ class FormViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary=_("JSON schema"),
         description=_("Generate the JSON schema for a form."),
-        parameters=[UUID_OR_SLUG_PARAMETER],
         request=None,
-        responses={status.HTTP_200_OK: OpenApiTypes.OBJECT},
+        responses={
+            status.HTTP_200_OK: OpenApiTypes.OBJECT,
+            status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+        },
+        parameters=[
+            *FormJsonSchemaOptionsSerializer.as_openapi_params(),
+            UUID_OR_SLUG_PARAMETER,
+        ],
     )
-    @action(detail=True, methods=["get"], permission_classes=(permissions.IsAdminUser,))
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=(permissions.IsAdminUser,),
+        renderer_classes=(FormJSONSchemaRenderer,),
+    )
     def json_schema(self, request, *args, **kwargs):
         form = self.get_object()
 
+        serializer = FormJsonSchemaOptionsSerializer(
+            data=request.query_params, context={"form": form}
+        )
+        serializer.is_valid(raise_exception=True)
+
         schema = generate_json_schema(
-            form,
+            form=form,
             limit_to_variables=form.formvariable_set.values_list("key", flat=True),
+            backend_id=serializer.validated_data["backend"],
+            backend_options=serializer.validated_data["options"],
         )
 
         return Response(schema)

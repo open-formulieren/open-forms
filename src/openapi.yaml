@@ -2300,6 +2300,11 @@ paths:
           embedding page emits a `style-src` policy containing `unsafe-inline`, then
           you can omit this header without losing functionality. We recommend favouring
           the nonce mechanism though.
+      - in: query
+        name: registrationBackendKey
+        schema:
+          type: string
+        description: The registration backend key for which to generate the schema.
       - in: path
         name: uuid_or_slug
         schema:
@@ -2318,6 +2323,36 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
           description: ''
           headers:
             X-Session-Expires-In:

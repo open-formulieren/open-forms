@@ -2089,6 +2089,11 @@
     "description": "Objects registration: document types",
     "originalDefault": "Document types"
   },
+  "b0tRq+": {
+    "defaultMessage": "Form JSON schema: {backendLabel}",
+    "description": "Generate JSON schema modal title",
+    "originalDefault": "Form JSON schema: {backendLabel}"
+  },
   "b9D64D": {
     "defaultMessage": "Privacy-gevoelig",
     "description": "Is sensitive icon title",
@@ -2641,6 +2646,11 @@
     "defaultMessage": "{numErrors, plural, one {Er is een validatiefout.} other {Er zijn {numErrors} validatefouten.} }",
     "description": "Registration validation errors icon next to button to configure options",
     "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
+  },
+  "k2G5xb": {
+    "defaultMessage": "Before generating a schema, ensure the options are configured and the complete form is saved.",
+    "description": "Form JSON schema help text",
+    "originalDefault": "Before generating a schema, ensure the options are configured and the complete form is saved."
   },
   "k34Vke": {
     "defaultMessage": "dan",
@@ -3328,6 +3338,11 @@
     "description": "create form definition icon title",
     "originalDefault": "Create definition"
   },
+  "xgcUQF": {
+    "defaultMessage": "Generate JSON schema",
+    "description": "Link label to generate JSON schema of registration backend",
+    "originalDefault": "Generate JSON schema"
+  },
   "xxyIg/": {
     "defaultMessage": "Markeer het formulier als afspraakformulier, met een aparte flow. Hiervoor dient een afsprakenplugin ingesteld te zijn.",
     "description": "Form appointment enabled field help text",
@@ -3419,6 +3434,11 @@
     "defaultMessage": "Inzending-instellingen",
     "description": "Form submission settings fieldset title",
     "originalDefault": "Submission settings"
+  },
+  "zu8ntq": {
+    "defaultMessage": "An error occurred during schema generation",
+    "description": "Form schema generation error message",
+    "originalDefault": "An error occurred during schema generation"
   },
   "zwOwrD": {
     "defaultMessage": "Selecteer een attribuut uit het objecttype",

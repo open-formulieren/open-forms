@@ -4349,6 +4349,16 @@
       "value": "Documenttypen"
     }
   ],
+  "b0tRq+": [
+    {
+      "type": 0,
+      "value": "Form JSON schema: "
+    },
+    {
+      "type": 1,
+      "value": "backendLabel"
+    }
+  ],
   "b5Bxb/": [
     {
       "type": 0,
@@ -5607,6 +5617,12 @@
     {
       "type": 0,
       "value": "Omlaag"
+    }
+  ],
+  "k2G5xb": [
+    {
+      "type": 0,
+      "value": "Before generating a schema, ensure the options are configured and the complete form is saved."
     }
   ],
   "k34Vke": [
@@ -7051,6 +7067,12 @@
       "value": "Formulierdefinitie aanmaken"
     }
   ],
+  "xgcUQF": [
+    {
+      "type": 0,
+      "value": "Generate JSON schema"
+    }
+  ],
   "xxVNeU": [
     {
       "type": 0,
@@ -7269,6 +7291,12 @@
     {
       "type": 0,
       "value": "Inzending-instellingen"
+    }
+  ],
+  "zu8ntq": [
+    {
+      "type": 0,
+      "value": "An error occurred during schema generation"
     }
   ],
   "zwOwrD": [

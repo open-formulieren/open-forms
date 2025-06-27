@@ -63,3 +63,9 @@ class FormCamelCaseJSONParser(FormCamelCaseMixin, CamelCaseJSONParser):
     """
 
     pass
+
+
+class FormJSONSchemaRenderer(CamelCaseJSONRenderer):
+    # To ensure custom snake-case properties do not get converted to camel case, we
+    # ignore the properties when rendering the response.
+    json_underscoreize = {"ignore_fields": ("properties",)}

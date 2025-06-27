@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import {React, useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -7,6 +7,7 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import ModalJsonSchemaGeneration from 'components/admin/forms/ModalJsonSchemaGeneration';
 import Select from 'components/admin/forms/Select';
 import {DeleteIcon} from 'components/admin/icons';
 
@@ -76,6 +77,11 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
   const selectedBackend = backend.backend || '';
   const selectedBackendType = availableBackends.find(choice => choice.id === selectedBackend);
 
+  let showSchemaButton = ['json_dump', 'objects_api'].includes(backend.backend);
+  if (backend.backend === 'objects_api' && backend.options.version === 1) {
+    showSchemaButton = false;
+  }
+
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
     defaultMessage: 'Add another',
@@ -136,6 +142,33 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
         currentOptions={backend.options || {}}
         onChange={onChange}
       />
+
+      {showSchemaButton && (
+        <FormRow>
+          <Field
+            name={`form.registrationBackends.${index}.schema`}
+            label="Form JSON schema"
+            helpText={
+              <FormattedMessage
+                defaultMessage={`Before generating a schema, ensure the options are configured and
+                 the complete form is saved.`}
+                description="Form JSON schema help text"
+              />
+            }
+          >
+            <ModalJsonSchemaGeneration
+              modalTitle={
+                <FormattedMessage
+                  description="Generate JSON schema modal title"
+                  defaultMessage={`Form JSON schema: {backendLabel}`}
+                  values={{backendLabel: selectedBackendType.label}}
+                />
+              }
+              backendKey={backend.key}
+            />
+          </Field>
+        </FormRow>
+      )}
     </Fieldset>
   );
 };
