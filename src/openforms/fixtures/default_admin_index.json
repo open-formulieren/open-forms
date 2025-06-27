@@ -188,11 +188,11 @@
             ],
             [
                 "mozilla_django_oidc_db",
-                "OIDCProvider"
+                "oidcprovider"
             ],
             [
                 "mozilla_django_oidc_db",
-                "OIDCClient"
+                "oidcclient"
             ],
             [
                 "django_camunda",
