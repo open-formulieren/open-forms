@@ -17,7 +17,7 @@ BASE = "https://mock-oidc-provider:9999"
 
 
 class OIDCConfigModelMigrationTests(TestMigrations):
-    app = "oidc"
+    app = "oidc_plugins"
     migrate_from = "0001_initial"
     migrate_to = "0002_move_data_oidc_config"
 
