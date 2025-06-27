@@ -191,10 +191,6 @@ class Migration(migrations.Migration):
         ("authentication_org_oidc", "0001_initial"),
     ]
     run_before = [
-        (
-            "digid_eherkenning_oidc_generics",
-            "0011_delete_digidconfig_delete_digidmachtigenconfig_and_more",
-        ),
         ("mozilla_django_oidc_db", "0008_delete_openidconnectconfig"),
     ]
 
