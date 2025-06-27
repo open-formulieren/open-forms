@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"values": {"firstName": "We Are", "file": {"file_name": "test_file.txt",
-      "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}, "auth_bsn": "123456789"}, "values_schema":
+    body: '{"values": {"auth_bsn": "123456789", "firstName": "We Are", "file": {"file_name":
+      "test_file.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"}}, "values_schema":
       {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
       "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
       the authenticated person. This value follows the rules for Dutch social security
@@ -19,13 +19,13 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NDk1NjAyNzksImV4cCI6MTc0OTYwMzQ3OSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.S2zHTdX91APx4NFRdhiAD89MhsZEc3K3oghqoeCZ6N0
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEwMjkzOTAsImV4cCI6MTc1MTA3MjU5MCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.wc-2eYIsbSqI0fqY-vbukZ95QnKKewC01iZee6iC-wY
       Connection:
       - keep-alive
       Content-Length:
       - '1007'
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
       content-type:
       - application/json
     method: POST
@@ -61,7 +61,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 10 Jun 2025 12:57:59 GMT
+      - Fri, 27 Jun 2025 13:03:10 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.10
     status:

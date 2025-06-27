@@ -11,15 +11,16 @@ from django.utils.translation import gettext_lazy as _
 
 from zgw_consumers.client import build_client
 
+from openforms.formio.service import FormioData
 from openforms.formio.typing import (
     Component,
     EditGridComponent,
     FileComponent,
 )
-from openforms.forms.json_schema import generate_json_schema
+from openforms.forms.json_schema import NestedDict, generate_json_schema
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission, SubmissionFileAttachment
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
@@ -42,8 +43,6 @@ class GenericJSONRegistration(BasePlugin):
     ) -> dict:
         state = submission.load_submission_value_variables_state()
 
-        # TODO: keys with a period (e.g. `foo.bar`) will currently not be added to the
-        #  submission data. This will be fixed with issue 5041
         # Get static values
         static_values = state.get_static_data()
         # Update static values with registration variables
@@ -53,20 +52,19 @@ class GenericJSONRegistration(BasePlugin):
         all_values.update(static_values)
 
         # Values
-        values = {
-            key: value
-            for key, value in all_values.items()
-            if key in options["variables"]
-        }
+        variables = [key for key in options["variables"] if key in all_values]
+        values = FormioData({key: all_values[key] for key in variables})
         values_schema = generate_json_schema(
             submission.form,
-            list(values.keys()),
+            variables,
             backend_id=PLUGIN_IDENTIFIER,
             backend_options=options,  # pyright: ignore[reportArgumentType]
             submission=submission,
         )
         transform_to_list = options["transform_to_list"]
-        post_process(values, values_schema, submission, transform_to_list)
+        post_process(
+            variables, values, NestedDict(values_schema), submission, transform_to_list
+        )
 
         # Metadata
         # Note: as the metadata contains only static variables no post-processing is
@@ -89,7 +87,7 @@ class GenericJSONRegistration(BasePlugin):
         # Send to the service
         data = json.dumps(
             {
-                "values": values,
+                "values": values.data,
                 "values_schema": values_schema,
                 "metadata": metadata,
                 "metadata_schema": metadata_schema,
@@ -206,8 +204,9 @@ class GenericJSONRegistration(BasePlugin):
 
 
 def post_process(
-    values: JSONObject,
-    schema: JSONObject,
+    variables: list[str],
+    values: FormioData,
+    schema: NestedDict,
     submission: Submission,
     transform_to_list: list[str] | None = None,
 ) -> None:
@@ -219,6 +218,7 @@ def post_process(
     - Get all attachments of this submission, and group them by the data path
     - Process each component
 
+    :param variables: List of variable keys to process.
     :param values: Mapping from key to value of the data to be sent.
     :param schema: JSON schema describing ``values``.
     :param submission: The corresponding submission instance.
@@ -248,7 +248,7 @@ def post_process(
         key = attachment.data_path  # pyright: ignore[reportAttributeAccessIssue]
         attachments_dict[key].append(attachment)
 
-    for key in values.keys():
+    for key in variables:
         variable = state.variables.get(key)
         if (
             variable is None
@@ -274,8 +274,8 @@ def post_process(
 
 def process_component(
     component: Component,
-    values: JSONObject,
-    schema: JSONObject,
+    values: FormioData,
+    schema: NestedDict,
     attachments: dict[str, list[SubmissionFileAttachment]],
     configuration_wrapper,
     key_prefix: str = "",
@@ -308,7 +308,7 @@ def process_component(
         transform_to_list = []
 
     key = component["key"]
-    assert isinstance(schema["properties"], dict)
+    schema_key = f"properties.{key.replace('.', '.properties.')}"
 
     match component:
         case {"type": "file", "multiple": True}:
@@ -321,7 +321,7 @@ def process_component(
                 cast(FileComponent, component), attachments, key_prefix
             )
 
-            variable_schema = schema["properties"][key]
+            variable_schema = schema[schema_key]
             assert isinstance(variable_schema, dict)
 
             assert (n_attachments := len(attachment_list)) <= 1  # sanity check
@@ -346,12 +346,17 @@ def process_component(
             # Note: the schema actually only needs to be processed once for each child
             # component, but will be processed for each submitted repeating group entry
             # for implementation simplicity.
-            edit_grid_schema: JSONObject = schema["properties"][key]["items"]  # type: ignore
+            edit_grid_schema = NestedDict(schema[schema_key]["items"])  # type: ignore
 
-            for index, edit_grid_values in enumerate(
-                cast(list[JSONObject], values[key])
-            ):
-                for child_key in edit_grid_values.keys():
+            component = cast(EditGridComponent, component)
+
+            edit_grid_values_list = cast(list[dict[str, VariableValue]], values[key])
+            for index, edit_grid_values in enumerate(edit_grid_values_list):
+                edit_grid_values = FormioData(edit_grid_values)
+
+                for child_component in component["components"]:
+                    child_key = child_component["key"]
+
                     process_component(
                         component=configuration_wrapper[child_key],
                         values=edit_grid_values,
@@ -364,6 +369,10 @@ def process_component(
                             else f"{key}.{index}"
                         ),
                     )
+
+                # Need to manually set it to the list, as ``FormioData`` creates a copy
+                # so mutations are not applied to ``values``
+                edit_grid_values_list[index] = edit_grid_values.data
 
         case _:
             pass
