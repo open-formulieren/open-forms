@@ -44,3 +44,6 @@ class RegistrationAttribute(models.TextChoices):
 
     # Location
     locatie_coordinaat = "locatie_coordinaat", _("Location > Coordinate")
+
+    # Partners
+    partners = "partners", _("Partners")
