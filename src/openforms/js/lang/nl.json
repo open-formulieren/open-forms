@@ -3148,6 +3148,11 @@
     "description": "Simple logic type info text",
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
   },
+  "tSeev4": {
+    "defaultMessage": "Plugin configuration: DigiD",
+    "description": "DigiD authentication options modal title",
+    "originalDefault": "Plugin configuration: DigiD"
+  },
   "tg+6bo": {
     "defaultMessage": "JSON-sjabloon voor de betaalstatus-update",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' label",

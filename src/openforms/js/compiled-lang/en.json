@@ -6681,6 +6681,12 @@
       "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
     }
   ],
+  "tSeev4": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: DigiD"
+    }
+  ],
   "tU1UVF": [
     {
       "type": 0,
