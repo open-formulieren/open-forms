@@ -22,6 +22,10 @@ class TestStaticVariables(TestCase):
             plugin="test-plugin",
             attribute=AuthAttribute.bsn,
             value="111222333",
+            additional_claims={
+                "firstName": "John",
+                "familyName": "Doe",
+            },
         )
 
         static_data = {
@@ -34,6 +38,10 @@ class TestStaticVariables(TestCase):
                 "plugin": "test-plugin",
                 "attribute": AuthAttribute.bsn,
                 "value": "111222333",
+                "additional_claims": {
+                    "firstName": "John",
+                    "familyName": "Doe",
+                },
             },
             "auth_bsn": "111222333",
             "auth_kvk": "",
@@ -143,6 +151,27 @@ class TestStaticVariables(TestCase):
 
                 self.assertEqual(static_data["auth_context_branch_number"], expected)
 
+    def test_additional_claims_variable(self):
+        auth_info = AuthInfoFactory.create(
+            plugin="test-plugin",
+            attribute=AuthAttribute.bsn,
+            value="111222333",
+            additional_claims={
+                "firstName": "John",
+                "familyName": "Doe",
+            },
+        )
+
+        static_data = {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(submission=auth_info.submission)
+        }
+
+        self.assertEqual(
+            static_data["auth_additional_claims"],
+            {"firstName": "John", "familyName": "Doe"},
+        )
+
 
 class StaticVariableValidJsonSchemaTests(TestCase):
     validator = Draft202012Validator
@@ -182,6 +211,10 @@ class StaticVariableValidJsonSchemaTests(TestCase):
 
     def test_auth_pseudo(self):
         schema = _get_json_schema("auth_pseudo")
+        self.assertValidSchema(schema)
+
+    def test_auth_additional_claims(self):
+        schema = _get_json_schema("auth_additional_claims")
         self.assertValidSchema(schema)
 
     def test_auth_context(self):

@@ -20,7 +20,7 @@ class DigidMockAuthentication(BasePlugin):
     provides_auth = AuthAttribute.bsn
     is_demo_plugin = True
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         url = reverse("digid-mock:login", request=request)
         acs = furl(self.get_return_url(request, form))
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
@@ -41,7 +41,7 @@ class DigidMockAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         form_url = request.GET.get("next")
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")

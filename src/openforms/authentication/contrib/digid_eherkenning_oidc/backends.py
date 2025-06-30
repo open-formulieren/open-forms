@@ -3,15 +3,19 @@ from typing import override
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
+from django.urls import resolve
 
 import structlog
 from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
+from furl import furl
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
+from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
+from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.typing import JSONObject
 
 from .plugin import get_config_to_plugin
@@ -103,13 +107,40 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
 
         return True
 
+    @staticmethod
+    def _extract_additional_claims_for_auth_backend(
+        auth_backend: FormAuthenticationBackend, claims: JSONObject
+    ) -> JSONObject:
+        # The first plugin that will use this is Yivi.
+        # Adding the method as preparation for upcoming logic.
+        claims_to_extract = {}
+        return claims_to_extract
+
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
         """
         Extract the claims configured on the config and store them in the session.
         """
         config_to_plugin = get_config_to_plugin()
         assert self.config_class and self.config_class in config_to_plugin
-        session_key = config_to_plugin[self.config_class].session_key
+        plugin = config_to_plugin[self.config_class]
+        session_key = plugin.session_key
         procssed_claims = self._process_claims(claims)
+
+        return_url = self.request.session.get(_RETURN_URL_SESSION_KEY, "")
+        return_path = furl(return_url).path
+        _, _, kwargs = resolve(return_path)
+
+        try:
+            form = Form.objects.get(slug=kwargs.get("slug"))
+
+            auth_backend = FormAuthenticationBackend.objects.get(
+                form=form, backend=plugin.identifier
+            )
+            procssed_claims["additional_claims"] = (
+                self._extract_additional_claims_for_auth_backend(auth_backend, claims)
+            )
+        except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
+            pass
+
         assert self.request
         self.request.session[session_key] = procssed_claims

@@ -31,7 +31,7 @@ class OIDCAuthentication(BasePlugin):
     verbose_name = _("Organization via OpenID Connect")
     provides_auth = AuthAttribute.employee_id
 
-    def start_login(self, request: HttpRequest, form: Form, form_url: str):
+    def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
@@ -50,7 +50,7 @@ class OIDCAuthentication(BasePlugin):
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_return(self, request, form):
+    def handle_return(self, request, form, options):
         """
         Redirect to form URL.
         """
