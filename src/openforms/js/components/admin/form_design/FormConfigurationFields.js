@@ -243,8 +243,7 @@ const AuthenticationFields = ({
       {authBackends.map((authBackend, index) => (
         <AuthPluginOptions
           key={authBackend.backend}
-          index={index}
-          name={`form.authBackends.${index}`}
+          name={`form.authBackends.${index}.options`}
           authBackend={authBackend}
           availableAuthPlugins={availableAuthPlugins}
           onChange={onChange}
@@ -742,7 +741,7 @@ FormConfigurationFields.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       label: PropTypes.string,
-      providesAuth: PropTypes.string,
+      providesAuth: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
       schema: PropTypes.object,
     })
   ),

@@ -38,7 +38,6 @@ import {SubmissionLimitFields} from './SubmissionFields';
 import Tab from './Tab';
 import TextLiterals from './TextLiterals';
 import {FormWarnings} from './Warnings';
-import {getInitialPluginOptions} from './authentication/utils';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
@@ -346,7 +345,7 @@ function reducer(draft, action) {
         const plugin = draft.availableAuthPlugins.find(backend => backend.id === pluginId);
         draft.form.authBackends.push({
           backend: pluginId,
-          options: getInitialPluginOptions(plugin),
+          options: {},
         });
       }
       break;
