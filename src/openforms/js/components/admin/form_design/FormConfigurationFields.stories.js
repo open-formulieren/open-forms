@@ -1,4 +1,4 @@
-import {fn} from '@storybook/test';
+import {expect, fn, userEvent, within} from '@storybook/test';
 
 import FormConfigurationFields from './FormConfigurationFields';
 
@@ -35,6 +35,24 @@ export default {
         id: 'digid',
         label: 'DigiD',
         providesAuth: 'bsn',
+        schema: {
+          type: 'object',
+          properties: {
+            loa: {
+              type: 'string',
+              enum: [
+                '',
+                'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+                'urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract',
+                'urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard',
+                'urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI',
+              ],
+              enumNames: ['', 'DigiD Basis', 'DigiD Midden', 'DigiD Substantieel', 'DigiD Hoog'],
+              title: 'options bsn LoA',
+              description: 'The minimal LoA for bsn authentication.',
+            },
+          },
+        },
       },
       {
         id: 'eherkenning',
@@ -71,3 +89,31 @@ export default {
 };
 
 export const Default = {};
+
+export const AuthenticationPluginWithOptionsModal = {
+  args: {
+    form: {
+      authBackends: [
+        {
+          backend: 'digid',
+          options: {
+            loa: '',
+          },
+        },
+      ],
+    },
+    selectedAuthPlugins: ['digid'],
+  },
+
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const authTitle = canvas.getByRole('heading', {name: 'Inloggen (Tonen)'});
+    expect(authTitle).toBeVisible();
+    await userEvent.click(within(authTitle).getByRole('link', {name: '(Tonen)'}));
+
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
+
+    expect(canvas.getByRole('heading', {name: 'Plugin configuration: DigiD'})).toBeVisible();
+  },
+};
