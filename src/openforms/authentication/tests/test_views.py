@@ -42,6 +42,7 @@ class AuthenticationFlowTests(APITestCase):
         """
         register = Registry()
         register("plugin1")(Plugin)
+        register("plugin2")(Plugin)
         plugin = register["plugin1"]
 
         step = FormStepFactory(
@@ -81,6 +82,13 @@ class AuthenticationFlowTests(APITestCase):
             self.assertEqual(response.content, b"unknown plugin")
             self.assertEqual(response.status_code, 400)
 
+        with self.subTest("start bad authentication backend"):
+            request = factory.get(url, {"next": next_url})
+            request.session = {}
+            response = start_view(request, slug=form.slug, plugin_id="plugin2")
+            self.assertEqual(response.content, b"plugin not allowed")
+            self.assertEqual(response.status_code, 400)
+
         with self.subTest("start bad redirect"):
             request = factory.get(url, {"next": bad_url})
             response = start_view(request, slug=form.slug, plugin_id=plugin.identifier)
@@ -109,6 +117,13 @@ class AuthenticationFlowTests(APITestCase):
             request = factory.get(url, {"next": next_url})
             response = return_view(request, slug=form.slug, plugin_id="bad_plugin")
             self.assertEqual(response.content, b"unknown plugin")
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("return bad authentication backend"):
+            request = factory.get(url, {"next": next_url})
+            request.session = {}
+            response = return_view(request, slug=form.slug, plugin_id="plugin2")
+            self.assertEqual(response.content, b"plugin not allowed")
             self.assertEqual(response.status_code, 400)
 
         with self.subTest("return bad redirect"):
