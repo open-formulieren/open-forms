@@ -6,8 +6,18 @@ from collections import OrderedDict
 from collections.abc import MutableMapping
 from datetime import datetime
 from functools import partial
-from typing import Any, Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
+from typing import (
+    Any,
+    BinaryIO,
+    Callable,
+    Iterator,
+    Literal,
+    NotRequired,
+    Protocol,
+    TypedDict,
+)
 
+from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -307,11 +317,11 @@ class Client(BaseClient):
         self,
         zaak_id: str,
         doc_id: str,
-        document: SubmissionReport | SubmissionFileAttachment,
+        content: BinaryIO | ContentFile,
         doc_data: dict,
     ) -> None:
-        document.content.seek(0)
-        base64_body = base64.b64encode(document.content.read()).decode()
+        content.seek(0)
+        base64_body = base64.b64encode(content.read()).decode()
 
         now = timezone.now()
         # TODO: vertrouwelijkAanduiding
@@ -354,7 +364,7 @@ class Client(BaseClient):
         self._create_related_document(
             zaak_id=zaak_id,
             doc_id=doc_id,
-            document=submission_report,
+            content=submission_report.content,
             doc_data={
                 # TODO: Pass submission object, extract name.
                 # "titel": name,
@@ -376,13 +386,33 @@ class Client(BaseClient):
         self._create_related_document(
             zaak_id=zaak_id,
             doc_id=doc_id,
-            document=submission_attachment,
+            content=submission_attachment.content,
             doc_data={
                 "titel": submission_attachment.titel
                 or submission_attachment.get_display_name(),
                 "bestandsnaam": submission_attachment.get_display_name(),
                 "formaat": submission_attachment.content_type,
                 "beschrijving": "Bijgevoegd document",
+            },
+        )
+
+    def create_confirmation_email_attachment(
+        self, zaak_id: str, doc_id: str, email_content: BinaryIO
+    ) -> None:
+        """
+        Create a zaakdocument with the submitted file.
+        """
+        self._create_related_document(
+            zaak_id=zaak_id,
+            doc_id=doc_id,
+            content=email_content,
+            doc_data={
+                "titel": "Bevestigingsmail",
+                "bestandsnaam": "bevestigingsmail.pdf",
+                "formaat": "application/pdf",
+                "beschrijving": (
+                    "De bevestigingsmail die naar de initiator is verstuurd."
+                ),
             },
         )
 

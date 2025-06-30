@@ -1,0 +1,266 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:genereerDocumentIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+      \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>f159cae5-447b-4b13-a9dd-7eca7a21cd72</StUF:referentienummer>\n<StUF:tijdstipBericht>20250704150314</StUF:tijdstipBericht>\n\n
+      \       <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerDocumentIdentificatie_Di02>\n
+      \   </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1347'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/genereerDocumentIdentificatie_Di02
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: http://localhost/stuf-zds
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \   <soapenv:Header/>\n    <soapenv:Body>\n        <ZKN:genereerDocumentIdentificatie_Du02\n
+        \               xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n                xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+        \           <ZKN:stuurgegevens>\n                <StUF:berichtcode>Du02</StUF:berichtcode>\n
+        \               <StUF:zender>\n                    <StUF:organisatie>KING</StUF:organisatie>\n
+        \                   <StUF:applicatie>STP</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:zender>\n                <StUF:ontvanger>\n                    <StUF:organisatie>ORG</StUF:organisatie>\n
+        \                   <StUF:applicatie>TTA</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:ontvanger>\n                <StUF:tijdstipBericht>20210520125731</StUF:tijdstipBericht>\n
+        \               <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n
+        \           </ZKN:stuurgegevens>\n            <ZKN:melding>melding</ZKN:melding>\n
+        \           <ZKN:document StUF:entiteittype=\"EDC\" StUF:functie=\"entiteit\">\n
+        \               <ZKN:identificatie>c7aa092651ba3097</ZKN:identificatie>\n
+        \           </ZKN:document>\n        </ZKN:genereerDocumentIdentificatie_Du02>\n
+        \   </soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1364'
+      Content-Type:
+      - text/xml
+      Date:
+      - Fri, 04 Jul 2025 15:03:14 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:edcLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"
+      xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\">\n    <ZKN:stuurgegevens>\n
+      \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>fc730c83-ec85-44aa-8f93-0508cb382ff7</StUF:referentienummer>\n<StUF:tijdstipBericht>20250704150314</StUF:tijdstipBericht>\n\n
+      \       <StUF:entiteittype>EDC</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
+      \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>I</StUF:indicatorOvername>\n
+      \   </ZKN:parameters>\n    <ZKN:object StUF:entiteittype=\"EDC\" StUF:verwerkingssoort=\"T\">\n
+      \       <ZKN:identificatie>c7aa092651ba3097</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
+      \       <ZKN:creatiedatum>20250704</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20250704</ZKN:ontvangstdatum>\n
+      \       <ZKN:titel>Bevestigingsmail</ZKN:titel>\n        <ZKN:beschrijving>De
+      bevestigingsmail die naar de initiator is verstuurd.</ZKN:beschrijving>\n        <ZKN:formaat>application/pdf</ZKN:formaat>\n
+      \       <ZKN:taal>nld</ZKN:taal>\n        <ZKN:status>definitief</ZKN:status>\n
+      \       <ZKN:verzenddatum>20250704</ZKN:verzenddatum>\n        <ZKN:vertrouwelijkAanduiding>GEHEIM</ZKN:vertrouwelijkAanduiding>\n
+      \       <ZKN:auteur>open-forms</ZKN:auteur>\n        <ZKN:inhoud xmime:contentType=\"application/pdf\"
+      StUF:bestandsnaam=\"bevestigingsmail.pdf\">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</ZKN:inhoud>\n
+      \       <StUF:tijdvakGeldigheid>\n            <StUF:beginGeldigheid>20250704</StUF:beginGeldigheid>\n
+      \           <StUF:eindGeldigheid StUF:noValue=\"geenWaarde\" xsi:nil=\"true\"/>\n
+      \       </StUF:tijdvakGeldigheid>\n        <StUF:tijdstipRegistratie>20250704150314</StUF:tijdstipRegistratie>\n
+      \       <ZKN:isRelevantVoor StUF:entiteittype=\"EDCZAK\" StUF:verwerkingssoort=\"T\">\n
+      \           <ZKN:gerelateerde StUF:entiteittype=\"ZAK\" StUF:verwerkingssoort=\"I\">\n
+      \               <ZKN:identificatie>abc123</ZKN:identificatie>\n                <ZKN:omschrijving>Form
+      000</ZKN:omschrijving>\n            </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20250704150314</StUF:tijdstipRegistratie>\n
+      \       </ZKN:isRelevantVoor>\n    </ZKN:object>\n</ZKN:edcLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '7720'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: http://localhost/stuf-zds
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \   <soapenv:Header/>\n    <soapenv:Body>\n        <StUF:Bv03Bericht xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n
+        \                         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n
+        \                         xsi:schemaLocation=\"http://www.egem.nl/StUF/StUF0301
+        stuf0301.xsd\">\n            <StUF:stuurgegevens>\n                <StUF:berichtcode>Bv03</StUF:berichtcode>\n
+        \               <StUF:zender>\n                    <StUF:organisatie>KING</StUF:organisatie>\n
+        \                   <StUF:applicatie>STP</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:zender>\n                <StUF:ontvanger>\n                    <StUF:organisatie>ORG</StUF:organisatie>\n
+        \                   <StUF:applicatie>TTA</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:ontvanger>\n                <!-- NOTE: these mock values
+        are meaningless -->\n                <StUF:referentienummer>2301189518</StUF:referentienummer>\n
+        \               <StUF:tijdstipBericht>20210520125731</StUF:tijdstipBericht>\n
+        \               <StUF:crossRefnummer>ea84f068-55e1-43fd-b4a0-94fc18f9b7af</StUF:crossRefnummer>\n
+        \           </StUF:stuurgegevens>\n        </StUF:Bv03Bericht>\n    </soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1349'
+      Content-Type:
+      - text/xml
+      Date:
+      - Fri, 04 Jul 2025 15:03:14 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:genereerDocumentIdentificatie_Di02 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+      \   <ZKN:stuurgegevens>\n        <StUF:berichtcode>Di02</StUF:berichtcode>\n
+      \       <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>18fa9f6b-43ff-492c-ada7-cd15dbf6b6d8</StUF:referentienummer>\n<StUF:tijdstipBericht>20250704150314</StUF:tijdstipBericht>\n\n
+      \       <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n    </ZKN:stuurgegevens>\n</ZKN:genereerDocumentIdentificatie_Di02>\n
+      \   </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1347'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/genereerDocumentIdentificatie_Di02
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: http://localhost/stuf-zds
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \   <soapenv:Header/>\n    <soapenv:Body>\n        <ZKN:genereerDocumentIdentificatie_Du02\n
+        \               xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n                xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\">\n
+        \           <ZKN:stuurgegevens>\n                <StUF:berichtcode>Du02</StUF:berichtcode>\n
+        \               <StUF:zender>\n                    <StUF:organisatie>KING</StUF:organisatie>\n
+        \                   <StUF:applicatie>STP</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:zender>\n                <StUF:ontvanger>\n                    <StUF:organisatie>ORG</StUF:organisatie>\n
+        \                   <StUF:applicatie>TTA</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:ontvanger>\n                <StUF:tijdstipBericht>20210520125731</StUF:tijdstipBericht>\n
+        \               <StUF:functie>genereerDocumentidentificatie</StUF:functie>\n
+        \           </ZKN:stuurgegevens>\n            <ZKN:melding>melding</ZKN:melding>\n
+        \           <ZKN:document StUF:entiteittype=\"EDC\" StUF:functie=\"entiteit\">\n
+        \               <ZKN:identificatie>a6f1b3d0922c4f66</ZKN:identificatie>\n
+        \           </ZKN:document>\n        </ZKN:genereerDocumentIdentificatie_Du02>\n
+        \   </soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1364'
+      Content-Type:
+      - text/xml
+      Date:
+      - Fri, 04 Jul 2025 15:03:14 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"\n
+      \   xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n>\n
+      \   <soapenv:Header>\n        \n\n    </soapenv:Header>\n    <soapenv:Body>\n
+      \       \n\n<ZKN:edcLk01 xmlns:ZKN=\"http://www.egem.nl/StUF/sector/zkn/0310\"
+      xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\">\n    <ZKN:stuurgegevens>\n
+      \       <StUF:berichtcode>Lk01</StUF:berichtcode>\n        <StUF:zender>\n    <StUF:organisatie>zender_organisatie-0</StUF:organisatie>\n<StUF:applicatie>zender_applicatie-0</StUF:applicatie>\n<StUF:administratie>zender_administratie-0</StUF:administratie>\n<StUF:gebruiker>zender_gebruiker-0</StUF:gebruiker>\n\n</StUF:zender>\n<StUF:ontvanger>\n
+      \   <StUF:organisatie>ontvanger_organisatie-0</StUF:organisatie>\n<StUF:applicatie>ontvanger_applicatie-0</StUF:applicatie>\n<StUF:administratie>ontvanger_administratie-0</StUF:administratie>\n<StUF:gebruiker>ontvanger_gebruiker-0</StUF:gebruiker>\n\n</StUF:ontvanger>\n<StUF:referentienummer>49f0b575-6d84-4e2d-b94f-e9d759965361</StUF:referentienummer>\n<StUF:tijdstipBericht>20250704150314</StUF:tijdstipBericht>\n\n
+      \       <StUF:entiteittype>EDC</StUF:entiteittype>\n    </ZKN:stuurgegevens>\n
+      \   <ZKN:parameters>\n        <StUF:mutatiesoort>T</StUF:mutatiesoort>\n        <StUF:indicatorOvername>I</StUF:indicatorOvername>\n
+      \   </ZKN:parameters>\n    <ZKN:object StUF:entiteittype=\"EDC\" StUF:verwerkingssoort=\"T\">\n
+      \       <ZKN:identificatie>a6f1b3d0922c4f66</ZKN:identificatie>\n        <ZKN:dct.omschrijving>foo</ZKN:dct.omschrijving>\n
+      \       <ZKN:creatiedatum>20250704</ZKN:creatiedatum>\n        <ZKN:ontvangstdatum>20250704</ZKN:ontvangstdatum>\n
+      \       <ZKN:titel>Bevestigingsmail</ZKN:titel>\n        <ZKN:beschrijving>De
+      bevestigingsmail die naar de initiator is verstuurd.</ZKN:beschrijving>\n        <ZKN:formaat>application/pdf</ZKN:formaat>\n
+      \       <ZKN:taal>nld</ZKN:taal>\n        <ZKN:status>definitief</ZKN:status>\n
+      \       <ZKN:verzenddatum>20250704</ZKN:verzenddatum>\n        <ZKN:vertrouwelijkAanduiding>GEHEIM</ZKN:vertrouwelijkAanduiding>\n
+      \       <ZKN:auteur>open-forms</ZKN:auteur>\n        <ZKN:inhoud xmime:contentType=\"application/pdf\"
+      StUF:bestandsnaam=\"bevestigingsmail.pdf\">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</ZKN:inhoud>\n
+      \       <StUF:tijdvakGeldigheid>\n            <StUF:beginGeldigheid>20250704</StUF:beginGeldigheid>\n
+      \           <StUF:eindGeldigheid StUF:noValue=\"geenWaarde\" xsi:nil=\"true\"/>\n
+      \       </StUF:tijdvakGeldigheid>\n        <StUF:tijdstipRegistratie>20250704150314</StUF:tijdstipRegistratie>\n
+      \       <ZKN:isRelevantVoor StUF:entiteittype=\"EDCZAK\" StUF:verwerkingssoort=\"T\">\n
+      \           <ZKN:gerelateerde StUF:entiteittype=\"ZAK\" StUF:verwerkingssoort=\"I\">\n
+      \               <ZKN:identificatie>abc123</ZKN:identificatie>\n                <ZKN:omschrijving>Form
+      000</ZKN:omschrijving>\n            </ZKN:gerelateerde>\n            <StUF:tijdstipRegistratie>20250704150314</StUF:tijdstipRegistratie>\n
+      \       </ZKN:isRelevantVoor>\n    </ZKN:object>\n</ZKN:edcLk01>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '7780'
+      Content-Type:
+      - application/soap+xml
+      SOAPAction:
+      - http://www.egem.nl/StUF/sector/zkn/0310/voegZaakdocumentToe_Lk01
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: http://localhost/stuf-zds
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \   <soapenv:Header/>\n    <soapenv:Body>\n        <StUF:Bv03Bericht xmlns:StUF=\"http://www.egem.nl/StUF/StUF0301\"\n
+        \                         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n
+        \                         xsi:schemaLocation=\"http://www.egem.nl/StUF/StUF0301
+        stuf0301.xsd\">\n            <StUF:stuurgegevens>\n                <StUF:berichtcode>Bv03</StUF:berichtcode>\n
+        \               <StUF:zender>\n                    <StUF:organisatie>KING</StUF:organisatie>\n
+        \                   <StUF:applicatie>STP</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:zender>\n                <StUF:ontvanger>\n                    <StUF:organisatie>ORG</StUF:organisatie>\n
+        \                   <StUF:applicatie>TTA</StUF:applicatie>\n                    <StUF:gebruiker/>\n
+        \               </StUF:ontvanger>\n                <!-- NOTE: these mock values
+        are meaningless -->\n                <StUF:referentienummer>2301189518</StUF:referentienummer>\n
+        \               <StUF:tijdstipBericht>20210520125731</StUF:tijdstipBericht>\n
+        \               <StUF:crossRefnummer>ea84f068-55e1-43fd-b4a0-94fc18f9b7af</StUF:crossRefnummer>\n
+        \           </StUF:stuurgegevens>\n        </StUF:Bv03Bericht>\n    </soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1349'
+      Content-Type:
+      - text/xml
+      Date:
+      - Fri, 04 Jul 2025 15:03:14 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.9
+    status:
+      code: 200
+      message: OK
+version: 1
