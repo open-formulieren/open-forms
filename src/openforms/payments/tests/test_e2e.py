@@ -9,6 +9,7 @@ from furl import furl
 from playwright.async_api import Route, expect
 from rest_framework.test import APIRequestFactory
 
+from openforms.forms.constants import StatementCheckboxChoices
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import ProcessingStatuses
 from openforms.submissions.models import Submission
@@ -30,6 +31,8 @@ class PaymentFlowTests(E2ETestCase):
             formstep__form_definition__slug="first-step",
             payment_backend="demo",
             product__price=Decimal("11.35"),
+            ask_privacy_consent=StatementCheckboxChoices.disabled,
+            ask_statement_of_truth=StatementCheckboxChoices.disabled,
         )
 
         return form
@@ -83,7 +86,6 @@ class PaymentFlowTests(E2ETestCase):
 
                 await page.get_by_role("button", name="Formulier starten").click()
                 await page.get_by_role("button", name="Volgende").click()
-                await page.get_by_role("checkbox").click()  # Privacy checkbox
                 await page.get_by_role("button", name="Verzenden").click()
                 await page.get_by_role("button", name="Betalen").click()
 
