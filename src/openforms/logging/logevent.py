@@ -387,6 +387,38 @@ def registration_skipped_not_yet_paid(submission: Submission):
 # - - -
 
 
+def registration_update_with_confirmation_email_failure(
+    submission: Submission, error: Exception, plugin=None
+):
+    _create_log(
+        submission,
+        "registration_update_with_confirmation_email_failure",
+        plugin=plugin,
+        error=error,
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def registration_update_with_confirmation_email_skip(submission: Submission):
+    _create_log(
+        submission,
+        "registration_update_with_confirmation_email_skip",
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+def registration_update_with_confirmation_email_success(submission: Submission, plugin):
+    _create_log(
+        submission,
+        "registration_update_with_confirmation_email_success",
+        plugin=plugin,
+        tags=[TimelineLogTags.submission_lifecycle],
+    )
+
+
+# - - -
+
+
 def confirmation_email_scheduled(
     submission: Submission, scheduling_options: dict
 ) -> None:
