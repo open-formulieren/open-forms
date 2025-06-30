@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990421"],
-      "fields": ["burgerservicenummer", "adressering"]}'
+      "fields": ["burgerservicenummer", "burgerservicenummer", "adressering"]}'
     headers:
       Accept:
       - '*/*'
@@ -10,11 +10,11 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '131'
+      - '154'
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
       x-doelbinding:
       - BRPACT-AanschrijvenZakelijkGerechtigde
       x-gebruiker:
@@ -44,7 +44,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 21 May 2025 09:06:08 GMT
+      - Mon, 30 Jun 2025 14:54:11 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:

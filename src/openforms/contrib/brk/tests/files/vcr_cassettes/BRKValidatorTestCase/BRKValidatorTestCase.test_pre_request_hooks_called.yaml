@@ -11,7 +11,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
@@ -43,7 +43,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 21 May 2025 09:04:42 GMT
+      - Mon, 30 Jun 2025 14:45:11 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
@@ -73,7 +73,7 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
@@ -106,7 +106,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 21 May 2025 09:04:43 GMT
+      - Mon, 30 Jun 2025 14:45:10 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
