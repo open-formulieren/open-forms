@@ -9,7 +9,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTAxNjE4NjIsImV4cCI6MTc1MDIwNTA2MiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.pDpO2cUoW3Ep3x7g4yqU9Jf8lyE0DDZD6g1c8NDIX8g
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEyOTYzNjQsImV4cCI6MTc1MTMzOTU2NCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.hwqPaGJ6re5DV1LKp1wSDi-_QTfoMrmwzR4pdYt3rEo
       Connection:
       - keep-alive
       Content-Length:
@@ -17,7 +17,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
       x-doelbinding:
       - ''
       x-gebruiker:
@@ -41,7 +41,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 17 Jun 2025 12:04:21 GMT
+      - Mon, 30 Jun 2025 15:12:43 GMT
       Server:
       - Kestrel
     status:
