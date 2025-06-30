@@ -10,12 +10,19 @@ from freezegun import freeze_time
 from lxml import etree
 from privates.test import temp_private_root
 from requests import ConnectTimeout
+from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.authentication.service import AuthAttribute
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.config.constants import FamilyMembersDataAPIChoices
 from openforms.config.models import GlobalConfiguration
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.prefill.service import prefill_variables
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks import on_post_submission_event, pre_registration
 from openforms.submissions.tests.factories import (
@@ -3465,3 +3472,265 @@ class StufZDSPluginPaymentVCRTests(OFVCRMixin, StUFZDSTestBase):
                     f"//stuf:extraElementen/stuf:extraElement[@naam='{name}']",
                     value,
                 )
+
+
+class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.zaakbetrokkene_partners_omschrijving = "A description"
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+
+        hc_config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        )
+        hc_config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=hc_config,
+        )
+
+        global_config = GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        )
+        global_config_patcher = patch(
+            "openforms.config.models.GlobalConfiguration.get_solo",
+            return_value=global_config,
+        )
+
+        hc_config = hc_config_patcher.start()
+        global_config = global_config_patcher.start()
+        cls.addClassCleanup(hc_config_patcher.stop)
+        cls.addClassCleanup(global_config_patcher.stop)
+
+    def test_create_zaak_with_partners_as_betrokkene(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partnersKey",
+                    "type": "partners",
+                    "label": "Partners",
+                    "registration": {"attribute": RegistrationAttribute.partners},
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009921",
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "1234"},
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partnersKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+
+        partners_paths = {
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": 2,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": 2,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": 2,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": 2,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": 2,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": 2,
+        }
+
+        for path, count in partners_paths.items():
+            self.assertXPathCount(xml_doc, path, count)
+
+        # make sure that nothing is registered as extraElement
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='partners_immutable.0.bsn']",
+        )
+
+    def test_create_zaak_with_partners_as_extraElementen(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partnersKey",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009921",
+            language_code="en",
+            public_registration_reference="abc890",
+            registration_result={"zaak": "890"},
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partnersKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']": "999995182",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.firstNames']": "Anna Maria Petra",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.initials']": "A.M.P.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.affixes']": "",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.lastName']": "Jansma",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.dateOfBirth']": "1945-04-18",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.description']": "A description",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.bsn']": "123456782",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.firstNames']": "Test second partner",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.initials']": "T.s.p.",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.affixes']": "",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.lastName']": "Test",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.dateOfBirth']": "1945-04-18",
+                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.description']": "A description",
+            },
+        )
+
+        # make sure that nothing is registered as zaakbetrokkene
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+
+    def test_create_zaak_with_no_partners_retrieved(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partnersKey",
+                    "type": "partners",
+                    "label": "Partners",
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009830",
+            language_code="en",
+            public_registration_reference="abc999",
+            registration_result={"zaak": "9990"},
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partnersKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+        prefill_variables(submission)
+
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']",
+        )
+
+    def test_create_zaak_with_hidden_partners(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partnersKey",
+                    "type": "partners",
+                    "label": "Partners",
+                    "registration": {"attribute": RegistrationAttribute.partners},
+                    "hidden": True,
+                },
+            ],
+            form__name="my-form",
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="000009830",
+            language_code="en",
+            public_registration_reference="abc999",
+            registration_result={"zaak": "9990"},
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partnersKey",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        prefill_variables(submission)
+        self.plugin.register_submission(submission, self.options)
+
+        stuf_request = self.cassette.requests[1]
+        xml_doc = etree.fromstring(stuf_request.body)
+
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathNotExists(
+            xml_doc,
+            "//zkn:object/zkn:heeftAlsOverigBetrokkene[@stuf:entiteittype='ZAKBTROVR']/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn",
+        )
+        self.assertXPathNotExists(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']",
+        )

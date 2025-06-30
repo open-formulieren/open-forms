@@ -1,0 +1,34 @@
+{% if partners %}
+    {% for partner in partners %}
+        <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde>
+                <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                {% if partner.bsn %}
+                    <BG:inp.bsn>{{ partner.bsn }}</BG:inp.bsn>
+                    {% if partner.prefilled %}
+                        <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                    {% else %}
+                        <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                    {% endif %}
+                {% endif %}
+                {% if partner.lastName %}
+                    <BG:geslachtsnaam>{{ partner.lastName }}</BG:geslachtsnaam>
+                {% endif %}
+                {% if partner.affixes %}
+                    <BG:voorvoegselGeslachtsnaam>{{ partner.affixes }}</BG:voorvoegselGeslachtsnaam>
+                {% endif %}
+                {% if partner.initials %}
+                    <BG:voorletters>{{ partner.initials }}</BG:voorletters>
+                {% endif %}
+                {% if partner.firstNames %}
+                    <BG:voornamen>{{ partner.firstNames }}</BG:voornamen>
+                {% endif %}
+                {% if partner.dateOfBirth %}
+                    <BG:geboortedatum>{{ partner.dateOfBirth }}</BG:geboortedatum>
+                {% endif %}
+                </ZKN:natuurlijkPersoon>
+            </ZKN:gerelateerde>
+            <ZKN:omschrijving StUF:exact="true">{{ partner.description }}</ZKN:omschrijving>
+        </ZKN:heeftAlsOverigBetrokkene>
+    {% endfor %}
+{% endif %}

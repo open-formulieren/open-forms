@@ -1,9 +1,10 @@
 import base64
 import uuid
 from collections import OrderedDict
+from collections.abc import MutableMapping
 from datetime import datetime
 from functools import partial
-from typing import Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
+from typing import Any, Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -218,7 +219,7 @@ class Client(BaseClient):
     def create_zaak(
         self,
         zaak_identificatie: str,
-        zaak_data: dict,
+        zaak_data: MutableMapping[str, Any],
         extra_data: ExtraData,
     ) -> None:
         now = timezone.now()
