@@ -11,12 +11,14 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add
   response:
     body:
-      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add"}},"_embedded":{}}'
+      string: '{"type":"https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?#System_Net_HttpStatusCode_OK","title":"Het
+        product kan momenteel niet geleverd worden, probeer het later nog eens.","status":200,"detail":"No
+        Content","instance":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add","code":"noContent"}'
     headers:
       Access-Control-Allow-Credentials:
       - 'true'
@@ -29,16 +31,16 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '133'
+      - '267'
       Content-Security-Policy:
       - 'default-src ''self''; script-src ''self''; connect-src ''self''; style-src
         ''self''; img-src ''self'' data:; object-src ''none''; font-src ''self'' https://*.kadaster.nl;
         media-src ''self'' data: https://*.kadaster.nl; frame-src ''self''; frame-ancestors
         ''none''; upgrade-insecure-requests;'
       Content-Type:
-      - application/hal+json
+      - application/problem+json
       Date:
-      - Wed, 21 May 2025 09:04:42 GMT
+      - Mon, 30 Jun 2025 14:45:09 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:

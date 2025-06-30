@@ -11,12 +11,12 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204","uuid":"ac49bcc6-ed49-478d-84d4-a9e61fc97204","name":"Form","namePlural":"Forms","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-05-16","modifiedAt":"2025-05-19","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204/versions/1"]}]}'
+      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204","uuid":"ac49bcc6-ed49-478d-84d4-a9e61fc97204","name":"Form","namePlural":"Forms","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-05-16","modifiedAt":"2025-05-28","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -29,7 +29,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:11:56 GMT
+      - Mon, 30 Jun 2025 14:58:23 GMT
       Referrer-Policy:
       - same-origin
       Server:

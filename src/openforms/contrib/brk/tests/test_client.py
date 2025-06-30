@@ -30,7 +30,14 @@ class BRKCadastralClientTests(BRKTestMixin, OFVCRMixin, SimpleTestCase):
             res = client.get_real_estate_by_address(
                 {"postcode": "1234AB", "huisnummer": "1"}  # Does not exist
             )
-            self.assertEqual(res["_embedded"], {})
+
+            # This request also returns a status code 200, which seems weird. From
+            # kadaster.github.io/BRK-bevragen/swagger-ui-2.0#/Kadastraal Onroerende Zaken/GetKadastraalOnroerendeZaken
+            # it's not clear what is returned when an address does not exist, though
+            self.assertEqual(
+                res["title"],
+                "Het product kan momenteel niet geleverd worden, probeer het later nog eens.",
+            )
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
