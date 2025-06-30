@@ -21,6 +21,16 @@ class StufZDSConfig(SingletonModel):
         related_name="stuf_zds_config",
         null=True,
     )
+    zaakbetrokkene_partners_omschrijving = models.CharField(
+        _("description for zaakbetrokkene partners registration"),
+        max_length=100,
+        default="",
+        blank=True,
+        help_text=_(
+            "The description that will be added if the zaakbetrokkene registration is "
+            "used for the partners."
+        ),
+    )
 
     objects = StufZDSConfigManager()
 

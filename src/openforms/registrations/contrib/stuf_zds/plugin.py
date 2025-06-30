@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import MutableMapping
 from dataclasses import dataclass
 from functools import partial
 from typing import TYPE_CHECKING, Any, override
@@ -11,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from json_logic.typing import Primitive
 
+from openforms.forms.models import FormVariable
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin, PreRegistrationResult
 from openforms.registrations.constants import (
@@ -24,7 +26,11 @@ from openforms.submissions.mapping import (
     get_component,
     get_unmapped_data,
 )
-from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models import (
+    Submission,
+    SubmissionReport,
+)
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from stuf.stuf_zds.client import (
     NoServiceConfigured,
@@ -191,6 +197,8 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         "initiator.kvk": FieldConf(submission_auth_info_attribute="kvk"),
         # Location
         "locatie": FieldConf(RegistrationAttribute.locatie_coordinaat),
+        # Partners
+        "partners": RegistrationAttribute.partners,
     }
 
     def pre_register_submission(
@@ -218,6 +226,73 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         data = get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
         payment_extra = _get_extra_payment_variables(submission, options)
         return {**data, **payment_extra}
+
+    def process_partners(
+        self,
+        submission: Submission,
+        zaak_data: MutableMapping[str, Any],
+        extra_data: dict[str, Any],
+    ) -> None:
+        config = StufZDSConfig.get_solo()
+        description = config.zaakbetrokkene_partners_omschrijving
+
+        # register as zaakbetrokkene
+        if RegistrationAttribute.partners in zaak_data:
+            component = get_component(
+                submission,
+                RegistrationAttribute.partners,
+                REGISTRATION_ATTRIBUTE,
+            )
+
+            assert component is not None
+            assert component["type"] == "partners"
+
+            fm_immutable_variable = (
+                FormVariable.objects.filter(
+                    source=FormVariableSources.user_defined,
+                    prefill_plugin="family_members",
+                )
+                .filter(prefill_options__mutable_data_form_variable=component["key"])
+                .first()
+            )
+
+            if fm_immutable_variable:
+                if fm_immutable_variable.key in extra_data:
+                    del extra_data[fm_immutable_variable.key]
+
+                # xml file generation depends on whether the variable was prefilled or not
+                # (authentiek)
+                state = submission.load_submission_value_variables_state()
+                submission_variable = state.get_variable(fm_immutable_variable.key)
+
+                # update the zaak data with the information needed for the xml request
+                for partner in zaak_data[RegistrationAttribute.partners]:
+                    partner.update(
+                        {
+                            "description": description,
+                            "dateOfBirth": partner["dateOfBirth"].replace("-", ""),
+                            "prefilled": bool(submission_variable),
+                        }
+                    )
+                    del partner["dateOfBirthPrecision"]
+        # register as extraElementen
+        else:
+            variables = FormVariable.objects.filter(
+                source=FormVariableSources.user_defined,
+                prefill_plugin="family_members",
+            ).exclude(prefill_options={})
+            for variable in variables:
+                from_key, to_key = (
+                    variable.key,
+                    variable.prefill_options["mutable_data_form_variable"],
+                )
+                value = extra_data[from_key]
+                for item in value:
+                    item["description"] = description
+                    del item["dateOfBirthPrecision"]
+
+                extra_data[to_key] = value
+                del extra_data[from_key]
 
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
@@ -259,6 +334,11 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 zaak_data["locatie"]["key"] = component["key"]
 
             extra_data = self.get_extra_data(submission, options)
+
+            # mutate the zaak_data and the extra data for the partners component according
+            # to the type of the registration we want to send (zaakbetrokkene or extraElementen)
+            self.process_partners(submission, zaak_data, extra_data)
+
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
 
