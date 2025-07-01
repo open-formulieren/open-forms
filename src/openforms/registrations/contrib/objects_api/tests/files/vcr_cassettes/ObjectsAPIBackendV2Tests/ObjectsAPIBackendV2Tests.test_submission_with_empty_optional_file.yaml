@@ -11,7 +11,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2
   response:
@@ -30,7 +30,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:33:43 GMT
+      - Tue, 01 Jul 2025 08:33:10 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -63,12 +63,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/c2cb0233-b71d-4351-aa21-b203d08be4b2","uuid":"c2cb0233-b71d-4351-aa21-b203d08be4b2","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/11637efa-1be9-4d79-8a0f-f6ef26d1a563","uuid":"11637efa-1be9-4d79-8a0f-f6ef26d1a563","type":"http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2","record":{"index":1,"typeVersion":1,"data":{"single_file":""},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2025-07-01","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -83,9 +83,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:33:43 GMT
+      - Tue, 01 Jul 2025 08:33:10 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/c2cb0233-b71d-4351-aa21-b203d08be4b2
+      - http://localhost:8002/api/v2/objects/11637efa-1be9-4d79-8a0f-f6ef26d1a563
       Referrer-Policy:
       - same-origin
       Server:

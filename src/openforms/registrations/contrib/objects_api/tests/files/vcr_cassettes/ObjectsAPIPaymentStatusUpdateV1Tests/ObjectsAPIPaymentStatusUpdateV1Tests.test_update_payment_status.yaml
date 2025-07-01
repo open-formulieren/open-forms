@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {}, "startAt": "2025-05-21"}}'
+      "record": {"typeVersion": 1, "data": {}, "startAt": "2025-07-01"}}'
     headers:
       Accept:
       - '*/*'
@@ -18,12 +18,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d","uuid":"57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2025-05-21","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/0f5e1599-7ab2-4539-806b-30f5ae8f6088","uuid":"0f5e1599-7ab2-4539-806b-30f5ae8f6088","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2025-07-01","endAt":null,"registrationAt":"2025-07-01","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -38,9 +38,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:33:47 GMT
+      - Tue, 01 Jul 2025 08:33:14 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d
+      - http://localhost:8002/api/v2/objects/0f5e1599-7ab2-4539-806b-30f5ae8f6088
       Referrer-Policy:
       - same-origin
       Server:
@@ -66,7 +66,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e
   response:
@@ -85,7 +85,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:33:47 GMT
+      - Tue, 01 Jul 2025 08:33:14 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -120,12 +120,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d
+    uri: http://localhost:8002/api/v2/objects/0f5e1599-7ab2-4539-806b-30f5ae8f6088
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d","uuid":"57e5fb1d-e11e-48e6-9e45-5c09d3b63e2d","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"],"payment_ids":["12345"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/0f5e1599-7ab2-4539-806b-30f5ae8f6088","uuid":"0f5e1599-7ab2-4539-806b-30f5ae8f6088","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"],"payment_ids":["12345"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2025-07-01","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -140,7 +140,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:33:47 GMT
+      - Tue, 01 Jul 2025 08:33:14 GMT
       Referrer-Policy:
       - same-origin
       Server:
