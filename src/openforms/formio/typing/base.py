@@ -4,14 +4,14 @@ Base types for more specific component types.
 These are common ancestors for all specific component types.
 """
 
-from typing import Literal, NotRequired, TypeAlias, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from openforms.typing import JSONValue
 
 from ..constants import DataSrcOptions
 from .dates import DateConstraintConfiguration
 
-TranslationsDict: TypeAlias = dict[str, dict[str, str]]
+type TranslationsDict = dict[str, dict[str, str]]
 
 
 class Validate(TypedDict, total=False):

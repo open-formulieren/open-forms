@@ -288,8 +288,7 @@ def _iter_case_type_versions(
         identification=case_type_identification,
     )
     assert case_type_versions is not None
-    for version in case_type_versions:
-        yield version
+    yield from case_type_versions
 
 
 def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:

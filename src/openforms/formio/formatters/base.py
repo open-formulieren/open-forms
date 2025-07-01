@@ -40,7 +40,7 @@ class FormatterBase[T: Component]:
         multiple = component.get("multiple", False)
         # this breaks if multiple is true and value not a list
         if multiple:
-            if not isinstance(value, (tuple, list)):
+            if not isinstance(value, tuple | list):
                 # this happens if value is None
                 value = [value]
         else:
@@ -84,4 +84,4 @@ class FormatterBase[T: Component]:
         )
 
     def format(self, component: T, value: Any) -> str:  # pragma:nocover
-        raise NotImplementedError("%r must implement the 'format' method" % type(self))
+        raise NotImplementedError(f"{type(self)!r} must implement the 'format' method")

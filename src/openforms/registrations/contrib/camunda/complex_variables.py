@@ -9,12 +9,12 @@ data may be static/hardcoded.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, TypeAlias, TypedDict
+from typing import Any, TypedDict
 
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
 
-AnyVariable: TypeAlias = "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
+type AnyVariable = "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
 
 
 class VarLogicExpression(TypedDict):

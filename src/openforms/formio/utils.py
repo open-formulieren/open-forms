@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any
 
 import elasticapm
 import structlog
@@ -22,7 +22,7 @@ logger = structlog.stdlib.get_logger(__name__)
 
 # XXX: we should probably be able to narrow this in Python 3.11 with non-total typed
 # dicts.
-ComponentLike: TypeAlias = (
+type ComponentLike = (
     FormioConfiguration | JSONObject | Component | ColumnsComponent | Column
 )
 

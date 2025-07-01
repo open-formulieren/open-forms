@@ -201,14 +201,14 @@ def _remove_nils[C: Mapping | list](container: C) -> C:
     return (
         Container(
             **{
-                k: (_remove_nils(v) if isinstance(v, (Mapping, list)) else v)
+                k: (_remove_nils(v) if isinstance(v, Mapping | list) else v)
                 for k, v in container.items()
                 if not is_nil(v)
             }
         )
         if issubclass(Container, Mapping)
         else [
-            _remove_nils(v) if isinstance(v, (Mapping, list)) else v
+            _remove_nils(v) if isinstance(v, Mapping | list) else v
             for v in container
             if not is_nil(v)
         ]

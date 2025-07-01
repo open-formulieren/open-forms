@@ -3,7 +3,7 @@ import os
 import re
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Literal, TypeAlias
+from typing import Any, Literal
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import override_settings, tag
@@ -24,7 +24,7 @@ from playwright.async_api import (
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.conf.utils import config
 
-SupportedBrowser: TypeAlias = Literal["chromium", "firefox", "webkit"]
+type SupportedBrowser = Literal["chromium", "firefox", "webkit"]
 
 HEADLESS = "NO_E2E_HEADLESS" not in os.environ
 BROWSER: SupportedBrowser = os.getenv("E2E_DRIVER", default="chromium")  # type:ignore

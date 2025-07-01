@@ -83,7 +83,7 @@ def get_options_from_variable(
     ]
 
     if any(
-        isinstance(item_key, (dict, list)) or isinstance(item_label, (dict, list))
+        isinstance(item_key, dict | list) or isinstance(item_label, dict | list)
         for item_key, item_label in normalised_options
     ):
         logevent.form_configuration_error(

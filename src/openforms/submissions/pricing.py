@@ -110,7 +110,7 @@ def _price_from_variable(submission: Submission) -> Decimal | None:
         f"{type(value)}. We require a value that can be cast to a decimal.",
         variable=var_key,
     )
-    if not isinstance(value, (str, float, int)) or isinstance(value, bool):
+    if not isinstance(value, str | float | int) or isinstance(value, bool):
         raise invalid_type_error
     try:
         return Decimal(value)
