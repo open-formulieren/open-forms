@@ -160,6 +160,9 @@
                     <ZKN:identificatie>{{ registrator.medewerker.identificatie }}</ZKN:identificatie>
                 </ZKN:medewerker>
             </ZKN:gerelateerde>
+            {% if stuf_zds_config.zaakbetrokkene_registrator_omschrijving %}
+                <ZKN:omschrijving>{{ stuf_zds_config.zaakbetrokkene_registrator_omschrijving }}</ZKN:omschrijving>
+            {% endif %}
         </ZKN:heeftAlsOverigBetrokkene>
         {% endif %}
         {% include "stuf_zds/soap/includes/partners.xml" %}
