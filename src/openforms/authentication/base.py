@@ -7,6 +7,15 @@ from furl import furl
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
+from openforms.authentication.models import AuthInfo
+from openforms.authentication.types import (
+    DigiDContext,
+    DigiDMachtigenContext,
+    EHerkenningContext,
+    EHerkenningMachtigenContext,
+    EmployeeContext,
+    YiviContext,
+)
 from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import AnyRequest, JSONObject, StrOrPromise
@@ -51,6 +60,10 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     return_method = "GET"
     is_for_gemachtigde = False
 
+    # Indicating if the plugin handles the authInfo -> authContext themselves.
+    # Works in conjunction with ``BasePlugin.auth_info_to_auth_context``
+    manage_auth_context: bool = False
+
     # override
 
     def start_login(
@@ -75,6 +88,26 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
         raise NotImplementedError()  # noqa
 
     # helpers
+
+    def auth_info_to_auth_context(
+        self, auth_info: AuthInfo
+    ) -> (
+        DigiDContext
+        | DigiDMachtigenContext
+        | EHerkenningContext
+        | EHerkenningMachtigenContext
+        | EmployeeContext
+        | YiviContext
+    ):
+        """
+        Plugin custom auth info to auth context handling.
+
+        This will be executed during the AuthInfo ``to_auth_context_data`` when
+        ``manage_auth_context`` is set to ``True``.
+        """
+        raise NotImplementedError(
+            "Subclasses must implement 'auth_info_to_auth_context'"
+        )
 
     def get_start_url(self, request: Request, form: Form) -> str:
         return reverse(
