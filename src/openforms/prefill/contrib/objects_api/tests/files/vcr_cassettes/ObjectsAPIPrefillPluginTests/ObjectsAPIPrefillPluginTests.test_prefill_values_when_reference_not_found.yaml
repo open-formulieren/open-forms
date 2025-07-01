@@ -13,7 +13,7 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8002/api/v2/objects/048a37ca-a602-4158-9e60-9f06f3e47e2a
   response:
@@ -33,7 +33,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:26:14 GMT
+      - Tue, 01 Jul 2025 07:53:48 GMT
       Referrer-Policy:
       - same-origin
       Server:

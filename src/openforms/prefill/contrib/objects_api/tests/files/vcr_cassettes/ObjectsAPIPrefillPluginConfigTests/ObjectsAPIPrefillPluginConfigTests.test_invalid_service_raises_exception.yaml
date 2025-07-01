@@ -11,7 +11,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8002/api/v2/invalid/objects?pageSize=1
   response:
@@ -58,7 +58,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:26:13 GMT
+      - Tue, 01 Jul 2025 07:53:47 GMT
       Referrer-Policy:
       - same-origin
       Server:
