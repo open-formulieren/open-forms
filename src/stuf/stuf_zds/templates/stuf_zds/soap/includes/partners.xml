@@ -28,7 +28,9 @@
                 {% endif %}
                 </ZKN:natuurlijkPersoon>
             </ZKN:gerelateerde>
-            <ZKN:omschrijving StUF:exact="true">{{ partner.description }}</ZKN:omschrijving>
+            {% if stuf_zds_config.zaakbetrokkene_partners_omschrijving %}
+                <ZKN:omschrijving StUF:exact="true">{{ stuf_zds_config.zaakbetrokkene_partners_omschrijving }}</ZKN:omschrijving>
+            {% endif %}
         </ZKN:heeftAlsOverigBetrokkene>
     {% endfor %}
 {% endif %}

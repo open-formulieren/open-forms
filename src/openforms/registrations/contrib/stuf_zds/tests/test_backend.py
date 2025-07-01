@@ -159,6 +159,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         config = StufZDSConfig.get_solo()
         config.service = self.service
         config.save()
+        self.addCleanup(StufZDSConfig.clear_cache)
 
     @patch("celery.app.task.Task.request")
     def test_plugin(self, m, mock_task):
@@ -1610,6 +1611,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__payment_backend="demo",
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
+        config = StufZDSConfig.get_solo()
+        config.zaakbetrokkene_registrator_omschrijving = "registrator"
+        config.save()
 
         m.post(
             self.service.soap_service.url,
@@ -1678,6 +1682,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
                 "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "123456782",  # Identificatie of the employee
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:omschrijving": "registrator",
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
                 "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "4.893164274470299 52.36673378967122",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
@@ -3150,6 +3155,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
         config = StufZDSConfig.get_solo()
         config.service = self.service
         config.save()
+        self.addCleanup(StufZDSConfig.clear_cache)
 
     @tag("gh-4145")
     def test_payment_status_is_correct_on_payment_update(self, m):

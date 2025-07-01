@@ -18,6 +18,7 @@ from soap.constants import SOAPVersion
 from stuf.tests.factories import StufServiceFactory
 
 from ..client import PaymentStatus, StufZDSClient, ZaakOptions
+from ..models import StufZDSConfig
 from . import StUFZDSTestBase
 from .utils import load_mock, match_text, xml_from_request_history
 
@@ -73,7 +74,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_soap_12(self, m):
         self.service.soap_version = SOAPVersion.soap12
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
 
         m.post(
             self.service.soap_service.url,
@@ -118,7 +119,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_soap_11(self, m):
         self.service.soap_service.soap_version = SOAPVersion.soap11
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
 
         m.post(
             self.service.soap_service.url,
@@ -161,7 +162,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_identificatie(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock(
@@ -209,7 +210,11 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(
+            self.service,
+            self.options,
+            config=StufZDSConfig(zaakbetrokkene_cosigner_omschrijving="cosigner"),
+        )
         self.options.update({"cosigner": "123456782"})
         m.post(
             self.service.soap_service.url,
@@ -245,6 +250,7 @@ class StufZDSClientTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
                 "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:omschrijving": "cosigner",
             },
         )
 
@@ -262,7 +268,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_set_zaak_payment(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),  # reuse?
@@ -306,7 +312,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_document_identificatie(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock(
@@ -351,7 +357,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_document(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
@@ -403,7 +409,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_attachment(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
@@ -456,7 +462,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_attachment_with_custom_title(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
@@ -512,7 +518,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_network_error(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(self.service.soap_service.url, exc=RequestException)
         submission_report = SubmissionReportFactory.create()
 
@@ -552,7 +558,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_xml_parse_error(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(self.service.soap_service.url, text="> > broken xml < <")
         submission_report = SubmissionReportFactory.create()
 
@@ -584,7 +590,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_bad_structure_error(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(self.service.soap_service.url, content=load_mock("dummy.xml"))
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
@@ -607,7 +613,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_parse_error(self, m):
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         m.post(
             self.service.soap_service.url,
             status_code=500,
@@ -646,7 +652,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         exactly as it was received (including newlines, spaces...) except for
         identifying information.
         """
-        client = StufZDSClient(self.service, self.options)
+        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
         content_bits = (
             b"<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/",
             b'soap/envelope/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">',

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import uuid
 from collections import OrderedDict
@@ -106,10 +108,12 @@ def get_client(options: ZaakOptions) -> "Client":
     config = StufZDSConfig.get_solo()
     if not (service := config.service):
         raise NoServiceConfigured("You must configure a service!")
-    return StufZDSClient(service, options)
+    return StufZDSClient(service, options, config=config)
 
 
-def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
+def StufZDSClient(
+    service: StufService, options: ZaakOptions, config: StufZDSConfig
+) -> Client:
     factory = ServiceClientFactory(service)
     init_kwargs = get_client_init_kwargs(
         service,
@@ -117,6 +121,7 @@ def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
     )
     return Client.configure_from(
         factory,
+        config=config,
         options=options,
         failure_log_callback=partial(logevent.stuf_zds_failure_response, service),
         success_log_callback=partial(logevent.stuf_zds_success_response, service),
@@ -135,12 +140,14 @@ class Client(BaseClient):
     def __init__(
         self,
         *args,
+        config: StufZDSConfig,
         options: ZaakOptions,
         failure_log_callback: Callable[[str], None],
         success_log_callback: Callable[[str], None],
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        self.config = config
         self.zds_options = options
         # TODO: do we still need this? This can be a processor?
         self.log_stuf_zds_failure = failure_log_callback
@@ -160,6 +167,7 @@ class Client(BaseClient):
         # not necessarily be set by the caller.
         context = kwargs.get("context") or {}
         context.setdefault("referentienummer", uuid.uuid4())
+        context["stuf_zds_config"] = self.config
 
         kwargs["context"] = context
         kwargs.setdefault("endpoint_type", EndpointType.vrije_berichten)

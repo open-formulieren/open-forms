@@ -15,6 +15,7 @@ from openforms.tests.utils import can_connect
 from ...constants import EndpointType
 from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient, ZaakOptions
+from ..models import StufZDSConfig
 
 
 @requests_mock.Mocker()
@@ -54,7 +55,9 @@ class StufZdsClientTest(TestCase):
             soap_service__client_certificate=self.client_certificate,
             soap_service__server_certificate=self.server_certificate,
         )
-        client = StufZDSClient(stuf_service, self.client_options)
+        client = StufZDSClient(
+            stuf_service, self.client_options, config=StufZDSConfig()
+        )
         m.post(
             stuf_service.soap_service.url,
             text=render_to_string(
@@ -82,7 +85,9 @@ class StufZdsClientTest(TestCase):
             soap_service__client_certificate=self.client_certificate_only,
             soap_service__server_certificate=self.server_certificate,
         )
-        client = StufZDSClient(stuf_service, self.client_options)
+        client = StufZDSClient(
+            stuf_service, self.client_options, config=StufZDSConfig()
+        )
         m.post(
             stuf_service.soap_service.url,
             text=render_to_string(
@@ -105,7 +110,9 @@ class StufZdsClientTest(TestCase):
 
     def test_no_mutual_tls(self, m):
         stuf_service = StufServiceFactory.create()
-        client = StufZDSClient(stuf_service, self.client_options)
+        client = StufZDSClient(
+            stuf_service, self.client_options, config=StufZDSConfig()
+        )
         m.post(
             stuf_service.soap_service.url,
             text=render_to_string(
@@ -134,7 +141,11 @@ class StufZdsRegressionTests(SimpleTestCase):
         http.client, used by requests.
         """
         stuf_service = StufServiceFactory.build()
-        client = StufZDSClient(stuf_service, {})  # type: ignore
+        client = StufZDSClient(
+            stuf_service,
+            {},  # pyright: ignore[reportArgumentType]
+            config=StufZDSConfig(),
+        )
 
         with patch.object(
             client, "to_absolute_url", return_value="https://example.com"
@@ -163,7 +174,11 @@ class StufZdsRegressionTests(SimpleTestCase):
         stuf_service = StufServiceFactory.build(
             soap_service__url="https://example.com", soap_service__timeout=1
         )
-        with StufZDSClient(stuf_service, {}) as client:  # type: ignore
+        with StufZDSClient(
+            stuf_service,
+            {},  # pyright: ignore[reportArgumentType]
+            config=StufZDSConfig(),
+        ) as client:
             client.get("https://example.com/path")
 
         assert m.last_request.timeout == 1  # type: ignore

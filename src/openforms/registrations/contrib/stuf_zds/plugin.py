@@ -233,9 +233,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
         zaak_data: MutableMapping[str, Any],
         extra_data: dict[str, Any],
     ) -> None:
-        config = StufZDSConfig.get_solo()
-        description = config.zaakbetrokkene_partners_omschrijving
-
         # register as zaakbetrokkene
         if RegistrationAttribute.partners in zaak_data:
             component = get_component(
@@ -269,7 +266,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 for partner in zaak_data[RegistrationAttribute.partners]:
                     partner.update(
                         {
-                            "description": description,
                             "dateOfBirth": partner["dateOfBirth"].replace("-", ""),
                             "prefilled": bool(submission_variable),
                         }
@@ -288,7 +284,6 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 )
                 value = extra_data[from_key]
                 for item in value:
-                    item["description"] = description
                     del item["dateOfBirthPrecision"]
 
                 extra_data[to_key] = value
