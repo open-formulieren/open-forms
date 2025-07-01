@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8004/api/v1/tabellen?code=tabel-with-many-items
   response:
@@ -22,11 +22,11 @@ interactions:
       Content-Length:
       - '208'
       Content-Security-Policy:
-      - 'img-src ''self'' data: cdn.redoc.ly; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; base-uri ''self''; worker-src ''self'' blob:; object-src
-        ''none''; frame-ancestors ''none''; frame-src ''self''; style-src ''self''
-        ''unsafe-inline'' fonts.googleapis.com; script-src ''self'' ''unsafe-inline'';
-        default-src ''self'''
+      - 'frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
+        default-src ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; form-action ''self'';
+        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -54,7 +54,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8004/api/v1/items?tabel__code=tabel-with-many-items
   response:
@@ -66,11 +66,11 @@ interactions:
       Content-Length:
       - '10910'
       Content-Security-Policy:
-      - 'img-src ''self'' data: cdn.redoc.ly; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; base-uri ''self''; worker-src ''self'' blob:; object-src
-        ''none''; frame-ancestors ''none''; frame-src ''self''; style-src ''self''
-        ''unsafe-inline'' fonts.googleapis.com; script-src ''self'' ''unsafe-inline'';
-        default-src ''self'''
+      - 'frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
+        default-src ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; form-action ''self'';
+        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -96,7 +96,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8004/api/v1/items?page=2&tabel__code=tabel-with-many-items
   response:
@@ -108,11 +108,11 @@ interactions:
       Content-Length:
       - '225'
       Content-Security-Policy:
-      - 'img-src ''self'' data: cdn.redoc.ly; font-src ''self'' fonts.gstatic.com;
-        form-action ''self''; base-uri ''self''; worker-src ''self'' blob:; object-src
-        ''none''; frame-ancestors ''none''; frame-src ''self''; style-src ''self''
-        ''unsafe-inline'' fonts.googleapis.com; script-src ''self'' ''unsafe-inline'';
-        default-src ''self'''
+      - 'frame-src ''self''; worker-src ''self'' blob:; frame-ancestors ''none'';
+        default-src ''self''; base-uri ''self''; script-src ''self'' ''unsafe-inline'';
+        font-src ''self'' fonts.gstatic.com; object-src ''none''; form-action ''self'';
+        img-src ''self'' data: cdn.redoc.ly; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
