@@ -41,9 +41,9 @@ class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
         folder_path = render_from_string(
             options["folder_path"],
             {
-                "year": "{date:%Y}".format(date=date),
-                "month": "{date:%m}".format(date=date),
-                "day": "{date:%d}".format(date=date),
+                "year": f"{date:%Y}",
+                "month": f"{date:%m}",
+                "day": f"{date:%d}",
             },
         )
 
@@ -83,7 +83,7 @@ class MSGraphRegistration(BasePlugin[MicrosoftGraphOptions]):
         self._set_payment(uploader, submission, folder_name)
 
     def update_payment_status(
-        self, submission: "Submission", options: MicrosoftGraphOptions
+        self, submission: Submission, options: MicrosoftGraphOptions
     ):
         config = MSGraphRegistrationConfig.get_solo()
         client = MSGraphClient(config.service)

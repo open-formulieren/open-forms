@@ -1,10 +1,10 @@
 import os.path
 import pathlib
 import re
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import timedelta
 from functools import partial
-from typing import Iterable, Iterator
 from urllib.parse import urlparse
 
 from django.conf import settings

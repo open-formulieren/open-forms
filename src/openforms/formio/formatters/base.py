@@ -1,5 +1,6 @@
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Iterable, Sequence
+from typing import Any
 
 from django.utils.encoding import force_str
 from django.utils.html import format_html, format_html_join

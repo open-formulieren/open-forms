@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -53,7 +53,7 @@ from ..digest import (
 )
 from ..tasks import Digest
 
-utc = timezone.utc
+utc = UTC
 
 TEST_FILES = Path(__file__).parent / "data"
 
@@ -956,7 +956,7 @@ class FamilyMembersBrokenHCConfigurationTests(OFVCRMixin, TestCase):
 class InvalidCertificatesTests(TestCase):
     def test_expiring_certificates_not_used_by_a_service_are_not_collected(self):
         # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
-        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+        with open(TEST_FILES / "test.certificate") as client_certificate_f:
             CertificateFactory.create(
                 label="Test certificate",
                 public_certificate=File(client_certificate_f, name="test.certificate"),
@@ -969,7 +969,7 @@ class InvalidCertificatesTests(TestCase):
 
     def test_not_expiring_and_valid_certificates_are_not_collected(self):
         # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
-        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+        with open(TEST_FILES / "test.certificate") as client_certificate_f:
             certificate = CertificateFactory.create(
                 label="Test certificate",
                 public_certificate=File(client_certificate_f, name="test.certificate"),
@@ -983,7 +983,7 @@ class InvalidCertificatesTests(TestCase):
 
     def test_expiring_certificates_are_collected(self):
         # the certificate (test.certificate) expires on Apr 9 05:17:53 2026 GMT
-        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+        with open(TEST_FILES / "test.certificate") as client_certificate_f:
             certificate = CertificateFactory.create(
                 label="Test certificate",
                 public_certificate=File(client_certificate_f, name="test.certificate"),
@@ -1001,8 +1001,8 @@ class InvalidCertificatesTests(TestCase):
         # test2.certificate on Apr 9 05:22:12 2026 GMT. Here the test.key is not valid
         # for test2.certificate which causes an invalid keypair error
         with (
-            open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
-            open(TEST_FILES / "test.key", "r") as key_f,
+            open(TEST_FILES / "test2.certificate") as client_certificate_f,
+            open(TEST_FILES / "test.key") as key_f,
         ):
             certificate = CertificateFactory.create(
                 label="Test certificate",
@@ -1021,8 +1021,8 @@ class InvalidCertificatesTests(TestCase):
         # test2.certificate on Apr 9 05:22:12 2026 GMT. Here the test.key is not valid
         # for test2.certificate which causes an invalid keypair error
         with (
-            open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
-            open(TEST_FILES / "test.key", "r") as key_f,
+            open(TEST_FILES / "test2.certificate") as client_certificate_f,
+            open(TEST_FILES / "test.key") as key_f,
         ):
             certificate = CertificateFactory.create(
                 label="Test certificate",

@@ -137,7 +137,7 @@ class BaseTokenGenerator(ABC):
         invalidate the token.
         """
         parts = self.get_hash_value_parts(obj)
-        assert all((isinstance(bit, str) for bit in parts)), (
+        assert all(isinstance(bit, str) for bit in parts), (
             "All hash value parts should be strings."
         )
         joined_parts = "".join(parts)

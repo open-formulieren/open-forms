@@ -1,5 +1,6 @@
+from collections.abc import Iterator
 from functools import partial
-from typing import Iterator, Protocol, TypedDict
+from typing import Protocol, TypedDict
 
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _

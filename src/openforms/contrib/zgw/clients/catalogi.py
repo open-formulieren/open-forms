@@ -1,7 +1,8 @@
+from collections.abc import Callable, Iterator
 from datetime import date
 from functools import cached_property
 from operator import itemgetter
-from typing import Callable, Iterator, Literal, NotRequired, TypeAlias, TypedDict
+from typing import Literal, NotRequired, TypeAlias, TypedDict
 
 from flags.state import flag_enabled
 from requests import Response

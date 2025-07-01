@@ -1,4 +1,5 @@
-from typing import Callable, TypeAlias
+from collections.abc import Callable
+from typing import TypeAlias
 
 from openforms.plugins.registry import BaseRegistry
 

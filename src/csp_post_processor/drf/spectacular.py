@@ -45,7 +45,7 @@ def _get_serializer_class(view_cls: type[APIView]):
             "serializer_class",
         ]
         # can't guess serializer -> give up
-        if not any((hasattr(view_cls, attr) for attr in serializer_attrs)):
+        if not any(hasattr(view_cls, attr) for attr in serializer_attrs):
             return None
 
     auto_schema = AutoSchema()
@@ -107,10 +107,8 @@ class CSPPostProcessedHTMLFieldExtension(OpenApiViewExtension):
         # now check if the serializer has a CSPPostProcessedHTMLField
         serializer = force_instance(serializer)
         is_post_processable = any(
-            (
-                isinstance(field, CSPPostProcessedHTMLField)
-                for field in serializer.get_fields().values()
-            )
+            isinstance(field, CSPPostProcessedHTMLField)
+            for field in serializer.get_fields().values()
         )
         if not is_post_processable:
             return self.target

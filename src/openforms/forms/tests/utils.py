@@ -15,5 +15,5 @@ EXPORT_BLOB = {
 # convert the readable JSON files into an actual export blob of strings
 for filename in EXPORT_BLOB_FILENAMES:
     path = os.path.join(EXPORTS_DIR, f"{filename}.json")
-    with open(path, "r") as infile:
+    with open(path) as infile:
         EXPORT_BLOB[filename] = infile.read()

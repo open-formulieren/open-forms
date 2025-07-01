@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -1149,7 +1149,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         mock_registration.assert_called()
         self.assertEqual(
             submission.last_register_date,
-            datetime(2024, 2, 16, 21, 15).replace(tzinfo=timezone.utc),
+            datetime(2024, 2, 16, 21, 15).replace(tzinfo=UTC),
         )
         self.assertEqual(submission.registration_attempts, 1)
 
@@ -1190,7 +1190,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         self.assertTrue(submission.pre_registration_completed)
         self.assertEqual(
             submission.last_register_date,
-            datetime(2024, 2, 16, 21, 15).replace(tzinfo=timezone.utc),
+            datetime(2024, 2, 16, 21, 15).replace(tzinfo=UTC),
         )
         self.assertEqual(submission.registration_attempts, 1)
 

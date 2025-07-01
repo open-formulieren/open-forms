@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Generic, Iterator, TypeVar
+from collections.abc import Callable, Iterator
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from django.db import OperationalError
 

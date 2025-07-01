@@ -12,8 +12,8 @@ from openforms.typing import JSONValue
 from ..validators import HeaderValidator, QueryParameterValidator, ValidationError
 
 FIELD_NAME_ALPHABET = "!#$%&'*+-.^_`|~0123456789" + ascii_letters
-VCHAR = "".join((chr(i) for i in range(0x21, 0x7F)))
-OBS_TEXT = "".join((chr(i) for i in range(0x80, 0x100)))
+VCHAR = "".join(chr(i) for i in range(0x21, 0x7F))
+OBS_TEXT = "".join(chr(i) for i in range(0x80, 0x100))
 SP = "\x20"
 HTAB = "\x09"
 CR = "\x0d"

@@ -33,7 +33,7 @@ class MapFormatter(FormatterBase):
     def format(self, component: MapComponent, value: MapValue) -> str:
         # use a comma here since its a single data element
         if coordinates := value.get("coordinates"):
-            return ", ".join((str(x) for x in coordinates))
+            return ", ".join(str(x) for x in coordinates)
         else:
             return ""
 

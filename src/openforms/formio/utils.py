@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterator, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import elasticapm
 import structlog

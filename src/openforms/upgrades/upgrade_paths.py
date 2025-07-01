@@ -1,8 +1,8 @@
 import contextlib
 import sys
+from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Collection
 
 from django.conf import settings
 from django.core.management import CommandError, call_command
@@ -140,10 +140,8 @@ def check_upgrade_path(from_version: str, to_version: str) -> bool:
             return True
 
     if not any(
-        (
-            version_range.contains(in_version)
-            for version_range in upgrade_constraint.valid_ranges
-        )
+        version_range.contains(in_version)
+        for version_range in upgrade_constraint.valid_ranges
     ):
         return False
 

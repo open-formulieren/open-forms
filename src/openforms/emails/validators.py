@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 from urllib.parse import urlsplit
 
 from django.core.exceptions import ValidationError

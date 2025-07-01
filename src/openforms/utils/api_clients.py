@@ -1,4 +1,5 @@
-from typing import Generic, Iterator, TypedDict, TypeVar
+from collections.abc import Iterator
+from typing import Generic, TypedDict, TypeVar
 
 from ape_pie import APIClient
 

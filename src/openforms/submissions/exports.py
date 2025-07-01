@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Iterator
+from collections.abc import Iterator
 
 from django.db import models
 from django.http import HttpResponse

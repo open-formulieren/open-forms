@@ -1,5 +1,5 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Iterator
 
 from openapi_parser import parse
 from openapi_parser.specification import Object, Property, Specification

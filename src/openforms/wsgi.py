@@ -7,7 +7,7 @@ For more information on this file, see
 https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from django.core.wsgi import get_wsgi_application
 
@@ -27,7 +27,7 @@ class LogVars:
 
     def __call__(self, environ, start_response):
         if uwsgi is not None:
-            now = datetime.now(tz=timezone.utc)
+            now = datetime.now(tz=UTC)
             uwsgi.set_logvar("iso8601timestamp", now.isoformat())
         return self.application(environ, start_response)
 

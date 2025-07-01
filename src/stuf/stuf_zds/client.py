@@ -1,10 +1,10 @@
 import base64
 import uuid
 from collections import OrderedDict
-from collections.abc import MutableMapping
+from collections.abc import Callable, Iterator, MutableMapping
 from datetime import datetime
 from functools import partial
-from typing import Any, Callable, Iterator, Literal, NotRequired, Protocol, TypedDict
+from typing import Any, Literal, NotRequired, Protocol, TypedDict
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _

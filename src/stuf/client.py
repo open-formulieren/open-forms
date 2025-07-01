@@ -124,7 +124,7 @@ class BaseClient(APIClient):
         known_bases = list(self._endpoints.values())
 
         if is_base_url(maybe_relative_url):
-            if not any((maybe_relative_url.startswith(base) for base in known_bases)):
+            if not any(maybe_relative_url.startswith(base) for base in known_bases):
                 raise InvalidURLError(
                     f"Target URL {maybe_relative_url} has a different base URL than the "
                     f"client's possible bases ({known_bases})."
