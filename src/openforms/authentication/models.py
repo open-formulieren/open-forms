@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
+from openforms.authentication.registry import register as auth_registry
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
 
@@ -16,7 +17,6 @@ from .constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
-from .contrib.yivi_oidc.constants import PLUGIN_ID as YIVI_PLUGIN_ID
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 from .types import (
     DigiDContext,
@@ -279,20 +279,12 @@ class AuthInfo(BaseAuthInfo):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
 
-        if self.plugin == YIVI_PLUGIN_ID:
-            yivi_context: YiviContext = {
-                "source": "yivi",
-                "authorizee": {
-                    "legalSubject": {
-                        "identifierType": self.attribute,
-                        "identifier": self.value,
-                        "additionalInformation": self.additional_claims,
-                    }
-                },
-            }
-            if self.attribute is not AuthAttribute.pseudo:
-                yivi_context["levelOfAssurance"] = self.loa
-            return yivi_context
+        try:
+            plugin = auth_registry[self.plugin]
+            if plugin.manage_auth_context:
+                return plugin.auth_info_to_auth_context(auth_info=self)
+        except KeyError:
+            pass
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate

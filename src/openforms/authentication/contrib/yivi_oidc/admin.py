@@ -1,6 +1,5 @@
 from typing import Sequence
 
-from django import forms
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
@@ -9,44 +8,11 @@ from digid_eherkenning.oidc.admin import (
     COMMON_FIELDSETS,
     admin_modelform_factory,
 )
-from mozilla_django_oidc_db.forms import OpenIDConnectConfigForm
 from solo.admin import SingletonModelAdmin
 
-from openforms.forms.models import Form
+from openforms.contrib.auth_oidc.admin import OIDCConfigForm
 
-from .constants import PLUGIN_ID
 from .models import AttributeGroup, YiviOpenIDConnectConfig
-from .plugin import YiviOIDCAuthentication
-
-
-class OIDCConfigForm(OpenIDConnectConfigForm):
-    """
-    Custom form class to block backend disabling if any form uses it.
-    """
-
-    def clean_enabled(self):
-        """
-        Scan the (live) forms to see if any might be using this backend.
-        Disabling a backend while it is being used as a plugin on a live form would
-        break this form, so we warn the users for this.
-        """
-        enabled = self.cleaned_data["enabled"]
-        # Nothing to do if it is being or stays enabled
-        if enabled:
-            return enabled
-
-        forms_with_backend = Form.objects.live().filter(
-            auth_backends__backend__exact=PLUGIN_ID,
-        )
-        if forms_with_backend.exists():
-            raise forms.ValidationError(
-                _(
-                    "{plugin_identifier} is selected as authentication backend "
-                    "for one or more forms, please remove this backend from these "
-                    "forms before disabling this authentication backend."
-                ).format(plugin_identifier=YiviOIDCAuthentication.verbose_name)
-            )
-        return enabled
 
 
 def yivi_fieldsets_factory(
@@ -83,7 +49,7 @@ def yivi_fieldsets_factory(
 
 
 @admin.register(YiviOpenIDConnectConfig)
-class DigiDConfigAdmin(SingletonModelAdmin):
+class YiviOpenIDConnectConfigAdmin(SingletonModelAdmin):
     form = admin_modelform_factory(YiviOpenIDConnectConfig, form=OIDCConfigForm)
     fieldsets = yivi_fieldsets_factory(
         bsn_claim_mapping_fields=[
