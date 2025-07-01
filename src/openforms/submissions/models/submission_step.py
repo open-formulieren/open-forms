@@ -13,7 +13,7 @@ from openforms.forms.models import FormDefinition, FormStep
 
 
 def _make_frozen(obj):
-    if not isinstance(obj, (dict, list)):
+    if not isinstance(obj, dict | list):
         return obj
 
     elif isinstance(obj, list):

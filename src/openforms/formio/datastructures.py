@@ -225,7 +225,7 @@ class FormioData(UserDict):
             else:
                 raise AttributeError(f"Item '{data}' has no attribute '{k}'")
 
-            if not isinstance(child, (dict, list)):
+            if not isinstance(child, dict | list):
                 data[k] = {}
 
             data = data[k]

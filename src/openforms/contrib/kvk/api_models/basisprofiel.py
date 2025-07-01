@@ -1,9 +1,9 @@
-from typing import Literal, TypeAlias, TypedDict
+from typing import Literal, TypedDict
 
-JaNee: TypeAlias = Literal["Ja", "Nee"]
+type JaNee = Literal["Ja", "Nee"]
 
 # HAL links - if we fully type these, they should go in openforms.contrib.hal_client
-Links: TypeAlias = list[dict]
+type Links = list[dict]
 
 
 class MaterieleRegistratie(TypedDict):

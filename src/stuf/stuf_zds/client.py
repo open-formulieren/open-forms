@@ -104,7 +104,7 @@ class NoServiceConfigured(RuntimeError):
     pass
 
 
-def get_client(options: ZaakOptions) -> "Client":
+def get_client(options: ZaakOptions) -> Client:
     config = StufZDSConfig.get_solo()
     if not (service := config.service):
         raise NoServiceConfigured("You must configure a service!")

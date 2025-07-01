@@ -34,7 +34,7 @@ def _set_arrayfields(form, config: BaseConfig) -> None:
     fields = [
         f.name
         for f in config._meta.get_fields()
-        if isinstance(f, (ArrayField, JSONField))
+        if isinstance(f, ArrayField | JSONField)
     ]
     for field in fields:
         form[field] = json.dumps(getattr(config, field))

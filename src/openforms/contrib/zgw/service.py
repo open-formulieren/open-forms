@@ -1,11 +1,11 @@
 from io import BytesIO
-from typing import Literal, NotRequired, TypeAlias, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 
 from .clients.documenten import DocumentenClient
 
-SupportedLanguage: TypeAlias = Literal["nl", "en"]
+type SupportedLanguage = Literal["nl", "en"]
 
 
 class DocumentOptions(TypedDict):

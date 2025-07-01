@@ -98,12 +98,11 @@ def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
         case [str(), "datetime"]:
             parsed_value = parse_datetime(value)
             if not parsed_value:
-                raise ValueError("Could not parse %s as a datetime" % value)
+                raise ValueError(f"Could not parse {value} as a datetime")
             return parsed_value
 
     raise ValueError(
-        "Unexpected type encountered when processing min/max validation for %s component."
-        % component_type
+        f"Unexpected type encountered when processing min/max validation for {component_type} component."
     )
 
 

@@ -40,7 +40,7 @@ def _setup_random_state():
         encoded_state = base64.b64encode(
             pickle.dumps(factory.random.get_random_state())
         )
-        print("Current random state: %s" % encoded_state.decode("ascii"))
+        print("Current random state: {}".format(encoded_state.decode("ascii")))
 
 
 class RandomStateRunner(DiscoverRunner):

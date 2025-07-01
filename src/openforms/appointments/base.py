@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Generic, TypeAlias, TypeVar
+from typing import Generic, TypeVar
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -57,7 +57,7 @@ class CustomerDetails(Generic[F]):
 
 
 TInput = TypeVar("TInput", bound=JSONPrimitive)
-Normalizer: TypeAlias = Callable[[TInput], TInput]
+type Normalizer[TInput: JSONPrimitive] = Callable[[TInput], TInput]
 
 
 @dataclass()

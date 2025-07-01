@@ -676,7 +676,7 @@ class GlobalConfiguration(SingletonModel):
             )
             if not result.can_connect:
                 raise ValidationError(
-                    _("Cannot connect to ClamAV: %(error)s" % {"error": result.error})
+                    _("Cannot connect to ClamAV: {error}").format(error=result.error)
                 )
 
         return super().clean()

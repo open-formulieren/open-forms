@@ -8,7 +8,7 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING
 
 import structlog
 from glom import assign, glom
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 logger = structlog.stdlib.get_logger(__name__)
 
-FieldOrNestedFields: TypeAlias = serializers.Field | dict[str, "FieldOrNestedFields"]
+type FieldOrNestedFields = serializers.Field | dict[str, "FieldOrNestedFields"]
 
 
 class StepDataSerializer(serializers.Serializer):

@@ -118,7 +118,7 @@ def op_var(operation: Operation, for_root=False) -> str:
         return gettext("(invalid var ref)")
 
     var_ref = cast(str | int | Operation | None, operation.arguments[0])
-    if isinstance(var_ref, (str, int)):
+    if isinstance(var_ref, str | int):
         return _fmt_var(str(var_ref))
 
     if var_ref is None or var_ref == "":

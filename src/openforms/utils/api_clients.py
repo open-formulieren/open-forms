@@ -24,8 +24,7 @@ def pagination_helper(
     """
 
     def _iter(_data: PaginatedResponseData[T]) -> Iterator[T]:
-        for result in _data["results"]:
-            yield result
+        yield from _data["results"]
         if next_url := _data["next"]:
             response = client.get(next_url)
             response.raise_for_status()

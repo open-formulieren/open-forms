@@ -126,7 +126,7 @@ class BaseTokenGenerator(ABC):
             self._make_hash_value(obj, timestamp),
             secret=self.secret,
         ).hexdigest()[::2]  # Limit to 20 characters to shorten the URL.
-        return "%s-%s" % (ts_b36, hash_string)
+        return f"{ts_b36}-{hash_string}"
 
     def _make_hash_value(self, obj: models.Model, timestamp: int) -> str:
         """
