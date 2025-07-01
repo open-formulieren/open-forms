@@ -1,5 +1,5 @@
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
-from typing import Callable, Iterator
 
 from django.conf import settings
 from django.urls import reverse
@@ -52,7 +52,7 @@ class ContainerMixin:
                 f"the {render_configuration.key} property!"
             )
 
-        any_children_visible = any((child.is_visible for child in self.get_children()))
+        any_children_visible = any(child.is_visible for child in self.get_children())
         if not any_children_visible:
             return False
 

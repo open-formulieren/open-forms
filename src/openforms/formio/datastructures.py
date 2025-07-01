@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import re
 from collections import UserDict
-from typing import Iterator, cast
+from collections.abc import Iterator
+from typing import cast
 
 from glom import glom
 

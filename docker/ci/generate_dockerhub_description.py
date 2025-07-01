@@ -11,9 +11,10 @@
 import json
 import re
 import sys
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, TypedDict
+from typing import TypedDict
 
 import requests
 from jinja2 import Environment, FileSystemLoader, select_autoescape

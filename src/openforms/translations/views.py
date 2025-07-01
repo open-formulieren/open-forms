@@ -43,6 +43,6 @@ class FormIOTranslationsView(APIView):
                 "nl.json",
             )
         )
-        with open(filepath, "r") as translation_file:
+        with open(filepath) as translation_file:
             translations_nl = json.load(translation_file)
         return Response(status=status.HTTP_200_OK, data={"nl": translations_nl})

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 from django.http import HttpRequest
 
@@ -37,7 +38,7 @@ class Registry(BaseRegistry[BasePlugin]):
 
     def get_options(
         self, request: HttpRequest, form: Form | None = None
-    ) -> list["APIInfo"]:
+    ) -> list[APIInfo]:
         options = []
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:

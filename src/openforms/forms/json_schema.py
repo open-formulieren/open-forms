@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from collections import UserDict
-from typing import Iterator, Sequence
+from collections.abc import Iterator, Sequence
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,

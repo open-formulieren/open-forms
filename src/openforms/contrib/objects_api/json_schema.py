@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
 from dataclasses import dataclass, field, replace
-from typing import Iterator, Literal, Self, overload
+from typing import Literal, Self, overload
 
 from jsonschema_specifications import REGISTRY
 from referencing import Resource

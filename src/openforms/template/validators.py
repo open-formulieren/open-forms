@@ -37,16 +37,16 @@ class DjangoTemplateValidator:
         for tag_name in self.required_template_tags:
             # note: the double {{ and }} are escapes for the format()
             variants = [
-                "{{% {t} %}}".format(t=tag_name),
-                "{{% {t}%}}".format(t=tag_name),
-                "{{%{t} %}}".format(t=tag_name),
-                "{{%{t}%}}".format(t=tag_name),
+                f"{{% {tag_name} %}}",
+                f"{{% {tag_name}%}}",
+                f"{{%{tag_name} %}}",
+                f"{{%{tag_name}%}}",
             ]
             for tag in variants:
                 if tag in value:
                     break
             else:
-                tag_str = "{{% {} %}}".format(tag_name)
+                tag_str = f"{{% {tag_name} %}}"
                 raise ValidationError(
                     _("Missing required template-tag {tag}").format(tag=tag_str),
                     code="invalid",

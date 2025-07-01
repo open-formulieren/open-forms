@@ -1,6 +1,6 @@
 import dataclasses
-from collections.abc import MutableMapping
-from typing import Any, Callable, Mapping
+from collections.abc import Callable, Mapping, MutableMapping
+from typing import Any
 
 from glom import Assign, glom
 

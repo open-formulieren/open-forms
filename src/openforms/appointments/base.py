@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Callable, Generic, TypeAlias, TypeVar
+from typing import Generic, TypeAlias, TypeVar
 
 from django.db.models import TextChoices
 from django.urls import reverse

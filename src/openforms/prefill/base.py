@@ -1,5 +1,5 @@
-from collections.abc import Collection
-from typing import Any, Container, Iterable, TypedDict
+from collections.abc import Collection, Container, Iterable
+from typing import Any, TypedDict
 
 from rest_framework import serializers
 

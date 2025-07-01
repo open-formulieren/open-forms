@@ -56,9 +56,9 @@ You can set the environment variable ``VCR_RECORD_MODE`` to any of the supported
 
 # once in dev, none in CI
 import os
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 
 from vcr.config import VCR
 from vcr.unittest import VCRMixin

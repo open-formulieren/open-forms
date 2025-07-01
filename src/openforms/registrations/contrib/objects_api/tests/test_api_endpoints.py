@@ -368,5 +368,5 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
         self.assertGreater(len(data), 0)
-        has_any_drafts = any((item for item in data if item["isPublished"] is False))
+        has_any_drafts = any(item for item in data if item["isPublished"] is False)
         self.assertTrue(has_any_drafts)

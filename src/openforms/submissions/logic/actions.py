@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping, Self, TypedDict
+from typing import Any, Self, TypedDict
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder

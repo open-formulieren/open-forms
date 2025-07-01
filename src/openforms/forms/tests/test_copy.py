@@ -69,12 +69,12 @@ class CopyFormTests(TestCase):
         copied_form_2 = form.copy()
 
         self.assertEqual(copied_form_2.name, _("{name} (copy)").format(name=form.name))
-        self.assertEqual(copied_form_2.slug, "{}-2".format(copied_form_1.slug))
+        self.assertEqual(copied_form_2.slug, f"{copied_form_1.slug}-2")
 
         copied_form_3 = form.copy()
 
         self.assertEqual(copied_form_3.name, _("{name} (copy)").format(name=form.name))
-        self.assertEqual(copied_form_3.slug, "{}-3".format(copied_form_1.slug))
+        self.assertEqual(copied_form_3.slug, f"{copied_form_1.slug}-3")
 
     def test_copy_form_with_variables(self):
         form = FormFactory.create(slug="test-copying-with-vars")

@@ -1,9 +1,9 @@
 import uuid
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import groupby
-from typing import Iterable
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q

@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
     def load_unlisted(self):
         unlisted_path = os.path.join(settings.BASE_DIR, self.unlisted_models_fixture)
-        with open(unlisted_path, "r") as f:
+        with open(unlisted_path) as f:
             return json.load(f)
 
     def handle(self, **options):
