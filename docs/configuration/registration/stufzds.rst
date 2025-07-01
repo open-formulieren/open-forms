@@ -108,7 +108,9 @@ Configuration
 
 11. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **StUF-ZDS** line.
 12. Select for the **Service**, the StUF Service we created above
-13. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
+13. Additionally, you can provide values for the ``<ZKN:omschrijving>`` element for some
+    "zaakbetrokkenen" that may get created (like cosigner, registrator, partners...).
+    The values here depend on your downstream StUF-ZDS service provider.
 14. Click **Save**
 
 The StUF-ZDS configuration is now complete and can be selected as registration
