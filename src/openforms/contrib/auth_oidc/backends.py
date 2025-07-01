@@ -1,5 +1,4 @@
-from itertools import chain
-from typing import assert_never, override
+from typing import override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -8,17 +7,13 @@ from django.urls import resolve
 
 import structlog
 from digid_eherkenning.oidc.claims import process_claims
-from digid_eherkenning.oidc.models import BaseConfig
-from flags.state import flag_enabled
+from digid_eherkenning.oidc.models.base import BaseConfig
 from furl import furl
-from glom import Path, glom
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from openforms.authentication.contrib.yivi_oidc.constants import PLUGIN_ID as YIVI_PLUGIN_ID
-from openforms.authentication.contrib.yivi_oidc.models import AttributeGroup, YiviOpenIDConnectConfig
 from openforms.forms.models import Form, FormAuthenticationBackend
 from openforms.typing import JSONObject
 
@@ -38,9 +33,7 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
     def _check_candidate_backend(self) -> bool:
         # if we're dealing with a mozilla-django-oidc-db config that is *not* a
         # OF config, then don't bother.
-        if issubclass(self.config_class, BaseConfig) or issubclass(
-            self.config_class, YiviOpenIDConnectConfig
-        ):
+        if issubclass(self.config_class, BaseConfig):
             return super()._check_candidate_backend()
         return False
 
@@ -74,45 +67,17 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
 
     def _process_claims(self, claims: JSONObject) -> JSONObject:
         # see if we can use a cached config instance from the settings configuration
-        assert hasattr(self, "_config") and (
-            isinstance(self._config, BaseConfig)
-            or isinstance(self._config, YiviOpenIDConnectConfig)
-        )
+        assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
 
-        # Because Yivi has loa config for BSN and KVK, we need to set the "global" loa
-        # config dynamically based on which data is presented.
-        # This will be moved after oidc-db changes.
-        if issubclass(self.config_class, YiviOpenIDConnectConfig):
-            # Check if the claims contain the claim for BSN.
-            # If so then the authentication is for BSN
+        config_to_plugin = get_config_to_plugin()
+        assert self.config_class and self.config_class in config_to_plugin
+        plugin = config_to_plugin[self.config_class]
 
-            # Set the "global" loa config based on the used authentication method
-            match (
-                glom(claims, Path(*self._config.bsn_claim), default=None),
-                glom(claims, Path(*self._config.kvk_claim), default=None),
-            ):
-                case str(), _:
-                    self._config.loa_claim = self._config.bsn_loa_claim
-                    self._config.default_loa = self._config.bsn_default_loa
-                    self._config.loa_value_mapping = self._config.bsn_loa_value_mapping
-                case None, str():
-                    self._config.loa_claim = self._config.kvk_loa_claim
-                    self._config.default_loa = self._config.kvk_default_loa
-                    self._config.loa_value_mapping = self._config.kvk_loa_value_mapping
-                case None, None:
-                    self._config.loa_claim = [""]
-                    self._config.default_loa = None
-                    self._config.loa_value_mapping = None
-                case _:
-                    assert_never(claims)
+        # Allow plugin-specific actions before processing the claims.
+        plugin.before_process_claims(self._config, claims)
 
-        strict_mode = False
-        # Strict mode is only applicable for DigiD and eHerkenning via OIDC.
-        if not issubclass(self.config_class, YiviOpenIDConnectConfig):
-            strict_mode = flag_enabled(
-                "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
-            )
-            assert isinstance(strict_mode, bool)
+        strict_mode = plugin.strict_mode(self.request)
+        assert isinstance(strict_mode, bool)
 
         return process_claims(claims, self._config, strict=strict_mode)
 
@@ -146,24 +111,6 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
 
         return True
 
-    @staticmethod
-    def _extract_additional_claims_for_auth_backend(
-        auth_backend: FormAuthenticationBackend, claims: JSONObject
-    ) -> JSONObject:
-        claims_to_extract = {}
-        if auth_backend.backend == YIVI_PLUGIN_ID:
-            attributes_to_add = AttributeGroup.objects.filter(
-                name__in=auth_backend.options.get("additional_attributes_groups", [])
-            ).values_list("attributes", flat=True)
-
-            claims_to_extract = {
-                attribute: claims[attribute]
-                for attribute in list(chain.from_iterable(attributes_to_add))
-                if attribute in claims
-            }
-
-        return claims_to_extract
-
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
         """
         Extract the claims configured on the config and store them in the session.
@@ -184,8 +131,8 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
             auth_backend = FormAuthenticationBackend.objects.get(
                 form=form, backend=plugin.identifier
             )
-            procssed_claims["additional_claims"] = (
-                self._extract_additional_claims_for_auth_backend(auth_backend, claims)
+            procssed_claims["additional_claims"] = plugin.extract_additional_claims(
+                auth_backend.options, claims
             )
         except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
             pass
