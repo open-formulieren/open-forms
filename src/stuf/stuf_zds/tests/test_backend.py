@@ -210,7 +210,11 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak(self, m):
-        client = StufZDSClient(self.service, self.options, config=StufZDSConfig())
+        client = StufZDSClient(
+            self.service,
+            self.options,
+            config=StufZDSConfig(zaakbetrokkene_cosigner_omschrijving="cosigner"),
+        )
         self.options.update({"cosigner": "123456782"})
         m.post(
             self.service.soap_service.url,
@@ -246,6 +250,7 @@ class StufZDSClientTests(StUFZDSTestBase):
                 "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
                 "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "123456782",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:omschrijving": "cosigner",
             },
         )
 
