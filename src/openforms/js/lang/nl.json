@@ -370,7 +370,7 @@
     "originalDefault": "Previous text"
   },
   "7AQfXl": {
-    "defaultMessage": "Additional attributes groups",
+    "defaultMessage": "Aanvullende attributengroepen",
     "description": "Additional attributes groups label",
     "originalDefault": "Additional attributes groups"
   },
@@ -921,7 +921,7 @@
     "originalDefault": "Send confirmation email"
   },
   "G+nriX": {
-    "defaultMessage": "Additional scopes are used to request additional information from the user, which will become available as variables after login.",
+    "defaultMessage": "Aanvullende scopes worden gebruikt om extra informatie van de gebruiker op te vragen, die na het inloggen beschikbaar worden als variabelen.",
     "description": "Additional scopes help text",
     "originalDefault": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
   },
@@ -1246,7 +1246,7 @@
     "originalDefault": "Manually defined"
   },
   "KjG6+9": {
-    "defaultMessage": "Yivi plugin options for bsn",
+    "defaultMessage": "Yivi-pluginopties voor bsn",
     "description": "Yivi plugin options for bsn fieldset title",
     "originalDefault": "Yivi plugin options for bsn"
   },
@@ -1351,7 +1351,7 @@
     "originalDefault": "fetch the value for a variable from a service"
   },
   "M/1wxK": {
-    "defaultMessage": "Authentication options",
+    "defaultMessage": "Authenticatie-opties",
     "description": "Authentication options label",
     "originalDefault": "Authentication options"
   },
@@ -1577,7 +1577,7 @@
     "originalDefault": "Alias"
   },
   "Pvaekr": {
-    "defaultMessage": "Plugin configuration: Yivi",
+    "defaultMessage": "Plugin-instellingen: Yivi",
     "description": "Yivi authentication options modal title",
     "originalDefault": "Plugin configuration: Yivi"
   },
@@ -2115,7 +2115,7 @@
     "originalDefault": "Document types"
   },
   "b0tRq+": {
-    "defaultMessage": "Form JSON schema: {backendLabel}",
+    "defaultMessage": "Formulier JSON-schema: {backendLabel}",
     "description": "Generate JSON schema modal title",
     "originalDefault": "Form JSON schema: {backendLabel}"
   },
@@ -2542,7 +2542,7 @@
     "originalDefault": "Children"
   },
   "hx0iTv": {
-    "defaultMessage": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier.",
+    "defaultMessage": "Beschikbare authenticatie-opties voor de gebruikers. Als er geen waarde wordt opgegeven, wordt een pseudoniem gebruikt als identificatie.",
     "description": "Authentication options help text",
     "originalDefault": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier."
   },
@@ -2678,7 +2678,7 @@
     "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "k2G5xb": {
-    "defaultMessage": "Before generating a schema, ensure the options are configured and the complete form is saved.",
+    "defaultMessage": "Zorg dat de opties zijn ingesteld en het formulier is opgeslagen, vóór het genereren van een schema",
     "description": "Form JSON schema help text",
     "originalDefault": "Before generating a schema, ensure the options are configured and the complete form is saved."
   },
@@ -2718,7 +2718,7 @@
     "originalDefault": "Subject of the email sent to the registration backend to notify a change in the payment status."
   },
   "kckipT": {
-    "defaultMessage": "Bestemmings-variabele",
+    "defaultMessage": "Bestemmingsvariabele",
     "description": "Family members options: accessible label for (form) variable dropdown",
     "originalDefault": "Data destination form variable"
   },
@@ -3179,7 +3179,7 @@
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
   },
   "tSeev4": {
-    "defaultMessage": "Plugin configuration: DigiD",
+    "defaultMessage": "Plugin-instellingen: DigiD",
     "description": "DigiD authentication options modal title",
     "originalDefault": "Plugin configuration: DigiD"
   },
@@ -3374,7 +3374,7 @@
     "originalDefault": "Create definition"
   },
   "xgcUQF": {
-    "defaultMessage": "Generate JSON schema",
+    "defaultMessage": "Genereer JSON-schema",
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
   },
@@ -3441,7 +3441,7 @@
     "originalDefault": "Zds zaaktype omschrijving"
   },
   "zItxZ9": {
-    "defaultMessage": "Yivi plugin options for kvk",
+    "defaultMessage": "Yivi-pluginopties voor kvk",
     "description": "Yivi plugin options for kvk fieldset title",
     "originalDefault": "Yivi plugin options for kvk"
   },
@@ -3476,7 +3476,7 @@
     "originalDefault": "Submission settings"
   },
   "zu8ntq": {
-    "defaultMessage": "An error occurred during schema generation",
+    "defaultMessage": "Er is een fout opgetreden tijdens het genereren van het schema",
     "description": "Form schema generation error message",
     "originalDefault": "An error occurred during schema generation"
   },

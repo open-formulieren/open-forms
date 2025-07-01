@@ -110,7 +110,7 @@
   "/kZu2e": [
     {
       "type": 0,
-      "value": "Initials"
+      "value": "Initialen"
     }
   ],
   "/rF8P0": [
@@ -846,7 +846,7 @@
   "7AQfXl": [
     {
       "type": 0,
-      "value": "Additional attributes groups"
+      "value": "Aanvullende attributengroepen"
     }
   ],
   "7F64bK": [
@@ -2083,7 +2083,7 @@
   "G+nriX": [
     {
       "type": 0,
-      "value": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+      "value": "Aanvullende scopes worden gebruikt om extra informatie van de gebruiker op te vragen, die na het inloggen beschikbaar worden als variabelen."
     }
   ],
   "G1JHUM": [
@@ -2461,7 +2461,7 @@
   "JKnHMC": [
     {
       "type": 0,
-      "value": "Lastname"
+      "value": "Achternaam"
     }
   ],
   "JKq3TC": [
@@ -2607,7 +2607,7 @@
   "KjG6+9": [
     {
       "type": 0,
-      "value": "Yivi plugin options for bsn"
+      "value": "Yivi-pluginopties voor bsn"
     }
   ],
   "Kl9yvd": [
@@ -2757,7 +2757,7 @@
   "M/1wxK": [
     {
       "type": 0,
-      "value": "Authentication options"
+      "value": "Authenticatie-opties"
     }
   ],
   "M0kOz9": [
@@ -2775,7 +2775,7 @@
   "M2+MHj": [
     {
       "type": 0,
-      "value": "Affixes"
+      "value": "Voorvoegsels"
     }
   ],
   "M9JbDC": [
@@ -3139,7 +3139,7 @@
   "Pvaekr": [
     {
       "type": 0,
-      "value": "Plugin configuration: Yivi"
+      "value": "Plugin-instellingen: Yivi"
     }
   ],
   "PwUKIe": [
@@ -4242,7 +4242,7 @@
   "ZYWsHs": [
     {
       "type": 0,
-      "value": "Date of birth"
+      "value": "Geboortedatum"
     }
   ],
   "ZdZ2Mb": [
@@ -4382,7 +4382,7 @@
   "b0tRq+": [
     {
       "type": 0,
-      "value": "Form JSON schema: "
+      "value": "Formulier JSON-schema: "
     },
     {
       "type": 1,
@@ -5350,7 +5350,7 @@
   "hx0iTv": [
     {
       "type": 0,
-      "value": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier."
+      "value": "Beschikbare authenticatie-opties voor de gebruikers. Als er geen waarde wordt opgegeven, wordt een pseudoniem gebruikt als identificatie."
     }
   ],
   "hxssl8": [
@@ -5658,7 +5658,7 @@
   "k2G5xb": [
     {
       "type": 0,
-      "value": "Before generating a schema, ensure the options are configured and the complete form is saved."
+      "value": "Zorg dat de opties zijn ingesteld en het formulier is opgeslagen, vóór het genereren van een schema"
     }
   ],
   "k34Vke": [
@@ -5712,7 +5712,7 @@
   "kckipT": [
     {
       "type": 0,
-      "value": "Bestemmings-variabele"
+      "value": "Bestemmingsvariabele"
     }
   ],
   "kg/eh1": [
@@ -6738,7 +6738,7 @@
   "tSeev4": [
     {
       "type": 0,
-      "value": "Plugin configuration: DigiD"
+      "value": "Plugin-instellingen: DigiD"
     }
   ],
   "tU1UVF": [
@@ -7112,7 +7112,7 @@
   "xgcUQF": [
     {
       "type": 0,
-      "value": "Generate JSON schema"
+      "value": "Genereer JSON-schema"
     }
   ],
   "xxVNeU": [
@@ -7278,7 +7278,7 @@
   "zItxZ9": [
     {
       "type": 0,
-      "value": "Yivi plugin options for kvk"
+      "value": "Yivi-pluginopties voor kvk"
     }
   ],
   "zQE4f2": [
@@ -7344,7 +7344,7 @@
   "zu8ntq": [
     {
       "type": 0,
-      "value": "An error occurred during schema generation"
+      "value": "Er is een fout opgetreden tijdens het genereren van het schema"
     }
   ],
   "zwOwrD": [
