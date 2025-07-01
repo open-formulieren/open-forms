@@ -41,12 +41,12 @@ assignees: sergei-maertens
     - [ ] `openforms.contrib.reference_lists`
     - [ ] `openforms.emails.tests.test_tasks_integration`
     - [ ] `openforms.formio.dynamic_config.tests.test_reference_lists_config`
-    - [ ] `openforms.forms.tests.test_generate_json_schema`
+    - [ ] `openforms.forms.tests.test_json_schema`
   - Registration plugins:
     - [ ] Objects API: `openforms.registrations.contrib.objects_api`
     - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
     - [ ] StUF_ZDS APIs: `openforms.registrations.contrib.stuf_zds.tests.test_backend`
-    - [ ] Generic JSON: `openforms.registration.contrib.json_dump.tests.test_backend`
+    - [ ] Generic JSON: `openforms.registration.contrib.generic_json.tests.test_backend`
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
