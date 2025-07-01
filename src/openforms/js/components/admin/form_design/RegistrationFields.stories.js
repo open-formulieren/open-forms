@@ -962,14 +962,14 @@ export const ObjectsAPIJsonSchema = {
   play: async ({canvasElement, step, args}) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByText('Generate JSON schema'));
+    await userEvent.click(canvas.getByText('Genereer JSON-schema'));
 
     const modalForm = await screen.findByRole('dialog');
     expect(modalForm).toBeVisible();
     const modal = within(modalForm);
 
     expect(
-      await modal.getByRole('heading', {name: 'Form JSON schema: Objects API registration'})
+      await modal.getByRole('heading', {name: 'Formulier-JSON-schema: Objects API registration'})
     ).toBeVisible();
     // The json editor can be slow to load, so include a larger timeout to counteract test flakiness
     expect(await modal.findByText(/string/, undefined, {timeout: 5000})).toBeVisible();
@@ -1012,13 +1012,15 @@ export const ObjectsAPIJsonSchemaError = {
   play: async ({canvasElement, step, args}) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByText('Generate JSON schema'));
+    await userEvent.click(canvas.getByText('Genereer JSON-schema'));
 
     const modalForm = await screen.findByRole('dialog');
     expect(modalForm).toBeVisible();
     const modal = within(modalForm);
 
-    expect(await modal.findByText('An error occurred during schema generation')).toBeVisible();
+    expect(
+      await modal.findByText('Er is een fout opgetreden tijdens het genereren van het schema')
+    ).toBeVisible();
   },
 };
 

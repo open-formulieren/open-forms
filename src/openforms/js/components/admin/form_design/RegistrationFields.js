@@ -147,7 +147,12 @@ const BackendFields = ({index = 0, backend, availableBackends = [], onChange, on
         <FormRow>
           <Field
             name={`form.registrationBackends.${index}.schema`}
-            label="Form JSON schema"
+            label={
+              <FormattedMessage
+                defaultMessage="Form JSON schema"
+                description="Form JSON schema label"
+              />
+            }
             helpText={
               <FormattedMessage
                 defaultMessage={`Before generating a schema, ensure the options are configured and

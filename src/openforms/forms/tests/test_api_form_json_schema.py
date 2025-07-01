@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from rest_framework import status
@@ -15,6 +16,7 @@ from openforms.forms.tests.factories import (
 from openforms.variables.constants import FormVariableDataTypes
 
 
+@override_settings(LANGUAGE_CODE="en")
 class FormJsonSchemaAPITests(APITestCase):
     maxDiff = None
 

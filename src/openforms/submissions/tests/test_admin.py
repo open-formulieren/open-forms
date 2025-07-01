@@ -345,7 +345,7 @@ class TestSubmissionAdmin(WebTest):
             )
             self.assertEqual(
                 registration_backend_field.text(),
-                f"Registratie backend:\nEmail van {form.name}",
+                f"Registratiebackend:\nEmail van {form.name}",
             )
 
         with self.subTest(
@@ -381,7 +381,7 @@ class TestSubmissionAdmin(WebTest):
             )
             self.assertEqual(
                 registration_backend_field.text(),
-                f"Registratie backend:\nObjects api van {form.name}",
+                f"Registratiebackend:\nObjects api van {form.name}",
             )
 
 

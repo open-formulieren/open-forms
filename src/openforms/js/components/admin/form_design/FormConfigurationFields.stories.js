@@ -114,6 +114,6 @@ export const AuthenticationPluginWithOptionsModal = {
 
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 
-    expect(canvas.getByRole('heading', {name: 'Plugin configuration: DigiD'})).toBeVisible();
+    expect(canvas.getByRole('heading', {name: 'Plugin-instellingen: DigiD'})).toBeVisible();
   },
 };

@@ -4233,6 +4233,12 @@
       "value": "Set the registration backend to use for the submission"
     }
   ],
+  "ZdbjbT": [
+    {
+      "type": 0,
+      "value": "Form JSON schema"
+    }
+  ],
   "ZfLhiZ": [
     {
       "type": 0,

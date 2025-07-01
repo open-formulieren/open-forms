@@ -2029,6 +2029,11 @@
     "description": "action type \"set-registration-backend\" label",
     "originalDefault": "Set the registration backend to use for the submission"
   },
+  "ZdbjbT": {
+    "defaultMessage": "Form JSON schema",
+    "description": "Form JSON schema label",
+    "originalDefault": "Form JSON schema"
+  },
   "ZfLhiZ": {
     "defaultMessage": "Maximum age",
     "description": "Family members filters: maximum age field label",
