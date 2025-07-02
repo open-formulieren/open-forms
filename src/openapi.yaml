@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 3.2.0-alpha.1
+  version: 3.2.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -2304,7 +2304,8 @@ paths:
         name: registrationBackendKey
         schema:
           type: string
-        description: The registration backend key for which to generate the schema.
+        description: De registratiebackend-sleutel waarvoor het schema moet worden
+          gegenereerd.
       - in: path
         name: uuid_or_slug
         schema:
