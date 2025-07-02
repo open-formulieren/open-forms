@@ -132,6 +132,21 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         allow_blank=True,
     )
+    partners_roltype = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
+        ),
+    )
+    partners_description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "Description (omschrijving) that will be used in the partners registration."
+        ),
+        default="",
+    )
 
     # Objects API
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
@@ -306,8 +321,8 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
 
     3. Validate that the configured case properties ("eigenschappen") exist on the
        specified case type.
-    4. Validate that the employee role type ("medewerkerroltype") exists on the
-       specified case type.
+    4. Validate that the employee ("medewerkerroltype") and the partner role partnersroltype
+       types exist on the specified case type.
     """
     with get_catalogi_client(attrs["zgw_api_group"]) as client:
         # validate the catalogue itself - the queryset in the field guarantees that
@@ -324,7 +339,7 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         _validate_case_type_properties(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
-        _validate_medewerker_roltype(
+        _validate_medewerker_and_partners_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
 
@@ -547,13 +562,20 @@ def _validate_case_type_properties(
         )
 
 
-def _validate_medewerker_roltype(
+def _validate_medewerker_and_partners_roltype(
     client: CatalogiClient,
     attrs: RegistrationOptions,
     iter_case_type_versions: CaseTypeVersionsIterator | None,
 ) -> None:
-    if not (description := attrs.get("medewerker_roltype")):
+    medewerker_description = attrs.get("medewerker_roltype")
+    partners_description = attrs.get("partners_roltype")
+    if not medewerker_description and not partners_description:
         return
+
+    description = (
+        medewerker_description if medewerker_description else partners_description
+    )
+    assert description
 
     if case_type_identification := attrs["case_type_identification"]:
         assert iter_case_type_versions is not None
@@ -573,11 +595,14 @@ def _validate_medewerker_roltype(
         )
 
     if not roltypen:
-        raise serializers.ValidationError(
-            {
-                "medewerker_roltype": _(
-                    "Could not find a roltype with this description related to the zaaktype."
-                )
-            },
-            code="invalid",
-        )
+        errors = {}
+        if medewerker_description:
+            errors["medewerker_roltype"] = _(
+                "Could not find a roltype with this description related to the zaaktype."
+            )
+        if partners_description:
+            errors["partners_roltype"] = _(
+                "Could not find a roltype with this description related to the zaaktype."
+            )
+
+        raise serializers.ValidationError(errors, code="invalid")
