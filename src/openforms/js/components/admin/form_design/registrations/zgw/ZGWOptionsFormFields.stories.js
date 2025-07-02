@@ -32,6 +32,8 @@ const render = ({apiGroups, objectsApiGroupChoices, confidentialityLevelChoices,
       organisatieRsin: '',
       zaakVertrouwelijkheidaanduiding: '',
       medewerkerRoltype: '',
+      partnersRoltype: '',
+      partnersDescription: '',
       propertyMappings: [],
       productUrl: '',
       // Ensure that this is explicitly set to null instead of undefined,
@@ -122,6 +124,7 @@ export const ValidationErrorsBaseTab = {
       [`${NAME}.organisatieRsin`, 'Computer says no'],
       [`${NAME}.zaakVertrouwelijkheidaanduiding`, 'Computer says no'],
       [`${NAME}.medewerkerRoltype`, 'Computer says no'],
+      [`${NAME}.partnersRoltype`, 'Computer says no'],
       [`${NAME}.productUrl`, 'Computer says no'],
       [`${NAME}.objectsApiGroup`, 'Computer says no'],
       [`${NAME}.objecttype`, 'Computer says no'],
@@ -181,7 +184,7 @@ export const SelectCaseTypeAndDocumentType = {
     });
 
     await step('Select employee role type', async () => {
-      const roleTypeSelect = canvas.getByLabelText('Medewerkerroltype');
+      const roleTypeSelect = canvas.getByLabelText('Medewerker roltype');
       await rsSelect(roleTypeSelect, 'Baliemedewerker');
     });
 
