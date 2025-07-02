@@ -244,7 +244,47 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             serializer.errors["medewerker_roltype"][0],
         )
 
-    def test_roltype_omschrijving_validated_against_case_type_identification(self):
+    def test_partners_roltype_omschrijving_validated_against_case_type_identification(
+        self,
+    ):
+        base = {
+            "zgw_api_group": self.zgw_group.pk,
+            "catalogue": {
+                "domain": "PARTN",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000001",
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/c36362e0-6428-4ef5-ad8b-a82ba5834248"
+            ),
+            "objects_api_group": None,
+        }
+
+        with self.subTest("valid"):
+            data = {**base, "partners_roltype": "Partner role type"}
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertTrue(is_valid)
+
+        with self.subTest("invalid"):
+            data = {**base, "partners_roltype": "Invalid"}
+            serializer = ZaakOptionsSerializer(data=data)
+
+            is_valid = serializer.is_valid()
+
+            self.assertFalse(is_valid)
+            self.assertIn("partners_roltype", serializer.errors)
+            self.assertEqual(
+                "Could not find a roltype with this description related to the zaaktype.",
+                serializer.errors["partners_roltype"][0],
+            )
+
+    def test_medewerker_roltype_omschrijving_validated_against_case_type_identification(
+        self,
+    ):
         base = {
             "zgw_api_group": self.zgw_group.pk,
             "catalogue": {
