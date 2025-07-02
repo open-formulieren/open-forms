@@ -21,7 +21,73 @@ class OIDCAuthenticationInitView(OIDCInit):
     options: YiviOptions
 
     @staticmethod
-    def _yivi_condiscon_scope(options: YiviOptions) -> str:
+    def _build_authentication_condiscon(options: YiviOptions) -> list[list[str]]:
+        """
+        Helper function for creating the "authentication attributes" part of the Signicat
+        Yivi condiscon.
+        """
+        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
+
+        if not len(options["authentication_options"]):
+            # If no authentication options are selected, fallback to the pseudo_claim
+            return [yivi_global_config.pseudo_claim]
+
+        authentication_condiscon: list[list[str]] = []
+        for option in options["authentication_options"]:
+            match option:
+                case AuthAttribute.bsn:
+                    bsn_attributes: list[str] = deepcopy(yivi_global_config.bsn_claim)
+
+                    if yivi_global_config.bsn_loa_claim:
+                        bsn_attributes += yivi_global_config.bsn_loa_claim
+
+                    authentication_condiscon.append(bsn_attributes)
+
+                case AuthAttribute.kvk:
+                    kvk_attributes: list[str] = deepcopy(yivi_global_config.kvk_claim)
+
+                    if yivi_global_config.kvk_loa_claim:
+                        kvk_attributes += yivi_global_config.kvk_loa_claim
+
+                    authentication_condiscon.append(kvk_attributes)
+
+                case AuthAttribute.pseudo:
+                    authentication_condiscon.append(yivi_global_config.pseudo_claim)
+
+        return authentication_condiscon
+
+    @staticmethod
+    def _build_additional_attributes_condiscon(
+        options: YiviOptions,
+    ) -> list[list[list[str]]]:
+        """
+        Helper function for creating the "additional attributes" part of the Signicat
+        Yivi condiscon.
+
+        All the `additional_attributes_groups` are optional, meaning that the end-user
+        can choose which information they want to provide. This is defined by the empty
+        list in the ``additional_attributes_condiscon`` (see below).
+        """
+        additional_attributes_condiscon: list[list[list[str]]] = []
+        attributes_groups = AttributeGroup.objects.filter(
+            name__in=options["additional_attributes_groups"]
+        )
+
+        for attributes_group in attributes_groups:
+            # documentation: https://irma.app/docs/condiscon/#other-features
+            additional_attributes_condiscon.append(
+                [
+                    attributes_group.attributes,
+                    # The empty list ensures that this attribute becomes optional.
+                    # This needs to be placed as last, otherwise it doesn't work
+                    # (see https://dashboard.signicat.com/contact-us/tickets/207907)
+                    [],
+                ]
+            )
+
+        return additional_attributes_condiscon
+
+    def _get_signicat_yivi_condiscon_scope(self, options: YiviOptions) -> str:
         """
         Return the yivi condiscon scope as a Signicat additional parameter.
 
@@ -34,78 +100,30 @@ class OIDCAuthenticationInitView(OIDCInit):
         Yivi has some documentation about the codiscon format and logic:
         https://irma.app/docs/condiscon/.
 
-        The scopes-to-add are fetched from the plugin options `authentication_options`
-        and `additional_attributes_groups`.
+        The scopes-to-add are fetched from the plugin options ``authentication_options``
+        and ``additional_attributes_groups``.
 
-        When multiple `authentication_options` are defined, the user can choose which one
-        to use. Otherwise, if only one is defined, then that one becomes required. When
-        no `authentication_options` are defined we fallback to the pseudo authentication
-        option.
+        When multiple ``authentication_options`` are defined, the user can choose which
+        one to use. Otherwise, if only one is defined, then that one becomes required.
+        When no ``authentication_options`` are defined we fallback to the pseudo
+        authentication option.
 
         All the `additional_attributes_groups` are optional, meaning that the end-user
         can choose which information they want to provide.
         """
 
-        condiscon_items = []
-        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
+        # Start with condiscon of authentication attributes
+        condiscon_items: list[list[list[str]]] = [
+            self._build_authentication_condiscon(options)
+        ]
 
-        # Add authentication scopes
-        if len(options["authentication_options"]):
-            authentication_condiscon = []
-            for option in options["authentication_options"]:
-                match option:
-                    case AuthAttribute.bsn:
-                        bsn_attributes = [".".join(yivi_global_config.bsn_claim)]
+        additional_attributes_condiscon: list[list[list[str]]] = (
+            self._build_additional_attributes_condiscon(options)
+        )
+        if additional_attributes_condiscon:
+            condiscon_items += additional_attributes_condiscon
 
-                        if yivi_global_config.bsn_loa_claim and len(
-                            yivi_global_config.bsn_loa_claim
-                        ):
-                            bsn_attributes.append(
-                                ".".join(yivi_global_config.bsn_loa_claim)
-                            )
-
-                        authentication_condiscon.append(bsn_attributes)
-
-                    case AuthAttribute.kvk:
-                        kvk_attributes = [".".join(yivi_global_config.kvk_claim)]
-
-                        if yivi_global_config.kvk_loa_claim and len(
-                            yivi_global_config.kvk_loa_claim
-                        ):
-                            kvk_attributes.append(
-                                ".".join(yivi_global_config.kvk_loa_claim)
-                            )
-
-                        authentication_condiscon.append(kvk_attributes)
-
-                    case AuthAttribute.pseudo:
-                        # Leave this empty, to allow "anonymous" authentication
-                        authentication_condiscon.append(
-                            [".".join(yivi_global_config.pseudo_claim)]
-                        )
-
-            condiscon_items.append(authentication_condiscon)
-        else:
-            # If no authentication options are selected, fallback to the pseudo_claim
-            condiscon_items.append([[".".join(yivi_global_config.pseudo_claim)]])
-
-        # Add additional groups, as optional
-        attributes_groups = AttributeGroup.objects.filter(
-            name__in=options["additional_attributes_groups"]
-        ).all()
-        for attributes_group in attributes_groups:
-            # documentation: https://irma.app/docs/condiscon/#other-features
-            condiscon_items.append(
-                [
-                    attributes_group.attributes,
-                    # By adding an "empty" choice, this attribute becomes optional.
-                    # The empty choice needs to be placed as last, otherwise it doesn't
-                    # work (see https://dashboard.signicat.com/contact-us/tickets/207907)
-                    [],
-                ]
-            )
-
-        # Turn condiscon list into a string, and base64 encode it
+        # Turn the condiscon list into a string, and base64 encode it
         condiscon_string = json.dumps(condiscon_items)
 
         # Create a signicat param scope with the base64 condiscon string.
@@ -120,10 +138,10 @@ class OIDCAuthenticationInitView(OIDCInit):
         and additional scopes to the request.
         """
         extra_params = super().get_extra_params(request)
-        defined_scope = deepcopy(self.config_class.get_solo().oidc_rp_scopes_list)
+        defined_scope = deepcopy(self._config.oidc_rp_scopes_list)
 
         # Add the yivi authentication and additional scopes
-        defined_scope.append(self._yivi_condiscon_scope(self.options))
+        defined_scope.append(self._get_signicat_yivi_condiscon_scope(self.options))
 
         extra_params["scope"] = " ".join(defined_scope)
         return extra_params
