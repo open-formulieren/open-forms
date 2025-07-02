@@ -73,6 +73,22 @@
     }
 },
 {
+    "model": "catalogi.catalogus",
+    "pk": 4,
+    "fields": {
+        "_etag": "602693e4fd0fda29129832b3c7ab6381",
+        "naam": "Test partners",
+        "uuid": "f85edcc1-b67d-4692-a2da-3ae73672c7eb",
+        "domein": "PARTN",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "For testing partners component",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
     "model": "catalogi.eigenschapspecificatie",
     "pk": 1,
     "fields": {
@@ -348,6 +364,27 @@
     }
 },
 {
+    "model": "catalogi.informatieobjecttype",
+    "pk": 11,
+    "fields": {
+        "_etag": "d1578799f8c4a1550d91c80d82e8181b",
+        "datum_begin_geldigheid": "2020-06-20",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "c36362e0-6428-4ef5-ad8b-a82ba5834248",
+        "omschrijving": "Partners",
+        "informatieobjectcategorie": "Partners",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "intern",
+        "omschrijving_generiek_informatieobjecttype": "Partners",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 4
+    }
+},
+{
     "model": "catalogi.zaaktypeinformatieobjecttype",
     "pk": 1,
     "fields": {
@@ -396,6 +433,19 @@
         "informatieobjecttype": 10,
         "volgnummer": 2,
         "richting": "inkomend",
+        "statustype": null
+    }
+},
+{
+    "model": "catalogi.zaaktypeinformatieobjecttype",
+    "pk": 6,
+    "fields": {
+        "_etag": "a19587cb7e5dcac6ba896b4709853601",
+        "uuid": "265a08eb-d441-48ce-bbe8-e1177299dddf",
+        "zaaktype": 8,
+        "informatieobjecttype": 11,
+        "volgnummer": 1,
+        "richting": "intern",
         "statustype": null
     }
 },
@@ -531,6 +581,66 @@
         "omschrijving": "Geslaagd",
         "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/ce8cf476-0b59-496f-8eee-957a7c6e2506",
         "omschrijving_generiek": "Afgebroken",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
+    "model": "catalogi.resultaattype",
+    "pk": 7,
+    "fields": {
+        "_etag": "fd2fdba6e80d9847ab827b9d4c883507",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "e0e6e742-0e65-4b05-9bdb-e8ace60fb303",
+        "zaaktype": 8,
+        "omschrijving": "Partner found",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/f33dbd16-68ae-4820-acb5-5f437bca5edb",
+        "omschrijving_generiek": "Verwerkt",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "blijvend_bewaren",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
+    "model": "catalogi.resultaattype",
+    "pk": 8,
+    "fields": {
+        "_etag": "6b178f7054bdaa190be774984b550fc5",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "94ccefcb-2862-4942-945b-82e8f975275e",
+        "zaaktype": 8,
+        "omschrijving": "Partner not found",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/f33dbd16-68ae-4820-acb5-5f437bca5edb",
+        "omschrijving_generiek": "Verwerkt",
         "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
         "archiefnominatie": "vernietigen",
         "archiefactietermijn": "P10Y",
@@ -703,6 +813,19 @@
         "omschrijving": "Baliemedewerker",
         "omschrijving_generiek": "klantcontacter",
         "zaaktype": 7
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 15,
+    "fields": {
+        "_etag": "75c694efd31e764bb3c45c44562d01a7",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "0e65bcbc-b35d-4763-867e-b2458566d72e",
+        "omschrijving": "Partner role type",
+        "omschrijving_generiek": "behandelaar",
+        "zaaktype": 8
     }
 },
 {
@@ -879,6 +1002,42 @@
         "statustype_omschrijving": "Afgerond",
         "statustype_omschrijving_generiek": "",
         "statustypevolgnummer": 5,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 13,
+    "fields": {
+        "_etag": "b5c80c0fad85ab328bdcc5e6ea6c3bf5",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "61d9c8ca-8c06-4fe2-a0bd-284f8871444e",
+        "zaaktype": 8,
+        "statustype_omschrijving": "Open",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 14,
+    "fields": {
+        "_etag": "ad57202e81f29129e9eaa3a06d5a10f2",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "7b05a49f-a0cc-4ea9-ab01-27ff561e6376",
+        "zaaktype": 8,
+        "statustype_omschrijving": "Closed",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 2,
         "doorlooptijd": null,
         "informeren": false,
         "statustekst": "",
@@ -1158,6 +1317,52 @@
         "bronzaaktype_identificatie": "",
         "bronzaaktype_omschrijving": "",
         "catalogus": 2,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 8,
+    "fields": {
+        "_etag": "d94871ed20bdb38c754e2df287c8a8b8",
+        "datum_begin_geldigheid": "2020-06-20",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "22b996c3-e893-42e4-933d-79045dfd142c",
+        "identificatie": "ZAAKTYPE-2020-0000000001",
+        "zaaktype_omschrijving": "Case type for partners component",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "doel": "Test",
+        "aanleiding": "Test",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "extern",
+        "handeling_initiator": "Request",
+        "onderwerp": "Test",
+        "handeling_behandelaar": "Test",
+        "doorlooptijd_behandeling": "P10Y",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2020-06-20",
+        "verantwoordelijke": "000000000",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Test partners process",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 4,
         "deelzaaktypen": []
     }
 }
