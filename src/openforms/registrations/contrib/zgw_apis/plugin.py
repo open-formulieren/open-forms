@@ -207,6 +207,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.inpBsn": FieldConf(
             submission_auth_info_attribute="bsn"
         ),
+        # Partners
+        "partners": RegistrationAttribute.partners,
     }
 
     zaak_mapping = {
@@ -381,16 +383,61 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 "intermediate.documents.report.relation",
             )
 
-            rol = execute_unless_result_exists(
-                partial(
-                    zaken_client.create_rol,
-                    catalogi_client=catalogi_client,
-                    zaak=zaak,
-                    betrokkene=rol_data,
-                ),
-                submission,
-                "intermediate.rol",
-            )
+            # We may have multiple roles that need to be created, for now this is needed
+            # for custom partners component
+            rollen_results = None
+            if RegistrationAttribute.partners not in rol_data:
+                rol = execute_unless_result_exists(
+                    partial(
+                        zaken_client.create_rol,
+                        catalogi_client=catalogi_client,
+                        zaak=zaak,
+                        betrokkene=rol_data,
+                    ),
+                    submission,
+                    "intermediate.rol",
+                )
+                rollen_results = rol
+            else:
+                # mutate the data and add what is needed for the role
+                rollen = []
+                for index, data in enumerate(rol_data[RegistrationAttribute.partners]):
+                    partners_roltype_omschrijving = options.get("partners_roltype")
+                    assert partners_roltype_omschrijving
+
+                    roltypen = catalogi_client.list_roltypen(
+                        zaaktype=zaak["zaaktype"],
+                        matcher=omschrijving_matcher(partners_roltype_omschrijving),
+                    )
+                    roltype = roltypen[0]
+
+                    data.update(
+                        {
+                            "roltype": roltype["url"],
+                            "betrokkeneType": "natuurlijk_persoon",
+                            "betrokkeneIdentificatie": {
+                                "inpBsn": data.get("bsn"),
+                                "voorvoegselGeslachtsnaam": data.get("affixes"),
+                                "voorletters": data.get("initials"),
+                                "geslachtsnaam": data.get("lastName"),
+                                "voornamen": data.get("firstNames"),
+                                "geboortedatum": data.get("dateOfBirth"),
+                            },
+                        }
+                    )
+
+                    rol = execute_unless_result_exists(
+                        partial(
+                            zaken_client.create_rol,
+                            catalogi_client=catalogi_client,
+                            zaak=zaak,
+                            betrokkene=data,
+                        ),
+                        submission,
+                        f"intermediate.rol.{index}",
+                    )
+                    rollen.append(rol)
+                rollen_results = rollen
 
             medewerker_rol: dict[str, Any] | None = None
             if submission.has_registrator:
@@ -501,7 +548,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 {
                     "document": summary_pdf_document,
                     "status": status,
-                    "rol": rol,
+                    "rollen": rollen_results,
                 }
             )
 
