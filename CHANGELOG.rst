@@ -6,6 +6,19 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.4 (2025-07-11)
+==================
+
+Regular bugfix release.
+
+* Fixed broken link.
+* Updated backend dependencies:
+
+    - Bumped django to 4.2.23.
+    - Bumped requests to 2.32.4.
+    - Bumped urllib3 to 2.5.0.
+    - Bumped vcrpy to 7.0.0.
+
 3.1.3 (2025-06-06)
 ==================
 
