@@ -898,7 +898,7 @@ flexibility in which data you register for your processes.
 
 **💄 Better theming tools**
 
-We've added a graphical tool to edit `design token <https://nldesignsystem.nl/handboek/design-tokens/>`_
+We've added a graphical tool to edit `design token <https://nldesignsystem.nl/handboek/huisstijl/design-tokens/>`_
 values in our admin interface. Before, you'd have to edit raw JSON-code and piece together
 all bits, but now there is a handy reference of available tokens AND you can change their
 values to suit your visual identity in great detail.
