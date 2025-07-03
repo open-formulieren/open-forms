@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +9,9 @@ from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from digid_eherkenning.oidc.models.base import LOA_MAPPING_SCHEMA, BaseConfig
 from django_jsonform.models.fields import ArrayField, JSONField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
+
+from openforms.authentication.contrib.yivi_oidc.constants import PLUGIN_ID
+from openforms.forms.models import FormAuthenticationBackend
 
 
 def get_callback_view(self):
@@ -185,3 +189,48 @@ class AttributeGroup(models.Model):
     class Meta:
         verbose_name = _("yivi attribute group")
         verbose_name_plural = _("yivi attribute groups")
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            return super().save(*args, **kwargs)
+
+        original_object = AttributeGroup.objects.get(pk=self.pk)
+        if original_object == self.name:
+            # The name didn't change, so we got nothing to do
+            return super().save(*args, **kwargs)
+
+        auth_backends_to_update = []
+        for auth_backend in FormAuthenticationBackend.objects.filter(backend=PLUGIN_ID):
+            if original_object.name in auth_backend.options.get(
+                "additional_attributes_groups", []
+            ):
+                # Replace the old attribute group name for the new one
+                auth_backend.options["additional_attributes_groups"].remove(
+                    original_object.name
+                )
+                auth_backend.options["additional_attributes_groups"].append(self.name)
+
+                auth_backends_to_update.append(auth_backend)
+
+        if auth_backends_to_update:
+            FormAuthenticationBackend.objects.bulk_update(
+                auth_backends_to_update, ["options"]
+            )
+
+        super().save(*args, **kwargs)
+
+    # @TODO this doesn't appear to work for bulk delete
+    def delete(self, using=None, keep_parents=False):
+        for auth_backend in FormAuthenticationBackend.objects.filter(backend=PLUGIN_ID):
+            if self.name in auth_backend.options.get(
+                "additional_attributes_groups", []
+            ):
+                # @TODO this errors real hard, maybe use a softer alternative.
+                raise ValidationError(
+                    _(
+                        "This attribute group cannot be removed because it is used in"
+                        "one or more authentication backends."
+                    )
+                )
+
+        return super().delete(using=using, keep_parents=keep_parents)
