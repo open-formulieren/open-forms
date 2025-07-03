@@ -7,11 +7,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0NzgyMDA3MywiZXhwIjoxNzQ3ODYzMjczLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.zmmhxnGDMpjtwyEA77iGRte6BzxffoxqQehi5vduLik
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1MTM1ODg4NywiZXhwIjoxNzUxNDAyMDg3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YtByb3v5LZl5ekxaD90mkpDGMxgbMKlRYDM8-BEAUOA
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen?domein=VRSN
   response:
@@ -47,11 +47,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0NzgyMDA3MywiZXhwIjoxNzQ3ODYzMjczLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.zmmhxnGDMpjtwyEA77iGRte6BzxffoxqQehi5vduLik
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1MTM1ODg4NywiZXhwIjoxNzUxNDAyMDg3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YtByb3v5LZl5ekxaD90mkpDGMxgbMKlRYDM8-BEAUOA
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/zaaktypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d&identificatie=ZT-001
   response:
@@ -90,11 +90,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0NzgyMDA3MywiZXhwIjoxNzQ3ODYzMjczLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.zmmhxnGDMpjtwyEA77iGRte6BzxffoxqQehi5vduLik
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1MTM1ODg4NywiZXhwIjoxNzUxNDAyMDg3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YtByb3v5LZl5ekxaD90mkpDGMxgbMKlRYDM8-BEAUOA
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d
   response:
@@ -134,11 +134,11 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc0NzgyMDA3MywiZXhwIjoxNzQ3ODYzMjczLCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.zmmhxnGDMpjtwyEA77iGRte6BzxffoxqQehi5vduLik
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTc1MTM1ODg4NywiZXhwIjoxNzUxNDAyMDg3LCJjbGllbnRfaWQiOiJ0ZXN0X2NsaWVudF9pZCIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.YtByb3v5LZl5ekxaD90mkpDGMxgbMKlRYDM8-BEAUOA
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
     uri: http://localhost:8003/catalogi/api/v1/informatieobjecttypen?catalogus=http%3A%2F%2Flocalhost%3A8003%2Fcatalogi%2Fapi%2Fv1%2Fcatalogussen%2Fbd58635c-793e-446d-a7e0-460d7b04829d
   response:

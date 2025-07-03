@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"nested": {"bsn": "111222333"}, "foo":
-      "bar"}, "startAt": "2025-05-21"}}'
+      "bar"}, "startAt": "2025-06-30"}}'
     headers:
       Accept:
       - '*/*'
@@ -19,12 +19,12 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/861c0aaa-2595-4ca4-8d78-89906736fc59","uuid":"861c0aaa-2595-4ca4-8d78-89906736fc59","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2025-05-21","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/55fbf626-f6e3-4c45-8be0-d80857895619","uuid":"55fbf626-f6e3-4c45-8be0-d80857895619","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"nested":{"bsn":"111222333"},"foo":"bar"},"geometry":null,"startAt":"2025-06-30","endAt":null,"registrationAt":"2025-06-30","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -39,9 +39,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:11:57 GMT
+      - Mon, 30 Jun 2025 14:58:24 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/861c0aaa-2595-4ca4-8d78-89906736fc59
+      - http://localhost:8002/api/v2/objects/55fbf626-f6e3-4c45-8be0-d80857895619
       Referrer-Policy:
       - same-origin
       Server:
@@ -69,12 +69,12 @@ interactions:
       Content-Crs:
       - EPSG:4326
       User-Agent:
-      - python-requests/2.32.2
+      - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8002/api/v2/objects/861c0aaa-2595-4ca4-8d78-89906736fc59
+    uri: http://localhost:8002/api/v2/objects/55fbf626-f6e3-4c45-8be0-d80857895619
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/861c0aaa-2595-4ca4-8d78-89906736fc59","uuid":"861c0aaa-2595-4ca4-8d78-89906736fc59","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-05-21","endAt":null,"registrationAt":"2025-05-21","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/55fbf626-f6e3-4c45-8be0-d80857895619","uuid":"55fbf626-f6e3-4c45-8be0-d80857895619","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{"foo":"bar","nested":{"bsn":"111222333"}},"geometry":null,"startAt":"2025-06-30","endAt":null,"registrationAt":"2025-06-30","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -89,7 +89,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 21 May 2025 09:11:57 GMT
+      - Mon, 30 Jun 2025 14:58:24 GMT
       Referrer-Policy:
       - same-origin
       Server:
