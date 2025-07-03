@@ -2,8 +2,9 @@ import hashlib
 import os.path
 import uuid
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, Mapping, cast
+from typing import TYPE_CHECKING, cast
 
 from django.core.files.base import File
 from django.db import models

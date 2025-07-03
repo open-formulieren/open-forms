@@ -202,7 +202,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
     }
 
     def pre_register_submission(
-        self, submission: "Submission", options: RegistrationOptions
+        self, submission: Submission, options: RegistrationOptions
     ) -> PreRegistrationResult:
         zaak_options: ZaakOptions = {
             **options,

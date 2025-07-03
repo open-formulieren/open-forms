@@ -14,7 +14,7 @@ def main():
     input_file = ROOT_DIR / "requirements" / "base.in"
     allowed_paths = [f"/{repo}" for repo in ALLOWLIST]
     violations = []
-    with open(input_file, "r") as base_in:
+    with open(input_file) as base_in:
         for line in base_in:
             line = line.strip()
             # ignore comments

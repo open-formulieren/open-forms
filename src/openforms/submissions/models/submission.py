@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, Mapping, assert_never
+from typing import TYPE_CHECKING, assert_never
 
 from django.conf import settings
 from django.db import models, transaction

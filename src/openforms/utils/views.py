@@ -50,7 +50,7 @@ class ErrorDetailView(TemplateView):
             if exc_klass is not None:
                 return exc_klass
         else:
-            raise Http404("Unknown exception class '{}'".format(klass))
+            raise Http404(f"Unknown exception class '{klass}'")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

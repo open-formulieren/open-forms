@@ -1,8 +1,9 @@
 from collections import Counter
+from collections.abc import Callable
 from contextlib import contextmanager
 from datetime import date, datetime
 from functools import wraps
-from typing import Callable, ParamSpec, TypeVar
+from typing import ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils import timezone

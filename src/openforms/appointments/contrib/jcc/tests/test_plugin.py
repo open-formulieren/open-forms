@@ -572,7 +572,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_available_products_unexpected_exception(self, m):
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_available_products()
@@ -591,7 +591,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_locations_unexpected_exception(self, m):
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
         product = Product(identifier="k@pu77", name="Kaputt")
 
         with self.assertRaises(AppointmentException):
@@ -635,7 +635,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_dates_unexpected_exception(self, m):
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
 
@@ -657,7 +657,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_times_unexpected_exception(self, m):
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
 
@@ -698,7 +698,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             }
         )
         start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaisesMessage(
             AppointmentCreateFailed, "Unexpected appointment create failure"

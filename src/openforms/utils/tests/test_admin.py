@@ -1,4 +1,4 @@
-from datetime import datetime, timezone as dt_timezone
+from datetime import UTC, datetime
 
 from django.test import override_settings
 from django.urls import reverse
@@ -27,7 +27,7 @@ class OutgoingRequestLogAdminTests(WebTest):
             status=404,
         )
 
-    @freeze_time(datetime(2024, 1, 1, tzinfo=dt_timezone.utc))
+    @freeze_time(datetime(2024, 1, 1, tzinfo=UTC))
     @override_settings(LANGUAGE_CODE="en")
     def test_viewing_outgoing_request_log_details_in_admin_creates_log(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)

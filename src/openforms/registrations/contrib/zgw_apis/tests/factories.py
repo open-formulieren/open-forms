@@ -6,7 +6,7 @@ from ..models import ZGWApiGroupConfig
 
 
 class ZGWApiGroupConfigFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "ZGW API set %03d" % n)
+    name = factory.Sequence(lambda n: f"ZGW API set {n:03d}")
     identifier = factory.Sequence(lambda n: f"zgw-api-group-{n}")
     zrc_service = factory.SubFactory(
         "zgw_consumers.test.factories.ServiceFactory", api_type=APITypes.zrc

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import (
     Any,
-    Iterator,
     Literal,
     assert_never,
     override,

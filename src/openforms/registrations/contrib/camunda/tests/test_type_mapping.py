@@ -17,7 +17,7 @@ FILES_DIR = os.path.join(
 
 
 def load_json(filename: str, files_dir=FILES_DIR):
-    with open(os.path.join(files_dir, filename), "r") as infile:
+    with open(os.path.join(files_dir, filename)) as infile:
         return json.load(infile)
 
 

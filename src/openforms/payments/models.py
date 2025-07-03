@@ -21,7 +21,7 @@ class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
         qs = self.filter(status=PaymentStatus.completed)
         return qs.update(status=PaymentStatus.registered)
 
-    def paid(self) -> models.QuerySet["SubmissionPayment"]:
+    def paid(self) -> models.QuerySet[SubmissionPayment]:
         return self.filter(
             status__in=(PaymentStatus.registered, PaymentStatus.completed)
         )
@@ -84,7 +84,7 @@ class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQue
 
         def mark_registered(self) -> int: ...
 
-        def paid(self) -> models.QuerySet["SubmissionPayment"]: ...
+        def paid(self) -> models.QuerySet[SubmissionPayment]: ...
 
         def get_completed_provider_payment_ids(self) -> list[str]: ...
 

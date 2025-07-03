@@ -1,5 +1,6 @@
+from collections.abc import Iterator
 from functools import partial
-from typing import Iterator, Protocol, TypedDict
+from typing import Protocol, TypedDict
 
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -287,8 +288,7 @@ def _iter_case_type_versions(
         identification=case_type_identification,
     )
     assert case_type_versions is not None
-    for version in case_type_versions:
-        yield version
+    yield from case_type_versions
 
 
 def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:

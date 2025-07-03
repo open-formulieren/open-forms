@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
@@ -436,7 +436,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             },
             completed=True,
             # Use a stable timestamp to get stable request params
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -508,7 +508,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             completed=True,
             # version 531f6c1a-97f7-478c-85f0-67d2f23661c7 of the document type is
             # valid on this timestamp
-            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=UTC),
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -573,7 +573,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             },
             completed=True,
             # version is valid from August 9th
-            completed_on=datetime(2024, 8, 10, 12, 0, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 8, 10, 12, 0, 0).replace(tzinfo=UTC),
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],

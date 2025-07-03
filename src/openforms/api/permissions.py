@@ -21,13 +21,12 @@ class TimestampedTokenPermission(permissions.BasePermission):
         self, request: Request, view: APIView, obj: models.Model
     ) -> bool:
         assert self.token_generator, (
-            'You must specify a token generator on permission class "%s"'
-        ) % self.__class__.__name__
+            f'You must specify a token generator on permission class "{self.__class__.__name__}"'
+        )
         assert self.token_kwarg in view.kwargs, (
-            "Expected view %s to be called with a URL keyword argument "
-            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            f"Expected view {view.__class__.__name__} to be called with a URL keyword argument "
+            f'named "{self.token_kwarg}". Fix your URL conf, or set the `.lookup_field` '
             "attribute on the view correctly."
-            % (view.__class__.__name__, self.token_kwarg)
         )
         token = view.kwargs[self.token_kwarg]
         return self.token_generator.check_token(obj, token)

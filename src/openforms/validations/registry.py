@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Iterable, TypeAlias
+from collections.abc import Iterable
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,7 @@ from .base import BasePlugin
 
 logger = structlog.stdlib.get_logger(__name__)
 
-StrOrIterable: TypeAlias = str | Iterable["StrOrIterable"]
+type StrOrIterable = str | Iterable["StrOrIterable"]
 
 
 @dataclasses.dataclass()

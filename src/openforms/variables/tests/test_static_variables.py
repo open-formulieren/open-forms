@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from django.test import TestCase, override_settings
@@ -22,13 +22,13 @@ class NowTests(TestCase):
 
         variable = _get_variable("now", submission=submission)
 
-        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=timezone.utc)
+        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=UTC)
         self.assertEqual(variable.initial_value, expected)
 
     def test_without_submission(self):
         variable = _get_variable("now")
 
-        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=timezone.utc)
+        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=UTC)
         self.assertEqual(variable.initial_value, expected)
 
 

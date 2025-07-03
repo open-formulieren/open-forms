@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 class SubmissionQuerySet(models.QuerySet["Submission"]):
     def annotate_removal_fields(
         self, limit_field: str, method_field: str = ""
-    ) -> "SubmissionQuerySet":
+    ) -> SubmissionQuerySet:
         config = GlobalConfiguration.get_solo()
         annotation = self.annotate(
             removal_limit=Case(

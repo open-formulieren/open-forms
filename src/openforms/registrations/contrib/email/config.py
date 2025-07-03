@@ -1,9 +1,8 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
-from typing_extensions import NotRequired
 
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.emails.validators import URLSanitationValidator

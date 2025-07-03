@@ -1,5 +1,5 @@
 from base64 import b64encode
-from typing import BinaryIO, Literal, TypeAlias
+from typing import BinaryIO, Literal
 
 from django.core.files.base import ContentFile
 
@@ -9,7 +9,7 @@ from openforms.contrib.client import LoggingMixin
 from openforms.translations.utils import to_iso639_2b
 from openforms.utils.date import get_today
 
-DocumentStatus: TypeAlias = Literal[
+type DocumentStatus = Literal[
     "in_bewerking",
     "ter_vaststelling",
     "definitief",

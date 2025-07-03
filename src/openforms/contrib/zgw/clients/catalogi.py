@@ -1,7 +1,8 @@
+from collections.abc import Callable, Iterator
 from datetime import date
 from functools import cached_property
 from operator import itemgetter
-from typing import Callable, Iterator, Literal, NotRequired, TypeAlias, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from flags.state import flag_enabled
 from requests import Response
@@ -105,7 +106,7 @@ class Eigenschap(TypedDict):
     specificatie: EigenschapSpecificatie
 
 
-CatalogiAPIVersion: TypeAlias = tuple[
+type CatalogiAPIVersion = tuple[
     int,  # major
     int,  # minor
     int,  # patch

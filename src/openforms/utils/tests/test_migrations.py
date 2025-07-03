@@ -26,8 +26,7 @@ class TestMigrations(TransactionTestCase):
             self.app,
         )
         assert all(_checks), (
-            "TestCase '%s' must define migrate_from, migrate_to and app properties"
-            % type(self).__name__
+            f"TestCase '{type(self).__name__}' must define migrate_from, migrate_to and app properties"
         )
         self.migrate_from = [(self.app, self.migrate_from)]
         self.migrate_to = [(self.app, self.migrate_to)]

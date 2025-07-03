@@ -1,6 +1,6 @@
 import json
 import textwrap
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest import expectedFailure
@@ -1695,7 +1695,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version
-            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=UTC),
         )
         RegistratorInfoFactory.create(submission=submission, value="employee-123")
         options: RegistrationOptions = {
@@ -1790,7 +1790,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version
-            completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 11, 1, 15, 30, 0).replace(tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -1848,7 +1848,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version
-            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 9, 9, 15, 30, 0).replace(tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": zgw_group,
@@ -1893,7 +1893,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case & document type version
-            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         options: RegistrationOptions = {
@@ -1965,7 +1965,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version (2024-10-31)
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,
@@ -2051,7 +2051,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             bsn="123456782",
             completed=True,
             # Pin to a known case type version (2024-10-31)
-            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=timezone.utc),
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
         )
         options: RegistrationOptions = {
             "zgw_api_group": self.zgw_group,

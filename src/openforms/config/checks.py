@@ -1,4 +1,5 @@
-from typing import Any, Generator, Protocol
+from collections.abc import Generator
+from typing import Any, Protocol
 
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _

@@ -17,14 +17,14 @@ from openforms.utils.admin import SubmitActions
 def has_change_permission(user, obj: models.Model) -> bool:
     opts = obj._meta
     codename = get_permission_codename("change", opts)
-    return user.has_perm("%s.%s" % (opts.app_label, codename))
+    return user.has_perm(f"{opts.app_label}.{codename}")
 
 
 def get_obj_repr(user, obj: models.Model) -> str:
     opts = obj._meta
     if has_change_permission(user, obj):
         obj_url = reverse(
-            "admin:%s_%s_change" % (opts.app_label, opts.model_name),
+            f"admin:{opts.app_label}_{opts.model_name}_change",
             args=(quote(obj.pk),),
         )
         obj_repr = format_html('<a href="{}">{}</a>', urlquote(obj_url), obj)

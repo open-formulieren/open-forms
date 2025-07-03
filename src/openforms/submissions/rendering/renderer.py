@@ -8,8 +8,8 @@ printable data.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Iterator
 
 from openforms.forms.models import Form
 from openforms.variables.rendering.nodes import VariablesNode

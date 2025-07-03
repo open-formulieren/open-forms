@@ -51,8 +51,8 @@ class SubmissionProcessingStatus:
     @property
     def status(self) -> str:
         results = self.get_async_results()
-        any_failed = any((result.state == states.FAILURE for result in results))
-        all_ready = all((result.state in states.READY_STATES for result in results))
+        any_failed = any(result.state == states.FAILURE for result in results)
+        all_ready = all(result.state in states.READY_STATES for result in results)
         if results and (any_failed or all_ready):
             return ProcessingStatuses.done
         return ProcessingStatuses.in_progress
@@ -63,8 +63,8 @@ class SubmissionProcessingStatus:
             return ""
 
         results = self.get_async_results()
-        all_success = all((result.state == states.SUCCESS for result in results))
-        any_failed = any((result.state == states.FAILURE for result in results))
+        all_success = all(result.state == states.SUCCESS for result in results)
+        any_failed = any(result.state == states.FAILURE for result in results)
 
         if all_success:
             return ProcessingResults.success

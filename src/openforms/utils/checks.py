@@ -50,8 +50,7 @@ def check_modelform_exclude(app_configs, **kwargs):
         # no `.fields` defined, so scream loud enough to prevent this
         errors.append(
             Error(
-                "ModelForm %s.%s with Meta.exclude detected, this is a bad practice"
-                % (form.__module__, form.__name__),
+                f"ModelForm {form.__module__}.{form.__name__} with Meta.exclude detected, this is a bad practice",
                 hint="Use ModelForm.Meta.fields instead",
                 obj=form,
                 id="utils.E001",
@@ -85,7 +84,7 @@ def check_missing_init_files(app_configs, **kwargs):
 
         errors.append(
             Warning(
-                "Directory '%s' does not contain an `__init__.py` file" % dirpath,
+                f"Directory '{dirpath}' does not contain an `__init__.py` file",
                 hint="Consider adding this module to make sure tests are picked up",
                 id="utils.W001",
             )

@@ -1,5 +1,6 @@
 import re
-from typing import TYPE_CHECKING, Mapping
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
 from urllib.parse import quote
 
 from django.core.exceptions import SuspiciousOperation, ValidationError

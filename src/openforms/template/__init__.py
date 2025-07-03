@@ -13,8 +13,7 @@ Possible future features:
 * ...
 """
 
-from collections.abc import Mapping
-from typing import Iterator
+from collections.abc import Iterator, Mapping
 
 from django.template.backends.django import Template as DjangoTemplate
 from django.template.base import Node, VariableNode

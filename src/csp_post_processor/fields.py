@@ -43,7 +43,7 @@ class CSPPostProcessedWYSIWYGField(TextField):
             return self.__dict__["model"]
         except KeyError:
             raise AttributeError(
-                "'%s' object has no attribute 'model'" % self.__class__.__name__
+                f"'{self.__class__.__name__}' object has no attribute 'model'"
             )
 
     @model.setter
