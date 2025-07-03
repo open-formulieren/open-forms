@@ -2090,7 +2090,7 @@
     "originalDefault": "Document types"
   },
   "b0tRq+": {
-    "defaultMessage": "Form JSON schema: {backendLabel}",
+    "defaultMessage": "Formulier JSON-schema: {backendLabel}",
     "description": "Generate JSON schema modal title",
     "originalDefault": "Form JSON schema: {backendLabel}"
   },
@@ -2648,7 +2648,7 @@
     "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "k2G5xb": {
-    "defaultMessage": "Before generating a schema, ensure the options are configured and the complete form is saved.",
+    "defaultMessage": "Zorg dat de opties zijn ingesteld en het formulier is opgeslagen, vóór het genereren van een schema",
     "description": "Form JSON schema help text",
     "originalDefault": "Before generating a schema, ensure the options are configured and the complete form is saved."
   },
@@ -3149,7 +3149,7 @@
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
   },
   "tSeev4": {
-    "defaultMessage": "Plugin configuration: DigiD",
+    "defaultMessage": "Plugin-instellingen: DigiD",
     "description": "DigiD authentication options modal title",
     "originalDefault": "Plugin configuration: DigiD"
   },
@@ -3344,7 +3344,7 @@
     "originalDefault": "Create definition"
   },
   "xgcUQF": {
-    "defaultMessage": "Generate JSON schema",
+    "defaultMessage": "Genereer JSON-schema",
     "description": "Link label to generate JSON schema of registration backend",
     "originalDefault": "Generate JSON schema"
   },
@@ -3441,7 +3441,7 @@
     "originalDefault": "Submission settings"
   },
   "zu8ntq": {
-    "defaultMessage": "An error occurred during schema generation",
+    "defaultMessage": "Er is een fout opgetreden tijdens het genereren van het schema",
     "description": "Form schema generation error message",
     "originalDefault": "An error occurred during schema generation"
   },
