@@ -33,7 +33,7 @@ export default {
             },
             title: 'Authentication options',
             description:
-              'Available authentication options that the user can choice from. The user must chose one of the options. If left empty, a hashed value will be used as authentication identifier.',
+              'These are the available authentication options available for user identification. If no authentication option has been chosen, the pseudo option will be requested from the user.',
           },
           additionalAttributesGroups: {
             type: 'array',
