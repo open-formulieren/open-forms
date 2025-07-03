@@ -41,6 +41,7 @@ class HashIdentifyingAttributesTests(TestCase):
             "value": "123456789",
             "acting_subject_identifier_value": "some-opaque-identifier",
             "legal_subject_identifier_value": "12345678",
+            "additional_claims": {"attribute_name": "some value"},
         }
 
         auth_info = AuthInfoFactory.create(

@@ -38,3 +38,13 @@
     text-align: end;
   }
 }
+
+.form-additional-attributes-groups-dropdown-option {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+
+  @include bem.element('label') {
+    font-size: 12px;
+  }
+}

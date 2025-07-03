@@ -107,12 +107,6 @@
       "value": "The maximum value this field can have before the form can be submitted."
     }
   ],
-  "/kZu2e": [
-    {
-      "type": 0,
-      "value": "Initials"
-    }
-  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -841,6 +835,12 @@
     {
       "type": 0,
       "value": "Previous text"
+    }
+  ],
+  "7AQfXl": [
+    {
+      "type": 0,
+      "value": "Additional attributes groups"
     }
   ],
   "7F64bK": [
@@ -2053,6 +2053,12 @@
       "value": "Send confirmation email"
     }
   ],
+  "G+nriX": [
+    {
+      "type": 0,
+      "value": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+    }
+  ],
   "G1JHUM": [
     {
       "type": 0,
@@ -2425,12 +2431,6 @@
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
     }
   ],
-  "JKnHMC": [
-    {
-      "type": 0,
-      "value": "Lastname"
-    }
-  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -2569,6 +2569,12 @@
     {
       "type": 0,
       "value": "Manually defined"
+    }
+  ],
+  "KjG6+9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for bsn"
     }
   ],
   "Kl9yvd": [
@@ -2715,6 +2721,12 @@
       "value": "fetch the value for a variable from a service"
     }
   ],
+  "M/1wxK": [
+    {
+      "type": 0,
+      "value": "Authentication options"
+    }
+  ],
   "M0kOz9": [
     {
       "type": 0,
@@ -2725,12 +2737,6 @@
     {
       "type": 0,
       "value": "Change text"
-    }
-  ],
-  "M2+MHj": [
-    {
-      "type": 0,
-      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -3089,6 +3095,12 @@
     {
       "type": 0,
       "value": "Alias"
+    }
+  ],
+  "Pvaekr": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Yivi"
     }
   ],
   "PwUKIe": [
@@ -4191,12 +4203,6 @@
       "value": "TITLE parameter"
     }
   ],
-  "ZYWsHs": [
-    {
-      "type": 0,
-      "value": "Date of birth"
-    }
-  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -5271,12 +5277,6 @@
       "value": "If left blank, then the most recent version is used."
     }
   ],
-  "hkXaC1": [
-    {
-      "type": 0,
-      "value": "BSN"
-    }
-  ],
   "huHjRm": [
     {
       "type": 0,
@@ -5293,6 +5293,12 @@
     {
       "type": 0,
       "value": "Mobile"
+    }
+  ],
+  "hx0iTv": [
+    {
+      "type": 0,
+      "value": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier."
     }
   ],
   "hxssl8": [
@@ -7219,6 +7225,12 @@
     {
       "type": 0,
       "value": "Use globally configured map component settings"
+    }
+  ],
+  "zItxZ9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for kvk"
     }
   ],
   "zQE4f2": [

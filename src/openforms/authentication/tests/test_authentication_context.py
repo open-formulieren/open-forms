@@ -10,19 +10,27 @@ The schema used in these tests is taken from the proposal above. It will be made
 at some point.
 """
 
-from django.test import SimpleTestCase
+from unittest.mock import patch
+
+from django.test.testcases import SimpleTestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..base import BasePlugin
 from ..constants import (
     ActingSubjectIdentifierType,
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
 from ..models import AuthInfo
+from ..registry import Registry
+from .mocks import Plugin
 from .utils import AuthContextAssertMixin
+
+register = Registry()
+register("dummy")(Plugin)
 
 
 class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
@@ -38,7 +46,8 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             legal_subject_identifier_value="",
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
 
@@ -57,7 +66,8 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             },
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
 
@@ -78,7 +88,8 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             ),
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
         self.assertNotIn("branchNumber", auth_context["authorizee"]["legalSubject"])
@@ -101,7 +112,8 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             ),
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
         self.assertIn("branchNumber", auth_context["authorizee"]["legalSubject"])
@@ -132,7 +144,8 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             },
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
         self.assertNotIn("branchNumber", auth_context["authorizee"]["legalSubject"])
@@ -164,7 +177,102 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
             },
         )
 
-        auth_context = auth_info.to_auth_context_data()
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
         self.assertIn("branchNumber", auth_context["authorizee"]["legalSubject"])
+
+    def test_plugin_with_manage_auth_context_raises_error_if_auth_info_to_auth_context_method_isnt_implemented(
+        self,
+    ):
+        class FailingAuthContextPlugin(BasePlugin):
+            verbose_name = "some human readable label"
+            provides_auth = AuthAttribute.bsn
+            manage_auth_context = True
+
+        register("failing-auth-context")(FailingAuthContextPlugin)
+
+        auth_info = AuthInfo(
+            plugin="failing-auth-context",
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+        )
+
+        with self.assertRaises(NotImplementedError) as exc:
+            with patch("openforms.authentication.models.auth_registry", new=register):
+                auth_info.to_auth_context_data()
+                self.assertEqual(
+                    exc.exception.args[0],
+                    "Subclasses must implement 'auth_info_to_auth_context'",
+                )
+
+    def test_plugin_with_manage_auth_context_calls_auth_info_to_auth_context(self):
+        class CorrectAuthContextPlugin(BasePlugin):
+            verbose_name = "some human readable label"
+            provides_auth = AuthAttribute.bsn
+            manage_auth_context = True
+
+            def auth_info_to_auth_context(self, auth_info: AuthInfo):
+                return {
+                    "result": "custom auth_info_to_auth_context handling",
+                }
+
+        register("correct-auth-context")(CorrectAuthContextPlugin)
+
+        auth_info = AuthInfo(
+            plugin="correct-auth-context",
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+        )
+
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
+
+        self.assertEqual(
+            auth_context,
+            {
+                "result": "custom auth_info_to_auth_context handling",
+            },
+        )
+
+    def test_auth_info_to_auth_context_is_only_called_when_with_manage_auth_context_is_true(
+        self,
+    ):
+        class UnusedAuthContextPlugin(BasePlugin):
+            verbose_name = "some human readable label"
+            provides_auth = AuthAttribute.bsn
+            manage_auth_context = False
+
+            def auth_info_to_auth_context(self, auth_info: AuthInfo):
+                return {
+                    "source": "custom auth_info_to_auth_context handling",
+                }
+
+        register("unused-auth-context")(UnusedAuthContextPlugin)
+
+        auth_info = AuthInfo(
+            plugin="unused-auth-context",
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            loa=DigiDAssuranceLevels.high,
+        )
+
+        with patch("openforms.authentication.models.auth_registry", new=register):
+            auth_context = auth_info.to_auth_context_data()
+
+        # Because the plugin `manage_auth_context` is set to False, the default logic is
+        # used.
+        self.assertEqual(
+            auth_context,
+            {
+                "source": "digid",
+                "levelOfAssurance": DigiDAssuranceLevels.high,
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "bsn",
+                        "identifier": "999991607",
+                    }
+                },
+            },
+        )

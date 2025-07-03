@@ -7,8 +7,7 @@ from django.urls import resolve
 
 import structlog
 from digid_eherkenning.oidc.claims import process_claims
-from digid_eherkenning.oidc.models import BaseConfig
-from flags.state import flag_enabled
+from digid_eherkenning.oidc.models.base import BaseConfig
 from furl import furl
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
@@ -23,9 +22,9 @@ from .plugin import get_config_to_plugin
 logger = structlog.stdlib.get_logger(__name__)
 
 
-class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
+class GenericOIDCBackend(OIDCAuthenticationBackend):
     """
-    A backend specialised to the digid-eherkenning-generics subclassed model.
+    A generic backend specialised to the OF OIDC plugins.
     """
 
     OF_OIDCDB_REQUIRED_CLAIMS = dynamic_setting[list[str]](default=[])
@@ -33,10 +32,10 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
     @override
     def _check_candidate_backend(self) -> bool:
         # if we're dealing with a mozilla-django-oidc-db config that is *not* a
-        # digid-eherkenning-generics subclass, then don't bother.
-        if not issubclass(self.config_class, BaseConfig):
-            return False
-        return super()._check_candidate_backend()
+        # OF config, then don't bother.
+        if issubclass(self.config_class, BaseConfig):
+            return super()._check_candidate_backend()
+        return False
 
     def get_or_create_user(
         self, access_token: str, id_token: str, payload: JSONObject
@@ -50,17 +49,15 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         assert isinstance(self.request, HttpRequest)
 
         user_info = self.get_userinfo(access_token, id_token, payload)
-        claims_verified = self.verify_claims(user_info)
-        if not claims_verified:
-            msg = "Claims verification failed"
+        if not self.verify_claims(user_info):
             # Raise PermissionDenied rather than SuspiciousOperation - this makes it
             # Django stops trying other (OIDC) authentication backends, which fail
             # because the code was already exchanged for an access token.
-            # Note that this backend only runs for the DigiD/eHerkenning configs at all,
+            # Note that this backend only runs for the OF OIDC configs at all,
             # and those aren't particularly compatible with the admin-OIDC flow anyway.
             # See :meth:`_check_candidate_backend` that prevents this backend from being
             # used for admin OIDC.
-            raise PermissionDenied(msg)
+            raise PermissionDenied("Claims verification failed")
 
         self._extract_and_store_claims(payload)
 
@@ -71,10 +68,17 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
     def _process_claims(self, claims: JSONObject) -> JSONObject:
         # see if we can use a cached config instance from the settings configuration
         assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
-        strict_mode = flag_enabled(
-            "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
-        )
+
+        config_to_plugin = get_config_to_plugin()
+        assert self.config_class and self.config_class in config_to_plugin
+        plugin = config_to_plugin[self.config_class]
+
+        # Allow plugin-specific actions before processing the claims.
+        plugin.before_process_claims(self._config, claims)
+
+        strict_mode = plugin.strict_mode(self.request)
         assert isinstance(strict_mode, bool)
+
         return process_claims(claims, self._config, strict=strict_mode)
 
     @override
@@ -107,15 +111,6 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
 
         return True
 
-    @staticmethod
-    def _extract_additional_claims_for_auth_backend(
-        auth_backend: FormAuthenticationBackend, claims: JSONObject
-    ) -> JSONObject:
-        # The first plugin that will use this is Yivi.
-        # Adding the method as preparation for upcoming logic.
-        claims_to_extract = {}
-        return claims_to_extract
-
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
         """
         Extract the claims configured on the config and store them in the session.
@@ -136,8 +131,8 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
             auth_backend = FormAuthenticationBackend.objects.get(
                 form=form, backend=plugin.identifier
             )
-            procssed_claims["additional_claims"] = (
-                self._extract_additional_claims_for_auth_backend(auth_backend, claims)
+            procssed_claims["additional_claims"] = plugin.extract_additional_claims(
+                auth_backend.options, claims
             )
         except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
             pass

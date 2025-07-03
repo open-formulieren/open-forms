@@ -203,6 +203,14 @@
                 "ofeherkenningconfig"
             ],
             [
+                "yivi_oidc",
+                "yiviopenidconnectconfig"
+            ],
+            [
+                "yivi_oidc",
+                "attributegroup"
+            ],
+            [
                 "django_camunda",
                 "camundaconfig"
             ],

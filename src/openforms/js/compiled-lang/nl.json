@@ -107,12 +107,6 @@
       "value": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
     }
   ],
-  "/kZu2e": [
-    {
-      "type": 0,
-      "value": "Initials"
-    }
-  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -841,6 +835,12 @@
     {
       "type": 0,
       "value": "'Vorige' tekst"
+    }
+  ],
+  "7AQfXl": [
+    {
+      "type": 0,
+      "value": "Additional attributes groups"
     }
   ],
   "7F64bK": [
@@ -2074,6 +2074,12 @@
       "value": "Verstuur bevestigingsmail"
     }
   ],
+  "G+nriX": [
+    {
+      "type": 0,
+      "value": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+    }
+  ],
   "G1JHUM": [
     {
       "type": 0,
@@ -2446,12 +2452,6 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
-  "JKnHMC": [
-    {
-      "type": 0,
-      "value": "Lastname"
-    }
-  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -2590,6 +2590,12 @@
     {
       "type": 0,
       "value": "Handmatig ingesteld"
+    }
+  ],
+  "KjG6+9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for bsn"
     }
   ],
   "Kl9yvd": [
@@ -2736,6 +2742,12 @@
       "value": "haal de waarde op uit een externe registratie"
     }
   ],
+  "M/1wxK": [
+    {
+      "type": 0,
+      "value": "Authentication options"
+    }
+  ],
   "M0kOz9": [
     {
       "type": 0,
@@ -2746,12 +2758,6 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
-    }
-  ],
-  "M2+MHj": [
-    {
-      "type": 0,
-      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -3110,6 +3116,12 @@
     {
       "type": 0,
       "value": "Alias"
+    }
+  ],
+  "Pvaekr": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Yivi"
     }
   ],
   "PwUKIe": [
@@ -4209,12 +4221,6 @@
       "value": "TITLE-parameter"
     }
   ],
-  "ZYWsHs": [
-    {
-      "type": 0,
-      "value": "Date of birth"
-    }
-  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -5293,12 +5299,6 @@
       "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
     }
   ],
-  "hkXaC1": [
-    {
-      "type": 0,
-      "value": "BSN"
-    }
-  ],
   "huHjRm": [
     {
       "type": 0,
@@ -5315,6 +5315,12 @@
     {
       "type": 0,
       "value": "Mobiel"
+    }
+  ],
+  "hx0iTv": [
+    {
+      "type": 0,
+      "value": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier."
     }
   ],
   "hxssl8": [
@@ -7237,6 +7243,12 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
+    }
+  ],
+  "zItxZ9": [
+    {
+      "type": 0,
+      "value": "Yivi plugin options for kvk"
     }
   ],
   "zQE4f2": [
