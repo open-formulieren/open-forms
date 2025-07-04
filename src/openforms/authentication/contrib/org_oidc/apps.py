@@ -10,3 +10,4 @@ class OrgOIDCApp(AppConfig):
     def ready(self):
         # register the plugin
         from . import plugin  # noqa
+        from .oidc_plugins import plugins as oidc_plugins  # noqa
