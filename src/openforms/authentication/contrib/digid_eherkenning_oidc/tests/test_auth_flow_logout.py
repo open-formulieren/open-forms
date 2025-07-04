@@ -34,22 +34,24 @@ from furl import furl
 from requests import Session
 from rest_framework.test import APIRequestFactory
 
-from openforms.authentication.registry import register
-from openforms.authentication.tests.utils import URLsHelper
-from openforms.contrib.auth_oidc.plugin import (
-    OIDC_ID_TOKEN_SESSION_KEY,
-)
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    keycloak_login,
+    mock_get_random_string,
+    mock_oidc_client,
+)
 
+from ....registry import register
+from ....tests.utils import URLsHelper
+from ..oidc_plugins.constants import (
+    OIDC_DIGID_IDENTIFIER,
+    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
+    OIDC_EH_IDENTIFIER,
+)
+from ..plugin import OIDC_ID_TOKEN_SESSION_KEY
 from .base import (
     IntegrationTestsBase,
-    mock_digid_config,
-    mock_digid_machtigen_config,
-    mock_eherkenning_bewindvoering_config,
-    mock_eherkenning_config,
-    mock_eidas_company_config,
-    mock_eidas_config,
 )
 
 
@@ -107,7 +109,8 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the DigiD plugin.
     """
 
-    @mock_digid_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(authentication_backend="digid_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="digid_oidc")
@@ -128,7 +131,8 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_digid_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
@@ -146,7 +150,8 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eHerkenning plugin.
     """
 
-    @mock_eherkenning_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eherkenning_oidc")
@@ -167,7 +172,8 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eherkenning_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
@@ -224,7 +230,8 @@ class DigiDMachtigenLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the DigiD Nachtigen plugin.
     """
 
-    @mock_digid_machtigen_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         start_url = URLsHelper(form=form).get_auth_start(
@@ -247,7 +254,8 @@ class DigiDMachtigenLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_digid_machtigen_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
@@ -265,7 +273,8 @@ class EHerkenningBewindvoeringLogoutTests(LogoutTestsMixin, IntegrationTestsBase
     Test the (RP-initiated) logout flow for the eHerkenning Bewindvoering plugin.
     """
 
-    @mock_eherkenning_bewindvoering_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_BEWINDVOERING_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
@@ -293,7 +302,8 @@ class EHerkenningBewindvoeringLogoutTests(LogoutTestsMixin, IntegrationTestsBase
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eherkenning_bewindvoering_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_BEWINDVOERING_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
