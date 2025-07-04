@@ -109,3 +109,16 @@ def render_to_pdf(template_name: str, context: dict) -> tuple[str, bytes]:
     )
     pdf: bytes = html_object.write_pdf(pdf_variant="pdf/ua-1")
     return rendered_html, pdf
+
+
+def convert_html_to_pdf(html: str) -> bytes:
+    """Convert a string with HTML to a PDF."""
+    import weasyprint  # heavy import
+
+    html_object = weasyprint.HTML(
+        string=html,
+        url_fetcher=UrlFetcher(),
+        base_url=settings.BASE_URL,
+    )
+    pdf: bytes = html_object.write_pdf(pdf_variant="pdf/ua-1")
+    return pdf
