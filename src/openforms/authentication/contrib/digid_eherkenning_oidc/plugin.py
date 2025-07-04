@@ -1,81 +1,191 @@
 from __future__ import annotations
 
-from typing import NotRequired, TypedDict, assert_never
+from collections.abc import Sequence
+from typing import ClassVar, Protocol, TypedDict, assert_never
 
-from django.http import HttpRequest
+from django.http import (
+    HttpRequest,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
+from django.http.response import HttpResponseBase
 from django.utils.translation import gettext_lazy as _
 
 from flags.state import flag_enabled
+from mozilla_django_oidc_db.registry import register as oidc_registry
+from mozilla_django_oidc_db.utils import do_op_logout
+from mozilla_django_oidc_db.views import (
+    _RETURN_URL_SESSION_KEY,
+    OIDCAuthenticationRequestInitView,
+)
 
-from openforms.authentication.constants import LegalSubjectIdentifierType
 from openforms.authentication.contrib.digid.views import (
     DIGID_MESSAGE_PARAMETER,
-    LOGIN_CANCELLED,
+    LOGIN_CANCELLED as DIGID_LOGIN_CANCELLED,
 )
 from openforms.authentication.contrib.eherkenning.views import (
+    LOGIN_CANCELLED as EH_LOGIN_CANCELLED,
     MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
 )
-from openforms.authentication.typing import FormAuth
-from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
+from openforms.authentication.models import AuthInfo
+from openforms.authentication.types import EIDASCompanyContext, EIDASContext, OIDCErrors
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
     get_eidas_logo,
 )
+from openforms.forms.models.form import Form
+from openforms.typing import StrOrPromise
+from openforms.utils.urls import reverse_plus
 
-from ...base import LoginLogo
-from ...constants import AuthAttribute
-from ...models import AuthInfo
+from ...base import BasePlugin, CosignSlice, LoginLogo
+from ...constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+    LegalSubjectIdentifierType,
+)
+from ...exceptions import InvalidCoSignData
 from ...registry import register
-from ...types import (
-    EIDASCompanyContext,
-    EIDASContext,
-)
-from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from ...typing import FormAuth
 from .constants import EIDAS_COMPANY_PLUGIN_ID, EIDAS_PLUGIN_ID
-from .models import (
-    OFDigiDConfig,
-    OFDigiDMachtigenConfig,
-    OFEHerkenningBewindvoeringConfig,
-    OFEHerkenningConfig,
-    OFEIDASCompanyConfig,
-    OFEIDASConfig,
+from .oidc_plugins.constants import (
+    OIDC_DIGID_IDENTIFIER,
+    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
+    OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
-from .views import (
-    digid_init,
-    digid_machtigen_init,
-    eherkenning_bewindvoering_init,
-    eherkenning_init,
-    eidas_company_init,
-    eidas_init,
+from .oidc_plugins.types import (
+    DigiDClaims,
+    DigiDmachtigenClaims,
+    EHBewindvoeringClaims,
+    EHClaims,
+    EIDASClaims,
+    EIDASCompanyClaims,
 )
+
+OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
+
+
+class AuthInit(Protocol):
+    def __call__(
+        self, request: HttpRequest, return_url: str, *args, **kwargs
+    ) -> HttpResponseBase: ...
 
 
 class OptionsT(TypedDict):
     pass
 
 
-class DigiDClaims(TypedDict):
-    """
-    Processed DigiD claims structure.
+# can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
+# assignable... :(
+class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
+    verbose_name: StrOrPromise = ""
+    provides_auth: ClassVar[Sequence[AuthAttribute]]
+    oidc_plugin_identifier: ClassVar[str]
 
-    See :attr:`digid_eherkenning.oidc.models.DigiDConfig.CLAIMS_CONFIGURATION` for the
-    source of this structure.
-    """
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
+    ) -> HttpResponseRedirect:
+        return_url_query = {"next": form_url}
+        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
+            return_url_query[CO_SIGN_PARAMETER] = co_sign_param
 
-    bsn_claim: str
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
+        return_url = reverse_plus(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": self.identifier},
+            request=request,
+            query=return_url_query,
+        )
+
+        # "evaluate" the view, this achieves two things:
+        #
+        # * we save a browser redirect cycle since we get the redirect to the identity
+        #   provider immediately
+        # * we control the config to apply 100% server side rather than passing it as
+        #   a query parameter, which prevents a malicious user from messing with the
+        #   redirect URL
+        #
+        # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
+        # start_view and gets handled there.
+
+        # TODO: using self.init_view passes "self" as first argument, workaround
+        init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=self.oidc_plugin_identifier,
+            allow_next_from_query=False,
+        )
+        response = init_view(request, return_url=return_url)
+        assert isinstance(response, HttpResponseRedirect)
+        return response
+
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
+        if not (claim := request.session.get(self.oidc_plugin_identifier)):
+            raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
+        return {
+            "identifier": claim,
+            "fields": {},
+        }
+
+    def transform_claims(self, normalized_claims: T) -> FormAuth:
+        raise NotImplementedError("Subclasses must implement 'transform_claims'")
+
+    def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
+        """
+        Redirect to form URL.
+        """
+        form_url = request.GET.get("next")
+        if not form_url:
+            return HttpResponseBadRequest("missing 'next' parameter")
+
+        normalized_claims: T | None = request.session.get(self.oidc_plugin_identifier)
+        if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
+            form_auth = self.transform_claims(normalized_claims)
+            request.session[FORM_AUTH_SESSION_KEY] = form_auth
+
+        return HttpResponseRedirect(form_url)
+
+    def logout(self, request: HttpRequest):
+        if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
+            oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
+            config = oidc_plugin.get_config()
+
+            do_op_logout(config, id_token)
+
+        keys_to_delete = (
+            "oidc_login_next",  # from upstream library
+            self.oidc_plugin_identifier,
+            _RETURN_URL_SESSION_KEY,
+            OIDC_ID_TOKEN_SESSION_KEY,
+        )
+        for key in keys_to_delete:
+            if key in request.session:
+                del request.session[key]
+
+    def get_error_message_parameters(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        """Return the message code and the error description for a failed login."""
+        errors = self.get_error_codes()
+        if (
+            error == "access_denied"
+            and error_description == "The user cancelled"
+            and "access_denied" in errors
+        ):
+            return errors["access_denied"]
+        return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def get_error_codes(self) -> OIDCErrors:
+        raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
 
 @register("digid_oidc")
 class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = (AuthAttribute.bsn,)
-    session_key = "digid_oidc:bsn"
-    config_class = OFDigiDConfig
-    init_view = staticmethod(digid_init)
+    oidc_plugin_identifier = OIDC_DIGID_IDENTIFIER
 
     def strict_mode(self, request: HttpRequest) -> bool:
         return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
@@ -91,7 +201,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     ) -> tuple[str, str]:
         match error, error_description:
             case ("access_denied", "The user cancelled"):
-                return (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)
+                return (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
@@ -106,31 +216,15 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
             "loa": str(normalized_claims.get("loa_claim", "")),
         }
 
-
-class EHClaims(TypedDict):
-    """
-    Processed EH claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.EHerkenningConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    identifier_type_claim: NotRequired[str]
-    legal_subject_claim: str
-    acting_subject_claim: NotRequired[str]
-    branch_number_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
+    def get_error_codes(self) -> OIDCErrors:
+        return {"access_denied": (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)}
 
 
 @register("eherkenning_oidc")
 class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = (AuthAttribute.kvk,)
-    session_key = "eherkenning_oidc:kvk"
-    config_class = OFEHerkenningConfig
-    init_view = staticmethod(eherkenning_init)
+    oidc_plugin_identifier = OIDC_EH_IDENTIFIER
 
     def get_label(self) -> str:
         return "eHerkenning"
@@ -149,7 +243,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
                 eh_message_parameter = EH_MESSAGE_PARAMETER % {
                     "plugin_id": self.identifier.split("_")[0]
                 }
-                return (eh_message_parameter, LOGIN_CANCELLED)
+                return (eh_message_parameter, EH_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
@@ -185,23 +279,11 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
             form_auth["legal_subject_service_restriction"] = service_restriction
         return form_auth
 
-
-class EIDASClaims(TypedDict):
-    """
-    Processed eIDAS claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.OFEIDASConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    legal_subject_identifier_claim: str
-    legal_subject_identifier_type_claim: str
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-    legal_subject_first_name_claim: str
-    legal_subject_family_name_claim: str
-    legal_subject_date_of_birth_claim: str
+    def get_error_codes(self) -> OIDCErrors:
+        eh_message_parameter = EH_MESSAGE_PARAMETER % {
+            "plugin_id": self.identifier.split("_")[0]
+        }
+        return {"access_denied": (eh_message_parameter, EH_LOGIN_CANCELLED)}
 
 
 @register(EIDAS_PLUGIN_ID)
@@ -212,9 +294,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
         AuthAttribute.national_id,
         AuthAttribute.pseudo,
     )
-    session_key = "eidas_oidc"
-    config_class = OFEIDASConfig
-    init_view = staticmethod(eidas_init)
+    oidc_plugin_identifier = OIDC_EIDAS_IDENTIFIER
     manage_auth_context = True
     provides_multiple_auth_attributes = True
 
@@ -288,44 +368,18 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
                 eIDAS_message_parameter = EH_MESSAGE_PARAMETER % {
                     "plugin_id": self.identifier.split("_")[0]
                 }
-                return (eIDAS_message_parameter, LOGIN_CANCELLED)
+                return (eIDAS_message_parameter, EH_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
-
-
-class EIDASCompanyClaims(TypedDict):
-    """
-    Processed eIDAS claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.EIDASCompanyOIDCAuthentication.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    # As the Signicat simulator only returns natural person information, we don't exactly
-    # know how this is returned.
-    legal_subject_identifier_claim: str
-    acting_subject_identifier_claim: str
-    acting_subject_identifier_type_claim: str
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-    legal_subject_name_claim: str
-    acting_subject_first_name_claim: str
-    acting_subject_family_name_claim: str
-    acting_subject_date_of_birth_claim: str
-
-    mandate_service_id_claim: str
 
 
 @register(EIDAS_COMPANY_PLUGIN_ID)
 class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, OptionsT]):
     verbose_name = _("eIDAS for companies via OpenID Connect")
     provides_auth = (AuthAttribute.pseudo,)
-    session_key = "eidas_company_oidc"
-    config_class = OFEIDASCompanyConfig
-    init_view = staticmethod(eidas_company_init)
     manage_auth_context = True
+    oidc_plugin_identifier = OIDC_EIDAS_COMPANY_IDENTIFIER
 
     def get_label(self) -> str:
         return "eIDAS for companies"
@@ -419,27 +473,10 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
                 eIDAS_message_parameter = EH_MESSAGE_PARAMETER % {
                     "plugin_id": self.identifier.split("_")[0]
                 }
-                return (eIDAS_message_parameter, LOGIN_CANCELLED)
+                return (eIDAS_message_parameter, EH_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
-
-
-class DigiDmachtigenClaims(TypedDict):
-    """
-    Processed DigiD Machtigen claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.DigiDMachtigenConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    representee_bsn_claim: str
-    authorizee_bsn_claim: str
-    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
-    mandate_service_id_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
 
 
 @register("digid_machtigen_oidc")
@@ -448,9 +485,7 @@ class DigiDMachtigenOIDCAuthentication(
 ):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = (AuthAttribute.bsn,)
-    session_key = "digid_machtigen_oidc:machtigen"
-    config_class = OFDigiDMachtigenConfig
-    init_view = staticmethod(digid_machtigen_init)
+    oidc_plugin_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
     is_for_gemachtigde = True
 
     def failure_url_error_message(
@@ -458,7 +493,7 @@ class DigiDMachtigenOIDCAuthentication(
     ) -> tuple[str, str]:
         match error, error_description:
             case ("access_denied", "The user cancelled"):
-                return (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)
+                return (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
@@ -491,26 +526,8 @@ class DigiDMachtigenOIDCAuthentication(
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
-
-class EHBewindvoeringClaims(TypedDict):
-    """
-    Processed EH claims structure.
-
-    See :attr:`digid_eherkenning.oidc.models.EHerkenningBewindvoeringConfig.CLAIMS_CONFIGURATION`
-    for the source of this structure.
-    """
-
-    identifier_type_claim: NotRequired[str]
-    legal_subject_claim: str
-    acting_subject_claim: str
-    branch_number_claim: NotRequired[str]
-    # *could* be a number if no value mapping is specified and the source claims return
-    # numeric values...
-    loa_claim: NotRequired[str | int | float]
-    representee_claim: str
-    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
-    mandate_service_id_claim: NotRequired[str]
-    mandate_service_uuid_claim: NotRequired[str]
+    def get_error_codes(self) -> OIDCErrors:
+        return {"access_denied": (DIGID_MESSAGE_PARAMETER, DIGID_LOGIN_CANCELLED)}
 
 
 _EH_IDENTIFIER_TYPE_MAP = {
@@ -527,9 +544,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
     # told)
     provides_auth = (AuthAttribute.bsn,)
-    session_key = "eherkenning_bewindvoering_oidc:machtigen"
-    config_class = OFEHerkenningBewindvoeringConfig
-    init_view = staticmethod(eherkenning_bewindvoering_init)
+    oidc_plugin_identifier = OIDC_EH_BEWINDVOERING_IDENTIFIER
     is_for_gemachtigde = True
 
     def failure_url_error_message(
@@ -540,7 +555,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
                 eh_message_parameter = EH_MESSAGE_PARAMETER % {
                     "plugin_id": self.identifier.split("_")[0]
                 }
-                return (eh_message_parameter, LOGIN_CANCELLED)
+                return (eh_message_parameter, EH_LOGIN_CANCELLED)
 
             case _:
                 return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
@@ -602,3 +617,9 @@ class EHerkenningBewindvoeringOIDCAuthentication(
 
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
+
+    def get_error_codes(self) -> OIDCErrors:
+        eh_message_parameter = EH_MESSAGE_PARAMETER % {
+            "plugin_id": self.identifier.split("_")[0]
+        }
+        return {"access_denied": (eh_message_parameter, EH_LOGIN_CANCELLED)}

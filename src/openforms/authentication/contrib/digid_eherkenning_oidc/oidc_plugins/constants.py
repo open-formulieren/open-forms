@@ -1,0 +1,6 @@
+OIDC_DIGID_IDENTIFIER = "oidc-digid"
+OIDC_DIGID_MACHTIGEN_IDENTIFIER = "oidc-digid-machtigen"
+OIDC_EH_IDENTIFIER = "oidc-eherkenning"
+OIDC_EH_BEWINDVOERING_IDENTIFIER = "oidc-eherkenning-bewindvoering"
+OIDC_EIDAS_IDENTIFIER = "oidc-eidas"
+OIDC_EIDAS_COMPANY_IDENTIFIER = "oidc-eidas-company"

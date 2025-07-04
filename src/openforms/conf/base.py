@@ -1073,7 +1073,6 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
 # DeprecationWarning
-# XXX: remove in Open Forms 3.0
 _USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=False)
 OIDC_AUTHENTICATION_CALLBACK_URL = (
     "legacy_oidc:oidc_authentication_callback"

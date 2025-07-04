@@ -177,3 +177,7 @@ class EIDASCompanyContext(TypedDict):
     ]
     authorizee: EIDASCompanyAuthorizee
     mandate: EIDASMandate
+
+
+class OIDCErrors(TypedDict):
+    access_denied: NotRequired[tuple[str, str]]

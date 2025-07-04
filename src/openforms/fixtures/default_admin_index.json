@@ -187,20 +187,12 @@
                 "eherkenningconfiguration"
             ],
             [
-                "digid_eherkenning_oidc",
-                "ofdigidconfig"
+                "mozilla_django_oidc_db",
+                "oidcprovider"
             ],
             [
-                "digid_eherkenning_oidc",
-                "ofdigidmachtigenconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningbewindvoeringconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningconfig"
+                "mozilla_django_oidc_db",
+                "oidcclient"
             ],
             [
                 "digid_eherkenning_oidc",
