@@ -96,3 +96,7 @@ class EmployeeContext(TypedDict):
     source: Literal["custom"]
     levelOfAssurance: Literal["unknown"]
     authorizee: EmployeeAuthorizee
+
+
+class OIDCErrors(TypedDict):
+    access_denied: NotRequired[tuple[str, str]]

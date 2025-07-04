@@ -1,0 +1,61 @@
+oidc_db_config_enable: true
+oidc_db_config_admin_auth:
+  providers:
+  - identifier: keycloak-provider
+    oidc_use_nonce: true
+    oidc_nonce_size: 32
+    oidc_state_size: 32
+    endpoint_config:
+      oidc_op_discovery_endpoint: http://localhost:8080/realms/test/
+  items:
+  - identifier: admin-oidc
+    enabled: true
+    oidc_rp_client_id: testid
+    oidc_rp_client_secret: 7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I
+    oidc_rp_scopes_list:
+    - openid
+    - email
+    - profile
+    oidc_rp_sign_algo: RS256
+    oidc_provider_identifier: keycloak-provider
+    userinfo_claims_source: id_token
+    options:
+      user_settings:
+        claim_mappings:
+          username:
+            - sub
+          first_name:
+            - given_name
+          email:
+            - email
+        username_case_sensitive: true
+      groups_settings:
+        claim_mapping:
+          - groups
+        sync: true
+        sync_pattern: '*'
+        default_groups: []
+        make_users_staff: true
+        superuser_group_names:
+          - Registreerders
+  - identifier: oidc-digid
+    enabled: true
+    oidc_rp_client_id: testid
+    oidc_rp_client_secret: 7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I
+    oidc_rp_scopes_list:
+    - openid
+    - email
+    - profile
+    - bsn
+    oidc_rp_sign_algo: RS256
+    oidc_provider_identifier: keycloak-provider
+    userinfo_claims_source: id_token
+    options:
+      loa_settings:
+        claim_path: ["loa"]
+        default: "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract"
+        value_mapping: []
+      identity_settings: 
+        bsn_claim_path: ["bsn"]
+
+      
