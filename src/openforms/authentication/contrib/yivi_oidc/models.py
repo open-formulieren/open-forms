@@ -164,6 +164,7 @@ class AttributeGroup(models.Model):
             "A longer human-readable description for the group of attributes, used in "
             "the form configuration."
         ),
+        blank=True,
     )
     attributes = ArrayField(
         base_field=models.CharField(

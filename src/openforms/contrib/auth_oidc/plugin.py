@@ -17,13 +17,12 @@ from openforms.authentication.base import BasePlugin, CosignSlice
 from openforms.authentication.constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
-    AuthAttribute,
 )
 from openforms.authentication.exceptions import InvalidCoSignData
 from openforms.authentication.registry import register
 from openforms.authentication.typing import FormAuth
 from openforms.forms.models import Form
-from openforms.typing import JSONObject, StrOrPromise
+from openforms.typing import JSONObject
 from openforms.utils.urls import reverse_plus
 
 from .constants import OIDC_ID_TOKEN_SESSION_KEY
@@ -53,8 +52,6 @@ class AuthInit(Protocol):
 # can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
 # assignable... :(
 class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
-    verbose_name: StrOrPromise = ""
-    provides_auth: AuthAttribute
     provides_multiple_auth_attributes: bool = False
     session_key: str = ""
     config_class: ClassVar[type[BaseConfig]]

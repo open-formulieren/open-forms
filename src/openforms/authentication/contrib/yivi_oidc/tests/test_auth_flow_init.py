@@ -23,7 +23,7 @@ class YiviInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    def _assert_condiscon_scope(self, scope: str, expected: list[list[list[str]]]):
+    def assertCondisconScope(self, scope: str, expected: list[list[list[str]]]):
         # Fetch the signicat param part of the scope
         match = re.search(r"(signicat:param:[^\s]+)", scope)
         signicat_scope = match.group(1) if match else None
@@ -62,9 +62,15 @@ class YiviInitTests(IntegrationTestsBase):
             redirect_target.path,
             "/realms/test/protocol/openid-connect/auth",
         )
-        self.assertEqual(
+        scope_list = query_params["scope"].split(" ")
+        self.assertIn("openid", scope_list)
+        self.assertCondisconScope(
             query_params["scope"],
-            ("openid signicat:param:condiscon_base64:W1tbImF0dHJpYnV0ZS5wc2V1ZG8iXV1d"),
+            [
+                [
+                    ["attribute.pseudo"],
+                ],
+            ],
         )
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
@@ -90,16 +96,9 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        self.assertEqual(
-            query_params["scope"],
-            (
-                "openid "
-                "signicat:param:condiscon_base64:"
-                "W1tbImF0dHJpYnV0ZS5ic24iXV0sIFtbImZpcnN0X25hbWUiLCAibGFzdF9u"
-                "YW1lIl0sIFtdXSwgW1siZW1haWxfYWRkcmVzcyJdLCBbXV1d"
-            ),
-        )
-        self._assert_condiscon_scope(
+        scope_list = query_params["scope"].split(" ")
+        self.assertIn("openid", scope_list)
+        self.assertCondisconScope(
             query_params["scope"],
             [
                 # The `bsn_claim` from the Yivi global config. This is required.
@@ -136,15 +135,9 @@ class YiviInitTests(IntegrationTestsBase):
         self.assertEqual(yivi_global_config.bsn_claim, ["attribute.bsn"])
         self.assertEqual(yivi_global_config.bsn_loa_claim, ["attribute.loa:bsn"])
 
-        self.assertEqual(
-            query_params["scope"],
-            (
-                "openid "
-                "signicat:param:condiscon_base64:"
-                "W1tbImF0dHJpYnV0ZS5ic24iLCAiYXR0cmlidXRlLmxvYTpic24iXV1d"
-            ),
-        )
-        self._assert_condiscon_scope(
+        scope_list = query_params["scope"].split(" ")
+        self.assertIn("openid", scope_list)
+        self.assertCondisconScope(
             query_params["scope"],
             [
                 # The ``bsn_claim`` and ``bsn_loa_claim`` from the Yivi global config.
@@ -180,16 +173,9 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        self.assertEqual(
-            query_params["scope"],
-            (
-                "openid "
-                "signicat:param:condiscon_base64:"
-                "W1tbImF0dHJpYnV0ZS5ic24iXSwgWyJhdHRyaWJ1dGUua3ZrIl0s"
-                "IFsiYXR0cmlidXRlLnBzZXVkbyJdXV0="
-            ),
-        )
-        self._assert_condiscon_scope(
+        scope_list = query_params["scope"].split(" ")
+        self.assertIn("openid", scope_list)
+        self.assertCondisconScope(
             query_params["scope"],
             [
                 # The `bsn_claim`, `kvk_claim` and `pseudo_claim` from the Yivi global
@@ -220,11 +206,9 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        self.assertEqual(
-            query_params["scope"],
-            ("openid signicat:param:condiscon_base64:W1tbImF0dHJpYnV0ZS5wc2V1ZG8iXV1d"),
-        )
-        self._assert_condiscon_scope(
+        scope_list = query_params["scope"].split(" ")
+        self.assertIn("openid", scope_list)
+        self.assertCondisconScope(
             query_params["scope"],
             [
                 [

@@ -38,6 +38,7 @@ class Migration(migrations.Migration):
                 (
                     "description",
                     models.CharField(
+                        blank=True,
                         help_text="A longer human-readable description for the group of attributes, used in the form configuration.",
                         max_length=200,
                         verbose_name="group description",
