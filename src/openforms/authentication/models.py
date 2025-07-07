@@ -1,3 +1,4 @@
+import json
 from collections.abc import Collection
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
@@ -7,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
+from openforms.authentication.registry import register as auth_registry
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
 
@@ -22,6 +24,7 @@ from .types import (
     EHerkenningContext,
     EHerkenningMachtigenContext,
     EmployeeContext,
+    YiviContext,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -81,12 +84,17 @@ class BaseAuthInfo(models.Model):
 
         for field_name in self.identifying_attributes:
             field = self._meta.get_field(field_name)
-            assert isinstance(field, models.CharField)
+            assert isinstance(field, models.CharField | models.JSONField)
             _value = getattr(self, field_name)
             # empty fields that are not required can be left empty - we don't need to
             # hash those.
             if not _value and field.blank:
                 continue
+
+            if isinstance(field, models.JSONField):
+                # Make sure json values are cast to string
+                _value = json.dumps(_value)
+
             hashed_value = get_salted_hash(_value)
             setattr(self, field_name, hashed_value)
 
@@ -221,6 +229,7 @@ class AuthInfo(BaseAuthInfo):
     identifying_attributes = BaseAuthInfo.identifying_attributes + (
         "acting_subject_identifier_value",
         "legal_subject_identifier_value",
+        "additional_claims",
     )
 
     class Meta:
@@ -265,9 +274,17 @@ class AuthInfo(BaseAuthInfo):
         | EHerkenningContext
         | EHerkenningMachtigenContext
         | EmployeeContext
+        | YiviContext
     ):
         if self.attribute_hashed:
             logger.debug("detected_hashed_authentication_attributes", auth_info=self.pk)
+
+        try:
+            plugin = auth_registry[self.plugin]
+            if plugin.manage_auth_context:
+                return plugin.auth_info_to_auth_context(auth_info=self)
+        except KeyError:
+            pass
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate

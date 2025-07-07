@@ -7,6 +7,7 @@ from ..constants import (
     LegalSubjectIdentifierType,
 )
 from ..contrib.digid.constants import DIGID_DEFAULT_LOA
+from ..contrib.yivi_oidc.models import AttributeGroup
 from ..models import AuthInfo, RegistratorInfo
 
 
@@ -78,6 +79,12 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
                 ],
             },
         )
+        is_yivi = factory.Trait(
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=DigiDAssuranceLevels.substantial,
+        )
 
 
 class RegistratorInfoFactory(factory.django.DjangoModelFactory):
@@ -90,3 +97,10 @@ class RegistratorInfoFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = RegistratorInfo
+
+
+class AttributeGroupFactory(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: f"attribute-group-{n}")
+
+    class Meta:
+        model = AttributeGroup

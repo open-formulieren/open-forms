@@ -369,6 +369,11 @@
     "description": "literals.previousText form label",
     "originalDefault": "Previous text"
   },
+  "7AQfXl": {
+    "defaultMessage": "Additional attributes groups",
+    "description": "Additional attributes groups label",
+    "originalDefault": "Additional attributes groups"
+  },
   "7F64bK": {
     "defaultMessage": "Formulieren die als 'verwijderd' gemarkeerd zijn worden op termijn uit de database verwijderd.",
     "description": "Form deleted field help text",
@@ -915,6 +920,11 @@
     "description": "Label of form field 'Send the confirmation email'",
     "originalDefault": "Send confirmation email"
   },
+  "G+nriX": {
+    "defaultMessage": "Additional scopes are used to request additional information from the user, which will become available as variables after login.",
+    "description": "Additional scopes help text",
+    "originalDefault": "Additional scopes are used to request additional information from the user, which will become available as variables after login."
+  },
   "G1JHUM": {
     "defaultMessage": "Annuleren",
     "description": "Cancel link help",
@@ -1235,6 +1245,11 @@
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
   },
+  "KjG6+9": {
+    "defaultMessage": "Yivi plugin options for bsn",
+    "description": "Yivi plugin options for bsn fieldset title",
+    "originalDefault": "Yivi plugin options for bsn"
+  },
   "Kl9yvd": {
     "defaultMessage": "Pad",
     "description": "JSON registration options 'path' label",
@@ -1334,6 +1349,11 @@
     "defaultMessage": "haal de waarde op uit een externe registratie",
     "description": "action type \"fetch-from-service\" label",
     "originalDefault": "fetch the value for a variable from a service"
+  },
+  "M/1wxK": {
+    "defaultMessage": "Authentication options",
+    "description": "Authentication options label",
+    "originalDefault": "Authentication options"
   },
   "M0kOz9": {
     "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
@@ -1555,6 +1575,11 @@
     "description": "Manage process vars alias column title",
     "isTranslated": true,
     "originalDefault": "Alias"
+  },
+  "Pvaekr": {
+    "defaultMessage": "Plugin configuration: Yivi",
+    "description": "Yivi authentication options modal title",
+    "originalDefault": "Plugin configuration: Yivi"
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
@@ -2516,6 +2541,11 @@
     "description": "Label for children option",
     "originalDefault": "Children"
   },
+  "hx0iTv": {
+    "defaultMessage": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier.",
+    "description": "Authentication options help text",
+    "originalDefault": "Specify which authentication options are available for users. If left empty, a pseudonym will be used as identifier."
+  },
   "hxssl8": {
     "defaultMessage": "Objecten-API-integratie",
     "description": "ZGW APIs registration: Objects API fieldset title",
@@ -3409,6 +3439,11 @@
     "defaultMessage": "Zaaktypeomschrijving",
     "description": "StUF-ZDS registration options 'zdsZaaktypeOmschrijving' label",
     "originalDefault": "Zds zaaktype omschrijving"
+  },
+  "zItxZ9": {
+    "defaultMessage": "Yivi plugin options for kvk",
+    "description": "Yivi plugin options for kvk fieldset title",
+    "originalDefault": "Yivi plugin options for kvk"
   },
   "zQE4f2": {
     "defaultMessage": "n.v.t.",

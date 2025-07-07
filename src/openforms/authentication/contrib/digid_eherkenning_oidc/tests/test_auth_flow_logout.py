@@ -36,10 +36,12 @@ from rest_framework.test import APIRequestFactory
 
 from openforms.authentication.registry import register
 from openforms.authentication.tests.utils import URLsHelper
+from openforms.contrib.auth_oidc.plugin import (
+    OIDC_ID_TOKEN_SESSION_KEY,
+)
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import keycloak_login
 
-from ..plugin import OIDC_ID_TOKEN_SESSION_KEY
 from .base import (
     IntegrationTestsBase,
     mock_digid_config,

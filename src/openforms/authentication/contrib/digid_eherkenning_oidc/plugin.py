@@ -1,34 +1,31 @@
 from __future__ import annotations
 
-from typing import ClassVar, NotRequired, Protocol, TypedDict
+from typing import NotRequired, TypedDict
 
-from django.http import (
-    HttpRequest,
-    HttpResponseBadRequest,
-    HttpResponseBase,
-    HttpResponseRedirect,
-)
+from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
-from mozilla_django_oidc_db.utils import do_op_logout
-from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
 from openforms.authentication.constants import LegalSubjectIdentifierType
+from openforms.authentication.contrib.digid.views import (
+    DIGID_MESSAGE_PARAMETER,
+    LOGIN_CANCELLED,
+)
+from openforms.authentication.contrib.eherkenning.views import (
+    MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
+)
 from openforms.authentication.typing import FormAuth
+from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
 )
-from openforms.forms.models import Form
-from openforms.typing import StrOrPromise
-from openforms.utils.urls import reverse_plus
 
-from ...base import BasePlugin, CosignSlice, LoginLogo
-from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
-from ...exceptions import InvalidCoSignData
+from ...base import LoginLogo
+from ...constants import AuthAttribute
 from ...registry import register
+from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .models import (
     OFDigiDConfig,
     OFDigiDMachtigenConfig,
@@ -42,114 +39,9 @@ from .views import (
     eherkenning_init,
 )
 
-OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
-
-
-def get_config_to_plugin() -> dict[type[BaseConfig], OIDCAuthentication]:
-    """
-    Get the mapping of config class to plugin identifier from the registry.
-    """
-    return {
-        plugin.config_class: plugin
-        for plugin in register
-        if isinstance(plugin, OIDCAuthentication)
-    }
-
-
-class AuthInit(Protocol):
-    def __call__(
-        self, request: HttpRequest, return_url: str, *args, **kwargs
-    ) -> HttpResponseBase: ...
-
 
 class OptionsT(TypedDict):
     pass
-
-
-# can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
-# assignable... :(
-class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
-    verbose_name: StrOrPromise = ""
-    provides_multiple_auth_attributes: bool = False
-    session_key: str = ""
-    config_class: ClassVar[type[BaseConfig]]
-    init_view: ClassVar[AuthInit]
-
-    def __init_subclass__(cls) -> None:
-        super().__init_subclass__()
-
-        assert cls.provides_multiple_auth_attributes or len(cls.provides_auth) == 1, (
-            f"Did you accidentally enable multiple auth attributes on {cls!r}?"
-        )
-
-    def start_login(
-        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
-    ):
-        return_url_query = {"next": form_url}
-        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
-            return_url_query[CO_SIGN_PARAMETER] = co_sign_param
-
-        return_url = reverse_plus(
-            "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": self.identifier},
-            request=request,
-            query=return_url_query,
-        )
-
-        # "evaluate" the view, this achieves two things:
-        #
-        # * we save a browser redirect cycle since we get the redirect to the identity
-        #   provider immediately
-        # * we control the config to apply 100% server side rather than passing it as
-        #   a query parameter, which prevents a malicious user from messing with the
-        #   redirect URL
-        #
-        # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
-        # start_view and gets handled there.
-        response = self.init_view(request, return_url=return_url)
-        assert isinstance(response, HttpResponseRedirect)
-        return response
-
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
-        if not (claim := request.session.get(self.session_key)):
-            raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
-        return {
-            "identifier": claim,
-            "fields": {},
-        }
-
-    def transform_claims(self, normalized_claims: T) -> FormAuth:
-        raise NotImplementedError("Subclasses must implement 'transform_claims'")
-
-    def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
-        """
-        Redirect to form URL.
-        """
-        form_url = request.GET.get("next")
-        if not form_url:
-            return HttpResponseBadRequest("missing 'next' parameter")
-
-        normalized_claims: T | None = request.session.get(self.session_key)
-        if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
-            form_auth = self.transform_claims(normalized_claims)
-            request.session[FORM_AUTH_SESSION_KEY] = form_auth
-
-        return HttpResponseRedirect(form_url)
-
-    def logout(self, request: HttpRequest):
-        if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
-            config = self.config_class.get_solo()
-            do_op_logout(config, id_token)
-
-        keys_to_delete = (
-            "oidc_login_next",  # from upstream library
-            self.session_key,
-            _RETURN_URL_SESSION_KEY,
-            OIDC_ID_TOKEN_SESSION_KEY,
-        )
-        for key in keys_to_delete:
-            if key in request.session:
-                del request.session[key]
 
 
 class DigiDClaims(TypedDict):
@@ -174,13 +66,28 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     config_class = OFDigiDConfig
     init_view = staticmethod(digid_init)
 
+    def strict_mode(self, request: HttpRequest) -> bool:
+        return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
+
     def get_label(self) -> str:
         return "DigiD"
 
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
-    def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
+    def failure_url_error_message(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        match error, error_description:
+            case ("access_denied", "The user cancelled"):
+                return (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)
+
+            case _:
+                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: DigiDClaims
+    ) -> FormAuth:
         return {
             "plugin": self.identifier,
             "attribute": self.provides_auth[0],
@@ -220,7 +127,25 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
-    def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
+    def strict_mode(self, request: HttpRequest) -> bool:
+        return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
+
+    def failure_url_error_message(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        match error, error_description:
+            case ("access_denied", "The user cancelled"):
+                eh_message_parameter = EH_MESSAGE_PARAMETER % {
+                    "plugin_id": self.identifier.split("_")[0]
+                }
+                return (eh_message_parameter, LOGIN_CANCELLED)
+
+            case _:
+                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EHClaims
+    ) -> FormAuth:
         acting_subject_identifier_value = normalized_claims.get(
             "acting_subject_claim", ""
         )
@@ -278,7 +203,19 @@ class DigiDMachtigenOIDCAuthentication(
     init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
-    def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
+    def failure_url_error_message(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        match error, error_description:
+            case ("access_denied", "The user cancelled"):
+                return (DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED)
+
+            case _:
+                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: DigiDmachtigenClaims
+    ) -> FormAuth:
         authorizee = normalized_claims["authorizee_bsn_claim"]
         mandate_context = {}
         if "mandate_service_id_claim" in normalized_claims:
@@ -294,6 +231,9 @@ class DigiDMachtigenOIDCAuthentication(
             "legal_subject_identifier_value": authorizee,
             "mandate_context": mandate_context,
         }
+
+    def strict_mode(self, request: HttpRequest) -> bool:
+        return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
 
     def get_label(self) -> str:
         return "DigiD Machtigen"
@@ -342,7 +282,22 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
-    def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:
+    def failure_url_error_message(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        match error, error_description:
+            case ("access_denied", "The user cancelled"):
+                eh_message_parameter = EH_MESSAGE_PARAMETER % {
+                    "plugin_id": self.identifier.split("_")[0]
+                }
+                return (eh_message_parameter, LOGIN_CANCELLED)
+
+            case _:
+                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EHBewindvoeringClaims
+    ) -> FormAuth:
         authorizee = normalized_claims["legal_subject_claim"]
         # Assume KVK if claim is not present...
         name_qualifier = normalized_claims.get(
@@ -388,6 +343,9 @@ class EHerkenningBewindvoeringOIDCAuthentication(
         if service_restriction := normalized_claims.get("branch_number_claim", ""):
             form_auth["legal_subject_service_restriction"] = service_restriction
         return form_auth
+
+    def strict_mode(self, request: HttpRequest) -> bool:
+        return flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request)
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"
