@@ -72,29 +72,25 @@ form authentication as well.
 Yivi (OIDC)
 -----------
 
-Yivi allows authentication based on attributes (which *could* be a bsn or kvk-number).
-This means that we cannot know beforehand which specific claims will be received after
-authentication.
+Yivi authenticates based on attributes (which *could* be a bsn or kvk-number) disclosed
+by the end users. As a consequence, we cannot know beforehand which specific claims will
+be received after authentication.
 
 Configuration is done in the admin via **Configuratie** > **Yivi (OIDC)**.
 
-.. automodule:: openforms.authentication.contrib.yivi_oidc
-   :members:
+.. note:: End-users must have the Yivi app installed on their phone.
 
-.. note:: For end-users to authenticate with Yivi they need access to a mobile phone with
-   the Yivi app installed.
-
-.. note:: Technical note: Yivi usage is currently limited to Signicat.
+.. warning:: Due to technical reasons, Yivi support is currently only available through
+   Signicat.
 
 Form specific configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When configuring the Yivi plugin, in the form builder, you can specify which
 authentication options are available during login (bsn, kvk and/or pseudo) and which
-additional attributes should be requested from the user.
-
-.. autoclass:: openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer
-   :members:
+additional attributes should be requested from the user. See
+:class:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer` for
+details.
 
 Requesting attributes using the condiscon system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -104,21 +100,20 @@ authentication attributes to request from users. With condiscon you define a mul
 conditional data structure, which provides users more control over which attributes they
 do and don't provide.
 
-Which attributes to use is derived from the
-:mod:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer`
-:attr:`authentication_options` and :attr:`additional_attributes_groups`. In the
-:func:`start_login()` we pass the plugin options to the Yivi
-:class:`openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView`.
-From here, we used in the :func:`get_extra_params()` function to add the attributes to
-the authentication request.
+:attr:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer.authentication_options`
+and :attr:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer.additional_attributes_groups`
+determine which attributes to include in the condiscon parameter.
+
+:meth:`openforms.authentication.contrib.yivi_oidc.plugin.YiviOIDCAuthentication.start_login`
+passes the plugin options to
+:class:`openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView`,
+after which :meth:`openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView.get_extra_params`
+adds the attributes to the authentication request.
 
 As the condiscon scope is form-specific, we need to modify the authentication request
 scopes dynamically. The scope is shaped following the
 `Signicat parameters <https://developer.signicat.com/broker/signicat-identity-broker/authentication-providers/yivi.html#example-of-adding-condiscon-parameter-in-your-oidc-request>`_
 scope standard.
-
-.. autoclass:: openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView
-   :members:
 
 .. note:: Important notes about the Yivi attributes and condiscon!
 
@@ -178,3 +173,17 @@ For example, the following scope will request the bsn and fullname of a user:
     scope: "openid irma-demo.gemeente.personalData.bsn irma-demo.gemeente.personalData.fullname"
 
 Whether other identity providers work similarly is yet to determine.
+
+Reference
+^^^^^^^^^
+
+.. automodule:: openforms.authentication.contrib.yivi_oidc
+   :members:
+
+.. autoclass:: openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer
+
+.. autoclass:: openforms.authentication.contrib.yivi_oidc.plugin.YiviOIDCAuthentication
+   :members:
+
+.. autoclass:: openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView
+   :members:
