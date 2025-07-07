@@ -11,6 +11,7 @@ from .co_sign import (
     PrefillConfig,
     get_default_plugin_for_auth_attribute,
 )
+from .fields import PrefillPluginChoiceField
 
 
 @register("coSign")
@@ -24,7 +25,9 @@ class CoSignValidator(BaseValidator):
                 code="invalid",
             )
 
+        assert isinstance(auth_plugin_id, str)
         auth_plugin = auth_register[auth_plugin_id]
+
         default_plugin = get_default_plugin_for_auth_attribute(
             auth_plugin.provides_auth
         )
@@ -32,14 +35,14 @@ class CoSignValidator(BaseValidator):
             config_field_name = AUTH_ATTRIBUTE_TO_CONFIG_FIELD[
                 auth_plugin.provides_auth
             ]
+            field = PrefillConfig._meta.get_field(config_field_name)
+            assert isinstance(field, PrefillPluginChoiceField)
             raise ValidationError(
                 _(
                     "The co-sign component requires the '{field_label}' "
                     "({config_verbose_name}) to be configured."
                 ).format(
-                    field_label=PrefillConfig._meta.get_field(
-                        config_field_name
-                    ).verbose_name,
+                    field_label=field.verbose_name,
                     config_verbose_name=PrefillConfig._meta.verbose_name,
                 ),
                 code="invalid",

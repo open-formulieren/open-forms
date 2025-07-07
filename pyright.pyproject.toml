@@ -42,6 +42,7 @@ include = [
     "src/openforms/logging/models.py",
     # Prefill
     "src/openforms/prefill/contrib/family_members",
+    "src/openforms/prefill/validators.py",
     # Registrations
     "src/openforms/registrations/tasks.py",
     "src/openforms/registrations/contrib/demo/",
