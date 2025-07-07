@@ -1,5 +1,6 @@
 .. _developers_backend_modules_authentication:
 
+==============
 Authentication
 ==============
 
@@ -10,9 +11,8 @@ identifiable.
 .. contents:: :local:
    :depth: 3
 
-----------
 Python API
-----------
+==========
 
 The public API serves as an abstraction over the various engines.
 
@@ -21,9 +21,15 @@ The public API serves as an abstraction over the various engines.
 .. automodule:: openforms.authentication.service
    :members:
 
--------------------------
+
+Plugin developer reference
+--------------------------
+
+See the :ref:`Python API <developers_authentication_plugins_python_api>`.
+
+
 Available implementations
--------------------------
+=========================
 
 The following plugins are available in Open Forms core.
 
@@ -120,7 +126,7 @@ individual scopes for the claims you want to be fulfilled.
 (This way of working *might* result into losing the major strength of Yivi; that the user
 can choose what data they provide.)
 
-generic OIDC authentication with Signicat
+Generic OIDC authentication with Signicat
 """""""""""""""""""""""""""""""""""""""""
 
 One piece of the puzzle: generic OIDC authentication via Signicat.
@@ -136,15 +142,3 @@ For example, the following scope will request the bsn and fullname of a user:
     scope: "openid irma-demo.gemeente.personalData.bsn irma-demo.gemeente.personalData.fullname"
 
 Whether other identity providers work similarly is yet to determine.
-
---------------------------
-Plugin developer reference
---------------------------
-
-Python API
-----------
-
-This section serves as a reference for authentication plugins.
-
-.. automodule:: openforms.authentication.base
-   :members:

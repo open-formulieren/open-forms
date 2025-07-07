@@ -59,6 +59,7 @@ Modules
     :maxdepth: 1
 
     modules/index
+    modules/authentication
     modules/dmn
 
 General purpose functionality
