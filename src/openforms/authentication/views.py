@@ -386,11 +386,13 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                 stacklevel=2,
             )
             logger.debug("handle_co_sign")
+            auth_attributes = plugin.provides_auth
+            assert len(auth_attributes) == 1
             co_sign_data: CosignData = {
                 **plugin.handle_co_sign(self.request, form),
                 "version": "v1",
                 "plugin": plugin.identifier,
-                "co_sign_auth_attribute": plugin.provides_auth,
+                "co_sign_auth_attribute": auth_attributes[0],
             }
             serializer = CoSignDataSerializer(data=co_sign_data)
             serializer.is_valid(raise_exception=True)

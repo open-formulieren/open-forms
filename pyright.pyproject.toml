@@ -40,8 +40,13 @@ include = [
     # Logging
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
+    # Authentication
+    "src/openforms/authentication/contrib/digid/",
+    "src/openforms/authentication/contrib/family_members",
     # Prefill
-    "src/openforms/prefill/contrib/family_members",
+    "src/openforms/prefill/contrib/outage/",
+    "src/openforms/prefill/models.py",
+    "src/openforms/prefill/signals.py",
     "src/openforms/prefill/validators.py",
     # Registrations
     "src/openforms/registrations/tasks.py",
@@ -67,6 +72,8 @@ include = [
 ]
 exclude = [
     "**/__pycache__",
+    "src/openforms/authentication/contrib/digid/tests/test_auth_procedure.py",
+    "src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",

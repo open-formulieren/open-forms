@@ -20,7 +20,7 @@ class PrefillConfig(SingletonModel):
         help_text=_("Default prefill plugin to use for company data"),
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("global prefill configuration")
 
     def __str__(self):

@@ -31,18 +31,18 @@ class SingleLoAOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
 
 
 class SingleAuthPlugin(BasePlugin):
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     verbose_name = "SingleAuthPlugin"
 
 
 class AdditionalConfigAuthPlugin(BasePlugin):
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     verbose_name = "AdditionalConfigAuthPlugin"
     configuration_options = SingleLoAOptionsSerializer
 
 
 class DemoAuthPlugin(BasePlugin):
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     verbose_name = "DemoAuthPlugin"
     is_demo_plugin = True
 
@@ -111,13 +111,13 @@ class ResponseTests(APITestCase):
             {
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": None,
             },
             {
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": {
                     "type": "object",
                     "properties": {
@@ -149,19 +149,19 @@ class ResponseTests(APITestCase):
             {
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": None,
             },
             {
                 "id": "plugin2",
                 "label": "DemoAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": None,
             },
             {
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": {
                     "type": "object",
                     "properties": {
@@ -198,7 +198,7 @@ class ResponseTests(APITestCase):
             {
                 "id": "plugin3",
                 "label": "AdditionalConfigAuthPlugin",
-                "providesAuth": "bsn",
+                "providesAuth": ["bsn"],
                 "schema": {
                     "type": "object",
                     "properties": {

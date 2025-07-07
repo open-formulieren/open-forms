@@ -42,7 +42,7 @@ DigidOptionsForm.propType = {
   plugin: PropTypes.shape({
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    providesAuth: PropTypes.oneOf(['bsn']).isRequired,
+    providesAuth: PropTypes.oneOf([['bsn']]).isRequired,
     schema: PropTypes.exact({
       type: PropTypes.oneOf(['object']).isRequired,
       properties: PropTypes.shape({

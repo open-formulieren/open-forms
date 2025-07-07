@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import ClassVar, TypedDict
 
 from django.http import HttpRequest, HttpResponse
 
@@ -47,7 +48,7 @@ class Options(TypedDict):
 
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
-    provides_auth: AuthAttribute
+    provides_auth: ClassVar[Sequence[AuthAttribute]]
     return_method = "GET"
     is_for_gemachtigde = False
 

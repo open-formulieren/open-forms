@@ -5,6 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import FormRow from 'components/admin/forms/FormRow';
 
 import {BACKEND_OPTIONS_FORMS} from './authentication/index';
+import TYPES from './types';
 
 const AuthPluginOptions = ({name, authBackend, availableAuthPlugins, onChange}) => {
   const plugin = availableAuthPlugins.find(authPlugin => authPlugin.id === authBackend.backend);
@@ -48,13 +49,7 @@ AuthPluginOptions.propTypes = {
     // Options configuration shape is specific to plugin
     options: PropTypes.object,
   }).isRequired,
-  availableAuthPlugins: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      label: PropTypes.string,
-      providesAuth: PropTypes.string,
-    })
-  ),
+  availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

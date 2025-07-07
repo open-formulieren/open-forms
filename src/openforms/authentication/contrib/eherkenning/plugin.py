@@ -99,9 +99,10 @@ class AuthenticationBasePlugin(BasePlugin):
 
         # set the session auth key only if we're not co-signing
         if identifier and CO_SIGN_PARAMETER not in request.GET:
+            assert len(self.provides_auth) == 1
             request.session[FORM_AUTH_SESSION_KEY] = {
                 "plugin": self.identifier,
-                "attribute": self.provides_auth,
+                "attribute": self.provides_auth[0],
                 "value": identifier,
                 "loa": self.get_session_loa(request.session),
             }
@@ -119,7 +120,7 @@ class AuthenticationBasePlugin(BasePlugin):
 @register("eherkenning")
 class EHerkenningAuthentication(AuthenticationBasePlugin):
     verbose_name = _("eHerkenning")
-    provides_auth = AuthAttribute.kvk
+    provides_auth = (AuthAttribute.kvk,)
     session_key = EHERKENNING_AUTH_SESSION_KEY
 
     def get_session_loa(self, session) -> str:
@@ -139,7 +140,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
 @register("eidas")
 class EIDASAuthentication(AuthenticationBasePlugin):
     verbose_name = _("eIDAS")
-    provides_auth = AuthAttribute.pseudo
+    provides_auth = (AuthAttribute.pseudo,)
     session_key = EIDAS_AUTH_SESSION_KEY
 
     def get_logo(self, request) -> LoginLogo | None:

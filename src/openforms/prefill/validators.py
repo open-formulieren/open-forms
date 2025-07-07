@@ -27,14 +27,16 @@ class CoSignValidator(BaseValidator):
 
         assert isinstance(auth_plugin_id, str)
         auth_plugin = auth_register[auth_plugin_id]
+        if len(auth_plugin.provides_auth) > 1:
+            raise ValidationError(
+                _("You may only select plugins that provide a single auth attribute."),
+                code="invalid",
+            )
 
-        default_plugin = get_default_plugin_for_auth_attribute(
-            auth_plugin.provides_auth
-        )
+        auth_attribute = auth_plugin.provides_auth[0]
+        default_plugin = get_default_plugin_for_auth_attribute(auth_attribute)
         if not default_plugin:
-            config_field_name = AUTH_ATTRIBUTE_TO_CONFIG_FIELD[
-                auth_plugin.provides_auth
-            ]
+            config_field_name = AUTH_ATTRIBUTE_TO_CONFIG_FIELD[auth_attribute]
             field = PrefillConfig._meta.get_field(config_field_name)
             assert isinstance(field, PrefillPluginChoiceField)
             raise ValidationError(

@@ -17,7 +17,7 @@ export default {
     plugin: {
       id: 'digid',
       label: 'DigiD',
-      providesAuth: 'bsn',
+      providesAuth: ['bsn'],
       schema: {
         type: 'object',
         properties: {
