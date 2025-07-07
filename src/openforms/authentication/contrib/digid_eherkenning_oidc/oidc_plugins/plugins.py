@@ -1,6 +1,5 @@
 import warnings
-from abc import abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -9,10 +8,14 @@ from django.http import HttpRequest, HttpResponse
 
 import structlog
 from flags.state import flag_enabled
-from mozilla_django_oidc_db.plugins import OIDCBasePlugin
+from mozilla_django_oidc_db.plugins import (
+    AnonymousUserOIDCPluginProtocol,
+    BaseOIDCPlugin,
+)
 from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.typing import JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
+from typing_extensions import deprecated
 
 from .constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -33,12 +36,18 @@ from .views import anon_user_callback_view
 logger = structlog.stdlib.get_logger(__name__)
 
 
-class BaseDigiDeHerkenningPlugin(OIDCBasePlugin):
-    @abstractmethod
+class OFLegacyOIDCPluginProtocol(Protocol):
+    @deprecated(
+        "These plugin-specific callback URLs are deprecated. "
+        "Instead, use the generic callback URL in urls.py - it"
+        " can handle the different configs."
+    )
     def _get_legacy_callback(self) -> str:
         """Get the django URL name of the callback URL."""
         ...
 
+
+class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
     def get_setting(self, attr: str, *args) -> Any:
         attr_lower = attr.lower()
 
@@ -74,15 +83,6 @@ class BaseDigiDeHerkenningPlugin(OIDCBasePlugin):
             return False
 
         return True
-
-    # TODO find a more elegant way of doing this...
-    def create_user(self, claims: JSONObject) -> AnonymousUser:
-        # This method is not called since we implemented get_or_create_user
-        pass
-
-    def update_user(self, user: AnonymousUser, claims: JSONObject) -> AnonymousUser:
-        # This method is not called since we implemented get_or_create_user
-        pass
 
     def filter_users_by_claims(self, claims: JSONObject):
         # This method is not called since we implemented get_or_create_user
@@ -144,7 +144,7 @@ class BaseDigiDeHerkenningPlugin(OIDCBasePlugin):
 
 
 @register(OIDC_DIGID_IDENTIFIER)
-class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin):
+class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return DIGID_OPTIONS_SCHEMA
 
@@ -159,9 +159,6 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin):
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
-        # TODO: check if this logic is correct:
-        # The claims in "always required" come from the models in OpenForms,
-        # while the other ones come from the digid_eherkenning package
         return {
             "always_required_claims": [
                 {
@@ -175,7 +172,7 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin):
 
 
 @register(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
-class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
+class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return DIGID_MACHTIGEN_OPTIONS_SCHEMA
 
@@ -221,7 +218,7 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin):
 
 
 @register(OIDC_EH_IDENTIFIER)
-class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
+class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return EHERKENNING_OPTIONS_SCHEMA
 
@@ -281,7 +278,9 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin):
 
 
 @register(OIDC_EH_BEWINDVOERING_IDENTIFIER)
-class OIDCeHerkenningBewindvoeringPlugin(BaseDigiDeHerkenningPlugin):
+class OIDCeHerkenningBewindvoeringPlugin(
+    BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol
+):
     def get_schema(self) -> JSONObject:
         return EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA
 
