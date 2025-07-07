@@ -31,6 +31,7 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
         )
         auth_context = auth_info.to_auth_context_data()
 
+        self.assertValidContext(auth_context)
         self.assertEqual(
             auth_context,
             {
@@ -64,13 +65,14 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
         )
         auth_context = auth_info.to_auth_context_data()
 
+        self.assertValidContext(auth_context)
         self.assertEqual(
             auth_context,
             {
                 "source": "yivi",
                 "authorizee": {
                     "legalSubject": {
-                        "identifierType": "kvk",
+                        "identifierType": "kvkNummer",
                         "identifier": "11122233",
                         "additionalInformation": {
                             "firstName": "John",
@@ -87,7 +89,7 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
             plugin=PLUGIN_ID,
             attribute=AuthAttribute.pseudo,
             value="11122233",
-            loa=AssuranceLevels.low,
+            loa="unknown",
             additional_claims={
                 "firstName": "John",
                 "familyName": "Doe",
@@ -95,14 +97,14 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
         )
         auth_context = auth_info.to_auth_context_data()
 
-        # Assert that all attributes, except loa, are present for Pseudo.
+        self.assertValidContext(auth_context)
         self.assertEqual(
             auth_context,
             {
                 "source": "yivi",
                 "authorizee": {
                     "legalSubject": {
-                        "identifierType": "pseudo",
+                        "identifierType": "opaque",
                         "identifier": "11122233",
                         "additionalInformation": {
                             "firstName": "John",
@@ -110,5 +112,6 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
                         },
                     }
                 },
+                "levelOfAssurance": "unknown",
             },
         )

@@ -481,6 +481,12 @@
         "description": "Fixed value to indicate Yivi authentication.",
         "const": "yivi"
       },
+      "loa:unknown": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "If loa for some reason isn't available (for example, pseudo login) we fallback to the value 'unknown'.",
+        "type": "string",
+        "const": "unknown"
+      },
       "loa:bsn": {
         "title": "Level of assurance (betrouwbaarheidsniveaus)",
         "description": "Logius defines the available levels of assurance *and* prescribes what the minimum level must be.",
@@ -504,10 +510,17 @@
           "urn:etoegang:core:assurance-class:loa4"
         ]
       },
+      "additionalInformation": {
+        "title": "A collection of additional attributes, collected during authentication",
+        "description": "Yivi supports the fetching of additional personal or company attributes, that help identify the authorizee.",
+        "type": "object",
+        "additionalProperties": true
+      },
 
       "schemas": {
         "withNaturalPerson": {
           "title": "Authentication context data schema for Yivi authentication of a natural person with bsn.",
+          "$comment": "This schema contains experimental features. Subject to change.",
           "type": "object",
           "required": [
             "source",
@@ -531,12 +544,7 @@
                       "$ref": "#/$defs/_naturalPerson:base"
                     },
                     {
-                      "type": "object",
-                      "properties": {
-                        "additionalInformation": {
-                          "type": "object"
-                        }
-                      }
+                      "$ref": "#/$defs/yivi/additionalInformation"
                     }
                   ]
                 }
@@ -548,6 +556,7 @@
         },
         "withCompany": {
           "title": "Authentication context data schema for Yivi authentication of a company with kvk.",
+          "$comment": "This schema contains experimental features. Subject to change.",
           "type": "object",
           "required": [
             "source",
@@ -574,9 +583,7 @@
                     ]}
                   ],
                   "properties": {
-                    "additionalInformation": {
-                      "type": "object"
-                    }
+                    "additionalInformation": {"$ref": "#/$defs/yivi/additionalInformation"}
                   }
                 }
               },
@@ -587,13 +594,16 @@
         },
         "withPseudo": {
           "title": "Authentication context data schema for Yivi authentication of a person with pseudonym.",
+          "$comment": "This schema contains experimental features. Subject to change.",
           "type": "object",
           "required": [
             "source",
+            "levelOfAssurance",
             "authorizee"
           ],
           "properties": {
             "source": {"$ref": "#/$defs/yivi/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/yivi/loa:unknown"},
             "authorizee": {
               "title": "Authorizee (ge-autoriseerde)",
               "description": "The authorized user.",
@@ -610,9 +620,7 @@
                   "identifier": {
                     "type": "string"
                   },
-                  "additionalInformation": {
-                    "type": "object"
-                  }
+                  "additionalInformation": {"$ref": "#/$defs/yivi/additionalInformation"}
                 }
               },
               "additionalProperties": false

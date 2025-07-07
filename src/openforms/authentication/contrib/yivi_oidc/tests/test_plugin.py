@@ -87,6 +87,7 @@ class YiviPluginTransformClaimsTest(TestCase):
                 "plugin": "yivi_oidc",
                 "additional_claims": {},
                 "attribute": "pseudo",
+                "loa": "unknown",
                 "value": "dummy-set-by@openforms",
             },
         )
@@ -110,6 +111,7 @@ class YiviPluginTransformClaimsTest(TestCase):
                 "plugin": "yivi_oidc",
                 "additional_claims": {"attribute_name": "attribute_value"},
                 "attribute": "pseudo",
+                "loa": "unknown",
                 "value": "dummy-set-by@openforms",
             },
         )

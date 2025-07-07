@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import TypedDict, cast
+from typing import TypedDict, assert_never, cast
 
 from django.http import HttpRequest
 from django.templatetags.static import static
@@ -131,7 +131,7 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
         )
 
         form_auth = {
-            "attribute": authentication_attribute,
+            "attribute": authentication_attribute.value,
             "plugin": self.identifier,
             "additional_claims": normalized_claims.get("additional_claims", {}),
         }
@@ -153,23 +153,33 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
                     normalized_claims.get("pseudo_claim", "")
                     or "dummy-set-by@openforms"
                 )
+                form_auth["loa"] = "unknown"
 
         return form_auth
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> YiviContext:
         auth_attribute = AuthAttribute(auth_info.attribute)
+        match auth_attribute:
+            case AuthAttribute.bsn:
+                identifier_type = "bsn"
+            case AuthAttribute.kvk:
+                identifier_type = "kvkNummer"
+            case AuthAttribute.pseudo:
+                identifier_type = "opaque"
+            case _:
+                assert_never(auth_attribute)
+
         yivi_context: YiviContext = {
             "source": "yivi",
             "authorizee": {
                 "legalSubject": {
-                    "identifierType": auth_attribute.value,
+                    "identifierType": identifier_type,
                     "identifier": auth_info.value,
                     "additionalInformation": cast(dict, auth_info.additional_claims),
                 }
             },
+            "levelOfAssurance": auth_info.loa,
         }
-        if auth_attribute is not AuthAttribute.pseudo:
-            yivi_context["levelOfAssurance"] = auth_info.loa
         return yivi_context
 
     def before_process_claims(

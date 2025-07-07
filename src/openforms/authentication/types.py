@@ -99,7 +99,7 @@ class EmployeeContext(TypedDict):
 
 
 class YiviLegalSubject(TypedDict):
-    identifierType: Literal["bsn", "kvk", "pseudo"]
+    identifierType: Literal["bsn", "kvkNummer", "opaque"]
     identifier: str
     additionalInformation: dict  # For the additional scoped claims
 
@@ -112,17 +112,16 @@ class YiviAuthorizee(TypedDict):
 class YiviContext(TypedDict):
     source: Literal["yivi"]
     # The levelOfAssurance changes based on the used configured auth attribute
-    levelOfAssurance: NotRequired[
-        Literal[
-            "urn:etoegang:core:assurance-class:loa1",
-            "urn:etoegang:core:assurance-class:loa2",
-            "urn:etoegang:core:assurance-class:loa2plus",
-            "urn:etoegang:core:assurance-class:loa3",
-            "urn:etoegang:core:assurance-class:loa4",
-            "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-            "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-            "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-            "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
-        ]
+    levelOfAssurance: Literal[
+        "urn:etoegang:core:assurance-class:loa1",
+        "urn:etoegang:core:assurance-class:loa2",
+        "urn:etoegang:core:assurance-class:loa2plus",
+        "urn:etoegang:core:assurance-class:loa3",
+        "urn:etoegang:core:assurance-class:loa4",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+        "unknown",
     ]
     authorizee: YiviAuthorizee
