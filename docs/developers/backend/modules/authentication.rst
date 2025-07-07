@@ -4,17 +4,20 @@
 Authentication
 ==============
 
-The authentication plugins allow end-users/citizen to identify themselves when
-interacting with official municipality forms. This makes users more trustful and
-identifiable.
+The authentication module provides plugins to establish the identity of end-users
+filling out a form. Identifying attributes can then be used by
+:ref:`developers_prefill_plugins` to retrieve additional details of the citizen or
+company. Depending on the authentication plugin used, a certain level of assurance
+regarding the authentication strength can be obtained as well, increasing trust for
+higher levels.
 
 .. contents:: :local:
-   :depth: 3
+   :depth: 2
 
 Python API
 ==========
 
-The public API serves as an abstraction over the various engines.
+The public API serves as an abstraction over the various plugins.
 
 **Reference**
 
@@ -32,6 +35,39 @@ Available implementations
 =========================
 
 The following plugins are available in Open Forms core.
+
+Demo, DigiD Mock, Outage
+------------------------
+
+Demo plugins, available only to admin users and when demo plugins are enabled in the
+configuration. They allow simulating various login mechanisms without requiring a real
+integration.
+
+DigiD
+-----
+
+Provides DigiD integration via the SAMLv2 standards. Implemented throught the library
+django-digid-eherkenning.
+
+eHerkenning and eIDAS
+---------------------
+
+Provides eHerkenning and eIDAS integration via the SAMLv2 standards. Implemented
+through the library django-digid-eherkenning.
+
+DigiD and eHerkenning/eIDAS via OpenID Connect
+----------------------------------------------
+
+DigiD, eHerkenning and eIDAS support through the OIDC protocol rather than SAML. Depends
+on an OpenID Connect provider that implements the SAML flows under the hood. Implemented
+throught the ``oidc`` flavour of the django-digid-eherkenning library.
+
+Organisation (OIDC)
+-------------------
+
+Provides authentication for staff users through their organisation single-sign on.
+Shares the OpenID Connect configuration for the admin login option, but is exposed to
+form authentication as well.
 
 Yivi (OIDC)
 -----------
