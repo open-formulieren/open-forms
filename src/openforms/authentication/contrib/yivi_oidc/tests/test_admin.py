@@ -21,7 +21,7 @@ def _set_arrayfields(form, config: YiviOpenIDConnectConfig) -> None:
     fields = [
         f.name
         for f in config._meta.get_fields()
-        if isinstance(f, (ArrayField, JSONField)) and f.name in form.fields
+        if isinstance(f, (ArrayField | JSONField)) and f.name in form.fields
     ]
     for field in fields:
         form[field] = json.dumps(getattr(config, field))

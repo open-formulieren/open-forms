@@ -200,8 +200,8 @@ class EmailDigestTaskIntegrationTests(TestCase):
             )
 
             with (
-                open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
-                open(TEST_FILES / "test.key", "r") as key_f,
+                open(TEST_FILES / "test2.certificate") as client_certificate_f,
+                open(TEST_FILES / "test.key") as key_f,
             ):
                 certificate = CertificateFactory.create(
                     label="",

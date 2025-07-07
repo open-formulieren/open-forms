@@ -47,7 +47,7 @@ class DefaultFormatterTestCase(TestCase):
         # TODO simplify without reference to all_components.json
         all_components = load_json("all_components.json")["components"]
         time_component = next(
-            (component for component in all_components if component["key"] == "time")
+            component for component in all_components if component["key"] == "time"
         )
         time_component["multiple"] = True
 

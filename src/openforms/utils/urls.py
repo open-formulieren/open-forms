@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from importlib import import_module
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
@@ -35,7 +35,7 @@ def build_absolute_uri(location: str, request: AnyRequest | None = None):
 
     # copied and modified from request.build_absolute_uri()
     base = urlsplit(settings.BASE_URL)
-    current_scheme_host = "{}://{}".format(base.scheme, base.netloc)
+    current_scheme_host = f"{base.scheme}://{base.netloc}"
 
     bits = urlsplit(location)
     if not (bits.scheme and bits.netloc):

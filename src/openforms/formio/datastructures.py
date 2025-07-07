@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import re
 from collections import UserDict
-from typing import Iterator, cast
+from collections.abc import Iterator
+from typing import cast
 
 from glom import glom
 
@@ -224,7 +225,7 @@ class FormioData(UserDict):
             else:
                 raise AttributeError(f"Item '{data}' has no attribute '{k}'")
 
-            if not isinstance(child, (dict, list)):
+            if not isinstance(child, dict | list):
                 data[k] = {}
 
             data = data[k]

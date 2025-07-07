@@ -1,4 +1,4 @@
-from typing import Iterator
+from collections.abc import Iterator
 
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeString

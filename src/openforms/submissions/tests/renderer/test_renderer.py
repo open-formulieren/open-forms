@@ -78,9 +78,7 @@ class FormNodeTests(TestCase):
         )
 
         nodes = [
-            node
-            for node in renderer
-            if isinstance(node, (FormNode, SubmissionStepNode))
+            node for node in renderer if isinstance(node, FormNode | SubmissionStepNode)
         ]
 
         self.assertEqual(len(nodes), 3)
@@ -112,9 +110,7 @@ class FormNodeTests(TestCase):
         )
 
         nodes = [
-            node
-            for node in renderer
-            if isinstance(node, (FormNode, SubmissionStepNode))
+            node for node in renderer if isinstance(node, FormNode | SubmissionStepNode)
         ]
 
         self.assertEqual(len(nodes), 2)

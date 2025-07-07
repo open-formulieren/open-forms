@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
 from dataclasses import dataclass, field, replace
-from typing import Iterator, Literal, Self, overload
+from typing import Literal, Self, overload
 
 from jsonschema_specifications import REGISTRY
 from referencing import Resource
@@ -91,7 +92,7 @@ def iter_json_schema_paths(
                         # `type` is not required. But if provided, we want to make sure
                         # it is 'object' (or a list of allowed types where 'object' is allowed).
                         type_ = v.get("type", "object")
-                        assert isinstance(type_, (str, list))
+                        assert isinstance(type_, str | list)
                         assert type_ == "object" or "object" in type_
 
                         yield from _iter_json_schema(v, json_path)

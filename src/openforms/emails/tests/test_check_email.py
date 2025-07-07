@@ -152,7 +152,7 @@ class CheckEmailSettingsFunctionTests(TestCase):
     @override_settings(**smtp_settings)
     def test_login_socket_error(self):
         with mock.patch("smtplib.SMTP", autospec=True) as mock_smtp:
-            mock_smtp.return_value.login.side_effect = socket.error()
+            mock_smtp.return_value.login.side_effect = OSError()
             res = check_email_backend("receiver@bar.bazz")
             mock_smtp.assert_called()
 

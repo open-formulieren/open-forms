@@ -67,11 +67,7 @@ def hsl_to_rgbhex(hsl_css_color):
 
         # conversion algorithm via https://stackoverflow.com/questions/41403936/converting-hsl-to-hex-in-python3
         rgb = colorsys.hls_to_rgb(h / 360, l / 100, s / 100)
-        hex = "#%02x%02x%02x" % (
-            round(rgb[0] * 255),
-            round(rgb[1] * 255),
-            round(rgb[2] * 255),
-        )
+        hex = f"#{round(rgb[0] * 255):02x}{round(rgb[1] * 255):02x}{round(rgb[2] * 255):02x}"
         return hex
 
 

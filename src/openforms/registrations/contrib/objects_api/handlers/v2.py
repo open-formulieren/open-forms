@@ -92,7 +92,7 @@ def process_mapped_variable(
 
     # normalize non-primitive date/datetime values so that they're ready for JSON
     # serialization in the proper format
-    if isinstance(value, (date, datetime)):
+    if isinstance(value, date | datetime):
         value = value.isoformat()
 
     # Date and datetime objects are now converted to strings, so we can safely cast to

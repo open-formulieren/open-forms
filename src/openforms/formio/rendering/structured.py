@@ -46,7 +46,7 @@ def render_json(submission: "Submission") -> JSONObject:
                 else f"{current_step_slug}.{node.key}"
             )
 
-            value = {} if isinstance(node, (FieldSetNode, ColumnsNode)) else node.value
+            value = {} if isinstance(node, FieldSetNode | ColumnsNode) else node.value
             if isinstance(node, EditGridNode):
                 value = []
 

@@ -662,7 +662,7 @@ class SubmissionReportGenerationTests(TestCase):
         with (
             patch(
                 "openforms.submissions.tasks.pdf.SubmissionReport.generate_submission_report_pdf",
-                side_effect=IOError("storage full"),
+                side_effect=OSError("storage full"),
             ),
             self.assertRaises(IOError),
         ):

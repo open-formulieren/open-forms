@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from django.test import TestCase
 from django.urls import reverse
@@ -26,7 +26,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -74,7 +74,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -94,7 +94,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -115,7 +115,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -141,7 +141,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -174,7 +174,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
             auth_info__value="123456782",
             auth_info__plugin="digid",
         )
-        start_time = datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc)
+        start_time = datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC)
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
@@ -229,7 +229,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -268,7 +268,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(
@@ -306,7 +306,7 @@ class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
         AppointmentInfoFactory.create(
             submission=submission,
             registration_ok=True,
-            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc),
+            start_time=datetime(2021, 7, 21, 12, 00, 00, tzinfo=UTC),
         )
 
         endpoint = reverse(

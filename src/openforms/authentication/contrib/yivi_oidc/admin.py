@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Sequence
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _

@@ -94,7 +94,7 @@ class TextField(BasePlugin[TextFieldComponent]):
 
     @staticmethod
     def normalizer(component: Component, value: str) -> str:
-        if isinstance(value, (int, float)):
+        if isinstance(value, int | float):
             return str(value)
         return value
 
@@ -999,7 +999,7 @@ class EditGridField(serializers.Field):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
         """
-        if isinstance(data, (str, Mapping)) or not hasattr(data, "__iter__"):
+        if isinstance(data, str | Mapping) or not hasattr(data, "__iter__"):
             self.fail("not_a_list", input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail("empty")

@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator
+from collections.abc import Iterable, Iterator
 
 import elasticapm
 from json_logic import jsonLogic

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Generic, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, Generic, TypeVar, cast
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models

@@ -431,7 +431,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_available_products_unexpected_exception(self, m):
-        m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.get(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_available_products()
@@ -456,7 +456,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_locations_unexpected_exception(self, m):
-        m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.get(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_locations()
@@ -485,7 +485,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_dates_unexpected_exception(self, m):
-        m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.get(requests_mock.ANY, exc=OSError("tubes are closed"))
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
 
@@ -520,7 +520,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     def test_get_times_unexpected_exception(self, m):
-        m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.get(requests_mock.ANY, exc=OSError("tubes are closed"))
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
 
@@ -617,7 +617,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
                 }
             },
         )
-        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        m.post(requests_mock.ANY, exc=OSError("tubes are closed"))
 
         with self.assertRaisesMessage(
             AppointmentCreateFailed, "Unexpected appointment create failure"

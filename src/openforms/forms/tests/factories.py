@@ -24,7 +24,7 @@ def random_registration_plugin():
 
 
 class FormFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "Form %03d" % n)
+    name = factory.Sequence(lambda n: f"Form {n:03d}")
     slug = factory.Faker("word")
     active = True
     product = factory.SubFactory(ProductFactory)
@@ -145,7 +145,7 @@ class FormAuthenticationBackendFactory(factory.django.DjangoModelFactory):
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "FormDefinition %03d" % n)
+    name = factory.Sequence(lambda n: f"FormDefinition {n:03d}")
 
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
@@ -270,7 +270,7 @@ class FormLogicFactory(factory.django.DjangoModelFactory):
 
 
 class FormVariableFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "Variable %03d" % n)
+    name = factory.Sequence(lambda n: f"Variable {n:03d}")
     form = factory.SubFactory(FormFactory)
     key = factory.Faker("word")
     source = FormVariableSources.user_defined
@@ -318,7 +318,7 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "Category %03d" % n)
+    name = factory.Sequence(lambda n: f"Category {n:03d}")
 
     class Meta:
         model = "forms.Category"
