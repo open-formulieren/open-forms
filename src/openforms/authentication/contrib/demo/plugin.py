@@ -29,7 +29,7 @@ class DemoBaseForm(forms.Form):
 
 class BSNForm(DemoBaseForm):
     bsn = forms.CharField(
-        max_length=9, required=True, label=_("BSN"), validators=[BSNValidator]
+        max_length=9, required=True, label=_("BSN"), validators=[BSNValidator()]
     )
 
 
@@ -46,7 +46,6 @@ class DemoBaseAuthentication(BasePlugin):
     verbose_name = _("Demo")
     return_method = "POST"
     form_class: type = NotImplemented
-    provides_auth: str = NotImplemented
     is_demo_plugin = True
 
     def start_login(
@@ -86,8 +85,8 @@ class DemoBaseAuthentication(BasePlugin):
         if not is_co_sign:
             request.session[FORM_AUTH_SESSION_KEY] = {
                 "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": submitted.cleaned_data[self.provides_auth],
+                "attribute": self.provides_auth[0],
+                "value": submitted.cleaned_data[self.provides_auth[0]],
             }
 
         return HttpResponseRedirect(submitted.cleaned_data["next"])
@@ -103,7 +102,7 @@ class DemoBaseAuthentication(BasePlugin):
 class DemoBSNAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo BSN")
     form_class = BSNForm
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     form_field = "bsn"
     is_demo_plugin = True
 
@@ -112,6 +111,6 @@ class DemoBSNAuthentication(DemoBaseAuthentication):
 class DemoKVKAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo KvK number")
     form_class = KVKForm
-    provides_auth = AuthAttribute.kvk
+    provides_auth = (AuthAttribute.kvk,)
     form_field = "kvk"
     is_demo_plugin = True

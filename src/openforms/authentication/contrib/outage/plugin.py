@@ -13,7 +13,7 @@ class OutageAuthentication(BasePlugin):
 
     verbose_name = _("Demo Outage")
     is_demo_plugin = True
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
 
     def start_login(self, request, form, form_url, options):
         raise Exception("simulated backend failure")
@@ -29,7 +29,7 @@ class BSNOutageAuthentication(OutageAuthentication):
     """
 
     verbose_name = _("BSN Outage")
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
 
 
 @register("kvk-outage")
@@ -39,4 +39,4 @@ class KVKOutageAuthentication(OutageAuthentication):
     """
 
     verbose_name = _("KvK Outage")
-    provides_auth = AuthAttribute.kvk
+    provides_auth = (AuthAttribute.kvk,)

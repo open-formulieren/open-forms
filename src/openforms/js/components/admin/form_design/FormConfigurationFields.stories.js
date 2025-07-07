@@ -34,7 +34,7 @@ export default {
       {
         id: 'digid',
         label: 'DigiD',
-        providesAuth: 'bsn',
+        providesAuth: ['bsn'],
         schema: {
           type: 'object',
           properties: {
@@ -57,7 +57,7 @@ export default {
       {
         id: 'eherkenning',
         label: 'eHerkenning',
-        providesAuth: 'kvk',
+        providesAuth: ['kvk'],
       },
     ],
     availableThemes: [

@@ -7,7 +7,7 @@ import structlog
 from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.choices import SectorType
 from digid_eherkenning.saml2.digid import DigiDClient
-from digid_eherkenning.views import (
+from digid_eherkenning.views.digid import (
     DigiDAssertionConsumerServiceView as _DigiDAssertionConsumerServiceView,
     DigiDLoginView as _DigiDLoginView,
 )
@@ -39,8 +39,9 @@ GENERIC_LOGIN_ERROR = "error"
 class DigiDLoginView(_DigiDLoginView):
     def get_level_of_assurance(self):
         # get the form_slug from /auth/{slug}/...?next=...
-        return_path = furl(self.request.GET.get("next")).path
-        _, _, kwargs = resolve(return_path)
+        next_param = self.request.GET.get("next", "")
+        return_path = furl(next_param).path
+        _, _, kwargs = resolve(str(return_path))
         form = get_object_or_404(Form, slug=kwargs.get("slug"))
 
         # called after AuthenticationStartView.get(), which already checks if there is an
@@ -93,6 +94,7 @@ class DigiDAssertionConsumerServiceView(
             )
             return HttpResponseRedirect(failure_url)
 
+        assert name_id is not None
         match name_id.split(":"):
             case [SectorType.bsn, bsn]:
                 pass

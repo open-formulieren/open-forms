@@ -35,7 +35,7 @@ const PluginWarning = ({loginRequired, configuration}) => {
       const authPlugin = availableAuthPlugins.find(plugin => plugin.id === pluginName);
       if (!authPlugin) break;
 
-      if (requiredAuthAttribute.includes(authPlugin.providesAuth)) {
+      if (requiredAuthAttribute.some(attr => authPlugin.providesAuth.includes(attr))) {
         pluginProvidesAttribute = true;
         break;
       }

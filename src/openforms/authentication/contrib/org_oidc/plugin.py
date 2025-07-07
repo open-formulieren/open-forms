@@ -29,7 +29,7 @@ class OIDCAuthentication(BasePlugin):
     """
 
     verbose_name = _("Organization via OpenID Connect")
-    provides_auth = AuthAttribute.employee_id
+    provides_auth = (AuthAttribute.employee_id,)
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         return_url = reverse_plus(
@@ -63,7 +63,7 @@ class OIDCAuthentication(BasePlugin):
 
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
-            "attribute": self.provides_auth,
+            "attribute": self.provides_auth[0],
             "value": request.user.employee_id or request.user.username,
         }
 
@@ -95,3 +95,6 @@ class OIDCAuthentication(BasePlugin):
             href="https://openid.net/",
             appearance=LogoAppearance.light,
         )
+
+
+assert len(OIDCAuthentication.provides_auth) == 1

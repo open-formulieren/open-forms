@@ -10,7 +10,7 @@ from ..registry import Registry
 
 class Plugin(BasePlugin):
     verbose_name = "some human readable label"
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
 
     def start_login(self, request, form, form_url, options):
         return HttpResponse("start")
@@ -40,7 +40,7 @@ class FailingPlugin(BasePlugin):
 
 class RequiresAdminPlugin(BasePlugin):
     verbose_name = "plugin requiring staff user session"
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     is_demo_plugin = True
 
     def start_login(self, request, form, form_url, options):

@@ -28,7 +28,7 @@ factory = APIRequestFactory()
 
 
 class ProvidesEmployeePlugin(Plugin):
-    provides_auth = AuthAttribute.employee_id
+    provides_auth = (AuthAttribute.employee_id,)
 
 
 class SetSubmissionIdentifyingAttributesTests(APITestCase):
@@ -40,7 +40,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "plugin1",
-                "attribute": RequiresAdminPlugin.provides_auth,
+                "attribute": RequiresAdminPlugin.provides_auth[0],
                 "value": "123",
             }
         }
@@ -72,7 +72,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "plugin1",
-                "attribute": RequiresAdminPlugin.provides_auth,
+                "attribute": RequiresAdminPlugin.provides_auth[0],
                 "value": "123",
             }
         }
@@ -191,7 +191,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "plugin1",
-                "attribute": Plugin.provides_auth,
+                "attribute": Plugin.provides_auth[0],
                 "value": "123",
             }
         }

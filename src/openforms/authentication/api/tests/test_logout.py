@@ -50,7 +50,7 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
 
         register("plugin1")(Plugin)
         plugin1 = register["plugin1"]
-        plugin1.provides_auth = AuthAttribute.bsn
+        plugin1.provides_auth = (AuthAttribute.bsn,)
         logout_mock = Mock()
         plugin1.logout = logout_mock
 

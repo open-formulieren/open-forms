@@ -70,10 +70,17 @@ class OptionsT(TypedDict):
 # assignable... :(
 class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
-    provides_auth: AuthAttribute
+    provides_multiple_auth_attributes: bool = False
     session_key: str = ""
     config_class: ClassVar[type[BaseConfig]]
     init_view: ClassVar[AuthInit]
+
+    def __init_subclass__(cls) -> None:
+        super().__init_subclass__()
+
+        assert cls.provides_multiple_auth_attributes or len(cls.provides_auth) == 1, (
+            f"Did you accidentally enable multiple auth attributes on {cls!r}?"
+        )
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
@@ -162,7 +169,7 @@ class DigiDClaims(TypedDict):
 @register("digid_oidc")
 class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     verbose_name = _("DigiD via OpenID Connect")
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     session_key = "digid_oidc:bsn"
     config_class = OFDigiDConfig
     init_view = staticmethod(digid_init)
@@ -176,7 +183,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
         return {
             "plugin": self.identifier,
-            "attribute": self.provides_auth,
+            "attribute": self.provides_auth[0],
             "value": normalized_claims["bsn_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
         }
@@ -202,7 +209,7 @@ class EHClaims(TypedDict):
 @register("eherkenning_oidc")
 class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     verbose_name = _("eHerkenning via OpenID Connect")
-    provides_auth = AuthAttribute.kvk
+    provides_auth = (AuthAttribute.kvk,)
     session_key = "eherkenning_oidc:kvk"
     config_class = OFEHerkenningConfig
     init_view = staticmethod(eherkenning_init)
@@ -231,7 +238,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
             # TODO: look at `identifier_type_claim` and return kvk or rsin accordingly.
             # Currently we have no support for RSIN at all, so that will need to be
             # added first (and has implications for prefill!)
-            "attribute": self.provides_auth,
+            "attribute": self.provides_auth[0],
             "value": normalized_claims["legal_subject_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
             "acting_subject_identifier_type": "opaque",
@@ -265,7 +272,7 @@ class DigiDMachtigenOIDCAuthentication(
     OIDCAuthentication[DigiDmachtigenClaims, OptionsT]
 ):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     session_key = "digid_machtigen_oidc:machtigen"
     config_class = OFDigiDMachtigenConfig
     init_view = staticmethod(digid_machtigen_init)
@@ -280,7 +287,7 @@ class DigiDMachtigenOIDCAuthentication(
             ]
         return {
             "plugin": self.identifier,
-            "attribute": self.provides_auth,
+            "attribute": self.provides_auth[0],
             "value": normalized_claims["representee_bsn_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
             "legal_subject_identifier_type": "bsn",
@@ -329,7 +336,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
     # told)
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
     config_class = OFEHerkenningBewindvoeringConfig
     init_view = staticmethod(eherkenning_bewindvoering_init)
@@ -356,7 +363,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
 
         form_auth: FormAuth = {
             "plugin": self.identifier,
-            "attribute": self.provides_auth,
+            "attribute": self.provides_auth[0],
             "value": normalized_claims["representee_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
             # representee

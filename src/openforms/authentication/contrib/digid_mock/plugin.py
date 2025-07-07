@@ -17,7 +17,7 @@ from ...registry import register
 @register("digid-mock")
 class DigidMockAuthentication(BasePlugin):
     verbose_name = _("DigiD Mock")
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     is_demo_plugin = True
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
@@ -54,7 +54,7 @@ class DigidMockAuthentication(BasePlugin):
         if CO_SIGN_PARAMETER not in request.GET:
             request.session[FORM_AUTH_SESSION_KEY] = {
                 "plugin": self.identifier,
-                "attribute": self.provides_auth,
+                "attribute": self.provides_auth[0],
                 "value": bsn,
             }
 

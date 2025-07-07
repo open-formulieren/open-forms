@@ -12,6 +12,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import AuthPluginOptions from './AuthPluginOptions';
+import TYPES from './types';
 
 const SUMBISSION_ALLOWED_CHOICES = [
   [
@@ -737,14 +738,7 @@ FormConfigurationFields.propTypes = {
     ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  availableAuthPlugins: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      label: PropTypes.string,
-      providesAuth: PropTypes.string,
-      schema: PropTypes.object,
-    })
-  ),
+  availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
   selectedAuthPlugins: PropTypes.array.isRequired,
   onAuthPluginChange: PropTypes.func.isRequired,
 };

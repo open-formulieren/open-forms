@@ -23,9 +23,10 @@ def add_co_sign_representation(
         action="prefill.add_co_sign_representation",
         submission_uuid=str(submission.uuid),
     )
-    log.debug("cosign", plugin_auth_type=plugin.provides_auth)
+    assert len(plugin.provides_auth) == 1
+    log.debug("cosign", plugin_auth_type=plugin.provides_auth[0])
     if not submission.co_sign_data or not submission.co_sign_data["identifier"]:
         log.warning("cosign_data_missing_or_incomplete", outcome="skip")
         return
 
-    _add_co_sign_representation(submission, plugin.provides_auth)
+    _add_co_sign_representation(submission, plugin.provides_auth[0])

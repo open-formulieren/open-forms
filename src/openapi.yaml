@@ -7010,9 +7010,12 @@ components:
           type: string
           description: The human-readable name for a plugin.
         providesAuth:
-          type: string
-          title: Provides authentication attributes
-          description: The authentication attribute provided by this plugin.
+          type: array
+          items:
+            type: string
+            title: Provides authentication attributes
+            description: The authentication attribute provided by this plugin.
+          minItems: 1
         schema:
           type: object
           additionalProperties: {}

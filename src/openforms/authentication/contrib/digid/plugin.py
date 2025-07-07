@@ -32,7 +32,7 @@ def loa_order(loa: str) -> int:
 @register(PLUGIN_ID)
 class DigidAuthentication(BasePlugin[DigidOptions]):
     verbose_name = _("DigiD")
-    provides_auth = AuthAttribute.bsn
+    provides_auth = (AuthAttribute.bsn,)
     configuration_options = DigidOptionsSerializer
 
     def start_login(
@@ -101,7 +101,7 @@ class DigidAuthentication(BasePlugin[DigidOptions]):
         return loa_order(authenticated_loa) >= loa_order(required)
 
     def get_logo(self, request) -> LoginLogo | None:
-        return LoginLogo(title=self.get_label(), **get_digid_logo(request))
+        return LoginLogo(title=str(self.get_label()), **get_digid_logo(request))
 
     def logout(self, request: HttpRequest):
         if DIGID_AUTH_SESSION_KEY in request.session:
