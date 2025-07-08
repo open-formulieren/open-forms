@@ -5,7 +5,6 @@ from django.db import models
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
 from digid_eherkenning.oidc.models import (
     BaseConfig,
     DigiDConfig,
@@ -16,6 +15,10 @@ from digid_eherkenning.oidc.models import (
 from digid_eherkenning.oidc.models.base import default_loa_choices
 from django_jsonform.models.fields import ArrayField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
+
+from openforms.authentication.contrib.digid_eherkenning_oidc.choices import (
+    EIDASAssuranceLevels,
+)
 
 
 def get_callback_view(self):
@@ -87,7 +90,7 @@ class OFEHerkenningConfig(EHerkenningConfig):
         return "oidc_authentication_callback"
 
 
-@default_loa_choices(DigiDAssuranceLevels)
+@default_loa_choices(EIDASAssuranceLevels)
 class OFEIDASConfig(BaseConfig):
     class Meta:
         verbose_name = _("eIDAS (OIDC)")

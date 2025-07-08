@@ -153,9 +153,8 @@ class EIDASCompanyAuthorizee(TypedDict):
 class EIDASContext(TypedDict):
     source: Literal["eidas"]
     levelOfAssurance: Literal[
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
+        "low",
+        "substantial",
+        "high",
     ]
     authorizee: EIDASNaturalPersonAuthorizee | EIDASCompanyAuthorizee
