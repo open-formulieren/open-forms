@@ -1,5 +1,4 @@
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels
@@ -7,7 +6,10 @@ from digid_eherkenning.models import EherkenningConfiguration
 from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.contrib.digid_eherkenning.utils import get_eherkenning_logo
+from openforms.contrib.digid_eherkenning.utils import (
+    get_eherkenning_logo,
+    get_eidas_logo,
+)
 from openforms.forms.models import Form
 
 from ...base import BasePlugin, CosignSlice, LoginLogo
@@ -15,7 +17,6 @@ from ...constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
     AuthAttribute,
-    LogoAppearance,
 )
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -144,9 +145,4 @@ class EIDASAuthentication(AuthenticationBasePlugin):
     session_key = EIDAS_AUTH_SESSION_KEY
 
     def get_logo(self, request) -> LoginLogo | None:
-        return LoginLogo(
-            title=self.get_label(),
-            image_src=request.build_absolute_uri(static("img/eidas.png")),
-            href="https://digital-strategy.ec.europa.eu/en/policies/eu-trust-mark",
-            appearance=LogoAppearance.light,
-        )
+        return LoginLogo(title=self.get_label(), **get_eidas_logo(request))

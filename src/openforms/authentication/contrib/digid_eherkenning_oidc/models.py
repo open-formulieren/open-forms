@@ -92,9 +92,6 @@ class OFEHerkenningConfig(EHerkenningConfig):
 
 @default_loa_choices(EIDASAssuranceLevels)
 class OFEIDASConfig(BaseConfig):
-    class Meta:
-        verbose_name = _("eIDAS (OIDC)")
-
     get_callback_view = get_callback_view
     of_oidcdb_required_claims = [
         "first_name_claim",
@@ -185,19 +182,15 @@ class OFEIDASConfig(BaseConfig):
         {"field": "company_name_claim", "required": False},
     )
 
+    class Meta:
+        verbose_name = _("eIDAS (OIDC)")
+
     @property
     def oidcdb_username_claim(self):
         return self.person_identifier_claim
 
     @classproperty
-    def oidc_authentication_callback_url(cls) -> str:  # type: ignore
-        if settings.USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS:
-            warnings.warn(
-                "Legacy DigiD-eHerkenning callback endpoints will be removed in 4.0",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return "eidas_oidc:callback"
+    def oidc_authentication_callback_url(cls) -> str:
         return "oidc_authentication_callback"
 
 
