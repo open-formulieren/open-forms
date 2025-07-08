@@ -56,6 +56,49 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
+    @mock_digid_config()
+    def test_successfully_complete_submission(self):
+        form = FormFactory.create(authentication_backend="digid_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(start_response["Location"])
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
     @mock_digid_config(bsn_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="digid_oidc")
@@ -326,6 +369,51 @@ class EIDASCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
+    @mock_eidas_config()
+    def test_successfully_complete_submission(self):
+        form = FormFactory.create(authentication_backend="eidas_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"], username="eidas-person", password="eidas-person"
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
     @mock_eidas_config(person_identifier_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
@@ -439,6 +527,53 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
         callback_response = self.app.get(redirect_uri, auto_follow=True)
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+    @mock_digid_machtigen_config()
+    def test_successfully_complete_submission(self):
+        form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="digid-machtigen",
+            password="digid-machtigen",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
 
     @mock_digid_machtigen_config(
         representee_bsn_claim=["absent-claim"],
@@ -582,6 +717,57 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
         callback_response = self.app.get(redirect_uri, auto_follow=True)
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+    @mock_eherkenning_bewindvoering_config()
+    def test_successfully_complete_submission(self):
+        form = FormFactory.create(
+            authentication_backend="eherkenning_bewindvoering_oidc"
+        )
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(
+            plugin_id="eherkenning_bewindvoering_oidc"
+        )
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eherkenning-bewindvoering",
+            password="eherkenning-bewindvoering",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
 
     @mock_eherkenning_bewindvoering_config(
         legal_subject_claim=["absent-claim"],
