@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import timedelta
 from unittest.mock import patch
@@ -133,6 +134,10 @@ class DownloadSubmissionReportTests(APITestCase):
             ("licenseplate", "AA-00-13"),
             ("map", "52.193459, 5.279538"),
             ("number", "1"),
+            (
+                "partners",
+                '[{"bsn": "999970136", "firstNames": "Pia", "initials": "P.", "affixes": "", "lastName": "Pauw", "dateOfBirth": "April 1, 1989", "dateOfBirthPrecision": "date"}]',
+            ),
             ("password", "Panda1911!"),  # XXX Why is this widget even an option?
             ("phonenumber", "+49 1234 567 890"),
             ("postcode", "3744 AA"),
@@ -378,6 +383,17 @@ class DownloadSubmissionReportTests(APITestCase):
                     "coordinates": [52.193459, 5.279538],
                 },
                 "numberkey": "1",
+                "partnerskey": [
+                    {
+                        "bsn": "999970136",
+                        "firstNames": "Pia",
+                        "initials": "P.",
+                        "affixes": "",
+                        "lastName": "Pauw",
+                        "dateOfBirth": "1989-04-01",
+                        "dateOfBirthPrecision": "date",
+                    }
+                ],
                 "passwordkey": "Panda1911!",
                 "phonenumberkey": "+49 1234 567 890",
                 "postcodekey": "3744 AA",
@@ -406,11 +422,22 @@ class DownloadSubmissionReportTests(APITestCase):
 
         for component_type, localised_input in fields:
             with self.subTest(f"FormIO label for {component_type}"):
-                self.assertIn(localised_input, html_report)
+                if component_type != "partners":
+                    self.assertIn(localised_input, html_report)
+
                 self.assertNotIn(
                     f"Untranslated {component_type.title()} label", html_report
                 )
                 self.assertIn(f"Translated {component_type.title()} label", html_report)
+
+            # Partners component tests
+            if component_type == "partners":
+                partners_list = json.loads(localised_input)
+                del partners_list[0]["firstNames"]
+                del partners_list[0]["dateOfBirthPrecision"]
+                for partner_label, partner_value in partners_list[0].items():
+                    self.assertIn(partner_label, html_report)
+                    self.assertIn(partner_value, html_report)
 
         # assert structural labels
         self.assertIn("Translated Field Set label", html_report)

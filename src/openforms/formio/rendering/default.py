@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
+from typing import Any, Literal, NotRequired, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -345,3 +346,91 @@ class SoftRequiredErrors(ComponentNode):
         registration data...
         """
         return False
+
+
+class PartnerValue(TypedDict):
+    bsn: str
+    initials: NotRequired[str]
+    affixes: NotRequired[str]
+    first_names: NotRequired[str]
+    last_name: NotRequired[str]
+    date_of_birth: NotRequired[str]
+    date_of_birth_precision: Literal["date", "year_month", "year"] | None
+
+
+@register("partners")
+class PartnersNode(ComponentNode):
+    @property
+    def value(self) -> Any:
+        value = self.step_data[self.path or self.key]
+        return value
+
+    @property
+    def display_value(self) -> str | list[PartnerValue]:
+        # in export mode, expose the raw datatype
+        if self.mode == RenderModes.export:
+            return self.value
+
+        assert isinstance(self.value, list)
+
+        # return nothing - we produce "virtual" child components that result in the actual
+        # key/value output
+        return ""
+
+    def get_children(self) -> Iterator[ComponentNode]:
+        repeats = len(self.value) if self.value else 0
+        components: list[Component] = [
+            {
+                "type": "bsn",
+                "key": "bsn",
+                "label": _("BSN"),
+            },
+            {
+                "type": "textfield",
+                "key": "initials",
+                "label": _("Initials"),
+            },
+            {
+                "type": "textfield",
+                "key": "affixes",
+                "label": _("Affixes"),
+            },
+            {
+                "type": "textfield",
+                "key": "lastName",
+                "label": _("Lastname"),
+            },
+            {
+                "type": "date",
+                "key": "dateOfBirth",
+                "label": _("Date of birth"),
+            },
+        ]
+
+        for node_index in range(repeats):
+            yield ComponentNode.build_node(
+                step_data=self.step_data,
+                component={
+                    "type": "component_label",
+                    "key": "component_label",
+                    "label": _("Partner {counter}").format(counter=node_index + 1),
+                },
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                path=f"{self.key}.{node_index}",
+                parent_node=self,
+            )
+
+            for component in components:
+                yield ComponentNode.build_node(
+                    step_data=self.step_data,
+                    component={
+                        "type": component["type"],
+                        "key": component["key"],
+                        "label": component["label"],
+                    },
+                    renderer=self.renderer,
+                    depth=self.depth + 1,
+                    path=f"{self.key}.{node_index}",
+                    parent_node=self,
+                )
