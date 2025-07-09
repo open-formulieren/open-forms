@@ -46,9 +46,8 @@ class OgoneMerchant(models.Model):
         help_text=_("Optionally override the preset endpoint"),
     )
 
-    @property
-    def endpoint(self):
-        return self.endpoint_custom or self.endpoint_preset
+    def __str__(self):
+        return self.label
 
     def clean(self):
         super().clean()
@@ -59,5 +58,6 @@ class OgoneMerchant(models.Model):
                 )
             )
 
-    def __str__(self):
-        return self.label
+    @property
+    def endpoint(self):
+        return self.endpoint_custom or self.endpoint_preset

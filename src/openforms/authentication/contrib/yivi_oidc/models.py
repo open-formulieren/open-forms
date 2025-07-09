@@ -139,7 +139,7 @@ class YiviOpenIDConnectConfig(BaseConfig):
         {"field": "pseudo_claim", "required": False},
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Yivi (OIDC)")
 
     @classproperty
@@ -186,3 +186,6 @@ class AttributeGroup(models.Model):
     class Meta:
         verbose_name = _("yivi attribute group")
         verbose_name_plural = _("yivi attribute groups")
+
+    def __str__(self):
+        return self.name

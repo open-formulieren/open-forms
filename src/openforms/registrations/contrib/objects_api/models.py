@@ -64,7 +64,7 @@ class ObjectsAPIConfig(SingletonModel):
         verbose_name = _("Objects API configuration")
 
 
-class ObjectsAPIRegistrationData(models.Model):
+class ObjectsAPIRegistrationData(models.Model):  # noqa: DJ008
     """Holds the temporary data available when registering a submission to the Objects API.
 
     When starting the submission registration, this model is first populated. The Objects API
@@ -90,7 +90,7 @@ class ObjectsAPIRegistrationData(models.Model):
     )
 
 
-class ObjectsAPISubmissionAttachment(models.Model):
+class ObjectsAPISubmissionAttachment(models.Model):  # noqa: DJ008
     """A utility model to link a submission file attachment with the Documents API URL."""
 
     submission_file_attachment = models.ForeignKey(

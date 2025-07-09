@@ -82,7 +82,7 @@ class FrozenDjangoJSONEncoder(DjangoJSONEncoder):
         return super().default(o)
 
 
-class SubmissionStep(models.Model):
+class SubmissionStep(models.Model):  # noqa: DJ008
     """
     Submission data.
 

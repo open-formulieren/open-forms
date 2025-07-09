@@ -1,5 +1,6 @@
 import json
 from collections.abc import Collection
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.db import models
@@ -65,6 +66,10 @@ class BaseAuthInfo(models.Model):
         verbose_name = _("Authentication details")
         verbose_name_plural = _("Authentication details")
 
+    if TYPE_CHECKING:
+
+        def get_attribute_display(self) -> str: ...
+
     def clear_sensitive_data(self):
         self.value = ""
         self.save()
@@ -81,7 +86,7 @@ class BaseAuthInfo(models.Model):
         relying on the global Django ``PASSWORD_HASHERS`` setting.
         """
         if delay:
-            hash_identifying_attributes_task.delay(self.pk)
+            hash_identifying_attributes_task.delay(self.pk)  # pyright: ignore[reportFunctionMemberAccess]
             return
 
         for field_name in self.identifying_attributes:
@@ -137,7 +142,6 @@ class ConjointConstraint(models.CheckConstraint):
         return path, args, kwargs
 
 
-# TODO: what about co-sign data?
 class AuthInfo(BaseAuthInfo):
     # Relation to submission - there can only be a single auth info for a submission.
     submission = models.OneToOneField(
@@ -234,7 +238,7 @@ class AuthInfo(BaseAuthInfo):
         "additional_claims",
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Authentication details")
         verbose_name_plural = _("Authentication details")
         constraints = [
@@ -267,6 +271,12 @@ class AuthInfo(BaseAuthInfo):
             ),
             # TODO: add constraints matching the json schema for the identifier types
         ]
+
+    def __str__(self):
+        return _("Submission authentication: {plugin}::{attr}").format(
+            plugin=self.plugin,
+            attr=self.get_attribute_display(),
+        )
 
     def to_auth_context_data(
         self,
@@ -407,7 +417,7 @@ class RegistratorInfo(BaseAuthInfo):
         related_name="_registrator",
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Registrator authentication details")
         verbose_name_plural = _("Registrator authentication details")
 
@@ -417,3 +427,9 @@ class RegistratorInfo(BaseAuthInfo):
                 _("Can register submission for customers"),
             ),
         ]
+
+    def __str__(self):
+        return _("Submission registrator: {plugin}::{attr}").format(
+            plugin=self.plugin,
+            attr=self.get_attribute_display(),
+        )

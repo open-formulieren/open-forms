@@ -79,9 +79,9 @@ extend-exclude = [
 [tool.ruff.lint]
 extend-select = [
     "UP",  # pyupgrade
-    # "DJ",  # django
-    # "LOG", # logging
-    # "G",
+    "DJ",  # django
+    # "LOG", # logging - disabled because we use structlog
+    "G",
     "I",     # isort
     # "E",   # pycodestyle
     "F",     # pyflakes
