@@ -8,6 +8,8 @@ from ..models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASCompanyConfig,
+    OFEIDASConfig,
 )
 
 
@@ -23,6 +25,7 @@ class CallbackURLConfigurationTests(TestCase):
         self.addCleanup(OFEHerkenningConfig.clear_cache)
         self.addCleanup(OFDigiDMachtigenConfig.clear_cache)
         self.addCleanup(OFEHerkenningBewindvoeringConfig.clear_cache)
+        self.addCleanup(OFEIDASConfig.clear_cache)
 
     @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
     def test_legacy_settings(self):
@@ -52,6 +55,8 @@ class CallbackURLConfigurationTests(TestCase):
             OFEHerkenningConfig,
             OFDigiDMachtigenConfig,
             OFEHerkenningBewindvoeringConfig,
+            OFEIDASConfig,
+            OFEIDASCompanyConfig,
         )
 
         for config_cls in cases:

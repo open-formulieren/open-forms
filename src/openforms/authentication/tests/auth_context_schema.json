@@ -8,6 +8,8 @@
     {"$ref": "#/$defs/digid/schemas/withMandate"},
     {"$ref": "#/$defs/eherkenning/schemas/withoutMandate"},
     {"$ref": "#/$defs/eherkenning/schemas/withMandate"},
+    {"$ref": "#/$defs/eidas/schemas/withNaturalPerson"},
+    {"$ref": "#/$defs/eidas/schemas/withCompany"},
     {"$ref": "#/$defs/yivi/schemas/withNaturalPerson"},
     {"$ref": "#/$defs/yivi/schemas/withCompany"},
     {"$ref": "#/$defs/yivi/schemas/withPseudo"}
@@ -471,6 +473,164 @@
             {"$ref": "#/$defs/eherkenning/mandate:company"}
           ],
           "unevaluatedProperties": false
+        }
+      }
+    },
+
+    "eidas": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate eIDAS authentication.",
+        "const": "eidas"
+      },
+      "loa": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/eIDAS+Levels+of+Assurance defines the available levels of assurance.",
+        "type": "string",
+        "enum": [
+          "low",
+          "substantial",
+          "high"
+        ]
+      },
+      "service": {
+        "title": "A service reference",
+        "description": "eIDAS mandates are bound to a single service. A service is identified by its ID.",
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "mandate": {
+        "title": "Mandate context",
+        "description": "Additional context describing the extent of the mandate. At least one dimension/property must be provided.",
+        "type": "object",
+        "required": [],
+        "properties": {
+          "services": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/eidas/service"}
+          }
+        },
+        "additionalProperties": false
+      },
+
+      "naturalPerson": {
+        "title": "Properties for an eIDAS natural person",
+        "type": "object",
+        "required": ["identifierType", "identifier", "firstName", "familyName", "dateOfBirth"],
+        "properties": {
+          "identifierType": {
+            "description": "A natural person can be identified by a range of identification values.",
+            "type": "string",
+            "enum": [
+              "bsn",
+              "nationalID",
+              "opaque"
+            ]
+          },
+          "identifier": {
+            "description": "The identifier could be a bsn, pseudonym or any other european person identification, so we cannot apply some sort detailed specification or validation.",
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "familyName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+
+      "company": {
+        "title": "Properties for an eIDAS company",
+        "type": "object",
+        "required": ["identifierType", "identifier", "companyName"],
+        "properties": {
+          "identifierType": {
+            "description": "A company will be identified by a opaque string containing; country code, schema type and a unique identification number.",
+            "const": "opaque"
+          },
+          "identifier": {
+            "description": "A pseudonym value, structured as `<CountryCode>/<Scheme>/<IDValue>`, identifying the company.",
+            "type": "string",
+            "pattern": "^[A-Z]{2}\/[A-Z0-9-]+\/[A-Z0-9-]+$"
+          },
+          "companyName": {
+            "type": "string"
+          }
+        }
+      },
+
+      "schemas": {
+        "withNaturalPerson": {
+          "title": "Authentication context data schema for eIDAS representing a natural person without company information.",
+          "$comment": "This schema contains experimental features. Subject to change.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/eidas/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/eidas/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The user that is authorized.",
+              "type": "object",
+              "required": ["legalSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/eidas/naturalPerson"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withCompany": {
+          "title": "Authentication context data schema for eIDAS representing a natural person with company information.",
+          "$comment": "This schema contains experimental features. Subject to change.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee",
+            "mandate"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/eidas/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/eidas/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The user that is authorized.",
+              "type": "object",
+              "required": ["legalSubject", "actingSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/eidas/company"
+                },
+                "actingSubject": {
+                  "$ref": "#/$defs/eidas/naturalPerson"
+                }
+              },
+              "additionalProperties": false
+            },
+            "mandate": {"$ref": "#/$defs/eidas/mandate"}
+          },
+          "additionalProperties": false
         }
       }
     },

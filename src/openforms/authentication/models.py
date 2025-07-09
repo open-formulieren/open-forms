@@ -23,6 +23,8 @@ from .types import (
     DigiDMachtigenContext,
     EHerkenningContext,
     EHerkenningMachtigenContext,
+    EIDASCompanyContext,
+    EIDASContext,
     EmployeeContext,
     YiviContext,
 )
@@ -273,6 +275,8 @@ class AuthInfo(BaseAuthInfo):
         | DigiDMachtigenContext
         | EHerkenningContext
         | EHerkenningMachtigenContext
+        | EIDASContext
+        | EIDASCompanyContext
         | EmployeeContext
         | YiviContext
     ):

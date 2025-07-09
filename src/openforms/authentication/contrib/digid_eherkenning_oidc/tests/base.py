@@ -6,6 +6,9 @@ from django.test import override_settings
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from django_webtest import WebTest
 
+from openforms.authentication.contrib.digid_eherkenning_oidc.choices import (
+    EIDASAssuranceLevels,
+)
 from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -25,6 +28,35 @@ mock_digid_config = partial(
     oidc_rp_scopes_list=["openid", "bsn"],
     loa_claim=["authsp_level"],
     default_loa=DigiDAssuranceLevels.middle,
+)
+
+mock_eidas_config = partial(
+    mock_config,
+    model="OFEIDASConfig",
+    oidc_rp_scopes_list=["openid", "eidas"],
+    loa_claim=["authsp_level"],
+    legal_subject_identifier_claim=["person_identifier"],
+    legal_subject_identifier_type_claim=["person_identifier_type"],
+    legal_subject_first_name_claim=["first_name"],
+    legal_subject_family_name_claim=["family_name"],
+    legal_subject_date_of_birth_claim=["birthdate"],
+    default_loa=EIDASAssuranceLevels.low,
+)
+
+mock_eidas_company_config = partial(
+    mock_config,
+    model="OFEIDASCompanyConfig",
+    oidc_rp_scopes_list=["openid", "eidas"],
+    loa_claim=["authsp_level"],
+    legal_subject_identifier_claim=["company_identifier"],
+    legal_subject_name_claim=["company_name"],
+    acting_subject_identifier_claim=["person_identifier"],
+    acting_subject_identifier_type_claim=["person_identifier_type"],
+    acting_subject_first_name_claim=["first_name"],
+    acting_subject_family_name_claim=["family_name"],
+    acting_subject_date_of_birth_claim=["birthdate"],
+    mandate_service_id_claim=["service_id"],
+    default_loa=EIDASAssuranceLevels.low,
 )
 
 mock_eherkenning_config = partial(

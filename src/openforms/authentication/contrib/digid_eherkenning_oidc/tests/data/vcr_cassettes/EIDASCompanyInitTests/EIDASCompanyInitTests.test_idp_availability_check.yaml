@@ -1,0 +1,26 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.2
+    method: GET
+    uri: http://localhost:8080/i-dont-exist
+  response:
+    body:
+      string: '{"error":"Unable to find matching target resource method"}'
+    headers:
+      Content-Type:
+      - application/json
+      content-length:
+      - '58'
+    status:
+      code: 404
+      message: Not Found
+version: 1

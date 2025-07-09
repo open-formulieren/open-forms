@@ -125,3 +125,55 @@ class YiviContext(TypedDict):
         "unknown",
     ]
     authorizee: YiviAuthorizee
+
+
+class EIDASNaturalPersonSubject(TypedDict):
+    identifierType: Literal["bsn", "nationalID", "opaque"]
+    identifier: str
+    firstName: str
+    familyName: str
+    dateOfBirth: str
+
+
+class EIDASCompanySubject(TypedDict):
+    identifierType: Literal["opaque"]
+    identifier: str
+    companyName: str
+
+
+class EIDASNaturalPersonAuthorizee(TypedDict):
+    legalSubject: EIDASNaturalPersonSubject
+
+
+class EIDASCompanyAuthorizee(TypedDict):
+    legalSubject: EIDASCompanySubject
+    actingSubject: EIDASNaturalPersonSubject
+
+
+class EIDASService(TypedDict):
+    id: str
+
+
+class EIDASMandate(TypedDict):
+    services: list[EIDASService]
+
+
+class EIDASContext(TypedDict):
+    source: Literal["eidas"]
+    levelOfAssurance: Literal[
+        "low",
+        "substantial",
+        "high",
+    ]
+    authorizee: EIDASNaturalPersonAuthorizee
+
+
+class EIDASCompanyContext(TypedDict):
+    source: Literal["eidas"]
+    levelOfAssurance: Literal[
+        "low",
+        "substantial",
+        "high",
+    ]
+    authorizee: EIDASCompanyAuthorizee
+    mandate: EIDASMandate
