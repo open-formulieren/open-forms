@@ -554,6 +554,36 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
+    "id" : "d4b37044-82a9-4010-b3c3-af0fd40336ef",
+    "createdTimestamp" : 1752048653095,
+    "username" : "eidas-person-national",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "attributes" : {
+      "birthdate" : [ "1946-01-25" ],
+      "person_identifier" : [ "070770-905D" ],
+      "service_uuid" : [ "e922b4a2-4313-4e47-b59d-7aea595822b5" ],
+      "actingSubjectID" : [ "BAhmWbLiP6ykmsq7FSg5IXnMLibwZQmBevc6s408FIR3yYIwveaCrfYBjeDeYTuJ6QD02zlb2WWAyfOt" ],
+      "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
+      "person_identifier_type" : [ "national_id" ],
+      "first_name" : [ "John" ],
+      "family_name" : [ "Doe" ]
+    },
+    "credentials" : [ {
+      "id" : "03981523-6a5b-45bf-8c40-0c8d62b47aeb",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1752049055260,
+      "secretData" : "{\"value\":\"fCf2lgNWUQGs+FH/5Gp7OqJGxUcmFy5EqNMHWRZqn5s=\",\"salt\":\"xRDPhVv7vouMRho9oe4XUA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-test" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "a28aac19-6ac5-4ce5-bbe3-b6c24051914a",
     "createdTimestamp" : 1707141299906,
     "username" : "service-account-testid",

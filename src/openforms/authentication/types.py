@@ -128,7 +128,7 @@ class YiviContext(TypedDict):
 
 
 class EIDASNaturalPersonSubject(TypedDict):
-    identifierType: Literal["bsn", "national_id", "opaque"]
+    identifierType: Literal["bsn", "nationalID", "opaque"]
     identifier: str
     firstName: str
     familyName: str

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import NotRequired, TypedDict
+from typing import NotRequired, TypedDict, assert_never
 
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
@@ -225,11 +225,15 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
         return LoginLogo(title=self.get_label(), **get_eidas_logo(request))
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASContext:
-        legal_subject_identifier_type = (
-            auth_info.attribute
-            if auth_info.attribute != AuthAttribute.pseudo
-            else "opaque"
-        )
+        match auth_info.attribute:
+            case AuthAttribute.national_id:
+                legal_subject_identifier_type = "nationalID"
+            case AuthAttribute.bsn:
+                legal_subject_identifier_type = "bsn"
+            case AuthAttribute.pseudo:
+                legal_subject_identifier_type = "opaque"
+            case _:
+                assert_never(auth_info.acting_subject_identifier_type)
 
         return {
             "source": "eidas",
@@ -330,11 +334,15 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
         return LoginLogo(title=self.get_label(), **get_eidas_logo(request))
 
     def auth_info_to_auth_context(self, auth_info: AuthInfo) -> EIDASCompanyContext:
-        acting_subject_identifier_type = (
-            auth_info.acting_subject_identifier_type
-            if auth_info.acting_subject_identifier_type != AuthAttribute.pseudo
-            else "opaque"
-        )
+        match auth_info.acting_subject_identifier_type:
+            case AuthAttribute.national_id:
+                acting_subject_identifier_type = "nationalID"
+            case AuthAttribute.bsn:
+                acting_subject_identifier_type = "bsn"
+            case AuthAttribute.pseudo:
+                acting_subject_identifier_type = "opaque"
+            case _:
+                assert_never(auth_info.acting_subject_identifier_type)
 
         return {
             "source": "eidas",

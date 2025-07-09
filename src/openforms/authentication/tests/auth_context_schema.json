@@ -687,7 +687,7 @@
             "type": "string",
             "enum": [
               "bsn",
-              "national_id",
+              "nationalID",
               "opaque"
             ]
           },

@@ -18,6 +18,7 @@ from django.urls import reverse
 
 from django_webtest import DjangoTestApp
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.utils import AuthContextAssertMixin, URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
@@ -121,6 +122,37 @@ class EIDASAuthContextTests(
                     "legalSubject": {
                         "identifierType": "bsn",
                         "identifier": "123456789",
+                        "firstName": "John",
+                        "familyName": "Doe",
+                        "dateOfBirth": "1946-01-25",
+                    },
+                },
+            },
+        )
+
+    @mock_eidas_config()
+    def test_record_auth_context_for_eidas_natural_national_person_authentication(self):
+        self._login_and_start_form(
+            "eidas_oidc",
+            username="eidas-person-national",
+            password="eidas-person-national",
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        self.assertEqual(submission.auth_info.attribute, AuthAttribute.national_id)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(
+            auth_context,
+            {
+                "source": "eidas",
+                "levelOfAssurance": "low",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "nationalID",
+                        "identifier": "070770-905D",
                         "firstName": "John",
                         "familyName": "Doe",
                         "dateOfBirth": "1946-01-25",
