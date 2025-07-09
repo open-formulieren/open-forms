@@ -107,6 +107,12 @@
       "value": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
     }
   ],
+  "/kZu2e": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -493,6 +499,12 @@
       "value": "Weergavestijl"
     }
   ],
+  "3rmiz8": [
+    {
+      "type": 0,
+      "value": "FirstNames"
+    }
+  ],
   "3z1hhJ": [
     {
       "type": 0,
@@ -843,6 +855,12 @@
       "value": "Additional attributes groups"
     }
   ],
+  "7E8B/6": [
+    {
+      "type": 0,
+      "value": "Enable selection"
+    }
+  ],
   "7F64bK": [
     {
       "type": 0,
@@ -1099,6 +1117,12 @@
     {
       "type": 0,
       "value": "Niet privacy-gevoelig"
+    }
+  ],
+  "96yhxP": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "9AQi2/": [
@@ -1772,6 +1796,12 @@
       "value": "Plugin"
     }
   ],
+  "DaG+4u": [
+    {
+      "type": 0,
+      "value": "Partners roltype"
+    }
+  ],
   "DaxIUG": [
     {
       "type": 0,
@@ -2232,6 +2262,12 @@
       "value": "Extra elementen"
     }
   ],
+  "H9I1Lx": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
   "HCfL9x": [
     {
       "type": 0,
@@ -2452,10 +2488,10 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
-  "JKq3TC": [
+  "JKnHMC": [
     {
       "type": 0,
-      "value": "Medewerkerroltype"
+      "value": "Lastname"
     }
   ],
   "JRGs/Q": [
@@ -2530,6 +2566,12 @@
     {
       "type": 0,
       "value": " vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap."
+    }
+  ],
+  "K3xA0z": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
     }
   ],
   "KClY/2": [
@@ -2758,6 +2800,12 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
+    }
+  ],
+  "M2+MHj": [
+    {
+      "type": 0,
+      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -3110,6 +3158,12 @@
     {
       "type": 0,
       "value": "Weergave/layout"
+    }
+  ],
+  "PtKaEy": [
+    {
+      "type": 0,
+      "value": "The description that will be used in partners registration."
     }
   ],
   "PtZ96W": [
@@ -4221,6 +4275,12 @@
       "value": "TITLE-parameter"
     }
   ],
+  "ZYWsHs": [
+    {
+      "type": 0,
+      "value": "Date of birth"
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -4769,6 +4829,18 @@
       "value": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen."
     }
   ],
+  "dzIRgm": [
+    {
+      "type": 0,
+      "value": "Partners description"
+    }
+  ],
+  "e09gXO": [
+    {
+      "type": 0,
+      "value": "Allow the selection of specific children that are retrieved from the external source for further processing."
+    }
+  ],
   "eAmrdi": [
     {
       "type": 0,
@@ -5297,6 +5369,12 @@
     {
       "type": 0,
       "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
+    }
+  ],
+  "hkXaC1": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "huHjRm": [
@@ -6549,6 +6627,12 @@
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
     }
   ],
+  "sFWqtz": [
+    {
+      "type": 0,
+      "value": "Medewerkerroltype"
+    }
+  ],
   "sNGN82": [
     {
       "type": 0,
@@ -6745,12 +6829,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "tzwS3S": [
-    {
-      "type": 0,
-      "value": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen."
     }
   ],
   "u+IP17": [
@@ -7165,6 +7243,12 @@
     {
       "type": 0,
       "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt."
+    }
+  ],
+  "yO/Vkd": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
     }
   ],
   "yQUV3M": [

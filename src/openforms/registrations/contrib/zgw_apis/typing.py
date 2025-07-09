@@ -41,6 +41,8 @@ class RegistrationOptions(TypedDict):
     organisatie_rsin: NotRequired[str]
     zaak_vertrouwelijkheidaanduiding: NotRequired[VertrouwelijkheidAanduiding]
     medewerker_roltype: NotRequired[str]
+    partners_roltype: str
+    partners_description: str
     objects_api_group: ObjectsAPIGroupConfig | None
     objecttype: NotRequired[str]
     objecttype_version: NotRequired[int]
