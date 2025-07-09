@@ -232,7 +232,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
                 legal_subject_identifier_type = "bsn"
             case AuthAttribute.pseudo:
                 legal_subject_identifier_type = "opaque"
-            case _:
+            case _:  # pragma: no cover
                 assert_never(auth_info.acting_subject_identifier_type)
 
         return {
@@ -341,7 +341,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
                 acting_subject_identifier_type = "bsn"
             case AuthAttribute.pseudo:
                 acting_subject_identifier_type = "opaque"
-            case _:
+            case _:  # pragma: no cover
                 assert_never(auth_info.acting_subject_identifier_type)
 
         return {
