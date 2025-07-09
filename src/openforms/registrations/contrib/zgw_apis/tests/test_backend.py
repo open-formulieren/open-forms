@@ -29,6 +29,7 @@ from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
+from ....exceptions import RegistrationFailed
 from ..client import get_documents_client, get_zaken_client
 from ..plugin import ZGWRegistration
 from ..typing import RegistrationOptions
@@ -2096,3 +2097,217 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 "second property": "a value",
             },
         )
+
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.get_last_confirmation_email",
+        side_effect=[("HTML content 1", 1), ("HTML content 2", 2)],
+    )
+    def test_confirmation_emails_are_attached_when_updating_registration(
+        self, mock_get_last_email
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={"someText": "Foo"},
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            confirmation_email_sent=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # Full registration
+        plugin.register_submission(submission, options)
+
+        # Confirmation email updates
+        for _ in range(2):
+            result = plugin.update_registration_with_confirmation_email(
+                submission, options
+            )
+            assert result is not None
+
+        result = submission.registration_result
+        self.assertEqual(len(result["intermediate"]["confirmation_emails"]), 2)
+
+        for document in result["intermediate"]["confirmation_emails"].values():
+            document_data = document["document"]
+            self.assertEqual(document_data["bronorganisatie"], "000000000")
+            self.assertEqual(document_data["formaat"], "application/pdf")
+            self.assertEqual(document_data["vertrouwelijkheidaanduiding"], "openbaar")
+            self.assertEqual(document_data["taal"], "nld")
+            self.assertEqual(document_data["titel"], "Bevestigingsmail")
+
+        with get_zaken_client(self.zgw_group) as zaken_client:
+            zios = zaken_client.get(
+                "zaakinformatieobjecten", params={"zaak": result["zaak"]["url"]}
+            ).json()
+            # One for the submission report pdf and two for the confirmation emails
+            self.assertEqual(len(zios), 3)
+
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.get_last_confirmation_email",
+        return_value=("HTML content", 1),
+    )
+    def test_confirmation_email_is_only_attached_once(self, mock_get_last_email):
+        """
+        Can occur when sending another confirmation email has failed for whatever
+        reason.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={"someText": "Foo"},
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            confirmation_email_sent=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # Full registration
+        plugin.register_submission(submission, options)
+
+        # Confirmation email updates
+        for _ in range(2):
+            result = plugin.update_registration_with_confirmation_email(
+                submission, options
+            )
+            assert result is not None
+
+        result = submission.registration_result
+        self.assertEqual(len(result["intermediate"]["confirmation_emails"]), 1)
+
+        with get_zaken_client(self.zgw_group) as zaken_client:
+            zios = zaken_client.get(
+                "zaakinformatieobjecten", params={"zaak": result["zaak"]["url"]}
+            ).json()
+            # One for the submission report pdf and only one confirmation email
+            self.assertEqual(len(zios), 2)
+
+    def test_updating_registration_skips_when_confirmation_email_was_not_sent(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={"someText": "Foo"},
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            confirmation_email_sent=False,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+
+        self.assertIsNone(
+            plugin.update_registration_with_confirmation_email(submission, options)
+        )
+
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.get_last_confirmation_email",
+        return_value=None,
+    )
+    def test_updating_registration_raises_when_confirmation_email_was_not_found(
+        self, mock_get_last_email
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "someText",
+                    "label": "Some text",
+                }
+            ],
+            submitted_data={"someText": "Foo"},
+            bsn="123456782",
+            completed=True,
+            # Pin to a known case & document type version
+            completed_on=datetime(2024, 6, 9, 15, 30, 0).replace(tzinfo=UTC),
+            confirmation_email_sent=True,
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "TEST",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZT-001",
+            "document_type_description": "Attachment Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "objects_api_group": None,
+            "product_url": "",
+        }
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # Full registration
+        plugin.register_submission(submission, options)
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.update_registration_with_confirmation_email(submission, options)
