@@ -1,6 +1,9 @@
 from django.test import TestCase
+from django.test.client import RequestFactory
 
-from openforms.authentication.constants import AuthAttribute
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
+
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.yivi_oidc.config import YiviOptions
 from openforms.authentication.contrib.yivi_oidc.models import (
     YiviOpenIDConnectConfig,
@@ -265,3 +268,124 @@ class YiviPluginExtractAdditionalClaimsTest(TestCase):
 
         extracted_claims = plugin.extract_additional_claims(plugin_options, data)
         self.assertEqual(extracted_claims, {"firstname": "bob"})
+
+
+class YiviPluginCheckRequirementsTest(TestCase):
+    """
+    Testing the Yivi plugin ``check_requirements`` function.
+
+    Until we have a proper setup for Yivi auth_flow_callback tests, we need to
+    test/validate the ``check_requirements`` manually. Once Yivi auth_flow_callback is
+    possible, these tests should be replaced with an actual Yivi authentication test
+    implementation.
+    """
+
+    def test_valid_check_requirements_for_pseudo_auth(self):
+        request = RequestFactory().get("/")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "loa": "unknown",
+                "attribute": AuthAttribute.pseudo,
+            }
+        }
+
+        plugin_options: YiviOptions = {
+            "authentication_options": [
+                AuthAttribute.pseudo,
+                AuthAttribute.kvk,
+                AuthAttribute.bsn,
+            ],
+            "additional_attributes_groups": [],
+            "bsn_loa": DigiDAssuranceLevels.high,
+            "kvk_loa": AssuranceLevels.high,
+        }
+
+        self.assertTrue(plugin.check_requirements(request, plugin_options))
+
+    def test_valid_check_requirements_for_bsn_auth(self):
+        request = RequestFactory().get("/")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "loa": "unknown",
+                "attribute": AuthAttribute.pseudo,
+            }
+        }
+        plugin_options: YiviOptions = {
+            "authentication_options": [
+                AuthAttribute.pseudo,
+                AuthAttribute.kvk,
+                AuthAttribute.bsn,
+            ],
+            "additional_attributes_groups": [],
+            "bsn_loa": DigiDAssuranceLevels.high,
+            "kvk_loa": AssuranceLevels.high,
+        }
+
+        self.assertTrue(plugin.check_requirements(request, plugin_options))
+
+    def test_invalid_check_requirements_for_bsn_auth_with_loa_below_plugin_requirement(
+        self,
+    ):
+        request = RequestFactory().get("/")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "loa": DigiDAssuranceLevels.substantial,
+                "attribute": AuthAttribute.bsn,
+            }
+        }
+        plugin_options: YiviOptions = {
+            "authentication_options": [
+                AuthAttribute.pseudo,
+                AuthAttribute.kvk,
+                AuthAttribute.bsn,
+            ],
+            "additional_attributes_groups": [],
+            "bsn_loa": DigiDAssuranceLevels.high,
+            "kvk_loa": AssuranceLevels.high,
+        }
+
+        self.assertFalse(plugin.check_requirements(request, plugin_options))
+
+    def test_valid_check_requirements_for_kvk_auth(self):
+        request = RequestFactory().get("/")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "loa": AssuranceLevels.high,
+                "attribute": AuthAttribute.kvk,
+            }
+        }
+        plugin_options: YiviOptions = {
+            "authentication_options": [
+                AuthAttribute.pseudo,
+                AuthAttribute.kvk,
+                AuthAttribute.bsn,
+            ],
+            "additional_attributes_groups": [],
+            "bsn_loa": DigiDAssuranceLevels.high,
+            "kvk_loa": AssuranceLevels.high,
+        }
+
+        self.assertTrue(plugin.check_requirements(request, plugin_options))
+
+    def test_invalid_check_requirements_for_kvk_auth_with_loa_below_plugin_requirement(
+        self,
+    ):
+        request = RequestFactory().get("/")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "loa": AssuranceLevels.substantial,
+                "attribute": AuthAttribute.kvk,
+            }
+        }
+        plugin_options: YiviOptions = {
+            "authentication_options": [
+                AuthAttribute.pseudo,
+                AuthAttribute.kvk,
+                AuthAttribute.bsn,
+            ],
+            "additional_attributes_groups": [],
+            "bsn_loa": DigiDAssuranceLevels.high,
+            "kvk_loa": AssuranceLevels.high,
+        }
+
+        self.assertFalse(plugin.check_requirements(request, plugin_options))
