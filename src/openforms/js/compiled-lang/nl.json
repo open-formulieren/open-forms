@@ -107,6 +107,12 @@
       "value": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
     }
   ],
+  "/kZu2e": [
+    {
+      "type": 0,
+      "value": "Initials"
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -2452,6 +2458,12 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
+  "JKnHMC": [
+    {
+      "type": 0,
+      "value": "Lastname"
+    }
+  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -2758,6 +2770,12 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
+    }
+  ],
+  "M2+MHj": [
+    {
+      "type": 0,
+      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -4221,6 +4239,12 @@
       "value": "TITLE-parameter"
     }
   ],
+  "ZYWsHs": [
+    {
+      "type": 0,
+      "value": "Date of birth"
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -5297,6 +5321,12 @@
     {
       "type": 0,
       "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
+    }
+  ],
+  "hkXaC1": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "huHjRm": [
