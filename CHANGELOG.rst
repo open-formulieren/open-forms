@@ -6,7 +6,7 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.0.9 (2025-07-11)
+3.0.9 (2025-07-09)
 ==================
 
 Final bugfix release in the ``3.0.x`` series.
