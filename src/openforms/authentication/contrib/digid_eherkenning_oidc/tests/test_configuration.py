@@ -8,6 +8,7 @@ from ..models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASCompanyConfig,
     OFEIDASConfig,
 )
 
@@ -36,7 +37,6 @@ class CallbackURLConfigurationTests(TestCase):
                 OFEHerkenningBewindvoeringConfig,
                 "/eherkenning-bewindvoering-oidc/callback/",
             ),
-            (OFEIDASConfig, "/eidas-oidc/callback/"),
         )
 
         for config_cls, expected_url in cases:
@@ -56,6 +56,7 @@ class CallbackURLConfigurationTests(TestCase):
             OFDigiDMachtigenConfig,
             OFEHerkenningBewindvoeringConfig,
             OFEIDASConfig,
+            OFEIDASCompanyConfig,
         )
 
         for config_cls in cases:

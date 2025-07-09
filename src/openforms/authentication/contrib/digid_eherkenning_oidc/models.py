@@ -92,72 +92,37 @@ class OFEHerkenningConfig(EHerkenningConfig):
 
 @default_loa_choices(EIDASAssuranceLevels)
 class OFEIDASConfig(BaseConfig):
-    get_callback_view = get_callback_view
-    of_oidcdb_required_claims = [
-        "first_name_claim",
-        "family_name_claim",
-        "date_of_birth_claim",
-        "person_identifier_claim",
-    ]
-
-    person_identifier_claim = ClaimField(
-        verbose_name=_("person identifier claim"),
+    legal_subject_identifier_claim = ClaimField(
+        verbose_name=_("legal subject identifier claim"),
         default=ClaimFieldDefault("urn:etoegang:1.12:EntityConcernedID:PseudoID"),
         help_text=_(
             "Name of the claim holding the identifier of the authenticated user."
         ),
     )
-    person_identifier_type_claim = ClaimField(
-        verbose_name=_("person identifier type claim"),
+    legal_subject_identifier_type_claim = ClaimField(
+        verbose_name=_("legal subject identifier type claim"),
         default=ClaimFieldDefault("namequalifier"),
         help_text=_(
             "Claim that specifies how the person identifier claim must be interpreted. "
             "The expected claim value is one of: 'bsn', 'pseudo' or 'national_id'."
         ),
     )
-    first_name_claim = ClaimField(
-        verbose_name=_("person first name claim"),
+    legal_subject_first_name_claim = ClaimField(
+        verbose_name=_("legal subject first name claim"),
         default=ClaimFieldDefault("urn:etoegang:1.9:attribute:FirstName"),
         help_text=_("Claim that holds the legal name of the authenticated user."),
     )
-    family_name_claim = ClaimField(
-        verbose_name=_("person family name claim"),
+    legal_subject_family_name_claim = ClaimField(
+        verbose_name=_("legal subject family name claim"),
         default=ClaimFieldDefault("urn:etoegang:1.9:attribute:FamilyName"),
         help_text=_(
             "Claim that holds the legal family name of the authenticated user."
         ),
     )
-    date_of_birth_claim = ClaimField(
-        verbose_name=_("person date of birth claim"),
+    legal_subject_date_of_birth_claim = ClaimField(
+        verbose_name=_("legal subject date of birth claim"),
         default=ClaimFieldDefault("urn:etoegang:1.9:attribute:DateOfBirth"),
         help_text=_("Claim that holds the legal birthdate of the authenticated user."),
-    )
-    mandate_service_id_claim = ClaimField(
-        verbose_name=_("service ID claim"),
-        default=ClaimFieldDefault("urn:etoegang:core:ServiceID"),
-        help_text=_(
-            "Name of the claim holding the service ID for which the acting subject "
-            "is authorized."
-        ),
-    )
-
-    company_identifier_claim = ArrayField(
-        verbose_name=_("company identifier claim"),
-        default=ClaimFieldDefault(
-            "urn:etoegang:1.11:EntityConcernedID:eIDASLegalIdentifier"
-        ),
-        base_field=models.CharField("claim path segment", max_length=100),
-        help_text=_(
-            "Name of the claim holding the identifier of the authenticated company."
-        ),
-    )
-    company_name_claim = ArrayField(
-        verbose_name=_("company name claim"),
-        default=ClaimFieldDefault(
-            "urn:etoegang:1.11:attribute-represented:CompanyName"
-        ),
-        base_field=models.CharField("claim path segment", max_length=100),
-        help_text=_("Claim that holds the name of the authenticated company."),
     )
 
     oidc_rp_scopes_list = ArrayField(
@@ -171,15 +136,20 @@ class OFEIDASConfig(BaseConfig):
         ),
     )
 
+    get_callback_view = get_callback_view
+    of_oidcdb_required_claims = [
+        "legal_subject_identifier_claim",
+        "legal_subject_first_name_claim",
+        "legal_subject_family_name_claim",
+        "legal_subject_date_of_birth_claim",
+    ]
+
     CLAIMS_CONFIGURATION = (
-        {"field": "first_name_claim", "required": True},
-        {"field": "family_name_claim", "required": True},
-        {"field": "date_of_birth_claim", "required": True},
-        {"field": "person_identifier_claim", "required": True},
-        {"field": "person_identifier_type_claim", "required": True},
-        {"field": "mandate_service_id_claim", "required": False},
-        {"field": "company_identifier_claim", "required": False},
-        {"field": "company_name_claim", "required": False},
+        {"field": "legal_subject_identifier_claim", "required": True},
+        {"field": "legal_subject_identifier_type_claim", "required": True},
+        {"field": "legal_subject_first_name_claim", "required": True},
+        {"field": "legal_subject_family_name_claim", "required": True},
+        {"field": "legal_subject_date_of_birth_claim", "required": True},
     )
 
     class Meta:
@@ -187,7 +157,111 @@ class OFEIDASConfig(BaseConfig):
 
     @property
     def oidcdb_username_claim(self):
-        return self.person_identifier_claim
+        return self.legal_subject_identifier_claim
+
+    @classproperty
+    def oidc_authentication_callback_url(cls) -> str:
+        return "oidc_authentication_callback"
+
+
+@default_loa_choices(EIDASAssuranceLevels)
+class OFEIDASCompanyConfig(BaseConfig):
+    legal_subject_identifier_claim = ArrayField(
+        verbose_name=_("company identifier claim"),
+        default=ClaimFieldDefault(
+            "urn:etoegang:1.11:EntityConcernedID:eIDASLegalIdentifier"
+        ),
+        base_field=models.CharField("claim path segment", max_length=100),
+        help_text=_(
+            "Name of the claim holding the identifier of the authenticated company."
+        ),
+    )
+    legal_subject_name_claim = ArrayField(
+        verbose_name=_("company name claim"),
+        default=ClaimFieldDefault(
+            "urn:etoegang:1.11:attribute-represented:CompanyName"
+        ),
+        base_field=models.CharField("claim path segment", max_length=100),
+        help_text=_("Claim that holds the name of the authenticated company."),
+    )
+
+    acting_subject_identifier_claim = ClaimField(
+        verbose_name=_("acting subject identifier claim"),
+        default=ClaimFieldDefault("urn:etoegang:1.12:EntityConcernedID:PseudoID"),
+        help_text=_("Name of the claim holding the identifier of the acting subject."),
+    )
+    acting_subject_identifier_type_claim = ClaimField(
+        verbose_name=_("acting subject identifier type claim"),
+        default=ClaimFieldDefault("namequalifier"),
+        help_text=_(
+            "Claim that specifies how the acting subject identifier claim must be "
+            "interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
+            "'national_id'."
+        ),
+    )
+    acting_subject_first_name_claim = ClaimField(
+        verbose_name=_("acting subject first name claim"),
+        default=ClaimFieldDefault("urn:etoegang:1.9:attribute:FirstName"),
+        help_text=_("Claim that holds the legal name of the acting subject."),
+    )
+    acting_subject_family_name_claim = ClaimField(
+        verbose_name=_("acting subject family name claim"),
+        default=ClaimFieldDefault("urn:etoegang:1.9:attribute:FamilyName"),
+        help_text=_("Claim that holds the legal family name of the acting subject."),
+    )
+    acting_subject_date_of_birth_claim = ClaimField(
+        verbose_name=_("acting subject date of birth claim"),
+        default=ClaimFieldDefault("urn:etoegang:1.9:attribute:DateOfBirth"),
+        help_text=_("Claim that holds the legal birthdate of the acting subject."),
+    )
+    mandate_service_id_claim = ClaimField(
+        verbose_name=_("service ID claim"),
+        default=ClaimFieldDefault("urn:etoegang:core:ServiceID"),
+        help_text=_(
+            "Name of the claim holding the service ID for which the acting subject "
+            "is authorized."
+        ),
+    )
+
+    oidc_rp_scopes_list = ArrayField(
+        verbose_name=_("OpenID Connect scopes"),
+        base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
+        default=["openid", "profile", "legal"],
+        blank=True,
+        help_text=_(
+            "OpenID Connect scopes that are requested during login. "
+            "These scopes are hardcoded and must be supported by the identity provider."
+        ),
+    )
+
+    get_callback_view = get_callback_view
+    of_oidcdb_required_claims = [
+        "legal_subject_identifier_claim",
+        "legal_subject_name_claim",
+        "acting_subject_identifier_claim",
+        "acting_subject_first_name_claim",
+        "acting_subject_family_name_claim",
+        "acting_subject_date_of_birth_claim",
+        "mandate_service_id_claim",
+    ]
+
+    CLAIMS_CONFIGURATION = (
+        {"field": "legal_subject_identifier_claim", "required": True},
+        {"field": "legal_subject_name_claim", "required": True},
+        {"field": "acting_subject_identifier_claim", "required": True},
+        {"field": "acting_subject_identifier_type_claim", "required": True},
+        {"field": "acting_subject_first_name_claim", "required": True},
+        {"field": "acting_subject_family_name_claim", "required": True},
+        {"field": "acting_subject_date_of_birth_claim", "required": True},
+        {"field": "mandate_service_id_claim", "required": True},
+    )
+
+    class Meta:
+        verbose_name = _("eIDAS for companies (OIDC)")
+
+    @property
+    def oidcdb_username_claim(self):
+        return self.legal_subject_identifier_claim
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:

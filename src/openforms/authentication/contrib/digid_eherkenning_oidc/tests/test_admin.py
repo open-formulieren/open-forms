@@ -17,6 +17,7 @@ from ..models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASCompanyConfig,
     OFEIDASConfig,
 )
 
@@ -306,6 +307,59 @@ class EIDASConfigAdminTests(AdminTestsBase):
         change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
 
         form = change_page.forms["ofeidasconfig_form"]
+        _set_arrayfields(form, self.config)
+
+        # disable the backend
+        form["enabled"] = False
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 200)  # there are validation errors
+        self.config.refresh_from_db()
+        self.assertTrue(self.config.enabled)
+
+
+class EIDASCompanyConfigAdminTests(AdminTestsBase):
+    CHANGE_PAGE_URL = reverse_lazy(
+        "admin:digid_eherkenning_oidc_ofeidascompanyconfig_change"
+    )
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # minimal configuration to pass form validation & not do network IO
+        cls.config = config = OFEIDASCompanyConfig(
+            enabled=True,
+            oidc_rp_client_id="testclient",
+            oidc_rp_client_secret="secret",
+            oidc_op_authorization_endpoint="http://localhost/oidc/auth",
+            oidc_op_token_endpoint="http://localhost/oidc/token",
+            oidc_op_user_endpoint="http://localhost/oidc/userinfo",
+            oidc_op_logout_endpoint="http://localhost/oidc/logout",
+        )
+        config.save()
+        cls.user = SuperUserFactory.create()
+
+    def test_can_disable_backend_iff_unused_in_forms(self):
+        FormFactory.create(authentication_backend="other-backend")
+        change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
+
+        form = change_page.forms["ofeidascompanyconfig_form"]
+        _set_arrayfields(form, self.config)
+
+        # disable the backend
+        form["enabled"] = False
+        response = form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        self.config.refresh_from_db()
+        self.assertFalse(self.config.enabled)
+
+    def test_cannot_disable_backend_if_used_in_any_form(self):
+        FormFactory.create(authentication_backend="eidas_company_oidc")
+        change_page = self.app.get(self.CHANGE_PAGE_URL, user=self.user)
+
+        form = change_page.forms["ofeidascompanyconfig_form"]
         _set_arrayfields(form, self.config)
 
         # disable the backend

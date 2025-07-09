@@ -150,6 +150,14 @@ class EIDASCompanyAuthorizee(TypedDict):
     actingSubject: EIDASNaturalPersonSubject
 
 
+class EIDASService(TypedDict):
+    id: str
+
+
+class EIDASMandate(TypedDict):
+    services: list[EIDASService]
+
+
 class EIDASContext(TypedDict):
     source: Literal["eidas"]
     levelOfAssurance: Literal[
@@ -157,4 +165,15 @@ class EIDASContext(TypedDict):
         "substantial",
         "high",
     ]
-    authorizee: EIDASNaturalPersonAuthorizee | EIDASCompanyAuthorizee
+    authorizee: EIDASNaturalPersonAuthorizee
+
+
+class EIDASCompanyContext(TypedDict):
+    source: Literal["eidas"]
+    levelOfAssurance: Literal[
+        "low",
+        "substantial",
+        "high",
+    ]
+    authorizee: EIDASCompanyAuthorizee
+    mandate: EIDASMandate

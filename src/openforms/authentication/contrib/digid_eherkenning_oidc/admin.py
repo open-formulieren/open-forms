@@ -23,6 +23,7 @@ from .models import (
     OFDigiDMachtigenConfig,
     OFEHerkenningBewindvoeringConfig,
     OFEHerkenningConfig,
+    OFEIDASCompanyConfig,
     OFEIDASConfig,
 )
 
@@ -64,13 +65,34 @@ class EIDASConfigAdmin(SingletonModelAdmin):
     form = admin_modelform_factory(OFEIDASConfig, form=OIDCConfigForm)
     fieldsets = fieldsets_factory(
         claim_mapping_fields=[
-            "person_identifier_claim",
-            "person_identifier_type_claim",
-            "first_name_claim",
-            "family_name_claim",
-            "date_of_birth_claim",
-            "company_identifier_claim",
-            "company_name_claim",
+            "legal_subject_identifier_claim",
+            "legal_subject_identifier_type_claim",
+            "legal_subject_first_name_claim",
+            "legal_subject_family_name_claim",
+            "legal_subject_date_of_birth_claim",
+            "loa_claim",
+            "default_loa",
+            "loa_value_mapping",
+        ]
+    )
+
+
+@admin.register(OFEIDASCompanyConfig)
+class EIDASCompanyConfigAdmin(SingletonModelAdmin):
+    """
+    Configuration for eIDAS authentication for companies via OpenID connect.
+    """
+
+    form = admin_modelform_factory(OFEIDASCompanyConfig, form=OIDCConfigForm)
+    fieldsets = fieldsets_factory(
+        claim_mapping_fields=[
+            "legal_subject_identifier_claim",
+            "legal_subject_name_claim",
+            "acting_subject_identifier_claim",
+            "acting_subject_identifier_type_claim",
+            "acting_subject_first_name_claim",
+            "acting_subject_family_name_claim",
+            "acting_subject_date_of_birth_claim",
             "mandate_service_id_claim",
             "loa_claim",
             "default_loa",

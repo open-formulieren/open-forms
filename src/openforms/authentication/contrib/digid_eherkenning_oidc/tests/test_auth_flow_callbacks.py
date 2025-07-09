@@ -32,6 +32,7 @@ from .base import (
     mock_digid_machtigen_config,
     mock_eherkenning_bewindvoering_config,
     mock_eherkenning_config,
+    mock_eidas_company_config,
     mock_eidas_config,
 )
 
@@ -414,7 +415,7 @@ class EIDASCallbackTests(IntegrationTestsBase):
             submission = Submission.objects.get()
             self.assertTrue(submission.is_authenticated)
 
-    @mock_eidas_config(person_identifier_claim=["absent-claim"])
+    @mock_eidas_config(legal_subject_identifier_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -868,6 +869,169 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.status_code, 200)
         expected_url = furl(url_helper.frontend_start).add(
             {"_eherkenning-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
+
+
+class EIDASCompanyCallbackTests(IntegrationTestsBase):
+    """
+    Test the return/callback side after authenticating with the identity provider.
+    """
+
+    @mock_eidas_company_config()
+    def test_redirects_after_successful_auth(self):
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-company",
+            password="eidas-company",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+    @mock_eidas_company_config()
+    def test_successfully_complete_submission(self):
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-company",
+            password="eidas-company",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(callback_response.request.url, url_helper.frontend_start)
+
+        # assert that we can start a submission
+        with (
+            self.subTest("submission start"),
+            override_settings(
+                ALLOWED_HOSTS=["*"],
+                CORS_ALLOWED_ORIGINS=["http://testserver.com"],
+            ),
+        ):
+            api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+            # make sure csrf cookie is set
+            form_detail_response = self.app.get(api_path)
+            body = {
+                "form": f"http://testserver.com{api_path}",
+                "formUrl": "http://testserver.com/my-form",
+            }
+
+            response = self.app.post_json(
+                reverse("api:submission-list"),
+                body,
+                extra_environ={
+                    "HTTP_X_CSRFTOKEN": form_detail_response.headers["X-CSRFToken"],
+                },
+            )
+
+            self.assertEqual(response.status_code, 201)
+            submission = Submission.objects.get()
+            self.assertTrue(submission.is_authenticated)
+
+    @mock_eidas_company_config(legal_subject_identifier_claim=["absent-claim"])
+    def test_failing_claim_verification(self):
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+        start_response = self.app.get(start_url)
+
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="eidas-company",
+            password="eidas-company",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "eidas_company_oidc"}
+        )
+        self.assertIn("of-auth-problem", callback_response.request.GET)
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+
+    @mock_eidas_company_config(oidc_rp_scopes_list=["badscope"])
+    def test_eidas_company_error_reported_for_cancelled_login_anon_django_user(self):
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+
+        # modify the error parameters - there doesn't seem to be an obvious way to trigger
+        # this via keycloak itself.
+        # Note: this is an example of a specific provider. It may differ when a
+        # different provider is used. According to
+        # https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
+        # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the
+        # error we expect from OIDC.
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
+
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_eidas-message": "login-cancelled"}
+        )
+        assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
+        self.assertEqual(callback_response.request.url, str(expected_url))
+
+    @mock_eidas_company_config(oidc_rp_scopes_list=["badscope"])
+    def test_eidas_company_error_reported_for_cancelled_login_with_staff_django_user(
+        self,
+    ):
+        self.app.set_user(StaffUserFactory.create())
+        form = FormFactory.create(authentication_backend="eidas_company_oidc")
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
+
+        # initialize state, but don't actually log in - we have an invalid config and
+        # keycloak redirects back to our callback URL with error parameters.
+        start_response = self.app.get(start_url)
+        auth_response = requests.get(start_response["Location"], allow_redirects=False)
+
+        # check out assumptions/expectations before proceeding
+        callback_url = furl(auth_response.headers["Location"])
+        assert callback_url.netloc == "testserver"
+        assert "state" in callback_url.args
+        callback_url.args.update(
+            {"error": "access_denied", "error_description": "The user cancelled"}
+        )
+
+        callback_response = self.app.get(str(callback_url), auto_follow=True)
+
+        self.assertEqual(callback_response.status_code, 200)
+        expected_url = furl(url_helper.frontend_start).add(
+            {"_eidas-message": "login-cancelled"}
         )
         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
         self.assertEqual(callback_response.request.url, str(expected_url))

@@ -207,6 +207,10 @@
                 "ofeidasconfig"
             ],
             [
+                "digid_eherkenning_oidc",
+                "ofeidascompanyconfig"
+            ],
+            [
                 "yivi_oidc",
                 "yiviopenidconnectconfig"
             ],

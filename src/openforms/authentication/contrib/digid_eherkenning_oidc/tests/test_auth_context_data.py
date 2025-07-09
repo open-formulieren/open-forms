@@ -29,6 +29,7 @@ from .base import (
     mock_digid_machtigen_config,
     mock_eherkenning_bewindvoering_config,
     mock_eherkenning_config,
+    mock_eidas_company_config,
     mock_eidas_config,
 )
 
@@ -111,20 +112,25 @@ class EIDASAuthContextTests(
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        self.assertEqual(auth_context["source"], "eidas")
         self.assertEqual(
-            auth_context["authorizee"]["legalSubject"],
+            auth_context,
             {
-                "identifierType": "bsn",
-                "identifier": "123456789",
-                "firstName": "John",
-                "familyName": "Doe",
-                "dateOfBirth": "1946-01-25",
+                "source": "eidas",
+                "levelOfAssurance": "low",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "bsn",
+                        "identifier": "123456789",
+                        "firstName": "John",
+                        "familyName": "Doe",
+                        "dateOfBirth": "1946-01-25",
+                    },
+                },
             },
         )
 
-    @mock_eidas_config(person_identifier_type_claim=["invalid-claim"])
-    def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_person_identifier_type_claim(
+    @mock_eidas_config(legal_subject_identifier_type_claim=["invalid-claim"])
+    def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_legal_subject_identifier_type_claim(
         self,
     ):
         self._login_and_start_form(
@@ -133,25 +139,43 @@ class EIDASAuthContextTests(
 
         submission = Submission.objects.get()
         self.assertTrue(submission.is_authenticated)
+        # Assert that, in the absense of the ``legal_subject_identifier_type_claim``,
+        # ``AuthAttribute.pseudo`` was set as the ``auth_info.attribute``.
+        self.assertEqual(submission.auth_info.attribute, AuthAttribute.pseudo)
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        self.assertEqual(auth_context["source"], "eidas")
         self.assertEqual(
-            auth_context["authorizee"]["legalSubject"],
+            auth_context,
             {
-                "identifierType": "opaque",
-                "identifier": "123456789",
-                "firstName": "John",
-                "familyName": "Doe",
-                "dateOfBirth": "1946-01-25",
+                "source": "eidas",
+                "levelOfAssurance": "low",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "opaque",
+                        "identifier": "123456789",
+                        "firstName": "John",
+                        "familyName": "Doe",
+                        "dateOfBirth": "1946-01-25",
+                    },
+                },
             },
         )
 
-    @mock_eidas_config()
+
+@override_settings(ALLOWED_HOSTS=["*"])
+class EIDASCompanyAuthContextTests(
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+):
+    csrf_checks = False
+    extra_environ = {
+        "HTTP_HOST": "localhost:8000",
+    }
+
+    @mock_eidas_company_config()
     def test_record_auth_context_for_eidas_company_authentication(self):
         self._login_and_start_form(
-            "eidas_oidc", username="eidas-company", password="eidas-company"
+            "eidas_company_oidc", username="eidas-company", password="eidas-company"
         )
 
         submission = Submission.objects.get()
@@ -159,56 +183,77 @@ class EIDASAuthContextTests(
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        self.assertEqual(auth_context["source"], "eidas")
         self.assertEqual(
-            auth_context["authorizee"]["legalSubject"],
+            auth_context,
             {
-                "identifierType": "opaque",
-                "identifier": "012345678",
-                "companyName": "example company BV",
-            },
-        )
-        self.assertEqual(
-            auth_context["authorizee"]["actingSubject"],
-            {
-                "identifierType": "bsn",
-                "identifier": "123456789",
-                "firstName": "John",
-                "familyName": "Doe",
-                "dateOfBirth": "1946-01-25",
+                "source": "eidas",
+                "levelOfAssurance": "low",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "opaque",
+                        "identifier": "NL/NTR/123456789",
+                        "companyName": "example company BV",
+                    },
+                    "actingSubject": {
+                        "identifierType": "bsn",
+                        "identifier": "123456789",
+                        "firstName": "John",
+                        "familyName": "Doe",
+                        "dateOfBirth": "1946-01-25",
+                    },
+                },
+                "mandate": {
+                    "services": [
+                        {"id": "urn:etoegang:DV:00000003244440010000:services:9102"}
+                    ]
+                },
             },
         )
 
-    @mock_eidas_config(person_identifier_type_claim=["invalid-claim"])
-    def test_record_auth_context_for_eidas_company_authentication_with_missing_person_identifier_type_claim(
+    @mock_eidas_company_config(acting_subject_identifier_type_claim=["invalid-claim"])
+    def test_record_auth_context_for_eidas_company_authentication_with_missing_acting_subject_identifier_type_claim(
         self,
     ):
         self._login_and_start_form(
-            "eidas_oidc", username="eidas-company", password="eidas-company"
+            "eidas_company_oidc", username="eidas-company", password="eidas-company"
         )
 
         submission = Submission.objects.get()
         self.assertTrue(submission.is_authenticated)
+        # Assert that, in the absense of the ``acting_subject_identifier_type_claim``,
+        # ``AuthAttribute.pseudo`` was set as the ``acting_subject_identifier_type``.
+        self.assertEqual(
+            submission.auth_info.acting_subject_identifier_type, AuthAttribute.pseudo
+        )
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        self.assertEqual(auth_context["source"], "eidas")
+        # Without the `person_identifier_type_claim`, expect the actingSubject
+        # identifierType to be `"opaque"`
         self.assertEqual(
-            auth_context["authorizee"]["legalSubject"],
+            auth_context,
             {
-                "identifierType": "opaque",
-                "identifier": "012345678",
-                "companyName": "example company BV",
-            },
-        )
-        self.assertEqual(
-            auth_context["authorizee"]["actingSubject"],
-            {
-                "identifierType": "opaque",
-                "identifier": "123456789",
-                "firstName": "John",
-                "familyName": "Doe",
-                "dateOfBirth": "1946-01-25",
+                "source": "eidas",
+                "levelOfAssurance": "low",
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "opaque",
+                        "identifier": "NL/NTR/123456789",
+                        "companyName": "example company BV",
+                    },
+                    "actingSubject": {
+                        "identifierType": "opaque",
+                        "identifier": "123456789",
+                        "firstName": "John",
+                        "familyName": "Doe",
+                        "dateOfBirth": "1946-01-25",
+                    },
+                },
+                "mandate": {
+                    "services": [
+                        {"id": "urn:etoegang:DV:00000003244440010000:services:9102"}
+                    ]
+                },
             },
         )
 

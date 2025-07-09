@@ -506,7 +506,7 @@
       "service_id" : [ "urn:etoegang:DV:00000003244440010000:services:9102" ],
       "company_name" : [ "example company BV" ],
       "person_identifier_type" : [ "bsn" ],
-      "company_identifier" : [ "012345678" ],
+      "company_identifier" : [ "NL/NTR/123456789" ],
       "first_name" : [ "John" ],
       "family_name" : [ "Doe" ]
     },
