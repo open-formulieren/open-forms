@@ -8,7 +8,6 @@ from .form_submission_statistics import FormSubmissionStatistics
 from .form_variable import FormVariable
 from .form_version import FormVersion
 from .logic import FormLogic
-from .pricing_logic import FormPriceLogic
 
 __all__ = [
     "Form",
@@ -17,7 +16,6 @@ __all__ = [
     "FormStep",
     "FormVersion",
     "FormLogic",
-    "FormPriceLogic",
     "FormSubmissionStatistics",
     "FormVariable",
     "Category",
