@@ -8,15 +8,19 @@ from django.utils.translation import gettext_lazy as _
 from glom import Path, glom
 
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
-from openforms.typing import JSONObject
+from openforms.typing import AnyRequest, JSONObject
 
 from ...base import LoginLogo
-from ...constants import AuthAttribute, LogoAppearance
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...models import AuthInfo
 from ...registry import register
 from ...types import YiviContext
 from ...typing import FormAuth
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from ..digid.constants import DIGID_DEFAULT_LOA
+from ..digid.plugin import loa_order as digid_loa_order
+from ..eherkenning.constants import EHERKENNING_DEFAULT_LOA
+from ..eherkenning.plugin import loa_order as eherkenning_loa_order
 from .config import YiviOptions, YiviOptionsSerializer
 from .constants import LOGIN_CANCELLED, PLUGIN_ID, YIVI_MESSAGE_PARAMETER
 from .models import AttributeGroup, YiviOpenIDConnectConfig
@@ -234,3 +238,26 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
             href="https://yivi.app/",
             appearance=LogoAppearance.light,
         )
+
+    def check_requirements(self, request: AnyRequest, options: YiviOptions) -> bool:
+        # check LoA requirements
+        authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
+        authenticated_attribute = request.session[FORM_AUTH_SESSION_KEY]["attribute"]
+
+        match authenticated_attribute:
+            case AuthAttribute.pseudo:
+                # We don't have a loa for pseudo login
+                return True
+
+            case AuthAttribute.kvk:
+                required = options["kvk_loa"] or EHERKENNING_DEFAULT_LOA
+                return eherkenning_loa_order(
+                    authenticated_loa
+                ) >= eherkenning_loa_order(required)
+
+            case AuthAttribute.bsn:
+                required = options["bsn_loa"] or DIGID_DEFAULT_LOA
+                return digid_loa_order(authenticated_loa) >= digid_loa_order(required)
+
+            case _:
+                assert_never(authenticated_attribute)
