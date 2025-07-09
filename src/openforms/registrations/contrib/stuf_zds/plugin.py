@@ -4,7 +4,8 @@ import re
 from collections.abc import MutableMapping
 from dataclasses import dataclass
 from functools import partial
-from typing import TYPE_CHECKING, Any, override
+from io import BytesIO
+from typing import Any, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -12,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 from json_logic.typing import Primitive
 
+from openforms.emails.service import get_last_confirmation_email
 from openforms.forms.models import FormVariable
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.base import BasePlugin, PreRegistrationResult
@@ -30,6 +32,7 @@ from openforms.submissions.models import (
     Submission,
     SubmissionReport,
 )
+from openforms.utils.pdf import convert_html_to_pdf
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from stuf.stuf_zds.client import (
@@ -40,15 +43,13 @@ from stuf.stuf_zds.client import (
 )
 from stuf.stuf_zds.models import StufZDSConfig
 
+from ...exceptions import RegistrationFailed
 from ...registry import register
 from ...utils import execute_unless_result_exists
 from .options import ZaakOptionsSerializer
 from .registration_variables import register as variables_registry
 from .typing import RegistrationOptions
 from .utils import flatten_data
-
-if TYPE_CHECKING:
-    from openforms.forms.models import FormVariable
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -476,6 +477,68 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 ),
             ),
         ]
+
+    def update_registration_with_confirmation_email(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> dict | None:
+        logger.info(
+            "update_registration_with_confirmation_email_started", options=options
+        )
+
+        if not submission.confirmation_email_sent:
+            logger.info(
+                "update_registration_with_confirmation_email_skipped",
+                reason="no_confirmation_email_sent",
+            )
+            return None
+
+        res = get_last_confirmation_email(submission)
+        if res is None:
+            logger.info(
+                "update_registration_with_confirmation_email_aborted",
+                reason="no_confirmation_email_found",
+            )
+            raise RegistrationFailed("Confirmation email was not found")
+        html, message_id = res
+
+        assert submission.registration_result
+
+        zaak_options: ZaakOptions = {
+            **options,
+            "omschrijving": submission.form.admin_name,
+            "cosigner": (
+                cosign.signing_details["value"]
+                if (cosign := submission.cosign_state).is_signed
+                else ""
+            ),
+        }
+
+        # Generate email
+        content = BytesIO(convert_html_to_pdf(html))
+
+        with get_client(options=zaak_options) as client:
+            # Zaak ID reserved during the pre-registration phase
+            zaak_id = submission.public_registration_reference
+
+            doc_id = execute_unless_result_exists(
+                client.create_document_identificatie,
+                submission,
+                f"intermediate.confirmation_emails.{message_id}.document_id",
+            )
+            execute_unless_result_exists(
+                partial(
+                    client.create_confirmation_email_attachment,
+                    zaak_id,
+                    doc_id,
+                    content,
+                ),
+                submission,
+                f"intermediate.confirmation_emails.{message_id}.document",
+                default=False,
+                result=True,
+            )
+
+        return submission.registration_result
 
 
 class LangInjection:
