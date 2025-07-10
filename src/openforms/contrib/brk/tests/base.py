@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
+from maykin_common.vcr import _VCRTestCase
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
@@ -38,7 +39,7 @@ class BRKTestMixin:
         self.config_mock = patcher.start()
         self.addCleanup(patcher.stop)
 
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
+    def _get_vcr_kwargs(self: _VCRTestCase, **kwargs):
+        kwargs = super()._get_vcr_kwargs(**kwargs)
         kwargs["filter_headers"] = ["X-Api-Key"]
         return kwargs

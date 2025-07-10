@@ -83,8 +83,8 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
             },
         )
 
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs = super()._get_vcr_kwargs(**kwargs)
         kwargs["filter_headers"] = ["x-api-key"]
         return kwargs
 

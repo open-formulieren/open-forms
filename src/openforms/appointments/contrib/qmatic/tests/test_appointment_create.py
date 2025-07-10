@@ -48,9 +48,13 @@ class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
         )
 
     def _get_vcr_kwargs(self, **kwargs):
-        kwargs = super()._get_vcr_kwargs(**kwargs)
-        kwargs["before_record_response"] = scrub_cookies
-        return kwargs
+        kwargs.update(
+            {
+                "decode_compressed_response": False,
+                "before_record_response": scrub_cookies,
+            }
+        )
+        return super()._get_vcr_kwargs(**kwargs)
 
     def test_create_appointment_single_product_single_customer(self):
         customer = _CustomerDetails(
