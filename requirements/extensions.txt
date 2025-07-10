@@ -196,6 +196,7 @@ django==4.2.23
     #   drf-spectacular
     #   mail-cleaner
     #   maykin-2fa
+    #   maykin-common
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   open-forms-ext-haalcentraal-hr
@@ -555,6 +556,10 @@ markuppy==1.14
     #   -r requirements/base.txt
     #   tablib
 maykin-2fa==1.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+maykin-common==0.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
