@@ -272,16 +272,15 @@ This contains the changes from the alpha and fixes applied until the stable vers
 BEFORE upgrading to 3.1.0, please read the release notes carefully and review the
 following instructions.
 
+Upgrade procedure
+-----------------
+
 .. warning:: Upgrade notice
 
     [:backend:`4931`] introduced a migration which processes log records and therefore
     could take a long time to complete. Make sure to verify the amount of log records
     before applying the migration to see if the longer processing time is relevant for
     the upgrade.
-
-
-Upgrade procedure
------------------
 
 To upgrade to 3.1, please:
 
