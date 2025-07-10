@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -48,15 +47,6 @@ class OgoneMerchant(models.Model):
 
     def __str__(self):
         return self.label
-
-    def clean(self):
-        super().clean()
-        if not self.endpoint_custom and not self.endpoint_preset:
-            raise ValidationError(
-                _("Specify either '{preset}' or '{custom}'").format(
-                    preset=_("Preset endpoint"), custom=_("Custom endpoint")
-                )
-            )
 
     @property
     def endpoint(self):
