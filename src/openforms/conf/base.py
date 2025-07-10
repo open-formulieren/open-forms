@@ -688,7 +688,7 @@ USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
 ADMIN_INDEX_AUTO_CREATE_APP_GROUP = False
 
 ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
-    "openforms.utils.django_two_factor_auth.should_display_dropdown_menu"
+    "maykin_common.django_two_factor_auth.should_display_dropdown_menu"
 )
 
 #
