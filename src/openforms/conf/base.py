@@ -684,6 +684,11 @@ USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
 ##############################
 
 #
+# MAYKIN-COMMON
+#
+PDF_BASE_URL_FUNCTION = "openforms.utils.pdf.get_base_url"
+
+#
 # Django-Admin-Index
 #
 ADMIN_INDEX_AUTO_CREATE_APP_GROUP = False
