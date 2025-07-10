@@ -142,6 +142,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_totp",
     "two_factor",
     "two_factor.plugins.webauthn",  # USB key/hardware token support
+    "maykin_common",
     "maykin_2fa",
     # Optional applications.
     "ordered_model",
