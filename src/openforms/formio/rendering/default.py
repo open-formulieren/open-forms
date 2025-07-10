@@ -408,12 +408,17 @@ class PartnersNode(ComponentNode):
         ]
 
         for node_index in range(repeats):
+            # the following custom node is the way/workaround to manage to have a type of
+            # label component on the form summary. This may cause problems in the future
+            # in case we introduce a component with the same name.
             yield ComponentNode.build_node(
                 step_data=self.step_data,
                 component={
                     "type": "component_label",
                     "key": "component_label",
-                    "label": _("Partner {counter}").format(counter=node_index + 1),
+                    "label": _("{label} {counter}").format(
+                        label=self.component["label"], counter=node_index + 1
+                    ),
                 },
                 renderer=self.renderer,
                 depth=self.depth + 1,
@@ -424,11 +429,7 @@ class PartnersNode(ComponentNode):
             for component in components:
                 yield ComponentNode.build_node(
                     step_data=self.step_data,
-                    component={
-                        "type": component["type"],
-                        "key": component["key"],
-                        "label": component["label"],
-                    },
+                    component=component,
                     renderer=self.renderer,
                     depth=self.depth + 1,
                     path=f"{self.key}.{node_index}",

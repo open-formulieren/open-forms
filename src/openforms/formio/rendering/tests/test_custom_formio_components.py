@@ -62,14 +62,14 @@ class CustomFormNodeTests(TestCase):
 
         self.assertEqual("Partners: ", nodelist[0].render())
 
-        self.assertEqual("Partner 1: ", nodelist[1].render())
+        self.assertEqual("Partners 1: ", nodelist[1].render())
         self.assertEqual("BSN: 999970136", nodelist[2].render())
         self.assertEqual("Initials: P.", nodelist[3].render())
         self.assertEqual("Affixes: ", nodelist[4].render())
         self.assertEqual("Lastname: Pauw", nodelist[5].render())
         self.assertEqual("Date of birth: April 1, 1989", nodelist[6].render())
 
-        self.assertEqual("Partner 2: ", nodelist[7].render())
+        self.assertEqual("Partners 2: ", nodelist[7].render())
         self.assertEqual("BSN: 123456788", nodelist[8].render())
         self.assertEqual("Initials: P.", nodelist[9].render())
         self.assertEqual("Affixes: ", nodelist[10].render())
