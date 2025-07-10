@@ -27,6 +27,21 @@ def get_callback_view(self):
     return callback_view
 
 
+def get_default_scopes_eidas():
+    """
+    Returns the default scopes to request for OpenID Connect logins for eIDAS.
+    """
+    return ["openid", "profile"]
+
+
+def get_default_scopes_eidas_company():
+    """
+    Returns the default scopes to request for OpenID Connect logins for eIDAS with
+    company.
+    """
+    return ["openid", "profile", "legal"]
+
+
 class OFDigiDConfig(DigiDConfig):
     class Meta:
         proxy = True
@@ -128,7 +143,7 @@ class OFEIDASConfig(BaseConfig):
     oidc_rp_scopes_list = ArrayField(
         verbose_name=_("OpenID Connect scopes"),
         base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
-        default=["openid", "profile"],
+        default=get_default_scopes_eidas,
         blank=True,
         help_text=_(
             "OpenID Connect scopes that are requested during login. "
@@ -226,7 +241,7 @@ class OFEIDASCompanyConfig(BaseConfig):
     oidc_rp_scopes_list = ArrayField(
         verbose_name=_("OpenID Connect scopes"),
         base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
-        default=["openid", "profile", "legal"],
+        default=get_default_scopes_eidas_company,
         blank=True,
         help_text=_(
             "OpenID Connect scopes that are requested during login. "
