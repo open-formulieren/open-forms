@@ -239,19 +239,6 @@ div.breadcrumbs {
 }
 
 /**
- * Environment information
- */
-.env-info {
-  display: block;
-  align-self: center;
-  padding-inline: 8px;
-  padding-block: 5px;
-  background-color: var(--of-env-info-background-color, var(--secondary));
-  color: var(--of-env-info-color, var(--primary-fg));
-  border-radius: 3px;
-}
-
-/**
  * Django form field lengths
  */
 .change-form {
