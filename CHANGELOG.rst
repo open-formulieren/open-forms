@@ -275,16 +275,13 @@ following instructions.
 Upgrade procedure
 -----------------
 
-.. warning:: Upgrade notice
-
-    [:backend:`4931`] introduced a migration which processes log records and therefore
-    could take a long time to complete. Make sure to verify the amount of log records
-    before applying the migration to see if the longer processing time is relevant for
-    the upgrade.
-
 To upgrade to 3.1, please:
 
 * ⚠️ Ensure you upgrade to Open Forms 3.0.1 before upgrading to the 3.1 release series.
+
+* ⚠️ Verify the amount of log records before applying the upgrade. [:backend:`4931`]
+  introduced a migration which processes log records and therefore could take a
+  long time to complete.
 
 * We recommend running the ``bin/report_component_problems.py`` and
   ``bin/report_form_registration_problems.py`` scripts to diagnose any problems in
