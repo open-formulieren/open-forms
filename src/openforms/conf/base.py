@@ -1008,7 +1008,7 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
         "openforms.api.drf_spectacular.hooks.add_middleware_headers",
         "openforms.api.drf_spectacular.hooks.add_unsafe_methods_parameter",
-        "openforms.api.drf_spectacular.hooks.remove_invalid_url_defaults",
+        "maykin_common.drf_spectacular.hooks.remove_invalid_url_defaults",
     ],
     "TOS": None,
     # Optional: MAY contain "name", "url", "email"

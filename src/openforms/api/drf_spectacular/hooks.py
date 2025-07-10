@@ -1,5 +1,3 @@
-import itertools
-
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
@@ -126,72 +124,5 @@ def add_unsafe_methods_parameter(result, generator, request, public):
 
             operation.setdefault("parameters", [])
             operation["parameters"].append(CSRF_TOKEN_PARAMETER)
-
-    return result
-
-
-def remove_invalid_url_defaults(result, generator, **kwargs):  # pragma: no cover
-    """
-    Fix ``URLField(default="")`` schema generation.
-
-    An empty string does not satisfy the `format: uri` validation, and schema validation
-    tools can trip on this.
-
-    The majority of the code here is inspired by the built in postprocess_schema_enums
-    hook.
-
-    TODO: contribute upstream patch
-    """
-    schemas = result.get("components", {}).get("schemas", {})
-
-    def iter_prop_containers(schema):
-        match schema:
-            case {"properties": props}:
-                yield props
-            case {"oneOf": nested} | {"allOf": nested} | {"anyOf": nested}:
-                yield from iter_prop_containers(nested)
-            case list():
-                for item in schema:
-                    yield from iter_prop_containers(item)
-            case dict():
-                for nested in schema.values():
-                    yield from iter_prop_containers(nested)
-
-    def iter_parameter_schemas():
-        for path in result.get("paths", {}).values():
-            for operation in path.values():
-                if not (parameters := operation.get("parameters")):
-                    continue
-                for parameter in parameters:
-                    yield parameter["schema"]
-
-    schemas_iterator = itertools.chain(
-        iter_parameter_schemas(),
-        (
-            schema
-            for props in iter_prop_containers(schemas)
-            for schema in props.values()
-        ),
-    )
-
-    # find all string (with format uri) properties that have an invalid default
-    for prop_schema in schemas_iterator:
-        if prop_schema.get("type") == "array":
-            prop_schema = prop_schema.get("items", {})
-
-        # only consider string types
-        match prop_schema:
-            case {"type": "string"}:
-                pass
-            case {"type": list() as types} if "string" in types:
-                pass
-            case _:
-                continue
-
-        match prop_schema:
-            case {"format": "uri", "default": ""}:
-                del prop_schema["default"]
-            case _:
-                continue
 
     return result
