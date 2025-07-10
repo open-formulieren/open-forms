@@ -30,7 +30,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
     "@open-formulieren/design-tokens": "^0.59.0",
-    "@open-formulieren/formio-builder": "^0.41.0",
+    "@open-formulieren/formio-builder": "^0.41.1",
     "@open-formulieren/leaflet-tools": "^1.0.0",
     "@open-formulieren/monaco-json-editor": "^0.2.0",
     "@tinymce/tinymce-react": "^4.3.2",
