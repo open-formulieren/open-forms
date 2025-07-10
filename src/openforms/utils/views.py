@@ -1,13 +1,9 @@
-from django import http
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import BadRequest
 from django.http import Http404, HttpResponse
-from django.template import TemplateDoesNotExist, loader
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import requires_csrf_token
-from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.generic import RedirectView, TemplateView
 
 from rest_framework import exceptions as drf_exceptions
@@ -16,27 +12,6 @@ from openforms.emails.context import get_wrapper_context
 from openforms.forms.context_processors import sdk_urls
 
 from ..api import exceptions
-
-
-@requires_csrf_token
-def server_error(request, template_name=ERROR_500_TEMPLATE_NAME):  # pragma: no cover
-    """
-    500 error handler.
-
-    Templates: :template:`500.html`
-    Context: None
-    """
-    try:
-        template = loader.get_template(template_name)
-    except TemplateDoesNotExist:
-        if template_name != ERROR_500_TEMPLATE_NAME:
-            # Reraise if it's a missing custom template.
-            raise
-        return http.HttpResponseServerError(
-            "<h1>Server Error (500)</h1>", content_type="text/html"
-        )
-    context = {"request": request}
-    return http.HttpResponseServerError(template.render(context))
 
 
 class ErrorDetailView(TemplateView):

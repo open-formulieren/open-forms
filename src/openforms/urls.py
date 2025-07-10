@@ -13,7 +13,7 @@ from openforms.submissions.dev_views import SubmissionPDFTestView
 from openforms.utils.urls import decorator_include
 from openforms.utils.views import ErrorDetailView, SDKRedirectView
 
-handler500 = "openforms.utils.views.server_error"
+handler500 = "maykin_common.views.server_error"
 admin.site.site_header = "openforms admin"
 admin.site.site_title = "openforms admin"
 admin.site.index_title = _("Welcome to the Open Forms admin")
