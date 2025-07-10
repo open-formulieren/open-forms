@@ -38,6 +38,7 @@ from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_hi
 from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
+from ....exceptions import RegistrationFailed
 from ..options import default_payment_status_update_mapping
 from ..plugin import PLUGIN_IDENTIFIER, PartialDate, StufZDSRegistration
 from ..typing import RegistrationOptions
@@ -3740,3 +3741,119 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.bsn']",
         )
+
+
+class StufZDSConfirmationEmailVCRTests(OFVCRMixin, StUFZDSTestBase):
+    VCR_TEST_FILES = TESTS_DIR / "files"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.zds_service = StufServiceFactory.create(
+            soap_service__url="http://localhost/stuf-zds"
+        )
+        config = StufZDSConfig.get_solo()
+        config.service = cls.zds_service
+        config.save()
+        cls.addClassCleanup(StufZDSConfig.clear_cache)
+
+        cls.options: RegistrationOptions = {
+            "zds_zaaktype_code": "foo",
+            "zds_documenttype_omschrijving_inzending": "foo",
+            "zds_zaakdoc_vertrouwelijkheid": "GEHEIM",
+        }
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                    "label": "textfield",
+                },
+            ],
+            bsn="111222333",
+            submitted_data={"textfield": "Foo"},
+            language_code="en",
+            public_registration_reference="abc123",
+            registration_result={"zaak": "bar"},
+            confirmation_email_sent=True,
+        )
+
+    @patch(
+        "openforms.registrations.contrib.stuf_zds.plugin.get_last_confirmation_email",
+        side_effect=[("HTML content 1", 1), ("HTML content 2", 2)],
+    )
+    def test_confirmation_emails_are_attached_when_updating_registration(
+        self, mock_get_last_email
+    ):
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        for _ in range(2):
+            result = plugin.update_registration_with_confirmation_email(
+                self.submission, self.options
+            )
+            assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["confirmation_emails"]), 2)
+
+        # For each email: one for creating the document identifier one for attaching it
+        self.assertEqual(len(self.cassette.requests), 4)
+
+        for i in (-1, -3):
+            stuf_request = self.cassette.requests[i]
+            xml_doc = etree.fromstring(stuf_request.body)
+            self.assertSoapXMLCommon(xml_doc)
+
+            expected_items = {
+                "titel": "Bevestigingsmail",
+                "beschrijving": "De bevestigingsmail die naar de initiator is verstuurd.",
+                "formaat": "application/pdf",
+            }
+            for name, value in expected_items.items():
+                with self.subTest(extra_element=name, value=value):
+                    self.assertXPathEqual(xml_doc, f"//zkn:object/zkn:{name}", value)
+
+    @patch(
+        "openforms.registrations.contrib.stuf_zds.plugin.get_last_confirmation_email",
+        return_value=("HTML content", 1),
+    )
+    def test_confirmation_email_is_only_attached_once(self, mock_get_last_email):
+        """
+        Can occur when sending another confirmation email has failed for whatever
+        reason.
+        """
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        for _ in range(2):
+            result = plugin.update_registration_with_confirmation_email(
+                self.submission, self.options
+            )
+            assert result is not None
+
+        self.assertEqual(len(result["intermediate"]["confirmation_emails"]), 1)
+
+        # One for creating the first document identifier one for attaching it
+        self.assertEqual(len(self.cassette.requests), 2)
+
+    def test_updating_registration_skips_when_confirmation_email_was_not_sent(self):
+        submission = SubmissionFactory.create(confirmation_email_sent=False)
+
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        self.assertIsNone(
+            plugin.update_registration_with_confirmation_email(submission, self.options)
+        )
+
+    @patch(
+        "openforms.registrations.contrib.stuf_zds.plugin.get_last_confirmation_email",
+        return_value=None,
+    )
+    def test_raises_when_confirmation_email_was_not_sent(self, mock_get_last_email):
+        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
+
+        plugin.register_submission(self.submission, self.options)
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.update_registration_with_confirmation_email(
+                self.submission, self.options
+            )

@@ -347,3 +347,79 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     submission.save_registration_status(RegistrationStatuses.success, result or {})
     logevent.registration_success(submission, plugin)
     log.info("done")
+
+
+def update_registration_with_confirmation_email(submission_id: int) -> None:
+    log = logger.bind(
+        action="registrations.update_registration_with_confirmation_email"
+    )
+
+    submission = Submission.objects.get(id=submission_id)
+
+    if submission.registration_status != RegistrationStatuses.success:
+        log.info(
+            "update_registration_with_confirmation_email_aborted",
+            reason="main_registration_not_successful",
+        )
+        return
+
+    plugin = get_registration_plugin(submission)
+    if plugin is None:
+        log.info(
+            "update_registration_with_confirmation_email_completed",
+            reason="no_plugin_is_configured",
+        )
+        logevent.registration_update_with_confirmation_email_skip(submission)
+        return
+
+    if not plugin.is_enabled:
+        log.info(
+            "update_registration_with_confirmation_email_failed",
+            reason="plugin_is_disabled",
+        )
+        exc = RegistrationFailed("Registration plugin is not enabled")
+        logevent.registration_update_with_confirmation_email_failure(
+            submission, exc, plugin
+        )
+        return
+
+    assert submission.registration_backend is not None
+    options_serializer = plugin.configuration_options(
+        data=submission.registration_backend.options,
+        context={"validate_business_logic": False},
+    )
+
+    try:
+        options_serializer.is_valid(raise_exception=True)
+    except ValidationError as exc:
+        log.warning(
+            "update_registration_with_confirmation_email_failed",
+            reason="invalid_options",
+            exc_info=exc,
+        )
+        logevent.registration_update_with_confirmation_email_failure(
+            submission, exc, plugin
+        )
+        return
+
+    assert submission.registration_result is not None
+    try:
+        result = plugin.update_registration_with_confirmation_email(
+            submission, options_serializer.validated_data
+        )
+    except (RegistrationFailed, Exception) as exc:
+        log.warning("update_registration_with_confirmation_email_failed", exc_info=exc)
+        submission.registration_result["update_with_confirmation_emails_traceback"] = (
+            traceback.format_exc()
+        )
+        submission.save(update_fields=["registration_result"])
+        logevent.registration_update_with_confirmation_email_failure(
+            submission, exc, plugin
+        )
+        return
+
+    if result:
+        submission.registration_result.update(result)
+    submission.save(update_fields=["registration_result"])
+    logevent.registration_update_with_confirmation_email_success(submission, plugin)
+    log.info("done")

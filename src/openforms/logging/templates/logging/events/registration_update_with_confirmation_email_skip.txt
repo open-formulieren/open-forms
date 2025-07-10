@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead %}
+   {{ lead }}: Update submission registration with confirmation email skipped: no backend configured.
+{% endblocktrans %}

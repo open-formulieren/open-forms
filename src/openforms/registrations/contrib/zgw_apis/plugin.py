@@ -1,6 +1,7 @@
 import warnings
 from datetime import datetime
 from functools import partial, wraps
+from io import BytesIO
 from typing import Any, TypedDict
 
 from django.urls import reverse
@@ -26,9 +27,11 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
+from openforms.emails.service import get_last_confirmation_email
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.date import datetime_in_amsterdam
+from openforms.utils.pdf import convert_html_to_pdf
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin, PreRegistrationResult
@@ -348,6 +351,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                 )
                 informatieobjecttype_url = options["informatieobjecttype"]
 
+            result["informatieobjecttype_url"] = informatieobjecttype_url
+
             # Upload the summary PDF
             pdf_options: DocumentOptions = {
                 "informatieobjecttype": informatieobjecttype_url,
@@ -661,3 +666,87 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
             )
 
             return response
+
+    @wrap_api_errors
+    def update_registration_with_confirmation_email(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> dict | None:
+        logger.info(
+            "update_registration_with_confirmation_email_started", options=options
+        )
+
+        if not submission.confirmation_email_sent:
+            logger.info(
+                "update_registration_with_confirmation_email_skipped",
+                reason="no_confirmation_email_sent",
+            )
+            return None
+
+        res = get_last_confirmation_email(submission)
+        if res is None:
+            logger.info(
+                "update_registration_with_confirmation_email_aborted",
+                reason="no_confirmation_email_found",
+            )
+            raise RegistrationFailed("Confirmation email was not found")
+        html, message_id = res
+
+        result = submission.registration_result
+        assert result
+        assert "informatieobjecttype_url" in result, (
+            "Should be set during main registration"
+        )
+
+        zgw: ZGWApiGroupConfig = options["zgw_api_group"]
+        zgw.apply_defaults_to(options)
+        # help the type checker a little... it doesn't understand the mutations in
+        # apply_defaults_to
+        assert "organisatie_rsin" in options
+        assert "doc_vertrouwelijkheidaanduiding" in options
+        assert "auteur" in options
+
+        assert submission.completed_on is not None
+        date = datetime_in_amsterdam(submission.completed_on).date().isoformat()
+
+        # Generate email
+        content = BytesIO(convert_html_to_pdf(html))
+
+        # Create a document
+        with get_documents_client(zgw) as documents_client:
+            logger.debug("creating_confirmation_email_document")
+            document = execute_unless_result_exists(
+                partial(
+                    documents_client.create_document,
+                    informatieobjecttype=result["informatieobjecttype_url"],
+                    bronorganisatie=options["organisatie_rsin"],
+                    title="Bevestigingsmail",
+                    author=options["auteur"],
+                    language=submission.language_code,
+                    format="application/pdf",
+                    content=content,
+                    status="definitief",
+                    filename="bevestigingsmail.pdf",
+                    description="De bevestigingsmail die naar de initiator is verstuurd.",
+                    received_date=date,
+                    vertrouwelijkheidaanduiding=(
+                        options["doc_vertrouwelijkheidaanduiding"]
+                    ),
+                ),
+                submission,
+                f"intermediate.confirmation_emails.{message_id}.document",
+            )
+
+        # Relate the document to the zaak
+        with get_zaken_client(zgw) as zaken_client:
+            logger.debug("relating_confirmation_email_document")
+            execute_unless_result_exists(
+                partial(
+                    zaken_client.relate_document,
+                    zaak=result["zaak"],
+                    document=document,
+                ),
+                submission,
+                f"intermediate.confirmation_emails.{message_id}.relation",
+            )
+
+        return result

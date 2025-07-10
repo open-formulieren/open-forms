@@ -171,6 +171,9 @@ def send_confirmation_email(submission: Submission) -> None:
             submission_uuid=str(submission.uuid),
         )
         logevent.confirmation_email_skip(submission)
+
+        submission.confirmation_email_sent = False
+        submission.save(update_fields=["confirmation_email_sent"])
         return
 
     cc_emails = []

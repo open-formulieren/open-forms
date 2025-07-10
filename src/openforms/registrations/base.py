@@ -106,6 +106,15 @@ class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
         """
         return []
 
+    def update_registration_with_confirmation_email(
+        self, submission: Submission, options: OptionsT
+    ) -> dict | None:
+        """Update the registered submission with a confirmation email.
+
+        Should be overridden by subclasses.
+        """
+        return None
+
     def process_variable_schema(
         self, component: Component, schema: JSONObject, options: OptionsT
     ):

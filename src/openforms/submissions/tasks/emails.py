@@ -19,6 +19,7 @@ from openforms.emails.constants import (
 from openforms.emails.utils import send_mail_html
 from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import logevent
+from openforms.registrations.tasks import update_registration_with_confirmation_email
 from openforms.template import render_from_string
 
 from ..models import Submission
@@ -28,7 +29,6 @@ __all__ = [
     "schedule_emails",
     "send_email_cosigner",
 ]
-
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -85,6 +85,8 @@ def send_confirmation_email(submission_id: int) -> None:
         )
     ):
         _send_confirmation_email(submission)
+
+        on_confirmation_email_sent.delay(submission.pk)
 
 
 @app.task()
@@ -209,3 +211,14 @@ def schedule_emails(submission_id: int) -> None:
     logevent.confirmation_email_scheduled(
         submission, scheduling_options=execution_options
     )
+
+
+@app.task(
+    base=QueueOnce,
+    ignore_result=True,
+    once={"graceful": True},
+)
+def on_confirmation_email_sent(submission_id: int) -> None:
+    """Hook that is called after the send confirmation email task has completed."""
+
+    update_registration_with_confirmation_email(submission_id)
