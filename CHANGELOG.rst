@@ -6,6 +6,23 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.4 (2025-07-10)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5394`] Fixed crash when saving DigiD or eHerkenning configuration in the admin.
+* [:backend:`5407`] Added note in the 3.1.0 upgrade procedure about migrations (possibly) taking a long time to
+  complete.
+* Fixed broken link.
+* Updated backend dependencies:
+
+    - Bumped django to 4.2.23.
+    - Bumped requests to 2.32.4.
+    - Bumped urllib3 to 2.5.0.
+    - Bumped vcrpy to 7.0.0.
+    - Bumped django-privates to 3.1.1.
+
 3.1.3 (2025-06-06)
 ==================
 
