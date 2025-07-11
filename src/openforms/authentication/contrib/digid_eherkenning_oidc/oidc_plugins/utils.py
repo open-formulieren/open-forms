@@ -1,9 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import structlog
 from glom import Path, PathAccessError, assign, glom
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.typing import JSONObject
 
 from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
+
+if TYPE_CHECKING:
+    from ..plugin import OIDCAuthentication
+    from .plugins import BaseDigiDeHerkenningPlugin
+
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -193,3 +202,21 @@ def _process_loa(claims: JSONObject, config: OIDCClient) -> str:
     processed_loa = loa_map.get(loa, loa)
     assert processed_loa
     return processed_loa
+
+
+class NoAuthPluginFound(Exception):
+    pass
+
+
+def get_of_auth_plugin(oidc_plugin: BaseDigiDeHerkenningPlugin) -> OIDCAuthentication:
+    from openforms.authentication.registry import register as _of_auth_registry
+
+    for _identifier, plugin in _of_auth_registry.items():
+        if not hasattr(plugin, "oidc_plugin_identifier"):
+            continue
+
+        assert isinstance(plugin, OIDCAuthentication)
+        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:
+            return plugin
+    else:
+        raise NoAuthPluginFound()

@@ -8,14 +8,12 @@ from mozilla_django_oidc_db.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
 
+from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.utils import (
+    get_of_auth_plugin,
+)
 from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
     OIDCAuthentication,
 )
-from openforms.authentication.registry import register as _of_auth_registry
-
-
-class NoAuthPluginFound(Exception):
-    pass
 
 
 class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
@@ -91,15 +89,7 @@ class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
     def _get_of_auth_plugin(self) -> OIDCAuthentication:
         configuration = lookup_config(self.request)
 
-        for _identifier, plugin in _of_auth_registry.items():
-            if not hasattr(plugin, "oidc_plugin_identifier"):
-                continue
-
-            assert isinstance(plugin, OIDCAuthentication)
-            if plugin.oidc_plugin_identifier == configuration.identifier:
-                return plugin
-        else:
-            raise NoAuthPluginFound()
+        return get_of_auth_plugin(configuration)
 
 
 anon_user_callback_view = OIDCAuthAnonUserCallbackView.as_view()

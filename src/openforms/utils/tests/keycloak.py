@@ -30,9 +30,14 @@ from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.consta
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from openforms.authentication.contrib.org_oidc.oidc_plugins.constants import (
     OIDC_ORG_IDENTIFIER,
+)
+from openforms.authentication.contrib.yivi_oidc.oidc_plugins.constants import (
+    OIDC_YIVI_IDENTIFIER,
 )
 from openforms.typing import JSONObject
 
@@ -189,6 +194,37 @@ CLIENT_DEFAULT_OPTIONS = {
             "mandate_service_uuid_claim_path": ["service_uuid"],
         },
     },
+    OIDC_EIDAS_IDENTIFIER: {
+        "loa_settings": {
+            "claim_path": ["authsp_level"],
+            "default": AssuranceLevels.low_plus,
+            "value_mapping": [],
+        },
+        "identity_settings": {
+            "legal_subject_identifier_claim_path": ["name_qualifier"],
+            "legal_subject_identifier_type_claim_path": ["aanvrager.kvk"],
+            "legal_subject_first_name_claim": ["actingSubjectID"],
+            "legal_subject_family_name_claim": ["representeeBSN"],
+            "legal_subject_date_of_birth_claim": ["service_id"],
+        },
+    },
+    OIDC_EIDAS_COMPANY_IDENTIFIER: {
+        "loa_settings": {
+            "claim_path": ["authsp_level"],
+            "default": AssuranceLevels.low_plus,
+            "value_mapping": [],
+        },
+        "identity_settings": {
+            "legal_subject_identifier_claim_path": ["name_qualifier"],
+            "legal_subject_name_claim_path": ["aanvrager.kvk"],
+            "acting_subject_identifier_claim_path": ["actingSubjectID"],
+            "acting_subject_identifier_type_claim_path": ["representeeBSN"],
+            "acting_subject_first_name_claim_path": ["service_id"],
+            "acting_subject_family_name_claim_path": ["service_id"],
+            "legal_subject_date_of_birth_claim_path": ["service_id"],
+            "mandate_service_id_claim_path": ["service_id"],
+        },
+    },
     OIDC_ORG_IDENTIFIER: {
         "user_settings": {
             "claim_mappings": {
@@ -206,6 +242,24 @@ CLIENT_DEFAULT_OPTIONS = {
             "make_users_staff": False,
             "superuser_group_names": [],
             "default_groups": [],
+        },
+    },
+    OIDC_YIVI_IDENTIFIER: {
+        "loa_settings": {
+            "claim_path": ["authsp_level"],
+            "default": AssuranceLevels.low_plus,
+            "value_mapping": [],
+        },
+        "identity_settings": {
+            "bsn_claim_path": ["name_qualifier"],
+            "bsn_loa_claim_path": ["aanvrager.kvk"],
+            "bsn_default_loa": ["actingSubjectID"],
+            "bsn_loa_value_mapping": ["representeeBSN"],
+            "kvk_claim_path": ["service_id"],
+            "kvk_loa_claim_path": ["service_id"],
+            "kvk_default_loa": ["service_id"],
+            "kvk_loa_value_mapping": ["service_id"],
+            "pseudo_claim_path": ["service_id"],
         },
     },
 }

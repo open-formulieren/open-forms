@@ -14,7 +14,6 @@ from mozilla_django_oidc_db.plugins import (
 )
 from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.typing import JSONObject
-from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import deprecated
 
 from .constants import (
@@ -22,12 +21,16 @@ from .constants import (
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from .schemas import (
     DIGID_MACHTIGEN_OPTIONS_SCHEMA,
     DIGID_OPTIONS_SCHEMA,
     EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA,
     EHERKENNING_OPTIONS_SCHEMA,
+    EIDAS_COMPANY_SCHEMA,
+    EIDAS_SCHEMA,
 )
 from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
 from .utils import process_claims
@@ -63,31 +66,6 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         return super().get_setting(attr, *args)
 
-    def verify_claims(self, claims: JSONObject) -> bool:
-        """Verify the provided claims to decide if authentication should be allowed."""
-
-        assert claims, "Empty claims should have been blocked earlier"
-        obfuscated_claims = obfuscate_claims(claims, self.get_sensitive_claims())
-
-        log = logger.bind(claims=obfuscated_claims)
-        log.debug("received_oidc_claims")
-
-        # process_claims in strict mode raises ValueError if *required* claims are
-        # missing
-        try:
-            self._process_claims(claims)
-        except ValueError as exc:
-            log.error(
-                "claim_processing_failure", reason="claims_incomplete", exc_info=exc
-            )
-            return False
-
-        return True
-
-    def filter_users_by_claims(self, claims: JSONObject):
-        # This method is not called since we implemented get_or_create_user
-        pass
-
     def get_or_create_user(
         self,
         access_token: str,
@@ -104,6 +82,9 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
         # Here we use the payload instead of the user_info, because the claims
         # configured in the OIDCClient options refer to the structure of the payload and not
         # that of the user_info.
+        import pdb
+
+        pdb.set_trace()
         claims_verified = self.verify_claims(payload)
         if not claims_verified:
             msg = "Claims verification failed"
@@ -128,6 +109,7 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         strict_mode = flag_enabled("DIGID_EHERKENNING_OIDC_STRICT")
         assert isinstance(strict_mode, bool)
+
         return process_claims(
             claims,
             config,
@@ -356,3 +338,74 @@ class OIDCeHerkenningBewindvoeringPlugin(
             sensitive_claims.append(branch_number_claim_path)
 
         return sensitive_claims
+
+
+@register(OIDC_EIDAS_IDENTIFIER)
+class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
+    def get_schema(self) -> JSONObject:
+        return EIDAS_SCHEMA
+
+    def get_sensitive_claims(self) -> list[list[str]]:
+        return []
+
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
+        config = self.get_config()
+
+        # TODO: are these always required??
+        return {
+            "always_required_claims": [
+                config.options["identity_settings"][
+                    "legal_subject_identifier_claim_path"
+                ],
+                config.options["identity_settings"][
+                    "legal_subject_identifier_type_claim_path"
+                ],
+                config.options["identity_settings"]["legal_subject_first_name_claim"],
+                config.options["identity_settings"]["legal_subject_family_name_claim"],
+                config.options["identity_settings"][
+                    "legal_subject_date_of_birth_claim"
+                ],
+            ],
+            "strict_required_claims": [],
+            "optional_claims": [],
+        }
+
+
+@register(OIDC_EIDAS_COMPANY_IDENTIFIER)
+class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
+    def get_schema(self) -> JSONObject:
+        return EIDAS_COMPANY_SCHEMA
+
+    def get_sensitive_claims(self) -> list[list[str]]:
+        return []
+
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
+        config = self.get_config()
+
+        # TODO: are these always required??
+        return {
+            "always_required_claims": [
+                config.options["identity_settings"][
+                    "legal_subject_identifier_claim_path"
+                ],
+                config.options["identity_settings"]["legal_subject_name_claim_path"],
+                config.options["identity_settings"][
+                    "acting_subject_identifier_claim_path"
+                ],
+                config.options["identity_settings"][
+                    "acting_subject_identifier_type_claim_path"
+                ],
+                config.options["identity_settings"][
+                    "acting_subject_first_name_claim_path"
+                ],
+                config.options["identity_settings"][
+                    "acting_subject_family_name_claim_path"
+                ],
+                config.options["identity_settings"][
+                    "legal_subject_date_of_birth_claim_path"
+                ],
+                config.options["identity_settings"]["mandate_service_id_claim_path"],
+            ],
+            "strict_required_claims": [],
+            "optional_claims": [],
+        }

@@ -9,7 +9,7 @@ from ..oidc_plugins.constants import (
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
     OIDC_EIDAS_COMPANY_IDENTIFIER,
-    OIDC_EIDAS_IDENTIFIER
+    OIDC_EIDAS_IDENTIFIER,
 )
 
 
@@ -47,7 +47,7 @@ class CallbackURLConfigurationTests(TestCase):
             OIDC_DIGID_MACHTIGEN_IDENTIFIER,
             OIDC_EH_BEWINDVOERING_IDENTIFIER,
             OIDC_EIDAS_COMPANY_IDENTIFIER,
-            OIDC_EIDAS_IDENTIFIER
+            OIDC_EIDAS_IDENTIFIER,
         )
 
         for identifier in cases:
