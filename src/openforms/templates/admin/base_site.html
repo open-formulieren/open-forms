@@ -1,10 +1,11 @@
 {% extends "admin/base.html" %}
-{% load i18n static multidomain utils %}
+{% load i18n static multidomain maykin_common %}
 
 {% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
 {% block extrastyle %}
     {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'maykin_common/css/version.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'bundles/admin_overrides.css' %}">
 
     <link href="{% static 'ico/favicon.svg' %}" sizes="any" rel="icon" type="image/svg+xml" />
@@ -23,7 +24,7 @@
     <h1 id="site-name">
         <a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans "Administration" %}</a>
     </h1>
-    {% environment_info %}
+    {% show_environment_info %}
     {% if user.is_anonymous %}
       {% include "admin/color_theme_toggle.html" %}
     {% endif %}

@@ -67,6 +67,8 @@ include = [
     "src/openforms/template",
     # generic typing helpers
     "src/openforms/typing.py",
+    # Utils
+    "src/openforms/utils/pdf.py",
     # JSON schema generation
     "src/openforms/forms/json_schema.py"
 ]

@@ -7,13 +7,13 @@ django-simple-certmanager[testutils]
 django-webtest
 factory-boy
 freezegun
+maykin-common[axes,mfa,pdf,vcr]
 playwright
 pyquery  # integrates with webtest
 requests-mock
 tenacity
 tblib
 hypothesis  # property-based testing
-vcrpy  # record HTTP fixtures
 zgw-consumers[testutils]
 
 # Code formatting

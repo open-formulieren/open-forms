@@ -206,6 +206,7 @@ django==4.2.23
     #   drf-spectacular
     #   mail-cleaner
     #   maykin-2fa
+    #   maykin-common
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -213,6 +214,7 @@ django-admin-index==3.1.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   maykin-common
 django-admin-rangefilter==0.13.2
     # via
     #   -c requirements/base.txt
@@ -232,6 +234,7 @@ django-axes==6.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   maykin-common
 django-camunda==0.15.0
     # via
     #   -c requirements/base.txt
@@ -594,6 +597,12 @@ maykin-2fa==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   maykin-common
+maykin-common==0.6.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   -r requirements/test-tools.in
 maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/base.txt
@@ -612,7 +621,7 @@ mozilla-django-oidc-db==0.22.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-multidict==6.0.5
+multidict==6.6.3
     # via yarl
 o365==2.0.31
     # via
@@ -700,6 +709,8 @@ prompt-toolkit==3.0.27
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   click-repl
+propcache==0.3.2
+    # via yarl
 psycopg==3.2.1
     # via
     #   -c requirements/base.txt
@@ -841,6 +852,7 @@ requests==2.32.4
     #   django-camunda
     #   django-log-outgoing-requests
     #   jsonschema-spec
+    #   maykin-common
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
@@ -1012,6 +1024,8 @@ tornado==6.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
+types-requests==2.32.4.20250611
+    # via maykin-common
 typing-extensions==4.12.2
     # via
     #   -c requirements/base.txt
@@ -1047,13 +1061,14 @@ urllib3==2.5.0
     #   elastic-apm
     #   requests
     #   sentry-sdk
+    #   types-requests
     #   vcrpy
 uwsgi==2.0.26
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
 vcrpy==7.0.0
-    # via -r requirements/test-tools.in
+    # via maykin-common
 vine==5.1.0
     # via
     #   -c requirements/base.txt
@@ -1072,6 +1087,7 @@ weasyprint==60.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   maykin-common
 webauthn==2.0.0
     # via
     #   -c requirements/base.txt
@@ -1117,7 +1133,7 @@ xmltodict==0.12.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-yarl==1.9.2
+yarl==1.20.1
     # via vcrpy
 zeep==4.2.1
     # via

@@ -142,6 +142,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_totp",
     "two_factor",
     "two_factor.plugins.webauthn",  # USB key/hardware token support
+    "maykin_common",
     "maykin_2fa",
     # Optional applications.
     "ordered_model",
@@ -683,12 +684,17 @@ USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
 ##############################
 
 #
+# MAYKIN-COMMON
+#
+PDF_BASE_URL_FUNCTION = "openforms.utils.pdf.get_base_url"
+
+#
 # Django-Admin-Index
 #
 ADMIN_INDEX_AUTO_CREATE_APP_GROUP = False
 
 ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
-    "openforms.utils.django_two_factor_auth.should_display_dropdown_menu"
+    "maykin_common.django_two_factor_auth.should_display_dropdown_menu"
 )
 
 #
@@ -1008,7 +1014,7 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
         "openforms.api.drf_spectacular.hooks.add_middleware_headers",
         "openforms.api.drf_spectacular.hooks.add_unsafe_methods_parameter",
-        "openforms.api.drf_spectacular.hooks.remove_invalid_url_defaults",
+        "maykin_common.drf_spectacular.hooks.remove_invalid_url_defaults",
     ],
     "TOS": None,
     # Optional: MAY contain "name", "url", "email"

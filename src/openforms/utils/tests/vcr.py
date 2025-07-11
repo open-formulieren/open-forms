@@ -55,13 +55,14 @@ You can set the environment variable ``VCR_RECORD_MODE`` to any of the supported
 """
 
 # once in dev, none in CI
+import inspect
 import os
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
+from maykin_common.vcr import VCRMixin
 from vcr.config import VCR
-from vcr.unittest import VCRMixin
 
 RECORD_MODE = os.environ.get("VCR_RECORD_MODE", "none")
 
@@ -73,21 +74,14 @@ class OFVCRMixin(VCRMixin):
     Using this mixin will result in HTTP requests/responses being recorded.
     """
 
-    VCR_TEST_FILES: Path
-    """
-    A :class:`pathlib.Path` instance where the cassettes should be stored.
-    """
-
     def _get_cassette_library_dir(self):
-        assert self.VCR_TEST_FILES, (
-            "You must define the `VCR_TEST_FILES` class attribute"
-        )
-        return str(self.VCR_TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
+        if self.VCR_TEST_FILES:
+            return super()._get_cassette_library_dir()
 
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
-        kwargs.setdefault("record_mode", RECORD_MODE)
-        return kwargs
+        # skip intermediate directories and keep cassettes close to the test module
+        class_name = self.__class__.__qualname__
+        path = Path(inspect.getfile(self.__class__))
+        return str(path.parent / "vcr_cassettes" / path.stem / class_name)
 
 
 @contextmanager
