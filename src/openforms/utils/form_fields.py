@@ -1,6 +1,6 @@
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Protocol
 
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import (
@@ -68,9 +68,13 @@ def get_arrayfield_choices(model: type[models.Model], field: str):
     return choices
 
 
+class GetFieldChoices(Protocol):
+    def __call__(self) -> Sequence[tuple[object, object]]: ...
+
+
 class CheckboxChoicesArrayField(MultipleChoiceField):
     widget = CheckboxSelectMultiple
-    get_field_choices: Callable[[], Sequence[tuple[Any, Any]]]
+    get_field_choices: GetFieldChoices
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("choices", self.get_field_choices)

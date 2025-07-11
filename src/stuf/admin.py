@@ -9,11 +9,11 @@ from .models import StufService
 class StufServiceAdminAdminForm(forms.ModelForm):
     class Meta:
         model = StufService
+        fields = "__all__"  # noqa: DJ007
         widgets = {
             # turn off autocomplete: https://stackoverflow.com/q/33113891
             "password": PasswordInput(attrs={"autocomplete": "new-password"}),
         }
-        fields = "__all__"
 
 
 @admin.register(StufService)

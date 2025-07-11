@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings, tag
+from django.test import SimpleTestCase, TestCase, override_settings, tag
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
@@ -539,3 +539,12 @@ class SubmissionTests(TestCase):
                 for c in step2.form_step.form_definition.configuration["components"]
             ]
             self.assertEqual(step2_keys, ["textfield2"])
+
+
+class SubmissionFileAttachmentTests(SimpleTestCase):
+    def test_model_str_for_unsaved_instance(self):
+        instance = SubmissionFileAttachment()
+
+        result = str(instance)
+
+        self.assertIsInstance(result, str)

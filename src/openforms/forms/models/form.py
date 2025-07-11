@@ -394,6 +394,9 @@ class Form(models.Model):
         else:
             return self.admin_name
 
+    def get_absolute_url(self):
+        return reverse("forms:form-detail", kwargs={"slug": self.slug})
+
     @property
     def is_available(self) -> bool:
         """
@@ -418,12 +421,6 @@ class Form(models.Model):
         if (limit := self.submission_limit) and limit <= self.submission_counter:
             return True
         return False
-
-    def get_absolute_url(self):
-        return reverse("forms:form-detail", kwargs={"slug": self.slug})
-
-    def get_api_url(self):
-        return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
     def get_registration_backend_display(self) -> str:
         return (

@@ -7,7 +7,7 @@ app = Flask(__name__)
 def json_plugin_post():
     data = request.get_json()
 
-    app.logger.info(f"Data received: {data}")
+    app.logger.info("Data received: %r", data)
 
     message = "No data" if data is None else "Data received"
     return jsonify({"message": message, "data": data}), 201

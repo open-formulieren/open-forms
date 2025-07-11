@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -46,18 +45,9 @@ class OgoneMerchant(models.Model):
         help_text=_("Optionally override the preset endpoint"),
     )
 
+    def __str__(self):
+        return self.label
+
     @property
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
-
-    def clean(self):
-        super().clean()
-        if not self.endpoint_custom and not self.endpoint_preset:
-            raise ValidationError(
-                _("Specify either '{preset}' or '{custom}'").format(
-                    preset=_("Preset endpoint"), custom=_("Custom endpoint")
-                )
-            )
-
-    def __str__(self):
-        return self.label

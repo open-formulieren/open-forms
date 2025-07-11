@@ -23,7 +23,7 @@ class UploadFileTypesField(CheckboxChoicesArrayField):
 class GlobalConfigurationAdminForm(forms.ModelForm):
     class Meta:
         model = GlobalConfiguration
-        fields = "__all__"
+        fields = "__all__"  # noqa: DJ007
         field_classes = {
             "form_upload_default_file_types": UploadFileTypesField,
         }
@@ -35,7 +35,7 @@ class GlobalConfigurationAdminForm(forms.ModelForm):
 class ThemeAdminForm(forms.ModelForm):
     class Meta:
         model = Theme
-        fields = "__all__"
+        fields = "__all__"  # noqa: DJ007
         widgets = {
             "design_token_values": DesignTokenValuesTextareaReact,
         }
