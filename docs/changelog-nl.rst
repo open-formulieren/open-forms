@@ -9,6 +9,210 @@ Changelog (NL)
     This is the Dutch version of the changelog. The English version can be
     found :ref:`here <changelog>`.
 
+3.2.0 "Nimma" (2025-07-11)
+==========================
+
+Open Formulieren 3.2.0 is een feature release.
+
+.. epigraph::
+
+   "Nimma" is een informele, liefkozende bijnaam voor een van de oudste
+   steden van Nederland: Nijmegen. De naam wordt vaak gebruikt door de lokale
+   bevolking en drukt een gevoel van trots, verbondenheid en eigen identiteit uit.
+   Natuurlijk zijn we ook trots dat Nijmegen bijdraagt aan Open Formulieren.
+
+Deze release bevat wijzigingen van de alpha-versies en oplossingen tot aan de
+stabiele versie. Lees de release-opmerkingen aandachtig voor het upgraden naar versie 3.2.0
+en volg de instructies zoals hieronder beschreven:
+
+Update-procedure
+-----------------
+
+.. warning::
+
+   The Camunda registratieplugin zal verwijderd worden in Open Formulieren 4.0. Er is geen vervanging
+   gepland - neem contact op als je afhankelijk bent van deze plugin.
+
+.. warning::
+
+   De manier waarop data wordt gegenereerd via de Generieke JSON-registratieplugin is
+   aangepast. Indien er conflicten optreden tussen vaste, component-, en gebruikersvariabelen
+   worden de vaste variabelen gebruikt. Voorheen hadden in dit soort gevallen
+   de component- en gebruikersvariabelen prioriteit. De validatie zorgt ervoor dat het niet mogelijk is
+   om variabelen te definiëren met dezelfde sleutels als vaste variabelen. Dit geldt echter
+   niet voor oudere formulieren of nieuw toegevoegde vaste variabelen.
+
+Belangrijkste verbeteringen
+---------------------------
+
+**🔊 Verbeterde logging**
+
+    De logging is verbeterd voor betere integratie met observatietools zoals Grafana.
+
+**🛂 Authenticatie d.m.v. Yivi en eIDAS**
+
+    Ondersteuning is toegevoegd voor `Yivi <https://yivi.app/>`_- en
+    `eIDAS <https://en.wikipedia.org/wiki/EIDAS>`_-authenticatie d.m.v. het OpenID Connect-protocol. Door de
+    ondersteuning voor Yivi-athenticatie kunnen eindgebruikers nu kiezen welke informatie zij willen delen met Open Formulieren.
+
+    Met eIDAS kunnen Europese burgers zonder DigiD (en/of BSN)
+    toegang krijgen tot formulieren die deze manier van authenticatie vereisen.
+
+**👫 Partners-component met prefill**
+
+    Het partners-component is toegevoegd om informatie zoals initialen, achternaam en
+    geboortedatum van een partner te tonen of in te voeren.
+
+    Dit component kan vooringevuld worden door het gebruik van de nieuwe familieleden-prefillplugin.
+    De familieleden-prefillplugin kan informatie opvragen vanuit "Haal Centraal BRP personen bevragen"
+    (versie 2) of "StUF-BG" (versie 3.1).
+
+**📝 JSON-schema genereren**
+
+    Het genereren van een JSON-schema van een formulier is sinds deze release mogelijk.
+    Het beschrijft de gegevens van een ingediend formulier van alle gebuikers-
+    en componentvariabelen, en kan gegenereerd worden voor de Generieke JSON- of
+    Objecten-API-registratieplugins. Het schema beschrijft de
+    gegevensstructuur alsof deze is verstuurd met de Generieke JSON- of Objecten-API-registratieplugins.
+
+    De schemas van componentvariabelen bevatten ook een beschrijving en eventuele validatieregels
+    als deze gespecificeerd zijn in de componentinstellingen.
+
+Gedetaileerde wijzigingen
+-------------------------
+
+**Nieuwe functies**
+
+* [:backend:`4966`, :backend:`5285`, :backend:`5334`] Logging verbeterd voor betere
+  integratie met observatietools zoals Grafana.
+* [:backend:`5140`] De authenticatiemodulearchitectuur is herzien om het mogelijk
+  te maken om ondersteuning toe te voegen voor nieuwe plugins gebaseerd op het OpenID
+  Connect-protocol (Yivi en eIDAS).
+
+* [:backend:`5132`] Ondersteuning toegevoegd voor authenticatie d.m.v. Yivi via het
+  OpenID Connect-protocol.
+
+    - Maakt het mogelijk om in te loggen met formulieren via DigiD, eHerkenning, of anoniem.
+    - Aanvullende attributengroepen kunnen gedefinieerd worden in de Yivi configuration,
+      en de relevante kunnen per form geselecteerd worden.
+      Deze groepen maken het mogelijk voor eindgebruikers om, optioneel, aanvullende
+      persoonlijke of bedrijfsgegevens aan te leveren.
+
+* [:backend:`4453`] Ondersteuning toegevoegd voor authenticatie d.m.v. eIDAS via het
+  OpenID Connect-protocol. Door de ondersteuning van eIDAS kunnen Europese burgers
+  zonder DigiD (en/of BSN) toegang krijgen tot formulieren.
+
+* [:backend:`5254`] Nieuwe familieleden-prefillplugin toegevoegd.
+
+    - De gegevens kunnen worden opgehaald vanuit "Haal Centraal BRP personen bevragen"
+      (version 2) of "StUF-BG" (version 3.1).
+    - Partners of kinderen van de ingelogde gebruiker kunnen opgeslagen worden in een gebruikersvariabele.
+    - De opgehaalde gegevens van kinderen kunnen worden gefilterd op basis van leeftijd
+      en of zij overleden zijn.
+
+* [:backend:`4944`, :backend:`5268`, :sdk:`824`] Partners-component toegevoegd.
+
+    - Het is mogelijk om handmatig een partner toe te voegen of in te vullen met de nieuwe familieleden-prefillplugin.
+    - Partners kunnen worden geregistreed via de StUF-ZDS-registratie.
+    - Partnerdetails toegevoegd aan de e-mail-registratie.
+    - Configuratieproblemen zullen worden toegevoegd aan de rapportage-e-mail.
+
+* [:backend:`4923`, :backend:`5312`, :backend:`5027`] Mogelijkheid toegevoegd om een JSON-schema van een formulier te genereren.
+
+    - Een schema kan gegenereerd worden via het tabblad **Registratie** voor
+      de Generieke JSON- of Objecten-API-registratieplugins, en beschrijft de gegevensstructuur
+      geproduceerd door een van deze plugins.
+    - Alle gebruikers- en componentvariabelen zijn inbegrepen in het schema.
+    - De componentschemas bevatten validatieregels en een beschrijving indien beschikbaar.
+
+* [:backend:`5174`] De mogelijkheid toegevoegd om een omschrijving te configureren
+  voor 'zaakbetrokkenen' (registratoren, mede-ondertekenaars of partners) in de StUF-ZDS-plugin.
+* [:backend:`4877`] Ondersteuning toegevoegd voor het bijvoegen van een kopie van de
+  bevestigingse-mail(s) verstuurd naar de initiator in een aangemaakte zaak
+  in de ZGW API's and StUF-ZDS registraties.
+* [:backend:`5193`] `exp` claim toegevoeggd aan JWT in ZGW APIs.
+* [:backend:`5283`] De getoonde kolommen in de admin-formulierenlijst zijn opgeschoond
+  om de UX te verbeteren.
+
+**Bugfixes**
+
+* [:backend:`5394`] Een crash opgelost bij het opslaan van de DigiD- of eHerkenning-
+  configuratie in de admin
+* [:backend:`5041`] Probleem opgelost waarbij componenten met een punt in hun sleutel
+  niet toegevoegd werden aan de data van de Generieke JSON-registratie.
+* Probleem verholpen waarbij verborgen selectievakjes component onderdeel was van de
+  ingediende data als leeg object.
+* [:backend:`5326`] Fouten door onvoldoende geheugen tijdens de e-mailopschoning opgelost.
+* Het niet matchen van de standaardwaarde van de ``clearOnHide``-optie met de frontend opgelost.
+* [:backend:`5303`] Springende gebruikersvariabelen vanwege de auto-sort opgelost.
+* [:backend:`4401`] Oneindige omleiding door fout-geconfigureerde OIDC-authenticatiebackend opgelost.
+* [:backend:`5300`] Een regressie met geneste ingediende data in de vorige alpha release
+  is opgelost.
+* [:backend:`4933`] Ontbrekende Cosign v2-informatie toegevoegd voor registratie-e-mailsjablonen.
+* [:backend:`5245`] Een incorrecte variablekoppeling-configuratie wanneer er meerdere
+  registratiebackends beschikbaar zijn voor een form is opgelost.
+* [:backend:`5214`] Het niet gebruiken van de employee ID binnen de authenticatiecontext wanneer de organization-via-OIDC-plugin gebruikt wordt, is opgelost.
+* [:backend:`5238`] De volgorde van de formulierversies in de versiegeschiedenis is opgelost.
+* [:backend:`5263`] Dubbele encodering van data in de Generieke JSON-registratieplugin
+  is opgelost.
+* [:backend:`5202`] Afspraakinformatie onder het onderdeel inzendingen in de admin is verwijderd.
+* [:backend:`5207`] Twee bugs omtrent de referentielijsten-integratie zijn opgelost:
+
+    - Het genereren van JSON-schemas voor componenten die de referentielijsten als databron
+      gebruiken in de Generieke JSON-registratieplugin is opgelost.
+    - Het tonen van actieve items van niet-actieve tabellen voor componenten die referentielijsten
+      als databron gebruiken is opgelost.
+* De ‘verstuur als lijst'-instelling voor de Objecten-API-variabele-opties die beschikbaar was
+  voor alle componenten is opgelost.
+* De ‘koppel aan geometrie-veld’-instelling voor de Objecten-API-variabele-opties die bescikbaar
+  was voor alle componenten is opgelost.
+* [:backend:`5181`, :backend:`5235`, :backend:`5289`] Incorrecte ``null`` waarde in
+  componenten zijn opgelost.
+* [:backend:`5243`] Niet-bestaande variablen die meegenomen werden in de 'verstuur als lijst'
+  optie van de Generieke JSON-registratie en Objecten-API plugins zijn opgelost.
+* [:backend:`5239`] ``kvkNummer``-attribuut dat niet werd meegestuurd in ZGW API's
+  registraties is opgelost.
+* [:backend:`4917`] De backwards-compatibility-problemen van de herziene formuliernavigatie zijn opgelost.
+  Zie `de SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_ for gedetaileerde upgrade-documentatie.
+* Probleem opgelost waarbij API spec-strings met het format 'uri' een lege waarde hadden
+  als standaardwaarde.
+* HTML sanitization van design tokens opgelost.
+
+**Projectonderhoud**
+
+* [:backend:`5252`] JSON Dump-plugin hernoemd naar Generieke JSON-registratie.
+* [:backend:`5179`, :backend:`5221`, :backend:`5139`] Het aanmaken en gebruik van gegevensstructuren is geoptimaliseerd.
+* [:backend:`5407`] Een melding toegevoegd in de 3.1.0 upgradeprocedure over
+  mogelijk lange upgradetijd vanwege een migratie.
+* De meeste bugbear linter-regels zijn ingeschakeld.
+* OAS-checks zijn vervangen in de CI door een herbruikbare workflow.
+* Oudere release notes zijn gearchiveerd.
+* Voorbereidende werkzaamheden voor de migratie naar django-upgrade-check.
+* Overgestapt van bump2version naar bump-my-version.
+* Overgestapt naar ruff van black, isort en flake8.
+* Een script is toegevoegd dat ervoor zorgt dat "fix"-scripts correct functioneren.
+* Willekeurig falende tests zijn opgelost.
+* Type checking opgelost.
+* Pyupgrade linter-regels ingeschakeld.
+
+* Backend dependencies bijgewerkt:
+
+    - django naar 4.2.23.
+    - urllib3 naar 2.5.0.
+    - requests naar 2.32.4.
+    - vcrpy naar 7.0.0.
+    - h11 naar 0.16.0.
+    - httpcore naar 1.0.9.
+    - tornado naar 6.5.
+    - zgw-consumers naar 0.38.0.
+    - celery naar 5.5.0.
+    - django-privates naar 3.1.1
+
+* Frontend dependencies bijgewerkt:
+
+    - @open-formulieren/design-tokens naar 0.59.0.
+    - @open-formulieren/formio-builder naar 0.41.1.
+
 3.1.0 "Lente" (31 maart 2025)
 =============================
 
@@ -34,6 +238,10 @@ Om naar 3.1.0 te upgraden, let dan op:
 
 * ⚠️ Zorg dat je minimaal op versie 3.0.1 zit. We raden altijd de meest recente patch
   release aan, op het moment van schrijven is dit 3.0.6.
+
+* ⚠️ Controleer het aantal log records voor het toepassen van de upgrade. Via [:backend:`4931`]
+  is er een migratie toegevoegd die log records verwerkt en kan zorgen voor een langere
+  verwerkingstijd.
 
 * We raden aan om de scripts ``bin/report_component_problems.py`` en
   ``bin/report_form_registration_problems.py`` uit te voeren om bestaande problemen in
@@ -345,7 +553,7 @@ Volledig overzicht van wijzigingen
 ----------------------------------
 
 **Breaking changes**
- 
+
 * [:backend:`4375`] De omgevingsvariabele ``DISABLE_SENDING_HIDDEN_FIELDS`` voor de
   Objecten-API is verwijderd.
 * Automatisch patchen van ``cosign_information`` template-tag verwijderd.

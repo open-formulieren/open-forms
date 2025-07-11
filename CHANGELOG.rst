@@ -7,6 +7,237 @@ Changelog
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
 
+3.2.0 "Nimma" (2025-07-11)
+==========================
+
+Open Forms 3.2.0 is a feature release.
+
+.. epigraph::
+
+    "Nimma" is an informal, affectionate nickname for one of the oldest cities in the Netherlands: Nijmegen.
+    The name is often used by locals and conveys a sense of pride, solidarity, and personal identity.
+    Naturally, we are also proud of the fact that Nijmegen contributes to Open Forms.
+
+This contains the changes from the alpha releases and fixes applied until the stable version.
+BEFORE upgrading to 3.2.0, please read the release notes carefully and review the following
+instructions.
+
+Upgrade procedure
+-----------------
+
+.. warning::
+
+   The Camunda registration backend will be removed in Open Forms 4.0. There is no
+   replacement scheduled - if you rely on this plugin, please get in touch.
+
+.. warning::
+
+    For the Generic JSON registration plugin, we changed the way that the data is generated.
+    In case of key conflicts between static, component, and user-defined variables,
+    the static variables will take precedence. Previously, the component and user-defined
+    variables would override the static variables. Our validation guards against the use of
+    keys that are already present in the static variables, but this does not cover old forms
+    and newly-added static variables.
+
+Major features
+--------------
+
+**🔊 Improved logging**
+
+    We improved the logs that are emitted by the application, which enable better integration with observability
+    tooling like Grafana.
+
+**🛂 Authentication using Yivi and eIDAS**
+
+    We implemented support for `Yivi <https://yivi.app/>`_ and `eIDAS <https://en.wikipedia.org/wiki/EIDAS>`_
+    authentication via the OpenID Connect protocol. With support for Yivi authentication, end-users can decide which
+    personal information they want to share with Open Forms.
+
+    Support for eIDAS will allow European citizens without a DigiD (and/or BSN) to have access to forms which
+    require authentication.
+
+**👫 Partners component with prefill**
+
+    We added a partners component, where information such as initials, last name, and date of birth of a
+    partner can be shown or provided.
+
+    This component can be prefilled using a new family members prefill plugin, that allows retrieving data from
+    "Haal Centraal BRP personen bevragen" (version 2) or "StUF-BG" (version 3.1).
+
+**📝 JSON schema generation**
+
+    We added the possibility to generate a JSON schema of a form. It describes the submission data of all user-defined
+    and component variables, and can be generated for the Generic JSON and Objects API registrations in the shape of
+    the data produced by either of those plugins.
+
+    The schemas of component variables also include a description and validation rules if they were specified
+    in the configuration of these components.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`4966`, :backend:`5285`, :backend:`5334`] Improved the logs emitted by the application to better integrate
+  with observability tooling like Grafana.
+
+* [:backend:`5140`] Reworked the authentication module architecture to make it possible to add support for
+  new plugins based on the OpenID Connect protocol (Yivi and eIDAS).
+
+* [:backend:`5132`] Added support for authentication using Yivi via the OpenID Connect protocol.
+
+    - Allows logging in to forms using DigiD, eHerkenning, or anonymously.
+    - Additional attribute groups can be defined in the Yivi configuration, and relevant ones can be selected per form.
+      These groups allow end-users to, optionally, provide additional personal or company details.
+
+* [:backend:`4453`] Added support for authentication using eIDAS via the OpenID connect protocol. Allows European
+  citizens without a DigiD (and/or BSN) to have access to forms which require authentication.
+
+* [:backend:`5254`] Added new family members prefill plugin.
+
+    - The data can be retrieved from "Haal Centraal BRP personen bevragen" (version 2) or "StUF-BG" (version 3.1).
+    - Partners or children of the authenticated user can be stored in a user-defined variable.
+    - The retrieved data of children can be filtered by age and whether they are deceased.
+
+* [:backend:`4944`, :backend:`5268`, :sdk:`824`] Added partners component.
+
+    - It is possible to manually add a partner, or to prefill the component using the new family members prefill plugin.
+    - Partners can be registered through the StUF-ZDS registration.
+    - Partner details are included in the email registration.
+    - Configuration issues will be reported in the digest email.
+
+* [:backend:`4923`, :backend:`5312`, :backend:`5027`] Added JSON schema generation of a form.
+
+    - The schema can be generated from the **Registration** tab for the Objects API and Generic JSON plugins,
+      and it represents the shape of the data produced by either of these plugins.
+    - All user-defined and component variables are included in the schema.
+    - The component schemas include validation rules and a description when available.
+
+* [:backend:`5174`] Added possibility to configure a description for 'zaakbetrokkenen' (registrators, cosigners, or
+  partners) in the StUF-ZDS plugin.
+* [:backend:`4877`] Added support for attaching a copy of the confirmation email(s) sent to the initiator to a created
+  case in the ZGW API's and StUF-ZDS registrations.
+* [:backend:`5193`] Added `exp` claim to JWT in ZGW APIs.
+* [:backend:`5283`] Cleaned up the displayed columns in the admin form list to improve the UX.
+
+**Bugfixes**
+
+* [:backend:`5394`] Fixed crash when saving DigiD or eHerkenning configuration in the admin.
+* [:backend:`5041`] Fixed components with a period in their key not being added to the data in the Generic JSON
+  registration.
+* Fixed hidden selectboxes component being present in the submission data as an empty object.
+* [:backend:`5326`] Fixed out-of-memory errors during email clean-up.
+* Fixed default value of the ``clearOnHide`` option not matching the frontend.
+* [:backend:`5303`] Fixed user-defined variables jumping around because of the auto-sort.
+* [:backend:`4401`] Fixed infinite redirect loop on misconfigured OIDC authentication backend.
+* [:backend:`5300`] Fixed a regression in the previous alpha release where nested submission data was not being saved.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registration email templates.
+* [:backend:`5245`] Fixed broken variable-mapping configuration when multiple registration backends
+  are available on a form.
+* [:backend:`5214`] Fixed employee ID not being used in the authentication context when the
+  organization-via-OIDC plugin is used.
+* [:backend:`5238`] Fixed the order of form versions in version history.
+* [:backend:`5263`] Fixed double encoding of data in generic JSON registration plugin.
+* [:backend:`5202`] Removed appointment information from the submission tab in the admin.
+* [:backend:`5207`] Fixed two bugs regarding reference-list integration:
+
+    - Fixed JSON schema generation for components that use reference lists as a data source in the
+      generic JSON registration plugin.
+    - Fixed valid items of invalid table being shown for components that use reference lists as a
+      data source.
+
+* Fixed the ‘transform to list’ setting for the Objects API variable options being available for all
+  components.
+* Fixed the ‘map to geometry field’ setting for the Objects API variable options being available for
+  all components.
+* [:backend:`5181`, :backend:`5235`, :backend:`5289`] Fixed incorrect ``null`` values in components.
+* [:backend:`5243`] Fixed non-existing variables being included in the 'transform to list'
+  option of the generic JSON registration and Objects API plugins.
+* [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
+* [:backend:`4917`] Fixed the backwards-compatibility issues of the reworked form
+  navigation. See `the SDK storybook <https://open-formulieren.github.io/open-forms-sdk/?path=/docs/developers-upgrade-notes-3-1-0--docs>`_
+  for detailed upgrade documentation.
+* Fixed API spec for strings with format 'uri' having an empty string as default value.
+* Fixed HTML sanitization of design tokens.
+
+**Project maintenance**
+
+* [:backend:`5252`] Renamed JSON Dump plugin to Generic JSON registration.
+* [:backend:`5179`, :backend:`5221`, :backend:`5139`] Optimized creation and access of data structures.
+* [:backend:`5407`] Added note in the 3.1.0 upgrade procedure about migrations (possibly) taking a long time to
+  complete.
+* Enabled most of bugbear linter rules.
+* Replaced OAS checks in CI with a re-usable workflow.
+* Archived old release notes.
+* Prepared migration to django-upgrade-check.
+* Switched to bump-my-version from bump2version.
+* Switched to ruff from black, isort, and flake8.
+* Added script to verify that fix scripts work as expected.
+* Fixed test flakiness.
+* Fixed type checking.
+* Enabled pyupgrade linter rules.
+* Updated backend dependencies:
+
+    - Bumped django to 4.2.23.
+    - Bumped urllib3 to 2.5.0.
+    - Bumped requests to 2.32.4.
+    - Bumped vcrpy to 7.0.0.
+    - Bumped h11 to 0.16.0.
+    - Bumped httpcore to 1.0.9.
+    - Bumped tornado to 6.5.
+    - Bumped zgw-consumers to 0.38.0.
+    - Bumped celery to 5.5.0.
+    - Bumped django-privates to 3.1.1
+
+* Updated frontend dependencies:
+
+    - Bumped @open-formulieren/design-tokens to 0.59.0.
+    - Bumped @open-formulieren/formio-builder to 0.41.1.
+
+
+3.1.4 (2025-07-10)
+==================
+
+Regular bugfix release.
+
+* [:backend:`5394`] Fixed crash when saving DigiD or eHerkenning configuration in the admin.
+* [:backend:`5407`] Added note in the 3.1.0 upgrade procedure about migrations (possibly) taking a long time to
+  complete.
+* Fixed broken link.
+* Updated backend dependencies:
+
+    - Bumped django to 4.2.23.
+    - Bumped requests to 2.32.4.
+    - Bumped urllib3 to 2.5.0.
+    - Bumped vcrpy to 7.0.0.
+    - Bumped django-privates to 3.1.1.
+
+
+3.0.9 (2025-07-09)
+==================
+
+Final bugfix release in the ``3.0.x`` series.
+
+* Fixed broken link.
+* Updated backend dependencies:
+
+    - Bumped django to 4.2.23.
+    - Bumped requests to 2.32.4.
+    - Bumped urllib3 to 2.5.0.
+    - Bumped vcrpy to 7.0.0.
+
+
+3.1.3 (2025-06-06)
+==================
+
+Hotfix addressing a backport issue.
+
+* [:backend:`5193`] Fixed missing backport of the zgw-consumers upgrade, causing a crash
+  when editing services.
+* [:backend:`5303`] Fixed user defined variables jumping around because of the auto-sort.
+* Upgraded Django to the latest security release.
+
+
 3.2.0-alpha.1 (2025-05-23)
 ==========================
 
@@ -62,6 +293,48 @@ This is an alpha release, meaning it is not finished yet or suitable for product
     - Bumped httpcore to 1.0.9.
     - Bumped django to 4.2.21.
     - Bumped tornado to 6.5.
+
+
+3.1.2 (2025-05-23)
+==================
+
+Regular bugfix release.
+
+**Bugfixes**
+
+* [:backend:`5289`] Fixed crash in fix-script.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registraton email templates.
+
+**Project maintenance**
+
+* Upgraded django to 4.2.21 with the latest security patches.
+
+
+3.0.8 (2025-05-23)
+==================
+
+Regular bugfix release.
+
+**Minor security improvements**
+
+On request the low severity security patches from 3.1.0 are backported.
+
+* Administrators are no-longer able to change the submission summary PDF through the
+  admin interface.
+* SVGs uploaded through the admin interface, used for logos and favicons, are now
+  automatically sanitized.
+* The form preview seen by form designers in the admin now applies extra HTML sanitation
+  on the client side. The backend already properly escaped this and the public UI was
+  never affected.
+
+**Bugfixes**
+
+* [:backend:`5289`] Fixed crash in fix-script.
+* [:backend:`4933`] Fixed missing Cosign v2 information for registraton email templates.
+
+**Project maintenance**
+
+* Upgraded django to 4.2.21 with the latest security patches.
 
 
 3.2.0-alpha.0 (2025-04-25)
@@ -204,13 +477,13 @@ Regular bugfix release.
 
 **Bugfixes**
 
-* [:backend: `5214`] Fixed employee ID not being used in the authentication context when
+* [:backend:`5214`] Fixed employee ID not being used in the authentication context when
   the organization-via-OIDC plugin is used.
-* [:backend: `5238`] Fixed the order of form versions in version history.
+* [:backend:`5238`] Fixed the order of form versions in version history.
 * [:backend:`5181`] Fixed incorrect ``null`` default values in components.
 * [:backend:`5239`] Fixed ``kvkNummer`` attribute not being sent in ZGW API's registration.
-* [:backend: `5188`] Fixed wrong prefill fields/attributes being logged.
-* [#5155] Fixed ``initial_date_reference`` being lost on language change while
+* [:backend:`5188`] Fixed wrong prefill fields/attributes being logged.
+* [:backend:`5155`] Fixed ``initial_date_reference`` being lost on language change while
   filling out a form.
 * [:backend:`4662`, :backend:`5147`] Fixed not-required selectboxes field preventing
   pausing the form.

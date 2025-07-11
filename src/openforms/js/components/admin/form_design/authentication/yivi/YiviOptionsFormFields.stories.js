@@ -96,7 +96,7 @@ export const DynamicOptionsBasedOnAuthenticationOptions = {
 
     await rsSelect(authenticationOptionsSelect, 'BSN');
     const bsnOptionsFieldset = canvas.getByRole('heading', {
-      name: 'Yivi plugin options for bsn',
+      name: 'Yivi-pluginopties voor bsn',
     });
     await waitFor(() => {
       expect(bsnOptionsFieldset).toBeVisible();
@@ -104,7 +104,7 @@ export const DynamicOptionsBasedOnAuthenticationOptions = {
 
     await rsSelect(authenticationOptionsSelect, 'KvK number');
     const kvkOptionsFieldset = canvas.getByRole('heading', {
-      name: 'Yivi plugin options for kvk',
+      name: 'Yivi-pluginopties voor kvk',
     });
     await waitFor(() => {
       expect(kvkOptionsFieldset).toBeVisible();

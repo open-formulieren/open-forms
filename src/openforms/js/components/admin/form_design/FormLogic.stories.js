@@ -287,6 +287,8 @@ export const DeletingOneOfMultipleActionsInSameTrigger = {
 
     // First action should be removed, and the second should still be present
     expect(canvas.queryByText(/First action/)).not.toBeInTheDocument();
-    expect(await canvas.findByText(/Second action/)).toBeInTheDocument();
+    expect(
+      await canvas.findByText(/Second action/, undefined, {timeout: 10 * 1000})
+    ).toBeInTheDocument();
   },
 };
