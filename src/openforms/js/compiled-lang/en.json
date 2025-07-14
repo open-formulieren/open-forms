@@ -107,12 +107,6 @@
       "value": "The maximum value this field can have before the form can be submitted."
     }
   ],
-  "/kZu2e": [
-    {
-      "type": 0,
-      "value": "Initials"
-    }
-  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -855,12 +849,6 @@
       "value": "Whether the form is (soft) deleted"
     }
   ],
-  "7HlMn7": [
-    {
-      "type": 0,
-      "value": "You must select a service."
-    }
-  ],
   "7JMcZW": [
     {
       "type": 0,
@@ -1225,12 +1213,6 @@
       "value": "Subtract"
     }
   ],
-  "9oJuUL": [
-    {
-      "type": 0,
-      "value": "Marker"
-    }
-  ],
   "9y3/ek": [
     {
       "type": 0,
@@ -1361,12 +1343,6 @@
     {
       "type": 0,
       "value": "Email payment subject"
-    }
-  ],
-  "BFq6vL": [
-    {
-      "type": 0,
-      "value": "Loading values..."
     }
   ],
   "BGZD6J": [
@@ -1975,6 +1951,12 @@
       "value": "Merchant ID"
     }
   ],
+  "F4SQsB": [
+    {
+      "type": 0,
+      "value": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
+    }
+  ],
   "F9ew4C": [
     {
       "type": 0,
@@ -2161,12 +2143,6 @@
     {
       "type": 0,
       "value": "Null"
-    }
-  ],
-  "Gjhh/5": [
-    {
-      "type": 0,
-      "value": "Available drawing shapes"
     }
   ],
   "GjumK9": [
@@ -2435,12 +2411,6 @@
     {
       "type": 0,
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
-    }
-  ],
-  "JKnHMC": [
-    {
-      "type": 0,
-      "value": "Lastname"
     }
   ],
   "JKq3TC": [
@@ -2749,12 +2719,6 @@
     {
       "type": 0,
       "value": "Change text"
-    }
-  ],
-  "M2+MHj": [
-    {
-      "type": 0,
-      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -3235,12 +3199,6 @@
       "value": "You need to configure both longitude and latitude."
     }
   ],
-  "R25Vbr": [
-    {
-      "type": 0,
-      "value": "Reference lists API"
-    }
-  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3485,12 +3443,6 @@
     {
       "type": 0,
       "value": "Double column"
-    }
-  ],
-  "T64zDz": [
-    {
-      "type": 0,
-      "value": "Polygon"
     }
   ],
   "TB/ku3": [
@@ -3849,12 +3801,6 @@
       "value": "Service"
     }
   ],
-  "WXpj4j": [
-    {
-      "type": 0,
-      "value": "Users can set a marker on the map"
-    }
-  ],
   "WZJG0y": [
     {
       "type": 0,
@@ -4027,12 +3973,6 @@
     {
       "type": 0,
       "value": "Advanced"
-    }
-  ],
-  "YObTjL": [
-    {
-      "type": 0,
-      "value": "The code of the table from which the options will be retrieved."
     }
   ],
   "YQ/Vx0": [
@@ -4221,12 +4161,6 @@
       "value": "TITLE parameter"
     }
   ],
-  "ZYWsHs": [
-    {
-      "type": 0,
-      "value": "Date of birth"
-    }
-  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -4383,12 +4317,6 @@
       "value": "House letter addition"
     }
   ],
-  "b64egT": [
-    {
-      "type": 0,
-      "value": "Users can draw shapes (polygons) on the map"
-    }
-  ],
   "b9D64D": [
     {
       "type": 0,
@@ -4519,12 +4447,6 @@
     {
       "type": 0,
       "value": "Something went wrong when fetching the available target paths"
-    }
-  ],
-  "cLzsxn": [
-    {
-      "type": 0,
-      "value": "Reference lists table code"
     }
   ],
   "cQvPLh": [
@@ -4775,6 +4697,12 @@
     {
       "type": 0,
       "value": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
+    }
+  ],
+  "e6SsfR": [
+    {
+      "type": 0,
+      "value": "Map configuration"
     }
   ],
   "eAmrdi": [
@@ -5123,12 +5051,6 @@
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
     }
   ],
-  "gSSyoc": [
-    {
-      "type": 0,
-      "value": "Reference lists service"
-    }
-  ],
   "gUl3mu": [
     {
       "type": 0,
@@ -5307,12 +5229,6 @@
       "value": "If left blank, then the most recent version is used."
     }
   ],
-  "hkXaC1": [
-    {
-      "type": 0,
-      "value": "BSN"
-    }
-  ],
   "huHjRm": [
     {
       "type": 0,
@@ -5347,12 +5263,6 @@
     {
       "type": 0,
       "value": "Internal name"
-    }
-  ],
-  "i/P7yw": [
-    {
-      "type": 0,
-      "value": "You must select a table."
     }
   ],
   "i7HknI": [
@@ -5519,6 +5429,12 @@
     {
       "type": 0,
       "value": "Resulting string"
+    }
+  ],
+  "jUYCwO": [
+    {
+      "type": 0,
+      "value": "Internal remarks"
     }
   ],
   "jV58dA": [
@@ -5741,6 +5657,22 @@
       "value": "Show character counter"
     }
   ],
+  "kw2jNc": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -5909,12 +5841,6 @@
     {
       "type": 0,
       "value": "Steps and fields"
-    }
-  ],
-  "mRmbnJ": [
-    {
-      "type": 0,
-      "value": "Line"
     }
   ],
   "mWHMvR": [
@@ -6279,12 +6205,6 @@
       "value": "User"
     }
   ],
-  "pM92DZ": [
-    {
-      "type": 0,
-      "value": "Users can draw straight lines on the map"
-    }
-  ],
   "pT5jx/": [
     {
       "type": 0,
@@ -6311,12 +6231,6 @@
       ],
       "type": 8,
       "value": "code"
-    }
-  ],
-  "pdmkVe": [
-    {
-      "type": 0,
-      "value": "Initial focus"
     }
   ],
   "pfdsz9": [
@@ -6593,30 +6507,6 @@
       "value": "Plugin attribute"
     }
   ],
-  "sjnifH": [
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (no longer valid)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
-    }
-  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6795,12 +6685,6 @@
       "value": "Footer"
     }
   ],
-  "u5fu3R": [
-    {
-      "type": 0,
-      "value": "The identifier of the reference lists service from which the options will be retrieved."
-    }
-  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6959,12 +6843,6 @@
       "value": "Errored Submissions Removal Method"
     }
   ],
-  "wJ7Yha": [
-    {
-      "type": 0,
-      "value": "Map settings"
-    }
-  ],
   "wLfQfD": [
     {
       "type": 0,
@@ -7011,6 +6889,22 @@
     {
       "type": 1,
       "value": "number"
+    }
+  ],
+  "wVoT0I": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
     }
   ],
   "wZ99FU": [

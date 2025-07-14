@@ -176,7 +176,7 @@ const FormDetailFields = ({form: {slug, translations, appointmentOptions}, onCha
                     />
                   }
                 >
-                  <TextArea rows={5} cols={85} value={translations[langCode].internalRemarks} />
+                  <TextArea rows={5} cols={85} value={translations[langCode].internalRemarks} onChange={onChange} />
                 </Field>
               </FormRow>
             </>

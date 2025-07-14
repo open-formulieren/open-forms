@@ -5,6 +5,7 @@ import set from 'lodash/set';
 
 export const initialFormTranslations = {
   name: '',
+  internalRemarks: '',
   changeText: '',
   confirmText: '',
   previousText: '',

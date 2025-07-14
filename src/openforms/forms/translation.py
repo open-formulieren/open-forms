@@ -7,6 +7,7 @@ from .models import Form, FormDefinition, FormStep
 class FormTranslationOptions(TranslationOptions):
     fields = (
         "name",
+        "internal_remarks",
         "submission_confirmation_template",
         "begin_text",
         "previous_text",

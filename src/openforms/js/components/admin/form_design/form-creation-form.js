@@ -188,6 +188,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
   name: 'form',
   introductionPageContent: 'form',
+  internalRemarks: 'form',
   explanationTemplate: 'form',
   submissionConfirmationTemplate: 'submission-confirmation',
   beginText: 'literals',

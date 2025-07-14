@@ -870,6 +870,12 @@
     "isTranslated": true,
     "originalDefault": "Merchant ID"
   },
+  "F4SQsB": {
+    "defaultMessage": "Opmerkingen of intenties over het formulier. Dit veld kan ook gebruikt worden voor aantekeningen voor later gebruik of voor een andere gebruiker.",
+    "description": "Interne formulier opmerkingen veld help tekst",
+    "isTranslated": true,
+    "originalDefault": "Opmerkingen of intenties over het formulier. Dit veld kan ook gebruikt worden voor aantekeningen voor later gebruik of voor een andere gebruiker."
+  },
   "F9ew4C": {
     "defaultMessage": "Versie",
     "description": "Objects API registration options 'objecttypeVersion' label",
@@ -2646,6 +2652,12 @@
     "defaultMessage": "Tekstsjabloon",
     "description": "Interpolation expression preview label",
     "originalDefault": "Resulting string"
+  },
+  "jUYCwO": {
+    "defaultMessage": "Interne opmerkingen",
+    "description": "Interne formulier opmerkingen veld label",
+    "isTranslated": true,
+    "originalDefault": "Interne opmerkingen"
   },
   "jYFS/i": {
     "defaultMessage": "Variabele",
