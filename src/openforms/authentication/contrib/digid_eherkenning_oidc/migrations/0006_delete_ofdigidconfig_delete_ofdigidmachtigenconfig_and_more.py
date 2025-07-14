@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("digid_eherkenning_oidc", "0002_move_data_oidc_config"),
+        ("digid_eherkenning_oidc", "0005_move_data_oidc_config"),
     ]
 
     operations = [
@@ -20,5 +20,11 @@ class Migration(migrations.Migration):
         ),
         migrations.DeleteModel(
             name="OFEHerkenningConfig",
+        ),
+        migrations.DeleteModel(
+            name="OFEIDASConfig",
+        ),
+        migrations.DeleteModel(
+            name="OFEIDASCompanyConfig",
         ),
     ]

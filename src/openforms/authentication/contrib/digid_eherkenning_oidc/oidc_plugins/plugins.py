@@ -17,21 +17,25 @@ from mozilla_django_oidc_db.typing import JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import deprecated
 
+from .....contrib.auth_oidc.views import anon_user_callback_view
 from .constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from .schemas import (
     DIGID_MACHTIGEN_OPTIONS_SCHEMA,
     DIGID_OPTIONS_SCHEMA,
     EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA,
     EHERKENNING_OPTIONS_SCHEMA,
+    EIDAS_COMPANY_SCHEMA,
+    EIDAS_SCHEMA,
 )
 from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
 from .utils import process_claims
-from .views import anon_user_callback_view
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -84,10 +88,6 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         return True
 
-    def filter_users_by_claims(self, claims: JSONObject):
-        # This method is not called since we implemented get_or_create_user
-        pass
-
     def get_or_create_user(
         self,
         access_token: str,
@@ -128,6 +128,7 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         strict_mode = flag_enabled("DIGID_EHERKENNING_OIDC_STRICT")
         assert isinstance(strict_mode, bool)
+
         return process_claims(
             claims,
             config,
@@ -168,6 +169,11 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
             ],
             "strict_required_claims": [],
             "optional_claims": [],
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
         }
 
 
@@ -203,6 +209,11 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginPro
                 }
             ],
             "optional_claims": [],
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
         }
 
     def _get_legacy_callback(self) -> str:
@@ -258,6 +269,11 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtoc
                 }
             ],
             "optional_claims": optional_claims,
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
         }
 
     def _get_legacy_callback(self) -> str:
@@ -338,6 +354,11 @@ class OIDCeHerkenningBewindvoeringPlugin(
                 },
             ],
             "optional_claims": optional_claims,
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
         }
 
     def _get_legacy_callback(self) -> str:
@@ -356,3 +377,133 @@ class OIDCeHerkenningBewindvoeringPlugin(
             sensitive_claims.append(branch_number_claim_path)
 
         return sensitive_claims
+
+
+@register(OIDC_EIDAS_IDENTIFIER)
+class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
+    def get_schema(self) -> JSONObject:
+        return EIDAS_SCHEMA
+
+    def get_sensitive_claims(self) -> list[list[str]]:
+        return []
+
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
+        config = self.get_config()
+
+        # TODO: are these always required??
+        return {
+            "always_required_claims": [
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_identifier_claim_path"
+                    ],
+                    "legacy": "legal_subject_identifier_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_first_name_claim"
+                    ],
+                    "legacy": "legal_subject_first_name_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_family_name_claim"
+                    ],
+                    "legacy": "legal_subject_family_name_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_date_of_birth_claim"
+                    ],
+                    "legacy": "legal_subject_date_of_birth_claim",
+                },
+            ],
+            "strict_required_claims": [],
+            "optional_claims": [
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_identifier_type_claim_path"
+                    ],
+                    "legacy": "legal_subject_identifier_type_claim",
+                },
+            ],
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
+        }
+
+
+@register(OIDC_EIDAS_COMPANY_IDENTIFIER)
+class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
+    def get_schema(self) -> JSONObject:
+        return EIDAS_COMPANY_SCHEMA
+
+    def get_sensitive_claims(self) -> list[list[str]]:
+        return []
+
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
+        config = self.get_config()
+
+        # TODO: are these always required??
+        return {
+            "always_required_claims": [
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_name_claim_path"
+                    ],
+                    "legacy": "legal_subject_name_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "legal_subject_identifier_claim_path"
+                    ],
+                    "legacy": "legal_subject_identifier_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "acting_subject_identifier_claim_path"
+                    ],
+                    "legacy": "acting_subject_identifier_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "acting_subject_first_name_claim_path"
+                    ],
+                    "legacy": "acting_subject_first_name_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "acting_subject_family_name_claim_path"
+                    ],
+                    "legacy": "acting_subject_family_name_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "acting_subject_date_of_birth_claim_path"
+                    ],
+                    "legacy": "acting_subject_date_of_birth_claim",
+                },
+                {
+                    "path": config.options["identity_settings"][
+                        "mandate_service_id_claim_path"
+                    ],
+                    "legacy": "mandate_service_id_claim",
+                },
+            ],
+            "strict_required_claims": [],
+            "optional_claims": [
+                {
+                    "path": config.options["identity_settings"][
+                        "acting_subject_identifier_type_claim_path"
+                    ],
+                    "legacy": "acting_subject_identifier_type_claim",
+                },
+            ],
+            "loa_claims": {
+                "claim_path": config.options["loa_settings"]["claim_path"],
+                "default": config.options["loa_settings"]["default"],
+                "value_mapping": config.options["loa_settings"]["value_mapping"],
+            },
+        }

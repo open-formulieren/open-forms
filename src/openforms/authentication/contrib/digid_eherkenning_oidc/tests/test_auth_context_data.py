@@ -18,6 +18,7 @@ from django.urls import reverse
 
 from django_webtest import DjangoTestApp
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 from openforms.utils.tests.keycloak import (
@@ -32,6 +33,8 @@ from ..oidc_plugins.constants import (
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from .base import (
     IntegrationTestsBase,
@@ -108,7 +111,8 @@ class EIDASAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_record_auth_context_for_eidas_natural_person_authentication(self):
         self._login_and_start_form(
             "eidas_oidc", username="eidas-person", password="eidas-person"
@@ -136,7 +140,8 @@ class EIDASAuthContextTests(
             },
         )
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_record_auth_context_for_eidas_natural_national_person_authentication(self):
         self._login_and_start_form(
             "eidas_oidc",
@@ -167,7 +172,15 @@ class EIDASAuthContextTests(
             },
         )
 
-    @mock_eidas_config(legal_subject_identifier_type_claim=["invalid-claim"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER,
+        overrides={
+            "options.identity_settings.legal_subject_identifier_type_claim_path": [
+                "invalid-claim"
+            ]
+        },
+    )
     def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_legal_subject_identifier_type_claim(
         self,
     ):
@@ -210,7 +223,8 @@ class EIDASCompanyAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_record_auth_context_for_eidas_company_authentication(self):
         self._login_and_start_form(
             "eidas_company_oidc", username="eidas-company", password="eidas-company"
@@ -248,7 +262,15 @@ class EIDASCompanyAuthContextTests(
             },
         )
 
-    @mock_eidas_company_config(acting_subject_identifier_type_claim=["invalid-claim"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER,
+        overrides={
+            "options.identity_settings.acting_subject_identifier_type_claim_path": [
+                "invalid-claim"
+            ]
+        },
+    )
     def test_record_auth_context_for_eidas_company_authentication_with_missing_acting_subject_identifier_type_claim(
         self,
     ):
@@ -266,7 +288,7 @@ class EIDASCompanyAuthContextTests(
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
-        # Without the `person_identifier_type_claim`, expect the actingSubject
+        # Without the `legal_subject_identifier_claim`, expect the actingSubject
         # identifierType to be `"opaque"`
         self.assertEqual(
             auth_context,

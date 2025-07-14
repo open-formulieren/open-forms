@@ -35,6 +35,8 @@ from ..oidc_plugins.constants import (
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from .base import (
     IntegrationTestsBase,
@@ -62,7 +64,8 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_digid_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_IDENTIFIER)
     def test_successfully_complete_submission(self):
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
@@ -403,7 +406,8 @@ class EIDASCallbackTests(IntegrationTestsBase):
     Test the return/callback side after authenticating with the identity provider.
     """
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -420,7 +424,8 @@ class EIDASCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_successfully_complete_submission(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -465,7 +470,15 @@ class EIDASCallbackTests(IntegrationTestsBase):
             submission = Submission.objects.get()
             self.assertTrue(submission.is_authenticated)
 
-    @mock_eidas_config(legal_subject_identifier_claim=["absent-claim"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER,
+        overrides={
+            "options.identity_settings.legal_subject_identifier_claim_path": [
+                "absent-claim"
+            ]
+        },
+    )
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -487,7 +500,10 @@ class EIDASCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
 
-    @mock_eidas_config(oidc_rp_scopes_list=["badscope"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER, overrides={"oidc_rp_scopes_list": ["badscope"]}
+    )
     def test_eidas_error_reported_for_cancelled_login_anon_django_user(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -523,7 +539,10 @@ class EIDASCallbackTests(IntegrationTestsBase):
         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
         self.assertEqual(callback_response.request.url, str(expected_url))
 
-    @mock_eidas_config(oidc_rp_scopes_list=["badscope"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER, overrides={"oidc_rp_scopes_list": ["badscope"]}
+    )
     def test_eidas_error_reported_for_cancelled_login_with_staff_django_user(
         self,
     ):
@@ -580,7 +599,8 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_digid_machtigen_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
     def test_successfully_complete_submission(self):
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
@@ -793,7 +813,8 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_eherkenning_bewindvoering_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EH_BEWINDVOERING_IDENTIFIER)
     def test_successfully_complete_submission(self):
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
@@ -969,7 +990,8 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
     Test the return/callback side after authenticating with the identity provider.
     """
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
@@ -988,7 +1010,8 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_successfully_complete_submission(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
@@ -1035,7 +1058,15 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
             submission = Submission.objects.get()
             self.assertTrue(submission.is_authenticated)
 
-    @mock_eidas_company_config(legal_subject_identifier_claim=["absent-claim"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER,
+        overrides={
+            "options.identity_settings.legal_subject_identifier_claim_path": [
+                "absent-claim"
+            ]
+        },
+    )
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
@@ -1059,7 +1090,10 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, str(expected_url))
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
 
-    @mock_eidas_company_config(oidc_rp_scopes_list=["badscope"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER, overrides={"oidc_rp_scopes_list": ["badscope"]}
+    )
     def test_eidas_company_error_reported_for_cancelled_login_anon_django_user(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
@@ -1095,7 +1129,10 @@ class EIDASCompanyCallbackTests(IntegrationTestsBase):
         assert BACKEND_OUTAGE_RESPONSE_PARAMETER not in expected_url.args
         self.assertEqual(callback_response.request.url, str(expected_url))
 
-    @mock_eidas_company_config(oidc_rp_scopes_list=["badscope"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER, overrides={"oidc_rp_scopes_list": ["badscope"]}
+    )
     def test_eidas_company_error_reported_for_cancelled_login_with_staff_django_user(
         self,
     ):

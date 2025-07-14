@@ -421,7 +421,10 @@ class Migration(migrations.Migration):
             "mozilla_django_oidc_db",
             "0006_oidcprovider_oidcclient",
         ),
-        ("digid_eherkenning_oidc", "0001_initial"),
+        (
+            "digid_eherkenning_oidc",
+            "0004_alter_ofeidascompanyconfig_oidc_rp_scopes_list_and_more",
+        ),
         (
             "digid_eherkenning_oidc_generics",
             "0009_remove_digidconfig_oidc_exempt_urls_and_more",

@@ -195,18 +195,6 @@
                 "oidcclient"
             ],
             [
-                "digid_eherkenning_oidc",
-                "ofeidasconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeidascompanyconfig"
-            ],
-            [
-                "yivi_oidc",
-                "yiviopenidconnectconfig"
-            ],
-            [
                 "yivi_oidc",
                 "attributegroup"
             ],

@@ -1,9 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import structlog
 from glom import Path, PathAccessError, assign, glom
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.typing import JSONObject
 
+from ...org_oidc.plugin import OIDCAuthentication as OrgOIDCAuthentication
+from ..plugin import OIDCAuthentication
 from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
+
+if TYPE_CHECKING:
+    from .plugins import BaseDigiDeHerkenningPlugin
+
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -145,7 +155,7 @@ def process_claims(
     # Add LoA claims
     loa_claim_path = config.options["loa_settings"]["claim_path"]
     try:
-        loa = _process_loa(claims, config)
+        loa = _process_loa(claims, claim_processing_instructions)
     except NoLOAClaim as exc:
         logger.info(
             "Missing LoA claim, excluding it from processed claims", exc_info=exc
@@ -157,12 +167,14 @@ def process_claims(
     return processed_claims
 
 
-def _process_loa(claims: JSONObject, config: OIDCClient) -> str:
-    default = glom(config.options, "loa_settings.default", default=None)
+def _process_loa(
+    claims: JSONObject, claim_processing_instructions: ClaimProcessingInstructions
+) -> str:
+    default = glom(claim_processing_instructions, "loa_claims.default", default=None)
     if (
         not (
             loa_claim_path := glom(
-                config.options, "loa_settings.claim_path", default=None
+                claim_processing_instructions, "loa_claims.claim_path", default=None
             )
         )
         and not default
@@ -186,10 +198,34 @@ def _process_loa(claims: JSONObject, config: OIDCClient) -> str:
     # 'from' is string or number, which are valid keys
     loa_map: dict[str | float | int, str] = {
         mapping["from"]: mapping["to"]
-        for mapping in glom(config.options, "loa_settings.value_mapping", default=[])
+        for mapping in glom(
+            claim_processing_instructions, "loa_claims.value_mapping", default=[]
+        )
     }
 
     # apply mapping, if not found -> use the literal original value instead
     processed_loa = loa_map.get(loa, loa)
     assert processed_loa
     return processed_loa
+
+
+class NoAuthPluginFound(Exception):
+    pass
+
+
+def get_of_auth_plugin(
+    oidc_plugin: BaseDigiDeHerkenningPlugin,
+) -> OIDCAuthentication | OrgOIDCAuthentication:
+    from openforms.authentication.registry import register as _of_auth_registry
+
+    for _identifier, plugin in _of_auth_registry.items():
+        if not hasattr(plugin, "oidc_plugin_identifier"):
+            continue
+
+        if (
+            hasattr(plugin, "oidc_plugin_identifier")
+            and plugin.oidc_plugin_identifier == oidc_plugin.identifier
+        ):
+            return plugin
+    else:
+        raise NoAuthPluginFound()

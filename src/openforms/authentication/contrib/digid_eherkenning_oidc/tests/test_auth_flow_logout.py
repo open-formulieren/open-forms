@@ -48,6 +48,8 @@ from ..oidc_plugins.constants import (
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from ..plugin import OIDC_ID_TOKEN_SESSION_KEY
 from .base import (
@@ -191,7 +193,8 @@ class EIDASLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eIDAS plugin.
     """
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_oidc")
@@ -212,7 +215,8 @@ class EIDASLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
@@ -321,7 +325,8 @@ class EIDASCompanyLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eIDAS for companies plugin.
     """
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_logout_also_logs_out_user_in_openid_provider(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_company_oidc")
@@ -342,7 +347,8 @@ class EIDASCompanyLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_logout_with_empty_session(self):
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 

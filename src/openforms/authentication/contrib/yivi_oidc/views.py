@@ -6,18 +6,21 @@ from typing import override
 from django.http import HttpRequest
 
 import structlog
-from mozilla_django_oidc_db.views import OIDCInit
+from mozilla_django_oidc_db.models import OIDCClient
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.auth_oidc.views import OIDCAuthenticationCallbackView
+from openforms.authentication.contrib.yivi_oidc.oidc_plugins.constants import (
+    OIDC_YIVI_IDENTIFIER,
+)
 
 from .config import YiviOptions
-from .models import AttributeGroup, YiviOpenIDConnectConfig
+from .models import AttributeGroup
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
-class OIDCAuthenticationInitView(OIDCInit):
+class OIDCAuthenticationInitView(OIDCAuthenticationRequestInitView):
     options: YiviOptions
 
     @staticmethod
@@ -26,33 +29,47 @@ class OIDCAuthenticationInitView(OIDCInit):
         Helper function for creating the "authentication attributes" part of the Signicat
         Yivi condiscon.
         """
-        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
+        yivi_config = OIDCClient.objects.get(identifier=OIDC_YIVI_IDENTIFIER)
 
         if not len(options["authentication_options"]):
             # If no authentication options are selected, fallback to the pseudo_claim
-            return [yivi_global_config.pseudo_claim]
+            return [yivi_config.options.get("identity_settings.pseudo_claim_path")]
 
         authentication_condiscon: list[list[str]] = []
         for option in options["authentication_options"]:
             match option:
                 case AuthAttribute.bsn:
-                    bsn_attributes: list[str] = deepcopy(yivi_global_config.bsn_claim)
+                    bsn_attributes: list[str] = deepcopy(
+                        yivi_config.options.get("identity_settings.bsn_claim_path")
+                    )
 
-                    if yivi_global_config.bsn_loa_claim:
-                        bsn_attributes += yivi_global_config.bsn_loa_claim
+                    if bsn_loa_claim_path := yivi_config.options.get(
+                        "identity_settings.bsn_loa_claim_path"
+                    ):
+                        bsn_attributes += bsn_loa_claim_path
 
                     authentication_condiscon.append(bsn_attributes)
 
                 case AuthAttribute.kvk:
-                    kvk_attributes: list[str] = deepcopy(yivi_global_config.kvk_claim)
+                    kvk_attributes: list[str] = deepcopy(
+                        yivi_config.options.get("identity_settings.kvk_claim_path")
+                    )
 
-                    if yivi_global_config.kvk_loa_claim:
-                        kvk_attributes += yivi_global_config.kvk_loa_claim
+                    if kvk_loa_claim_path := yivi_config.options.get(
+                        "identity_settings.kvk_loa_claim_path"
+                    ):
+                        kvk_attributes += kvk_loa_claim_path
 
                     authentication_condiscon.append(kvk_attributes)
 
                 case AuthAttribute.pseudo:
-                    authentication_condiscon.append(yivi_global_config.pseudo_claim)
+                    authentication_condiscon.append(
+                        deepcopy(
+                            yivi_config.options.get(
+                                "identity_settings.pseudo_claim_path"
+                            )
+                        )
+                    )
 
         return authentication_condiscon
 
@@ -145,6 +162,3 @@ class OIDCAuthenticationInitView(OIDCInit):
 
         extra_params["scope"] = " ".join(defined_scope)
         return extra_params
-
-
-callback_view = OIDCAuthenticationCallbackView.as_view()

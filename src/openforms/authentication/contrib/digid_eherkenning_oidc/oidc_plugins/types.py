@@ -15,12 +15,23 @@ class ClaimPathWithLegacy(TypedDict):
     legacy: str
 
 
+# Defining this way, because "from" is a reserved python keyword
+LoaValueMapping = TypedDict("LoaValueMapping", {"from": str | int, "to": str})
+
+
+class LoaClaimInstructions(TypedDict):
+    default: str
+    value_mapping: list[LoaValueMapping]
+    claim_path: ClaimPath
+
+
 class ClaimProcessingInstructions(TypedDict):
     # Claims that are ALWAYS required, also in lax mode
     always_required_claims: list[ClaimPathWithLegacy]
     # Claims that if missing will raise an error only in strict mode
     strict_required_claims: list[ClaimPathWithLegacy]
     optional_claims: list[ClaimPathWithLegacy]
+    loa_claims: LoaClaimInstructions
 
 
 #

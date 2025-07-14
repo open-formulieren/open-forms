@@ -28,6 +28,8 @@ from ..oidc_plugins.constants import (
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
     OIDC_EH_BEWINDVOERING_IDENTIFIER,
     OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 from .base import (
     IntegrationTestsBase,
@@ -177,7 +179,8 @@ class EIDASInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eidas_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_IDENTIFIER)
     def test_start_flow_redirects_to_oidc_provider(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_oidc")
@@ -197,8 +200,13 @@ class EIDASInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eidas_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER,
+        provider_overrides={
+            "oidc_op_authorization_endpoint": "http://localhost:8080/i-dont-exist"
+        },
+        overrides={"check_op_availability": True},
     )
     def test_idp_availability_check(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
@@ -214,7 +222,10 @@ class EIDASInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "eidas_oidc")
 
-    @mock_eidas_config(oidc_keycloak_idp_hint="oidc-eidas")
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_IDENTIFIER, overrides={"oidc_keycloak_idp_hint": "oidc-eidas"}
+    )
     def test_keycloak_idp_hint_is_respected(self):
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
@@ -234,7 +245,8 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eidas_company_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_EIDAS_COMPANY_IDENTIFIER)
     def test_start_flow_redirects_to_oidc_provider(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_company_oidc")
@@ -254,8 +266,13 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eidas_company_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER,
+        provider_overrides={
+            "oidc_op_authorization_endpoint": "http://localhost:8080/i-dont-exist"
+        },
+        overrides={"check_op_availability": True},
     )
     def test_idp_availability_check(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
@@ -273,7 +290,11 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
             query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "eidas_company_oidc"
         )
 
-    @mock_eidas_company_config(oidc_keycloak_idp_hint="oidc-eidas")
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_EIDAS_COMPANY_IDENTIFIER,
+        overrides={"oidc_keycloak_idp_hint": "oidc-eidas"},
+    )
     def test_keycloak_idp_hint_is_respected(self):
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
