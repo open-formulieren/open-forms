@@ -409,6 +409,7 @@ class FormsAPITests(APITestCase):
                     "backend": "digid",
                 }
             ],
+            "internal_remarks": "Remark 1",
         }
         response = self.client.post(url, data=data)
 
@@ -417,6 +418,7 @@ class FormsAPITests(APITestCase):
         form = Form.objects.get()
         self.assertEqual(form.name, "Test Post Form")
         self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(form.internal_remarks, "Remark 1")
 
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",
