@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('forms', '0107_delete_formpricelogic'),
+        ("forms", "0107_delete_formpricelogic"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='internal_remarks',
-            field=models.TextField(blank=True, help_text='Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user.', verbose_name='internal remarks'),
+            model_name="form",
+            name="internal_remarks",
+            field=models.TextField(
+                blank=True,
+                help_text="Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user.",
+                verbose_name="internal remarks",
+            ),
         ),
     ]
