@@ -37,6 +37,12 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
             return super()._check_candidate_backend()
         return False
 
+    @property
+    def auth_plugin(self):
+        config_to_plugin = get_config_to_plugin()
+        assert self.config_class and self.config_class in config_to_plugin
+        return config_to_plugin[self.config_class]
+
     def get_or_create_user(
         self, access_token: str, id_token: str, payload: JSONObject
     ) -> AnonymousUser:
@@ -65,13 +71,55 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
         user.is_active = True  # type: ignore
         return user
 
+    def _get_form_authentication_backend(
+        self, plugin_identifier: str
+    ) -> FormAuthenticationBackend | None:
+        return_url = self.request.session.get(_RETURN_URL_SESSION_KEY, "")
+        return_path = furl(return_url).path
+        _, _, kwargs = resolve(return_path)
+
+        try:
+            form = Form.objects.get(slug=kwargs.get("slug"))
+
+            auth_backend = FormAuthenticationBackend.objects.get(
+                form=form, backend=plugin_identifier
+            )
+        except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
+            return None
+
+        return auth_backend
+
+    def _obfuscate_claims(self, claims: JSONObject) -> JSONObject:
+        plugin = self.auth_plugin
+
+        # Get authentication_backend options and make sure that they are a dict
+        authentication_backend = self._get_form_authentication_backend(
+            plugin.identifier
+        )
+        authentication_backend_options = {}
+        if authentication_backend:
+            authentication_backend_options = authentication_backend.options or {}
+
+        if hasattr(plugin, "configuration_options"):
+            # Make sure that the `authentication_backend_options` are valid plugin options
+            serializer = plugin.configuration_options(
+                options=authentication_backend_options
+            )
+            serializer.is_valid(raise_exception=True)
+            authentication_backend_options = serializer.validated_data
+
+        # Obfuscate claims using static and dynamic lists of sensitive plugin claims
+        return obfuscate_claims(
+            claims,
+            self.OIDCDB_SENSITIVE_CLAIMS
+            + plugin.get_sensitive_claims(authentication_backend_options, claims),
+        )
+
     def _process_claims(self, claims: JSONObject) -> JSONObject:
         # see if we can use a cached config instance from the settings configuration
         assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
 
-        config_to_plugin = get_config_to_plugin()
-        assert self.config_class and self.config_class in config_to_plugin
-        plugin = config_to_plugin[self.config_class]
+        plugin = self.auth_plugin
 
         # Allow plugin-specific actions before processing the claims.
         plugin.before_process_claims(self._config, claims)
@@ -85,7 +133,7 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
     def verify_claims(self, claims) -> bool:
         """Verify the provided claims to decide if authentication should be allowed."""
         assert claims, "Empty claims should have been blocked earlier"
-        obfuscated_claims = obfuscate_claims(claims, self.OIDCDB_SENSITIVE_CLAIMS)
+        obfuscated_claims = self._obfuscate_claims(claims)
         log = logger.bind(claims=obfuscated_claims)
         log.debug("received_oidc_claims")
 
@@ -115,27 +163,15 @@ class GenericOIDCBackend(OIDCAuthenticationBackend):
         """
         Extract the claims configured on the config and store them in the session.
         """
-        config_to_plugin = get_config_to_plugin()
-        assert self.config_class and self.config_class in config_to_plugin
-        plugin = config_to_plugin[self.config_class]
+        plugin = self.auth_plugin
         session_key = plugin.session_key
         procssed_claims = self._process_claims(claims)
 
-        return_url = self.request.session.get(_RETURN_URL_SESSION_KEY, "")
-        return_path = furl(return_url).path
-        _, _, kwargs = resolve(return_path)
-
-        try:
-            form = Form.objects.get(slug=kwargs.get("slug"))
-
-            auth_backend = FormAuthenticationBackend.objects.get(
-                form=form, backend=plugin.identifier
-            )
+        auth_backend = self._get_form_authentication_backend(plugin.identifier)
+        if auth_backend:
             procssed_claims["additional_claims"] = plugin.extract_additional_claims(
                 auth_backend.options, claims
             )
-        except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
-            pass
 
         assert self.request
         self.request.session[session_key] = procssed_claims

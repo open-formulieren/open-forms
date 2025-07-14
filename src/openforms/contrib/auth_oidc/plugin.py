@@ -104,6 +104,13 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
     def strict_mode(self, request: HttpRequest) -> bool:
         return False
 
+    def get_sensitive_claims(self, options: OptionsT, claims: JSONObject) -> list[str]:
+        # Allow the plugin to dynamically decide which claims are sensitive. This will be
+        # used to obfuscate the claims, before logging.
+        # For statically defining the sensitive claims, ``oidcdb_sensitive_claims`` on
+        # the plugin config model should be used.
+        return []
+
     def transform_claims(self, options: OptionsT, normalized_claims: T) -> FormAuth:
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 

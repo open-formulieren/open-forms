@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from itertools import chain
 from typing import TypedDict, assert_never, cast
 
@@ -115,6 +116,17 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
     def strict_mode(self, request: HttpRequest) -> bool:
         # Yivi cannot be strict, as all its attributes should be optional!
         return False
+
+    def get_sensitive_claims(
+        self, options: YiviOptions, claims: JSONObject
+    ) -> Collection[str]:
+        # All claims that we receive, that where part of the Yivi additional attributes,
+        # should be marked as sensitive. As all Yivi claims *could* be sensitive, let's
+        # handle them all as such.
+        additional_claims = self.extract_additional_claims(options, claims)
+
+        # Return the `additional_claims` claim names as list
+        return list(additional_claims.keys())
 
     def failure_url_error_message(
         self, error: str, error_description: str

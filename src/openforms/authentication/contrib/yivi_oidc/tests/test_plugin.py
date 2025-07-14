@@ -389,3 +389,41 @@ class YiviPluginCheckRequirementsTest(TestCase):
         }
 
         self.assertFalse(plugin.check_requirements(request, plugin_options))
+
+
+class YiviPluginSensitiveClaimsTest(TestCase):
+    """
+    Testing the Yivi plugin ``get_sensitive_claims`` function.
+
+    All Yivi additional attributes (configured in the FormAuthenticationBackend) should
+    be marked as sensitive. This is because we cannot know what information will be
+    requested using Yivi (as the admins/municipalities decide this).
+    """
+
+    def test_all_configured_additional_attributes_are_present_in_the_get_sensitive_claims(
+        self,
+    ):
+        AttributeGroupFactory(
+            name="know_attributes", attributes=["firstname", "lastname"]
+        )
+        AttributeGroupFactory(name="know_attributes_2", attributes=["dob"])
+
+        plugin_options: YiviOptions = {
+            "authentication_options": [],
+            "additional_attributes_groups": ["know_attributes", "know_attributes_2"],
+            "bsn_loa": "",
+            "kvk_loa": "",
+        }
+
+        claims = {
+            "firstname": "John",
+            "lastname": "Doe",
+            "dob": "01-01-2000",
+            "random_attribute": "random value",
+        }
+
+        sensitive_claims = plugin.get_sensitive_claims(plugin_options, claims=claims)
+        self.assertEqual(
+            sensitive_claims,
+            ["firstname", "lastname", "dob"],
+        )

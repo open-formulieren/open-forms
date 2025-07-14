@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from copy import deepcopy
 
 from django.db import models
@@ -8,6 +9,7 @@ from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from digid_eherkenning.oidc.models.base import LOA_MAPPING_SCHEMA, BaseConfig
 from django_jsonform.models.fields import ArrayField, JSONField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
+from mozilla_django_oidc_db.typing import ClaimPath
 
 
 def get_callback_view(self):
@@ -141,6 +143,14 @@ class YiviOpenIDConnectConfig(BaseConfig):
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Yivi (OIDC)")
+
+    @property
+    def oidcdb_sensitive_claims(self) -> Sequence[ClaimPath]:
+        return [
+            self.bsn_claim,
+            self.kvk_claim,
+            self.pseudo_claim,
+        ]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:
