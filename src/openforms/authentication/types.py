@@ -161,9 +161,10 @@ class EIDASMandate(TypedDict):
 class EIDASContext(TypedDict):
     source: Literal["eidas"]
     levelOfAssurance: Literal[
-        "low",
-        "substantial",
-        "high",
+        "urn:etoegang:core:assurance-class:loa2",
+        "urn:etoegang:core:assurance-class:loa2plus",
+        "urn:etoegang:core:assurance-class:loa3",
+        "urn:etoegang:core:assurance-class:loa4",
     ]
     authorizee: EIDASNaturalPersonAuthorizee
 
@@ -171,9 +172,10 @@ class EIDASContext(TypedDict):
 class EIDASCompanyContext(TypedDict):
     source: Literal["eidas"]
     levelOfAssurance: Literal[
-        "low",
-        "substantial",
-        "high",
+        "urn:etoegang:core:assurance-class:loa2",
+        "urn:etoegang:core:assurance-class:loa2plus",
+        "urn:etoegang:core:assurance-class:loa3",
+        "urn:etoegang:core:assurance-class:loa4",
     ]
     authorizee: EIDASCompanyAuthorizee
     mandate: EIDASMandate

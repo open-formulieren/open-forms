@@ -488,9 +488,10 @@
         "description": "https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/eIDAS+Levels+of+Assurance defines the available levels of assurance.",
         "type": "string",
         "enum": [
-          "low",
-          "substantial",
-          "high"
+          "urn:etoegang:core:assurance-class:loa2",
+          "urn:etoegang:core:assurance-class:loa2plus",
+          "urn:etoegang:core:assurance-class:loa3",
+          "urn:etoegang:core:assurance-class:loa4"
         ]
       },
       "service": {
@@ -540,12 +541,15 @@
             "type": "string"
           },
           "firstName": {
+            "description": "The legal firstname of the natural person",
             "type": "string"
           },
           "familyName": {
+            "description": "The legal family name/lastname of the natural person",
             "type": "string"
           },
           "dateOfBirth": {
+            "description": "The legal date of birth of the natural person",
             "type": "string",
             "format": "date"
           }
@@ -567,6 +571,7 @@
             "pattern": "^[A-Z]{2}\/[A-Z0-9-]+\/[A-Z0-9-]+$"
           },
           "companyName": {
+            "description": "The legal name of the company",
             "type": "string"
           }
         }
