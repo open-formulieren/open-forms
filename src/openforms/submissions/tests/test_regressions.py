@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.test import TestCase, override_settings, tag
 
 from openforms.forms.models import FormDefinition, FormVersion
@@ -56,7 +58,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                 {
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
-                    "someDate": "2022-11-03",
+                    "someDate": date(2022, 11, 3),
                 },
             )
             renderer = Renderer(
@@ -77,6 +79,10 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
+                # TODO-2324: this does not get converted because the form variable that
+                #  holds the data type information is deleted. Is this OK, or would it
+                #  make more sense that SubmissionValueVariable always has access to the
+                #  data type?
                 "someDate": "2022-11-03",
             },
         )
@@ -204,7 +210,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())

@@ -66,6 +66,7 @@ class FormatterBase[T: Component]:
     def process_result(self, component: T, formatted: str) -> str:
         return formatted
 
+    # TODO-2324: value should be type-hinted as ``VariableValue``?
     def __call__(self, component: T, value: Any) -> str:
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
