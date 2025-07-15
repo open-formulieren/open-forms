@@ -189,6 +189,18 @@ def get_component_datatype(component):
     return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
 
 
+def get_component_data_subtype(component) -> str | None:
+    """
+    Get the data subtype of a component.
+
+    :returns: If the component is configured as 'multiple', the subtype will be the
+      original data type of the component, ``None`` otherwise.
+    """
+    if not component.get("multiple"):
+        return None
+    return COMPONENT_DATATYPES.get(component["type"], FormVariableDataTypes.string)
+
+
 def get_component_empty_value(component):
     data_type = get_component_datatype(component)
 
