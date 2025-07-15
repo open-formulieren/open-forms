@@ -161,6 +161,16 @@ class FormioData(UserDict):
 
     without having to worry about potential deep assignments or leak implementation
     details.
+
+    .. warning::
+
+        Internally, the data is saved in a nested dictionary structure, which means it
+        is NOT useful to iterate over the values using ``FormioData.items()``. For
+        nested keys ({"foo.bar": "baz"}), you will NOT get the complete key if you do
+        this, but only the top-level key "foo" with value {"bar": "baz"}.
+
+        Unfortunately, we cannot block ``.items()`` from being used completely, as
+        serializers need to be able to iterate over the data.
     """
 
     data: dict[str, VariableValue]

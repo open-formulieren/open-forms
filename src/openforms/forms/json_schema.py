@@ -74,7 +74,9 @@ def generate_json_schema(
     # another variable as a data source (radio, select, and selectboxes).
     state = submission.load_submission_value_variables_state()
     new_configuration = rewrite_formio_components(
-        submission.total_configuration_wrapper, submission, state.to_python()
+        submission.total_configuration_wrapper,
+        submission,
+        state.get_data(include_unsaved=True, include_static_variables=True),
     )
 
     requested_variables_schema = NestedDict()
