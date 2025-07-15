@@ -43,13 +43,8 @@ class GenericJSONRegistration(BasePlugin):
     ) -> dict:
         state = submission.load_submission_value_variables_state()
 
-        # Get static values
-        static_values = state.get_static_data()
-        # Update static values with registration variables
-        static_values.update(state.get_static_data(other_registry=variables_registry))
-
-        all_values = state.get_data()
-        all_values.update(static_values)
+        all_values = state.get_data(include_static_variables=True)
+        all_values.update(state.get_static_data(other_registry=variables_registry))
 
         # Values
         variables = [key for key in options["variables"] if key in all_values]

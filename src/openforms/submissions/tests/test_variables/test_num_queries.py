@@ -357,7 +357,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         # The queries should have been done in the get_state function
         with self.assertNumQueries(0):
-            state.get_data(submission_step1)
+            state.get_data(submission_step=submission_step1)
 
         with self.assertNumQueries(0):
             state.get_data()

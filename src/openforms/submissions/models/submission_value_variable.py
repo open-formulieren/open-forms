@@ -61,18 +61,44 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
-        """Return the values of the dynamic variables in the submission."""
-        submission_variables = self.saved_variables
+    def get_data(
+        self,
+        *,
+        submission_step: SubmissionStep | None = None,
+        include_unsaved=False,
+        include_static_variables=False,
+    ) -> FormioData:
+        """Return the values of the variables from the submission (step) in a
+        ``FormioData`` instance.
+
+        .. warning::
+
+            ``FormioData`` supports nested-key access ("foo.bar"), which means you
+            should NOT iterate over the values using ``FormioData.items()``, but rather
+            get the value using ``FormioData.get(key)``. See the docstring of
+            ``FormioData`` for more details.
+
+        :param submission_step: Submission step. If passed, only variables in this step
+          will be returned.
+        :param include_unsaved: Whether to include unsaved variables.
+        :param include_static_variables: Whether to include static variables.
+        """
+
         if submission_step:
-            submission_variables = self.get_variables_in_submission_step(
-                submission_step, include_unsaved=False
+            variables = self.get_variables_in_submission_step(
+                submission_step, include_unsaved
             )
+        else:
+            variables = self.variables if include_unsaved else self.saved_variables
 
         data = FormioData()
-        for variable_key, variable in submission_variables.items():
+        for variable in variables.values():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                data[variable_key] = variable.value
+                data[variable.key] = variable.to_python()
+
+        if include_static_variables:
+            data.update(self.get_static_data())
+
         return data
 
     def get_variables_in_submission_step(
@@ -178,8 +204,6 @@ class SubmissionValueVariablesState:
             self._static_data = self._get_static_data()
         return self._static_data
 
-    static_data = get_static_data  # DeprecationWarning
-
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []
         for variable in self.variables.values():
@@ -213,32 +237,16 @@ class SubmissionValueVariablesState:
         The ``data`` structure maps variable key and (new) values to set on the
         variables in the state.
 
-        :arg data: mapping of variable key to value.
+        Note: we do not perform any conversions to the native Python types here, this is
+        done when fetching the data from the state using ``.get_data()``
 
-        .. todo:: apply variable.datatype/format to obtain python objects? This also
-           needs to properly serialize back to JSON though!
+        :arg data: mapping of variable key to value.
         """
         for key, variable in self.variables.items():
             new_value = data.get(key, default=empty)
             if new_value is empty:
                 continue
             variable.value = new_value
-
-    def to_python(self) -> FormioData:
-        """
-        Collect the total picture of variable values converted to the appropriate Python
-        types.
-
-        The dynamic values are augmented with the static variables.
-
-        :return: A data mapping (key: variable key, value: native python object for the
-            value) ready for (template context) evaluation.
-        """
-        dynamic_values = {
-            key: variable.to_python() for key, variable in self.variables.items()
-        }
-        static_values = self.static_data()
-        return FormioData({**dynamic_values, **static_values})
 
 
 class SubmissionValueVariableManager(models.Manager):
@@ -411,7 +419,7 @@ class SubmissionValueVariable(models.Model):
 
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime.date()
@@ -422,7 +430,7 @@ class SubmissionValueVariable(models.Model):
                 return value
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime
