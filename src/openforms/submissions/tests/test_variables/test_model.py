@@ -139,6 +139,20 @@ class SubmissionValueVariableModelTests(TestCase):
             # -> fall back to stored value
             self.assertEqual(date_value2, "2022-09-13")
 
+        with self.subTest("date multiple"):
+            date_var_multiple = SubmissionValueVariableFactory.create(
+                key="dateVarMultiple",
+                value=["2025-07-15", "2025-07-16"],
+                form_variable__data_type=FormVariableDataTypes.array,
+                form_variable__data_subtype=FormVariableDataTypes.date,
+            )
+            _assign_form_variable(date_var_multiple)
+
+            date_value_multiple = date_var_multiple.to_python()
+            self.assertEqual(
+                date_value_multiple, [date(2025, 7, 15), date(2025, 7, 16)]
+            )
+
         with self.subTest("datetime 1"):
             date_var3 = SubmissionValueVariableFactory.create(
                 value="2022-09-13T11:10:45+02:00",
@@ -170,6 +184,24 @@ class SubmissionValueVariableModelTests(TestCase):
             self.assertIsNotNone(date_value4.tzinfo)
             expected = timezone.make_aware(datetime(2022, 9, 13, 11, 10, 45))
             self.assertEqual(date_value4, expected)
+
+        with self.subTest("datetime multiple"):
+            datetime_var_multiple = SubmissionValueVariableFactory.create(
+                key="datetimeVarMultiple",
+                value=["2025-07-15T12:34:56", "2025-07-16:11:22:33"],
+                form_variable__data_type=FormVariableDataTypes.array,
+                form_variable__data_subtype=FormVariableDataTypes.datetime,
+            )
+            _assign_form_variable(datetime_var_multiple)
+
+            datetime_value_multiple = datetime_var_multiple.to_python()
+            self.assertEqual(
+                datetime_value_multiple,
+                [
+                    timezone.make_aware(datetime(2025, 7, 15, 12, 34, 56)),
+                    timezone.make_aware(datetime(2025, 7, 16, 11, 22, 33)),
+                ],
+            )
 
         with self.subTest("time"):
             time_var = SubmissionValueVariableFactory.create(
@@ -208,6 +240,18 @@ class SubmissionValueVariableModelTests(TestCase):
 
             time_value = time_var.to_python(time(9, 41))
             self.assertEqual(time_value, time(9, 41))
+
+        with self.subTest("time multiple"):
+            time_var_multiple = SubmissionValueVariableFactory.create(
+                key="timeVarMultiple",
+                value=["12:34", "20:42"],
+                form_variable__data_type=FormVariableDataTypes.array,
+                form_variable__data_subtype=FormVariableDataTypes.time,
+            )
+            _assign_form_variable(time_var_multiple)
+
+            time_value_multiple = time_var_multiple.to_python()
+            self.assertEqual(time_value_multiple, [time(12, 34), time(20, 42)])
 
     def test_is_initially_prefilled_is_set(self):
         config = {

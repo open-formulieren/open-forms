@@ -398,6 +398,16 @@ class SubmissionValueVariable(models.Model):
 
         # we expect JSON types to have been properly stored (and thus not as string!)
         data_type = self.form_variable.data_type
+        data_subtype = self.form_variable.data_subtype
+
+        if not data_subtype:
+            return self._value_to_python(value, data_type)
+        else:
+            assert data_type == FormVariableDataTypes.array
+            return [self._value_to_python(v, data_subtype) for v in value]
+
+    @staticmethod
+    def _value_to_python(value: VariableValue, data_type: str) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,

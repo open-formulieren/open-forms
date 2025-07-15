@@ -17,6 +17,12 @@ COMPONENT_DATATYPES = {
 }
 
 
+COMPONENT_DATA_SUBTYPES = {
+    "file": "object",
+    "editgrid": "object",
+}
+
+
 class DataSrcOptions(StrEnum):
     manual = "manual"
     variable = "variable"
