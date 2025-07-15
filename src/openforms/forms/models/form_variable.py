@@ -12,6 +12,7 @@ import elasticapm
 import structlog
 
 from openforms.formio.utils import (
+    get_component_data_subtype,
     get_component_datatype,
     get_component_default_value,
     is_layout_component,
@@ -123,6 +124,7 @@ class FormVariableManager(models.Manager["FormVariable"]):
                     is_sensitive_data=component.get("isSensitiveData", False),
                     source=FormVariableSources.component,
                     data_type=get_component_datatype(component),
+                    data_subtype=get_component_data_subtype(component),
                     initial_value=get_component_default_value(component),
                 )
             )
@@ -292,6 +294,16 @@ class FormVariable(models.Model):
         choices=FormVariableDataTypes.choices,
         max_length=50,
     )
+    data_subtype = models.CharField(
+        verbose_name=_("data subtype"),
+        help_text=_(
+            "This field represents the data type of the values inside the container "
+            "for components that are configured as 'multiple'."
+        ),
+        choices=FormVariableDataTypes.choices,
+        max_length=50,
+        blank=True,
+    )
     data_format = models.CharField(
         verbose_name=_("data format"),
         help_text=_(
@@ -423,6 +435,7 @@ class FormVariable(models.Model):
             self.initial_value = get_component_default_value(component)
 
         self.data_type = get_component_datatype(component)
+        self.data_subtype = get_component_data_subtype(component)
 
     def check_data_type_and_initial_value(self):
         self.derive_info_from_component()

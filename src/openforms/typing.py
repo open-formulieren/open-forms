@@ -58,5 +58,10 @@ class JSONSerializable(Protocol):
 type JSONEncodable = DjangoJSONEncodable | JSONSerializable
 
 type VariableValue = (
-    JSONValue | datetime.date | datetime.time | datetime.datetime | relativedelta
+    JSONValue
+    | datetime.date
+    | datetime.time
+    | datetime.datetime
+    | relativedelta
+    | list[VariableValue]  # for components configured as multiple
 )
