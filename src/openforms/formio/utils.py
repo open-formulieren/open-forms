@@ -12,7 +12,7 @@ from typing_extensions import TypeIs
 from openforms.typing import JSONObject, JSONValue
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
-from .constants import COMPONENT_DATATYPES
+from .constants import COMPONENT_DATA_SUBTYPES, COMPONENT_DATATYPES
 from .typing import Column, ColumnsComponent, Component, FormioConfiguration
 
 if TYPE_CHECKING:
@@ -182,14 +182,30 @@ def is_layout_component(component: Component) -> bool:
     return False
 
 
-def get_component_datatype(component):
+def get_component_datatype(component: Component):
     component_type = component["type"]
     if component.get("multiple"):
         return FormVariableDataTypes.array
     return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
 
 
-def get_component_empty_value(component):
+def get_component_data_subtype(component: Component) -> str:
+    """
+    Get the data subtype of a component.
+
+    :returns: The original data type of the component if the component is configured as
+      'multiple', an empty string otherwise. Components that are already an array
+      (editgrid and files) are a special case, as 'multiple' is not relevant for these.
+    """
+    if subtype := COMPONENT_DATA_SUBTYPES.get(component["type"], None):
+        return subtype
+
+    if not component.get("multiple"):
+        return ""
+    return COMPONENT_DATATYPES.get(component["type"], FormVariableDataTypes.string)
+
+
+def get_component_empty_value(component: Component):
     data_type = get_component_datatype(component)
 
     if component["type"] == "selectboxes":
@@ -216,7 +232,7 @@ def get_component_empty_value(component):
     return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
-def get_component_default_value(component) -> Any | None:
+def get_component_default_value(component: Component) -> Any | None:
     # Formio has a getter for the:
     # - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
     # - defaultValue:
