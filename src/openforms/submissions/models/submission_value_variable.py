@@ -61,18 +61,31 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
+    def get_data(
+        self,
+        *,
+        submission_step: SubmissionStep | None = None,
+        include_unsaved=False,
+        # TODO-2324: perhaps just always default this to true?
+        include_static_variables=False,
+    ) -> FormioData:
         """Return the values of the dynamic variables in the submission."""
-        submission_variables = self.saved_variables
+
         if submission_step:
-            submission_variables = self.get_variables_in_submission_step(
-                submission_step, include_unsaved=False
+            variables = self.get_variables_in_submission_step(
+                submission_step, include_unsaved
             )
+        else:
+            variables = self.variables if include_unsaved else self.saved_variables
 
         data = FormioData()
-        for variable_key, variable in submission_variables.items():
+        for variable in variables.values():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                data[variable_key] = variable.value
+                data[variable.key] = variable.to_python()
+
+        if include_static_variables:
+            data.update(self.get_static_data())
+
         return data
 
     def get_variables_in_submission_step(
@@ -170,8 +183,6 @@ class SubmissionValueVariablesState:
             self._static_data = self._get_static_data()
         return self._static_data
 
-    static_data = get_static_data  # DeprecationWarning
-
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []
         for variable in self.variables.values():
@@ -207,7 +218,7 @@ class SubmissionValueVariablesState:
 
         :arg data: mapping of variable key to value.
 
-        .. todo:: apply variable.datatype/format to obtain python objects? This also
+        .. TODO-2324: apply variable.datatype/format to obtain python objects? This also
            needs to properly serialize back to JSON though!
         """
         for key, variable in self.variables.items():
@@ -215,22 +226,6 @@ class SubmissionValueVariablesState:
             if new_value is empty:
                 continue
             variable.value = new_value
-
-    def to_python(self) -> FormioData:
-        """
-        Collect the total picture of variable values converted to the appropriate Python
-        types.
-
-        The dynamic values are augmented with the static variables.
-
-        :return: A data mapping (key: variable key, value: native python object for the
-            value) ready for (template context) evaluation.
-        """
-        dynamic_values = {
-            key: variable.to_python() for key, variable in self.variables.items()
-        }
-        static_values = self.static_data()
-        return FormioData({**dynamic_values, **static_values})
 
 
 class SubmissionValueVariableManager(models.Manager):
@@ -397,7 +392,7 @@ class SubmissionValueVariable(models.Model):
 
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime.date()
@@ -408,7 +403,7 @@ class SubmissionValueVariable(models.Model):
                 return value
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime
