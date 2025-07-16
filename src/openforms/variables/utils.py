@@ -18,6 +18,7 @@ def check_date(value: str) -> str:
 
 
 def check_time(value: str) -> str:
+    # TODO-2324: use ``parse_time`` for this?
     try:
         time.fromisoformat(value)
     except ValueError:
@@ -25,12 +26,14 @@ def check_time(value: str) -> str:
     return value
 
 
+# TODO-2324: should this be combined with SubmissionValueVariable.to_python?
 def check_initial_value(initial_value: JSONObject, data_type: str) -> JSONObject:
     from .constants import CHECK_VARIABLE_TYPE, DEFAULT_INITIAL_VALUE
 
     try:
         return CHECK_VARIABLE_TYPE[data_type](initial_value)
     except (ValueError, TypeError):
+        # TODO-2324: change to ``get_component_empty_value``?
         return DEFAULT_INITIAL_VALUE[data_type]
 
 
@@ -49,6 +52,8 @@ def get_variables_for_context(submission: "Submission") -> dict[str, JSONValue]:
     if settings.ESCAPE_REGISTRATION_OUTPUT:
         data = html_escape_json(data)
 
+    # TODO: this overwrites static data with dynamic data. Not consistent with the JSON
+    #  dump and Objects API
     formio_data = FormioData(
         **{
             variable.key: variable.initial_value

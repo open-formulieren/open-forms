@@ -176,7 +176,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
         "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
         "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
-        # TODO-2343: Does it make sense to add a FieldConf here, or should we decide to
+        # TODO-2324: Does it make sense to add a FieldConf here, or should we decide to
         #  use non-python objects for this plugin?
         "betrokkeneIdentificatie.geboortedatum": FieldConf(
             RegistrationAttribute.initiator_geboortedatum,

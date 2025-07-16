@@ -227,6 +227,10 @@ class LogicComponentActionSerializer(serializers.Serializer):
                     }
                 )
 
+        # TODO-2324: ideally this should use the to_python method of the
+        #  SubmissionValueVariable to check the types for date/time/datetime components.
+        #  That does mean moving it out of there though, because there is no submission
+        #  variable available here.
         # validate format of value for date variable
         if action_type == LogicActionTypes.variable and isinstance(
             action_value, Primitive

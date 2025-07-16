@@ -514,6 +514,8 @@ class Submission(models.Model):
         sensitive_variables = self.submissionvaluevariable_set.filter(
             key__in=sensitive_variable_keys
         )
+        # TODO-2324: I think this should be the default empty value for the
+        #  corresponding form variable type, not an empty string
         sensitive_variables.update(
             value="", source=SubmissionValueVariableSources.sensitive_data_cleaner
         )

@@ -5,6 +5,11 @@ from openforms.typing import JSONValue
 from openforms.utils.date import datetime_in_amsterdam
 
 
+# TODO-2324: Looking at how this is used, the values passed to this function come from
+#  get_property_mappings_from_submission, which gets the values from the
+#  Submission.submissionvaluevariables_set. I think the proper way to do it is
+#  through the variables state, which means they will already be converted to python
+#  objects. Meaning we only have to apply the right formatting.
 def process_according_to_eigenschap_format(
     specificatie: EigenschapSpecificatie, value: JSONValue
 ) -> JSONValue:
