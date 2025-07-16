@@ -2,10 +2,15 @@ import json
 
 from django import template
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import SafeString
 
-from openforms.formio.rendering.structured import render_json
-from openforms.registrations.contrib.objects_api.utils import html_escape_json
+from openforms.formio.rendering.structured import (
+    reshape_submission_data_for_json_summary,
+)
+from openforms.registrations.contrib.objects_api.utils import (
+    recursively_escape_html_strings,
+)
 from openforms.typing import JSONEncodable
 
 from .....handlers.v1 import SubmissionContext
@@ -29,12 +34,12 @@ def uploaded_attachment_urls(context: template.Context) -> SafeString:
 def json_summary(context: template.Context) -> SafeString:
     submission = context.get("_submission")
 
-    json_data = render_json(submission) if submission else {}
+    data = reshape_submission_data_for_json_summary(submission) if submission else {}
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        json_data = html_escape_json(json_data)
+        data = recursively_escape_html_strings(data)
 
-    return SafeString(json.dumps(json_data))
+    return SafeString(json.dumps(data, cls=DjangoJSONEncoder))
 
 
 @register.simple_tag

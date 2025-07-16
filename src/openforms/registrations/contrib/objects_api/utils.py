@@ -1,17 +1,20 @@
 from django.utils.html import escape
 
-from openforms.typing import JSONValue
+from openforms.typing import VariableValue
 
 
-def html_escape_json[T: JSONValue](value: T) -> T:
+def recursively_escape_html_strings[T: VariableValue](value: T) -> T:
     """
     Recursively apply HTML escaping to string value nodes.
     """
     match value:
         case list():
-            return [html_escape_json(item) for item in value]  # pyright: ignore[reportReturnType]
+            return [recursively_escape_html_strings(item) for item in value]  # pyright: ignore[reportReturnType]
         case dict():
-            return {key: html_escape_json(value) for key, value in value.items()}  # pyright: ignore[reportReturnType]
+            return {
+                key: recursively_escape_html_strings(value)
+                for key, value in value.items()
+            }  # pyright: ignore[reportReturnType]
         case str():
             return escape(value)
         case _:
