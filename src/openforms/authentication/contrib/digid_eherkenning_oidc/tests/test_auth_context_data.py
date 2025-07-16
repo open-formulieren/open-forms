@@ -117,7 +117,7 @@ class EIDASAuthContextTests(
             auth_context,
             {
                 "source": "eidas",
-                "levelOfAssurance": "low",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "bsn",
@@ -148,7 +148,7 @@ class EIDASAuthContextTests(
             auth_context,
             {
                 "source": "eidas",
-                "levelOfAssurance": "low",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "nationalID",
@@ -181,7 +181,7 @@ class EIDASAuthContextTests(
             auth_context,
             {
                 "source": "eidas",
-                "levelOfAssurance": "low",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "opaque",
@@ -219,7 +219,7 @@ class EIDASCompanyAuthContextTests(
             auth_context,
             {
                 "source": "eidas",
-                "levelOfAssurance": "low",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "opaque",
@@ -266,7 +266,7 @@ class EIDASCompanyAuthContextTests(
             auth_context,
             {
                 "source": "eidas",
-                "levelOfAssurance": "low",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa2",
                 "authorizee": {
                     "legalSubject": {
                         "identifierType": "opaque",

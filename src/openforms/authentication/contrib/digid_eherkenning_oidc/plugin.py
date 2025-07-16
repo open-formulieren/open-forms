@@ -32,6 +32,7 @@ from ...types import (
     EIDASContext,
 )
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from .choices import EIDASAssuranceLevels
 from .constants import EIDAS_COMPANY_PLUGIN_ID, EIDAS_PLUGIN_ID
 from .models import (
     OFDigiDConfig,
@@ -237,7 +238,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
 
         return {
             "source": "eidas",
-            "levelOfAssurance": auth_info.loa,
+            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa).value,
             "authorizee": {
                 "legalSubject": {
                     "identifierType": legal_subject_identifier_type,
@@ -346,7 +347,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
 
         return {
             "source": "eidas",
-            "levelOfAssurance": auth_info.loa,
+            "levelOfAssurance": EIDASAssuranceLevels(auth_info.loa).value,
             "authorizee": {
                 "legalSubject": {
                     "identifierType": "opaque",
