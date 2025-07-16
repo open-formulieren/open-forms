@@ -67,6 +67,10 @@ class CustomFormNodeTests(TestCase):
         self.assertEqual("Initials: P.", nodelist[3].render())
         self.assertEqual("Affixes: ", nodelist[4].render())
         self.assertEqual("Lastname: Pauw", nodelist[5].render())
+        # TODO-2324: how to deal with the date of birth? It uses the DateFormatter,
+        #  which maybe should expect only date objects. We could keep the string
+        #  conversion in there, or alter the value in PartnersNode.value. Or something
+        #  else?
         self.assertEqual("Date of birth: April 1, 1989", nodelist[6].render())
 
         self.assertEqual("Partners 2: ", nodelist[7].render())

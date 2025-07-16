@@ -437,6 +437,8 @@ class DownloadSubmissionReportTests(APITestCase):
                 del partners_list[0]["dateOfBirthPrecision"]
                 for partner_label, partner_value in partners_list[0].items():
                     self.assertIn(partner_label, html_report)
+                    # TODO-2324: same problem with the dateOfBirth field of the partners
+                    #  component here
                     self.assertIn(partner_value, html_report)
 
         # assert structural labels

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 from typing import Any
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
@@ -62,8 +62,11 @@ class EmailFormatter(FormatterBase):
 
 
 class TimeFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_time(parse_time(value))
+    # TODO-2324: should this still accept strings?
+    def format(self, component: Component, value: str | time) -> str:
+        if isinstance(value, str):
+            value = parse_time(value)
+        return fmt_time(value)
 
 
 class PhoneNumberFormatter(FormatterBase):

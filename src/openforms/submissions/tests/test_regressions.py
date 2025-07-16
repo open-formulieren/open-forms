@@ -142,6 +142,9 @@ class SubmissionStepDeletedRegressionTests(TestCase):
 
         # reload submission as fresh data object so we don't have any cached states
         submission = Submission.objects.get(pk=submission.pk)
+        # TODO-2324: same problem as before, how do we deal with deleted form variables?
+        #  Type information is now lost, so it is not converted to a date object, which
+        #  in turn means the DateFormatter fails
         self.assertEqual(
             submission.data,
             {

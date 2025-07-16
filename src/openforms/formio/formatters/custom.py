@@ -1,5 +1,5 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
-from datetime import date
+from datetime import date, datetime
 from typing import NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
@@ -14,6 +14,7 @@ from .base import FormatterBase
 
 
 class DateFormatter(FormatterBase):
+    # TODO-2324: should this still accept strings?
     def format(self, component: Component, value: str | date | None) -> str:
         if isinstance(value, str):
             value = parse_date(value)
@@ -21,9 +22,11 @@ class DateFormatter(FormatterBase):
 
 
 class DateTimeFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        parsed_value = parse_datetime(value)
-        return f"{fmt_date(parsed_value)} {fmt_time(parsed_value, 'H:i')}"
+    # TODO-2324: should this still accept strings?
+    def format(self, component: Component, value: str | datetime) -> str:
+        if isinstance(value, str):
+            value = parse_datetime(value)
+        return f"{fmt_date(value)} {fmt_time(value, 'H:i')}"
 
 
 type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
