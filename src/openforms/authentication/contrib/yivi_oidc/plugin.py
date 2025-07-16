@@ -116,6 +116,29 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
         # Yivi cannot be strict, as all its attributes should be optional!
         return False
 
+    @staticmethod
+    def _get_all_additional_claims(
+        options: YiviOptions, claims: JSONObject
+    ) -> dict[str, any]:
+        attributes_to_add = AttributeGroup.objects.filter(
+            name__in=options.get("additional_attributes_groups", [])
+        ).values_list("attributes", flat=True)
+
+        return {
+            attribute: claims[attribute]
+            for attribute in list(chain.from_iterable(attributes_to_add))
+            if attribute in claims
+        }
+
+    def sensitive_claims(self, options: YiviOptions, claims: JSONObject) -> list[str]:
+        # All claims that we receive, that where part of the Yivi additional attributes,
+        # should be marked as sensitive. As all Yivi claims *could* be sensitive, let's
+        # handle them all as such.
+        additional_claims = self._get_all_additional_claims(options, claims)
+
+        # Return the `additional_claims` claim names as list
+        return list(additional_claims.keys())
+
     def failure_url_error_message(
         self, error: str, error_description: str
     ) -> tuple[str, str]:
@@ -218,15 +241,7 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
     def extract_additional_claims(
         self, options: YiviOptions, claims: JSONObject
     ) -> JSONObject:
-        attributes_to_add = AttributeGroup.objects.filter(
-            name__in=options.get("additional_attributes_groups", [])
-        ).values_list("attributes", flat=True)
-
-        return {
-            attribute: claims[attribute]
-            for attribute in list(chain.from_iterable(attributes_to_add))
-            if attribute in claims
-        }
+        return self._get_all_additional_claims(options, claims)
 
     def get_label(self):
         return "Yivi"
