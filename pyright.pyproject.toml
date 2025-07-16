@@ -22,6 +22,10 @@ include = [
     "src/openforms/validations/registry.py",
     "src/openforms/variables/base.py",
     "src/openforms/variables/registry.py",
+    # Appointments module
+    "src/openforms/appointments/models.py",
+    # Config app
+    "src/openforms/config/forms.py",
     # Formio tooling
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
@@ -36,15 +40,17 @@ include = [
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
     # Emails
+    "src/openforms/emails/forms.py",
     "src/openforms/emails/templatetags/cosign_information.py",
     # Logging
     "src/openforms/logging/logevent.py",
     "src/openforms/logging/models.py",
     # Authentication
     "src/openforms/authentication/contrib/digid/",
-    "src/openforms/authentication/contrib/family_members",
+    "src/openforms/authentication/contrib/outage/",
+    "src/openforms/authentication/models.py",
     # Prefill
-    "src/openforms/prefill/contrib/outage/",
+    "src/openforms/prefill/contrib/family_members",
     "src/openforms/prefill/models.py",
     "src/openforms/prefill/signals.py",
     "src/openforms/prefill/validators.py",
@@ -68,6 +74,7 @@ include = [
     # generic typing helpers
     "src/openforms/typing.py",
     # Utils
+    "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
     # JSON schema generation
     "src/openforms/forms/json_schema.py"

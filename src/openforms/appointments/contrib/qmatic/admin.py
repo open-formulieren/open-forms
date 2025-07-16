@@ -20,7 +20,7 @@ class RequiredCustomerFieldsField(CheckboxChoicesArrayField):
 class QmaticConfigForm(forms.ModelForm):
     class Meta:
         model = QmaticConfig
-        fields = "__all__"
+        fields = "__all__"  # noqa: DJ007
         field_classes = {
             "required_customer_fields": RequiredCustomerFieldsField,
         }

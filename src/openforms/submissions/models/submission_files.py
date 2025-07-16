@@ -76,6 +76,9 @@ class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
         verbose_name = _("temporary file upload")
         verbose_name_plural = _("temporary file uploads")
 
+    def __str__(self):
+        return self.file_name
+
 
 class SubmissionFileAttachmentQuerySet(
     DeleteFilesQuerySetMixin, models.QuerySet["SubmissionFileAttachment"]
@@ -194,6 +197,9 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         verbose_name_plural = _("submission file attachments")
         # see https://docs.djangoproject.com/en/2.2/topics/db/managers/#using-managers-for-related-object-access
         base_manager_name = "objects"
+
+    def __str__(self):
+        return self.get_display_name()
 
     def get_display_name(self):
         return self.file_name or self.original_name

@@ -1,10 +1,11 @@
 from datetime import date
-from typing import Any, TypeGuard
+from typing import TYPE_CHECKING, Any, TypeGuard
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.timezone import localdate
+from django.utils.formats import localize
+from django.utils.timezone import localdate, localtime
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
@@ -25,7 +26,7 @@ class AppointmentsConfig(SingletonModel):
         ),
     )
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Appointment configuration")
 
     def save(self, *args, **kwargs):
@@ -68,6 +69,10 @@ class AppointmentInfo(models.Model):
         auto_now_add=True,
         help_text=_("Timestamp when the appointment details were created"),
     )
+
+    if TYPE_CHECKING:
+
+        def get_status_display(self) -> str: ...
 
     class Meta:
         verbose_name = _("Appointment information")
@@ -143,6 +148,11 @@ class Appointment(models.Model):
         verbose_name = _("appointment")
         verbose_name_plural = _("appointments")
 
+    def __str__(self):
+        return _("{plugin} appointment on {time}").format(
+            plugin=self.plugin, time=localize(localtime(self.datetime))
+        )
+
     @property
     def date(self) -> date:
         # this assumes our timezone is the same timezone as the appointment system
@@ -195,3 +205,6 @@ class AppointmentProduct(models.Model):
     class Meta:
         verbose_name = _("appointment product")
         verbose_name_plural = _("appointment products")
+
+    def __str__(self):
+        return f"{self.amount} x {self.product_id}"
