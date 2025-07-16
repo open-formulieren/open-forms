@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 
 from django.conf import settings
 
-from openforms.registrations.contrib.objects_api.utils import html_escape_json
+from openforms.registrations.contrib.objects_api.utils import (
+    recursively_escape_html_strings,
+)
 from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import parse_date
 
@@ -48,6 +50,6 @@ def get_variables_for_context(submission: Submission) -> dict[str, VariableValue
     data = state.get_data(include_static_variables=True).data
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        data = html_escape_json(data)
+        data = recursively_escape_html_strings(data)
 
     return data

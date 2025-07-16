@@ -8,7 +8,7 @@ from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..handlers.v1 import get_payment_context_data
-from ..utils import html_escape_json
+from ..utils import recursively_escape_html_strings
 
 
 class EscapeHTMLTests(TestCase):
@@ -39,7 +39,7 @@ class EscapeHTMLTests(TestCase):
             ],
         }
 
-        dict_result = html_escape_json(dict_sample)
+        dict_result = recursively_escape_html_strings(dict_sample)
 
         self.assertEqual(expected_dict, dict_result)
 
@@ -59,7 +59,7 @@ class EscapeHTMLTests(TestCase):
             [{"nested_dict": "escape &lt; me"}],
         ]
 
-        list_result = html_escape_json(list_sample)
+        list_result = recursively_escape_html_strings(list_sample)
 
         self.assertEqual(expected_list, list_result)
 
@@ -68,7 +68,7 @@ class EscapeHTMLTests(TestCase):
 
         for sample in samples:
             with self.subTest(sample=sample):
-                result = html_escape_json(sample)
+                result = recursively_escape_html_strings(sample)
 
                 self.assertIs(result, sample)
 

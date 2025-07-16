@@ -64,4 +64,5 @@ type VariableValue = (
     | datetime.datetime
     | relativedelta
     | list[VariableValue]  # for components configured as multiple
+    | dict[str, VariableValue]
 )
