@@ -264,3 +264,68 @@ class TestRenderNestedJSON(TestCase):
                 "fd0": {"editgrid1": [{"input1": "Foo"}, {"input1": "Bar"}]},
             },
         )
+
+    def test_date_and_time_related_components(self):
+        form = FormFactory.create()
+        step = SubmissionStepFactory.create(
+            submission__form=form,
+            submission__form_url="https://example.com/some-form",
+            submission__completed=True,
+            form_step__form=form,
+            form_step__form_definition__slug="formstep-slug",
+            form_step__form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                    },
+                    {
+                        "key": "dateMultiple",
+                        "type": "date",
+                        "multiple": True,
+                    },
+                    {
+                        "key": "datetime",
+                        "type": "datetime",
+                    },
+                    {
+                        "key": "datetimeMultiple",
+                        "type": "datetime",
+                        "multiple": True,
+                    },
+                    {
+                        "key": "time",
+                        "type": "time",
+                    },
+                    {
+                        "key": "timeMultiple",
+                        "type": "time",
+                        "multiple": True,
+                    },
+                ],
+            },
+            data={
+                "date": "2000-01-01",
+                "dateMultiple": ["2000-01-01", "2000-01-02"],
+                "datetime": "2000-01-01T12:34:56Z",
+                "datetimeMultiple": ["2000-01-01T12:34:56Z", "2000-01-02T11:22:33Z"],
+                "time": "12:34:56",
+                "timeMultiple": ["12:34:56", "11:22:33"],
+            },
+        )
+
+        data = render_json(step.submission)
+
+        expected_data = {
+            "formstep-slug": {
+                "date": "2000-01-01",
+                "dateMultiple": ["2000-01-01", "2000-01-02"],
+                "datetime": "2000-01-01T12:34:56Z",
+                "datetimeMultiple": ["2000-01-01T12:34:56Z", "2000-01-02T11:22:33Z"],
+                "time": "12:34:56",
+                "timeMultiple": ["12:34:56", "11:22:33"],
+            }
+        }
+
+        self.assertEqual(data, expected_data)

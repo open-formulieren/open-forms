@@ -1,4 +1,7 @@
+import json
 from typing import TYPE_CHECKING
+
+from django.core.serializers.json import DjangoJSONEncoder
 
 from openforms.formio.service import FormioData
 from openforms.submissions.rendering import Renderer, RenderModes
@@ -52,4 +55,7 @@ def render_json(submission: "Submission") -> JSONObject:
 
             data[node_path] = value
 
-    return data.data
+    # TODO-2324: node.value now returns native Python objects, so we do this quick fix
+    #  to convert everything at once. The proper solution might be to implement another
+    #  `mode` (json) in the renderer
+    return json.loads(json.dumps(data.data, cls=DjangoJSONEncoder))
