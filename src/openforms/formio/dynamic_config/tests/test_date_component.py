@@ -1,6 +1,5 @@
 from copy import deepcopy
 from datetime import datetime
-from typing import Any
 
 from django.test import TestCase, tag
 from django.utils import timezone
@@ -8,6 +7,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.typing import VariableValue
 from openforms.variables.service import get_static_variables
 
 from ...service import FormioConfigurationWrapper, FormioData, get_dynamic_configuration
@@ -17,7 +17,7 @@ from ...typing import DateComponent
 class DynamicDateConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
-        component: DateComponent, variables: dict[str, Any]
+        component: DateComponent, variables: dict[str, VariableValue]
     ) -> DateComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         submission = SubmissionFactory.create()
@@ -206,7 +206,9 @@ class DynamicDateConfigurationTests(TestCase):
         some_date = timezone.make_aware(datetime(2022, 10, 14, 0, 0, 0))
         assert some_date.tzinfo.key == "Europe/Amsterdam"
 
-        new_component = self._get_dynamic_config(component, {"someDate": some_date})
+        new_component = self._get_dynamic_config(
+            component, {"someDate": some_date.date()}
+        )
 
         self.assertEqual(
             new_component["datePicker"]["minDate"],
@@ -233,7 +235,9 @@ class DynamicDateConfigurationTests(TestCase):
         some_date = timezone.make_aware(datetime(2022, 10, 14, 0, 0, 0))
         assert some_date.tzinfo.key == "Europe/Amsterdam"
 
-        new_component = self._get_dynamic_config(component, {"someDate": some_date})
+        new_component = self._get_dynamic_config(
+            component, {"someDate": some_date.date()}
+        )
 
         self.assertEqual(
             new_component["datePicker"]["maxDate"], "2022-09-14T00:00:00+02:00"
@@ -279,13 +283,10 @@ class DynamicDateConfigurationTests(TestCase):
 
         values = ["2023-01-30", "2023-01-30T15:22:00+01:00"]
         for value in values:
-            with self.subTest(value=value):
-                new_component = self._get_dynamic_config(
-                    component, {"stringVar": value}
-                )
-
-                max_date = new_component["datePicker"]["maxDate"]
-                self.assertEqual(max_date, "2023-01-30T00:00:00+01:00")
+            # With the work done in #2324, we expect data returned from the state to
+            # already be in date/datetime objects, so this is not allowed anymore
+            with self.subTest(value=value), self.assertRaises(TypeError):
+                self._get_dynamic_config(component, {"stringVar": value})
 
     @tag("gh-2581")
     def test_nonsense_variable(self):
@@ -314,7 +315,7 @@ class DynamicDateConfigurationTests(TestCase):
         #
         # Option 2 is harder to debug without visbility in error monitoring and therefore
         # not desired.
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self._get_dynamic_config(component, {"emptyVar": "foobar"})
 
     @tag("gh-2581")
