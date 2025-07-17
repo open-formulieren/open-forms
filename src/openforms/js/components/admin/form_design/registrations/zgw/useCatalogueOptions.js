@@ -20,6 +20,7 @@ const useCatalogueOptions = () => {
       caseTypeIdentification = '',
       documentTypeDescription = '',
       medewerkerRoltype = '',
+      partnersRoltype = '',
       productUrl = '',
     },
     setFieldValue,
@@ -74,10 +75,21 @@ const useCatalogueOptions = () => {
   // 4. Clear medewerker roltype when case type changes
   useUpdateEffect(() => {
     const caseTypeChanged = caseTypeIdentification !== previousCaseTypeIdentification;
-    if (previousCaseTypeIdentification && caseTypeChanged && medewerkerRoltype) {
-      setFieldValue('medewerkerRoltype', '');
+    if (previousCaseTypeIdentification && caseTypeChanged) {
+      if (medewerkerRoltype) {
+        setFieldValue('medewerkerRoltype', '');
+      }
+      if (partnersRoltype) {
+        setFieldValue('partnersRoltype', '');
+      }
     }
-  }, [setFieldValue, previousCaseTypeIdentification, caseTypeIdentification, medewerkerRoltype]);
+  }, [
+    setFieldValue,
+    previousCaseTypeIdentification,
+    caseTypeIdentification,
+    medewerkerRoltype,
+    partnersRoltype,
+  ]);
 
   return {
     loadingCatalogues,

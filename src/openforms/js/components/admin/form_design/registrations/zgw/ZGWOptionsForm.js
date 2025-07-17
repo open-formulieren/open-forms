@@ -45,6 +45,8 @@ const ZGWOptionsForm = ({name, label, schema, formData, onChange}) => {
         organisatieRsin: '',
         zaakVertrouwelijkheidaanduiding: '',
         medewerkerRoltype: '',
+        partnersRoltype: '',
+        partnersDescription: '',
         propertyMappings: [],
         productUrl: '',
         // Ensure that this is explicitly set to null instead of undefined,
@@ -93,6 +95,8 @@ ZGWOptionsForm.propTypes = {
     organisatieRsin: PropTypes.string,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
     medewerkerRoltype: PropTypes.string,
+    partnersRoltype: PropTypes.string,
+    partnersDescription: PropTypes.string,
     productUrl: PropTypes.string,
     propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
