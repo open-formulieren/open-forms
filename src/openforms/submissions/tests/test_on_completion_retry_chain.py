@@ -286,6 +286,8 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "objects_api_group": None,
                 "product_url": "http://example.com",
+                "partners_description": "",
+                "partners_roltype": "",
             },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)

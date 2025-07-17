@@ -296,8 +296,8 @@ class PartialRegistrationFailureTests(TestCase):
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
             )
 
-            rol = glom(intermediate_results, "rol")
-            self.assertEqual(rol["url"], "https://zaken.nl/api/v1/rollen/1")
+            initiator_rol = glom(intermediate_results, "initiator_rol")
+            self.assertEqual(initiator_rol["url"], "https://zaken.nl/api/v1/rollen/1")
 
             status = glom(intermediate_results, "status")
             self.assertEqual(status["url"], "https://zaken.nl/api/v1/statussen/1")
@@ -332,8 +332,8 @@ class PartialRegistrationFailureTests(TestCase):
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
             )
 
-            rol = glom(intermediate_results, "rol")
-            self.assertEqual(rol["url"], "https://zaken.nl/api/v1/rollen/1")
+            initiator_rol = glom(intermediate_results, "initiator_rol")
+            self.assertEqual(initiator_rol["url"], "https://zaken.nl/api/v1/rollen/1")
 
             status = glom(intermediate_results, "status")
             self.assertEqual(status["url"], "https://zaken.nl/api/v1/statussen/1")
