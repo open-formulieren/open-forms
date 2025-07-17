@@ -407,8 +407,8 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
 
             # We may have multiple roles that need to be created, for now this is needed
             # for custom partners component
+            partners_rollen = []
             if partners_rol_data:
-                partners_rollen = []
                 for index, data in enumerate(partners_rol_data):
                     partners_roltype_omschrijving = options["partners_roltype"]
                     partners_description = options["partners_description"]
