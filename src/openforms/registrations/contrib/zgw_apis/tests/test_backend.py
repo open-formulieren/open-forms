@@ -13,10 +13,21 @@ from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
+from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.config.constants import FamilyMembersDataAPIChoices
+from openforms.config.models import GlobalConfiguration
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.contrib.zgw.clients.zaken import CRS_HEADERS
+from openforms.forms.tests.factories import FormVariableFactory
+from openforms.prefill.contrib.family_members.plugin import (
+    PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
+)
+from openforms.prefill.service import prefill_variables
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import SubmissionStep
@@ -219,6 +230,8 @@ class ZGWBackendTests(TestCase):
             "medewerker_roltype": "Some description",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
         m.get(
@@ -294,6 +307,8 @@ class ZGWBackendTests(TestCase):
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "product_url": "https://example.com",
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -349,6 +364,8 @@ class ZGWBackendTests(TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
         roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
@@ -367,8 +384,7 @@ class ZGWBackendTests(TestCase):
         plugin = ZGWRegistration("zgw")
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
-
-        self.assertIsNone(result["rol"])
+        self.assertIsNone(result["initiator_rol"])
 
     def test_retried_registration_with_internal_reference(self, m):
         """
@@ -425,6 +441,8 @@ class ZGWBackendTests(TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
         m.patch(
@@ -514,6 +532,8 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -624,6 +644,8 @@ class ZGWBackendTests(TestCase):
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -699,6 +721,8 @@ class ZGWBackendTests(TestCase):
             "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -755,6 +779,8 @@ class ZGWBackendTests(TestCase):
             "auteur": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -854,6 +880,8 @@ class ZGWBackendTests(TestCase):
             "zaak_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1075,6 +1103,8 @@ class ZGWBackendTests(TestCase):
             "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
             "objecttype_version": 1,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -1086,7 +1116,9 @@ class ZGWBackendTests(TestCase):
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
         )
-        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
+        self.assertEqual(
+            result["initiator_rol"]["url"], "https://zaken.nl/api/v1/rollen/1"
+        )
         self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
         self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
         self.assertEqual(
@@ -1351,6 +1383,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
 
         plugin = ZGWRegistration("zgw")
@@ -1372,7 +1406,9 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                     f"{documenten_root}enkelvoudiginformatieobjecten/"
                 )
             )
-            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
+            self.assertTrue(
+                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
+            )
             self.assertTrue(
                 result["status"]["url"].startswith(f"{zaken_root}statussen/")
             )
@@ -1403,7 +1439,7 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             )
 
         with self.subTest("verify rol"):
-            rol_data = client.get(result["rol"]["url"]).json()
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
 
             self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
             self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
@@ -1535,6 +1571,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_description": "",
+            "partners_roltype": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1548,13 +1586,15 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
 
         with self.subTest("check recorded result"):
             zaken_root = self.zgw_group.zrc_service.api_root
-            self.assertTrue(result["rol"]["url"].startswith(f"{zaken_root}rollen/"))
+            self.assertTrue(
+                result["initiator_rol"]["url"].startswith(f"{zaken_root}rollen/")
+            )
 
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
 
         with self.subTest("verify initiator"):
-            rol_data = client.get(result["rol"]["url"]).json()
+            rol_data = client.get(result["initiator_rol"]["url"]).json()
 
             self.assertEqual(rol_data["omschrijvingGeneriek"], "initiator")
             self.assertEqual(rol_data["zaak"], result["zaak"]["url"])
@@ -1644,6 +1684,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "doc_vertrouwelijkheidaanduiding": "openbaar",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -1721,6 +1763,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 }
             ],
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
 
         plugin = ZGWRegistration("zgw")
@@ -1808,6 +1852,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             ),
             "product_url": "http://localhost/product/1234abcd-12ab-34cd-56ef-12345abcde10",
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1862,6 +1908,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             ),
             "product_url": "",
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -1909,6 +1957,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
         client = get_zaken_client(self.zgw_group)
@@ -1984,6 +2034,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 {"component_key": "textField2", "eigenschap": "second property"},
             ],
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -2070,6 +2122,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
                 {"component_key": "textField3.blah", "eigenschap": "second property"},
             ],
             "objects_api_group": None,
+            "partners_roltype": "",
+            "partners_description": "",
         }
         client = get_zaken_client(self.zgw_group)
         self.addCleanup(client.close)
@@ -2132,6 +2186,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2203,6 +2259,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2258,6 +2316,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
 
@@ -2299,6 +2359,8 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
             "informatieobjecttype": "",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         plugin = ZGWRegistration("zgw")
         pre_registration_result = plugin.pre_register_submission(submission, options)
@@ -2311,3 +2373,124 @@ class ZGWBackendVCRTests(OFVCRMixin, TestCase):
 
         with self.assertRaises(RegistrationFailed):
             plugin.update_registration_with_confirmation_email(submission, options)
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        ),
+    )
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        ),
+    )
+    def test_submission_with_partners_component(self, m, n):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "registration": {
+                        "attribute": RegistrationAttribute.partners,
+                    },
+                }
+            ],
+            auth_info__value="000009921",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+        options: RegistrationOptions = {
+            "zgw_api_group": self.zgw_group,
+            "catalogue": {
+                "domain": "PARTN",
+                "rsin": "000000000",
+            },
+            "case_type_identification": "ZAAKTYPE-2020-0000000001",
+            "document_type_description": "Partners PDF Informatieobjecttype",
+            "zaaktype": "",
+            "informatieobjecttype": "",
+            "product_url": "",
+            "objects_api_group": None,
+            "partners_roltype": "Partner role type",
+            "partners_description": "",
+        }
+
+        prefill_variables(submission)
+
+        client = get_zaken_client(self.zgw_group)
+        self.addCleanup(client.close)
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(submission, options)
+        assert submission.registration_result is not None
+        submission.registration_result.update(pre_registration_result.data)  # type: ignore
+        submission.save()
+
+        # perform the actual registration
+        result = plugin.register_submission(submission, options)
+        assert result is not None
+
+        self.assertEqual(
+            result["intermediate"]["initiator_rol"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "000009921",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "",
+                "voornamen": "",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["partner_rol"]["1"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "999995182",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Jansma",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "A.M.P.",
+                "voornamen": "Anna Maria Petra",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "1945-04-18",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
+        self.assertEqual(
+            result["intermediate"]["partner_rol"]["2"]["betrokkeneIdentificatie"],
+            {
+                "inpBsn": "123456782",
+                "anpIdentificatie": "",
+                "inpA_nummer": "",
+                "geslachtsnaam": "Test",
+                "voorvoegselGeslachtsnaam": "",
+                "voorletters": "T.s.p.",
+                "voornamen": "Test second partner",
+                "geslachtsaanduiding": "",
+                "geboortedatum": "1945-04-18",
+                "verblijfsadres": None,
+                "subVerblijfBuitenland": None,
+            },
+        )
