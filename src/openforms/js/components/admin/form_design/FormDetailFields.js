@@ -5,7 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {TextInput} from 'components/admin/forms/Inputs';
 
 import TinyMCEEditor from './Editor';
 import LanguageTabs from './LanguageTabs';
@@ -156,34 +156,6 @@ const FormDetailFields = ({form: {slug, translations, appointmentOptions}, onCha
                   </FormRow>
                 </>
               )}
-
-              <FormRow>
-                <Field
-                  name={`form.translations.${langCode}.internalRemarks`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Internal remarks"
-                      description="Internal form remarks field label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage={`
-                        Remarks or intentions about the form. Can also be used
-                        to save notes for later use or for another admin user.
-                      `}
-                      description="Internal form remarks field help text"
-                    />
-                  }
-                >
-                  <TextArea
-                    rows={5}
-                    cols={85}
-                    value={translations[langCode].internalRemarks}
-                    onChange={onChange}
-                  />
-                </Field>
-              </FormRow>
             </>
           )}
         </LanguageTabs>

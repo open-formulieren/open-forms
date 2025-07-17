@@ -107,6 +107,12 @@
       "value": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
     }
   ],
+  "/kZu2e": [
+    {
+      "type": 0,
+      "value": "Initialen"
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -849,6 +855,12 @@
       "value": "Formulieren die als 'verwijderd' gemarkeerd zijn worden op termijn uit de database verwijderd."
     }
   ],
+  "7HlMn7": [
+    {
+      "type": 0,
+      "value": "Je moet een service selecteren."
+    }
+  ],
   "7JMcZW": [
     {
       "type": 0,
@@ -1217,6 +1229,12 @@
       "value": "Aftrekken"
     }
   ],
+  "9oJuUL": [
+    {
+      "type": 0,
+      "value": "Pin/punt"
+    }
+  ],
   "9y3/ek": [
     {
       "type": 0,
@@ -1347,6 +1365,12 @@
     {
       "type": 0,
       "value": "Onderwerp betaalstatusmail"
+    }
+  ],
+  "BFq6vL": [
+    {
+      "type": 0,
+      "value": "Opties ophalen..."
     }
   ],
   "BGZD6J": [
@@ -1972,12 +1996,6 @@
       "value": "Merchant ID"
     }
   ],
-  "F4SQsB": [
-    {
-      "type": 0,
-      "value": "Opmerkingen of intenties over het formulier. Dit veld kan ook gebruikt worden voor aantekeningen voor later gebruik of voor een andere gebruiker."
-    }
-  ],
   "F9ew4C": [
     {
       "type": 0,
@@ -2164,6 +2182,12 @@
     {
       "type": 0,
       "value": "Leeg (null)"
+    }
+  ],
+  "Gjhh/5": [
+    {
+      "type": 0,
+      "value": "Beschikbare vormen"
     }
   ],
   "GjumK9": [
@@ -2432,6 +2456,12 @@
     {
       "type": 0,
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
+    }
+  ],
+  "JKnHMC": [
+    {
+      "type": 0,
+      "value": "Achternaam"
     }
   ],
   "JKq3TC": [
@@ -2740,6 +2770,12 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
+    }
+  ],
+  "M2+MHj": [
+    {
+      "type": 0,
+      "value": "Voorvoegsels"
     }
   ],
   "M9JbDC": [
@@ -3216,6 +3252,12 @@
       "value": "Je moet latitude en longitude allebei instellen."
     }
   ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
+    }
+  ],
   "R7XVbR": [
     {
       "type": 0,
@@ -3460,6 +3502,12 @@
     {
       "type": 0,
       "value": "Twee kolommen"
+    }
+  ],
+  "T64zDz": [
+    {
+      "type": 0,
+      "value": "Veelhoek (Polygoon)"
     }
   ],
   "TB/ku3": [
@@ -3818,6 +3866,12 @@
       "value": "Service"
     }
   ],
+  "WXpj4j": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen een punt aanduiden op de kaart."
+    }
+  ],
   "WZJG0y": [
     {
       "type": 0,
@@ -3990,6 +4044,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "YObTjL": [
+    {
+      "type": 0,
+      "value": "Code van de tabel waaruit de opties opgehaald worden"
     }
   ],
   "YQ/Vx0": [
@@ -4179,6 +4239,12 @@
       "value": "TITLE-parameter"
     }
   ],
+  "ZYWsHs": [
+    {
+      "type": 0,
+      "value": "Geboortedatum"
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -4335,6 +4401,12 @@
       "value": "Huislettertoevoeging"
     }
   ],
+  "b64egT": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen een veelhoek (gesloten vorm die uit rechte lijnen bestaat) tekenen."
+    }
+  ],
   "b9D64D": [
     {
       "type": 0,
@@ -4469,6 +4541,12 @@
     {
       "type": 0,
       "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
+    }
+  ],
+  "cLzsxn": [
+    {
+      "type": 0,
+      "value": "Tabelcode"
     }
   ],
   "cQvPLh": [
@@ -4719,12 +4797,6 @@
     {
       "type": 0,
       "value": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen."
-    }
-  ],
-  "e6SsfR": [
-    {
-      "type": 0,
-      "value": "Kaartinstellingen"
     }
   ],
   "eAmrdi": [
@@ -5073,6 +5145,12 @@
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "gSSyoc": [
+    {
+      "type": 0,
+      "value": "Service"
+    }
+  ],
   "gUl3mu": [
     {
       "type": 0,
@@ -5251,6 +5329,12 @@
       "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
     }
   ],
+  "hkXaC1": [
+    {
+      "type": 0,
+      "value": "BSN"
+    }
+  ],
   "huHjRm": [
     {
       "type": 0,
@@ -5285,6 +5369,12 @@
     {
       "type": 0,
       "value": "Interne naam"
+    }
+  ],
+  "i/P7yw": [
+    {
+      "type": 0,
+      "value": "Je moet een tabel selecteren."
     }
   ],
   "i7HknI": [
@@ -5451,12 +5541,6 @@
     {
       "type": 0,
       "value": "Tekstsjabloon"
-    }
-  ],
-  "jUYCwO": [
-    {
-      "type": 0,
-      "value": "Interne opmerkingen"
     }
   ],
   "jV58dA": [
@@ -5679,22 +5763,6 @@
       "value": "Toon aantal karakters"
     }
   ],
-  "kw2jNc": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
-    }
-  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -5863,6 +5931,12 @@
     {
       "type": 0,
       "value": "Stappen en velden"
+    }
+  ],
+  "mRmbnJ": [
+    {
+      "type": 0,
+      "value": "Lijn"
     }
   ],
   "mWHMvR": [
@@ -6227,6 +6301,12 @@
       "value": "Gebruiker"
     }
   ],
+  "pM92DZ": [
+    {
+      "type": 0,
+      "value": "Gebruikers kunnen rechte lijnen tekenen op de kaart."
+    }
+  ],
   "pT5jx/": [
     {
       "type": 0,
@@ -6242,7 +6322,7 @@
   "paY2Oa": [
     {
       "type": 0,
-      "value": "Waarden via de expressie: "
+      "value": "Opties uit de expressie: "
     },
     {
       "children": [
@@ -6253,6 +6333,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "pdmkVe": [
+    {
+      "type": 0,
+      "value": "Begin focuspunt"
     }
   ],
   "pfdsz9": [
@@ -6529,6 +6615,30 @@
       "value": "Pluginattribuut"
     }
   ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6703,6 +6813,12 @@
       "value": "Voettekst"
     }
   ],
+  "u5fu3R": [
+    {
+      "type": 0,
+      "value": "De (externe) service die de tabellen/referentielijsten ontsluit."
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -6861,6 +6977,12 @@
       "value": "Opschoonmethode voor niet voltooide inzendingen"
     }
   ],
+  "wJ7Yha": [
+    {
+      "type": 0,
+      "value": "Kaartinstellingen"
+    }
+  ],
   "wLfQfD": [
     {
       "type": 0,
@@ -6907,22 +7029,6 @@
     {
       "type": 1,
       "value": "number"
-    }
-  ],
-  "wVoT0I": [
-    {
-      "type": 0,
-      "value": "Opties via de expressie: "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "expression"
-        }
-      ],
-      "type": 8,
-      "value": "code"
     }
   ],
   "wZ99FU": [

@@ -69,8 +69,8 @@ class Form(models.Model):
         help_text=_("internal name for management purposes"),
     )
     internal_remarks = models.TextField(
-        _("internal remarks"),
-        help_text=_(
+        "internal remarks",
+        help_text=(
             "Remarks or intentions about the form. Can also be used to save notes"
             " for later use or for another admin user."
         ),
