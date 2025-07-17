@@ -133,6 +133,22 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
         allow_blank=True,
     )
+    partners_roltype = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        help_text=_(
+            "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
+        ),
+    )
+    partners_description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+        help_text=_(
+            "Description (omschrijving) that will be used in the partners registration."
+        ),
+    )
 
     # Objects API
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
@@ -306,8 +322,8 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
 
     3. Validate that the configured case properties ("eigenschappen") exist on the
        specified case type.
-    4. Validate that the employee role type ("medewerkerroltype") exists on the
-       specified case type.
+    4. Validate that the employee role type ("medewerkerroltype") and the partner role
+       type ("partnersroltype") exist on the specified case type.
     """
     with get_catalogi_client(attrs["zgw_api_group"]) as client:
         # validate the catalogue itself - the queryset in the field guarantees that
@@ -324,7 +340,7 @@ def _validate_against_catalogi_api(attrs: RegistrationOptions) -> None:
         _validate_case_type_properties(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
-        _validate_medewerker_roltype(
+        _validate_medewerker_and_partners_roltype(
             client, attrs, iter_case_type_versions=iter_case_type_versions
         )
 
@@ -547,37 +563,63 @@ def _validate_case_type_properties(
         )
 
 
-def _validate_medewerker_roltype(
+def _validate_medewerker_and_partners_roltype(
     client: CatalogiClient,
     attrs: RegistrationOptions,
     iter_case_type_versions: CaseTypeVersionsIterator | None,
 ) -> None:
-    if not (description := attrs.get("medewerker_roltype")):
+    medewerker_description = attrs.get("medewerker_roltype")
+    partners_description = attrs.get("partners_roltype")
+
+    if not medewerker_description and not partners_description:
         return
 
+    medewerker_roltypen = []
+    partners_roltypen = []
     if case_type_identification := attrs["case_type_identification"]:
         assert iter_case_type_versions is not None
-        roltypen = []
         for version in iter_case_type_versions(case_type_identification):
-            roltypen += client.list_roltypen(
-                zaaktype=version["url"],
-                matcher=omschrijving_matcher(description),
-            )
-            if roltypen:
+            if medewerker_description:
+                medewerker_roltypen += client.list_roltypen(
+                    zaaktype=version["url"],
+                    matcher=omschrijving_matcher(medewerker_description),
+                )
+
+            if partners_description:
+                partners_roltypen += client.list_roltypen(
+                    zaaktype=version["url"],
+                    matcher=omschrijving_matcher(partners_description),
+                )
+
+            if medewerker_roltypen and partners_roltypen:
                 break
 
     else:  # DeprecationWarning
-        roltypen = client.list_roltypen(
-            zaaktype=attrs["zaaktype"],
-            matcher=omschrijving_matcher(description),
-        )
+        if medewerker_description:
+            medewerker_roltypen += client.list_roltypen(
+                zaaktype=attrs["zaaktype"],
+                matcher=omschrijving_matcher(medewerker_description),
+            )
+        if partners_description:
+            partners_roltypen += client.list_roltypen(
+                zaaktype=attrs["zaaktype"],
+                matcher=omschrijving_matcher(partners_description),
+            )
 
-    if not roltypen:
+    error_message = _(
+        "Could not find a roltype with this description related to the zaaktype."
+    )
+    fields_with_error = [
+        field_name
+        for field_name, roltypen in {
+            "medewerker_roltype": medewerker_roltypen,
+            "partners_roltype": partners_roltypen,
+        }.items()
+        if not roltypen and attrs.get(field_name)
+    ]
+
+    if fields_with_error:
         raise serializers.ValidationError(
-            {
-                "medewerker_roltype": _(
-                    "Could not find a roltype with this description related to the zaaktype."
-                )
-            },
+            {field: error_message for field in fields_with_error},
             code="invalid",
         )
