@@ -187,32 +187,12 @@
                 "eherkenningconfiguration"
             ],
             [
-                "digid_eherkenning_oidc",
-                "ofdigidconfig"
+                "mozilla_django_oidc_db",
+                "oidcprovider"
             ],
             [
-                "digid_eherkenning_oidc",
-                "ofdigidmachtigenconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningbewindvoeringconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeherkenningconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeidasconfig"
-            ],
-            [
-                "digid_eherkenning_oidc",
-                "ofeidascompanyconfig"
-            ],
-            [
-                "yivi_oidc",
-                "yiviopenidconnectconfig"
+                "mozilla_django_oidc_db",
+                "oidcclient"
             ],
             [
                 "yivi_oidc",
