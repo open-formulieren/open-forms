@@ -12,6 +12,7 @@ const COMPONENT_DATATYPES = {
   map: 'array',
   editgrid: 'array',
   partners: 'array',
+  children: 'array',
 };
 
 const DATATYPES_CHOICES = [
