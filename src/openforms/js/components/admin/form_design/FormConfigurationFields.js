@@ -5,7 +5,7 @@ import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Checkbox, DateTimeInput, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, DateTimeInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
@@ -536,6 +536,7 @@ const FormConfigurationFields = ({
   const {
     uuid,
     internalName,
+    internalRemarks,
     slug,
     showProgressIndicator,
     showSummaryProgress,
@@ -607,6 +608,30 @@ const FormConfigurationFields = ({
             <TextInput value={internalName} onChange={onChange} maxLength="150" />
           </Field>
         </FormRow>
+
+        <FormRow>
+          <Field
+            name="form.internalRemarks"
+            label={
+              <FormattedMessage
+                defaultMessage="Internal remarks"
+                description="Internal form remarks field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage={`
+                Remarks or intentions about the form. Can also be used
+                to save notes for later use or for another admin user.
+                `}
+                description="Internal form remarks field help text"
+              />
+            }
+          >
+            <TextArea rows={5} cols={85} value={internalRemarks} onChange={onChange} />
+          </Field>
+        </FormRow>
+
         <FormRow>
           <Field
             name="form.slug"
@@ -715,6 +740,8 @@ const statementChoices = PropTypes.oneOf(STATEMENT_CHECKBOX_CHOICES.map(opt => o
 FormConfigurationFields.propTypes = {
   form: PropTypes.shape({
     uuid: PropTypes.string.isRequired,
+    internalName: PropTypes.string.isRequired,
+    internalRemarks: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
     showSummaryProgress: PropTypes.bool.isRequired,

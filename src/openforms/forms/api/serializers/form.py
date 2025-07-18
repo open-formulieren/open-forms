@@ -244,6 +244,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "uuid",
             "name",
             "internal_name",
+            "internal_remarks",
             "login_required",
             "translation_enabled",
             "registration_backends",

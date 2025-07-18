@@ -1324,6 +1324,7 @@ paths:
         Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
 
         - `internalName`
+        - `internalRemarks`
         - `registrationBackends`
         - `authBackends`
         - `paymentBackend`
@@ -1397,6 +1398,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
+        - `internalRemarks`
         - `registrationBackends`
         - `authBackends`
         - `paymentBackend`
@@ -1914,6 +1916,7 @@ paths:
         Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
 
         - `internalName`
+        - `internalRemarks`
         - `registrationBackends`
         - `authBackends`
         - `paymentBackend`
@@ -1993,6 +1996,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
+        - `internalRemarks`
         - `registrationBackends`
         - `authBackends`
         - `paymentBackend`
@@ -2076,6 +2080,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
+        - `internalRemarks`
         - `registrationBackends`
         - `authBackends`
         - `paymentBackend`
@@ -7635,7 +7640,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `internalRemarks`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7648,6 +7653,10 @@ components:
           type: string
           description: internal name for management purposes
           maxLength: 150
+        internalRemarks:
+          type: string
+          description: Remarks or intentions about the form. Can also be used to save
+            notes for later use or for another admin user.
         loginRequired:
           type: boolean
           readOnly: true
@@ -8156,7 +8165,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `internalRemarks`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8327,7 +8336,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `internalRemarks`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -9254,7 +9263,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
+        `internalName`, `internalRemarks`, `registrationBackends`, `authBackends`, `paymentBackend`, `paymentBackendOptions`, `priceVariableKey`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `submissionLimit`, `submissionCounter`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -9267,6 +9276,10 @@ components:
           type: string
           description: internal name for management purposes
           maxLength: 150
+        internalRemarks:
+          type: string
+          description: Remarks or intentions about the form. Can also be used to save
+            notes for later use or for another admin user.
         loginRequired:
           type: boolean
           readOnly: true

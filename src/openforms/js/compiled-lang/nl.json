@@ -1996,6 +1996,12 @@
       "value": "Merchant ID"
     }
   ],
+  "F4SQsB": [
+    {
+      "type": 0,
+      "value": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
+    }
+  ],
   "F9ew4C": [
     {
       "type": 0,
@@ -5541,6 +5547,12 @@
     {
       "type": 0,
       "value": "Tekstsjabloon"
+    }
+  ],
+  "jUYCwO": [
+    {
+      "type": 0,
+      "value": "Internal remarks"
     }
   ],
   "jV58dA": [
