@@ -76,7 +76,7 @@ Yivi authenticates based on attributes (which *could* be a bsn or kvk-number) di
 by the end users. As a consequence, we cannot know beforehand which specific claims will
 be received after authentication.
 
-Configuration is done in the admin via **Configuratie** > **Yivi (OIDC)**.
+Configuration is done in the admin via **Configuratie** > **OIDC Clients** and then **yivi-oidc**.
 
 .. note:: End-users must have the Yivi app installed on their phone.
 
@@ -104,11 +104,8 @@ do and don't provide.
 and :attr:`openforms.authentication.contrib.yivi_oidc.config.YiviOptionsSerializer.additional_attributes_groups`
 determine which attributes to include in the condiscon parameter.
 
-:meth:`openforms.authentication.contrib.yivi_oidc.plugin.YiviOIDCAuthentication.start_login`
-passes the plugin options to
-:class:`openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView`,
-after which :meth:`openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView.get_extra_params`
-adds the attributes to the authentication request.
+:meth:`openforms.authentication.contrib.yivi_oidc.oidc_plugins.YiviPlugin.get_extra_params` retrieves the 
+authentication backend options and adds the attributes to the authentication request.
 
 As the condiscon scope is form-specific, we need to modify the authentication request
 scopes dynamically. The scope is shaped following the
@@ -141,7 +138,7 @@ form-specific configuration, and the data provided by the user.
 
 To determine which authentication option was used you have to check the returned claims.
 This is done by the :func:`_get_user_chosen_authentication_attribute()` function; it
-checks the returned claims against the global configuration for bsn and kvk claims. If
+checks the returned claims against the configuration for bsn and kvk claims. If
 they match, then we know if the user logged in using bsn, kvk or anonymous/pseudo.
 
 Generic OIDC support
@@ -185,5 +182,5 @@ Reference
 .. autoclass:: openforms.authentication.contrib.yivi_oidc.plugin.YiviOIDCAuthentication
    :members:
 
-.. autoclass:: openforms.authentication.contrib.yivi_oidc.views.OIDCAuthenticationInitView
+.. autoclass:: openforms.authentication.contrib.yivi_oidc.oidc_plugins.plugins.YiviPlugin
    :members:
