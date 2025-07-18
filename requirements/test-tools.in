@@ -15,6 +15,7 @@ tenacity
 tblib
 hypothesis  # property-based testing
 zgw-consumers[testutils]
+zgw-consumers-oas
 
 # Code formatting
 ruff

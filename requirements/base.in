@@ -90,7 +90,7 @@ elastic-apm  # Elastic APM integration
 flower # task monitoring
 
 # Common Ground integration
-zgw-consumers[setup-configuration]
+git+https://github.com/maykinmedia/zgw-consumers.git@release/1.0.0[setup-configuration]
 
 # Anti virus scan
 clamd
