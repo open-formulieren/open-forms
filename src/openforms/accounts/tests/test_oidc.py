@@ -11,15 +11,19 @@ Some of hese tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
-from functools import partial
 from pathlib import Path
 
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from mozilla_django_oidc_db.constants import OIDC_ADMIN_CONFIG_IDENTIFIER
 
-from openforms.utils.tests.keycloak import keycloak_login, mock_oidc_db_config
+from openforms.utils.tests.keycloak import (
+    keycloak_login,
+    mock_get_random_string,
+    mock_oidc_client,
+)
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
@@ -28,18 +32,8 @@ from .factories import StaffUserFactory
 TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 
-mock_admin_oidc_config = partial(
-    mock_oidc_db_config,
-    app_label="mozilla_django_oidc_db",
-    model="OpenIDConnectConfig",
-    id=1,  # required for the group queries because we're using in-memory objects
-    make_users_staff=True,
-    username_claim=["preferred_username"],
-)
-
-
 class OIDCLoginButtonTestCase(WebTest):
-    @mock_admin_oidc_config(enabled=False)
+    @mock_oidc_client(OIDC_ADMIN_CONFIG_IDENTIFIER, overrides={"enabled": False})
     def test_oidc_button_disabled(self):
         response = self.app.get(reverse("admin-mfa-login"))
 
@@ -49,7 +43,7 @@ class OIDCLoginButtonTestCase(WebTest):
         # Verify that the login button is not visible
         self.assertIsNone(oidc_login_link)
 
-    @mock_admin_oidc_config(enabled=True)
+    @mock_oidc_client(OIDC_ADMIN_CONFIG_IDENTIFIER, overrides={"enabled": True})
     def test_oidc_button_enabled(self):
         response = self.app.get(reverse("admin-mfa-login"))
 
@@ -66,7 +60,11 @@ class OIDCLoginButtonTestCase(WebTest):
 class OIDCFlowTests(OFVCRMixin, WebTest):
     VCR_TEST_FILES = TEST_FILES
 
-    @mock_admin_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_ADMIN_CONFIG_IDENTIFIER,
+        overrides={"options.user_settings.claim_mappings.email": ["email"]},
+    )
     def test_duplicate_email_unique_constraint_violated(self):
         """
         Assert that duplicate email addresses result in usable user feedback.
@@ -107,7 +105,14 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
             self.assertEqual(staff_user.email, "admin@example.com")
             self.assertTrue(staff_user.is_staff)
 
-    @mock_admin_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_ADMIN_CONFIG_IDENTIFIER,
+        overrides={
+            "options.groups_settings.make_users_staff": True,
+            "options.user_settings.claim_mappings.username": ["preferred_username"],
+        },
+    )
     def test_happy_flow(self):
         login_page = self.app.get(reverse("admin-mfa-login"))
         start_response = login_page.click(
@@ -127,7 +132,15 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
         user = User.objects.get()
         self.assertEqual(user.username, "admin")
 
-    @mock_admin_oidc_config(make_users_staff=False)
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_ADMIN_CONFIG_IDENTIFIER,
+        overrides={
+            "options.groups_settings.make_users_staff": False,
+            "options.user_settings.claim_mappings.username": ["preferred_username"],
+            "options.user_settings.claim_mappings.email": ["email"],
+        },
+    )
     def test_happy_flow_existing_user(self):
         staff_user = StaffUserFactory.create(username="admin", email="update-me")
         login_page = self.app.get(reverse("admin-mfa-login"))
