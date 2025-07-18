@@ -275,7 +275,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.22.1
+django-digid-eherkenning @ git+https://github.com/maykinmedia/django-digid-eherkenning.git@d932add60cad1cbf84ea0d5404af7b8990794780
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -357,7 +357,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.6.0
+django-setup-configuration==0.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -654,7 +654,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.22.0
+mozilla-django-oidc-db @ git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@09b274637447988016e63beec87237adb97d36a1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
