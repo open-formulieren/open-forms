@@ -740,6 +740,8 @@ const statementChoices = PropTypes.oneOf(STATEMENT_CHECKBOX_CHOICES.map(opt => o
 FormConfigurationFields.propTypes = {
   form: PropTypes.shape({
     uuid: PropTypes.string.isRequired,
+    internalName: PropTypes.string.isRequired,
+    internalRemarks: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
     showSummaryProgress: PropTypes.bool.isRequired,
