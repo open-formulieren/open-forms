@@ -7,12 +7,14 @@ from django.urls.base import reverse_lazy
 from furl import furl
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.yivi_oidc.tests.base import mock_yivi_config
+from openforms.authentication.contrib.yivi_oidc.oidc_plugins.constants import (
+    OIDC_YIVI_IDENTIFIER,
+)
 from openforms.authentication.tests.factories import AttributeGroupFactory
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.tests.keycloak import mock_get_random_string, mock_oidc_client
 
-from ..models import YiviOpenIDConnectConfig
 from .base import IntegrationTestsBase
 
 
@@ -39,7 +41,11 @@ class YiviInitTests(IntegrationTestsBase):
 
         self.assertEqual(condiscon, expected)
 
-    @mock_yivi_config(pseudo_claim=["attribute.pseudo"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={"options.identity_settings.pseudo_claim_path": ["attribute.pseudo"]},
+    )
     def test_start_flow_redirects_to_oidc_provider(self):
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
@@ -75,7 +81,11 @@ class YiviInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_yivi_config(bsn_claim=["attribute.bsn"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={"options.identity_settings.bsn_claim_path": ["attribute.bsn"]},
+    )
     def test_signicat_condiscon_contains_only_the_chosen_authentication_and_additional_attributes(
         self,
     ):
@@ -112,7 +122,14 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_yivi_config(bsn_claim=["attribute.bsn"], bsn_loa_claim=["attribute.loa:bsn"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={
+            "options.identity_settings.bsn_claim_path": ["attribute.bsn"],
+            "options.identity_settings.bsn_loa_claim_path": ["attribute.loa:bsn"],
+        },
+    )
     def test_signicat_condiscon_authentication_attributes_also_contain_defined_loa(
         self,
     ):
@@ -130,11 +147,6 @@ class YiviInitTests(IntegrationTestsBase):
         redirect_target = furl(response["Location"])
         query_params = redirect_target.query.params
 
-        # Sanity check, Yivi config didn't change
-        yivi_global_config = YiviOpenIDConnectConfig.get_solo()
-        self.assertEqual(yivi_global_config.bsn_claim, ["attribute.bsn"])
-        self.assertEqual(yivi_global_config.bsn_loa_claim, ["attribute.loa:bsn"])
-
         scope_list = query_params["scope"].split(" ")
         self.assertIn("openid", scope_list)
         self.assertCondisconScope(
@@ -147,10 +159,14 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_yivi_config(
-        bsn_claim=["attribute.bsn"],
-        kvk_claim=["attribute.kvk"],
-        pseudo_claim=["attribute.pseudo"],
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={
+            "options.identity_settings.bsn_claim_path": ["attribute.bsn"],
+            "options.identity_settings.kvk_claim_path": ["attribute.kvk"],
+            "options.identity_settings.pseudo_claim_path": ["attribute.pseudo"],
+        },
     )
     def test_signicat_condiscon_contains_multiple_chosen_authentication_attributes(
         self,
@@ -188,7 +204,13 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_yivi_config(pseudo_claim=["attribute.pseudo"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={
+            "options.identity_settings.pseudo_claim_path": ["attribute.pseudo"],
+        },
+    )
     def test_signicat_condiscon_without_pre_defined_attributes_contains_the_pseudo_claim(
         self,
     ):
