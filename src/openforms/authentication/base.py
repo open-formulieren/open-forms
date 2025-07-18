@@ -68,7 +68,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     # override
 
     def start_login(
-        self, request: Request, form: Form, form_url: str, options: OptionsT
+        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
     ) -> HttpResponse:
         # redirect/go to auth service (like digid)
         raise NotImplementedError()  # noqa
