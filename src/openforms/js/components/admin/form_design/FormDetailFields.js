@@ -173,7 +173,6 @@ FormDetailFields.propTypes = {
       PropTypes.shape({
         name: PropTypes.string.isRequired,
         explanationTemplate: PropTypes.string.isRequired,
-        internalRemarks: PropTypes.string,
       })
     ).isRequired,
   }).isRequired,
