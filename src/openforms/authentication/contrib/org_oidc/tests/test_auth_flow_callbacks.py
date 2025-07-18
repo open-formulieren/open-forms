@@ -17,14 +17,19 @@ from django.test import override_settings
 from furl import furl
 
 from openforms.accounts.models import User
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.authentication.tests.utils import URLsHelper
-from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    keycloak_login,
+    mock_get_random_string,
+    mock_oidc_client,
+)
 from openforms.utils.urls import reverse_plus
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....tests.utils import URLsHelper
+from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
+from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")
@@ -42,7 +47,8 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
             "Group with required permissions is missing"
         )
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_redirects_after_successful_auth(self):
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
@@ -82,7 +88,11 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         self.assertEqual(s["attribute"], AuthAttribute.employee_id)
         self.assertEqual(s["value"], "9999")
 
-    @mock_org_oidc_config(username_claim=["absent-claim"])
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_ORG_IDENTIFIER,
+        overrides={"options.user_settings.claim_mappings.username": ["absent-claim"]},
+    )
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
