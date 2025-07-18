@@ -27,7 +27,10 @@ class SubmittedFileFactory(factory.DictFactory):
         if extracted:
             # The temporary upload was explicitly provided, read the necessary values from there
             temporary_upload = extracted
-            obj["originalName"] = obj["data"]["name"] = temporary_upload.file_name
+            obj["data"]["name"] = kwargs.get("data_name") or temporary_upload.file_name
+            obj["originalName"] = (
+                kwargs.get("original_name") or temporary_upload.file_name
+            )
             obj["size"] = obj["data"]["size"] = temporary_upload.file_size
         else:
             create_temporary_upload = (

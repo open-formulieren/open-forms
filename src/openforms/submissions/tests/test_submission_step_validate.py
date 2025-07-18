@@ -685,6 +685,141 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_validate_step_with_soft_hyphen_filename(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create(
+            file_name="Schermafbeelding 2025-07-08 om 09.39.36.png"  # no soft-hyphen
+        )
+        file = SubmittedFileFactory.create(
+            temporary_upload=temporary_file_upload,
+            temporary_upload__data_name="Schermafbeelding 2025-07-08 om 09.39.36.png",  # no soft-hyphen
+            temporary_upload__original_name="Scherm­afbeelding 2025-07-08 om 09.39.36.png",  # soft-hyphe
+        )
+
+        submission = temporary_file_upload.submission
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "of": {
+                            "image": {
+                                "resize": {
+                                    "apply": False,
+                                    "width": 2000,
+                                    "height": 2000,
+                                }
+                            }
+                        },
+                        "key": "fileUpload",
+                        "file": {
+                            "name": "",
+                            "type": ["image/png", "image/jpeg"],
+                            "allowedTypesLabels": [".png", ".jpg"],
+                        },
+                        "type": "file",
+                        "input": True,
+                        "label": "File Upload",
+                        "openForms": {"softRequired": False, "translations": {}},
+                        "showInPDF": True,
+                        "tableView": False,
+                        "filePattern": "image/png,image/jpeg",
+                        "showInEmail": False,
+                        "registration": {
+                            "titel": "",
+                            "bronorganisatie": "",
+                            "informatieobjecttype": "",
+                            "docVertrouwelijkheidaanduiding": "",
+                        },
+                        "showInSummary": True,
+                        "isSensitiveData": True,
+                        "maxNumberOfFiles": None,
+                        "translatedErrors": {
+                            "en": {"required": ""},
+                            "nl": {"required": ""},
+                        },
+                        "useConfigFiletypes": True,
+                        "id": "e01wt",
+                        "placeholder": "",
+                        "prefix": "",
+                        "customClass": "",
+                        "suffix": "",
+                        "multiple": False,
+                        "defaultValue": [],
+                        "protected": False,
+                        "unique": False,
+                        "persistent": True,
+                        "hidden": False,
+                        "clearOnHide": True,
+                        "refreshOn": "",
+                        "redrawOn": "",
+                        "modalEdit": False,
+                        "dataGridLabel": False,
+                        "labelPosition": "top",
+                        "description": "",
+                        "errorLabel": "",
+                        "tooltip": "",
+                        "hideLabel": False,
+                        "tabindex": "",
+                        "disabled": False,
+                        "autofocus": False,
+                        "dbIndex": False,
+                        "customDefaultValue": "",
+                        "calculateValue": "",
+                        "calculateServer": False,
+                        "widget": None,
+                        "attributes": {},
+                        "validateOn": "change",
+                        "validate": {
+                            "required": False,
+                            "custom": "",
+                            "customPrivate": False,
+                            "strictDateValidation": False,
+                            "multiple": False,
+                            "unique": False,
+                        },
+                        "conditional": {"show": None, "when": None, "eq": ""},
+                        "overlay": {
+                            "style": "",
+                            "left": "",
+                            "top": "",
+                            "width": "",
+                            "height": "",
+                        },
+                        "allowCalculateOverride": False,
+                        "encrypted": False,
+                        "showCharCount": False,
+                        "showWordCount": False,
+                        "properties": {},
+                        "allowMultipleMasks": False,
+                        "image": False,
+                        "privateDownload": False,
+                        "imageSize": "200",
+                        "fileMinSize": "0KB",
+                        "fileMaxSize": "10MB",
+                        "uploadOnly": False,
+                        "storage": "url",
+                        "url": "",
+                        "options": '{"withCredentials": true}',
+                        "webcam": False,
+                    },
+                ]
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse(
+                "api:submission-steps-validate",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+            {"data": {"fileUpload": [file]}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     @tag("gh-5191")
     def test_validate_map_component_hidden_and_clear_on_hide(self):
         submission = SubmissionFactory.create(

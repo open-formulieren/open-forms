@@ -5,6 +5,7 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
+import re
 from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
@@ -77,6 +78,8 @@ if TYPE_CHECKING:
 
 
 logger = structlog.stdlib.get_logger(__name__)
+
+FORMIO_FILENAME_PATTERN = re.compile(r"[^0-9a-zA-Z.\-_ ]")
 
 
 @register("default")
@@ -397,20 +400,31 @@ class FileSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # FormIO applies a regex pattern to the sent 'name' attribute which can
+        # cause the comparison between 'originalName' and 'name' to fail.
+        # The same pattern is applied here to follow that behaviour.
+        # See https://github.com/open-formulieren/formio.js/blob/maykin-4.13.12/src/components/file/File.js#L611.
+        formio_name = FORMIO_FILENAME_PATTERN.sub("", attrs["originalName"])
+
         for root_key, nested_key in (
             ("url", "url"),
             ("size", "size"),
             ("originalName", "name"),
         ):
-            if attrs[root_key] != attrs["data"][nested_key]:
-                raise serializers.ValidationError(
-                    _(
-                        "The value of {root_key} must match the value of {nested_key} in 'data'."
-                    ).format(
-                        root_key=root_key,
-                        nested_key=nested_key,
-                    )
+            exception = serializers.ValidationError(
+                _(
+                    "The value of {root_key} must match the value of {nested_key} in 'data'."
+                ).format(
+                    root_key=root_key,
+                    nested_key=nested_key,
                 )
+            )
+
+            if root_key == "originalName":
+                if formio_name != attrs["data"][nested_key]:
+                    raise exception
+            elif attrs[root_key] != attrs["data"][nested_key]:
+                raise exception
 
         temporary_upload = temporary_upload_from_url(attrs["url"])
         if temporary_upload is None:
@@ -421,7 +435,7 @@ class FileSerializer(serializers.Serializer):
                 {"size": _("Size does not match the uploaded file.")}
             )
 
-        if attrs["originalName"] != temporary_upload.file_name:
+        if formio_name != temporary_upload.file_name:
             raise serializers.ValidationError(
                 {"originalName": _("Name does not match the uploaded file.")}
             )
