@@ -19,13 +19,18 @@ from django.test import override_settings
 
 from rest_framework.test import APIRequestFactory
 
-from openforms.authentication.registry import register
-from openforms.authentication.tests.utils import URLsHelper
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    keycloak_login,
+    mock_get_random_string,
+    mock_oidc_client,
+)
 
+from ....registry import register
+from ....tests.utils import URLsHelper
+from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from ..plugin import PLUGIN_IDENTIFIER
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 @override_settings(BASE_URL="http://testserver")
@@ -54,7 +59,8 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         if not isinstance(request.session, dict):
             request.session.save()
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_logout_clears_session(self):
         form = FormFactory.create(authentication_backend=PLUGIN_IDENTIFIER)
         url_helper = URLsHelper(form=form)
@@ -69,7 +75,8 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         self.assertEqual(list(session.keys()), [])
         self.assertFalse(auth.get_user(self.app).is_authenticated)  # type: ignore
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_logout_without_any_session(self):
         self._do_plugin_logout(user=AnonymousUser())
 

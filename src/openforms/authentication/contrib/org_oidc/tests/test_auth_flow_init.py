@@ -17,11 +17,16 @@ from django.urls import reverse, reverse_lazy
 from furl import furl
 
 from openforms.accounts.tests.factories import StaffUserFactory
-from openforms.authentication.tests.utils import URLsHelper
-from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.tests.keycloak import (
+    mock_get_random_string,
+    mock_oidc_client,
+)
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from ....tests.utils import URLsHelper
+from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
+from .base import IntegrationTestsBase
 
 
 class OrgOIDCInitTests(IntegrationTestsBase):
@@ -31,7 +36,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_start_flow_redirects_to_oidc_provider(self):
         form = FormFactory.create(authentication_backend="org-oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="org-oidc")
@@ -51,8 +57,13 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_org_oidc_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_ORG_IDENTIFIER,
+        provider_overrides={
+            "oidc_op_authorization_endpoint": "http://localhost:8080/i-dont-exist",  # Non-existing endpoint!
+        },
+        overrides={"check_op_availability": True},
     )
     def test_idp_availability_check(self):
         form = FormFactory.create(authentication_backend="org-oidc")
@@ -68,7 +79,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "org-oidc")
 
-    @mock_org_oidc_config()
+    @mock_get_random_string()
+    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
     def test_start_flow_logs_out_existing_user(self):
         user = StaffUserFactory.create()
         self.app.get(reverse("admin:index"), user=user)
