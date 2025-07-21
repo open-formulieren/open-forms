@@ -685,6 +685,53 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_validate_step_with_soft_hyphen_filename(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create(
+            file_name="Schermafbeelding 2025-07-08 om 09.39.36.png"  # no soft-hyphen
+        )
+        file = SubmittedFileFactory.create(
+            temporary_upload=temporary_file_upload,
+            temporary_upload__data_name="Schermafbeelding 2025-07-08 om 09.39.36.png",  # no soft-hyphen
+            temporary_upload__original_name="Scherm­afbeelding 2025-07-08 om 09.39.36.png",  # soft-hyphen
+        )
+
+        submission = temporary_file_upload.submission
+        form_step = FormStepFactory.create(
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "fileUpload",
+                        "file": {
+                            "name": "",
+                            "type": ["image/png", "image/jpeg"],
+                            "allowedTypesLabels": [".png", ".jpg"],
+                        },
+                        "type": "file",
+                        "input": True,
+                        "label": "File Upload",
+                        "tableView": False,
+                        "filePattern": "image/png,image/jpeg",
+                        "useConfigFiletypes": True,
+                    },
+                ]
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse(
+                "api:submission-steps-validate",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+            {"data": {"fileUpload": [file]}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     @tag("gh-5191")
     def test_validate_map_component_hidden_and_clear_on_hide(self):
         submission = SubmissionFactory.create(
