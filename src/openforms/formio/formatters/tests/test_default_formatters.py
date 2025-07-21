@@ -31,10 +31,12 @@ class DefaultFormatterTestCase(TestCase):
             "phoneNumber": "+31633924456",
             "selectBoxes": "Option 1; Option 2",
             "licenseplate": "1-AAA-BB",
-            "select2": "29 december 2021",
-            "select3": "08:15",
             "addressNL": "1234AA 1",
-            "partners": "[{'bsn': '999970136', 'firstNames': 'Pia', 'initials': 'P.', 'affixes': '', 'lastName': 'Pauw', 'dateOfBirth': '1989-04-01', 'dateOfBirthPrecision': 'date'}]",
+            "partners": (
+                "[{'bsn': '999970136', 'firstNames': 'Pia', 'initials': 'P.', "
+                "'affixes': '', 'lastName': 'Pauw', 'dateOfBirth': '1989-04-01', "
+                "'dateOfBirthPrecision': 'date'}]"
+            ),
         }
 
         for component in all_components:
