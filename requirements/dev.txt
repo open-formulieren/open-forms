@@ -290,7 +290,7 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-digid-eherkenning==0.21.0
+django-digid-eherkenning==0.22.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
