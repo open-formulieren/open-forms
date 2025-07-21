@@ -90,6 +90,44 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(upload.file_size, 10)
         self.assertEqual(upload.submission, self.submission)
 
+    def test_soft_hyphen_upload(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile(
+            "Scherm­afbeelding 2025-07-08 om 09.39.36.txt",  # note the invisible soft-hyphen here
+            b"my content",
+            content_type="text/plain",
+        )
+
+        response = self.client.post(
+            url, {"file": file, "submission": self.submission_url}, format="multipart"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        body = response.json()
+
+        # no soft-hyphen here
+        self.assertEqual(body["name"], "Schermafbeelding 2025-07-08 om 09.39.36.txt")
+
+        response = self.client.get(body["url"])
+
+        self.assertIn(
+            "Schermafbeelding 2025-07-08 om 09.39.36.txt",  # no soft-hyphen
+            response["Content-Disposition"],
+        )
+
+        # use the convenient helper to check the model instance
+        upload = temporary_upload_from_url(body["url"])
+
+        assert upload is not None
+
+        self.assertEqual(
+            upload.file_name,
+            "Schermafbeelding 2025-07-08 om 09.39.36.txt",  # no soft-hyphen
+        )
+        self.assertEqual(upload.content_type, "text/plain")
+
     def test_upload_empty(self):
         self._add_submission_to_session(self.submission)
 
