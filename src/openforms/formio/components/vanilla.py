@@ -6,6 +6,7 @@ adjacent custom.py module.
 """
 
 import logging
+import re
 from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
@@ -78,6 +79,8 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+
+FORMIO_FILENAME_PATTERN = re.compile(r"[^0-9a-zA-Z.\-_ ]")
 
 
 @register("default")
@@ -228,7 +231,6 @@ class FormioTimeField(serializers.TimeField):
 
 
 class TimeBetweenValidator:
-
     def __init__(self, min_time: time, max_time: time) -> None:
         self.min_time = min_time
         self.max_time = max_time
@@ -383,6 +385,12 @@ class FileSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # FormIO applies a regex pattern to the sent 'name' attribute which can
+        # cause the comparison between 'originalName' and 'name' to fail.
+        # The same pattern is applied here to follow that behaviour.
+        # See https://github.com/open-formulieren/formio.js/blob/maykin-4.13.12/src/components/file/File.js#L611.
+        attrs["originalName"] = FORMIO_FILENAME_PATTERN.sub("", attrs["originalName"])
+
         for root_key, nested_key in (
             ("url", "url"),
             ("size", "size"),
@@ -621,7 +629,6 @@ class Checkbox(BasePlugin[Component]):
 
 
 class SelectboxesField(serializers.Serializer):
-
     default_error_messages = {
         "min_selected_count": _(
             "Ensure this field has at least {min_selected_count} checked options."
