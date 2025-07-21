@@ -870,6 +870,11 @@
     "isTranslated": true,
     "originalDefault": "Merchant ID"
   },
+  "F4SQsB": {
+    "defaultMessage": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user.",
+    "description": "Internal form remarks field help text",
+    "originalDefault": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
+  },
   "F9ew4C": {
     "defaultMessage": "Versie",
     "description": "Objects API registration options 'objecttypeVersion' label",
@@ -2646,6 +2651,11 @@
     "defaultMessage": "Tekstsjabloon",
     "description": "Interpolation expression preview label",
     "originalDefault": "Resulting string"
+  },
+  "jUYCwO": {
+    "defaultMessage": "Internal remarks",
+    "description": "Internal form remarks field label",
+    "originalDefault": "Internal remarks"
   },
   "jYFS/i": {
     "defaultMessage": "Variabele",

@@ -68,6 +68,15 @@ class Form(models.Model):
         max_length=150,
         help_text=_("internal name for management purposes"),
     )
+    internal_remarks = models.TextField(
+        _("internal remarks"),
+        help_text=_(
+            "Remarks or intentions about the form. Can also be used to save notes"
+            " for later use or for another admin user."
+        ),
+        blank=True,
+    )
+
     slug = AutoSlugField(
         _("slug"), max_length=100, populate_from="name", editable=True, unique=True
     )
