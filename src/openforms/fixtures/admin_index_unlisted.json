@@ -1,5 +1,6 @@
 [
     "config.RichTextColor",
+    "digid_eherkenning.MockDigidUser",
     "forms.FormLogic",
     "forms.FormDefinition",
     "forms.FormsExport",
