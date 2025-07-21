@@ -1,4 +1,5 @@
 import dataclasses
+from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -128,6 +129,17 @@ class StufZDSHelperTests(StUFZDSTestBase):
         )
         self.assertEqual("", actual.value)
         self.assertEqual("J", actual.indicator)
+
+        # date objects
+        actual = PartialDate.parse(date(2000, 1, 2))
+        self.assertEqual(dict(year=2000, month=1, day=2), dataclasses.asdict(actual))
+        self.assertEqual("20000102", actual.value)
+        self.assertEqual("V", actual.indicator)
+
+        actual = PartialDate.parse(datetime(2000, 1, 2, 12, 34, 56))
+        self.assertEqual(dict(year=2000, month=1, day=2), dataclasses.asdict(actual))
+        self.assertEqual("20000102", actual.value)
+        self.assertEqual("V", actual.indicator)
 
         # bad
         actual = PartialDate.parse(None)
