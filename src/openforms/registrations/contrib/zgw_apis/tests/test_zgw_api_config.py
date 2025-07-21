@@ -4,7 +4,7 @@ import requests_mock
 from privates.test import temp_private_root
 from requests.models import HTTPError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
-from zgw_consumers.test import generate_oas_component
+from zgw_consumers_oas.component_generation import generate_oas_component
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.tests.factories import (
