@@ -327,6 +327,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 
@@ -370,6 +372,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "doc_vertrouwelijkheidaanduiding": "geheim",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
 
         self.install_mocks(m)
@@ -465,6 +469,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             "doc_vertrouwelijkheidaanduiding": "geheim",
             "objects_api_group": None,
             "product_url": "",
+            "partners_roltype": "",
+            "partners_description": "",
         }
         self.install_mocks(m)
 

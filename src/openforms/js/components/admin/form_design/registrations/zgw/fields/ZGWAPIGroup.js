@@ -21,6 +21,8 @@ const ZGWAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
       zaaktype: '',
       informatieobjecttype: '',
       medewerkerRoltype: '',
+      partnersRoltype: '',
+      partnersDescription: '',
       propertyMappings: [],
       // objects API integration
       objecttype: undefined,

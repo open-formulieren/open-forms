@@ -778,6 +778,11 @@
     "isTranslated": true,
     "originalDefault": "Plugin"
   },
+  "DaG+4u": {
+    "defaultMessage": "Partners roltype",
+    "description": "ZGW-APIs registration options 'partnersRoltype' label",
+    "originalDefault": "Partners roltype"
+  },
   "DaxIUG": {
     "defaultMessage": "Sleutel variabele",
     "description": "'Variable key' label",
@@ -1170,11 +1175,6 @@
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
   },
-  "JKq3TC": {
-    "defaultMessage": "Medewerkerroltype",
-    "description": "Objects API registration options 'medewerkerRoltype' label",
-    "originalDefault": "Medewerker roltype"
-  },
   "JRGs/Q": {
     "defaultMessage": "Klap JsonLogic-expressie in/uit",
     "description": "Expand/collapse logic expression icon title",
@@ -1214,6 +1214,11 @@
     "defaultMessage": "Component {label} vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap.",
     "description": "No login required for formstep",
     "originalDefault": "Component {label} requires login, but this form step doesn't have the login marked as required."
+  },
+  "K3xA0z": {
+    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.",
+    "description": "ZGW-APIs registration options 'medewerkerRoltype' help text",
+    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
   "KClY/2": {
     "defaultMessage": "Verwerking",
@@ -1574,6 +1579,11 @@
     "defaultMessage": "Weergave/layout",
     "description": "Form presentation fieldset title",
     "originalDefault": "Presentation / appearance"
+  },
+  "PtKaEy": {
+    "defaultMessage": "The description that will be used in partners registration.",
+    "description": "ZGW APIs registration options 'partnersDescription' help text",
+    "originalDefault": "The description that will be used in partners registration."
   },
   "PtZ96W": {
     "defaultMessage": "Alias",
@@ -2290,6 +2300,11 @@
     "defaultMessage": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen.",
     "description": "form.introductionPageContent help text",
     "originalDefault": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
+  },
+  "dzIRgm": {
+    "defaultMessage": "Partners description",
+    "description": "ZGW APIs registration options 'partnersDescription' label",
+    "originalDefault": "Partners description"
   },
   "eBk+W0": {
     "defaultMessage": "Beheer procesvariabelen",
@@ -3138,6 +3153,11 @@
     "description": "Help text of form field 'Send the confirmation email'",
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
   },
+  "sFWqtz": {
+    "defaultMessage": "Medewerker roltype",
+    "description": "ZGW-APIs registration options 'medewerkerRoltype' label",
+    "originalDefault": "Medewerker roltype"
+  },
   "sNGN82": {
     "defaultMessage": "Vink aan om gebruikersbestanden als bijlage aan de registratiemail toe te voegen. Als een waarde gezet is, dan heeft deze hogere prioriteit dan de globale configuratie. Formulierbeheerders moeten ervoor zorgen dat de totale maximale bestandsgrootte onder de maximale e-mailbestandsgrootte blijft.",
     "description": "Email registration options 'attachFilesToEmail' helpText",
@@ -3212,11 +3232,6 @@
     "defaultMessage": "Naam",
     "description": "Manage complex process vars alias column title",
     "originalDefault": "Name"
-  },
-  "tzwS3S": {
-    "defaultMessage": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen.",
-    "description": "Objects API registration options 'medewerkerRoltype' help text",
-    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
   "u+IP17": {
     "defaultMessage": "Limiet aantal inzendingen",
@@ -3422,6 +3437,11 @@
     "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt.",
     "description": "Legacy objects API registration options: 'contentJSON' helpText",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
+  },
+  "yO/Vkd": {
+    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners.",
+    "description": "ZGW-APIs registration options 'partnersRoltype' help text",
+    "originalDefault": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
   },
   "yTBZ6U": {
     "defaultMessage": "Partners",

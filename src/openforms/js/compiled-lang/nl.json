@@ -1778,6 +1778,12 @@
       "value": "Plugin"
     }
   ],
+  "DaG+4u": [
+    {
+      "type": 0,
+      "value": "Partners roltype"
+    }
+  ],
   "DaxIUG": [
     {
       "type": 0,
@@ -2470,12 +2476,6 @@
       "value": "Achternaam"
     }
   ],
-  "JKq3TC": [
-    {
-      "type": 0,
-      "value": "Medewerkerroltype"
-    }
-  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -2548,6 +2548,12 @@
     {
       "type": 0,
       "value": " vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap."
+    }
+  ],
+  "K3xA0z": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
     }
   ],
   "KClY/2": [
@@ -3134,6 +3140,12 @@
     {
       "type": 0,
       "value": "Weergave/layout"
+    }
+  ],
+  "PtKaEy": [
+    {
+      "type": 0,
+      "value": "The description that will be used in partners registration."
     }
   ],
   "PtZ96W": [
@@ -4803,6 +4815,12 @@
     {
       "type": 0,
       "value": "Inhoud van de introductiepagina die naar de startpagina van het formulier leidt. Laat dit leeg om de introductiepagina uit te schakelen."
+    }
+  ],
+  "dzIRgm": [
+    {
+      "type": 0,
+      "value": "Partners description"
     }
   ],
   "eAmrdi": [
@@ -6597,6 +6615,12 @@
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
     }
   ],
+  "sFWqtz": [
+    {
+      "type": 0,
+      "value": "Medewerkerroltype"
+    }
+  ],
   "sNGN82": [
     {
       "type": 0,
@@ -6793,12 +6817,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "tzwS3S": [
-    {
-      "type": 0,
-      "value": "Omschrijving van het ROLTYPE voor medewerkers die het formulier voor een burger/bedrijf invullen."
     }
   ],
   "u+IP17": [
@@ -7213,6 +7231,12 @@
     {
       "type": 0,
       "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten-API gestuurd wordt."
+    }
+  ],
+  "yO/Vkd": [
+    {
+      "type": 0,
+      "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
     }
   ],
   "yQUV3M": [
