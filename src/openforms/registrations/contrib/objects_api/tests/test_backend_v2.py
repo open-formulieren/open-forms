@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -7,12 +8,22 @@ from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
+from openforms.config.constants import FamilyMembersDataAPIChoices
+from openforms.config.models import GlobalConfiguration
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.objects_api.tests.factories import ObjectsAPIGroupConfigFactory
 from openforms.formio.tests.factories import SubmittedFileFactory
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.prefill.contrib.family_members.plugin import (
+    PLUGIN_IDENTIFIER as FM_PLUGIN_IDENTIFIER,
+)
+from openforms.prefill.service import prefill_variables
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
@@ -21,6 +32,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
+from ....constants import RegistrationAttribute
 from ..config import ObjectsAPIOptionsSerializer
 from ..constants import PLUGIN_IDENTIFIER
 from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
@@ -632,6 +644,106 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             pre_registration(submission.pk, PostSubmissionEvents.on_retry)
         except AssertionError:
             self.fail("Assertion should have passed.")
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="http://localhost:5010/haalcentraal/api/brp/"
+            ),
+            brp_personen_version=BRPVersions.v20,
+        ),
+    )
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.haal_centraal
+        ),
+    )
+    def test_submission_with_partners_component(self, m, n):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "partners",
+                    "type": "partners",
+                    "registration": {
+                        "attribute": RegistrationAttribute.partners,
+                    },
+                }
+            ],
+            auth_info__value="000009921",
+            auth_info__attribute=AuthAttribute.bsn,
+            completed_on=datetime(2024, 11, 9, 15, 30, 0).replace(tzinfo=UTC),
+        )
+        FormVariableFactory.create(
+            key="partners_immutable",
+            form=submission.form,
+            user_defined=True,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+                "min_age": None,
+                "max_age": None,
+            },
+        )
+
+        serializer = ObjectsAPIOptionsSerializer(
+            data={
+                "version": 2,
+                "objects_api_group": self.objects_api_group.pk,
+                # See the docker compose fixtures for more info on these values:
+                "objecttype": UUID("59cdc902-576b-495f-ae63-c9c78b8afc09"),
+                "objecttype_version": 1,
+                "upload_submission_csv": False,
+                "update_existing_object": False,
+                "variables_mapping": [
+                    {
+                        "variable_key": "partners",
+                        "target_path": ["partners"],
+                    },
+                ],
+                "transform_to_list": [],
+                "iot_attachment": "",
+                "iot_submission_csv": "",
+                "iot_submission_report": "",
+            }
+        )
+
+        assert serializer.is_valid()
+
+        v2_options: RegistrationOptionsV2 = serializer.validated_data
+
+        prefill_variables(submission)
+
+        handler = ObjectsAPIV2Handler()
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(
+            data,
+            {
+                "partners": [
+                    {
+                        "bsn": "999995182",
+                        "initials": "A.M.P.",
+                        "affixes": "",
+                        "lastName": "Jansma",
+                        "dateOfBirth": "1945-04-18",
+                    },
+                    {
+                        "bsn": "123456782",
+                        "initials": "T.s.p.",
+                        "affixes": "",
+                        "lastName": "Test",
+                        "dateOfBirth": "1945-04-18",
+                    },
+                ]
+            },
+        )
 
 
 class V2HandlerTests(TestCase):
