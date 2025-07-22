@@ -1,15 +1,23 @@
-from django.test import TestCase
+from datetime import date, datetime, time
+
+from django.test import SimpleTestCase
 from django.utils.translation import gettext_lazy as _
 
 from ...service import format_value
 from .utils import load_json
 
 
-class DefaultFormatterTestCase(TestCase):
+class DefaultFormatterTestCase(SimpleTestCase):
     def test_formatters(self):
         # TODO ditch all_components*.json stuff after #1301 is fixed
         all_components = load_json("all_components.json")["components"]
         data = load_json("all_components_data.json")
+
+        # Submission data should be native Python objects
+        data["date"] = date.fromisoformat(data["date"])
+        data["time"] = time.fromisoformat(data["time"])
+        data["dateTime"] = datetime.fromisoformat(data["dateTime"])
+
         expected = {
             "bsn": "123456782",
             "date": "24 december 2021",
@@ -59,7 +67,8 @@ class DefaultFormatterTestCase(TestCase):
         )
         time_component["multiple"] = True
 
-        data = ["16:26:00", "8:42:00", "23:01:00"]
+        # The data we pass to the formatter should be native Python objects
+        data = [time(16, 26), time(8, 42), time(23, 1)]
 
         formatted = format_value(time_component, data)
 

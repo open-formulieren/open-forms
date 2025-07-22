@@ -1,7 +1,7 @@
+from datetime import time
 from typing import Any
 
 from django.template.defaultfilters import time as fmt_time, yesno
-from django.utils.dateparse import parse_time
 from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
@@ -60,8 +60,8 @@ class EmailFormatter(FormatterBase):
 
 
 class TimeFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_time(parse_time(value))
+    def format(self, component: Component, value: time | None) -> str:
+        return fmt_time(value)
 
 
 class PhoneNumberFormatter(FormatterBase):
