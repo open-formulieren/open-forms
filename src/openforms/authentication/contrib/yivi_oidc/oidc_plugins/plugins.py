@@ -1,5 +1,6 @@
 import base64
 import json
+from collections.abc import Iterable
 from copy import deepcopy
 from itertools import chain
 
@@ -52,6 +53,32 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         # Not used
         return False
 
+    def get_sensitive_claims(self, request: HttpRequest) -> list[list[str]]:
+        config = self.get_config()
+
+        sensitive_claims = [
+            config.options["identity_settings"]["bsn_claim_path"],
+            config.options["identity_settings"]["kvk_claim_path"],
+            config.options["identity_settings"]["pseudo_claim_path"],
+        ]
+
+        additional_attributes = self.get_additional_attributes(request)
+
+        # All claims that we receive, that where part of the Yivi additional attributes,
+        # should be marked as sensitive. As all Yivi claims *could* be sensitive, let's
+        # handle them all as such.
+        sensitive_claims.extend(
+            [
+                # The attribute is a path in the claim, but it is expressed as a string instead
+                # of an array like the other paths in the claims. So we make it an array
+                # for compatibility with the claim paths configured in the OIDCClient
+                [attribute]
+                for attribute in list(chain.from_iterable(additional_attributes))
+            ]
+        )
+
+        return sensitive_claims
+
     def get_or_create_user(
         self,
         access_token: str,
@@ -66,7 +93,9 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         actual Django user.
         """
         assert payload, "Empty claims should have been blocked earlier"
-        obfuscated_claims = obfuscate_claims(payload, self.get_sensitive_claims())
+        obfuscated_claims = obfuscate_claims(
+            payload, self.get_sensitive_claims(request)
+        )
 
         log = logger.bind(claims=obfuscated_claims)
         log.debug("received_oidc_claims")
@@ -136,22 +165,28 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
 
         return auth_backend.options
 
-    def extract_additional_claims(
-        self, request: HttpRequest, claims: JSONObject
-    ) -> JSONObject:
+    def get_additional_attributes(
+        self, request: HttpRequest
+    ) -> Iterable[Iterable[AttributeGroup]]:
         return_url = request.session.get(_RETURN_URL_SESSION_KEY, "")
         return_path = furl(return_url).path
         _, _, kwargs = resolve(str(return_path))
 
         auth_backend_options = self._get_auth_backend_options(kwargs.get("slug"))
         if auth_backend_options is None:
-            return {}
+            return []
 
-        attributes_to_add = AttributeGroup.objects.filter(
+        attributes = AttributeGroup.objects.filter(
             name__in=(auth_backend_options or {}).get(
                 "additional_attributes_groups", []
             )
         ).values_list("attributes", flat=True)
+        return attributes
+
+    def extract_additional_claims(
+        self, request: HttpRequest, claims: JSONObject
+    ) -> JSONObject:
+        attributes_to_add = self.get_additional_attributes(request)
 
         return {
             attribute: claims[attribute]

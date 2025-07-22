@@ -396,6 +396,50 @@ class YiviPluginExtractAdditionalClaimsTest(TestCase):
 
         self.assertEqual(extracted_claims, {"firstname": "bob"})
 
+    @mock_get_random_string()
+    @mock_oidc_client(
+        OIDC_YIVI_IDENTIFIER,
+        overrides={
+            "options.identity_settings.bsn_claim_path": ["test.attribute.bsn"],
+            "options.identity_settings.kvk_claim_path": ["test.attribute.kvk"],
+            "options.identity_settings.pseudo_claim_path": ["test.attribute.pseudo"],
+        },
+    )
+    def test_all_configured_additional_attributes_are_present_in_the_get_sensitive_claims(
+        self,
+    ):
+        AttributeGroupFactory(
+            name="know_attributes", attributes=["firstname", "lastname"]
+        )
+        AttributeGroupFactory(name="know_attributes_2", attributes=["dob"])
+        request = self._setup_form(
+            options={
+                "authentication_options": [],
+                "additional_attributes_groups": [
+                    "know_attributes",
+                    "know_attributes_2",
+                ],
+                "bsn_loa": "",
+                "kvk_loa": "",
+            }
+        )
+
+        yivi_oidc_plugin = oidc_registry[OIDC_YIVI_IDENTIFIER]
+
+        sensitive_claims = yivi_oidc_plugin.get_sensitive_claims(request)
+
+        self.assertEqual(
+            sensitive_claims,
+            [
+                ["test.attribute.bsn"],
+                ["test.attribute.kvk"],
+                ["test.attribute.pseudo"],
+                ["firstname"],
+                ["lastname"],
+                ["dob"],
+            ],
+        )
+
 
 class YiviPluginCheckRequirementsTest(TestCase):
     """

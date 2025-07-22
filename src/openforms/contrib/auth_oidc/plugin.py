@@ -93,7 +93,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
             "fields": {},
         }
 
-    def transform_claims(self, normalized_claims: T) -> FormAuth:
+    def transform_claims(self, options: OptionsT, normalized_claims: T) -> FormAuth:
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
     def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
@@ -106,7 +106,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
 
         normalized_claims: T | None = request.session.get(self.oidc_plugin_identifier)
         if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
-            form_auth = self.transform_claims(normalized_claims)
+            form_auth = self.transform_claims(options, normalized_claims)
             request.session[FORM_AUTH_SESSION_KEY] = form_auth
 
         return HttpResponseRedirect(form_url)

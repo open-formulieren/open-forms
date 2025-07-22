@@ -385,7 +385,13 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
         return EIDAS_SCHEMA
 
     def get_sensitive_claims(self) -> list[list[str]]:
-        return []
+        config = self.get_config()
+
+        return [
+            config.options["identity_settings"]["legal_subject_identifier_claim_path"],
+            config.options["identity_settings"]["legal_subject_first_name_claim_path"],
+            config.options["identity_settings"]["legal_subject_family_name_claim_path"],
+        ]
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
@@ -441,7 +447,16 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
         return EIDAS_COMPANY_SCHEMA
 
     def get_sensitive_claims(self) -> list[list[str]]:
-        return []
+        config = self.get_config()
+
+        return [
+            config.options["identity_settings"]["legal_subject_identifier_claim_path"],
+            config.options["identity_settings"]["acting_subject_identifier_claim_path"],
+            config.options["identity_settings"]["acting_subject_first_name_claim_path"],
+            config.options["identity_settings"][
+                "acting_subject_family_name_claim_path"
+            ],
+        ]
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
