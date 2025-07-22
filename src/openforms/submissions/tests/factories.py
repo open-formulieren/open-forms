@@ -312,6 +312,8 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
                 key=variable.key,
                 value=step_data[variable.key],
                 configuration=configuration,
+                data_type=variable.data_type,
+                data_subtype=variable.data_subtype,
             )
 
         if hasattr(submission_step.submission, "_variables_state"):
@@ -391,8 +393,7 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         ).first()
         if not submission_variable:
             submission_variable = SubmissionValueVariableFactory.create(
-                submission=submission,
-                key=form_key,
+                submission=submission, key=form_key, data_type=form_variable.data_type
             )
 
         file_attachment.submission_variable = submission_variable

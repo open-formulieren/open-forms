@@ -155,7 +155,7 @@ class SubmissionValueVariablesState:
                 continue
             submission_value_variable.form_variable = all_form_variables[variable_key]
 
-        # finally, add in the unsaved variables from defualt values
+        # finally, add in the unsaved variables from default values
         for variable_key, form_variable in all_form_variables.items():
             # if the key exists from the saved values in the DB, do nothing
             if variable_key in all_submission_variables:
@@ -174,6 +174,8 @@ class SubmissionValueVariablesState:
                 value=form_variable.get_initial_value(),
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
                 configuration=configuration,
+                data_type=form_variable.data_type,
+                data_subtype=form_variable.data_subtype,
             )
             unsaved_submission_var.form_variable = form_variable
             all_submission_variables[variable_key] = unsaved_submission_var
@@ -349,6 +351,22 @@ class SubmissionValueVariable(models.Model):
         blank=True,
         default=dict,
     )
+    data_type = models.CharField(
+        verbose_name=_("data type"),
+        help_text=_("The type of the value that will be associated with this variable"),
+        choices=FormVariableDataTypes.choices,
+        max_length=50,
+    )
+    data_subtype = models.CharField(
+        verbose_name=_("data subtype"),
+        help_text=_(
+            "This field represents the data type of the values inside the container "
+            "for components that are configured as 'multiple'."
+        ),
+        choices=FormVariableDataTypes.choices,
+        max_length=50,
+        blank=True,
+    )
 
     objects = SubmissionValueVariableManager()
 
@@ -381,30 +399,11 @@ class SubmissionValueVariable(models.Model):
         if value is None:
             return None
 
-        # it's possible a submission value variable exists without the form variable
-        # being present, e.g. existing submissions for which the form is modified after
-        # the submission is created (like removing a form step, which cascade deletes
-        # the related form variables).
-        # In those situations, we can't do anything meaningful.
-        if self.form_variable is None:
-            logger.debug(
-                "missing_form_variable",
-                action="submissions.convert_value_to_python",
-                submission_id=self.submission_id,
-                key=self.key,
-                submission_value_id=self.pk,
-            )
-            return value
-
-        # we expect JSON types to have been properly stored (and thus not as string!)
-        data_type = self.form_variable.data_type
-        data_subtype = self.form_variable.data_subtype
-
-        if not data_subtype:
-            return self._value_to_python(value, data_type)
+        if not self.data_subtype:
+            return self._value_to_python(value, self.data_type)
         else:
-            assert data_type == FormVariableDataTypes.array
-            return [self._value_to_python(v, data_subtype) for v in value]
+            assert self.data_type == FormVariableDataTypes.array
+            return [self._value_to_python(v, self.data_subtype) for v in value]
 
     @staticmethod
     def _value_to_python(value: VariableValue, data_type: str) -> VariableValue:
