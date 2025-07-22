@@ -1,9 +1,8 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
-from datetime import date
+from datetime import date, datetime
 from typing import NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
-from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -14,16 +13,13 @@ from .base import FormatterBase
 
 
 class DateFormatter(FormatterBase):
-    def format(self, component: Component, value: str | date | None) -> str:
-        if isinstance(value, str):
-            value = parse_date(value)
+    def format(self, component: Component, value: date | None) -> str:
         return fmt_date(value)
 
 
 class DateTimeFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        parsed_value = parse_datetime(value)
-        return f"{fmt_date(parsed_value)} {fmt_time(parsed_value, 'H:i')}"
+    def format(self, component: Component, value: datetime | None) -> str:
+        return f"{fmt_date(value)} {fmt_time(value, 'H:i')}"
 
 
 type MapValue = PointGeometry | LineStringGeometry | PolygonGeometry
