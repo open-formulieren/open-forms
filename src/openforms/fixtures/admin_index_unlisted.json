@@ -28,6 +28,5 @@
     "stuf_zds.StufZDSConfig",
     "suwinet.SuwinetConfig",
     "upgrade_check.Version",
-    "upgrades.VersionInfo",
     "zgw_apis.ZGWApiGroupConfig"
 ]
