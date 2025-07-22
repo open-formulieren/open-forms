@@ -276,7 +276,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 for partner in zaak_data[RegistrationAttribute.partners]:
                     partner.update(
                         {
-                            "dateOfBirth": partner["dateOfBirth"].replace("-", ""),
+                            "dateOfBirth": partner["dateOfBirth"].strftime("%Y%m%d"),
                             "prefilled": bool(submission_variable),
                         }
                     )

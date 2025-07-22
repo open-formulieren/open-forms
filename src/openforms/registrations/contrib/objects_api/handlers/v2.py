@@ -161,6 +161,8 @@ def process_mapped_variable(
             for partner in value:
                 assert isinstance(partner, dict)
 
+                partner["dateOfBirth"] = partner["dateOfBirth"].isoformat()
+
                 # these are not relevant for the object (at least for now)
                 partner.pop("firstNames", None)
                 partner.pop("dateOfBirthPrecision", None)

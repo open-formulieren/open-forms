@@ -405,8 +405,7 @@ class SubmissionValueVariable(models.Model):
             assert self.data_type == FormVariableDataTypes.array
             return [self._value_to_python(v, self.data_subtype) for v in value]
 
-    @staticmethod
-    def _value_to_python(value: VariableValue, data_type: str) -> VariableValue:
+    def _value_to_python(self, value: VariableValue, data_type: str) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,
@@ -449,5 +448,15 @@ class SubmissionValueVariable(models.Model):
             if isinstance(value, time):
                 return value
             return parse_time(value)
+
+        if value and data_type == FormVariableDataTypes.partners:
+            # This is a work-around to convert the date of birth string into a date
+            # object. For now, we always expect the ``dateOfBirthPrecision`` to be
+            # 'date', so we cast to a date object. This might cause problems in the
+            # future when we do support different precisions.
+            value["dateOfBirth"] = self._value_to_python(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
 
         return value

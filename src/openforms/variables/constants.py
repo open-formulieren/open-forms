@@ -21,6 +21,9 @@ class FormVariableDataTypes(models.TextChoices):
     datetime = "datetime", _("Datetime")
     time = "time", _("Time")
     date = "date", _("Date")
+    # This should only be used as a data subtype, and is a work-around to enable
+    # converting the partners submission data to native Python types
+    partners = "partners", _("Partners")
 
 
 class ServiceFetchMethods(models.TextChoices):
