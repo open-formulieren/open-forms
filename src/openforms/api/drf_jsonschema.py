@@ -11,10 +11,15 @@ from drf_jsonschema_serializer.converters import (
     BooleanFieldConverter,
     PrimaryKeyRelatedFieldConverter,
     SerializerJSONFieldConverter,
+    StringRelatedFieldConverter,
 )
 from rest_framework import serializers
 
-from .fields import JSONFieldWithSchema, PrimaryKeyRelatedAsChoicesField
+from .fields import (
+    JSONFieldWithSchema,
+    PrimaryKeyRelatedAsChoicesField,
+    SlugRelatedAsChoicesField,
+)
 
 
 @converter
@@ -32,6 +37,33 @@ class PrimaryKeyRelatedAsChoicesFieldConverter(PrimaryKeyRelatedFieldConverter):
         enum_names: list[str] = []
         for obj in field.queryset:
             enum.append(obj.pk)
+            enum_names.append(str(obj))
+
+        result["enum"] = enum
+        result["enumNames"] = enum_names
+
+        if field.allow_null:
+            result["enum"].insert(0, None)
+            result["enumNames"].insert(0, "-------")
+
+        return result
+
+
+@converter
+class SlugRelatedAsChoicesFieldConverter(StringRelatedFieldConverter):
+    field_class = SlugRelatedAsChoicesField
+
+    def convert(self, field) -> dict[str, Any]:
+        result: dict[str, Any] = super().convert(field)
+
+        # https://react-jsonschema-form.readthedocs.io/en/latest/usage/single/#custom-labels-for-enum-fields
+        # enumNames is not JSON-schema compliant, but works with rjfs library.
+
+        # output the options as enum
+        enum: list[str | None] = []
+        enum_names: list[str] = []
+        for obj in field.queryset:
+            enum.append(getattr(obj, field.slug_field, None))
             enum_names.append(str(obj))
 
         result["enum"] = enum

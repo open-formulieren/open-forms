@@ -2709,6 +2709,11 @@
     "description": "Display main website link help text",
     "originalDefault": "Whether to show a link to the main website on the confirmation page."
   },
+  "kDmazg": {
+    "defaultMessage": "Plugin configuration: Worldline",
+    "description": "Worldline options modal title",
+    "originalDefault": "Plugin configuration: Worldline"
+  },
   "kHn5Yw": {
     "defaultMessage": "Edit definition",
     "description": "JSON editor: edit value definition",
@@ -2923,6 +2928,11 @@
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
+  },
+  "obB1ik": {
+    "defaultMessage": "Which merchant should be used for payments related to this form.",
+    "description": "Worldline payment options 'merchant' help text",
+    "originalDefault": "Which merchant should be used for payments related to this form."
   },
   "oqv4fM": {
     "defaultMessage": "The prefill values will be taken from an object of the selected type.",
@@ -3368,6 +3378,11 @@
     "defaultMessage": "Submission confirmation template",
     "description": "Submission confirmation fieldset title",
     "originalDefault": "Submission confirmation template"
+  },
+  "xTcRPO": {
+    "defaultMessage": "Merchant",
+    "description": "Worldline payment options 'merchant' label",
+    "originalDefault": "Merchant"
   },
   "xTfMk5": {
     "defaultMessage": "Translation enabled",

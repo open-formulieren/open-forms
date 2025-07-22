@@ -677,6 +677,10 @@ odfpy==1.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   tablib
+onlinepayments-sdk-python3==5.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 openapi-schema-validator==0.6.2
     # via
     #   -c requirements/ci.txt
@@ -907,6 +911,7 @@ requests==2.32.4
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   onlinepayments-sdk-python3
     #   prance
     #   requests-file
     #   requests-mock
@@ -933,6 +938,7 @@ requests-toolbelt==1.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   onlinepayments-sdk-python3
     #   zeep
 rfc3339-validator==0.1.4
     # via

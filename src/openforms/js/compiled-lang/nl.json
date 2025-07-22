@@ -5757,6 +5757,12 @@
       "value": "Foutmelding"
     }
   ],
+  "kDmazg": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Worldline"
+    }
+  ],
   "kHn5Yw": [
     {
       "type": 0,
@@ -6225,6 +6231,12 @@
     {
       "type": 0,
       "value": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden."
+    }
+  ],
+  "obB1ik": [
+    {
+      "type": 0,
+      "value": "Which merchant should be used for payments related to this form."
     }
   ],
   "oqv4fM": [
@@ -7155,6 +7167,12 @@
     {
       "type": 0,
       "value": "Sjabloon bevestigingspagina"
+    }
+  ],
+  "xTcRPO": [
+    {
+      "type": 0,
+      "value": "Merchant"
     }
   ],
   "xTfMk5": [
