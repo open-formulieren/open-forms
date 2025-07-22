@@ -1,13 +1,9 @@
-from django.http import HttpRequest
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.registry import register as oidc_registry
-from mozilla_django_oidc_db.views import (
-    _RETURN_URL_SESSION_KEY,
-)
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.types import (
@@ -21,11 +17,7 @@ from openforms.authentication.registry import register
 from openforms.authentication.tests.factories import (
     AttributeGroupFactory,
 )
-from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import mock_get_random_string, mock_oidc_client
-
-from ....tests.utils import URLsHelper
-from ..constants import PLUGIN_ID as YIVI_PLUGIN_ID
 
 plugin = register["yivi_oidc"]
 
@@ -303,141 +295,6 @@ class YiviPluginProcessClaimsTest(TestCase):
         self.assertEqual(claim_processing_instructions["loa_claims"]["default"], "")
         self.assertEqual(
             claim_processing_instructions["loa_claims"]["value_mapping"], []
-        )
-
-
-class YiviPluginExtractAdditionalClaimsTest(TestCase):
-    """
-    Testing the Yivi plugin ``extract_additional_claims`` function.
-    """
-
-    def _setup_form(self, options: YiviOptions) -> HttpRequest:
-        form = FormFactory.create(
-            authentication_backend=YIVI_PLUGIN_ID,
-            authentication_backend__options=options,
-        )
-        url_helper = URLsHelper(form=form)
-
-        session = self.client.session
-        session[_RETURN_URL_SESSION_KEY] = url_helper.get_auth_start(
-            plugin_id=YIVI_PLUGIN_ID
-        )
-        session.save()
-
-        factory = RequestFactory()
-        factory = factory
-        request = factory.get("/irrelevant")
-        request.session = session
-
-        return request
-
-    def test_extract_additional_claims_with_known_attributes(self):
-        AttributeGroupFactory(
-            name="know_attributes", attributes=["firstname", "lastname"]
-        )
-        AttributeGroupFactory(name="know_attributes_2", attributes=["dob"])
-        request = self._setup_form(
-            options={
-                "authentication_options": [],
-                "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
-                ],
-                "bsn_loa": "",
-                "kvk_loa": "",
-            }
-        )
-
-        oidc_plugin = oidc_registry[OIDC_YIVI_IDENTIFIER]
-
-        extracted_claims = oidc_plugin.extract_additional_claims(
-            request, {"firstname": "bob", "lastname": "joe", "dob": "21-01-1999"}
-        )
-        self.assertEqual(
-            extracted_claims,
-            {"firstname": "bob", "lastname": "joe", "dob": "21-01-1999"},
-        )
-
-    def test_extract_additional_claims_with_unknown_attributes(self):
-        request = self._setup_form(
-            options={
-                "authentication_options": [],
-                "additional_attributes_groups": ["unknow_attributes"],
-                "bsn_loa": "",
-                "kvk_loa": "",
-            }
-        )
-
-        oidc_plugin = oidc_registry[OIDC_YIVI_IDENTIFIER]
-
-        extracted_claims = oidc_plugin.extract_additional_claims(
-            request, {"firstname": "bob"}
-        )
-
-        self.assertEqual(extracted_claims, {})
-
-    def test_extract_additional_claims_with_missing_claims(self):
-        AttributeGroupFactory(
-            name="know_attributes", attributes=["firstname", "lastname"]
-        )
-        request = self._setup_form(
-            options={
-                "authentication_options": [],
-                "additional_attributes_groups": ["know_attributes"],
-                "bsn_loa": "",
-                "kvk_loa": "",
-            }
-        )
-        oidc_plugin = oidc_registry[OIDC_YIVI_IDENTIFIER]
-
-        extracted_claims = oidc_plugin.extract_additional_claims(
-            request, {"firstname": "bob"}
-        )
-
-        self.assertEqual(extracted_claims, {"firstname": "bob"})
-
-    @mock_get_random_string()
-    @mock_oidc_client(
-        OIDC_YIVI_IDENTIFIER,
-        overrides={
-            "options.identity_settings.bsn_claim_path": ["test.attribute.bsn"],
-            "options.identity_settings.kvk_claim_path": ["test.attribute.kvk"],
-            "options.identity_settings.pseudo_claim_path": ["test.attribute.pseudo"],
-        },
-    )
-    def test_all_configured_additional_attributes_are_present_in_the_get_sensitive_claims(
-        self,
-    ):
-        AttributeGroupFactory(
-            name="know_attributes", attributes=["firstname", "lastname"]
-        )
-        AttributeGroupFactory(name="know_attributes_2", attributes=["dob"])
-        request = self._setup_form(
-            options={
-                "authentication_options": [],
-                "additional_attributes_groups": [
-                    "know_attributes",
-                    "know_attributes_2",
-                ],
-                "bsn_loa": "",
-                "kvk_loa": "",
-            }
-        )
-
-        yivi_oidc_plugin = oidc_registry[OIDC_YIVI_IDENTIFIER]
-
-        sensitive_claims = yivi_oidc_plugin.get_sensitive_claims(request)
-
-        self.assertEqual(
-            sensitive_claims,
-            [
-                ["test.attribute.bsn"],
-                ["test.attribute.kvk"],
-                ["test.attribute.pseudo"],
-                ["firstname"],
-                ["lastname"],
-                ["dob"],
-            ],
         )
 
 

@@ -134,7 +134,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             self.get_claim_processing_instructions(request, claims, config),
             # Yivi cannot be strict, as all its attributes should be optional!
             strict=False,
-            legacy=True,
+            legacy=False,
         )
 
     def process_claims(self, request: HttpRequest, claims: JSONObject) -> JSONObject:
@@ -205,7 +205,21 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
 
         claim_processing_instruction: ClaimProcessingInstructions = {
             "always_required_claims": [],
-            "optional_claims": [],
+            "optional_claims": [
+                # Yivi doesn't run in legacy mode
+                {
+                    "path": config.options["identity_settings"]["bsn_claim_path"],
+                    "legacy": "",
+                },
+                {
+                    "path": config.options["identity_settings"]["kvk_claim_path"],
+                    "legacy": "",
+                },
+                {
+                    "path": config.options["identity_settings"]["pseudo_claim_path"],
+                    "legacy": "",
+                },
+            ],
             "strict_required_claims": [],
             "loa_claims": {"default": "", "claim_path": [], "value_mapping": []},
         }

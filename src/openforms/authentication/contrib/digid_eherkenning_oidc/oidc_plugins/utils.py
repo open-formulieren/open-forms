@@ -153,7 +153,7 @@ def process_claims(
         add_to_claims(processed_claims, claim_path, value)
 
     # Add LoA claims
-    loa_claim_path = config.options["loa_settings"]["claim_path"]
+    loa_claim_path = claim_processing_instructions["loa_claims"]["claim_path"]
     try:
         loa = _process_loa(claims, claim_processing_instructions)
     except NoLOAClaim as exc:
