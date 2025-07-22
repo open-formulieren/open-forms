@@ -475,6 +475,11 @@ idna==3.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests
+importlib-metadata==8.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-api
 inflection==0.5.1
     # via
     #   -c requirements/base.txt
@@ -618,6 +623,48 @@ openpyxl==3.1.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+opentelemetry-api==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-instrumentation==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+opentelemetry-instrumentation-django==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-wsgi==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+opentelemetry-sdk==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-semantic-conventions==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+    #   opentelemetry-sdk
+opentelemetry-util-http==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
 orderedmultidict==1.0.1
     # via
     #   -c requirements/base.txt
@@ -627,6 +674,7 @@ packaging==23.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   opentelemetry-instrumentation
     #   prance
 pathable==0.4.3
     # via
@@ -929,6 +977,9 @@ typing-extensions==4.12.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
+    #   opentelemetry-api
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   psycopg
     #   pydantic
     #   pydantic-core
@@ -996,6 +1047,7 @@ wrapt==1.15.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   elastic-apm
+    #   opentelemetry-instrumentation
 xlrd==2.0.1
     # via
     #   -c requirements/base.txt
@@ -1026,6 +1078,11 @@ zgw-consumers==0.38.0
     #   -r requirements/base.txt
     #   open-forms-ext-haalcentraal-hr
     #   open-forms-ext-token-exchange
+zipp==3.23.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   importlib-metadata
 zopfli==0.2.3
     # via
     #   -c requirements/base.txt
