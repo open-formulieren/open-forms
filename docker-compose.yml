@@ -11,8 +11,6 @@
 # Before deploying to production, please review the environment configuration reference:
 # https://open-forms.readthedocs.io/en/latest/installation/config.html
 #
-version: '3.4'
-
 x-labels: &x-labels
   client: dev
   target: test
@@ -188,6 +186,16 @@ services:
     depends_on:
       - redis
       - celery
+    networks:
+      - open-forms-dev
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: --config=/etc/otel-collector-config.yaml
+    volumes:
+      - ./docker/otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
+    ports:
+      - 4317:4317
     networks:
       - open-forms-dev
 
