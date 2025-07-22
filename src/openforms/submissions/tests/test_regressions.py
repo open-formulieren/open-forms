@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.test import TestCase, override_settings, tag
 
 from openforms.forms.models import FormDefinition, FormVersion
@@ -56,7 +58,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                 {
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
-                    "someDate": "2022-11-03",
+                    "someDate": date(2022, 11, 3),
                 },
             )
             renderer = Renderer(
@@ -77,7 +79,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -141,7 +143,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -204,7 +206,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
