@@ -2,6 +2,7 @@ from django.db import transaction
 from django.utils import timezone
 
 import structlog
+from opentelemetry import metrics
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -15,6 +16,12 @@ from ..tokens import submission_status_token_generator
 from ..utils import persist_user_defined_variables, remove_submission_from_session
 
 logger = structlog.stdlib.get_logger(__name__)
+meter = metrics.get_meter("openforms.submissions")
+
+completion_counter = meter.create_counter(
+    "form.submission.completions",
+    description="The number of form submissions completed by end users",
+)
 
 
 class SubmissionCompletionMixin:
@@ -65,6 +72,16 @@ class SubmissionCompletionMixin:
                 "api:submission-status",
                 kwargs={"uuid": submission.uuid, "token": token},
             )
+        )
+
+        form = submission.form
+        completion_counter.add(
+            1,
+            {
+                "form.uuid": str(form.uuid),
+                "form.name": str(form.name),
+                "form.internal_name": str(form.internal_name),
+            },
         )
 
         return status_url
