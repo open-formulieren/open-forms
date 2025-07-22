@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import structlog
 from glom import Path, PathAccessError, assign, glom
-from mozilla_django_oidc_db.models import OIDCClient
 from mozilla_django_oidc_db.typing import JSONObject
 
 from ...org_oidc.plugin import OIDCAuthentication as OrgOIDCAuthentication
 from ..plugin import OIDCAuthentication
-from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
+from .types import ClaimPathDetails, ClaimProcessingInstructions
 
 if TYPE_CHECKING:
     from .plugins import BaseDigiDeHerkenningPlugin
@@ -24,10 +23,8 @@ class NoLOAClaim(Exception):
 
 def process_claims(
     claims: JSONObject,
-    config: OIDCClient,
     claim_processing_instructions: ClaimProcessingInstructions,
     strict: bool = True,
-    legacy: bool = False,
 ) -> JSONObject:
     """
     Given the raw claims, process them using the provided config.
@@ -77,31 +74,19 @@ def process_claims(
             return {
                 "always_required_claims": [
                     {
-                        "path": config.options["bsn_path"],
-                        "legacy": "bsn_claim"
+                        "path_in_claim": config.options["bsn_path"],
+                        "processed_path": ["bsn_claim"]
                     }
                 ],
                 "strict_required_claims": [
                     {
-                        "path": config.options["user_info"]["pet_path"],
-                        "legacy": "pet"
+                        "path_in_claim": config.options["user_info"]["pet_path"],
+                        "processed_path": ["pet"]
                     }
                 ],
             }
 
-    The resulting processed claim will be (in non-legacy mode):
-
-    .. code:: json
-
-       {
-           "bsn": "123456782",
-           "user": {
-               "pet": "cat",
-           },
-           "loa": "urn:etoegang:core:assurance-class:loa1"
-       }
-
-    While in legacy mode, this will give:
+    The resulting processed claim will be:
 
     .. code:: json
 
@@ -113,47 +98,48 @@ def process_claims(
     """
     processed_claims = {}
 
-    def add_to_claims(
-        processed_claims: dict, claim_path: ClaimPathWithLegacy, value: JSONObject
+    def _process_claim(
+        claim_path: ClaimPathDetails,
+        type_claim: Literal[
+            "always_required_claims", "strict_required_claims", "optional_claims"
+        ],
     ) -> None:
-        path_in_processed_claim = (
-            Path(claim_path["legacy"]) if legacy else Path(*claim_path["path"])
+        try:
+            value = glom(claims, Path(*claim_path["path_in_claim"]))
+        except PathAccessError as exc:
+            claim_repr = " > ".join(claim_path["path_in_claim"])
+
+            match type_claim:
+                case "always_required_claims":
+                    raise ValueError(
+                        f"Required claim '{claim_repr}' not found"
+                    ) from exc
+                case "strict_required_claims":
+                    if not strict:
+                        return
+                    raise ValueError(
+                        f"Required claim '{claim_repr}' not found"
+                    ) from exc
+                case "optional_claims":
+                    return
+
+        assign(
+            processed_claims, Path(*claim_path["processed_path"]), value, missing=dict
         )
-        assign(processed_claims, path_in_processed_claim, value, missing=dict)
 
     # Check claims that are required also in lax mode
     for claim_path in claim_processing_instructions["always_required_claims"]:
-        try:
-            value = glom(claims, Path(*claim_path["path"]))
-        except PathAccessError as exc:
-            claim_repr = " > ".join(claim_path["path"])
-            raise ValueError(f"Required claim '{claim_repr}' not found") from exc
-
-        add_to_claims(processed_claims, claim_path, value)
+        _process_claim(claim_path=claim_path, type_claim="always_required_claims")
 
     # Check the other required claims, here we only raise an error if we are running in strict mode
     for claim_path in claim_processing_instructions["strict_required_claims"]:
-        try:
-            value = glom(claims, Path(*claim_path["path"]))
-        except PathAccessError as exc:
-            if not strict:
-                continue
-            claim_repr = " > ".join(claim_path["path"])
-            raise ValueError(f"Required claim '{claim_repr}' not found") from exc
-
-        add_to_claims(processed_claims, claim_path, value)
+        _process_claim(claim_path=claim_path, type_claim="strict_required_claims")
 
     # Now process any optional claim
     for claim_path in claim_processing_instructions["optional_claims"]:
-        try:
-            value = glom(claims, Path(*claim_path["path"]))
-        except PathAccessError:
-            continue
-
-        add_to_claims(processed_claims, claim_path, value)
+        _process_claim(claim_path=claim_path, type_claim="optional_claims")
 
     # Add LoA claims
-    loa_claim_path = config.options["loa_settings"]["claim_path"]
     try:
         loa = _process_loa(claims, claim_processing_instructions)
     except NoLOAClaim as exc:
@@ -161,8 +147,10 @@ def process_claims(
             "Missing LoA claim, excluding it from processed claims", exc_info=exc
         )
     else:
-        path_in_processed_claim = Path("loa_claim") if legacy else Path(*loa_claim_path)
-        assign(processed_claims, path_in_processed_claim, loa)
+        processed_path = glom(
+            claim_processing_instructions, "loa_claims.processed_path", default=None
+        )
+        assign(processed_claims, Path(*processed_path), loa)
 
     return processed_claims
 
@@ -174,7 +162,7 @@ def _process_loa(
     if (
         not (
             loa_claim_path := glom(
-                claim_processing_instructions, "loa_claims.claim_path", default=None
+                claim_processing_instructions, "loa_claims.path_in_claim", default=None
             )
         )
         and not default
@@ -222,10 +210,7 @@ def get_of_auth_plugin(
         if not hasattr(plugin, "oidc_plugin_identifier"):
             continue
 
-        if (
-            hasattr(plugin, "oidc_plugin_identifier")
-            and plugin.oidc_plugin_identifier == oidc_plugin.identifier
-        ):
+        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:
             return plugin
     else:
         raise NoAuthPluginFound()

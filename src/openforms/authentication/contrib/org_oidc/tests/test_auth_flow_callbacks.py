@@ -17,6 +17,9 @@ from django.test import override_settings
 from furl import furl
 
 from openforms.accounts.models import User
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.tests.utils import URLsHelper
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import (
     keycloak_login,
@@ -25,9 +28,6 @@ from openforms.utils.tests.keycloak import (
 )
 from openforms.utils.urls import reverse_plus
 
-from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from ....tests.utils import URLsHelper
-from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from .base import IntegrationTestsBase
 

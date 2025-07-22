@@ -64,7 +64,9 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
-    def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: DigiDClaims
+    ) -> FormAuth:
         return {
             "plugin": self.identifier,
             "attribute": self.provides_auth[0],
@@ -88,7 +90,9 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
-    def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EHClaims
+    ) -> FormAuth:
         acting_subject_identifier_value = normalized_claims.get(
             "acting_subject_claim", ""
         )
@@ -167,7 +171,9 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
             },
         }
 
-    def transform_claims(self, normalized_claims: EIDASClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EIDASClaims
+    ) -> FormAuth:
         legal_subject_identifier_value = normalized_claims[
             "legal_subject_identifier_claim"
         ]
@@ -244,7 +250,9 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
             "mandate": auth_info.mandate_context,
         }
 
-    def transform_claims(self, normalized_claims: EIDASCompanyClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EIDASCompanyClaims
+    ) -> FormAuth:
         acting_subject_identifier_value = normalized_claims[
             "acting_subject_identifier_claim"
         ]
@@ -302,7 +310,9 @@ class DigiDMachtigenOIDCAuthentication(
     oidc_plugin_identifier = OIDC_DIGID_MACHTIGEN_IDENTIFIER
     is_for_gemachtigde = True
 
-    def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: DigiDmachtigenClaims
+    ) -> FormAuth:
         authorizee = normalized_claims["authorizee_bsn_claim"]
         mandate_context = {}
         if "mandate_service_id_claim" in normalized_claims:
@@ -346,7 +356,9 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     oidc_plugin_identifier = OIDC_EH_BEWINDVOERING_IDENTIFIER
     is_for_gemachtigde = True
 
-    def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:
+    def transform_claims(
+        self, options: OptionsT, normalized_claims: EHBewindvoeringClaims
+    ) -> FormAuth:
         authorizee = normalized_claims["legal_subject_claim"]
         # Assume KVK if claim is not present...
         name_qualifier = normalized_claims.get(

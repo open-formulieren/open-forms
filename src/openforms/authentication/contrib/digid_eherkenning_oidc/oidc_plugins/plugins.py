@@ -34,7 +34,7 @@ from .schemas import (
     EIDAS_COMPANY_SCHEMA,
     EIDAS_SCHEMA,
 )
-from .types import ClaimPathWithLegacy, ClaimProcessingInstructions
+from .types import ClaimPathDetails, ClaimProcessingInstructions
 from .utils import process_claims
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -67,27 +67,6 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         return super().get_setting(attr, *args)
 
-    def verify_claims(self, claims: JSONObject) -> bool:
-        """Verify the provided claims to decide if authentication should be allowed."""
-
-        assert claims, "Empty claims should have been blocked earlier"
-        obfuscated_claims = obfuscate_claims(claims, self.get_sensitive_claims())
-
-        log = logger.bind(claims=obfuscated_claims)
-        log.debug("received_oidc_claims")
-
-        # process_claims in strict mode raises ValueError if *required* claims are
-        # missing
-        try:
-            self._process_claims(claims)
-        except ValueError as exc:
-            log.error(
-                "claim_processing_failure", reason="claims_incomplete", exc_info=exc
-            )
-            return False
-
-        return True
-
     def get_or_create_user(
         self,
         access_token: str,
@@ -100,12 +79,29 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
 
         If the claims are valid, we only process them and do not create or update an
         actual Django user.
+
+        We use the payload instead of the user_info to extract the data, because the claims paths
+        configured in the OIDCClient options refer to the structure of the payload and not
+        that of the user_info.
         """
-        # Here we use the payload instead of the user_info, because the claims
-        # configured in the OIDCClient options refer to the structure of the payload and not
-        # that of the user_info.
-        claims_verified = self.verify_claims(payload)
-        if not claims_verified:
+        assert payload, "Empty claims should have been blocked earlier"
+        obfuscated_claims = obfuscate_claims(payload, self.get_sensitive_claims())
+
+        log = logger.bind(claims=obfuscated_claims)
+        log.debug("received_oidc_claims")
+
+        try:
+            # process_claims in strict mode raises ValueError if *required* claims are
+            # missing
+            processed_claims = process_claims(
+                payload,
+                self.get_claim_processing_instructions(),
+                self.strict_mode(),
+            )
+        except ValueError as exc:
+            log.error(
+                "claim_processing_failure", reason="claims_incomplete", exc_info=exc
+            )
             msg = "Claims verification failed"
             # Raise PermissionDenied rather than SuspiciousOperation - this makes it
             # Django stops trying other (OIDC) authentication backends, which fail
@@ -116,23 +112,11 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
             # used for admin OIDC.
             raise PermissionDenied(msg)
 
-        processed_claims = self._process_claims(payload)
         request.session[self.identifier] = processed_claims
 
         user = AnonymousUser()
         user.is_active = True  # type: ignore
         return user
-
-    def _process_claims(self, claims: JSONObject) -> JSONObject:
-        config = self.get_config()
-
-        return process_claims(
-            claims,
-            config,
-            self.get_claim_processing_instructions(),
-            self.strict_mode(),
-            legacy=True,
-        )
 
     def strict_mode(self, request: HttpRequest | None = None) -> bool:
         return bool(flag_enabled("DIGID_EHERKENNING_OIDC_STRICT", request=request))
@@ -163,16 +147,19 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"]["bsn_claim_path"],
-                    "legacy": "bsn_claim",
+                    "path_in_claim": config.options["identity_settings"][
+                        "bsn_claim_path"
+                    ],
+                    "processed_path": ["bsn_claim"],
                 }
             ],
             "strict_required_claims": [],
             "optional_claims": [],
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }
 
@@ -188,31 +175,32 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginPro
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "representee_bsn_claim_path"
                     ],
-                    "legacy": "representee_bsn_claim",
+                    "processed_path": ["representee_bsn_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "authorizee_bsn_claim_path"
                     ],
-                    "legacy": "authorizee_bsn_claim",
+                    "processed_path": ["authorizee_bsn_claim"],
                 },
             ],
             "strict_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "mandate_service_id_claim_path"
                     ],
-                    "legacy": "mandate_service_id_claim",
+                    "processed_path": ["mandate_service_id_claim"],
                 }
             ],
             "optional_claims": [],
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }
 
@@ -236,43 +224,50 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtoc
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
-        optional_claims: list[ClaimPathWithLegacy] = []
+        optional_claims: list[ClaimPathDetails] = []
         if branch_number_claim_path := config.options["identity_settings"].get(
             "branch_number_claim_path"
         ):
             optional_claims.append(
-                {"path": branch_number_claim_path, "legacy": "branch_number_claim"}
+                {
+                    "path_in_claim": branch_number_claim_path,
+                    "processed_path": ["branch_number_claim"],
+                }
             )
 
         if identifier_type_claim_path := config.options["identity_settings"].get(
             "identifier_type_claim_path"
         ):
             optional_claims.append(
-                {"path": identifier_type_claim_path, "legacy": "identifier_type_claim"}
+                {
+                    "path_in_claim": identifier_type_claim_path,
+                    "processed_path": ["identifier_type_claim"],
+                }
             )
 
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_claim_path"
                     ],
-                    "legacy": "legal_subject_claim",
+                    "processed_path": ["legal_subject_claim"],
                 },
             ],
             "strict_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_claim_path"
                     ],
-                    "legacy": "acting_subject_claim",
+                    "processed_path": ["acting_subject_claim"],
                 }
             ],
             "optional_claims": optional_claims,
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }
 
@@ -303,61 +298,68 @@ class OIDCeHerkenningBewindvoeringPlugin(
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
 
-        optional_claims: list[ClaimPathWithLegacy] = []
+        optional_claims: list[ClaimPathDetails] = []
         if branch_number_claim_path := config.options["identity_settings"].get(
             "branch_number_claim_path"
         ):
             optional_claims.append(
-                {"path": branch_number_claim_path, "legacy": "branch_number_claim"}
+                {
+                    "path_in_claim": branch_number_claim_path,
+                    "processed_path": ["branch_number_claim"],
+                }
             )
 
         if identifier_type_claim_path := config.options["identity_settings"].get(
             "identifier_type_claim_path"
         ):
             optional_claims.append(
-                {"path": identifier_type_claim_path, "legacy": "identifier_type_claim"}
+                {
+                    "path_in_claim": identifier_type_claim_path,
+                    "processed_path": ["identifier_type_claim"],
+                }
             )
 
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_claim_path"
                     ],
-                    "legacy": "legal_subject_claim",
+                    "processed_path": ["legal_subject_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "representee_claim_path"
                     ],
-                    "legacy": "representee_claim",
+                    "processed_path": ["representee_claim"],
                 },
             ],
             "strict_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_claim_path"
                     ],
-                    "legacy": "acting_subject_claim",
+                    "processed_path": ["acting_subject_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "mandate_service_id_claim_path"
                     ],
-                    "legacy": "mandate_service_id_claim",
+                    "processed_path": ["mandate_service_id_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "mandate_service_uuid_claim_path"
                     ],
-                    "legacy": "mandate_service_uuid_claim",
+                    "processed_path": ["mandate_service_uuid_claim"],
                 },
             ],
             "optional_claims": optional_claims,
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }
 
@@ -385,7 +387,13 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
         return EIDAS_SCHEMA
 
     def get_sensitive_claims(self) -> list[list[str]]:
-        return []
+        config = self.get_config()
+
+        return [
+            config.options["identity_settings"]["legal_subject_identifier_claim_path"],
+            config.options["identity_settings"]["legal_subject_first_name_claim_path"],
+            config.options["identity_settings"]["legal_subject_family_name_claim_path"],
+        ]
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
@@ -394,43 +402,44 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_identifier_claim_path"
                     ],
-                    "legacy": "legal_subject_identifier_claim",
+                    "processed_path": ["legal_subject_identifier_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_first_name_claim_path"
                     ],
-                    "legacy": "legal_subject_first_name_claim",
+                    "processed_path": ["legal_subject_first_name_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_family_name_claim_path"
                     ],
-                    "legacy": "legal_subject_family_name_claim",
+                    "processed_path": ["legal_subject_family_name_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_date_of_birth_claim_path"
                     ],
-                    "legacy": "legal_subject_date_of_birth_claim",
+                    "processed_path": ["legal_subject_date_of_birth_claim"],
                 },
             ],
             "strict_required_claims": [],
             "optional_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_identifier_type_claim_path"
                     ],
-                    "legacy": "legal_subject_identifier_type_claim",
+                    "processed_path": ["legal_subject_identifier_type_claim"],
                 },
             ],
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }
 
@@ -441,7 +450,16 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
         return EIDAS_COMPANY_SCHEMA
 
     def get_sensitive_claims(self) -> list[list[str]]:
-        return []
+        config = self.get_config()
+
+        return [
+            config.options["identity_settings"]["legal_subject_identifier_claim_path"],
+            config.options["identity_settings"]["acting_subject_identifier_claim_path"],
+            config.options["identity_settings"]["acting_subject_first_name_claim_path"],
+            config.options["identity_settings"][
+                "acting_subject_family_name_claim_path"
+            ],
+        ]
 
     def get_claim_processing_instructions(self) -> ClaimProcessingInstructions:
         config = self.get_config()
@@ -450,60 +468,61 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
         return {
             "always_required_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_name_claim_path"
                     ],
-                    "legacy": "legal_subject_name_claim",
+                    "processed_path": ["legal_subject_name_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "legal_subject_identifier_claim_path"
                     ],
-                    "legacy": "legal_subject_identifier_claim",
+                    "processed_path": ["legal_subject_identifier_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_identifier_claim_path"
                     ],
-                    "legacy": "acting_subject_identifier_claim",
+                    "processed_path": ["acting_subject_identifier_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_first_name_claim_path"
                     ],
-                    "legacy": "acting_subject_first_name_claim",
+                    "processed_path": ["acting_subject_first_name_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_family_name_claim_path"
                     ],
-                    "legacy": "acting_subject_family_name_claim",
+                    "processed_path": ["acting_subject_family_name_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_date_of_birth_claim_path"
                     ],
-                    "legacy": "acting_subject_date_of_birth_claim",
+                    "processed_path": ["acting_subject_date_of_birth_claim"],
                 },
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "mandate_service_id_claim_path"
                     ],
-                    "legacy": "mandate_service_id_claim",
+                    "processed_path": ["mandate_service_id_claim"],
                 },
             ],
             "strict_required_claims": [],
             "optional_claims": [
                 {
-                    "path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "acting_subject_identifier_type_claim_path"
                     ],
-                    "legacy": "acting_subject_identifier_type_claim",
+                    "processed_path": ["acting_subject_identifier_type_claim"],
                 },
             ],
             "loa_claims": {
-                "claim_path": config.options["loa_settings"]["claim_path"],
+                "path_in_claim": config.options["loa_settings"]["claim_path"],
                 "default": config.options["loa_settings"]["default"],
                 "value_mapping": config.options["loa_settings"]["value_mapping"],
+                "processed_path": ["loa_claim"],
             },
         }

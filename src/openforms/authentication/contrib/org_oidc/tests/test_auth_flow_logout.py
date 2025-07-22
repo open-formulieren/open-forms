@@ -19,6 +19,8 @@ from django.test import override_settings
 
 from rest_framework.test import APIRequestFactory
 
+from openforms.authentication.registry import register
+from openforms.authentication.tests.utils import URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import (
     keycloak_login,
@@ -26,8 +28,6 @@ from openforms.utils.tests.keycloak import (
     mock_oidc_client,
 )
 
-from ....registry import register
-from ....tests.utils import URLsHelper
 from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from ..plugin import PLUGIN_IDENTIFIER
 from .base import IntegrationTestsBase

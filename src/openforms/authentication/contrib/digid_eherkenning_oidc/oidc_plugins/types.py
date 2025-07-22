@@ -3,7 +3,7 @@ from typing import NotRequired, TypedDict
 type ClaimPath = list[str]
 
 
-class ClaimPathWithLegacy(TypedDict):
+class ClaimPathDetails(TypedDict):
     """
     When mozilla_django_oidc_db used solo models, the claims
     were remapped to the names of the fields in the configuration
@@ -11,8 +11,8 @@ class ClaimPathWithLegacy(TypedDict):
     the name of the old config field.
     """
 
-    path: ClaimPath
-    legacy: str
+    path_in_claim: ClaimPath
+    processed_path: ClaimPath
 
 
 # Defining this way, because "from" is a reserved python keyword
@@ -22,15 +22,16 @@ LoaValueMapping = TypedDict("LoaValueMapping", {"from": str | int, "to": str})
 class LoaClaimInstructions(TypedDict):
     default: str
     value_mapping: list[LoaValueMapping]
-    claim_path: ClaimPath
+    path_in_claim: ClaimPath
+    processed_path: ClaimPath
 
 
 class ClaimProcessingInstructions(TypedDict):
     # Claims that are ALWAYS required, also in lax mode
-    always_required_claims: list[ClaimPathWithLegacy]
+    always_required_claims: list[ClaimPathDetails]
     # Claims that if missing will raise an error only in strict mode
-    strict_required_claims: list[ClaimPathWithLegacy]
-    optional_claims: list[ClaimPathWithLegacy]
+    strict_required_claims: list[ClaimPathDetails]
+    optional_claims: list[ClaimPathDetails]
     loa_claims: LoaClaimInstructions
 
 

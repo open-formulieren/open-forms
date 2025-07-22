@@ -6,7 +6,6 @@ from mozilla_django_oidc_db.tests.factories import (
     OIDCClientFactory,
 )
 
-from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import mock_oidc_client
 
 from ...oidc_plugins.constants import (
@@ -39,10 +38,15 @@ class ProcessClaimsDigiDTest(TestCase):
             },
         },
     )
-    def test_digid_process_claims_legacy_mode(self):
+    def test_digid_process_claims(self):
         with self.subTest("BSN extraction + transform loa values"):
             claims = {"sub": "XXXXXXX54", "authsp_level": "30", "extra": "irrelevant"}
-            processed_claims = self.plugin._process_claims(claims)
+
+            processed_claims = process_claims(
+                claims,
+                self.plugin.get_claim_processing_instructions(),
+                False,
+            )
 
             self.assertEqual(
                 processed_claims,
@@ -54,7 +58,12 @@ class ProcessClaimsDigiDTest(TestCase):
 
         with self.subTest("BSN extraction + missing loa claim"):
             claims = {"sub": "XXXXXXX54"}
-            processed_claims = self.plugin._process_claims(claims)
+
+            processed_claims = process_claims(
+                claims,
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
 
             self.assertEqual(
                 processed_claims,
@@ -66,7 +75,12 @@ class ProcessClaimsDigiDTest(TestCase):
 
         with self.subTest("BSN extraction + unmapped LOA value"):
             claims = {"sub": "XXXXXXX54", "authsp_level": "20", "extra": "irrelevant"}
-            processed_claims = self.plugin._process_claims(claims)
+
+            processed_claims = process_claims(
+                claims,
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
 
             self.assertEqual(
                 processed_claims,
@@ -85,7 +99,11 @@ class ProcessClaimsDigiDTest(TestCase):
     )
     def test_digid_raises_on_missing_claims(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({"bsn": "XXXXXXX54"})
+            process_claims(
+                {"bsn": "XXXXXXX54"},
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
 
     @mock_oidc_client(
         OIDC_DIGID_IDENTIFIER,
@@ -96,7 +114,11 @@ class ProcessClaimsDigiDTest(TestCase):
         },
     )
     def test_digid_loa_claim_absent_without_default_loa(self):
-        processed_claims = self.plugin._process_claims({"sub": "XXXXXXX54"})
+        processed_claims = process_claims(
+            {"sub": "XXXXXXX54"},
+            self.plugin.get_claim_processing_instructions(),
+            strict=False,
+        )
 
         self.assertEqual(processed_claims, {"bsn_claim": "XXXXXXX54"})
 
@@ -109,8 +131,10 @@ class ProcessClaimsDigiDTest(TestCase):
         },
     )
     def test_digid_loa_claim_not_configured_but_default_set(self):
-        processed_claims = self.plugin._process_claims(
-            {"bsn": "XXXXXXX54", "loa": "ignored"}
+        processed_claims = process_claims(
+            {"bsn": "XXXXXXX54", "loa": "ignored"},
+            self.plugin.get_claim_processing_instructions(),
+            strict=False,
         )
 
         self.assertEqual(
@@ -141,16 +165,18 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
             },
         },
     )
-    def test_process_claims_legacy_mode(self):
+    def test_process_claims(self):
         with self.subTest("BSN extraction + transform loa values"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                     "extra": "irrelevant",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -164,12 +190,14 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
             )
 
         with self.subTest("BSN extraction + missing loa claim"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authorizee": "XXXXXXX99",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -183,14 +211,16 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
             )
 
         with self.subTest("BSN extraction + unmapped LOA value"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "20",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                     "extra": "irrelevant",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -212,36 +242,45 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
             "options.loa_settings.claim_path": ["authsp_level"],
         },
     )
-    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     def test_digid_machtigen_raises_on_missing_claims(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({})
+            process_claims(
+                {},
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "30",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
     @mock_oidc_client(
@@ -255,32 +294,42 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
     )
     def test_lax_mode(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({})
+            process_claims(
+                {},
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "representee": "XXXXXXX54",
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
-        processed_claims = self.plugin._process_claims(
+        processed_claims = process_claims(
             {
                 "representee": "XXXXXXX54",
                 "authorizee": "XXXXXXX99",
                 "authsp_level": "30",
-            }
+            },
+            self.plugin.get_claim_processing_instructions(),
+            strict=False,
         )
 
         self.assertEqual(
@@ -316,9 +365,9 @@ class ProcessClaimsEHTest(TestCase):
             },
         },
     )
-    def test_process_claims_legacy_mode(self):
+    def test_process_claims(self):
         with self.subTest("all claims provided, happy flow"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "namequalifier": "urn:etoegang:1.9:EntityConcernedID:KvKnr",
                     "kvk": "12345678",
@@ -326,7 +375,9 @@ class ProcessClaimsEHTest(TestCase):
                     "vestiging": "123456789012",
                     "loa": "urn:etoegang:core:assurance-class:loa2plus",
                     "extra": "ignored",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -341,12 +392,14 @@ class ProcessClaimsEHTest(TestCase):
             )
 
         with self.subTest("all required claims provided, happy flow"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "loa": "urn:etoegang:core:assurance-class:loa2plus",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -359,12 +412,14 @@ class ProcessClaimsEHTest(TestCase):
             )
 
         with self.subTest("mapping loa value"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "loa": 3,
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -377,11 +432,13 @@ class ProcessClaimsEHTest(TestCase):
             )
 
         with self.subTest("default/fallback loa"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -409,13 +466,20 @@ class ProcessClaimsEHTest(TestCase):
             },
         },
     )
-    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     def test_eherkenning_raises_on_missing_claims(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({"kvk": "12345678"})
+            process_claims(
+                {"kvk": "12345678"},
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({"sub": "-opaquestring-"})
+            process_claims(
+                {"sub": "-opaquestring-"},
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
 
     @mock_oidc_client(
         OIDC_EH_IDENTIFIER,
@@ -435,9 +499,17 @@ class ProcessClaimsEHTest(TestCase):
     )
     def test_lax_mode(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims({"sub": "-opaquestring-"})
+            process_claims(
+                {"sub": "-opaquestring-"},
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
+            )
 
-        processed_claims = self.plugin._process_claims({"kvk": "12345678"})
+        processed_claims = process_claims(
+            {"kvk": "12345678"},
+            self.plugin.get_claim_processing_instructions(),
+            strict=False,
+        )
 
         self.assertEqual(
             processed_claims,
@@ -475,7 +547,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
     )
     def test_eherkenning_bewindvoering_claim_processing(self):
         with self.subTest("all claims provided, happy flow"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "namequalifier": "urn:etoegang:1.9:EntityConcernedID:KvKnr",
                     "kvk": "12345678",
@@ -486,7 +558,9 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
                     "extra": "ignored",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -504,7 +578,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
             )
 
         with self.subTest("all required claims provided, happy flow"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
@@ -512,7 +586,9 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -528,7 +604,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
             )
 
         with self.subTest("mapping loa value"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
@@ -536,7 +612,9 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -552,14 +630,16 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
             )
 
         with self.subTest("default/fallback loa"):
-            processed_claims = self.plugin._process_claims(
+            processed_claims = process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=False,
             )
 
             self.assertEqual(
@@ -595,56 +675,65 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
             },
         },
     )
-    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
     def test_raises_on_missing_claims(self):
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "kvk": "12345678",
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "sub": "-opaquestring-",
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "bsn": "XXXXXXX54",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
         with self.assertRaises(ValueError):
-            self.plugin._process_claims(
+            process_claims(
                 {
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                     "bsn": "XXXXXXX54",
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
-                }
+                },
+                self.plugin.get_claim_processing_instructions(),
+                strict=True,
             )
 
     @mock_oidc_client(
@@ -669,11 +758,13 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
         },
     )
     def test_lax_mode(self):
-        processed_claims = self.plugin._process_claims(
+        processed_claims = process_claims(
             {
                 "kvk": "12345678",
                 "bsn": "XXXXXXX54",
-            }
+            },
+            self.plugin.get_claim_processing_instructions(),
+            strict=False,
         )
 
         self.assertEqual(
@@ -687,7 +778,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
 
 
 class OIDCUtilsTests(TestCase):
-    def test_processing_claims_non_legacy_mode(self):
+    def test_processing_claims(self):
         idp_claims = {
             "bsn": "123456782",
             "user": {"pet": "cat", "some": "other info"},
@@ -710,33 +801,38 @@ class OIDCUtilsTests(TestCase):
 
         processing_instructions: ClaimProcessingInstructions = {
             "always_required_claims": [
-                {"path": config.options["bsn_path"], "legacy": "bsn_claim"}
+                {
+                    "path_in_claim": config.options["bsn_path"],
+                    "processed_path": ["bsn_claim"],
+                }
             ],
             "strict_required_claims": [
-                {"path": config.options["user_info"]["pet_path"], "legacy": "pet"}
+                {
+                    "path_in_claim": config.options["user_info"]["pet_path"],
+                    "processed_path": ["user", "pet"],
+                }
             ],
             "optional_claims": [],
             "loa_claims": {
                 "default": "",
                 "value_mapping": [],
-                "claim_path": ["loa"],
+                "path_in_claim": ["loa"],
+                "processed_path": ["bla_loa_claim"],
             },
         }
 
         processed_claims = process_claims(
             idp_claims,
-            config,
             processing_instructions,
             strict=True,
-            legacy=False,
         )
 
         expected_claims = {
-            "bsn": "123456782",
+            "bsn_claim": "123456782",
             "user": {
                 "pet": "cat",
             },
-            "loa": "urn:etoegang:core:assurance-class:loa1",
+            "bla_loa_claim": "urn:etoegang:core:assurance-class:loa1",
         }
 
         self.assertEqual(expected_claims, processed_claims)

@@ -1,5 +1,6 @@
 import base64
 import json
+from collections.abc import Iterable
 from copy import deepcopy
 from itertools import chain
 
@@ -24,21 +25,22 @@ from mozilla_django_oidc_db.views import (
 )
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.yivi_oidc.config import YiviOptions
-from openforms.authentication.contrib.yivi_oidc.oidc_plugins.schemas import YIVI_SCHEMA
-from openforms.forms.models.form import Form
-from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
-
-from .....contrib.auth_oidc.views import anon_user_callback_view
-from ...digid_eherkenning_oidc.oidc_plugins.types import (
+from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.types import (
+    ClaimPathDetails,
     ClaimProcessingInstructions,
 )
-from ...digid_eherkenning_oidc.oidc_plugins.utils import (
+from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.utils import (
     get_of_auth_plugin,
     process_claims,
 )
+from openforms.contrib.auth_oidc.views import anon_user_callback_view
+from openforms.forms.models.form import Form
+from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
+
+from ..config import YiviOptions
 from ..models import AttributeGroup
 from .constants import OIDC_YIVI_IDENTIFIER
+from .schemas import YIVI_SCHEMA
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -48,9 +50,32 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return YIVI_SCHEMA
 
-    def verify_claims(self, claims: JSONObject) -> bool:
-        # Not used
-        return False
+    def get_sensitive_claims(
+        self,
+        additional_attributes: Iterable[Iterable[AttributeGroup]],
+    ) -> list[list[str]]:
+        config = self.get_config()
+
+        sensitive_claims = [
+            config.options["identity_settings"]["bsn_claim_path"],
+            config.options["identity_settings"]["kvk_claim_path"],
+            config.options["identity_settings"]["pseudo_claim_path"],
+        ]
+
+        # All claims that we receive, that where part of the Yivi additional attributes,
+        # should be marked as sensitive. As all Yivi claims *could* be sensitive, let's
+        # handle them all as such.
+        sensitive_claims.extend(
+            [
+                # The attribute is a path in the claim, but it is expressed as a string instead
+                # of an array like the other paths in the claims. So we make it an array
+                # for compatibility with the claim paths configured in the OIDCClient
+                [attribute]
+                for attribute in list(chain.from_iterable(additional_attributes))
+            ]
+        )
+
+        return sensitive_claims
 
     def get_or_create_user(
         self,
@@ -66,7 +91,12 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         actual Django user.
         """
         assert payload, "Empty claims should have been blocked earlier"
-        obfuscated_claims = obfuscate_claims(payload, self.get_sensitive_claims())
+
+        additional_attributes = self.get_additional_attributes(request)
+
+        obfuscated_claims = obfuscate_claims(
+            payload, self.get_sensitive_claims(additional_attributes)
+        )
 
         log = logger.bind(claims=obfuscated_claims)
         log.debug("received_oidc_claims")
@@ -75,7 +105,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             # Here we use the payload instead of the user_info, because the claims
             # configured in the OIDCClient options refer to the structure of the payload and not
             # that of the user_info.
-            processed_claims = self.process_claims(request, payload)
+            processed_claims = self.process_claims(payload, additional_attributes)
         except ValueError as exc:
             log.error(
                 "claim_processing_failure", reason="claims_incomplete", exc_info=exc
@@ -96,23 +126,20 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         user.is_active = True  # type: ignore
         return user
 
-    def _process_claims(self, request: HttpRequest, claims: JSONObject) -> JSONObject:
+    def process_claims(
+        self,
+        claims: JSONObject,
+        additional_attributes: Iterable[Iterable[AttributeGroup]],
+    ) -> JSONObject:
         config = self.get_config()
 
-        return process_claims(
+        processed_claims = process_claims(
             claims,
-            config,
-            self.get_claim_processing_instructions(request, claims, config),
+            self.get_claim_processing_instructions(
+                claims, config, additional_attributes
+            ),
             # Yivi cannot be strict, as all its attributes should be optional!
             strict=False,
-            legacy=True,
-        )
-
-    def process_claims(self, request: HttpRequest, claims: JSONObject) -> JSONObject:
-        processed_claims = self._process_claims(request, claims)
-
-        processed_claims["additional_claims"] = self.extract_additional_claims(
-            request, claims
         )
         return processed_claims
 
@@ -136,31 +163,29 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
 
         return auth_backend.options
 
-    def extract_additional_claims(
-        self, request: HttpRequest, claims: JSONObject
-    ) -> JSONObject:
+    def get_additional_attributes(
+        self, request: HttpRequest
+    ) -> Iterable[Iterable[AttributeGroup]]:
         return_url = request.session.get(_RETURN_URL_SESSION_KEY, "")
         return_path = furl(return_url).path
         _, _, kwargs = resolve(str(return_path))
 
         auth_backend_options = self._get_auth_backend_options(kwargs.get("slug"))
         if auth_backend_options is None:
-            return {}
+            return []
 
-        attributes_to_add = AttributeGroup.objects.filter(
+        attributes = AttributeGroup.objects.filter(
             name__in=(auth_backend_options or {}).get(
                 "additional_attributes_groups", []
             )
         ).values_list("attributes", flat=True)
-
-        return {
-            attribute: claims[attribute]
-            for attribute in list(chain.from_iterable(attributes_to_add))
-            if attribute in claims
-        }
+        return attributes
 
     def get_claim_processing_instructions(
-        self, request: HttpRequest, claims: JSONObject, config: OIDCClient
+        self,
+        claims: JSONObject,
+        config: OIDCClient,
+        additional_attributes: Iterable[Iterable[AttributeGroup]],
     ) -> ClaimProcessingInstructions:
         bsn_claim_path = config.options["identity_settings"]["bsn_claim_path"]
         kvk_claim_path = config.options["identity_settings"]["kvk_claim_path"]
@@ -170,35 +195,74 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
 
         claim_processing_instruction: ClaimProcessingInstructions = {
             "always_required_claims": [],
-            "optional_claims": [],
+            "optional_claims": [
+                # The processed paths should match those present in
+                # openforms.authentication.contrib.yivi_oidc.plugin.YiviClaims
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "bsn_claim_path"
+                    ],
+                    "processed_path": ["bsn_claim"],
+                },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "kvk_claim_path"
+                    ],
+                    "processed_path": ["kvk_claim"],
+                },
+                {
+                    "path_in_claim": config.options["identity_settings"][
+                        "pseudo_claim_path"
+                    ],
+                    "processed_path": ["pseudo_claim"],
+                },
+            ],
             "strict_required_claims": [],
-            "loa_claims": {"default": "", "claim_path": [], "value_mapping": []},
+            "loa_claims": {
+                "default": "",
+                "path_in_claim": [],
+                "value_mapping": [],
+                "processed_path": [],
+            },
         }
 
         match (has_bsn_claim, has_kvk_claim):
             case True, _:
                 claim_processing_instruction["loa_claims"] = {
                     "default": config.options["identity_settings"]["bsn_default_loa"],
-                    "claim_path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "bsn_loa_claim_path"
                     ],
                     "value_mapping": config.options["identity_settings"][
                         "bsn_loa_value_mapping"
                     ],
+                    "processed_path": ["loa_claim"],
                 }
             case False, True:
                 claim_processing_instruction["loa_claims"] = {
                     "default": config.options["identity_settings"]["kvk_default_loa"],
-                    "claim_path": config.options["identity_settings"][
+                    "path_in_claim": config.options["identity_settings"][
                         "kvk_loa_claim_path"
                     ],
                     "value_mapping": config.options["identity_settings"][
                         "kvk_loa_value_mapping"
                     ],
+                    "processed_path": ["loa_claim"],
                 }
             case False, False:
                 pass
 
+        # Additional Yivi attributes
+        claim_processing_instruction["optional_claims"].extend(
+            [
+                ClaimPathDetails(
+                    path_in_claim=[str(attribute)],
+                    processed_path=["additional_claims", str(attribute)],
+                )
+                for attribute in list(chain.from_iterable(additional_attributes))
+                if attribute in claims
+            ]
+        )
         return claim_processing_instruction
 
     @staticmethod

@@ -16,6 +16,7 @@ from django.urls import reverse
 
 from django_webtest import DjangoTestApp
 
+from openforms.authentication.tests.utils import URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 from openforms.utils.tests.keycloak import (
@@ -24,7 +25,6 @@ from openforms.utils.tests.keycloak import (
     mock_oidc_client,
 )
 
-from ....tests.utils import URLsHelper
 from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from .base import IntegrationTestsBase
 

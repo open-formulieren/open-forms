@@ -17,14 +17,14 @@ from django.urls import reverse, reverse_lazy
 from furl import furl
 
 from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.authentication.tests.utils import URLsHelper
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import (
     mock_get_random_string,
     mock_oidc_client,
 )
 
-from ....tests.utils import URLsHelper
-from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from .base import IntegrationTestsBase
 
