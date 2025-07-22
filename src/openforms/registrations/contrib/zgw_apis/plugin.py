@@ -430,7 +430,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                                 "voorletters": data.get("initials"),
                                 "geslachtsnaam": data.get("lastName"),
                                 "voornamen": data.get("firstNames"),
-                                "geboortedatum": data.get("dateOfBirth"),
+                                "geboortedatum": data.get("dateOfBirth").isoformat(),
                                 "roltoelichting": partners_description,
                             },
                         }

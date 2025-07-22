@@ -387,6 +387,10 @@ class FormVariable(models.Model):
                 | ~COMPONENT,
                 name="form_variable_subtype_empty_iff_data_type_is_not_array",
             ),
+            CheckConstraint(
+                check=~Q(data_type=FormVariableDataTypes.partners),
+                name="data_type_is_not_partners",
+            ),
         ]
 
     def __str__(self):

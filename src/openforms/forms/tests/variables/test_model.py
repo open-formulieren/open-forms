@@ -281,6 +281,11 @@ class FormVariableModelTests(TestCase):
         }
 
         for data_type, data_type_label in FormVariableDataTypes.choices:
+            if data_type == FormVariableDataTypes.partners:
+                # Not useful to test anything for this data type, as it is only used as
+                # a subtype. The data type of the partners component is still an array.
+                continue
+
             for index, initial_value in enumerate(values_to_try[data_type]):
                 with self.subTest(
                     f"Data type: {data_type_label}, initial value: {initial_value}"
@@ -352,6 +357,37 @@ class FormVariableModelTests(TestCase):
                 )
             except IntegrityError as e:
                 self.fail(f"IntegrityError raised unexpectedly: {e}")
+
+    # To be able to test the database constraint, need to make sure that the data
+    # types are not overwritten upon saving
+    @patch.object(FormVariable, "check_data_type_and_initial_value", return_value=None)
+    def test_data_type_partners(self, m):
+        form = FormFactory.create()
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    }
+                ]
+            },
+        )
+
+        with (
+            self.subTest("data type array and empty subtype not allowed"),
+            self.assertRaises(IntegrityError),
+            transaction.atomic(),
+        ):
+            FormVariable.objects.create(
+                form=form,
+                source=FormVariableSources.component,
+                form_definition=fd,
+                key="textfield",
+                data_type=FormVariableDataTypes.partners,
+                data_subtype="",
+            )
 
     def test_data_type_and_subtype_user_defined(self):
         with self.subTest("data type array and empty subtype"):
