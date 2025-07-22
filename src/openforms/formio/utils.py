@@ -194,10 +194,15 @@ def get_component_data_subtype(component) -> str:
     Get the data subtype of a component.
 
     :returns: The original data type of the component if the component is configured as
-     'multiple', an empty string otherwise.
+     'multiple', an empty string otherwise. Partners are a special case, because the
+     subtype is different from the default type in ``COMPONENT_DATATYPES``.
     """
+    if component["type"] == "partners":
+        return FormVariableDataTypes.partners
+
     if not component.get("multiple"):
         return ""
+
     return COMPONENT_DATATYPES.get(component["type"], FormVariableDataTypes.string)
 
 

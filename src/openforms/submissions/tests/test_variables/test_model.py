@@ -218,6 +218,36 @@ class SubmissionValueVariableModelTests(TestCase):
             time_value_multiple = time_var_multiple.to_python()
             self.assertEqual(time_value_multiple, [time(12, 34), time(20, 42)])
 
+        with self.subTest("partners"):
+            partners_var = SubmissionValueVariableFactory.create(
+                key="partners",
+                value=[
+                    {
+                        "bsn": "111222333",
+                        "initials": "F. O. O.",
+                        "affixes": "",
+                        "lastName": "Bar",
+                        "dateOfBirth": "2000-01-01",
+                    }
+                ],
+                data_type=FormVariableDataTypes.array,
+                data_subtype=FormVariableDataTypes.partners,
+            )
+
+            partners_value = partners_var.to_python()
+            self.assertEqual(
+                partners_value,
+                [
+                    {
+                        "bsn": "111222333",
+                        "initials": "F. O. O.",
+                        "affixes": "",
+                        "lastName": "Bar",
+                        "dateOfBirth": date(2000, 1, 1),
+                    }
+                ],
+            )
+
     def test_is_initially_prefilled_is_set(self):
         config = {
             "display": "form",
