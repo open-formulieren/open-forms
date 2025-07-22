@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 
-import openforms.upgrades.models
-
 
 class Migration(migrations.Migration):
     initial = True
@@ -26,7 +24,7 @@ class Migration(migrations.Migration):
                 (
                     "current",
                     models.CharField(
-                        default=openforms.upgrades.models.get_current_version,
+                        default="",
                         editable=False,
                         max_length=100,
                         verbose_name="current version",
@@ -35,7 +33,7 @@ class Migration(migrations.Migration):
                 (
                     "git_sha",
                     models.CharField(
-                        default=openforms.upgrades.models.get_default_git_sha,
+                        default="",
                         editable=False,
                         max_length=100,
                         verbose_name="current git hash",
