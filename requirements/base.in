@@ -88,6 +88,9 @@ uwsgi
 sentry-sdk[django]  # error monitoring
 elastic-apm  # Elastic APM integration
 flower # task monitoring
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-django
 
 # Common Ground integration
 zgw-consumers[setup-configuration]
