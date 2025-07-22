@@ -928,6 +928,11 @@ else:
     ]
 
 #
+# OpenTelemetry - GRPC
+#
+OTEL_COLLECTOR_URL = config("OTEL_COLLECTOR_URL", "localhost:4317")
+
+#
 # DJANGO REST FRAMEWORK
 #
 ENABLE_THROTTLING = config("ENABLE_THROTTLING", default=True)

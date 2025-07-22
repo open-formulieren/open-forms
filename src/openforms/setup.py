@@ -26,12 +26,22 @@ import structlog
 from django_redis import get_redis_connection
 from dotenv import load_dotenv
 from mozilla_django_oidc import views
+from opentelemetry import metrics, trace
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.sdk.resources import SERVICE_NAME, SERVICE_VERSION, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
 logger = structlog.stdlib.get_logger(__name__)
 
 mimetypes.init()
+
+_OTEL_INITIALIZED = False
 
 
 def setup_env():
@@ -45,12 +55,44 @@ def setup_env():
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
 
+    setup_otel()
     structlog.contextvars.bind_contextvars(source="app")
     setup_hypothesis()
     load_self_signed_certs()
     monkeypatch_requests()
     monkeypatch_mozilla_django_oidc_get_from_settings()
     monkeypatch_json_logic()
+
+
+def setup_otel(service_name: str = "") -> None:
+    global _OTEL_INITIALIZED
+    if _OTEL_INITIALIZED:
+        return
+
+    if not service_name:
+        service_name = f"Open Forms - {settings.ENVIRONMENT}"
+
+    resource = Resource.create(
+        attributes={
+            SERVICE_NAME: service_name,
+            SERVICE_VERSION: settings.RELEASE,
+        }
+    )
+
+    tracer_provider = TracerProvider(resource=resource)
+    processor = BatchSpanProcessor(
+        OTLPSpanExporter(endpoint=settings.OTEL_COLLECTOR_URL, insecure=True)
+    )
+    tracer_provider.add_span_processor(processor)
+    trace.set_tracer_provider(tracer_provider)
+
+    reader = PeriodicExportingMetricReader(
+        OTLPMetricExporter(endpoint=settings.OTEL_COLLECTOR_URL, insecure=True)
+    )
+    meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
+    metrics.set_meter_provider(meter_provider)
+
+    _OTEL_INITIALIZED = True
 
 
 def load_self_signed_certs() -> None:
