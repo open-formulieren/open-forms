@@ -460,6 +460,17 @@ glom==23.5.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
+googleapis-common-protos==1.70.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+grpcio==1.73.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
 html5lib==1.1
     # via
     #   -c requirements/base.txt
@@ -627,11 +638,33 @@ opentelemetry-api==1.35.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-django
     #   opentelemetry-instrumentation-wsgi
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
+opentelemetry-exporter-otlp==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-exporter-otlp-proto-common==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp
+opentelemetry-exporter-otlp-proto-http==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp
 opentelemetry-instrumentation==0.56b0
     # via
     #   -c requirements/base.txt
@@ -647,10 +680,19 @@ opentelemetry-instrumentation-wsgi==0.56b0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   opentelemetry-instrumentation-django
+opentelemetry-proto==1.35.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-sdk==1.35.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-semantic-conventions==0.56b0
     # via
     #   -c requirements/base.txt
@@ -716,6 +758,12 @@ prompt-toolkit==3.0.27
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   click-repl
+protobuf==6.31.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   googleapis-common-protos
+    #   opentelemetry-proto
 psycopg==3.2.1
     # via
     #   -c requirements/base.txt
@@ -847,6 +895,7 @@ requests==2.32.4
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   opentelemetry-exporter-otlp-proto-http
     #   prance
     #   requests-file
     #   requests-oauthlib
@@ -978,6 +1027,8 @@ typing-extensions==4.12.2
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
     #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   psycopg
