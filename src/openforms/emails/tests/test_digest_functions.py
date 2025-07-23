@@ -58,9 +58,17 @@ utc = UTC
 TEST_FILES = Path(__file__).parent / "data"
 
 
+class UnexpectedError(Exception): ...
+
+
 class OptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     def validate(self, attrs):
         raise serializers.ValidationError("Invalid configuration")
+
+
+class ErrorOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    def validate(self, attrs):
+        raise UnexpectedError("Something bad happened")
 
 
 @register_register("test-invalid-backend")
@@ -78,6 +86,18 @@ class InvalidBackend(BasePlugin):
 class InvalidFormConfiguration(BasePlugin):
     verbose_name = "Invalid form configuration"
     configuration_options = OptionsSerializer
+
+    def register_submission(self, submission, options):
+        pass
+
+    def check_config(self):
+        pass
+
+
+@register_register("test-error-form-conf")
+class ErrorFormConfiguration(BasePlugin):
+    verbose_name = "Error form configuration"
+    configuration_options = ErrorOptionsSerializer
 
     def register_submission(self, submission, options):
         pass
@@ -1114,6 +1134,24 @@ class InvalidRegistrationBackendsTests(TestCase):
         invalid_registration_backends = collect_invalid_registration_backends()
 
         self.assertEqual(len(invalid_registration_backends), 0)
+
+    @tag("gh-5340")
+    def test_registration_backend_raises_error_during_validation(self):
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="plugin2",
+            backend="test-error-form-conf",
+        )
+
+        invalid_registration_backends = collect_invalid_registration_backends()
+
+        self.assertEqual(len(invalid_registration_backends), 1)
+        self.assertEqual(
+            invalid_registration_backends[0].config_name,
+            ErrorFormConfiguration.verbose_name,
+        )
+        self.assertEqual(invalid_registration_backends[0].form_id, form.id)
 
 
 class InvalidLogicRulesTests(TestCase):
