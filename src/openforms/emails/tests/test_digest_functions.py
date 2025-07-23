@@ -1323,6 +1323,74 @@ class InvalidLogicRulesTests(TestCase):
             invalid_logic_rules,
         )
 
+    @tag("gh-5271")
+    def test_valid_logic_rules_with_reduce_and_accumulator_not_reported(self):
+        form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            name="Pets",
+            key="pets",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
+        FormLogicFactory(
+            form=form,
+            json_logic_trigger={
+                ">": [
+                    {
+                        "reduce": [
+                            {"var": "pets"},
+                            {"+": [{"var": "accumulator"}, 1]},
+                            0,
+                        ]
+                    },
+                    1,
+                ]
+            },
+        )
+
+        invalid_logic_rules = collect_invalid_logic_rules()
+
+        self.assertEqual(len(invalid_logic_rules), 0)
+
+    @tag("gh-5271")
+    def test_valid_logic_rules_with_accumulator_without_reduce_not_reported(self):
+        form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            name="Accumulator",
+            key="accumulator",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
+        FormLogicFactory(
+            form=form,
+            json_logic_trigger={">": [{"var": "accumulator"}, 1]},
+        )
+
+        invalid_logic_rules = collect_invalid_logic_rules()
+
+        self.assertEqual(len(invalid_logic_rules), 0)
+
+    @tag("gh-5271")
+    def test_invalid_logic_rules_with_accumulator_without_reduce_reported(self):
+        form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            name="Pet",
+            key="pet",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
+        FormLogicFactory(
+            form=form,
+            json_logic_trigger={">": [{"var": "accumulator"}, 1]},
+        )
+
+        invalid_logic_rules = collect_invalid_logic_rules()
+
+        self.assertEqual(len(invalid_logic_rules), 1)
+
 
 class ReferencelistExpiredDataTests(TestCase):
     def test_inactive_form_does_not_trigger_checks(self):
