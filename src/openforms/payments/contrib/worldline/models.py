@@ -41,6 +41,9 @@ class WorldlineMerchant(models.Model):
         help_text=_("Optionally override the preset endpoint"),
     )
 
+    def __str__(self):
+        return self.label
+
     @property
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
