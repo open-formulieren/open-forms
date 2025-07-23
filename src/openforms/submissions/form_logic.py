@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from django.utils.functional import empty
@@ -22,9 +24,9 @@ if TYPE_CHECKING:
 
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
-    submission: "Submission",
-    step: "SubmissionStep",
-    data: FormioData,
+    submission: Submission,
+    step: SubmissionStep,
+    unsaved_data: FormioData | None = None,
 ) -> FormioConfiguration:
     """
     Process all the form logic rules and mutate the step configuration if required.
@@ -62,8 +64,9 @@ def evaluate_form_logic(
 
     :param submission: Submission instance.
     :param step: Submission-step instance.
-    :param data: Submitted data. This data is assumed to be valid, as we perform a
-      conversion to the Python-type domain.
+    :param unsaved_data: Unsaved submitted data. This data is assumed to be valid, as we
+      perform a conversion to the Python-type domain. Note that we fetch all the existing
+      submission data from the state, so it's only necessary to pass unsaved data.
 
     """
     # grab the configuration that will be mutated
@@ -83,7 +86,8 @@ def evaluate_form_logic(
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
-    submission_variables_state.set_values(data)
+    if unsaved_data is not None:
+        submission_variables_state.set_values(unsaved_data)
     initial_data = submission_variables_state.get_data(
         include_unsaved=True, include_static_variables=True
     )
@@ -187,8 +191,8 @@ def evaluate_form_logic(
 
 
 def check_submission_logic(
-    submission: "Submission",
-    current_step: "SubmissionStep | None" = None,
+    submission: Submission,
+    current_step: SubmissionStep | None = None,
 ) -> None:
     if getattr(submission, "_form_logic_evaluated", False):
         return

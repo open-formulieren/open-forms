@@ -593,7 +593,6 @@ class SubmissionStepViewSet(
         # are changed, they can cause subsequent steps to be not-applicable. If that
         # happens, we need to wipe the data from those steps.
         submission = instance.submission
-        merged_data = submission.data
         # The endpoint permission evaluated the submission state, but now a step has been
         # created/updated, so we need to refresh it
         execution_state = submission.load_execution_state(refresh=True)
@@ -604,7 +603,7 @@ class SubmissionStepViewSet(
                 continue
 
             # evaluate the logic to determine if the step is applicable or not
-            evaluate_form_logic(submission, subsequent_step, merged_data)
+            evaluate_form_logic(submission, subsequent_step)
             if not subsequent_step.is_applicable and subsequent_step.completed:
                 subsequent_step.reset()
 

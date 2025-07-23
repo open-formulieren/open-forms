@@ -59,7 +59,7 @@ class DeterministicEvaluationTests(TestCase):
             submission=submission, form_step=step, data={"a": 3}
         )
 
-        evaluate_form_logic(submission, submission_step, submission_step.data)
+        evaluate_form_logic(submission, submission_step)
 
         state = submission.load_submission_value_variables_state()
         variable = state.variables["a"]
@@ -134,7 +134,7 @@ class DeterministicEvaluationTests(TestCase):
         # tests and assertions, check for every step that the evaluation is/isn't performed
 
         with self.subTest("Evaluation skipped on step 1"):
-            evaluate_form_logic(submission, ss1, submission.data)
+            evaluate_form_logic(submission, ss1)
 
             state = submission.load_submission_value_variables_state()
             var_a = state.variables["a"]
@@ -147,7 +147,7 @@ class DeterministicEvaluationTests(TestCase):
                 submission=submission, form_step=step2, data={"c": 2}
             )
 
-            evaluate_form_logic(submission, ss2, submission.data)
+            evaluate_form_logic(submission, ss2)
 
             state = submission.load_submission_value_variables_state()
             var_c = state.variables["c"]
@@ -160,7 +160,7 @@ class DeterministicEvaluationTests(TestCase):
                 submission=submission, form_step=step3, data={"d": 1}
             )
 
-            evaluate_form_logic(submission, ss3, submission.data)
+            evaluate_form_logic(submission, ss3)
 
             state = submission.load_submission_value_variables_state()
             self.assertEqual(ss3.data, {"d": 6})

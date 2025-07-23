@@ -325,7 +325,7 @@ class TestSubmissionAdmin(WebTest):
             )
 
             # Evaluate the logic, and save the changes
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
             submission.save()
 
             change_url = reverse(
@@ -361,7 +361,7 @@ class TestSubmissionAdmin(WebTest):
             )
 
             # Evaluate the logic, and save the changes
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
             submission.save()
 
             change_url = reverse(

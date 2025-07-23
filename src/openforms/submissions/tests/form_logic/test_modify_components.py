@@ -74,9 +74,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -145,9 +143,7 @@ class ComponentModificationTests(TestCase):
             },
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step)
 
         expected = {
             "components": [
@@ -228,9 +224,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -303,9 +297,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -378,9 +370,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -453,9 +443,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -528,9 +516,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -594,9 +580,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         expected = {
             "components": [
@@ -675,9 +659,7 @@ class ComponentModificationTests(TestCase):
             form_step=step2,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step_2, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step_2)
 
         # Expect configuration unchanged
         expected = {
@@ -762,9 +744,7 @@ class ComponentModificationTests(TestCase):
             data={},
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step)
 
         self.assertTrue(configuration["components"][1]["hidden"])
 
@@ -823,9 +803,7 @@ class ComponentModificationTests(TestCase):
             data={"step1_textfield": "hide step2_textfield"},
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step1, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step1)
 
         # Nothing changed in the current step, because the action in the rule references a component in another step
         expected = {
@@ -870,7 +848,7 @@ class ComponentModificationTests(TestCase):
             data={"radio": "yes", "textField": "Some data that must not be cleared!"},
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertEqual(
             "Some data that must not be cleared!", submission_step.data["textField"]
@@ -919,7 +897,7 @@ class ComponentModificationTests(TestCase):
             },
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertEqual(
             "Some data that must not be cleared!", submission_step.data["textField"]
@@ -965,7 +943,7 @@ class ComponentModificationTests(TestCase):
         )
 
         # Does not raise exception
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
     @tag("gh-2781")
     def test_hiding_nested_field(self):
@@ -1023,7 +1001,7 @@ class ComponentModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertEqual(submission_step.data["nested"]["component"], "")
 
@@ -1058,7 +1036,7 @@ class ComponentModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertNotIn("selectboxes", submission_step.data)
 
@@ -1115,9 +1093,7 @@ class ComponentModificationTests(TestCase):
             form_step=step,
         )
 
-        configuration = evaluate_form_logic(
-            submission, submission_step, submission.data
-        )
+        configuration = evaluate_form_logic(submission, submission_step)
 
         expected = {
             "components": [

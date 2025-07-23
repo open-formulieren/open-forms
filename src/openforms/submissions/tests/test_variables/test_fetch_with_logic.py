@@ -57,9 +57,7 @@ class ServiceFetchWithActionsTest(TestCase):
         )
         m.get("https://httpbin.org/get", json=42)
 
-        evaluate_form_logic(
-            submission, submission.submissionstep_set.first(), submission.data
-        )
+        evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         state = submission.load_submission_value_variables_state()
 
@@ -96,9 +94,7 @@ class ServiceFetchWithActionsTest(TestCase):
 
         m.get("https://httpbin.org/get", status_code=500)
 
-        evaluate_form_logic(
-            submission, submission.submissionstep_set.first(), submission.data
-        )
+        evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         state = submission.load_submission_value_variables_state(refresh=True)
 
@@ -212,17 +208,13 @@ class ServiceFetchWithActionsTest(TestCase):
         m.get("https://httpbin.org/get", json=42)
 
         with freeze_time("2023-02-21T18:00:00Z"):
-            evaluate_form_logic(
-                submission, submission.submissionstep_set.first(), submission.data
-            )
+            evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         self.assertEqual(len(m.request_history), 1)
         self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")
 
         with freeze_time("2023-02-21T18:01:00Z"):
-            evaluate_form_logic(
-                submission, submission.submissionstep_set.first(), submission.data
-            )
+            evaluate_form_logic(submission, submission.submissionstep_set.first())
 
         self.assertEqual(len(m.request_history), 2)
         self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")

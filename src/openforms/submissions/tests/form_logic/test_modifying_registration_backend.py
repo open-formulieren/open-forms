@@ -27,9 +27,7 @@ class RegistrationBackendModificationTests(TestCase):
         )
 
     def test_single_backend_no_logic(self):
-        evaluate_form_logic(
-            self.submission, self.submission.steps[0], self.submission.data
-        )
+        evaluate_form_logic(self.submission, self.submission.steps[0])
 
         self.assertEqual(self.submission.registration_backend.key, "default")
 
@@ -54,9 +52,7 @@ class RegistrationBackendModificationTests(TestCase):
             ],
         )
 
-        evaluate_form_logic(
-            self.submission, self.submission.steps[0], self.submission.data
-        )
+        evaluate_form_logic(self.submission, self.submission.steps[0])
 
         self.assertEqual(self.submission.registration_backend.key, "other")
 
@@ -83,7 +79,5 @@ class RegistrationBackendModificationTests(TestCase):
             ],
         )
 
-        evaluate_form_logic(
-            self.submission, self.submission.steps[0], self.submission.data
-        )
+        evaluate_form_logic(self.submission, self.submission.steps[0])
         self.assertEqual(self.submission.registration_backend.key, "default")
