@@ -72,7 +72,7 @@ class Filesize:
         return converter(numbers)
 
 
-def config(option: str, default: Any = undefined, *args, **kwargs):
+def config(option: str, default: Any = undefined, *args, **kwargs) -> Any:
     """
     Pull a config parameter from the environment.
 
