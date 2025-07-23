@@ -13,6 +13,9 @@ but the sample script is gone. We haven't supported that in the first place anyw
 <script id="piwik-pro-tag-manager-async" type="text/javascript" nonce="{{ request.csp_nonce }}">
   (function(window, document, dataLayerName, id) {
   window[dataLayerName]=window[dataLayerName]||[],window[dataLayerName].push({start:(new Date).getTime(),event:"stg.start"});
+  {# custom datalayer attribute to expose the CSP nonce to tag manager #}
+  window[dataLayerName].push({nonce: '{{ request.csp_nonce|escapejs }}'});
+  {# end custom datalayer attribute #}
   var scripts=document.getElementsByTagName('script')[0],tags=document.createElement('script');
   var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName);var qPString=qP.length>0?("?"+qP.join("&")):"";
   tags.async=!0,tags.src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/"+id+".js"+qPString,tags.nonce="{{ request.csp_nonce|escapejs }}",
