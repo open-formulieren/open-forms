@@ -395,6 +395,18 @@ def collect_invalid_registration_backends() -> list[InvalidRegistrationBackend]:
                     form_id=form.id,
                 )
             )
+        except Exception as exc:
+            # Catch any unexpected error, because we don't want this function to crash
+            invalid_registration_backends.append(
+                InvalidRegistrationBackend(
+                    config_name=plugin.verbose_name,
+                    exception_message=_(
+                        "Unexpected error appeared during the validation process: {exception}"
+                    ).format(exception=exc),
+                    form_name=form_name,
+                    form_id=form.id,
+                )
+            )
 
     return invalid_registration_backends
 
