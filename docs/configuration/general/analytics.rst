@@ -64,3 +64,17 @@ Configuration
 
 6. Scroll to the bottom and click **Save**.
 
+Vendor-specific notes
+---------------------
+
+Piwik Pro
+~~~~~~~~~
+
+Piwik Pro has a feature called
+`debug mode <https://help.piwik.pro/support/tag-manager/debug-mode/>`_. Open Forms
+supports this, provided that you manage the `Cross-Origin-Opener-Policy` header. There
+are two options for this:
+
+* Disabling it temporarily with a browser extension (preferred)
+* Deploying Open Forms with the ``CROSS_ORIGIN_OPENER_POLICY=unsafe-none``
+  :ref:`environment variable <installation_environment_config>`.

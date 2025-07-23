@@ -380,7 +380,7 @@ variables, linking to the description of their behaviour in their respective mod
      installations likely do not provide all this information yet.
 
 Specifying the environment variables
-=====================================
+====================================
 
 There are two strategies to specify the environment variables:
 
