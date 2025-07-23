@@ -1,39 +1,28 @@
 {% load solo_tags %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 {% if analytics_tools_config.is_piwik_pro_tag_manager_enabled %}
+{% comment %}
+See https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html#adding-nonce-to-container-code
+
+There *used* to be some other script for sync tags with a link to documentation at
+https://developers.piwik.pro/docs/content-security-policy-csp#adjusting-tags-to-work-with-the-content-security-policy
+but the sample script is gone. We haven't supported that in the first place anyway.
+{% endcomment %}
+
 <!-- Start Piwik PRO tag manager head tag -->
-{% comment %} See https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html#adding-nonce-to-container-code {% endcomment %}
 <script id="piwik-pro-tag-manager-async" type="text/javascript" nonce="{{ request.csp_nonce }}">
   (function(window, document, dataLayerName, id) {
   window[dataLayerName]=window[dataLayerName]||[],window[dataLayerName].push({start:(new Date).getTime(),event:"stg.start"});
+  {# custom datalayer attribute to expose the CSP nonce to tag manager #}
+  window[dataLayerName].push({nonce: '{{ request.csp_nonce|escapejs }}'});
+  {# end custom datalayer attribute #}
   var scripts=document.getElementsByTagName('script')[0],tags=document.createElement('script');
-  function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
-  var isStgDebug=(window.location.href.match("stg_debug")||document.cookie.match("stg_debug"))&&!window.location.href.match("stg_disable_debug");
-  stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
-  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),tags.nonce="{{ request.csp_nonce|escapejs }}",isStgDebug&&qP.push("stg_debug");
-  var qPString=qP.length>0?("?"+qP.join("&")):"";
-  tags.async=!0,tags.src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/"+id+".js"+qPString,
+  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName);var qPString=qP.length>0?("?"+qP.join("&")):"";
+  tags.async=!0,tags.src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/"+id+".js"+qPString,tags.nonce="{{ request.csp_nonce|escapejs }}",
   scripts.parentNode.insertBefore(tags,scripts);
   !function(a,n,i){a[n]=a[n]||{};for(var c=0;c<i.length;c++)!function(i){a[n][i]=a[n][i]||{},a[n][i].api=a[n][i].api||function(){
   var a=[].slice.call(arguments,0);"string"==typeof a[0]&&window[dataLayerName].push({event:n+"."+i+":"+a[0],parameters:[].slice.call(arguments,1)})}}(i[c])}(window,"ppms",["tm","cm"]);
   })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
 </script>
-
-
-{% comment %} This is the snippet for the sync tags. They require extra logic to inject nounces into loaded scripts
-(see https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html#adjusting-tags-to-work-with-content-security-policy)
-and tag creators seems to have to edit their sync tag to include the nounce in some way.
-Thus we are not supporting them for now, leaving the script here in case we do in the future.
-
-<script id="piwik-pro-tag-manager-sync" type="text/javascript" nonce="{{ request.csp_nonce }}">
-  (function(window, document, dataLayerName, id) {
-  function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
-  var isStgDebug=(window.location.href.match("stg_debug")||document.cookie.match("stg_debug"))&&!window.location.href.match("stg_disable_debug");
-  stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
-  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),isStgDebug&&qP.push("stg_debug");
-  var qPString=qP.length>0?("?"+qP.join("&")):"";
-  document.write('<script src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/'+id+'.sync.js' + qPString + '" nonce="{{ request.csp_nonce|escapejs }}"></' + 'script>');
-  })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
-</script> {% endcomment %}
 <!-- End Piwik PRO tag manager head tag -->
 {% endif %}
