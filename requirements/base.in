@@ -63,7 +63,7 @@ django-treebeard
 django-upgrade-check
 django-yubin
 # mozilla-django-oidc-db[setup-configuration]
-git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@09b274637447988016e63beec87237adb97d36a1
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@a98792cd8e501e8b90e56ddee39c6f4a872a543d
 maykin-common[axes,mfa,pdf]
 maykin-2fa
 django-timeline-logger
