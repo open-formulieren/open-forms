@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 # Django-hijack (and Django-hijack-admin)
+from django.conf import global_settings as defaults
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
@@ -576,6 +577,11 @@ CSRF_COOKIE_SAMESITE = config(
 )
 
 X_FRAME_OPTIONS = "DENY"
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY: str = config(
+    "CROSS_ORIGIN_OPENER_POLICY",
+    default=defaults.SECURE_CROSS_ORIGIN_OPENER_POLICY,
+)
 
 #
 # TESTING
