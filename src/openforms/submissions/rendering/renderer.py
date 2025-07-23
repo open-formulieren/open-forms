@@ -64,12 +64,9 @@ class Renderer:
         """
         Produce only the direct child nodes.
         """
-        submission_data = self.submission.data
         for step in self.steps:
             new_configuration = evaluate_form_logic(
-                submission=self.submission,
-                step=step,
-                data=submission_data,
+                submission=self.submission, step=step
             )
             # update the configuration for introspection - note that we are mutating
             # an instance here without persisting it to the backend on purpose!
