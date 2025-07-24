@@ -6,13 +6,13 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.1.5 (2025-07-11)
+3.1.5 (2025-07-24)
 ==================
 
 Regular bugfix release.
 
-* [:backend:`5454`] Fixed crash when saving DigiD or eHerkenning configuration in the admin.
-* [:backend:`5413`] Fixed uploading files with soft-hyphens not passing form validation.
+* [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
+* [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
 
 3.1.4 (2025-07-10)
 ==================
