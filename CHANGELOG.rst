@@ -11,6 +11,7 @@ Changelog
 
 Regular bugfix release.
 
+* [:backend:`5466`] Fixed translations for the cookie banner.
 * [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
 
