@@ -107,6 +107,12 @@
       "value": "De maximale waarde die dit veld kan hebben voordat het formulier kan worden verzonden."
     }
   ],
+  "/kZu2e": [
+    {
+      "type": 0,
+      "value": "Initialen"
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -2428,6 +2434,12 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
+  "JKnHMC": [
+    {
+      "type": 0,
+      "value": "Achternaam"
+    }
+  ],
   "JKq3TC": [
     {
       "type": 0,
@@ -2722,6 +2734,12 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
+    }
+  ],
+  "M2+MHj": [
+    {
+      "type": 0,
+      "value": "Voorvoegsels"
     }
   ],
   "M9JbDC": [
@@ -3180,6 +3198,12 @@
     {
       "type": 0,
       "value": "Je moet latitude en longitude allebei instellen."
+    }
+  ],
+  "R25Vbr": [
+    {
+      "type": 0,
+      "value": "Referentielijsten-API"
     }
   ],
   "R7XVbR": [
@@ -3934,12 +3958,6 @@
       "value": "Maximale breedte"
     }
   ],
-  "Y7QwvZ": [
-    {
-      "type": 0,
-      "value": "Referentielijsten-API"
-    }
-  ],
   "Y8cmP1": [
     {
       "type": 0,
@@ -4155,6 +4173,12 @@
     {
       "type": 0,
       "value": "TITLE-parameter"
+    }
+  ],
+  "ZYWsHs": [
+    {
+      "type": 0,
+      "value": "Geboortedatum"
     }
   ],
   "ZdZ2Mb": [
@@ -5217,6 +5241,12 @@
     {
       "type": 0,
       "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
+    }
+  ],
+  "hkXaC1": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "huHjRm": [
@@ -6451,6 +6481,30 @@
       "value": "Pluginattribuut"
     }
   ],
+  "sjnifH": [
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": " (niet meer geldig)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "isValid"
+    }
+  ],
   "smPv/m": [
     {
       "type": 1,
@@ -6653,30 +6707,6 @@
     {
       "type": 0,
       "value": "Fout"
-    }
-  ],
-  "ucbVst": [
-    {
-      "type": 1,
-      "value": "naam"
-    },
-    {
-      "options": {
-        "other": {
-          "value": [
-            {
-              "type": 0,
-              "value": " (niet meer geldig)"
-            }
-          ]
-        },
-        "true": {
-          "value": [
-          ]
-        }
-      },
-      "type": 5,
-      "value": "isValid"
     }
   ],
   "uiliGe": [
