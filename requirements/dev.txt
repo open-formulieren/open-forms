@@ -706,6 +706,10 @@ odfpy==1.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   tablib
+onlinepayments-sdk-python3==5.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 openapi-schema-validator==0.6.2
     # via
     #   -c requirements/ci.txt
@@ -946,6 +950,7 @@ requests==2.32.4
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   onlinepayments-sdk-python3
     #   prance
     #   requests-file
     #   requests-mock
@@ -972,6 +977,7 @@ requests-toolbelt==1.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   onlinepayments-sdk-python3
     #   zeep
 rfc3339-validator==0.1.4
     # via
@@ -1001,11 +1007,6 @@ ruamel-yaml==0.18.10
     #   -r requirements/ci.txt
     #   django-setup-configuration
     #   prance
-ruamel-yaml-clib==0.2.12
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   ruamel-yaml
 ruff==0.11.5
     # via
     #   -c requirements/ci.txt
@@ -1178,13 +1179,11 @@ typing-extensions==4.12.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   anyio
     #   mozilla-django-oidc-db
     #   psycopg
     #   pydantic
     #   pydantic-core
     #   pyee
-    #   pyopenssl
     #   qrcode
     #   rich-click
     #   zgw-consumers

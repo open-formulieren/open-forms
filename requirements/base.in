@@ -94,3 +94,6 @@ zgw-consumers[setup-configuration]
 
 # Anti virus scan
 clamd
+
+# Worldline SDK
+onlinepayments-sdk-python3
