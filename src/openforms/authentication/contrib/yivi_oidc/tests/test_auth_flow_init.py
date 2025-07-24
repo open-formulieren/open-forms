@@ -127,7 +127,7 @@ class YiviInitTests(IntegrationTestsBase):
         OIDC_YIVI_IDENTIFIER,
         overrides={
             "options.identity_settings.bsn_claim_path": ["attribute.bsn"],
-            "options.identity_settings.bsn_loa_claim_path": ["attribute.loa:bsn"],
+            "options.loa_settings.bsn_loa_claim_path": ["attribute.loa:bsn"],
         },
     )
     def test_signicat_condiscon_authentication_attributes_also_contain_defined_loa(

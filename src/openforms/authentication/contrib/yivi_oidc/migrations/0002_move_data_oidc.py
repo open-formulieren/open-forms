@@ -2,9 +2,9 @@
 
 from django.db import migrations
 
+from digid_eherkenning.oidc.migrations_operations import migrate_config_forward
 from glom import glom
 
-from ...digid_eherkenning_oidc.oidc_plugins.utils import migrate_config_forward
 from ..oidc_plugins.constants import OIDC_YIVI_IDENTIFIER
 
 
@@ -16,19 +16,16 @@ def move_data_forward(apps, schema_editor):
     if yivi_config_old:
         options = {
             "loa_settings": {
-                "claim_path": yivi_config_old.loa_claim,
-                "default": yivi_config_old.default_loa,
-                "value_mapping": yivi_config_old.loa_value_mapping,
-            },
-            "identity_settings": {
-                "bsn_claim_path": yivi_config_old.bsn_claim,
                 "bsn_loa_claim_path": yivi_config_old.bsn_loa_claim,
                 "bsn_default_loa": yivi_config_old.bsn_default_loa,
                 "bsn_loa_value_mapping": yivi_config_old.bsn_loa_value_mapping,
-                "kvk_claim_path": yivi_config_old.kvk_claim,
                 "kvk_loa_claim_path": yivi_config_old.kvk_loa_claim,
                 "kvk_default_loa": yivi_config_old.kvk_default_loa,
                 "kvk_loa_value_mapping": yivi_config_old.kvk_loa_value_mapping,
+            },
+            "identity_settings": {
+                "bsn_claim_path": yivi_config_old.bsn_claim,
+                "kvk_claim_path": yivi_config_old.kvk_claim,
                 "pseudo_claim_path": yivi_config_old.pseudo_claim,
             },
         }
@@ -72,37 +69,35 @@ def move_data_backwards(apps, schema_editor):
             oidc_keycloak_idp_hint=yivi_config.oidc_keycloak_idp_hint,
             userinfo_claims_source=yivi_config.userinfo_claims_source,
             # Options
-            loa_claim=glom(yivi_config.options, "loa_settings.claim_path", default=[]),
-            default_loa=glom(yivi_config.options, "loa_settings.default", default=""),
-            loa_value_mapping=glom(
-                yivi_config.options, "loa_settings.value_mapping", default=[]
-            ),
+            loa_claim=[],
+            default_loa="",
+            loa_value_mapping=[],
             bsn_claim=glom(
                 yivi_config.options, "identity_settings.bsn_claim_path", default=[]
             ),
             bsn_loa_claim=glom(
-                yivi_config.options, "identity_settings.bsn_loa_claim_path", default=[]
+                yivi_config.options, "loa_settings.bsn_loa_claim_path", default=[]
             ),
             bsn_default_loa=glom(
-                yivi_config.options, "identity_settings.bsn_default_loa", default=""
+                yivi_config.options, "loa_settings.bsn_default_loa", default=""
             ),
             bsn_loa_value_mapping=glom(
                 yivi_config.options,
-                "identity_settings.bsn_loa_value_mapping",
+                "loa_settings.bsn_loa_value_mapping",
                 default=[],
             ),
             kvk_claim=glom(
                 yivi_config.options, "identity_settings.kvk_claim_path", default=[]
             ),
             kvk_loa_claim=glom(
-                yivi_config.options, "identity_settings.kvk_loa_claim_path", default=[]
+                yivi_config.options, "loa_settings.kvk_loa_claim_path", default=[]
             ),
             kvk_default_loa=glom(
-                yivi_config.options, "identity_settings.kvk_default_loa", default=""
+                yivi_config.options, "loa_settings.kvk_default_loa", default=""
             ),
             kvk_loa_value_mapping=glom(
                 yivi_config.options,
-                "identity_settings.kvk_loa_value_mapping",
+                "loa_settings.kvk_loa_value_mapping",
                 default=[],
             ),
             pseudo_claim=glom(

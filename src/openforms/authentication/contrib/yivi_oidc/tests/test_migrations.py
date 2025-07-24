@@ -87,9 +87,12 @@ class OIDCConfigModelMigrationTests(TruncateCascadeMixin, TestMigrations):
         self.assertEqual(
             new_config.options["loa_settings"],
             {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": ["loa_value"],
+                "bsn_loa_claim_path": ["bsn.loa"],
+                "bsn_default_loa": AssuranceLevels.low,
+                "bsn_loa_value_mapping": [{"from": "bla", "to": "blo"}],
+                "kvk_loa_claim_path": ["kvk.loa"],
+                "kvk_default_loa": AssuranceLevels.high,
+                "kvk_loa_value_mapping": [{"from": "foo", "to": "bar"}],
             },
         )
 
@@ -97,13 +100,7 @@ class OIDCConfigModelMigrationTests(TruncateCascadeMixin, TestMigrations):
             new_config.options["identity_settings"],
             {
                 "bsn_claim_path": ["bsn"],
-                "bsn_loa_claim_path": ["bsn.loa"],
-                "bsn_default_loa": AssuranceLevels.low,
-                "bsn_loa_value_mapping": [{"from": "bla", "to": "blo"}],
                 "kvk_claim_path": ["kvk"],
-                "kvk_loa_claim_path": ["kvk.loa"],
-                "kvk_default_loa": AssuranceLevels.high,
-                "kvk_loa_value_mapping": [{"from": "foo", "to": "bar"}],
                 "pseudo_claim_path": ["pbdf.sidn-pbdf.irma.pseudonym"],
             },
         )
@@ -140,19 +137,16 @@ class OIDCConfigModelBackwardMigrationTests(TruncateCascadeMixin, TestMigrations
                 "oidc_rp_scopes_list": ["openid", "bsn"],
                 "options": {
                     "loa_settings": {
-                        "claim_path": ["loa"],
-                        "default": AssuranceLevels.low_plus,
-                        "value_mapping": ["loa_value"],
-                    },
-                    "identity_settings": {
-                        "bsn_claim_path": ["bsn"],
                         "bsn_loa_claim_path": ["bsn.loa"],
                         "bsn_default_loa": AssuranceLevels.low,
                         "bsn_loa_value_mapping": [{"from": "bla", "to": "blo"}],
-                        "kvk_claim_path": ["kvk"],
                         "kvk_loa_claim_path": ["kvk.loa"],
                         "kvk_default_loa": AssuranceLevels.high,
                         "kvk_loa_value_mapping": [{"from": "foo", "to": "bar"}],
+                    },
+                    "identity_settings": {
+                        "bsn_claim_path": ["bsn"],
+                        "kvk_claim_path": ["kvk"],
                         "pseudo_claim_path": ["pbdf.sidn-pbdf.irma.pseudonym"],
                     },
                 },

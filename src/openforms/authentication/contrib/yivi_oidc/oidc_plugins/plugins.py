@@ -229,22 +229,22 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         match (has_bsn_claim, has_kvk_claim):
             case True, _:
                 claim_processing_instruction["loa_claims"] = {
-                    "default": config.options["identity_settings"]["bsn_default_loa"],
-                    "path_in_claim": config.options["identity_settings"][
+                    "default": config.options["loa_settings"]["bsn_default_loa"],
+                    "path_in_claim": config.options["loa_settings"][
                         "bsn_loa_claim_path"
                     ],
-                    "value_mapping": config.options["identity_settings"][
+                    "value_mapping": config.options["loa_settings"][
                         "bsn_loa_value_mapping"
                     ],
                     "processed_path": ["loa_claim"],
                 }
             case False, True:
                 claim_processing_instruction["loa_claims"] = {
-                    "default": config.options["identity_settings"]["kvk_default_loa"],
-                    "path_in_claim": config.options["identity_settings"][
+                    "default": config.options["loa_settings"]["kvk_default_loa"],
+                    "path_in_claim": config.options["loa_settings"][
                         "kvk_loa_claim_path"
                     ],
-                    "value_mapping": config.options["identity_settings"][
+                    "value_mapping": config.options["loa_settings"][
                         "kvk_loa_value_mapping"
                     ],
                     "processed_path": ["loa_claim"],
@@ -286,7 +286,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
                     )
 
                     if bsn_loa_claim_path := glom(
-                        yivi_config.options, "identity_settings.bsn_loa_claim_path"
+                        yivi_config.options, "loa_settings.bsn_loa_claim_path"
                     ):
                         bsn_attributes += bsn_loa_claim_path
 
@@ -298,7 +298,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
                     )
 
                     if kvk_loa_claim_path := glom(
-                        yivi_config.options, "identity_settings.kvk_loa_claim_path"
+                        yivi_config.options, "loa_settings.kvk_loa_claim_path"
                     ):
                         kvk_attributes += kvk_loa_claim_path
 

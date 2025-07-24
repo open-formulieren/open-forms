@@ -247,19 +247,16 @@ CLIENT_DEFAULT_OPTIONS = {
     },
     OIDC_YIVI_IDENTIFIER: {
         "loa_settings": {
-            "claim_path": ["authsp_level"],
-            "default": AssuranceLevels.low_plus,
-            "value_mapping": [],
-        },
-        "identity_settings": {
-            "bsn_claim_path": ["bsn"],
             "bsn_loa_claim_path": [],
             "bsn_default_loa": "",
             "bsn_loa_value_mapping": [],
-            "kvk_claim_path": ["kvk"],
             "kvk_loa_claim_path": [],
             "kvk_default_loa": "",
             "kvk_loa_value_mapping": [],
+        },
+        "identity_settings": {
+            "bsn_claim_path": ["bsn"],
+            "kvk_claim_path": ["kvk"],
             "pseudo_claim_path": ["pbdf.sidn-pbdf.irma.pseudonym"],
         },
     },

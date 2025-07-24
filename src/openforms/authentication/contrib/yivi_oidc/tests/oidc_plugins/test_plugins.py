@@ -51,7 +51,7 @@ class ProcessClaimsYiviTest(TestCase):
         OIDC_YIVI_IDENTIFIER,
         overrides={
             "options.identity_settings.bsn_claim_path": ["test.attribute.bsn"],
-            "options.identity_settings.bsn_loa_claim_path": ["bsn.loa"],
+            "options.loa_settings.bsn_loa_claim_path": ["bsn.loa"],
         },
     )
     def test_yivi_process_claims_with_dots_in_path(self):
@@ -258,9 +258,9 @@ class YiviPluginProcessClaimsTest(TestCase):
         OIDC_YIVI_IDENTIFIER,
         overrides={
             "options.identity_settings.bsn_claim_path": ["test.attribute.bsn"],
-            "options.identity_settings.bsn_loa_claim_path": ["test.attribute.loa.bsn"],
-            "options.identity_settings.bsn_default_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-            "options.identity_settings.bsn_loa_value_mapping": [
+            "options.loa_settings.bsn_loa_claim_path": ["test.attribute.loa.bsn"],
+            "options.loa_settings.bsn_default_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            "options.loa_settings.bsn_loa_value_mapping": [
                 {"from": "bsn", "to": "bla"}
             ],
         },
@@ -300,9 +300,9 @@ class YiviPluginProcessClaimsTest(TestCase):
         OIDC_YIVI_IDENTIFIER,
         overrides={
             "options.identity_settings.kvk_claim_path": ["test.attribute.kvk"],
-            "options.identity_settings.kvk_loa_claim_path": ["test.attribute.loa.kvk"],
-            "options.identity_settings.kvk_default_loa": "urn:etoegang:core:assurance-class:loa2",
-            "options.identity_settings.kvk_loa_value_mapping": [
+            "options.loa_settings.kvk_loa_claim_path": ["test.attribute.loa.kvk"],
+            "options.loa_settings.kvk_default_loa": "urn:etoegang:core:assurance-class:loa2",
+            "options.loa_settings.kvk_loa_value_mapping": [
                 {"from": "kvk", "to": "bla"}
             ],
         },
@@ -342,15 +342,15 @@ class YiviPluginProcessClaimsTest(TestCase):
         OIDC_YIVI_IDENTIFIER,
         overrides={
             "options.identity_settings.bsn_claim_path": ["test.attribute.bsn"],
-            "options.identity_settings.bsn_loa_claim_path": ["test.attribute.loa.bsn"],
-            "options.identity_settings.bsn_default_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-            "options.identity_settings.bsn_loa_value_mapping": [
+            "options.loa_settings.bsn_loa_claim_path": ["test.attribute.loa.bsn"],
+            "options.loa_settings.bsn_default_loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            "options.loa_settings.bsn_loa_value_mapping": [
                 {"from": "bsn", "to": "bla"}
             ],
             "options.identity_settings.kvk_claim_path": ["test.attribute.kvk"],
-            "options.identity_settings.kvk_loa_claim_path": ["test.attribute.loa.kvk"],
-            "options.identity_settings.kvk_default_loa": "urn:etoegang:core:assurance-class:loa2",
-            "options.identity_settings.kvk_loa_value_mapping": [
+            "options.loa_settings.kvk_loa_claim_path": ["test.attribute.loa.kvk"],
+            "options.loa_settings.kvk_default_loa": "urn:etoegang:core:assurance-class:loa2",
+            "options.loa_settings.kvk_loa_value_mapping": [
                 {"from": "kvk", "to": "bla"}
             ],
         },
