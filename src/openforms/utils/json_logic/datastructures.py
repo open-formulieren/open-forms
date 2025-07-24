@@ -1,10 +1,16 @@
 from dataclasses import dataclass
-from typing import Iterator, cast
+from typing import Iterator, cast, TypedDict
 
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
 from .descriptions import _generate_description
+
+REDUCE_VAR_NAMES: list[str] = ["current", "accumulator"]
+
+
+class LogicContext(TypedDict):
+    in_reduce: bool
 
 
 @dataclass(frozen=True)
@@ -23,7 +29,7 @@ class ExpressionIntrospection:
 
     def get_input_keys(self) -> list[InputVar]:
         inputs = []
-        for node in iter_tree(self.tree):
+        for node, context in iter_tree(self.tree, LogicContext(in_reduce=False)):
             if isinstance(node, Primitive):
                 continue
             if node.operator != "var":
@@ -32,19 +38,27 @@ class ExpressionIntrospection:
                 continue
 
             key = cast(str, node.arguments[0])
+            if key in REDUCE_VAR_NAMES and context["in_reduce"]:
+                continue
+
             inputs.append(InputVar(key=key))
 
         return inputs
 
 
-def iter_tree(tree: JSONLogicExpressionTree) -> Iterator[Operation | Primitive]:
+def iter_tree(
+    tree: JSONLogicExpressionTree, context: LogicContext
+) -> Iterator[tuple[Operation | Primitive, LogicContext]]:
     if isinstance(tree, Primitive):
-        yield tree
+        yield tree, context
 
     elif isinstance(tree, list):
         for arg in tree:
-            yield from iter_tree(arg)
+            yield from iter_tree(arg, context)
 
     elif isinstance(tree, Operation):
-        yield tree
-        yield from iter_tree(tree.arguments)
+        yield tree, context
+        operation_context = LogicContext(
+            in_reduce=tree.operator.lower() == "reduce" or context["in_reduce"]
+        )
+        yield from iter_tree(tree.arguments, operation_context)
