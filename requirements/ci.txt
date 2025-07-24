@@ -263,7 +263,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning @ git+https://github.com/maykinmedia/django-digid-eherkenning.git@d932add60cad1cbf84ea0d5404af7b8990794780
+django-digid-eherkenning @ git+https://github.com/maykinmedia/django-digid-eherkenning.git@f5b58c359b3df036d3bdb89a9f7c7b024a82310a
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
