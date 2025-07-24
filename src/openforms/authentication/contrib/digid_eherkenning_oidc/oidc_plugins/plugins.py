@@ -7,7 +7,12 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 
 import structlog
-from digid_eherkenning.schemas import DIGID_OPTIONS_SCHEMA, EHERKENNING_OPTIONS_SCHEMA
+from digid_eherkenning.oidc.schemas import (
+    DIGID_MACHTIGEN_OPTIONS_SCHEMA,
+    DIGID_OPTIONS_SCHEMA,
+    EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA,
+    EHERKENNING_OPTIONS_SCHEMA,
+)
 from flags.state import flag_enabled
 from mozilla_django_oidc_db.plugins import (
     AnonymousUserOIDCPluginProtocol,
@@ -28,8 +33,6 @@ from .constants import (
     OIDC_EIDAS_IDENTIFIER,
 )
 from .schemas import (
-    DIGID_MACHTIGEN_OPTIONS_SCHEMA,
-    EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA,
     EIDAS_COMPANY_SCHEMA,
     EIDAS_SCHEMA,
 )

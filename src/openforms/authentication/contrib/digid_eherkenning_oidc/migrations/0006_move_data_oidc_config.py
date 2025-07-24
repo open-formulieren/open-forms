@@ -2,6 +2,13 @@
 
 from django.db import migrations
 
+from digid_eherkenning.oidc.migrations_operations import (
+    MoveDigiDDataOperation,
+    MoveDigiDMachtigenDataOperation,
+    MoveEHerkenningBewindvoeringDataOperation,
+    MoveEHerkenningDataOperation,
+    migrate_config_forward,
+)
 from glom import glom
 
 from ..oidc_plugins.constants import (
@@ -12,104 +19,15 @@ from ..oidc_plugins.constants import (
     OIDC_EIDAS_COMPANY_IDENTIFIER,
     OIDC_EIDAS_IDENTIFIER,
 )
-from ..oidc_plugins.utils import migrate_config_forward
 
 
 def move_data_forward(apps, schema_editor):
-    OFDigiDConfig = apps.get_model("digid_eherkenning_oidc", "OFDigiDConfig")
-    OFDigiDMachtigenConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFDigiDMachtigenConfig"
-    )
-    OFEHerkenningConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFEHerkenningConfig"
-    )
-    OFEHerkenningBewindvoeringConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFEHerkenningBewindvoeringConfig"
-    )
     OFEIDASConfig = apps.get_model("digid_eherkenning_oidc", "OFEIDASConfig")
     OFEIDASCompanyConfig = apps.get_model(
         "digid_eherkenning_oidc", "OFEIDASCompanyConfig"
     )
 
     # Solo model, there should be only one
-    digid_config_old = OFDigiDConfig.objects.first()
-    if digid_config_old:
-        options = {
-            "loa_settings": {
-                "claim_path": digid_config_old.loa_claim,
-                "default": digid_config_old.default_loa,
-                "value_mapping": digid_config_old.loa_value_mapping,
-            },
-            "identity_settings": {
-                "bsn_claim_path": digid_config_old.bsn_claim,
-            },
-        }
-        migrate_config_forward(digid_config_old, OIDC_DIGID_IDENTIFIER, options, apps)
-
-    digid_machtigen_config_old = OFDigiDMachtigenConfig.objects.first()
-    if digid_machtigen_config_old:
-        options = {
-            "loa_settings": {
-                "claim_path": digid_machtigen_config_old.loa_claim,
-                "default": digid_machtigen_config_old.default_loa,
-                "value_mapping": digid_machtigen_config_old.loa_value_mapping,
-            },
-            "identity_settings": {
-                "representee_bsn_claim_path": digid_machtigen_config_old.representee_bsn_claim,
-                "authorizee_bsn_claim_path": digid_machtigen_config_old.authorizee_bsn_claim,
-                "mandate_service_id_claim_path": digid_machtigen_config_old.mandate_service_id_claim,
-            },
-        }
-        migrate_config_forward(
-            digid_machtigen_config_old, OIDC_DIGID_MACHTIGEN_IDENTIFIER, options, apps
-        )
-
-    eherkenning_config_old = OFEHerkenningConfig.objects.first()
-    if eherkenning_config_old:
-        options = {
-            "loa_settings": {
-                "claim_path": eherkenning_config_old.loa_claim,
-                "default": eherkenning_config_old.default_loa,
-                "value_mapping": eherkenning_config_old.loa_value_mapping,
-            },
-            "identity_settings": {
-                "identifier_type_claim_path": eherkenning_config_old.identifier_type_claim,
-                "legal_subject_claim_path": eherkenning_config_old.legal_subject_claim,
-                "acting_subject_claim_path": eherkenning_config_old.acting_subject_claim,
-                "branch_number_claim_path": eherkenning_config_old.branch_number_claim,
-            },
-        }
-        migrate_config_forward(
-            eherkenning_config_old, OIDC_EH_IDENTIFIER, options, apps
-        )
-
-    eherkenning_bewindvoering_config_old = (
-        OFEHerkenningBewindvoeringConfig.objects.first()
-    )
-    if eherkenning_bewindvoering_config_old:
-        options = {
-            "loa_settings": {
-                "claim_path": eherkenning_bewindvoering_config_old.loa_claim,
-                "default": eherkenning_bewindvoering_config_old.default_loa,
-                "value_mapping": eherkenning_bewindvoering_config_old.loa_value_mapping,
-            },
-            "identity_settings": {
-                "identifier_type_claim_path": eherkenning_bewindvoering_config_old.identifier_type_claim,
-                "legal_subject_claim_path": eherkenning_bewindvoering_config_old.legal_subject_claim,
-                "acting_subject_claim_path": eherkenning_bewindvoering_config_old.acting_subject_claim,
-                "branch_number_claim_path": eherkenning_bewindvoering_config_old.branch_number_claim,
-                "representee_claim_path": eherkenning_bewindvoering_config_old.representee_claim,
-                "mandate_service_id_claim_path": eherkenning_bewindvoering_config_old.mandate_service_id_claim,
-                "mandate_service_uuid_claim_path": eherkenning_bewindvoering_config_old.mandate_service_uuid_claim,
-            },
-        }
-        migrate_config_forward(
-            eherkenning_bewindvoering_config_old,
-            OIDC_EH_BEWINDVOERING_IDENTIFIER,
-            options,
-            apps,
-        )
-
     eidas_config_old = OFEIDASConfig.objects.first()
     if eidas_config_old:
         options = {
@@ -162,278 +80,6 @@ def move_data_forward(apps, schema_editor):
 
 def move_data_backwards(apps, schema_editor):
     OIDCClient = apps.get_model("mozilla_django_oidc_db", "OIDCClient")
-
-    OFDigiDConfig = apps.get_model("digid_eherkenning_oidc", "OFDigiDConfig")
-
-    digid_config = (
-        OIDCClient.objects.select_related("oidc_provider")
-        .filter(identifier=OIDC_DIGID_IDENTIFIER)
-        .first()
-    )
-    if digid_config and digid_config.oidc_provider:
-        OFDigiDConfig.objects.create(
-            enabled=digid_config.enabled,
-            # Provider settings
-            oidc_op_discovery_endpoint=(
-                digid_config.oidc_provider.oidc_op_discovery_endpoint
-            ),
-            oidc_op_jwks_endpoint=digid_config.oidc_provider.oidc_op_jwks_endpoint,
-            oidc_op_authorization_endpoint=(
-                digid_config.oidc_provider.oidc_op_authorization_endpoint
-            ),
-            oidc_op_token_endpoint=digid_config.oidc_provider.oidc_op_token_endpoint,
-            oidc_op_user_endpoint=digid_config.oidc_provider.oidc_op_user_endpoint,
-            oidc_op_logout_endpoint=(
-                digid_config.oidc_provider.oidc_op_logout_endpoint
-            ),
-            oidc_token_use_basic_auth=digid_config.oidc_provider.oidc_token_use_basic_auth,
-            oidc_use_nonce=digid_config.oidc_provider.oidc_use_nonce,
-            oidc_nonce_size=digid_config.oidc_provider.oidc_nonce_size,
-            oidc_state_size=digid_config.oidc_provider.oidc_state_size,
-            # Client settings
-            oidc_rp_client_id=digid_config.oidc_rp_client_id,
-            oidc_rp_client_secret=digid_config.oidc_rp_client_secret,
-            oidc_rp_sign_algo=digid_config.oidc_rp_sign_algo,
-            oidc_rp_scopes_list=digid_config.oidc_rp_scopes_list,
-            oidc_rp_idp_sign_key=digid_config.oidc_rp_idp_sign_key,
-            oidc_keycloak_idp_hint=digid_config.oidc_keycloak_idp_hint,
-            userinfo_claims_source=digid_config.userinfo_claims_source,
-            # Options
-            loa_claim=glom(digid_config.options, "loa_settings.claim_path", default=[]),
-            default_loa=glom(digid_config.options, "loa_settings.default", default=""),
-            loa_value_mapping=glom(
-                digid_config.options, "loa_settings.value_mapping", default=[]
-            ),
-            bsn_claim=glom(
-                digid_config.options, "identity_settings.bsn_claim_path", default=[]
-            ),
-        )
-
-    OFDigiDMachtigenConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFDigiDMachtigenConfig"
-    )
-
-    digid_machtigen_config = (
-        OIDCClient.objects.select_related("oidc_provider")
-        .filter(identifier=OIDC_DIGID_MACHTIGEN_IDENTIFIER)
-        .first()
-    )
-    if digid_machtigen_config and digid_machtigen_config.oidc_provider:
-        OFDigiDMachtigenConfig.objects.create(
-            enabled=digid_machtigen_config.enabled,
-            # Provider settings
-            oidc_op_discovery_endpoint=(
-                digid_machtigen_config.oidc_provider.oidc_op_discovery_endpoint
-            ),
-            oidc_op_jwks_endpoint=digid_machtigen_config.oidc_provider.oidc_op_jwks_endpoint,
-            oidc_op_authorization_endpoint=(
-                digid_machtigen_config.oidc_provider.oidc_op_authorization_endpoint
-            ),
-            oidc_op_token_endpoint=digid_machtigen_config.oidc_provider.oidc_op_token_endpoint,
-            oidc_op_user_endpoint=digid_machtigen_config.oidc_provider.oidc_op_user_endpoint,
-            oidc_op_logout_endpoint=(
-                digid_machtigen_config.oidc_provider.oidc_op_logout_endpoint
-            ),
-            oidc_token_use_basic_auth=digid_machtigen_config.oidc_provider.oidc_token_use_basic_auth,
-            oidc_use_nonce=digid_machtigen_config.oidc_provider.oidc_use_nonce,
-            oidc_nonce_size=digid_machtigen_config.oidc_provider.oidc_nonce_size,
-            oidc_state_size=digid_machtigen_config.oidc_provider.oidc_state_size,
-            # Client settings
-            oidc_rp_client_id=digid_machtigen_config.oidc_rp_client_id,
-            oidc_rp_client_secret=digid_machtigen_config.oidc_rp_client_secret,
-            oidc_rp_sign_algo=digid_machtigen_config.oidc_rp_sign_algo,
-            oidc_rp_scopes_list=digid_machtigen_config.oidc_rp_scopes_list,
-            oidc_rp_idp_sign_key=digid_machtigen_config.oidc_rp_idp_sign_key,
-            oidc_keycloak_idp_hint=digid_machtigen_config.oidc_keycloak_idp_hint,
-            userinfo_claims_source=digid_machtigen_config.userinfo_claims_source,
-            # Options
-            loa_claim=glom(
-                digid_machtigen_config.options, "loa_settings.claim_path", default=[]
-            ),
-            default_loa=glom(
-                digid_machtigen_config.options, "loa_settings.default", default=""
-            ),
-            loa_value_mapping=glom(
-                digid_machtigen_config.options, "loa_settings.value_mapping", default=[]
-            ),
-            representee_bsn_claim=glom(
-                digid_machtigen_config.options,
-                "identity_settings.representee_bsn_claim_path",
-                default=[],
-            ),
-            authorizee_bsn_claim=glom(
-                digid_machtigen_config.options,
-                "identity_settings.authorizee_bsn_claim_path",
-                default=[],
-            ),
-            mandate_service_id_claim=glom(
-                digid_machtigen_config.options,
-                "identity_settings.mandate_service_id_claim_path",
-                default=[],
-            ),
-        )
-
-    OFEHerkenningConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFEHerkenningConfig"
-    )
-
-    eherkenning_config = (
-        OIDCClient.objects.select_related("oidc_provider")
-        .filter(identifier=OIDC_EH_IDENTIFIER)
-        .first()
-    )
-    if eherkenning_config and eherkenning_config.oidc_provider:
-        OFEHerkenningConfig.objects.create(
-            enabled=eherkenning_config.enabled,
-            # Provider settings
-            oidc_op_discovery_endpoint=(
-                eherkenning_config.oidc_provider.oidc_op_discovery_endpoint
-            ),
-            oidc_op_jwks_endpoint=eherkenning_config.oidc_provider.oidc_op_jwks_endpoint,
-            oidc_op_authorization_endpoint=(
-                eherkenning_config.oidc_provider.oidc_op_authorization_endpoint
-            ),
-            oidc_op_token_endpoint=eherkenning_config.oidc_provider.oidc_op_token_endpoint,
-            oidc_op_user_endpoint=eherkenning_config.oidc_provider.oidc_op_user_endpoint,
-            oidc_op_logout_endpoint=(
-                eherkenning_config.oidc_provider.oidc_op_logout_endpoint
-            ),
-            oidc_token_use_basic_auth=eherkenning_config.oidc_provider.oidc_token_use_basic_auth,
-            oidc_use_nonce=eherkenning_config.oidc_provider.oidc_use_nonce,
-            oidc_nonce_size=eherkenning_config.oidc_provider.oidc_nonce_size,
-            oidc_state_size=eherkenning_config.oidc_provider.oidc_state_size,
-            # Client settings
-            oidc_rp_client_id=eherkenning_config.oidc_rp_client_id,
-            oidc_rp_client_secret=eherkenning_config.oidc_rp_client_secret,
-            oidc_rp_sign_algo=eherkenning_config.oidc_rp_sign_algo,
-            oidc_rp_scopes_list=eherkenning_config.oidc_rp_scopes_list,
-            oidc_rp_idp_sign_key=eherkenning_config.oidc_rp_idp_sign_key,
-            oidc_keycloak_idp_hint=eherkenning_config.oidc_keycloak_idp_hint,
-            userinfo_claims_source=eherkenning_config.userinfo_claims_source,
-            # Options
-            loa_claim=glom(
-                eherkenning_config.options, "loa_settings.claim_path", default=[]
-            ),
-            default_loa=glom(
-                eherkenning_config.options, "loa_settings.default", default=""
-            ),
-            loa_value_mapping=glom(
-                eherkenning_config.options, "loa_settings.value_mapping", default=[]
-            ),
-            identifier_type_claim=glom(
-                eherkenning_config.options,
-                "identity_settings.identifier_type_claim_path",
-                default=[],
-            ),
-            legal_subject_claim=glom(
-                eherkenning_config.options,
-                "identity_settings.legal_subject_claim_path",
-                default=[],
-            ),
-            acting_subject_claim=glom(
-                eherkenning_config.options,
-                "identity_settings.acting_subject_claim_path",
-                default=[],
-            ),
-            branch_number_claim=glom(
-                eherkenning_config.options,
-                "identity_settings.branch_number_claim_path",
-                default=[],
-            ),
-        )
-
-    OFEHerkenningBewindvoeringConfig = apps.get_model(
-        "digid_eherkenning_oidc", "OFEHerkenningBewindvoeringConfig"
-    )
-
-    eherkenning_bewindvoering_config = (
-        OIDCClient.objects.select_related("oidc_provider")
-        .filter(identifier=OIDC_EH_BEWINDVOERING_IDENTIFIER)
-        .first()
-    )
-    if (
-        eherkenning_bewindvoering_config
-        and eherkenning_bewindvoering_config.oidc_provider
-    ):
-        OFEHerkenningBewindvoeringConfig.objects.create(
-            enabled=eherkenning_bewindvoering_config.enabled,
-            # Provider settings
-            oidc_op_discovery_endpoint=(
-                eherkenning_bewindvoering_config.oidc_provider.oidc_op_discovery_endpoint
-            ),
-            oidc_op_jwks_endpoint=eherkenning_bewindvoering_config.oidc_provider.oidc_op_jwks_endpoint,
-            oidc_op_authorization_endpoint=(
-                eherkenning_bewindvoering_config.oidc_provider.oidc_op_authorization_endpoint
-            ),
-            oidc_op_token_endpoint=eherkenning_bewindvoering_config.oidc_provider.oidc_op_token_endpoint,
-            oidc_op_user_endpoint=eherkenning_bewindvoering_config.oidc_provider.oidc_op_user_endpoint,
-            oidc_op_logout_endpoint=(
-                eherkenning_bewindvoering_config.oidc_provider.oidc_op_logout_endpoint
-            ),
-            oidc_token_use_basic_auth=eherkenning_bewindvoering_config.oidc_provider.oidc_token_use_basic_auth,
-            oidc_use_nonce=eherkenning_bewindvoering_config.oidc_provider.oidc_use_nonce,
-            oidc_nonce_size=eherkenning_bewindvoering_config.oidc_provider.oidc_nonce_size,
-            oidc_state_size=eherkenning_bewindvoering_config.oidc_provider.oidc_state_size,
-            # Client settings
-            oidc_rp_client_id=eherkenning_bewindvoering_config.oidc_rp_client_id,
-            oidc_rp_client_secret=eherkenning_bewindvoering_config.oidc_rp_client_secret,
-            oidc_rp_sign_algo=eherkenning_bewindvoering_config.oidc_rp_sign_algo,
-            oidc_rp_scopes_list=eherkenning_bewindvoering_config.oidc_rp_scopes_list,
-            oidc_rp_idp_sign_key=eherkenning_bewindvoering_config.oidc_rp_idp_sign_key,
-            oidc_keycloak_idp_hint=eherkenning_bewindvoering_config.oidc_keycloak_idp_hint,
-            userinfo_claims_source=eherkenning_bewindvoering_config.userinfo_claims_source,
-            # Options
-            loa_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "loa_settings.claim_path",
-                default=[],
-            ),
-            default_loa=glom(
-                eherkenning_bewindvoering_config.options,
-                "loa_settings.default",
-                default="",
-            ),
-            loa_value_mapping=glom(
-                eherkenning_bewindvoering_config.options,
-                "loa_settings.value_mapping",
-                default=[],
-            ),
-            identifier_type_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.identifier_type_claim_path",
-                default=[],
-            ),
-            legal_subject_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.legal_subject_claim_path",
-                default=[],
-            ),
-            acting_subject_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.acting_subject_claim_path",
-                default=[],
-            ),
-            branch_number_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.branch_number_claim_path",
-                default=[],
-            ),
-            representee_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.representee_claim_path",
-                default=[],
-            ),
-            mandate_service_id_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.mandate_service_id_claim_path",
-                default=[],
-            ),
-            mandate_service_uuid_claim=glom(
-                eherkenning_bewindvoering_config.options,
-                "identity_settings.mandate_service_uuid_claim_path",
-                default=[],
-            ),
-        )
 
     OFEIDASConfig = apps.get_model("digid_eherkenning_oidc", "OFEIDASConfig")
 
@@ -632,4 +278,10 @@ class Migration(migrations.Migration):
         ("mozilla_django_oidc_db", "0008_delete_openidconnectconfig"),
     ]
 
-    operations = [migrations.RunPython(move_data_forward, move_data_backwards)]
+    operations = [
+        MoveDigiDDataOperation(OIDC_DIGID_IDENTIFIER),
+        MoveDigiDMachtigenDataOperation(OIDC_DIGID_MACHTIGEN_IDENTIFIER),
+        MoveEHerkenningDataOperation(OIDC_EH_IDENTIFIER),
+        MoveEHerkenningBewindvoeringDataOperation(OIDC_EH_BEWINDVOERING_IDENTIFIER),
+        migrations.RunPython(move_data_forward, move_data_backwards),
+    ]
