@@ -44,7 +44,8 @@ django-capture-tag
 django-colorfield
 django-cookie-consent
 django-cors-headers
-django-digid-eherkenning[oidc]
+# django-digid-eherkenning[oidc]
+git+https://github.com/maykinmedia/django-digid-eherkenning.git@994736358c40dba2ae157602e8bad0027426c282
 django-flags
 django-hijack
 django-import-export
@@ -61,7 +62,8 @@ django-tinymce
 django-treebeard
 django-upgrade-check
 django-yubin
-mozilla-django-oidc-db[setup-configuration]
+# mozilla-django-oidc-db[setup-configuration]
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@a98792cd8e501e8b90e56ddee39c6f4a872a543d
 maykin-common[axes,mfa,pdf]
 maykin-2fa
 django-timeline-logger
