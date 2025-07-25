@@ -13,6 +13,7 @@ COMPONENT_DATATYPES = {
     "editgrid": "array",
     "datetime": "datetime",
     "partners": "array",
+    "children": "array",
 }
 
 
