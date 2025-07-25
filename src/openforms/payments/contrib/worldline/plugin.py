@@ -1,4 +1,4 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -15,7 +15,7 @@ from rest_framework.request import Request
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.frontend.frontend import get_frontend_redirect_url
 from openforms.payments.base import BasePlugin, PaymentInfo
-from openforms.payments.constants import PaymentRequestType
+from openforms.payments.constants import PaymentRequestType, PaymentStatus as _WorldlinePaymentStatus
 from openforms.payments.contrib.worldline.models import WorldlineMerchant
 from openforms.payments.contrib.worldline.typing import (
     AmountOfMoney,
@@ -48,7 +48,7 @@ def _construct_client_from_options(options: PaymentOptions) -> IHostedCheckoutCl
         api_key_id=merchant.api_key,
         secret_api_key=merchant.api_secret,
         authorization_type="v1HMAC",
-        integrator="openforms-test-sonny",  #  TODO: retrieve this from?
+        integrator="openforms",  #  TODO: is this the correct value?
         connect_timeout=5000,
         socket_timeout=10000,
         max_connections=10,
@@ -106,7 +106,16 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 "Failed to generate redirect URL to payment provider"
             ) from e  # TODO: handle this situation in a more user friendly way
 
-        # TODO: save RETURNMAC and hosted_checkout_id on SubmissionPayment?
+        plugin_options = payment.plugin_options
+        payment.plugin_options = {
+            **plugin_options,
+            "returnmac": checkout_response.returnmac,
+            "checkout_id": checkout_response.hosted_checkout_id,
+        }
+
+        payment.save(update_fields=("plugin_options",))
+
+        breakpoint()
 
         return PaymentInfo(
             type=PaymentRequestType.get,
@@ -114,7 +123,6 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             data={},
         )
 
-    # TODO
     def handle_return(
         self,
         request: Request,
@@ -127,14 +135,36 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             plugin=self,
             entrypoint="browser",
         ):
-            action = request.query_params.get(RETURN_ACTION_PARAM)
-            payment_id = request.query_params[PAYMENT_ID_PARAM]
-            log = logger.bind(payment_id=payment_id)
-
+            log = logger.bind()
             log.info("process_payment_status")
 
-            # TODO: verify RETURNMAC and hosted_checkout_id match with the saved values
-            # retrieved from the start of the payment process, see https://docs.connect.worldline-solutions.com/documentation/sdk/server/python/#use-a-hosted-payment-through-the-mycheckout-hosted-payment-pages
+            returnmac = payment.plugin_options.get("returnmac", "")
+            checkout_id = payment.plugin_options.get("checkout_id", "")
+
+            if (
+                not request.query_params.get("RETURNMAC") == returnmac
+                or not request.query_params.get("checkout_id") == checkout_id
+            ):
+                return HttpResponseBadRequest("Incorrect query parameters provided")
+
+            client = _construct_client_from_options(options)
+
+            try:
+                response = client.get_hosted_checkout(checkout_id)
+            except ApiException as e:
+                raise HttpResponseBadRequest(
+                    "Unable to retrieve checkout status"
+                ) from e  # TODO: return in a more user friendly way
+
+            payment_data = response.created_payment_output
+
+            if not payment_data:
+                return HttpResponseBadRequest(
+                    "No payment associated with the given checkout."
+                )  # TODO: return in a more user friendly way
+
+            # TODO: set payment status
+            payment.status =
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
