@@ -198,6 +198,11 @@ entry. This ensures the changes are also visible from the Github releases page.
 
 The CI workflow will ensure that a Docker image with the same release tag is published.
 
+**Create a PR with the changelog entries for the master branch**
+
+After publishing the release make sure to create a PR to the master branch with
+the newly added changelogs entries.
+
 **Announce the release in communication channels**
 
 This is to be fleshed out more, but some existing channels are:
