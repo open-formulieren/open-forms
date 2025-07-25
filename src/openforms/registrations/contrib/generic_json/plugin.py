@@ -374,6 +374,15 @@ def process_component(
                 # so mutations are not applied to ``values``
                 edit_grid_values_list[index] = edit_grid_values.data
 
+        case {"type": "partners"}:
+            partners = values.get("partners", [])
+
+            for partner in partners:
+                # these are not relevant (at least for now)
+                partner.pop("firstNames", None)
+                partner.pop("dateOfBirthPrecision", None)
+                partner.pop("__addedManually", None)
+
         case _:
             pass
 
