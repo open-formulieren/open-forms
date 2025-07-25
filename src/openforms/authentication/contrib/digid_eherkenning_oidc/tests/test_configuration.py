@@ -1,15 +1,15 @@
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from mozilla_django_oidc_db.views import OIDCInit
+from mozilla_django_oidc_db.registry import register as registry
 
-from ..models import (
-    OFDigiDConfig,
-    OFDigiDMachtigenConfig,
-    OFEHerkenningBewindvoeringConfig,
-    OFEHerkenningConfig,
-    OFEIDASCompanyConfig,
-    OFEIDASConfig,
+from ..oidc_plugins.constants import (
+    OIDC_DIGID_IDENTIFIER,
+    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+    OIDC_EH_BEWINDVOERING_IDENTIFIER,
+    OIDC_EH_IDENTIFIER,
+    OIDC_EIDAS_COMPANY_IDENTIFIER,
+    OIDC_EIDAS_IDENTIFIER,
 )
 
 
@@ -18,53 +18,42 @@ class CallbackURLConfigurationTests(TestCase):
     Test the legacy and new behaviour for the OIDC Redirect URIs for each config.
     """
 
-    def setUp(self):
-        super().setUp()
-
-        self.addCleanup(OFDigiDConfig.clear_cache)
-        self.addCleanup(OFEHerkenningConfig.clear_cache)
-        self.addCleanup(OFDigiDMachtigenConfig.clear_cache)
-        self.addCleanup(OFEHerkenningBewindvoeringConfig.clear_cache)
-        self.addCleanup(OFEIDASConfig.clear_cache)
-
     @override_settings(USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=True)
     def test_legacy_settings(self):
         cases = (
-            (OFDigiDConfig, "/digid-oidc/callback/"),
-            (OFEHerkenningConfig, "/eherkenning-oidc/callback/"),
-            (OFDigiDMachtigenConfig, "/digid-machtigen-oidc/callback/"),
+            (OIDC_DIGID_IDENTIFIER, "/digid-oidc/callback/"),
+            (OIDC_EH_IDENTIFIER, "/eherkenning-oidc/callback/"),
+            (OIDC_DIGID_MACHTIGEN_IDENTIFIER, "/digid-machtigen-oidc/callback/"),
             (
-                OFEHerkenningBewindvoeringConfig,
+                OIDC_EH_BEWINDVOERING_IDENTIFIER,
                 "/eherkenning-bewindvoering-oidc/callback/",
             ),
         )
 
-        for config_cls, expected_url in cases:
-            with self.subTest(config_cls=config_cls, expected_url=expected_url):
-                # use an init view to decouple the implementation details from the
-                # desired behaviour.
-                view = OIDCInit(config_class=config_cls)
+        for identifier, expected_url in cases:
+            with self.subTest(
+                oidc_plugin_identifier=identifier, expected_url=expected_url
+            ):
+                plugin = registry[identifier]
 
-                url = reverse(view.get_settings("OIDC_AUTHENTICATION_CALLBACK_URL"))
+                url = reverse(plugin.get_setting("OIDC_AUTHENTICATION_CALLBACK_URL"))
 
                 self.assertEqual(url, expected_url)
 
     def test_default_settings_behaviour(self):
         cases = (
-            OFDigiDConfig,
-            OFEHerkenningConfig,
-            OFDigiDMachtigenConfig,
-            OFEHerkenningBewindvoeringConfig,
-            OFEIDASConfig,
-            OFEIDASCompanyConfig,
+            OIDC_DIGID_IDENTIFIER,
+            OIDC_EH_IDENTIFIER,
+            OIDC_DIGID_MACHTIGEN_IDENTIFIER,
+            OIDC_EH_BEWINDVOERING_IDENTIFIER,
+            OIDC_EIDAS_COMPANY_IDENTIFIER,
+            OIDC_EIDAS_IDENTIFIER,
         )
 
-        for config_cls in cases:
-            with self.subTest(config_cls=config_cls):
-                # use an init view to decouple the implementation details from the
-                # desired behaviour.
-                view = OIDCInit(config_class=config_cls)
+        for identifier in cases:
+            with self.subTest(oidc_client_identifier=identifier):
+                plugin = registry[identifier]
 
-                url = reverse(view.get_settings("OIDC_AUTHENTICATION_CALLBACK_URL"))
+                url = reverse(plugin.get_setting("OIDC_AUTHENTICATION_CALLBACK_URL"))
 
                 self.assertEqual(url, "/auth/oidc/callback/")
