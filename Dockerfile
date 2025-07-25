@@ -12,6 +12,7 @@ FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 FROM python:3.12-slim-bookworm AS backend-build
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+        git \
         pkg-config \
         build-essential \
         python3-dev \

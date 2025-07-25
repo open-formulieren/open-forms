@@ -107,12 +107,6 @@
       "value": "The maximum value this field can have before the form can be submitted."
     }
   ],
-  "/kZu2e": [
-    {
-      "type": 0,
-      "value": "Initials"
-    }
-  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -2449,12 +2443,6 @@
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
     }
   ],
-  "JKnHMC": [
-    {
-      "type": 0,
-      "value": "Lastname"
-    }
-  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -2761,12 +2749,6 @@
     {
       "type": 0,
       "value": "Change text"
-    }
-  ],
-  "M2+MHj": [
-    {
-      "type": 0,
-      "value": "Affixes"
     }
   ],
   "M9JbDC": [
@@ -4239,12 +4221,6 @@
       "value": "TITLE parameter"
     }
   ],
-  "ZYWsHs": [
-    {
-      "type": 0,
-      "value": "Date of birth"
-    }
-  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -5329,12 +5305,6 @@
     {
       "type": 0,
       "value": "If left blank, then the most recent version is used."
-    }
-  ],
-  "hkXaC1": [
-    {
-      "type": 0,
-      "value": "BSN"
     }
   ],
   "huHjRm": [

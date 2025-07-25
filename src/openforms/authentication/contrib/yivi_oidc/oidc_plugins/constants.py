@@ -1,0 +1,1 @@
+OIDC_YIVI_IDENTIFIER = "oidc-yivi"
