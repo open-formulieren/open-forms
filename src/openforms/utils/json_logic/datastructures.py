@@ -7,6 +7,12 @@ from json_logic.typing import JSON, Primitive
 
 from .descriptions import _generate_description
 
+"""
+Variables that can be used inside the 'rule' part and are not included 
+in the 'data' part of JSON logic. 
+"""
+RESERVED_VAR_NAMES: list[str] = ["current", "accumulator"]
+
 
 @dataclass(frozen=True)
 class InputVar:
@@ -33,6 +39,9 @@ class ExpressionIntrospection:
                 continue
 
             key = cast(str, node.arguments[0])
+            if key in RESERVED_VAR_NAMES:
+                continue
+
             inputs.append(InputVar(key=key))
 
         return inputs
