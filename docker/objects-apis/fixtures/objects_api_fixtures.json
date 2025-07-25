@@ -45,6 +45,15 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 6,
+    "fields": {
+        "service": 1,
+        "uuid": "59cdc902-576b-495f-ae63-c9c78b8afc09",
+        "_name": "Partners"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -55,7 +64,8 @@
         "last_modified": "2023-10-24T08:58:51.291Z",
         "created": "2023-10-24T08:58:51.291Z",
         "application": "",
-        "administration": ""
+        "administration": "",
+        "is_superuser": false
     }
 },
 {
@@ -108,6 +118,17 @@
     "fields": {
         "token_auth": 1,
         "object_type": 5,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 6,
+    "fields": {
+        "token_auth": 1,
+        "object_type": 6,
         "mode": "read_and_write",
         "use_fields": false,
         "fields": null

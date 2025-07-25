@@ -155,6 +155,16 @@ def process_mapped_variable(
             assert isinstance(value, dict)
             if transform_to_list and variable_key in transform_to_list:
                 value = [option for option, is_selected in value.items() if is_selected]
+        case {"type": "partners"}:
+            assert isinstance(value, list)
+
+            for partner in value:
+                assert isinstance(partner, dict)
+
+                # these are not relevant for the object (at least for now)
+                partner.pop("firstNames", None)
+                partner.pop("dateOfBirthPrecision", None)
+                partner.pop("__addedManually", None)
 
         # not a component or standard behaviour where no transformation is necessary
         case None | _:
