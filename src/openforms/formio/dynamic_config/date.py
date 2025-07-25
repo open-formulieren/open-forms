@@ -1,14 +1,11 @@
 import operator
-from datetime import date, datetime, time
-from typing import Any, TypedDict, cast
+from datetime import datetime, time
+from typing import TypedDict, cast
 
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 
 from dateutil.relativedelta import relativedelta
 from glom import assign, glom
-
-from openforms.utils.date import parse_date
 
 from ..datastructures import FormioData
 from ..typing import DateComponent, DatetimeComponent
@@ -78,34 +75,6 @@ def normalize_config(
     return config
 
 
-def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
-    match [value, component_type]:
-        case [datetime(), "date"]:
-            assert value.tzinfo is not None, (
-                "Expected the input variable to be timezone aware!"
-            )
-            return timezone.localtime(value=value).date()
-        case [date(), "date"]:
-            return value
-        case [str(), "date"]:
-            # attempt to parse it as a date/datetime - could be because the variable
-            # was not properly typed and type conversion didn't happen.
-            # This can raise ValueError if the string is gibberish.
-            return parse_date(value)
-
-        case [datetime(), "datetime"]:
-            return value
-        case [str(), "datetime"]:
-            parsed_value = parse_datetime(value)
-            if not parsed_value:
-                raise ValueError(f"Could not parse {value} as a datetime")
-            return parsed_value
-
-    raise ValueError(
-        f"Unexpected type encountered when processing min/max validation for {component_type} component."
-    )
-
-
 def calculate_delta(
     component: DateComponent | DatetimeComponent,
     config: DateConstraintConfiguration,
@@ -115,10 +84,7 @@ def calculate_delta(
 
     base_value = data.get(config["variable"], None)
     if not base_value:
-        return
-
-    assert "type" in component
-    base_value = convert_to_python_type(component["type"], base_value)
+        return None
 
     delta = relativedelta(
         years=cast(int, glom(config, "delta.years", default=None) or 0),

@@ -7367,6 +7367,7 @@ components:
       - datetime
       - time
       - date
+      - partners
       type: string
       description: |-
         * `string` - String
@@ -7378,6 +7379,7 @@ components:
         * `datetime` - Datetime
         * `time` - Time
         * `date` - Date
+        * `partners` - Partners
     Date:
       type: object
       properties:
@@ -8623,6 +8625,7 @@ components:
             * `datetime` - Datetime
             * `time` - Time
             * `date` - Date
+            * `partners` - Partners
         dataFormat:
           type: string
           description: The format of the value that will be associated with this variable

@@ -30,6 +30,7 @@ from openforms.contrib.zgw.service import (
 from openforms.emails.service import get_last_confirmation_email
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.typing import VariableValue
 from openforms.utils.date import datetime_in_amsterdam
 from openforms.utils.pdf import convert_html_to_pdf
 from openforms.variables.utils import get_variables_for_context
@@ -56,24 +57,22 @@ class VariablesProperties(TypedDict):
 
 def get_property_mappings_from_submission(
     submission: Submission, mappings: list[VariablesProperties]
-) -> dict[str, Any]:
+) -> dict[str, VariableValue]:
     """
     Extract the values from the submission and map onto the provided properties (eigenschappen).
     """
-    property_mappings = {}
 
     # dict of {componentKey: eigenschap} mapping
     simple_mappings = {
         mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
     }
-    variable_values: list[tuple[str, str]]
-    variable_values = submission.submissionvaluevariable_set.filter(  # type: ignore
-        key__in=simple_mappings
-    ).values_list("key", "value")
+    variable_values = submission.data
 
-    for key, form_value in variable_values:
-        eigenschap = simple_mappings[key]
-        property_mappings[eigenschap] = form_value
+    property_mappings = {
+        simple_mappings[key]: variable_values[key]
+        for key in simple_mappings
+        if key in variable_values
+    }
 
     return property_mappings
 
@@ -176,7 +175,10 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
         "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
         "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
         "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
-        "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
+        "betrokkeneIdentificatie.geboortedatum": FieldConf(
+            RegistrationAttribute.initiator_geboortedatum,
+            transform=lambda date: date.isoformat(),
+        ),
         "betrokkeneIdentificatie.geslachtsaanduiding": FieldConf(
             RegistrationAttribute.initiator_geslachtsaanduiding,
             transform=_gender_choices,
@@ -428,7 +430,7 @@ class ZGWRegistration(BasePlugin[RegistrationOptions]):
                                 "voorletters": data.get("initials"),
                                 "geslachtsnaam": data.get("lastName"),
                                 "voornamen": data.get("firstNames"),
-                                "geboortedatum": data.get("dateOfBirth"),
+                                "geboortedatum": data.get("dateOfBirth").isoformat(),
                                 "roltoelichting": partners_description,
                             },
                         }

@@ -260,7 +260,7 @@ django-axes==6.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-camunda==0.15.0
+django-camunda==0.15.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

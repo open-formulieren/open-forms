@@ -421,8 +421,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             submission=submission,
             key="userDefinedVar",
             value=0,
+            data_type=FormVariableDataTypes.int,
             form_variable__user_defined=True,
-            form_variable__data_type=FormVariableDataTypes.int,
         )
 
         self._add_submission_to_session(submission)

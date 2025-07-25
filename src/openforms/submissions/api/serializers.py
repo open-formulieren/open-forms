@@ -268,11 +268,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
-        new_configuration = evaluate_form_logic(
-            instance.submission,
-            instance,
-            instance.submission.data,
-        )
+        new_configuration = evaluate_form_logic(instance.submission, instance)
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)
@@ -284,7 +280,9 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     def _run_formio_validation(self, data: FormioData) -> None:
         submission = self.instance.submission
         # evaluate dynamic configuration
-        configuration = evaluate_form_logic(submission, step=self.instance, data=data)
+        configuration = evaluate_form_logic(
+            submission, step=self.instance, unsaved_data=data
+        )
 
         # mark them all as not required, to support pausing forms where data is very
         # likely to still be incomplete. See #4144.
