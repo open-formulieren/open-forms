@@ -1,5 +1,13 @@
 from django.db import models
+from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
+
+from openforms.payments.constants import (
+    PAYMENT_STATUS_FINAL,
+    PaymentStatus as OFPaymentStatus,
+)
+
+# TODO: use TextChoices return type hint where applicable
 
 
 class WordlineEndpoints(models.TextChoices):
@@ -49,29 +57,46 @@ class PaymentStatus(models.TextChoices):
     # REFUNDED category
     refunded = "REFUNDED"
 
-    # TODO: map to PaymentStatus from payments app
-
 
 class PaymentStatusCategory(models.TextChoices):
     rejected = "REJECTED"
     status_unknown = "STATUS_UNKNOWN"
     successful = "SUCCESFUL"
 
-    payment_status_mapping = {
-        rejected: [
-            PaymentStatus.created,
-            PaymentStatus.cancelled,
-            PaymentStatus.rejected,
-            PaymentStatus.rejected_capture,
-        ],
-        status_unknown: [PaymentStatus.redirected],
-        successful: [PaymentStatus.redirected],
-    }
+    @classproperty
+    def payment_status_mapping(cls) -> dict:
+        return {
+            cls.rejected: [
+                PaymentStatus.created,
+                PaymentStatus.cancelled,
+                PaymentStatus.rejected,
+                PaymentStatus.rejected_capture,
+            ],
+            cls.status_unknown: [PaymentStatus.redirected],
+            cls.successful: [
+                PaymentStatus.pending_payment,
+                PaymentStatus.account_verified,
+                PaymentStatus.pending_approval,
+                PaymentStatus.pending_completion,
+                PaymentStatus.pending_capture,
+                PaymentStatus.pending_fraud_approval,
+                PaymentStatus.authorization_requested,
+                PaymentStatus.capture_requested,
+                PaymentStatus.captured,
+                PaymentStatus.paid,
+                PaymentStatus.chargeback_notification,
+                PaymentStatus.chargebacked,
+                PaymentStatus.reversed,
+                PaymentStatus.refunded,
+            ],
+        }
 
     @classmethod
-    def from_payment_status(cls, value):
+    def from_payment_status(cls, worldline_status: str) -> str:
         return next(
-            category for category, items in cls.payment_status_mapping if value in items
+            category
+            for category, items in cls.payment_status_mapping
+            if worldline_status in items
         )
 
 
@@ -86,44 +111,71 @@ class StatusCategory(models.TextChoices):
     reversed = "REVERSED"
     refunded = "REFUNDED"
 
-    payment_status_mapping = {
-        created: [PaymentStatus.created],
-        unsuccessful: [
-            PaymentStatus.cancelled,
-            PaymentStatus.rejected,
-            PaymentStatus.rejected_capture,
-        ],
-        pending_payment: [
-            PaymentStatus.redirected,
-            PaymentStatus.pending_payment,
-        ],
-        account_verified: [PaymentStatus.account_verified],
-        pending_merchant: [
-            PaymentStatus.pending_approval,
-            PaymentStatus.pending_completion,
-            PaymentStatus.pending_capture,
-            PaymentStatus.pending_fraud_approval,
-        ],
-        pending_connect_or_3rd_party: [
-            PaymentStatus.authorization_requested,
-            PaymentStatus.capture_requested,
-        ],
-        completed: [
-            PaymentStatus.captured,
-            PaymentStatus.paid,
-            PaymentStatus.chargeback_notification,
-        ],
-        reversed: [
-            PaymentStatus.chargebacked,
-            PaymentStatus.reversed,
-        ],
-        refunded: [
-            PaymentStatus.refunded,
-        ],
-    }
+    @classproperty
+    def payment_status_mapping(cls) -> dict:
+        return {
+            cls.created: [PaymentStatus.created],
+            cls.unsuccessful: [
+                PaymentStatus.cancelled,
+                PaymentStatus.rejected,
+                PaymentStatus.rejected_capture,
+            ],
+            cls.pending_payment: [
+                PaymentStatus.redirected,
+                PaymentStatus.pending_payment,
+            ],
+            cls.account_verified: [PaymentStatus.account_verified],
+            cls.pending_merchant: [
+                PaymentStatus.pending_approval,
+                PaymentStatus.pending_completion,
+                PaymentStatus.pending_capture,
+                PaymentStatus.pending_fraud_approval,
+            ],
+            cls.pending_connect_or_3rd_party: [
+                PaymentStatus.authorization_requested,
+                PaymentStatus.capture_requested,
+            ],
+            cls.completed: [
+                PaymentStatus.captured,
+                PaymentStatus.paid,
+                PaymentStatus.chargeback_notification,
+            ],
+            cls.reversed: [
+                PaymentStatus.chargebacked,
+                PaymentStatus.reversed,
+            ],
+            cls.refunded: [
+                PaymentStatus.refunded,
+            ],
+        }
+
+    @classproperty
+    def of_status_mapping(cls) -> dict:
+        return {
+            cls.created: OFPaymentStatus.started,
+            cls.unsuccessful: OFPaymentStatus.failed,
+            cls.pending_payment: OFPaymentStatus.started,
+            cls.account_verified: OFPaymentStatus.started,
+            cls.pending_merchant: OFPaymentStatus.processing,
+            cls.pending_connect_or_3rd_party: OFPaymentStatus.processing,
+            cls.completed: OFPaymentStatus.completed,
+            cls.reversed: OFPaymentStatus.completed,
+            cls.refunded: OFPaymentStatus.completed,
+        }
 
     @classmethod
-    def from_payment_status(cls, value):
+    def from_payment_status(cls, worldline_status: str) -> str:
         return next(
-            category for category, items in cls.payment_status_mapping if value in items
+            category
+            for category, items in cls.payment_status_mapping.items()
+            if worldline_status in items
         )
+
+    @classmethod
+    def to_of_status(cls, worldine_status_category: str) -> str:
+        return cls.of_status_mapping[worldine_status_category]
+
+
+def is_final_status(worldline_status: str) -> bool:
+    status_category = StatusCategory.from_payment_status(worldline_status)
+    return StatusCategory.to_of_status(status_category) in PAYMENT_STATUS_FINAL

@@ -1,4 +1,10 @@
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import structlog
@@ -15,7 +21,12 @@ from rest_framework.request import Request
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.frontend.frontend import get_frontend_redirect_url
 from openforms.payments.base import BasePlugin, PaymentInfo
-from openforms.payments.constants import PaymentRequestType, PaymentStatus as _WorldlinePaymentStatus
+from openforms.payments.constants import (
+    PAYMENT_STATUS_FINAL,
+    PaymentRequestType,
+    UserAction,
+)
+from openforms.payments.contrib.worldline.constants import StatusCategory
 from openforms.payments.contrib.worldline.models import WorldlineMerchant
 from openforms.payments.contrib.worldline.typing import (
     AmountOfMoney,
@@ -24,6 +35,7 @@ from openforms.payments.contrib.worldline.typing import (
     PaymentOptions,
 )
 from openforms.payments.models import SubmissionPayment
+from openforms.submissions.tokens import submission_status_token_generator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...registry import register
@@ -115,13 +127,30 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
         payment.save(update_fields=("plugin_options",))
 
-        breakpoint()
-
         return PaymentInfo(
             type=PaymentRequestType.get,
             url=checkout_response.redirect_url,  # valid for three hours
             data={},
         )
+
+    def apply_status(
+        self, payment: SubmissionPayment, worldline_status: str, payment_id: str
+    ) -> None:
+        if payment.status in PAYMENT_STATUS_FINAL:
+            # shouldn't happen or race-condition
+            return
+
+        status_category = StatusCategory.from_payment_status(worldline_status)
+        new_status = StatusCategory.to_of_status(status_category)
+
+        # run this query as atomic update()
+        qs = SubmissionPayment.objects.filter(id=payment.id)
+        qs = qs.exclude(status__in=PAYMENT_STATUS_FINAL)
+        qs = qs.exclude(status=new_status)
+        res = qs.update(status=new_status, provider_payment_id=payment_id)
+
+        if res > 0:
+            payment.refresh_from_db()
 
     def handle_return(
         self,
@@ -143,28 +172,44 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
             if (
                 not request.query_params.get("RETURNMAC") == returnmac
-                or not request.query_params.get("checkout_id") == checkout_id
+                or not request.query_params.get("hostedCheckoutId") == checkout_id
             ):
-                return HttpResponseBadRequest("Incorrect query parameters provided")
+                return HttpResponseBadRequest(b"Incorrect query parameters provided")
+
+            token = submission_status_token_generator.make_token(payment.submission)
+            status_url = request.build_absolute_uri(
+                reverse(
+                    "api:submission-status",
+                    kwargs={"uuid": payment.submission.uuid, "token": token},
+                )
+            )
 
             client = _construct_client_from_options(options)
 
             try:
                 response = client.get_hosted_checkout(checkout_id)
-            except ApiException as e:
-                raise HttpResponseBadRequest(
-                    "Unable to retrieve checkout status"
-                ) from e  # TODO: return in a more user friendly way
+            except ApiException:
+                return HttpResponseBadRequest(
+                    b"Unable to retrieve checkout status"
+                )  # TODO: return in a more user friendly way
 
             payment_data = response.created_payment_output
+            status = (
+                payment_data.payment.status
+                if payment_data and payment_data.payment
+                else None
+            )
 
             if not payment_data:
                 return HttpResponseBadRequest(
-                    "No payment associated with the given checkout."
+                    b"No payment associated with the given checkout."
                 )  # TODO: return in a more user friendly way
+            elif not status:
+                return HttpResponseBadRequest(
+                    b"No status associated with the given payment."
+                )
 
-            # TODO: set payment status
-            payment.status =
+            self.apply_status(payment, status, payment.provider_payment_id)
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
@@ -172,7 +217,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 action_params={
                     "of_payment_status": payment.status,
                     "of_payment_id": str(payment.uuid),
-                    "of_payment_action": action or UserAction.unknown,
+                    "of_payment_action": UserAction.accept,
                     "of_submission_status": status_url,
                 },
             )
