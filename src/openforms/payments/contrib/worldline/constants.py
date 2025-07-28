@@ -2,11 +2,14 @@ from django.db import models
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
+import structlog
+
 from openforms.payments.constants import (
-    PAYMENT_STATUS_FINAL,
     PaymentStatus as OFPaymentStatus,
     UserAction,
 )
+
+logger = structlog.stdlib.get_logger(__name__)
 
 # TODO: use TextChoices return type hint where applicable
 
@@ -57,48 +60,6 @@ class PaymentStatus(models.TextChoices):
 
     # REFUNDED category
     refunded = "REFUNDED"
-
-
-class PaymentStatusCategory(models.TextChoices):
-    rejected = "REJECTED"
-    status_unknown = "STATUS_UNKNOWN"
-    successful = "SUCCESFUL"
-
-    @classproperty
-    def payment_status_mapping(cls) -> dict:
-        return {
-            cls.rejected: [
-                PaymentStatus.created,
-                PaymentStatus.cancelled,
-                PaymentStatus.rejected,
-                PaymentStatus.rejected_capture,
-            ],
-            cls.status_unknown: [PaymentStatus.redirected],
-            cls.successful: [
-                PaymentStatus.pending_payment,
-                PaymentStatus.account_verified,
-                PaymentStatus.pending_approval,
-                PaymentStatus.pending_completion,
-                PaymentStatus.pending_capture,
-                PaymentStatus.pending_fraud_approval,
-                PaymentStatus.authorization_requested,
-                PaymentStatus.capture_requested,
-                PaymentStatus.captured,
-                PaymentStatus.paid,
-                PaymentStatus.chargeback_notification,
-                PaymentStatus.chargebacked,
-                PaymentStatus.reversed,
-                PaymentStatus.refunded,
-            ],
-        }
-
-    @classmethod
-    def from_payment_status(cls, worldline_status: str) -> str:
-        return next(
-            category
-            for category, items in cls.payment_status_mapping
-            if worldline_status in items
-        )
 
 
 class StatusCategory(models.TextChoices):
@@ -155,13 +116,13 @@ class StatusCategory(models.TextChoices):
         return {
             cls.created: OFPaymentStatus.started,
             cls.unsuccessful: OFPaymentStatus.failed,
-            cls.pending_payment: OFPaymentStatus.started,
+            cls.pending_payment: OFPaymentStatus.processing,
             cls.account_verified: OFPaymentStatus.started,
             cls.pending_merchant: OFPaymentStatus.processing,
             cls.pending_connect_or_3rd_party: OFPaymentStatus.processing,
             cls.completed: OFPaymentStatus.completed,
             cls.reversed: OFPaymentStatus.completed,
-            cls.refunded: OFPaymentStatus.completed,
+            cls.refunded: OFPaymentStatus.failed,
         }
 
     @classproperty
@@ -195,11 +156,40 @@ class StatusCategory(models.TextChoices):
         return cls.of_action_mapping[worldine_status_category]
 
 
-def is_final_status(worldline_status: str) -> bool:
-    status_category = StatusCategory.from_payment_status(worldline_status)
-    return StatusCategory.to_of_status(status_category) in PAYMENT_STATUS_FINAL
+class HostedCheckoutStatus(models.TextChoices):
+    payment_created = "PAYMENT_CREATED"
+    in_progress = "IN_PROGRESS"
+    cancelled_by_consumer = "CANCELLED_BY_CONSUMER"
+    client_not_eligible = "CLIENT_NOT_ELIGIBLE_FOR_SELECTED_PAYMENT_PRODUCT"
+
+    @classproperty
+    def of_mapping(cls) -> dict[str, str]:
+        return {
+            cls.payment_created: OFPaymentStatus.started,
+            cls.in_progress: OFPaymentStatus.started,
+            cls.cancelled_by_consumer: OFPaymentStatus.failed,
+            cls.client_not_eligible: OFPaymentStatus.failed,
+        }
+
+    @classmethod
+    def to_of_status(cls, value) -> str:
+        return cls.of_mapping[value]
 
 
-def get_user_action(worldline_status: str) -> str:
-    status_category = StatusCategory.from_payment_status(worldline_status)
-    return StatusCategory.to_of_action(status_category)
+def get_payment_status(
+    worldline_status: str | None, checkout_status: str | None = None
+) -> str:
+    if not worldline_status and checkout_status:
+        return HostedCheckoutStatus.to_of_status(checkout_status)
+
+    try:
+        status_category = StatusCategory.from_payment_status(worldline_status)
+    except KeyError as exc:
+        logger.exception(
+            "unknown_status_encountered",  # TODO: include in logging documentation
+            exc_info=exc,
+            status=worldline_status,
+            checkout_status=checkout_status,
+        )
+        return ""
+    return StatusCategory.to_of_status(status_category)

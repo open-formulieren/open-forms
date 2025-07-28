@@ -9,6 +9,7 @@ class PaymentRequestType(models.TextChoices):
     post = "post"
 
 
+# TODO: remove after removal of ogone app
 class UserAction(models.TextChoices):
     accept = "accept"
     exception = "exception"

@@ -3,12 +3,14 @@ from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseRedirect,
+    HttpResponseServerError,
 )
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from onlinepayments.sdk.api_exception import ApiException
+from onlinepayments.sdk.communicator import CommunicationException
 from onlinepayments.sdk.communicator_configuration import CommunicatorConfiguration
 from onlinepayments.sdk.domain.create_hosted_checkout_request import (
     CreateHostedCheckoutRequest,
@@ -16,6 +18,7 @@ from onlinepayments.sdk.domain.create_hosted_checkout_request import (
 from onlinepayments.sdk.factory import Factory
 from onlinepayments.sdk.merchant.merchant_client import IHostedCheckoutClient
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -24,11 +27,10 @@ from openforms.payments.base import BasePlugin, PaymentInfo
 from openforms.payments.constants import (
     PAYMENT_STATUS_FINAL,
     PaymentRequestType,
-    UserAction,
+    PaymentStatus,
 )
 from openforms.payments.contrib.worldline.constants import (
-    StatusCategory,
-    get_user_action,
+    get_payment_status,
 )
 from openforms.payments.contrib.worldline.models import WorldlineMerchant
 from openforms.payments.contrib.worldline.typing import (
@@ -46,7 +48,6 @@ from ...registry import register
 logger = structlog.stdlib.get_logger(__name__)
 
 
-# TODO: add configurable template fields?
 class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     merchant = PrimaryKeyRelatedAsChoicesField(
         queryset=WorldlineMerchant.objects.all(),
@@ -111,15 +112,22 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         # for more configurable checkout options.
         checkout_request = CreateHostedCheckoutRequest()
         checkout_request.from_dictionary(
-            {"hostedCheckoutSpecificInput": checkout_input, "order": order}
+            {
+                "returnCancelState": True,
+                "hostedCheckoutSpecificInput": checkout_input,
+                "order": order,
+            }
         )
 
         try:
             checkout_response = client.create_hosted_checkout(checkout_request)
-        except ApiException as e:
-            raise Exception(
-                "Failed to generate redirect URL to payment provider"
-            ) from e  # TODO: handle this situation in a more user friendly way
+        except (ApiException, CommunicationException) as e:
+            payment.status = PaymentStatus.failed
+            payment.save(update_fields=("status",))
+
+            raise APIException(
+                detail="Failed to retrieve redirect URL from payment provider"
+            ) from e
 
         plugin_options = payment.plugin_options
         payment.plugin_options = {
@@ -137,20 +145,23 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         )
 
     def apply_status(
-        self, payment: SubmissionPayment, worldline_status: str, payment_id: str
+        self,
+        payment: SubmissionPayment,
+        worldline_status: str,
+        checkout_status: str,
+        payment_id: str,
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
             return
 
-        status_category = StatusCategory.from_payment_status(worldline_status)
-        new_status = StatusCategory.to_of_status(status_category)
+        status = get_payment_status(worldline_status, checkout_status=checkout_status)
 
         # run this query as atomic update()
         qs = SubmissionPayment.objects.filter(id=payment.id)
         qs = qs.exclude(status__in=PAYMENT_STATUS_FINAL)
-        qs = qs.exclude(status=new_status)
-        res = qs.update(status=new_status, provider_payment_id=payment_id)
+        qs = qs.exclude(status=status)
+        res = qs.update(status=status, provider_payment_id=payment_id)
 
         if res > 0:
             payment.refresh_from_db()
@@ -192,27 +203,26 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             try:
                 response = client.get_hosted_checkout(checkout_id)
             except ApiException:
-                return HttpResponseBadRequest(
-                    b"Unable to retrieve checkout status"
-                )  # TODO: return in a more user friendly way
+                return HttpResponseServerError(b"Unable to retrieve checkout status")
 
             payment_data = response.created_payment_output
+            checkout_status = response.status
             status = (
                 payment_data.payment.status
                 if payment_data and payment_data.payment
-                else None
+                else ""
             )
 
-            if not payment_data:
-                return HttpResponseBadRequest(
-                    b"No payment associated with the given checkout."
-                )  # TODO: return in a more user friendly way
-            elif not status:
-                return HttpResponseBadRequest(
-                    b"No status associated with the given payment."
-                )
+            payment_provider_id = (
+                payment_data.payment.id if payment_data and payment_data.payment else ""
+            )
 
-            self.apply_status(payment, status, payment.provider_payment_id)
+            self.apply_status(
+                payment,
+                status,
+                checkout_status,
+                payment_provider_id,
+            )
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
@@ -220,7 +230,6 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 action_params={
                     "of_payment_status": payment.status,
                     "of_payment_id": str(payment.uuid),
-                    "of_payment_action": get_user_action(status),
                     "of_submission_status": status_url,
                 },
             )
