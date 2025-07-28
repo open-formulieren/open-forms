@@ -28,11 +28,6 @@ __pycache__
 .hypothesis
 
 # Environment
-/deployment/app.*.yml
-/deployment/hosts*
-!/deployment/hosts.example
-/deployment/templates/stuf-bg.conf
-
 local.py
 /env/
 /venv/

@@ -8,7 +8,6 @@ docker-compose*
 .git
 .github/
 .vscode
-deployment/
 docs/
 docker/
 env/
