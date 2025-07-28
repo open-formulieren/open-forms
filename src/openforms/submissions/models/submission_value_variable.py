@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -14,6 +14,8 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 
 from openforms.formio.service import FormioData
+from openforms.formio.typing import Component, EditGridComponent
+from openforms.formio.utils import get_component_data_subtype, get_component_datatype
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
@@ -362,9 +364,21 @@ class SubmissionValueVariable(models.Model):
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
         unique_together = (("submission", "key"),)
+        # TODO-2324: also add the constraints from form variable here?
 
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
+
+    # TODO-2324: change this when we have the configuration available on the variable
+    #  here
+    @property
+    def component(self):
+        try:
+            wrapper = self.form_variable.form_definition.configuration_wrapper
+        except AttributeError:
+            return None
+
+        return wrapper[self.key]
 
     def to_python(self, value: VariableValue | object = empty) -> VariableValue:
         """
@@ -386,12 +400,22 @@ class SubmissionValueVariable(models.Model):
             return None
 
         if not self.data_subtype:
-            return self._value_to_python(value, self.data_type)
+            return self._value_to_python(value, self.data_type, self.component)
         else:
             assert self.data_type == FormVariableDataTypes.array
-            return [self._value_to_python(v, self.data_subtype) for v in value]
+            return [
+                self._value_to_python(v, self.data_subtype, self.component)
+                for v in value
+            ]
 
-    def _value_to_python(self, value: VariableValue, data_type: str) -> VariableValue:
+    # TODO-2324: probably better to make this a separate function or static method,
+    #  because ``self`` can be misleading, as this is also used to process children
+    #  components
+    # TODO-2324: do we even need ``data_type`` now? We could just get everything from
+    #  the component
+    def _value_to_python(
+        self, value: VariableValue, data_type: str, component: Component | None = None
+    ) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,
@@ -446,5 +470,31 @@ class SubmissionValueVariable(models.Model):
                 value["dateOfBirth"], FormVariableDataTypes.date
             )
             return value
+
+        if value and data_type == FormVariableDataTypes.editgrid:
+            # Edit grids are fun :)
+            component = cast(EditGridComponent, component)
+
+            value = FormioData(value)
+            for child_component in component["components"]:
+                child_key = child_component["key"]
+                if (child_value := value.get(child_key, empty)) is empty:
+                    continue
+
+                data_type = get_component_datatype(child_component)
+                data_subtype = get_component_data_subtype(child_component)
+
+                if not data_subtype:
+                    value[child_key] = self._value_to_python(
+                        child_value, data_type, child_component
+                    )
+                else:
+                    assert data_type == FormVariableDataTypes.array
+                    value[child_key] = [
+                        self._value_to_python(v, data_subtype, child_component)
+                        for v in child_value
+                    ]
+
+            return value.data
 
         return value

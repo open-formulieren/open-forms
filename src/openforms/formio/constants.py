@@ -18,7 +18,7 @@ COMPONENT_DATATYPES = {
 
 COMPONENT_DATA_SUBTYPES = {
     "file": "object",
-    "editgrid": "object",
+    "editgrid": "editgrid",
     "partners": "partners",
 }
 
