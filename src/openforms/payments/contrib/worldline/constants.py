@@ -6,7 +6,6 @@ import structlog
 
 from openforms.payments.constants import (
     PaymentStatus as OFPaymentStatus,
-    UserAction,
 )
 
 logger = structlog.stdlib.get_logger(__name__)
@@ -125,20 +124,6 @@ class StatusCategory(models.TextChoices):
             cls.refunded: OFPaymentStatus.failed,
         }
 
-    @classproperty
-    def of_action_mapping(cls) -> dict:
-        return {
-            cls.created: UserAction.unknown,
-            cls.unsuccessful: UserAction.exception,
-            cls.pending_payment: UserAction.unknown,
-            cls.account_verified: UserAction.unknown,
-            cls.pending_merchant: UserAction.unknown,
-            cls.pending_connect_or_3rd_party: UserAction.unknown,
-            cls.completed: UserAction.accept,
-            cls.reversed: UserAction.accept,
-            cls.refunded: UserAction.accept,
-        }
-
     @classmethod
     def from_payment_status(cls, worldline_status: str) -> str:
         return next(
@@ -150,10 +135,6 @@ class StatusCategory(models.TextChoices):
     @classmethod
     def to_of_status(cls, worldine_status_category: str) -> str:
         return cls.of_status_mapping[worldine_status_category]
-
-    @classmethod
-    def to_of_action(cls, worldine_status_category: str) -> str:
-        return cls.of_action_mapping[worldine_status_category]
 
 
 class HostedCheckoutStatus(models.TextChoices):
