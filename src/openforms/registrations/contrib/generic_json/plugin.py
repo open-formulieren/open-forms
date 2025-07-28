@@ -374,6 +374,18 @@ def process_component(
                 # so mutations are not applied to ``values``
                 edit_grid_values_list[index] = edit_grid_values.data
 
+        case {"type": "partners"}:
+            partners = values[key]
+            assert isinstance(partners, list)
+
+            for partner in partners:
+                assert isinstance(partner, dict)
+
+                # these are not relevant (at least for now)
+                partner.pop("firstNames", None)
+                partner.pop("dateOfBirthPrecision", None)
+                partner.pop("__addedManually", None)
+
         case _:
             pass
 

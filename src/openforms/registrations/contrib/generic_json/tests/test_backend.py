@@ -1713,9 +1713,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
                     "affixes": "",
                     "initials": "P.",
                     "lastName": "Pauw",
-                    "firstNames": "Pia",
                     "dateOfBirth": "1989-04-01",
-                    "dateOfBirthPrecision": "date",
                 }
             ]
         }
