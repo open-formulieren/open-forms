@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import {getFormComponents} from 'components/admin/form_design/utils';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -10,11 +11,17 @@ import {TextInput} from 'components/admin/forms/Inputs';
 import {COSIGN_V1_TYPE} from 'components/form/coSignOld';
 
 import TYPES from './types';
+import {VARIABLE_SOURCES} from './variables/constants';
 
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
 const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
+  const {formVariables} = useContext(FormContext);
+  const userDefinedVariables = formVariables.filter(
+    variable => variable.source === VARIABLE_SOURCES.userDefined
+  );
+
   const {brpPersonenRequestOptions} = form;
 
   const components = Object.values(getFormComponents(formSteps));
@@ -26,9 +33,14 @@ const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
   const hasNpFamilyMembers = components.some(comp => comp.type === 'npFamilyMembers');
   const hasCosign = components.some(comp => comp.type === COSIGN_V1_TYPE);
 
+  // The new Family members prefill plugin
+  const hasFamilyMembersPrefill = userDefinedVariables.some(
+    variable => variable.prefillPlugin === 'family_members'
+  );
+
   return (
     <>
-      {hasBRPPrefill || hasNpFamilyMembers || hasCosign ? (
+      {hasBRPPrefill || hasNpFamilyMembers || hasCosign || hasFamilyMembersPrefill ? (
         <Fieldset
           title={
             <FormattedMessage
