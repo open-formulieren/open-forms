@@ -1,27 +1,27 @@
 interactions:
 - request:
     body: '{"values": {"partners": [{"bsn": "999970136", "affixes": "", "initials":
-      "P.", "lastName": "Pauw", "firstNames": "Pia", "dateOfBirth": "1989-04-01",
-      "dateOfBirthPrecision": "date"}]}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object", "properties": {"partners": {"title": "Partners", "type": "array",
-      "items": {"type": "object", "required": ["bsn"], "properties": {"bsn": {"type":
-      "string", "pattern": "^\\d{9}$", "format": "nl-bsn"}, "initials": {"type": "string"},
-      "affixes": {"type": "string"}, "lastName": {"type": "string"}, "dateOfBirth":
-      {"type": "string", "format": "date"}}, "additionalProperties": false}}}, "required":
-      ["partners"], "additionalProperties": false}, "metadata": {}, "metadata_schema":
-      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
-      "properties": {}, "required": [], "additionalProperties": false}}'
+      "P.", "lastName": "Pauw", "dateOfBirth": "1989-04-01"}]}, "values_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {"partners": {"title": "Partners", "type": "array", "items": {"type": "object",
+      "required": ["bsn"], "properties": {"bsn": {"type": "string", "pattern": "^\\d{9}$",
+      "format": "nl-bsn"}, "initials": {"type": "string"}, "affixes": {"type": "string"},
+      "lastName": {"type": "string"}, "dateOfBirth": {"type": "string", "format":
+      "date"}}, "additionalProperties": false}}}, "required": ["partners"], "additionalProperties":
+      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {}, "required": [], "additionalProperties":
+      false}}'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTEzNTk1NTMsImV4cCI6MTc1MTQwMjc1MywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.9e1NTYNrWbTv7E3ng2DMMGnscNn6bNkB-pjmLyx7xpQ
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTM2OTM1NTcsImV4cCI6MTc1MzczNjc1NywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.pLUuEKd5E1nWxhDXVb2Gw_q8RIsA_4gUKrbas_CQXKw
       Connection:
       - keep-alive
       Content-Length:
-      - '898'
+      - '845'
       User-Agent:
       - python-requests/2.32.4
       content-type:
@@ -35,16 +35,16 @@ interactions:
         false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
         \"object\"\n    },\n    \"values\": {\n      \"partners\": [\n        {\n
         \         \"affixes\": \"\",\n          \"bsn\": \"999970136\",\n          \"dateOfBirth\":
-        \"1989-04-01\",\n          \"dateOfBirthPrecision\": \"date\",\n          \"firstNames\":
-        \"Pia\",\n          \"initials\": \"P.\",\n          \"lastName\": \"Pauw\"\n
-        \       }\n      ]\n    },\n    \"values_schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
-        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"partners\":
-        {\n          \"items\": {\n            \"additionalProperties\": false,\n
-        \           \"properties\": {\n              \"affixes\": {\n                \"type\":
-        \"string\"\n              },\n              \"bsn\": {\n                \"format\":
-        \"nl-bsn\",\n                \"pattern\": \"^\\\\d{9}$\",\n                \"type\":
-        \"string\"\n              },\n              \"dateOfBirth\": {\n                \"format\":
-        \"date\",\n                \"type\": \"string\"\n              },\n              \"initials\":
+        \"1989-04-01\",\n          \"initials\": \"P.\",\n          \"lastName\":
+        \"Pauw\"\n        }\n      ]\n    },\n    \"values_schema\": {\n      \"$schema\":
+        \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {\n        \"partners\": {\n          \"items\":
+        {\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"affixes\": {\n                \"type\": \"string\"\n              },\n
+        \             \"bsn\": {\n                \"format\": \"nl-bsn\",\n                \"pattern\":
+        \"^\\\\d{9}$\",\n                \"type\": \"string\"\n              },\n
+        \             \"dateOfBirth\": {\n                \"format\": \"date\",\n
+        \               \"type\": \"string\"\n              },\n              \"initials\":
         {\n                \"type\": \"string\"\n              },\n              \"lastName\":
         {\n                \"type\": \"string\"\n              }\n            },\n
         \           \"required\": [\n              \"bsn\"\n            ],\n            \"type\":
@@ -55,11 +55,11 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '1595'
+      - '1522'
       Content-Type:
       - application/json
       Date:
-      - Tue, 01 Jul 2025 08:45:53 GMT
+      - Mon, 28 Jul 2025 09:05:57 GMT
       Server:
       - Werkzeug/3.1.3 Python/3.12.10
     status:
