@@ -6,8 +6,7 @@ Installation
 You can install Open Forms in several ways, depending on your intended purpose
 and expertise.
 
-1. Deploy using :ref:`Ansible <installation_ansible>` for public testing and
-   production purposes
+1. Using `Helm charts <https://github.com/maykinmedia/charts>`_ in Kubernetes environments.
 2. Run with :ref:`Docker Compose <installation_docker_compose>` on your computer for private testing purposes
 3. Run from :ref:`Python code <developers_installation>` on your computer for development purposes
 
@@ -23,7 +22,6 @@ After installation, follow the :ref:`configuration_index` instructions to enable
    :caption: Further reading
 
    docker_compose
-   ansible
    security
    config
    observability
