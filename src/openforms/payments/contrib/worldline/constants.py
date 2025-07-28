@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from openforms.payments.constants import (
     PAYMENT_STATUS_FINAL,
     PaymentStatus as OFPaymentStatus,
+    UserAction,
 )
 
 # TODO: use TextChoices return type hint where applicable
@@ -163,6 +164,20 @@ class StatusCategory(models.TextChoices):
             cls.refunded: OFPaymentStatus.completed,
         }
 
+    @classproperty
+    def of_action_mapping(cls) -> dict:
+        return {
+            cls.created: UserAction.unknown,
+            cls.unsuccessful: UserAction.exception,
+            cls.pending_payment: UserAction.unknown,
+            cls.account_verified: UserAction.unknown,
+            cls.pending_merchant: UserAction.unknown,
+            cls.pending_connect_or_3rd_party: UserAction.unknown,
+            cls.completed: UserAction.accept,
+            cls.reversed: UserAction.accept,
+            cls.refunded: UserAction.accept,
+        }
+
     @classmethod
     def from_payment_status(cls, worldline_status: str) -> str:
         return next(
@@ -175,7 +190,16 @@ class StatusCategory(models.TextChoices):
     def to_of_status(cls, worldine_status_category: str) -> str:
         return cls.of_status_mapping[worldine_status_category]
 
+    @classmethod
+    def to_of_action(cls, worldine_status_category: str) -> str:
+        return cls.of_action_mapping[worldine_status_category]
+
 
 def is_final_status(worldline_status: str) -> bool:
     status_category = StatusCategory.from_payment_status(worldline_status)
     return StatusCategory.to_of_status(status_category) in PAYMENT_STATUS_FINAL
+
+
+def get_user_action(worldline_status: str) -> str:
+    status_category = StatusCategory.from_payment_status(worldline_status)
+    return StatusCategory.to_of_action(status_category)

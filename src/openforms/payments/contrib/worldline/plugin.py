@@ -26,7 +26,10 @@ from openforms.payments.constants import (
     PaymentRequestType,
     UserAction,
 )
-from openforms.payments.contrib.worldline.constants import StatusCategory
+from openforms.payments.contrib.worldline.constants import (
+    StatusCategory,
+    get_user_action,
+)
 from openforms.payments.contrib.worldline.models import WorldlineMerchant
 from openforms.payments.contrib.worldline.typing import (
     AmountOfMoney,
@@ -217,7 +220,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 action_params={
                     "of_payment_status": payment.status,
                     "of_payment_id": str(payment.uuid),
-                    "of_payment_action": UserAction.accept,
+                    "of_payment_action": get_user_action(status),
                     "of_submission_status": status_url,
                 },
             )
