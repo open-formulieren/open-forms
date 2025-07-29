@@ -181,9 +181,13 @@ Open Forms uses the official Python SDK which should adhere to the environment v
 
 * ``OF_OTEL_PROTOCOL``: controls the wire protocol for the OTLP data. Defaults to
   ``gRPC``. Available options: ``gRPC`` and ``http``.
+* ``OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``: set to ``true`` when deploying with
+  Docker engine or similar to enable container resource detection. On Kubernetes, it's
+  recommended to enable the `kubernetes attributes processor`_ and leave this setting off.
 
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
+.. _`kubernetes attributes processor`: https://opentelemetry.io/docs/platforms/kubernetes/collector/components/#kubernetes-attributes-processor
 
 Processing of submissions
 -------------------------

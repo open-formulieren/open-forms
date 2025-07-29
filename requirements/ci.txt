@@ -725,12 +725,17 @@ opentelemetry-proto==1.35.0
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-resource-detector-containerid==0.56b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 opentelemetry-sdk==1.35.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-resource-detector-containerid
 opentelemetry-semantic-conventions==0.56b0
     # via
     #   -c requirements/base.txt

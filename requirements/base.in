@@ -89,6 +89,7 @@ sentry-sdk[django]  # error monitoring
 elastic-apm  # Elastic APM integration
 flower # task monitoring
 opentelemetry-api
+opentelemetry-resource-detector-containerid
 opentelemetry-sdk
 opentelemetry-exporter-otlp
 opentelemetry-instrumentation-django

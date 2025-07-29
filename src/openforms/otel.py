@@ -12,9 +12,16 @@ from django.conf import settings
 from opentelemetry import metrics, trace
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.sdk.resources import SERVICE_INSTANCE_ID, SERVICE_VERSION, Resource
+from opentelemetry.sdk.resources import (
+    SERVICE_INSTANCE_ID,
+    SERVICE_VERSION,
+    Resource,
+    get_aggregated_resources,
+)
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from openforms.conf.utils import config
 
 __all__ = [
     "setup_otel",
@@ -87,3 +94,14 @@ def load_exporters(protocol: ExportProtocol):
             return (OTLPMetricExporter, OTLPSpanExporter)
         case _:  # pragma: no cover
             assert_never(protocol)
+
+
+def aggregate_resource(resource: Resource) -> Resource:
+    if not config("OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default=False):
+        return resource
+
+    from opentelemetry.resource.detector.containerid import ContainerResourceDetector
+
+    return get_aggregated_resources(
+        detectors=[ContainerResourceDetector()], initial_resource=resource
+    )

@@ -412,11 +412,14 @@ opentelemetry-proto==1.35.0
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-resource-detector-containerid==0.56b0
+    # via -r requirements/base.in
 opentelemetry-sdk==1.35.0
     # via
     #   -r requirements/base.in
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-resource-detector-containerid
 opentelemetry-semantic-conventions==0.56b0
     # via
     #   opentelemetry-instrumentation
