@@ -3,6 +3,7 @@
 # Taken and adapted from https://grafana.com/docs/loki/latest/setup/install/docker/#install-with-docker-compose
 
 services:
+  # logs storage
   loki:
     image: grafana/loki:latest
     ports:
@@ -11,6 +12,7 @@ services:
     networks:
       - open-forms-dev
 
+  # log scraping from container output
   promtail:
     image: grafana/promtail:latest
     volumes:
@@ -24,6 +26,18 @@ services:
     networks:
       - open-forms-dev
 
+  # open telemetry collector, receives metrics from the application instance(s)
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: --config=/etc/otel-collector-config.yaml
+    volumes:
+      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
+    ports:
+      - 4317:4317
+    networks:
+      - open-forms-dev
+
+  # dashboard tool, visualizes telemetry. queries loki and prometheus
   grafana:
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning

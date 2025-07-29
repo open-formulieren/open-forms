@@ -13,6 +13,8 @@ os.environ.setdefault("CACHE_DEFAULT", "127.0.0.1:6379/2")
 os.environ.setdefault("CACHE_AXES", "127.0.0.1:6379/4")
 os.environ.setdefault("CACHE_PORTALOCKER", "127.0.0.1:6379/8")
 
+os.environ.setdefault("OTEL_SERVICE_NAME", "openforms")
+
 from .base import *  # noqa isort:skip
 
 # Database performance

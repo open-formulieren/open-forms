@@ -148,8 +148,8 @@ Content Security Policy (CSP) settings
 See also the :ref:`developer documentation <developers_csp>` and
 https://django-csp.readthedocs.io/en/latest/ for more information on CSP.
 
-Logging and monitoring settings
--------------------------------
+Logging, monitoring and Open Telemetry settings
+-----------------------------------------------
 
 * ``SENTRY_DSN``: URL of the sentry project to send error reports to. Defaults
   to an empty string (i.e. no monitoring). See `Sentry settings`_.
@@ -173,6 +173,14 @@ Logging and monitoring settings
   Defaults to ``True`` when using Docker and otherwise ``False``.
 
 * ``LOG_REQUESTS``: When enabled, all incoming requests are logged. Enabled by default.
+
+**Open Telemetry**
+
+Open Forms uses the official Python SDK which should adhere to the environment variables
+`specification <https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/>`_.
+
+* ``OF_OTEL_PROTOCOL``: controls the wire protocol for the OTLP data. Defaults to
+  ``gRPC``. Available options: ``gRPC`` and ``http``.
 
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html

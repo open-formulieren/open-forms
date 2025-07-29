@@ -928,9 +928,10 @@ else:
     ]
 
 #
-# OpenTelemetry - GRPC
+# OpenTelemetry - the majority of the envvars are standardized and automatically picked
+# up. See https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
 #
-OTEL_COLLECTOR_URL = config("OTEL_COLLECTOR_URL", "localhost:4317")
+OF_OTEL_PROTOCOL = config("OF_OTEL_PROTOCOL", default="gRPC")
 
 #
 # DJANGO REST FRAMEWORK
