@@ -1,3 +1,4 @@
+from typing import Any, Generator
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -8,6 +9,7 @@ from django.http import (
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 import structlog
 from onlinepayments.sdk.api_exception import ApiException
 from onlinepayments.sdk.communicator import CommunicationException
@@ -22,6 +24,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.config.data import Entry
 from openforms.frontend.frontend import get_frontend_redirect_url
 from openforms.payments.base import BasePlugin, PaymentInfo
 from openforms.payments.constants import (
@@ -56,26 +59,6 @@ class WorldlineOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializ
     )
 
 
-def _construct_client_from_options(options: PaymentOptions) -> IHostedCheckoutClient:
-    merchant = options["merchant"]
-
-    configuration = CommunicatorConfiguration(
-        api_endpoint=merchant.endpoint,
-        api_key_id=merchant.api_key,
-        secret_api_key=merchant.api_secret,
-        authorization_type="v1HMAC",
-        integrator="openforms",  #  TODO: is this the correct value?
-        connect_timeout=5000,
-        socket_timeout=10000,
-        max_connections=10,
-    )
-
-    communicator = Factory.create_communicator_from_configuration(configuration)
-    client = Factory.create_client_from_communicator(communicator)
-    merchant_client = client.merchant(merchant.pspid)
-    return merchant_client.hosted_checkout()
-
-
 def _generate_order(payment: SubmissionPayment) -> Order:
     amount_of_money = AmountOfMoney(
         currencyCode="EUR", amount=int((payment.amount * 100).to_integral_exact())
@@ -105,7 +88,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     ) -> PaymentInfo:
         order = _generate_order(payment)
         checkout_input = _generate_checkout_input(request, payment, self)
-        client = _construct_client_from_options(options)
+        client = options["merchant"].get_checkout_client()
 
         # See the hostedCheckoutSpecificInput field on
         # https://docs.direct.worldline-solutions.com/en/api-reference#tag/HostedCheckout/operation/CreateHostedCheckoutApi
@@ -198,7 +181,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 )
             )
 
-            client = _construct_client_from_options(options)
+            client = options["merchant"].get_checkout_client()
 
             try:
                 response = client.get_hosted_checkout(checkout_id)
@@ -238,3 +221,35 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     # TODO
     def handle_webhook(self, request: Request) -> SubmissionPayment:
         raise NotImplementedError()
+
+    @classmethod
+    def iter_config_checks(cls) -> Generator[Entry, Any, Any]:
+        for merchant in WorldlineMerchant.objects.all():
+            yield cls.check_merchant(merchant)
+
+    @classmethod
+    def check_merchant(cls, merchant: WorldlineMerchant):
+        entry = Entry(
+            name=f"{cls.verbose_name}: {merchant.label}",
+            actions=[
+                (
+                    _("Configuration"),
+                    reverse(
+                        "admin:payments_worldline_worldlinemerchant_change",
+                        args=(merchant.pk,),
+                    ),
+                )
+            ],
+        )
+
+        merchant_client = merchant.get_merchant_client()
+
+        try:
+            merchant_client.services().test_connection()
+        except Exception as e:
+            entry.status = False
+            entry.error = str(e)
+            print(e)
+        else:
+            entry.status = True
+        return entry

@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from onlinepayments.sdk.client import IMerchantClient
+from onlinepayments.sdk.communicator_configuration import CommunicatorConfiguration
+from onlinepayments.sdk.factory import Factory
+from onlinepayments.sdk.merchant.merchant_client import IHostedCheckoutClient
 
 from .constants import WordlineEndpoints
 
@@ -47,3 +51,23 @@ class WorldlineMerchant(models.Model):
     @property
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
+
+    def get_merchant_client(self) -> IMerchantClient:
+        configuration = CommunicatorConfiguration(
+            api_endpoint=self.endpoint,
+            api_key_id=self.api_key,
+            secret_api_key=self.api_secret,
+            authorization_type="v1HMAC",
+            integrator="openforms",  #  TODO: is this the correct value?
+            connect_timeout=5000,
+            socket_timeout=10000,
+            max_connections=10,
+        )
+
+        communicator = Factory.create_communicator_from_configuration(configuration)
+        client = Factory.create_client_from_communicator(communicator)
+        return client.merchant(self.pspid)
+
+    def get_checkout_client(self) -> IHostedCheckoutClient:
+        merchant_client = self.get_merchant_client()
+        return merchant_client.hosted_checkout()
