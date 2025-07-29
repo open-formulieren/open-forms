@@ -67,6 +67,21 @@ def evaluate_form_logic(
 
     """
     # grab the configuration that will be mutated
+    # TODO-2324: the configuration (wrapper) is modified here. Do we want to update the
+    #  configuration of the submission value variables by:
+    #   - Dynamically updating the configuration during evaluation
+    #   - Saving the configuration after evaluation
+    #   - Saving the configuration fetched from the form definition through the form
+    #     variable
+    #  Seems like dynamically updating is not useful, as we don't apply any mutations
+    #  directly (yet). We just record them and apply all at once. Somehow saving it
+    #  after evaluation seems like the best option.
+    #  Though, we don't necessarily need the actual configuration that was created
+    #  after logic rule evaluation, because we only get the component/data types from it
+    #  and they cannot be changed with a logic action.
+    #  Note that this configuration (wrapper) is never saved, because we don't do
+    #  snapshotting. It would be weird to save the modified configuration of a
+    #  particular submission to the form definition.
     config_wrapper = step.form_step.form_definition.configuration_wrapper
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
@@ -219,6 +234,8 @@ def check_submission_logic(
     for mutation in mutation_operations:
         for step in submission_state.submission_steps:
             assert step.form_step
+            # TODO-2324: with the configuration saved to the submission value variables, using
+            #  this here might cause inconsistancies...
             configuration = step.form_step.form_definition.configuration_wrapper
             mutation.apply(step, configuration)
 

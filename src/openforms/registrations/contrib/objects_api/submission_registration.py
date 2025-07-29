@@ -416,6 +416,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
 def _lookup_component(variable: SubmissionValueVariable) -> Component:
     assert variable.form_variable is not None
+    # TODO-2324: use the configuration from the SubmissionValueVariable instead?
     config_wrapper = variable.form_variable.form_definition.configuration_wrapper
     component = config_wrapper.component_map[variable.key]
     return component

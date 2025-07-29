@@ -274,6 +274,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             instance.submission.data,
         )
         # update the config for serialization
+        # TODO-2324: also need to update the submission value variables here?
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)
 

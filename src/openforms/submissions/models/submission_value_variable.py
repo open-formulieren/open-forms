@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,8 +14,9 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
-from openforms.formio.service import FormioData
+from openforms.formio.service import FormioConfigurationWrapper, FormioData
 from openforms.forms.models.form_variable import FormVariable
+from openforms.forms.validators import validate_template_expressions
 from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
@@ -140,6 +142,7 @@ class SubmissionValueVariablesState:
                 key=variable_key,
                 value=form_variable.get_initial_value(),
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
+                configuration=form_variable.form_definition.configuration,
             )
             unsaved_submission_var.form_variable = form_variable
             all_submission_variables[variable_key] = unsaved_submission_var
@@ -327,6 +330,13 @@ class SubmissionValueVariable(models.Model):
         null=True,
         blank=True,
     )
+    configuration = models.JSONField(
+        _("Form.io configuration"),
+        help_text=_("The form definition as Form.io JSON schema"),
+        validators=[validate_template_expressions],
+        blank=True,
+        default=dict,
+    )
 
     objects = SubmissionValueVariableManager()
 
@@ -339,6 +349,10 @@ class SubmissionValueVariable(models.Model):
 
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
+
+    @cached_property
+    def configuration_wrapper(self) -> FormioConfigurationWrapper:
+        return FormioConfigurationWrapper(self.configuration)
 
     def to_python(self, value: VariableValue | object = empty) -> VariableValue:
         """
