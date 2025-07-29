@@ -102,6 +102,7 @@ COPY \
     ./bin/fix_selectboxes_component_default_values.py \
     ./bin/fix_component_default_values.py \
     ./bin/fix_objects_api_form_registration_variables_mapping.py \
+    ./bin/fix_submission_value_variable_missing_fields.py \
     ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
