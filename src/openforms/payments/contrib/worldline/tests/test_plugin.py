@@ -18,6 +18,7 @@ from openforms.payments.contrib.worldline.constants import (
     HostedCheckoutStatus,
     PaymentStatus as _WorldlinePaymentStatus,
 )
+from openforms.payments.contrib.worldline.plugin import WorldlinePaymentPlugin
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
@@ -46,6 +47,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
+
         cls.merchant = WorldlineMerchantFactory.create(
             pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
@@ -407,6 +409,22 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         )
 
         self.assertEqual(payment.status, "")
+
+    def test_config_check(self):
+        configuration_entries = WorldlinePaymentPlugin.iter_config_checks()  # pyright: ignore[reportAttributeAccessIssue]
+
+        self.assertTrue(all(entry.status for entry in configuration_entries))
+
+    def test_incorrect_config_check(self):
+        WorldlineMerchantFactory.create(
+            pspid="dummy",
+            api_key="foo",
+            api_secret="bar",
+        )
+
+        configuration_entries = WorldlinePaymentPlugin.iter_config_checks()  # pyright: ignore[reportAttributeAccessIssue]
+
+        self.assertFalse(all(entry.status for entry in configuration_entries))
 
     @expectedFailure
     def test_webhook(self):
