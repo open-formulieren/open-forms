@@ -29,8 +29,6 @@ from ....registry import register
 factory = RequestFactory()
 
 
-# TODO: document Worldline test account credentials in Taiga, see
-# https://taiga.maykinmedia.nl/project/maykin-intranet/wiki/open-forms-internal-docs
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     CORS_ALLOWED_ORIGINS=["http://foo.bar"],
