@@ -9,5 +9,5 @@ class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
     api_key = "key"
     api_secret = "sekrit"
 
-    class Meta(factory.django.DjangoModelFactory.Meta):
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = WorldlineMerchant
