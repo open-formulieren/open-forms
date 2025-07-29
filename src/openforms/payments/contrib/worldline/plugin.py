@@ -249,7 +249,6 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         except Exception as e:
             entry.status = False
             entry.error = str(e)
-            print(e)
         else:
             entry.status = True
         return entry
