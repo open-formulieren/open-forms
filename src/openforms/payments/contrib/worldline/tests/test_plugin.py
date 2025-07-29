@@ -382,6 +382,32 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         # still registered
         self.assertEqual(payment.status, PaymentStatus.registered)
 
+    def test_determine_payment_status_from_checkout_status(self):
+        payment = SubmissionPaymentFactory.create(status=PaymentStatus.started)
+        plugin = register["worldline"]
+
+        plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
+            payment,
+            "",
+            HostedCheckoutStatus.cancelled_by_consumer,
+            "12345",
+        )
+
+        self.assertEqual(payment.status, PaymentStatus.failed)
+
+    def test_no_payment_status(self):
+        payment = SubmissionPaymentFactory.create(status=PaymentStatus.started)
+        plugin = register["worldline"]
+
+        plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
+            payment,
+            "",
+            "",
+            "12345",
+        )
+
+        self.assertEqual(payment.status, "")
+
     @expectedFailure
     def test_webhook(self):
         raise NotImplementedError

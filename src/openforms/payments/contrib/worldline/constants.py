@@ -126,11 +126,14 @@ class StatusCategory(models.TextChoices):
 
     @classmethod
     def from_payment_status(cls, worldline_status: str) -> str:
-        return next(
-            category
-            for category, items in cls.payment_status_mapping.items()
-            if worldline_status in items
-        )
+        try:
+            return next(
+                category
+                for category, items in cls.payment_status_mapping.items()
+                if worldline_status in items
+            )
+        except StopIteration:
+            raise KeyError(f"Unknown status {worldline_status} found")
 
     @classmethod
     def to_of_status(cls, worldine_status_category: str) -> str:
