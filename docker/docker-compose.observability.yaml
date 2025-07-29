@@ -31,7 +31,7 @@ services:
     image: otel/opentelemetry-collector:latest
     command: --config=/etc/otel-collector-config.yaml
     volumes:
-      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
+      - ./observability/otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
     ports:
       - 4317:4317
     networks:
