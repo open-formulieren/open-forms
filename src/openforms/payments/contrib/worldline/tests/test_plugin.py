@@ -17,7 +17,6 @@ from openforms.payments.contrib.worldline.constants import (
     HostedCheckoutStatus,
     PaymentStatus as _WorldlinePaymentStatus,
 )
-from openforms.payments.contrib.worldline.plugin import WorldlinePaymentPlugin
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
