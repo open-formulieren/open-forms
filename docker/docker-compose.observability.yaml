@@ -12,6 +12,16 @@ services:
     networks:
       - open-forms-dev
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-tsdb:/prometheus
+    networks:
+      - open-forms-dev
+
   # log scraping from container output
   promtail:
     image: grafana/promtail:latest
@@ -34,6 +44,8 @@ services:
       - ./observability/otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
     ports:
       - 4317:4317
+      - 4318:4318
+      - 8889:8889
     networks:
       - open-forms-dev
 
@@ -61,6 +73,20 @@ services:
           isDefault: true
           version: 1
           editable: false
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus:9090
+          jsonData:
+            httpMethod: POST
+            manageAlerts: false
+            allowAsRecordingRulesTarget: false
+            prometheusType: Prometheus
+            prometheusVersion: 3.5.0
+            cacheLevel: 'Low'
+            disableRecordingRules: false
+            timeInterval: 15s   # Prometheus scrape interval
+            incrementalQueryOverlapWindow: 10m
         EOF
         /run.sh
     image: grafana/grafana:latest
@@ -71,6 +97,7 @@ services:
 
 volumes:
   promtail-logs:
+  prometheus-tsdb:
 
 networks:
   open-forms-dev:

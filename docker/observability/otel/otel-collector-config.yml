@@ -8,25 +8,36 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1024
+
 exporters:
   # NOTE: Prior to v0.86.0 use `logging` instead of `debug`.
   debug:
     verbosity: detailed
-
-processors:
-  batch:
+  # Exposes a metrics endpoint that prometheus can scrape
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    namespace: otel
+    const_labels:
+      environment: docker
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
+      processors: [memory_limiter, batch]
       exporters: [debug]
-      processors: [batch]
     metrics:
       receivers: [otlp]
-      exporters: [debug]
-      processors: [batch]
+      processors: [memory_limiter, batch]
+      exporters: [debug, prometheus]
     logs:
       receivers: [otlp]
+      processors: [memory_limiter, batch]
       exporters: [debug]
-      processors: [batch]
