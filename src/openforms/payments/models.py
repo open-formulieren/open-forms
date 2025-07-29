@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
 from ..config.models import GlobalConfiguration
-from .constants import PAYMENT_STATUS_FINAL, PaymentStatus
+from .constants import PaymentStatus
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission

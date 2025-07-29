@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from ...registry import register
 from .models import WorldlineMerchant
 
 

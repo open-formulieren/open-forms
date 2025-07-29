@@ -330,7 +330,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.vcr_raises(SSLError),
             self.assertRaises(AppError) as exception_manager,
         ):
-            response = self.app.post(
+            self.app.post(
                 url,
                 json.dumps({"merchant": self.merchant.id}),
                 content_type="application/json",

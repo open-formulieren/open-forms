@@ -1,4 +1,6 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
+
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -9,16 +11,12 @@ from django.http import (
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-import requests
 import structlog
 from onlinepayments.sdk.api_exception import ApiException
 from onlinepayments.sdk.communicator import CommunicationException
-from onlinepayments.sdk.communicator_configuration import CommunicatorConfiguration
 from onlinepayments.sdk.domain.create_hosted_checkout_request import (
     CreateHostedCheckoutRequest,
 )
-from onlinepayments.sdk.factory import Factory
-from onlinepayments.sdk.merchant.merchant_client import IHostedCheckoutClient
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.request import Request
