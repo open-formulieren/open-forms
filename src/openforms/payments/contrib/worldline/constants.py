@@ -167,7 +167,7 @@ def get_payment_status(
         status_category = StatusCategory.from_payment_status(worldline_status)
     except KeyError as exc:
         logger.exception(
-            "unknown_status_encountered",  # TODO: include in logging documentation
+            "unknown_payment_status_encountered",
             exc_info=exc,
             status=worldline_status,
             checkout_status=checkout_status,
