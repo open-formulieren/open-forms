@@ -10,6 +10,7 @@ from uuid import uuid4
 from django.conf import settings
 
 from opentelemetry import metrics, trace
+from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import (
@@ -68,6 +69,10 @@ def setup_otel() -> None:
     reader = PeriodicExportingMetricReader(OTLPMetricExporter())
     meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
     metrics.set_meter_provider(meter_provider)
+
+    # set up instrumenters that (usually) monkeypatch modules or inject the right
+    # wrappers/middleware etc.
+    DjangoInstrumentor().instrument()
 
     _OTEL_INITIALIZED = True
 
