@@ -26,8 +26,9 @@ paths:
   /api/v2/analytics/analytics-tools-config-info:
     get:
       operationId: analytics_analytics_tools_config_info_retrieve
-      description: Haal informatie op over de analytics-tools voor de frontend.
-      summary: Analytics tools-configuratie
+      description: Returns information about the analytics tools that are needed by
+        the frontend.
+      summary: Analytics Tools Configuration
       tags:
       - analytics
       security:
@@ -239,8 +240,8 @@ paths:
                 type: array
                 items:
                   type: object
-                  description: Een Form.io componentdefinitie. De `type`-, `key`-
-                    en `label`-eigenschappen zijn gegarandeerd aanwezig en niet-leeg.
+                  description: A single Form.io component. The `type`, `key` and `label`
+                    properties are guaranteed to be present and non-empty.
                   properties:
                     type:
                       type: string
@@ -600,7 +601,7 @@ paths:
   /api/v2/config/privacy-policy-info:
     get:
       operationId: config_privacy_policy_info_retrieve
-      summary: Privacybeleid informatie
+      summary: Privacy policy info
       tags:
       - config
       security:
@@ -961,18 +962,15 @@ paths:
   /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
-      description: |-
-        Geef een lijst van bestaande formulierdefinities waarin één enkele definitie herbruikbaar of voor éénmalig gebruik kan zijn. Dit is inclusief definities die in geen enkel formulier gebruikt zijn.
-
-        Je kan deze lijst filteren op enkel herbruikbare definities of definities die in een specifiek formulier gebruikt worden.
-
-        **Merk op**: tegelijk filteren op `is_reusable` en `used_in` is geïmplementeerd als een OF-filter - je krijgt dus beide resultaten terug.
-
-        **Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je gebruikersrechten**
-
-        Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
-
-        - `translations`
+      description: "Get a list of existing form definitions, where a single item may\
+        \ be a re-usable or single-use definition. This includes form definitions\
+        \ not currently used in any form(s) at all.\n\nYou can filter this list down\
+        \ to only re-usable definitions or definitions used in a particular form.\n\
+        \n**Note**: filtering on both `is_reusable` and `used_in` at the same time\
+        \ is implemented as an OR-filter.\n\n**Warning: the response data depends\
+        \ on user permissions**\n\nNon-staff users receive a subset of all the documented\
+        \ fields. The fields reserved for staff users are used for internal form configuration.\
+        \ These are: \n\n- `translations`"
       summary: List form step definitions
       parameters:
       - in: query
@@ -1257,14 +1255,13 @@ paths:
   /api/v2/formio/fileupload:
     post:
       operationId: formio_fileupload_create
-      description: |-
-        Bestandsuploadhandler voor het Form.io bestandsupload opslagtype 'url'.
-
-        Bestandsuploads worden tijdelijke opgeslagen en moeten gekoppeld worden aan een inzending.
-
-        Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en).
-
-        De maximale toegestane upload-bestandsgrootte is `50,0 MB` voor deze instantie. Merk op dat dit inclusief multipart-metadata en boundaries is. De daadwerkelijke maximale bestandsgrootte is dus iets lager dan deze waarde.
+      description: "File upload handler for the Form.io file upload \"url\" storage\
+        \ type.\n\nThe uploads are stored temporarily and have to be claimed by the\
+        \ form submission using the returned JSON data. \n\nAccess to this view requires\
+        \ an active form submission. Unclaimed temporary files automatically expire\
+        \ after 2 day(s). \n\nThe maximum upload size for this instance is `50,0 MB`.\
+        \ Note that this includes the multipart metadata and boundaries, so the actual\
+        \ maximum file upload size is slightly smaller."
       summary: Create temporary file upload
       tags:
       - formio
@@ -1316,37 +1313,17 @@ paths:
   /api/v2/forms:
     get:
       operationId: forms_list
-      description: |-
-        Geef een lijst van actieve formulieren, inclusief verwijzingen naar de formulierstappen. De formulierstappen komen voor in de volgorde waarin ze zichtbaar moeten zijn.
-
-        **Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je gebruikersrechten**
-
-        Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
-
-        - `internalName`
-        - `internalRemarks`
-        - `registrationBackends`
-        - `authBackends`
-        - `paymentBackend`
-        - `paymentBackendOptions`
-        - `priceVariableKey`
-        - `product`
-        - `category`
-        - `theme`
-        - `activateOn`
-        - `deactivateOn`
-        - `isDeleted`
-        - `submissionConfirmationTemplate`
-        - `submissionLimit`
-        - `submissionCounter`
-        - `askPrivacyConsent`
-        - `askStatementOfTruth`
-        - `submissionsRemovalOptions`
-        - `confirmationEmailTemplate`
-        - `displayMainWebsiteLink`
-        - `includeConfirmationPageContentInPdf`
-        - `translations`
-        - `brpPersonenRequestOptions`
+      description: "List the active forms, including the pointers to the form steps.\
+        \ Form steps are included in order as they should appear.\n\n**Warning: the\
+        \ response data depends on user permissions**\n\nNon-staff users receive a\
+        \ subset of all the documented fields. The fields reserved for staff users\
+        \ are used for internal form configuration. These are: \n\n- `internalName`\n\
+        - `internalRemarks`\n- `registrationBackends`\n- `authBackends`\n- `paymentBackend`\n\
+        - `paymentBackendOptions`\n- `priceVariableKey`\n- `product`\n- `category`\n\
+        - `theme`\n- `activateOn`\n- `deactivateOn`\n- `isDeleted`\n- `submissionConfirmationTemplate`\n\
+        - `submissionLimit`\n- `submissionCounter`\n- `askPrivacyConsent`\n- `askStatementOfTruth`\n\
+        - `submissionsRemovalOptions`\n- `confirmationEmailTemplate`\n- `displayMainWebsiteLink`\n\
+        - `includeConfirmationPageContentInPdf`\n- `translations`\n- `brpPersonenRequestOptions`"
       summary: List forms
       parameters:
       - in: header
@@ -1906,41 +1883,23 @@ paths:
   /api/v2/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
-      description: |-
-        Haal de details/configuratie op van een specifiek formulier.
-
-        Een formulier is een verzameling van één of meerdere formulierstappen waarbij elke stap een verwijzing heeft naar een formio.js formulierdefinitie. Meerdere definities samen vormen een logisch geheel van formulierstappen die de klant doorloopt tijdens het invullen van het formulier. Formulierdefinities kunnen herbruikbaar zijn tussen verschillende formulieren.
-
-        **Waarschuwing: de response-data is afhankelijk van de gebruikersrechten**
-
-        Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
-
-        - `internalName`
-        - `internalRemarks`
-        - `registrationBackends`
-        - `authBackends`
-        - `paymentBackend`
-        - `paymentBackendOptions`
-        - `priceVariableKey`
-        - `product`
-        - `category`
-        - `theme`
-        - `activateOn`
-        - `deactivateOn`
-        - `isDeleted`
-        - `submissionConfirmationTemplate`
-        - `submissionLimit`
-        - `submissionCounter`
-        - `askPrivacyConsent`
-        - `askStatementOfTruth`
-        - `submissionsRemovalOptions`
-        - `confirmationEmailTemplate`
-        - `displayMainWebsiteLink`
-        - `includeConfirmationPageContentInPdf`
-        - `translations`
-        - `brpPersonenRequestOptions`
-
-        Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language cookie. De actieve taal wordt gecommuniceerd in de Content-Language response header. De gebruikelijke HTTP Content Negotiation principes zijn van toepassing.
+      description: "Retrieve the details/configuration of a particular form. \n\n\
+        A form is a collection of form steps, where each form step points to a formio.js\
+        \ form definition. Multiple definitions are combined in logical steps to build\
+        \ a multi-step/page form for end-users to fill out. Form definitions can be\
+        \ (and are) re-used among different forms.\n\n**Warning: the response data\
+        \ depends on user permissions**\n\nNon-staff users receive a subset of all\
+        \ the documented fields. The fields reserved for staff users are used for\
+        \ internal form configuration. These are: \n\n- `internalName`\n- `internalRemarks`\n\
+        - `registrationBackends`\n- `authBackends`\n- `paymentBackend`\n- `paymentBackendOptions`\n\
+        - `priceVariableKey`\n- `product`\n- `category`\n- `theme`\n- `activateOn`\n\
+        - `deactivateOn`\n- `isDeleted`\n- `submissionConfirmationTemplate`\n- `submissionLimit`\n\
+        - `submissionCounter`\n- `askPrivacyConsent`\n- `askStatementOfTruth`\n- `submissionsRemovalOptions`\n\
+        - `confirmationEmailTemplate`\n- `displayMainWebsiteLink`\n- `includeConfirmationPageContentInPdf`\n\
+        - `translations`\n- `brpPersonenRequestOptions`\n\nIf the form doesn't have\
+        \ translations enabled, its default language is forced by setting a language\
+        \ cookie and reflected in the Content-Language response header. Normal HTTP\
+        \ Content Negotiation rules apply."
       summary: Retrieve form details
       parameters:
       - in: header
@@ -2309,8 +2268,7 @@ paths:
         name: registrationBackendKey
         schema:
           type: string
-        description: De registratiebackend-sleutel waarvoor het schema moet worden
-          gegenereerd.
+        description: The registration backend key for which to generate the schema.
       - in: path
         name: uuid_or_slug
         schema:
@@ -3517,7 +3475,7 @@ paths:
         name: componentType
         schema:
           type: string
-        description: Geef enkel plugins die relevant zijn voor het opgegeven componenttype.
+        description: Only return plugins applicable for the specified component type.
       tags:
       - prefill
       security:
@@ -5602,12 +5560,10 @@ paths:
   /api/v2/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
-      description: |-
-        Haal tijdelijk bestand op.
-
-        Deze aanroep wordt gedaan door het standaard Form.io bestandsupload widget.
-
-        Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en)
+      description: "Retrieve temporary file upload for review by the uploader. \n\n\
+        This is called by the default Form.io file upload widget. \n\nAccess to this\
+        \ view requires an active form submission. Unclaimed temporary files automatically\
+        \ expire after 2 day(s). "
       summary: Retrieve temporary file upload
       parameters:
       - in: query
@@ -7870,9 +7826,8 @@ components:
           type: array
           items:
             type: object
-            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
-              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
-              kan worden.
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
             properties:
               type:
                 type: string
@@ -8896,21 +8851,21 @@ components:
         component:
           type: string
           title: Form.io component
-          description: 'Sleutel van de Form.io-component waarop de actie van toepassing
-            is. Dit veld is verplicht voor de actietypes `property` - anders is het
-            optioneel. '
+          description: Key of the Form.io component that the action applies to. This
+            field is required for the action types `property` - otherwise it's optional.
         variable:
           type: string
           title: Key of the target variable
-          description: Sleutel van de variabele die aangepast wordt door de actie.
-            Dit veld is verplicht voor de actietypes `variable` - anders is het optioneel.
+          description: Key of the target variable whose value will be changed. This
+            field is required for the action types `variable` - otherwise it's optional.
         formStepUuid:
           type: string
           format: uuid
           nullable: true
           title: form step
-          description: De formulierstap die wordt beïnvloed door de actie. Dit veld
-            is verplicht als het actietype `step-not-applicable` is, anders optioneel.
+          description: The UUID of the form step that will be affected by the action.
+            This field is required if the action type is `step-not-applicable`, otherwise
+            optional.
         action:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
@@ -9493,9 +9448,8 @@ components:
           type: array
           items:
             type: object
-            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
-              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
-              kan worden.
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
             properties:
               type:
                 type: string
@@ -9606,8 +9560,9 @@ components:
     PaymentBackendEnum:
       enum:
       - ogone-legacy
+      - worldline
       type: string
-      description: "* `` - \n* `ogone-legacy` - Ogone legacy"
+      description: "* `` - \n* `ogone-legacy` - Ogone legacy\n* `worldline` - Wordline"
     PaymentInfo:
       type: object
       properties:
@@ -9740,12 +9695,12 @@ components:
       properties:
         requiresPrivacyConsent:
           type: boolean
-          description: Of de gebruiker akkoord moet gaan met het privacybeleid voordat
-            hij een formulier indient.
+          description: Whether the user must agree to the privacy policy before submitting
+            a form.
         privacyLabel:
           type: string
-          description: Het opgemaakte label dat naast het selectievakje moet worden
-            getoond wanneer de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid.
+          description: The formatted label to use next to the checkbox when asking
+            the user to agree to the privacy policy.
       required:
       - requiresPrivacyConsent
     ProcessDefinition:
