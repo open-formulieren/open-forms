@@ -1,8 +1,8 @@
 .. _configuration_payment_worldline:
 
-==============
+=========
 Worldline
-==============
+=========
 
 Open Forms supports the **Worldline** payment backend (using a ``PSPID``).
 
