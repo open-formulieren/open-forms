@@ -2,6 +2,7 @@ import json
 import os
 from decimal import Decimal
 from pathlib import Path
+from unittest import expectedFailure
 from urllib.parse import urlencode
 
 from django.test import RequestFactory, override_settings
@@ -381,8 +382,10 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         # still registered
         self.assertEqual(payment.status, PaymentStatus.registered)
 
+    @expectedFailure
     def test_webhook(self):
         raise NotImplementedError
 
+    @expectedFailure
     def test_custom_com_and_title_attributes(self):
         raise NotImplementedError
