@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 from django.test import RequestFactory, override_settings
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from django_webtest import WebTest
 from requests.exceptions import SSLError
 from webtest import AppError
@@ -17,6 +17,7 @@ from openforms.payments.contrib.worldline.constants import (
     HostedCheckoutStatus,
     PaymentStatus as _WorldlinePaymentStatus,
 )
+from openforms.payments.contrib.worldline.plugin import WorldlinePaymentPlugin
 from openforms.payments.contrib.worldline.tests.factories import (
     WorldlineMerchantFactory,
 )
@@ -96,7 +97,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         soup = BeautifulSoup(response.content)
         form = soup.select_one("form[name=redirectForm]")
 
-        payment_url = form.attrs["action"]
+        self.assertIsInstance(form, Tag)
+
+        payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
 
         # trigger the payment
         requests.get(
@@ -266,7 +269,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         soup = BeautifulSoup(response.content)
         form = soup.select_one("form[name=redirectForm]")
 
-        payment_url = form.attrs["action"]
+        self.assertIsInstance(form, Tag)
+
+        payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
 
         # trigger the payment
         requests.get(
@@ -351,7 +356,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         plugin = register["worldline"]
 
         # regular apply
-        plugin.apply_status(
+        plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
             payment,
             _WorldlinePaymentStatus.paid,
             HostedCheckoutStatus.payment_created,
@@ -365,7 +370,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment.save()
 
         # ignores when try to race/overwrite to completed again
-        plugin.apply_status(
+        plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
             payment,
             _WorldlinePaymentStatus.paid,
             HostedCheckoutStatus.payment_created,

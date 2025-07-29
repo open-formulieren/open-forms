@@ -1,5 +1,6 @@
 from typing import TypedDict
 
+from openforms.payments.base import Options
 from openforms.payments.contrib.worldline.models import WorldlineMerchant
 
 
@@ -16,5 +17,5 @@ class CheckoutInput(TypedDict):
     returnUrl: str
 
 
-class PaymentOptions(TypedDict):
+class PaymentOptions(Options):
     merchant: WorldlineMerchant

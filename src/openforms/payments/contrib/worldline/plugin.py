@@ -121,7 +121,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
         return PaymentInfo(
             type=PaymentRequestType.get,
-            url=checkout_response.redirect_url,  # valid for three hours
+            url=checkout_response.redirect_url or "",  # valid for three hours
             data={},
         )
 
@@ -187,15 +187,17 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 return HttpResponseServerError(b"Unable to retrieve checkout status")
 
             payment_data = response.created_payment_output
-            checkout_status = response.status
+            checkout_status = response.status if response.status else ""
             status = (
                 payment_data.payment.status
-                if payment_data and payment_data.payment
+                if payment_data and payment_data.payment and payment_data.payment.status
                 else ""
             )
 
             payment_provider_id = (
-                payment_data.payment.id if payment_data and payment_data.payment else ""
+                payment_data.payment.id
+                if payment_data and payment_data.payment and payment_data.payment.id
+                else ""
             )
 
             self.apply_status(
