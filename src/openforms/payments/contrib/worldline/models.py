@@ -1,11 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
 from onlinepayments.sdk.client import IMerchantClient
 from onlinepayments.sdk.communicator_configuration import CommunicatorConfiguration
 from onlinepayments.sdk.factory import Factory
 from onlinepayments.sdk.merchant.merchant_client import IHostedCheckoutClient
 
-from .constants import WordlineEndpoints
+from .constants import WorldlineEndpoints
 
 
 class WorldlineMerchant(models.Model):
@@ -35,8 +36,8 @@ class WorldlineMerchant(models.Model):
 
     endpoint_preset = models.URLField(
         _("Preset endpoint"),
-        choices=WordlineEndpoints.choices,
-        default=WordlineEndpoints.test,
+        choices=WorldlineEndpoints.choices,
+        default=WorldlineEndpoints.test,
         help_text=_("Select a common preset endpoint"),
     )
     endpoint_custom = models.URLField(

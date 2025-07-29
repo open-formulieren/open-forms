@@ -13,7 +13,7 @@ logger = structlog.stdlib.get_logger(__name__)
 # TODO: use TextChoices return type hint where applicable
 
 
-class WordlineEndpoints(models.TextChoices):
+class WorldlineEndpoints(models.TextChoices):
     test = (
         "https://payment.preprod.direct.worldline-solutions.com",
         _("Worldline Test"),
