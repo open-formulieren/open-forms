@@ -191,7 +191,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         soup = BeautifulSoup(response.content)
         form = soup.select_one("form[name=redirectForm]")
 
-        payment_url = form.attrs["action"]
+        self.assertIsInstance(form, Tag)
+
+        payment_url = form.attrs["action"]  # pyright: ignore[reportOptionalMemberAccess]
 
         # trigger the payment
         requests.get(
