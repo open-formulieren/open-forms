@@ -163,7 +163,7 @@ class AuthPseudo(BaseStaticVariable):
 
 
 @register_static_variable("auth_additional_claims")
-class AuthContextAdditionalClaims(BaseStaticVariable):
+class AuthAdditionalClaims(BaseStaticVariable):
     name = _("Authentication additional claims")
     data_type = FormVariableDataTypes.object
 
