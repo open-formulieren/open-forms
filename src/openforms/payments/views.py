@@ -9,6 +9,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView
 
 import structlog
+from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import permissions
@@ -280,11 +281,15 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 @extend_schema(
     summary=_("Webhook handler for external payment flow"),
     description=_(
-        "This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` "
-        "is allowed as HTTP method."
+        "This endpoint is used for server-to-server calls. Depending on the plugin, multiple request "
+        "HTTP methods are supported."
         "\n\nVarious validations are performed:"
         "\n* the `plugin_id` is configured on the form"
         "\n* payment is required and configured on the form"
+        "\n\nWhenever the webhook_verification_header and webhook_verification_method"
+        " settings are set for a plugin and a request has an empty request body,"
+        " the request headers will be searched for the webhook_verification_header"
+        " and will be returned as the response body."
     ),
     parameters=[
         OpenApiParameter(
@@ -308,6 +313,12 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     request=None,
     responses={
         200: None,
+        (200, "text/plain"): OpenApiResponse(
+            response=str,
+            description=_(
+                "OK. Contains the value of the verification header configured for the plugin."
+            ),
+        ),
         (400, ERR_CONTENT_TYPE): OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Bad request. Invalid parameters were passed."),
@@ -319,7 +330,11 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     },
 )
 class PaymentWebhookView(PaymentFlowBaseView):
-    parser_classes = (FormParser, MultiPartParser)
+    parser_classes = (
+        FormParser,
+        MultiPartParser,
+        CamelCaseJSONParser,
+    )  # TODO: should we derive this from the plugin?
 
     def _handle_webhook(self, request, *args, **kwargs):
         try:
@@ -328,8 +343,25 @@ class PaymentWebhookView(PaymentFlowBaseView):
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
-        if plugin.webhook_method.upper() != request.method.upper():
+        request_method = request.method.upper()
+
+        if request_method not in plugin.allowed_http_methods:
             raise MethodNotAllowed(request.method)
+
+        if (
+            plugin.webhook_verification_header
+            and request_method == plugin.webhook_verification_method
+            and not request.body
+        ):
+            verification_value = request.headers.get(
+                plugin.webhook_verification_header, ""
+            )
+            content_type = "text/plain; charset=utf-8"
+            return HttpResponse(
+                verification_value.encode("utf-8"),
+                content_type=content_type,
+                headers={"Content-Type": content_type},
+            )
 
         payment = plugin.handle_webhook(request)
         if payment:
@@ -343,7 +375,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
                     )
                 )
 
-        return HttpResponse("")
+        return HttpResponse(b"")
 
     def get(self, request, *args, **kwargs):
         return self._handle_webhook(request, *args, **kwargs)
@@ -357,7 +389,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
         """
         response = super().finalize_response(request, response, *args, **kwargs)
         if hasattr(self, "_plugin"):
-            response["Allow"] = self._plugin.webhook_method
+            response["Allow"] = ", ".join(self._plugin.allowed_http_methods)
         return response
 
 

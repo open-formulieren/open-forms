@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Iterable, TypedDict
 
 from django.http import HttpRequest, HttpResponse
 
 from rest_framework import serializers
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -42,8 +43,11 @@ class Options(TypedDict):
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     return_method = "GET"
-    webhook_method = "POST"
     configuration_options: type[serializers.Serializer] = EmptyOptions
+
+    webhook_method = "POST"
+    webhook_verification_header: str = ""
+    webhook_verification_method: str = ""
 
     # override
 
@@ -63,7 +67,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: Request) -> SubmissionPayment:
+    def handle_webhook(self, request: Request) -> SubmissionPayment | None:
         raise NotImplementedError()
 
     # helpers
@@ -92,3 +96,12 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     def get_api_info(self, request: HttpRequest) -> APIInfo:
         info = APIInfo(self.identifier, str(self.get_label()))
         return info
+
+    @property
+    def allowed_http_methods(self) -> Iterable[str]:
+        methods = [self.webhook_method.upper()]
+
+        if self.webhook_verification_method:
+            methods.append(self.webhook_verification_method.upper())
+
+        return set(methods)

@@ -60,3 +60,11 @@ class WorldlineMerchant(models.Model):
     def get_checkout_client(self) -> IHostedCheckoutClient:
         merchant_client = self.get_merchant_client()
         return merchant_client.hosted_checkout()
+
+
+class WorldlineWebhookEntry(models.Model):
+    webhook_key_id = models.CharField(_("Webhook Key ID"), max_length=255, unique=True)
+    webhook_key_secret = models.CharField(_("Webhook Key Secret"), max_length=255)
+
+    class Meta:
+        verbose_name_plural = _("Worldline webhook entries")

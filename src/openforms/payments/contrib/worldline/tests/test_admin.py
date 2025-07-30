@@ -17,3 +17,15 @@ class WorldlineMerchantAdminTest(WebTest):
         response = self.app.get(url, user=user)
 
         self.assertEqual(200, response.status_code)
+
+
+@disable_admin_mfa()
+class WorldlineWebhookEntryAdminTest(WebTest):
+    @override_settings(BASE_URL="https://example.com/foo")
+    def test_webhook_entry_detail_page(self):
+        user = SuperUserFactory.create()
+        url = reverse("admin:payments_worldline_worldlinewebhookentry_add")
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(200, response.status_code)

@@ -5,15 +5,23 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect,
 )
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from onlinepayments.sdk.api_exception import ApiException as WorldlineApiException
+from onlinepayments.sdk.communication.request_header import RequestHeader
 from onlinepayments.sdk.communicator import CommunicationException
 from onlinepayments.sdk.domain.create_hosted_checkout_request import (
     CreateHostedCheckoutRequest,
+)
+from onlinepayments.sdk.webhooks.api_version_mismatch_exception import (
+    ApiVersionMismatchException,
+)
+from onlinepayments.sdk.webhooks.signature_validation_exception import (
+    SignatureValidationException,
 )
 from rest_framework import serializers
 from rest_framework.exceptions import APIException, ValidationError
@@ -46,6 +54,7 @@ from .typing import (
     Order,
     PaymentOptions,
 )
+from .utils import get_webhook_helper
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -86,6 +95,10 @@ def _generate_checkout_input(
 class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     verbose_name = _("Wordline")
     configuration_options = WorldlineOptionsSerializer
+
+    webhook_method = "POST"
+    webhook_verification_method = "GET"
+    webhook_verification_header = "X-GCS-Webhooks-Endpoint-Verification"
 
     def start_payment(
         self,
@@ -264,9 +277,58 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             )
             return HttpResponseRedirect(redirect_url)
 
-    # TODO
-    def handle_webhook(self, request: Request) -> SubmissionPayment:
-        raise NotImplementedError()
+    def handle_webhook(self, request: Request) -> SubmissionPayment | None:
+        webhook_helper = get_webhook_helper()
+
+        try:
+            webhook_event = webhook_helper.unmarshal(
+                request.body,
+                request_headers=[
+                    RequestHeader(header, request.headers[header])
+                    for header in request.headers
+                ],
+            )
+        except (SignatureValidationException, ApiVersionMismatchException) as e:
+            raise ValidationError({api_settings.NON_FIELD_ERRORS_KEY: [str(e)]}) from e
+
+        if (
+            not webhook_event.type
+            or not webhook_event.type.startswith("payment")
+            or not webhook_event.payment
+        ):
+            raise ValidationError(
+                {
+                    api_settings.NON_FIELD_ERRORS_KEY: [
+                        "Unknown webhook event encountered"
+                    ]
+                }
+            )
+
+        payment = get_object_or_404(
+            SubmissionPayment,
+            provider_payment_id=webhook_event.payment.payment_output.references.merchant_reference,
+        )
+
+        with structlog.contextvars.bound_contextvars(
+            submission_uuid=str(payment.submission.uuid),
+            payment_uuid=str(payment.uuid),
+            payment_id=payment.provider_payment_id,
+            plugin=self,
+            entrypoint="webhook",
+        ):
+            logger.info("process_payment_status")
+
+            status = WorldlinePaymentStatus(
+                webhook_event.payment.status if webhook_event.payment else None
+            )
+
+            self.apply_status(
+                payment,
+                status,
+                payment.provider_payment_id,
+            )
+
+            return payment
 
     @classmethod
     def iter_config_checks(cls) -> Iterator[Entry]:
