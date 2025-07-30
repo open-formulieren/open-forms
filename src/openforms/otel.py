@@ -15,6 +15,7 @@ from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import (
+    DEPLOYMENT_ENVIRONMENT,
     SERVICE_INSTANCE_ID,
     SERVICE_VERSION,
     Resource,
@@ -57,6 +58,7 @@ def setup_otel() -> None:
         attributes={
             SERVICE_VERSION: settings.RELEASE,
             SERVICE_INSTANCE_ID: str(uuid4()),
+            DEPLOYMENT_ENVIRONMENT: settings.ENVIRONMENT,
         }
     )
 
