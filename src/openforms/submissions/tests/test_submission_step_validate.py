@@ -936,3 +936,89 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             invalid_params[0]["reason"],
             "The family members prefill data may not be altered.",
         )
+
+    def test_partners_component_retrieves_correct_variable_for_validation(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "partners",
+                        "key": "partners",
+                        "label": "Partners",
+                    },
+                ]
+            },
+        )
+
+        # The order of the variables matters here, we want the unmatched variable first
+        FormVariableFactory.create(
+            user_defined=True,
+            key="immutable_partners_2",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="immutable_partners",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "partners",
+                "mutable_data_form_variable": "partners",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "initials": "",
+                    "affixes": "L",
+                    "lastName": "Boei",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                "data": {
+                    "partners": [
+                        {
+                            "bsn": "123456782",
+                            "initials": "",
+                            "affixes": "L",
+                            "lastName": "Boei",
+                            "dateOfBirth": "1990-01-01",
+                        }
+                    ]
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
