@@ -1,12 +1,11 @@
 from datetime import date, datetime
 
 from openforms.contrib.zgw.clients.catalogi import EigenschapSpecificatie
-from openforms.typing import JSONValue
-from openforms.utils.date import datetime_in_amsterdam
+from openforms.typing import JSONValue, VariableValue
 
 
 def process_according_to_eigenschap_format(
-    specificatie: EigenschapSpecificatie, value: JSONValue
+    specificatie: EigenschapSpecificatie, value: VariableValue
 ) -> JSONValue:
     """
     Process date/datetime values into the correct format for eigenschap.
@@ -22,17 +21,15 @@ def process_according_to_eigenschap_format(
     """
     match specificatie["formaat"], value:
         # pass-through
-        case "tekst" | "getal", _:
+        case "tekst" | "getal", str() | float() | int():
             return value
 
-        case "datum", str():
-            valid_date = date.fromisoformat(value)
-            return valid_date.strftime("%Y%m%d")
+        case "datum", date():
+            return value.strftime("%Y%m%d")
 
-        case "datum_tijd", str():
-            valid_datetime = datetime.fromisoformat(value)
-            localized_datetime = datetime_in_amsterdam(valid_datetime)
-            return localized_datetime.strftime("%Y%m%d%H%M%S")
+        case "datum_tijd", datetime():
+            assert value.tzinfo, "We expect timezone information to have been set"
+            return value.strftime("%Y%m%d%H%M%S")
 
-        case _:  # pragma: no cover
+        case _:
             raise ValueError("Received value in unknown/unexpected format!")

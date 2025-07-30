@@ -21,6 +21,13 @@ class FormVariableDataTypes(models.TextChoices):
     datetime = "datetime", _("Datetime")
     time = "time", _("Time")
     date = "date", _("Date")
+    # This should only be used as a data subtype, and is a work-around to enable
+    # converting the partners submission data to native Python types
+    partners = "partners", _("Partners")
+    editgrid = (
+        "editgrid",
+        _("Edit Grid"),
+    )  # TODO-2324: add a DB constraint for this as well
 
 
 class ServiceFetchMethods(models.TextChoices):

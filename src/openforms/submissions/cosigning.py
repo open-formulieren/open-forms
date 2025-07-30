@@ -105,7 +105,7 @@ class CosignState:
                 # https://github.com/open-formulieren/open-forms/issues/3901
                 state = self.submission.load_submission_value_variables_state()
                 visible = configuration_wrapper.is_visible_in_frontend(
-                    component["key"], values=state.to_python()
+                    component["key"], values=state.get_data(include_unsaved=True)
                 )
                 if not visible:
                     return None

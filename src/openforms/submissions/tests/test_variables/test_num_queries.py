@@ -54,17 +54,15 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             submission=submission, form_step=form_step2
         )
         submission_step2._unsaved_data = {"var3": "test3", "var4": "test4"}
-        data = submission.data
 
         # preload the execution state, this normally happens in the viewset/calling code
         submission.load_execution_state()
-        del submission._variables_state  # force re-fetching this to count queries
 
         # 1. Loading the variables state - fetch all the form variables
         # 2. Loading the variables state - fetch all the submission variables
         # 3. Retrieve all logic rules related to a form
         with self.assertNumQueries(3):
-            evaluate_form_logic(submission, submission_step2, data)
+            evaluate_form_logic(submission, submission_step2)
 
     def test_evaluate_form_logic_with_rules(self):
         form = FormFactory.create()
@@ -113,11 +111,9 @@ class SubmissionVariablesPerformanceTests(APITestCase):
                 }
             ],
         )
-        data = submission.data
 
         # preload the execution state, this normally happens in the viewset/calling code
         submission.load_execution_state()
-        del submission._variables_state  # force re-fetching this to count queries
 
         # 1.  Loading the variables state - fetch all the form variables
         # 2.  Loading the variables state - fetch all the submission variables
@@ -127,7 +123,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 5.  Retrieve the submission attachment files to be deleted
         # 6.  Delete submission values
         with self.assertNumQueries(6):
-            evaluate_form_logic(submission, submission_step2, data)
+            evaluate_form_logic(submission, submission_step2)
 
     def test_update_step_data(self):
         form = FormFactory.create()
@@ -357,7 +353,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         # The queries should have been done in the get_state function
         with self.assertNumQueries(0):
-            state.get_data(submission_step1)
+            state.get_data(submission_step=submission_step1)
 
         with self.assertNumQueries(0):
             state.get_data()

@@ -133,3 +133,21 @@ User defined ``SubmissionValueVariables`` are rendered when the renderer is in m
 ``registration`` (for the data sent to the registration backends). They are **NOT** included in the summary page of the
 form, the confirmation email or the PDF of the submission report.
 
+
+Working with submission data
+============================
+
+Accessing the values stored in the ``SubmissionValueVariables`` should be done through the
+``SubmissionValueVariablesState``. There is a single method (``SubmissionValueVariablesState.get_data()``, see below)
+which collects all submission value variables of the corresponding submission, and converts them to native Python types.
+This means that submitted data for date, time, and datetime components will be converted to ``date``, ``time``, and
+``datetime`` objects respectively. It allows us to easily perform operations (comparison, relative deltas, etc.) on the
+values of these components, without having to deal with on-the-fly conversions from (ISO) strings to time-related
+objects.
+
+Note that the data is still stored as JSON in the database, and also exits our Python-type domain once we serialize
+back for API responses.
+
+.. autoclass:: openforms.submissions.models.submission_value_variable.SubmissionValueVariablesState
+   :members:
+

@@ -6,6 +6,20 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+
+3.3.0-alpha.0 (2025-??-??)
+==========================
+
+.. warning::
+
+    For the email and confirmation templates, and the registration backends, we changed
+    the way that the data is generated. In case of key conflicts between static, component,
+    and user-defined variables, the static variables will take precedence. Previously, the
+    component and user-defined variables would override the static variables. Our validation
+    guards against the use of keys that are already present in the static variables, but this
+    does not cover old forms and newly-added static variables.
+
+
 3.1.5 (2025-07-24)
 ==================
 
@@ -14,6 +28,7 @@ Regular bugfix release.
 * [:backend:`5466`] Fixed translations for the cookie banner.
 * [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+
 
 3.2.0 "Nimma" (2025-07-11)
 ==========================

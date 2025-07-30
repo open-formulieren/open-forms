@@ -235,7 +235,7 @@ django-axes==6.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-common
-django-camunda==0.15.0
+django-camunda==0.15.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -92,7 +92,7 @@ class VariableModificationTests(TestCase):
             data={},
         )
 
-        evaluate_form_logic(submission, submission_step2, submission.data)
+        evaluate_form_logic(submission, submission_step2)
 
         variables_state = submission.load_submission_value_variables_state()
         variable = variables_state.variables["nTotalBoxes"]
@@ -171,7 +171,7 @@ class VariableModificationTests(TestCase):
             data={},
         )
 
-        evaluate_form_logic(submission, submission_step2, submission.data)
+        evaluate_form_logic(submission, submission_step2)
 
         variables_state = submission.load_submission_value_variables_state()
         variable = variables_state.variables["nTotalBoxes"]
@@ -250,7 +250,7 @@ class VariableModificationTests(TestCase):
             data={},
         )
 
-        evaluate_form_logic(submission, submission_step2, submission.data)
+        evaluate_form_logic(submission, submission_step2)
 
         variables_state = submission.load_submission_value_variables_state()
         variable = variables_state.variables["nTotalBoxes"]
@@ -353,7 +353,7 @@ class VariableModificationTests(TestCase):
             },
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 
@@ -402,7 +402,7 @@ class VariableModificationTests(TestCase):
             data={"datum": "2023-09-12"},
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 
@@ -497,7 +497,7 @@ class VariableModificationTests(TestCase):
                 rest_api_path="engine-rest/",
             ),
         ):
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 
@@ -610,7 +610,7 @@ class VariableModificationTests(TestCase):
                 rest_api_path="engine-rest/",
             ),
         ):
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 
@@ -709,7 +709,7 @@ class VariableModificationTests(TestCase):
                 rest_api_path="engine-rest/",
             ),
         ):
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 
@@ -758,7 +758,7 @@ class VariableModificationTests(TestCase):
             ],
         )
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         variables_state = submission.load_submission_value_variables_state()
 

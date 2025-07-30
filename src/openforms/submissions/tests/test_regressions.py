@@ -1,3 +1,5 @@
+from datetime import date, datetime, time
+
 from django.test import TestCase, override_settings, tag
 
 from openforms.forms.models import FormDefinition, FormVersion
@@ -56,7 +58,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                 {
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
-                    "someDate": "2022-11-03",
+                    "someDate": date(2022, 11, 3),
                 },
             )
             renderer = Renderer(
@@ -77,7 +79,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -88,6 +90,8 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             "someDate: 3 november 2022", rendered
         )  # check that type info is used for display
 
+    # TODO-2324: this seems to do exactly the same as
+    #  test_submission_step_not_lost_on_formstep_delete?
     def test_form_definition_also_deleted(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -141,7 +145,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -204,7 +208,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": date(2022, 11, 3),
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -215,3 +219,114 @@ class SubmissionStepDeletedRegressionTests(TestCase):
         self.assertIn("step2: ik ben een alien", rendered)
         # check that type info is used for display
         self.assertIn("someDate: 3 november 2022", rendered)
+
+    # TODO-2324: can probably be combined with the other test by just adding an editgrid
+    def test_data_type_information_is_preserved_on_from_step_delete(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "someDate",
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Editgrid",
+                        "components": [
+                            {"key": "date", "type": "date", "label": "Date"},
+                            {"key": "time", "type": "time", "label": "Time"},
+                            {
+                                "key": "datetime",
+                                "type": "datetime",
+                                "label": "Datetime",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step2",
+                    },
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form, completed=True)
+        submission_step1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={
+                "someDate": "2022-11-03",
+                "editgrid": [
+                    {
+                        "date": "2000-01-01",
+                        "time": "12:34:56",
+                        "datetime": "2000-01-01T12:34:56Z",
+                    }
+                ],
+            },
+        )
+        submission_step2 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"step2": "ik ben een alien"},
+        )
+        with self.subTest("check initial data setup"):
+            self.assertEqual(
+                submission.data,
+                {
+                    "step2": "ik ben een alien",
+                    "someDate": date(2022, 11, 3),
+                    "editgrid": [
+                        {
+                            "date": date(2000, 1, 1),
+                            "time": time(12, 34, 56),
+                            "datetime": datetime(2000, 1, 1, 12, 34, 56),
+                        }
+                    ],
+                },
+            )
+            renderer = Renderer(
+                submission=submission, mode=RenderModes.pdf, as_html=False
+            )
+            rendered = [node.render() for node in renderer]
+            self.assertIn(
+                "someDate: 3 november 2022", rendered
+            )  # check that type info is used for display
+
+        # delete a form step
+        step1.delete()
+
+        # reload submission as fresh data object so we don't have any cached states
+        submission = Submission.objects.get(pk=submission.pk)
+        self.assertEqual(
+            submission.data,
+            {
+                "step2": "ik ben een alien",
+                "someDate": date(2022, 11, 3),
+                "editgrid": [
+                    {
+                        "date": date(2000, 1, 1),
+                        "time": time(12, 34, 56),
+                        "datetime": datetime(2000, 1, 1, 12, 34, 56),
+                    }
+                ],
+            },
+        )
+        self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
+        self.assertTrue(SubmissionStep.objects.filter(pk=submission_step2.pk).exists())
+        renderer = Renderer(submission=submission, mode=RenderModes.pdf, as_html=False)
+        rendered = [node.render() for node in renderer]
+        # Check that type info is used for display
+        self.assertIn("someDate: 3 november 2022", rendered)
+        self.assertIn("date: 1 januari 2000", rendered)
+        self.assertIn("time: 12:34:56", rendered)
+        self.assertIn("datetime: 2000-01-01T12:34:56Z", rendered)

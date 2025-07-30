@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import MutableMapping
 from dataclasses import dataclass
+from datetime import date, datetime
 from functools import partial
 from io import BytesIO
 from typing import Any, override
@@ -88,15 +89,15 @@ class PartialDate:
         return self.value
 
     @classmethod
-    def parse(cls, json_partial_date):
-        if not json_partial_date:
-            return cls()
-        """
-        2000-01-01
-        2000-1-1
-        2000-01
-        2000-1
-        2000
+    def parse(cls, partial_date: str | date | datetime):
+        """Parse a partial date or a date/datetime object
+
+        Supports the following partial dates:
+            2000-01-01
+            2000-1-1
+            2000-01
+            2000-1
+            2000
         """
 
         def _safe_int(num):
@@ -109,13 +110,21 @@ class PartialDate:
             except TypeError:
                 return None
 
-        m = re.match(r"^(0|\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$", json_partial_date)
-        if not m:
-            return cls()
-        else:
-            return cls(
-                _safe_int(m.group(1)), _safe_int(m.group(2)), _safe_int(m.group(3))
-            )
+        match partial_date:
+            case date() | datetime():
+                return cls(partial_date.year, partial_date.month, partial_date.day)
+            case str():
+                m = re.match(r"^(0|\d{4})(?:-(\d{1,2})(?:-(\d{1,2}))?)?$", partial_date)
+                if not m:
+                    return cls()
+                else:
+                    return cls(
+                        _safe_int(m.group(1)),
+                        _safe_int(m.group(2)),
+                        _safe_int(m.group(3)),
+                    )
+            case _:
+                return cls()
 
 
 def _gender_choices(value):
@@ -267,7 +276,7 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 for partner in zaak_data[RegistrationAttribute.partners]:
                     partner.update(
                         {
-                            "dateOfBirth": partner["dateOfBirth"].replace("-", ""),
+                            "dateOfBirth": partner["dateOfBirth"].strftime("%Y%m%d"),
                             "prefilled": bool(submission_variable),
                         }
                     )
