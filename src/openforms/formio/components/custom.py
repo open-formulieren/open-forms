@@ -712,6 +712,7 @@ class PartnerListField(serializers.Field):
             source=FormVariableSources.user_defined,
             prefill_plugin=FM_PLUGIN_IDENTIFIER,
             prefill_options__mutable_data_form_variable=component_key,
+            form=submission.form,
         ).first()
         if fm_immutable_variable:
             # we do not receive these fields from the frontend (since they are not used
