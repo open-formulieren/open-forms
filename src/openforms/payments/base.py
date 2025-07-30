@@ -8,6 +8,7 @@ from django.http import HttpRequest, HttpResponse
 
 from rest_framework import serializers
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -42,7 +43,8 @@ class Options(TypedDict):
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     return_method = "GET"
-    webhook_method = "POST"
+    webhook_methods = ["POST"]
+    webhook_custom_response = False
     configuration_options: type[serializers.Serializer] = EmptyOptions
 
     # override
@@ -63,7 +65,7 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     ) -> HttpResponse:
         raise NotImplementedError()
 
-    def handle_webhook(self, request: Request) -> SubmissionPayment:
+    def handle_webhook(self, request: Request) -> SubmissionPayment | None:
         raise NotImplementedError()
 
     # helpers
@@ -88,6 +90,9 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             kwargs={"plugin_id": self.identifier},
             request=request,
         )
+
+    def get_webhook_response(self, request: Request) -> Response:
+        raise NotImplementedError
 
     def get_api_info(self, request: HttpRequest) -> APIInfo:
         info = APIInfo(self.identifier, str(self.get_label()))

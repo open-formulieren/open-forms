@@ -277,6 +277,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         return response
 
 
+# TODO: update documentation to allow GET and POST methods with various content types
 @extend_schema(
     summary=_("Webhook handler for external payment flow"),
     description=_(
@@ -328,7 +329,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
-        if plugin.webhook_method.upper() != request.method.upper():
+        if request.method.upper() not in plugin.webhook_methods:
             raise MethodNotAllowed(request.method)
 
         payment = plugin.handle_webhook(request)
@@ -342,6 +343,9 @@ class PaymentWebhookView(PaymentFlowBaseView):
                         PostSubmissionEvents.on_payment_complete,
                     )
                 )
+
+        if plugin.webhook_custom_response:
+            return plugin.get_webhook_response(request)
 
         return HttpResponse("")
 

@@ -11,6 +11,7 @@ from django.http import (
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework.views import Response
 import structlog
 from onlinepayments.sdk.api_exception import ApiException
 from onlinepayments.sdk.communicator import CommunicationException
@@ -75,6 +76,7 @@ def _generate_checkout_input(
 class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     verbose_name = _("Wordline")
     configuration_options = WorldlineOptionsSerializer
+    webhook_methods = ["GET", "POST"]
 
     def start_payment(
         self,
@@ -219,9 +221,34 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             )
             return HttpResponseRedirect(redirect_url)
 
-    # TODO
-    def handle_webhook(self, request: Request) -> SubmissionPayment:
-        raise NotImplementedError()
+    def _validate_webhook_request(self, request: Request) -> str:
+        if "X-GCS-Webhooks-Endpoint-Verification" not in request.headers:
+            raise ValueError(
+                "No X-GCS-Webhooks-Endpoint-Verification header found in request"
+            )
+
+        return request.headers["x-GCS-Webhooks-Endpoint-Verification"]
+
+    def handle_webhook(self, request: Request) -> SubmissionPayment | None:
+        if request.method.upper() == "GET":  # validation requests are handled later on
+            return
+
+        # TODO: process payment event
+
+    def get_webhook_response(self, request: Request) -> Response:
+        if request.method.upper() == "GET":
+            try:
+                value = self._validate_webhook_request(request)
+            except ValueError as e:
+                return Response(
+                    str(e).encode("utf-8"), content_type="text/plain", status=400
+                )  # TODO: follow response as documented in documentation
+
+            return Response(
+                value.encode("utf-8"), content_type="text/plain", status=200
+            )
+
+        return Response()
 
     @classmethod
     def iter_config_checks(cls) -> Generator[Entry, Any, Any]:
