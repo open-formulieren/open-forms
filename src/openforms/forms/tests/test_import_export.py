@@ -1690,6 +1690,47 @@ class ImportExportTests(TempdirMixin, TestCase):
         )
 
 
+class ExportObjectsAPITests(TempdirMixin, TestCase):
+    @tag("gh-5384")
+    def test_export_form_with_objects_registration_backend(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(identifier="test-objects-api-group")
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="objects_api",
+            key="test-objects-backend",
+            options={
+                "objects_api_group": objects_api_group.pk,
+            },
+        )
+
+        call_command("export", form.pk, self.filepath)
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            forms = json.loads(f.read("forms.json"))
+            self.assertEqual(len(forms), 1)
+            self.assertEqual(len(forms[0]["registration_backends"]), 1)
+            self.assertEqual(
+                forms[0]["registration_backends"][0]["key"], "test-objects-backend"
+            )
+            self.assertEqual(
+                forms[0]["registration_backends"][0]["options"]["objects_api_group"],
+                "test-objects-api-group",
+            )
+
+
 class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
 
