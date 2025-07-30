@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings, tag
+from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 from django_yubin.models import Message
@@ -650,86 +651,163 @@ class BrokenConfigurationTests(TestCase):
             family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
         ),
     )
-    def test_partners_with_no_stufbg_service_collected(self, m, n):
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
+    def test_family_members_with_no_stufbg_service_collected(self, m, n):
+        with self.subTest("partners"):
+            form = FormFactory.create(
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "partners",
+                            "type": "partners",
+                            "label": "Partners",
+                        }
+                    ],
+                },
+            )
+            FormVariableFactory.create(
+                form=form,
+                user_defined=True,
+                key="immutable_partners",
+                data_type=FormVariableDataTypes.array,
+                prefill_plugin="family_members",
+                prefill_options={
+                    "type": "partners",
+                    "mutable_data_form_variable": "partners",
+                },
+                initial_value=[
                     {
-                        "key": "partners",
-                        "type": "partners",
-                        "label": "partners",
+                        "bsn": "123456782",
+                        "initials": "",
+                        "affixes": "L",
+                        "lastName": "Boei",
+                        "dateOfBirth": "1990-01-01",
                     }
                 ],
-            },
-        )
-        FormVariableFactory.create(
-            form=form,
-            user_defined=True,
-            key="immutable_partners",
-            data_type=FormVariableDataTypes.array,
-            prefill_plugin="family_members",
-            prefill_options={
-                "type": "partners",
-                "mutable_data_form_variable": "partners",
-            },
-            initial_value=[
-                {
-                    "bsn": "123456782",
-                    "initials": "",
-                    "affixes": "L",
-                    "lastName": "Boei",
-                    "dateOfBirth": "1990-01-01",
-                }
-            ],
-        )
+            )
 
-        broken_configuration = collect_broken_configurations()
+            broken_configuration = collect_broken_configurations()
 
-        self.assertEqual(len(broken_configuration), 1)
-        self.assertEqual(broken_configuration[0].config_name, "StUF-BG Client")
+            self.assertEqual(len(broken_configuration), 1)
+            self.assertEqual(broken_configuration[0].config_name, "StUF-BG Client")
+
+        with self.subTest("children"):
+            form = FormFactory.create(
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "children",
+                            "type": "children",
+                            "label": "Children",
+                        }
+                    ],
+                },
+            )
+            FormVariableFactory.create(
+                form=form,
+                user_defined=True,
+                key="immutable_children",
+                data_type=FormVariableDataTypes.array,
+                prefill_plugin="family_members",
+                prefill_options={
+                    "type": "children",
+                    "mutable_data_form_variable": "children",
+                },
+                initial_value=[
+                    {
+                        "bsn": "999970409",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                    }
+                ],
+            )
+
+            broken_configuration = collect_broken_configurations()
+
+            self.assertEqual(len(broken_configuration), 1)
+            self.assertEqual(broken_configuration[0].config_name, "StUF-BG Client")
 
     @patch(
         "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(family_members_data_api=""),
     )
-    def test_partners_and_no_client_for_partners_configured_not_collected(self, m):
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
+    def test_family_members_and_no_client_for_retrieving_data_configured_not_collected(
+        self, m
+    ):
+        with self.subTest("partners"):
+            form = FormFactory.create(
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "partners",
+                            "type": "partners",
+                            "label": "Partners",
+                        }
+                    ],
+                },
+            )
+            FormVariableFactory.create(
+                form=form,
+                user_defined=True,
+                key="immutable_partners",
+                data_type=FormVariableDataTypes.array,
+                prefill_plugin="family_members",
+                prefill_options={
+                    "type": "partners",
+                    "mutable_data_form_variable": "partners",
+                },
+                initial_value=[
                     {
-                        "key": "partners",
-                        "type": "partners",
-                        "label": "partners",
+                        "bsn": "123456782",
+                        "initials": "",
+                        "affixes": "L",
+                        "lastName": "Boei",
+                        "dateOfBirth": "1990-01-01",
                     }
                 ],
-            },
-        )
-        FormVariableFactory.create(
-            form=form,
-            user_defined=True,
-            key="immutable_partners",
-            data_type=FormVariableDataTypes.array,
-            prefill_plugin="family_members",
-            prefill_options={
-                "type": "partners",
-                "mutable_data_form_variable": "partners",
-            },
-            initial_value=[
-                {
-                    "bsn": "123456782",
-                    "initials": "",
-                    "affixes": "L",
-                    "lastName": "Boei",
-                    "dateOfBirth": "1990-01-01",
-                }
-            ],
-        )
+            )
 
-        broken_configuration = collect_broken_configurations()
+            broken_configuration = collect_broken_configurations()
 
-        self.assertEqual(broken_configuration, [])
+            self.assertEqual(broken_configuration, [])
+
+        with self.subTest("children"):
+            form = FormFactory.create(
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "children",
+                            "type": "children",
+                            "label": "Children",
+                        }
+                    ],
+                },
+            )
+            FormVariableFactory.create(
+                form=form,
+                user_defined=True,
+                key="immutable_children",
+                data_type=FormVariableDataTypes.array,
+                prefill_plugin="family_members",
+                prefill_options={
+                    "type": "children",
+                    "mutable_data_form_variable": "children",
+                },
+                initial_value=[
+                    {
+                        "bsn": "999970409",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                    }
+                ],
+            )
+
+            broken_configuration = collect_broken_configurations()
+
+            self.assertEqual(broken_configuration, [])
 
     def test_no_partners_component_with_immutable_variable_collected(self):
         form = FormFactory.create(
@@ -770,6 +848,43 @@ class BrokenConfigurationTests(TestCase):
 
         self.assertEqual(broken_configuration[0].config_name, "User defined Variables")
 
+    def test_no_children_component_with_immutable_variable_collected(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "textField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                    }
+                ],
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration[0].config_name, "User defined Variables")
+
     @patch(
         "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
@@ -787,6 +902,32 @@ class BrokenConfigurationTests(TestCase):
                         "key": "partners",
                         "type": "partners",
                         "label": "Partners",
+                    }
+                ],
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    @patch(
+        "openforms.prefill.contrib.family_members.plugin.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            family_members_data_api=FamilyMembersDataAPIChoices.stuf_bg
+        ),
+    )
+    def test_stufbg_children_component_without_immutable_variable_not_collected(
+        self, m
+    ):
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "children",
+                        "type": "children",
+                        "label": "Children",
                     }
                 ],
             },
@@ -834,6 +975,114 @@ class BrokenConfigurationTests(TestCase):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(broken_configuration, [])
+
+    def test_children_component_with_immutable_variable_not_collected(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "children",
+                        "type": "children",
+                        "label": "Children",
+                    }
+                ],
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(broken_configuration, [])
+
+    def test_same_component_key_as_mutable_in_two_forms(self):
+        """
+        This is covering the case where we may have two different forms which have the same
+        key for the mutable varible/component (configured in the user defined immutable
+        variable). We make sure that the form which has broken configuration is reported.
+        """
+        form1 = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "children",
+                        "type": "children",
+                        "label": "Children",
+                    }
+                ],
+            },
+        )
+        form2 = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [],
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form1,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                }
+            ],
+        )
+        user_defined_2 = FormVariableFactory.create(
+            form=form2,
+            user_defined=True,
+            key="immutable_children_2",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                }
+            ],
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(
+            broken_configuration[0].exception_message,
+            _(
+                "There is no component of type 'partners/children' connected to variables '{user_defined}'."
+            ).format(user_defined=user_defined_2.name),
+        )
 
 
 @override_settings(LANGUAGE_CODE="en")

@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
-from openforms.formio.typing import Component
+from openforms.formio.typing import ChildrenComponent, Component
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
 
@@ -399,6 +399,98 @@ class PartnersNode(ComponentNode):
                 "type": "textfield",
                 "key": "lastName",
                 "label": _("Lastname"),
+            },
+            {
+                "type": "date",
+                "key": "dateOfBirth",
+                "label": _("Date of birth"),
+            },
+        ]
+
+        for node_index in range(repeats):
+            # the following custom node is the way/workaround to manage to have a type of
+            # label component on the form summary. This may cause problems in the future
+            # in case we introduce a component with the same name.
+            yield ComponentNode.build_node(
+                step_data=self.step_data,
+                component={
+                    "type": "component_label",
+                    "key": "component_label",
+                    "label": _("{label} {counter}").format(
+                        label=self.component["label"], counter=node_index + 1
+                    ),
+                },
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                path=f"{self.key}.{node_index}",
+                parent_node=self,
+            )
+
+            for component in components:
+                yield ComponentNode.build_node(
+                    step_data=self.step_data,
+                    component=component,
+                    renderer=self.renderer,
+                    depth=self.depth + 1,
+                    path=f"{self.key}.{node_index}",
+                    parent_node=self,
+                )
+
+
+class ChildValue(TypedDict):
+    bsn: str
+    initials: NotRequired[str]
+    affixes: NotRequired[str]
+    first_names: NotRequired[str]
+    last_name: NotRequired[str]
+    date_of_birth: NotRequired[str]
+    date_of_birth_precision: Literal["date", "year_month", "year"] | None
+    selected: bool
+
+
+@register("children")
+class ChildrenNode(ComponentNode):
+    @property
+    def value(self) -> Any:
+        self.component: ChildrenComponent
+        value = self.step_data[self.path or self.key]
+        assert isinstance(value, list)
+
+        if not self.component.get("enableSelection"):
+            return value
+
+        selected_children = []
+        for child in value:
+            assert isinstance(child, dict)
+            if child.get("selected"):
+                selected_children.append(child)
+
+        return selected_children
+
+    @property
+    def display_value(self) -> str | list[ChildValue]:
+        # in export mode, expose the raw datatype
+        if self.mode == RenderModes.export:
+            return self.value
+
+        assert isinstance(self.value, list)
+
+        # return nothing - we produce "virtual" child components that result in the actual
+        # key/value output
+        return ""
+
+    def get_children(self) -> Iterator[ComponentNode]:
+        repeats = len(self.value) if self.value else 0
+        components: list[Component] = [
+            {
+                "type": "bsn",
+                "key": "bsn",
+                "label": _("BSN"),
+            },
+            {
+                "type": "textfield",
+                "key": "firstNames",
+                "label": _("Firstnames"),
             },
             {
                 "type": "date",

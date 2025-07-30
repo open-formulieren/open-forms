@@ -251,6 +251,14 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
         }
         self.assertComponentSchemaIsValid(component=component)
 
+    def test_children(self):
+        component: Component = {
+            "label": "Children",
+            "key": "children",
+            "type": "children",
+        }
+        self.assertComponentSchemaIsValid(component=component)
+
 
 class GeneralComponentSchemaTests(SimpleTestCase):
     def test_description(self):

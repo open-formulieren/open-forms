@@ -43,6 +43,18 @@
     "houseLetter": "",
     "houseNumberAddition": ""
   },
+  "children": [
+    {
+      "bsn": "999970409",
+      "affixes": "van",
+      "initials": "P.",
+      "lastName": "Paassen",
+      "firstNames": "Pero",
+      "dateOfBirth": "2023-02-01",
+      "dateOfBirthPrecision": "date",
+      "selected": false
+    }
+  ],
   "partners": [
     {
       "bsn": "999970136",

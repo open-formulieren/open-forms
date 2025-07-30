@@ -2,6 +2,7 @@ import json
 import os
 from datetime import timedelta
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase, override_settings
 
@@ -137,6 +138,10 @@ class DownloadSubmissionReportTests(APITestCase):
             (
                 "partners",
                 '[{"bsn": "999970136", "firstNames": "Pia", "initials": "P.", "affixes": "", "lastName": "Pauw", "dateOfBirth": "April 1, 1989", "dateOfBirthPrecision": "date"}]',
+            ),
+            (
+                "children",
+                '[{"bsn": "999970409","affixes": "van","initials": "P.","lastName": "Paassen","firstNames": "Pero","dateOfBirth": "Feb. 1, 2023","dateOfBirthPrecision": "date","selected":"False","__addedManually":"False","__id":"2232657a-cb04-467d-9ded-6eb7a4819cc4"}]',
             ),
             ("password", "Panda1911!"),  # XXX Why is this widget even an option?
             ("phonenumber", "+49 1234 567 890"),
@@ -394,6 +399,25 @@ class DownloadSubmissionReportTests(APITestCase):
                         "dateOfBirthPrecision": "date",
                     }
                 ],
+                # TODO
+                # Make sure this is updated (the data we get from the submission) when task
+                # 2324 is completed
+                # the data here is coming from the submission so that's why we have the extra
+                # keys (used only for frontend operations)
+                "childrenkey": [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                        "selected": False,
+                        "__addedManually": False,
+                        "__id": UUID("2232657a-cb04-467d-9ded-6eb7a4819cc4"),
+                    },
+                ],
                 "passwordkey": "Panda1911!",
                 "phonenumberkey": "+49 1234 567 890",
                 "postcodekey": "3744 AA",
@@ -422,7 +446,7 @@ class DownloadSubmissionReportTests(APITestCase):
 
         for component_type, localised_input in fields:
             with self.subTest(f"FormIO label for {component_type}"):
-                if component_type != "partners":
+                if component_type not in ["partners", "children"]:
                     self.assertIn(localised_input, html_report)
 
                 self.assertNotIn(
@@ -433,11 +457,31 @@ class DownloadSubmissionReportTests(APITestCase):
             # Partners component tests
             if component_type == "partners":
                 partners_list = json.loads(localised_input)
+
+                # The following key value pairs need to be removed since they are not
+                # relevant for the partners data that we expect in the report.
                 del partners_list[0]["firstNames"]
                 del partners_list[0]["dateOfBirthPrecision"]
                 for partner_label, partner_value in partners_list[0].items():
                     self.assertIn(partner_label, html_report)
                     self.assertIn(partner_value, html_report)
+
+            # Children component tests
+            if component_type == "children":
+                children_list = json.loads(localised_input)
+
+                # The following key value pairs need to be removed since they are not
+                # relevant for the children data that we expect in the report.
+                del children_list[0]["affixes"]
+                del children_list[0]["initials"]
+                del children_list[0]["lastName"]
+                del children_list[0]["dateOfBirthPrecision"]
+                del children_list[0]["selected"]
+                del children_list[0]["__addedManually"]
+                del children_list[0]["__id"]
+                for child_label, child_value in children_list[0].items():
+                    self.assertIn(child_label, html_report)
+                    self.assertIn(child_value, html_report)
 
         # assert structural labels
         self.assertIn("Translated Field Set label", html_report)
