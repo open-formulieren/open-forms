@@ -1,12 +1,22 @@
 ---
 
+extensions:
+  basicauth/server:
+    htpasswd:
+      inline: |
+        otel:supersecret
+
 receivers:
   otlp:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
+        auth:
+          authenticator: basicauth/server
       http:
         endpoint: 0.0.0.0:4318
+        auth:
+          authenticator: basicauth/server
 
 processors:
   batch:
@@ -28,6 +38,7 @@ exporters:
       environment: docker
 
 service:
+  extensions: [basicauth/server]
   pipelines:
     traces:
       receivers: [otlp]
