@@ -59,7 +59,7 @@ Available plugin components
    registration_plugins
    prefill_plugins
    appointment_plugins
-   payment_plugins
+   payment/index
    authentication_plugins
 
 

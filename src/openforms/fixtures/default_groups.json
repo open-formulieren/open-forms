@@ -60,6 +60,26 @@
                 "theme"
             ],
             [
+                "add_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
+                "change_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
+                "delete_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
+                "view_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
                 "add_jccconfig",
                 "jcc",
                 "jccconfig"
@@ -103,26 +123,6 @@
                 "view_timelinelogproxy",
                 "logging",
                 "timelinelogproxy"
-            ],
-            [
-                "add_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "change_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "delete_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "view_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
             ],
             [
                 "add_qmaticconfig",
@@ -298,6 +298,16 @@
                 "formdefinition"
             ],
             [
+                "add_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
+                "view_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
                 "add_formstep",
                 "forms",
                 "formstep"
@@ -336,16 +346,6 @@
                 "view_formversion",
                 "forms",
                 "formversion"
-            ],
-            [
-                "add_formsexport",
-                "forms",
-                "formsexport"
-            ],
-            [
-                "view_formsexport",
-                "forms",
-                "formsexport"
             ]
         ]
     }
@@ -728,7 +728,7 @@
                 "config",
                 "globalconfiguration"
             ],
-                        [
+            [
                 "add_theme",
                 "config",
                 "theme"
@@ -969,6 +969,16 @@
                 "formlogic"
             ],
             [
+                "add_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
+                "view_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
                 "add_formstep",
                 "forms",
                 "formstep"
@@ -1009,14 +1019,24 @@
                 "formversion"
             ],
             [
-                "add_formsexport",
-                "forms",
-                "formsexport"
+                "add_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
             ],
             [
-                "view_formsexport",
-                "forms",
-                "formsexport"
+                "change_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
+                "delete_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
+            ],
+            [
+                "view_haalcentraalconfig",
+                "haalcentraal",
+                "haalcentraalconfig"
             ],
             [
                 "add_jccconfig",
@@ -1164,26 +1184,6 @@
                 "totpdevice"
             ],
             [
-                "add_webauthndevice",
-                "two_factor_webauthn",
-                "webauthndevice"
-            ],
-            [
-                "change_webauthndevice",
-                "two_factor_webauthn",
-                "webauthndevice"
-            ],
-            [
-                "delete_webauthndevice",
-                "two_factor_webauthn",
-                "webauthndevice"
-            ],
-            [
-                "view_webauthndevice",
-                "two_factor_webauthn",
-                "webauthndevice"
-            ],
-            [
                 "add_submissionpayment",
                 "payments",
                 "submissionpayment"
@@ -1222,26 +1222,6 @@
                 "view_ogonemerchant",
                 "payments_ogone",
                 "ogonemerchant"
-            ],
-            [
-                "add_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "change_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "delete_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
-            ],
-            [
-                "view_haalcentraalconfig",
-                "haalcentraal",
-                "haalcentraalconfig"
             ],
             [
                 "add_product",
@@ -1489,6 +1469,26 @@
                 "timelinelog"
             ],
             [
+                "add_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "change_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "delete_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "view_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
                 "add_nlxconfig",
                 "zgw_consumers",
                 "nlxconfig"
@@ -1588,14 +1588,14 @@
         "name": "Public API client",
         "permissions": [
             [
-                "view_form",
-                "forms",
-                "form"
-            ],
-            [
                 "view_category",
                 "forms",
                 "category"
+            ],
+            [
+                "view_form",
+                "forms",
+                "form"
             ]
         ]
     }

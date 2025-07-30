@@ -9,15 +9,22 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView
 
 import structlog
+from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import permissions
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
+from rest_framework import permissions, status
 from rest_framework.exceptions import MethodNotAllowed, NotFound, ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.api.parsers import PlainTextParser
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.logging import logevent
@@ -280,11 +287,15 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 @extend_schema(
     summary=_("Webhook handler for external payment flow"),
     description=_(
-        "This endpoint is used for server-to-server calls. Depending on the plugin, either `GET` or `POST` "
-        "is allowed as HTTP method."
+        "This endpoint is used for server-to-server calls. Depending on the plugin, multiple request "
+        "HTTP methods are supported."
         "\n\nVarious validations are performed:"
         "\n* the `plugin_id` is configured on the form"
         "\n* payment is required and configured on the form"
+        "\n\nWhenever the webhook_verification_header and webhook_verification_method"
+        " settings are set for a plugin and a request has an empty request body,"
+        " the request headers will be searched for the webhook_verification_header"
+        " and will be returned as the response body."
     ),
     parameters=[
         OpenApiParameter(
@@ -307,19 +318,47 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     ],
     request=None,
     responses={
-        200: None,
-        (400, ERR_CONTENT_TYPE): OpenApiResponse(
+        (status.HTTP_200_OK, "text/plain"): OpenApiResponse(
+            response=str,
+            examples=[
+                OpenApiExample(
+                    name="Webhook event",
+                    value="",
+                    media_type="text/plain",
+                    status_codes=[status.HTTP_200_OK],
+                    description=_(
+                        "The response returned when a webhook event is processed."
+                    ),
+                ),
+                OpenApiExample(
+                    name="Verification header",
+                    value="<verification-header-value>",
+                    media_type="text/plain",
+                    status_codes=[status.HTTP_200_OK],
+                    description=_(
+                        "The response returned when a verification header is set"
+                        " and no request body is found."
+                    ),
+                ),
+            ],
+        ),
+        (status.HTTP_400_BAD_REQUEST, ERR_CONTENT_TYPE): OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Bad request. Invalid parameters were passed."),
         ),
-        (404, ERR_CONTENT_TYPE): OpenApiResponse(
+        (status.HTTP_404_NOT_FOUND, ERR_CONTENT_TYPE): OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Not found. The slug did not point to a live plugin."),
         ),
     },
 )
 class PaymentWebhookView(PaymentFlowBaseView):
-    parser_classes = (FormParser, MultiPartParser)
+    parser_classes = (
+        FormParser,
+        MultiPartParser,
+        CamelCaseJSONParser,
+        PlainTextParser,
+    )
 
     def _handle_webhook(self, request, *args, **kwargs):
         try:
@@ -328,8 +367,23 @@ class PaymentWebhookView(PaymentFlowBaseView):
             raise NotFound(detail="unknown plugin")
         self._plugin = plugin
 
-        if plugin.webhook_method.upper() != request.method.upper():
+        request_method = request.method.upper()
+
+        if request_method not in plugin.allowed_http_methods:
             raise MethodNotAllowed(request.method)
+
+        if (
+            plugin.webhook_verification_header
+            and request_method == plugin.webhook_verification_method
+            and not request.body
+        ):
+            verification_value = request.headers.get(
+                plugin.webhook_verification_header, ""
+            )
+            return HttpResponse(
+                verification_value.encode("utf-8"),
+                content_type="text/plain; charset=utf-8",
+            )
 
         payment = plugin.handle_webhook(request)
         if payment:
@@ -343,7 +397,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
                     )
                 )
 
-        return HttpResponse("")
+        return HttpResponse(b"", content_type="text/plain")
 
     def get(self, request, *args, **kwargs):
         return self._handle_webhook(request, *args, **kwargs)
@@ -357,7 +411,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
         """
         response = super().finalize_response(request, response, *args, **kwargs)
         if hasattr(self, "_plugin"):
-            response["Allow"] = self._plugin.webhook_method
+            response["Allow"] = ", ".join(self._plugin.allowed_http_methods)
         return response
 
 
