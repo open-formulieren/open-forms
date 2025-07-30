@@ -179,8 +179,9 @@ Logging, monitoring and Open Telemetry settings
 Open Forms uses the official Python SDK which should adhere to the environment variables
 `specification <https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/>`_.
 
-* ``OF_OTEL_PROTOCOL``: controls the wire protocol for the OTLP data. Defaults to
-  ``gRPC``. Available options: ``gRPC`` and ``http``.
+* ``OTEL_EXPORTER_OTLP_PROTOCOL``: controls the wire protocol for the OTLP data. Defaults to
+  ``grpc``. Available options: ``grpc`` and ``http/protobuf``.
+
 * ``OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``: set to ``true`` when deploying with
   Docker engine or similar to enable container resource detection. On Kubernetes, it's
   recommended to enable the `kubernetes attributes processor`_ and leave this setting off.

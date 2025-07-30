@@ -11,6 +11,7 @@ from django.conf import settings
 
 from opentelemetry import metrics, trace
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import (
@@ -30,7 +31,7 @@ __all__ = [
 
 _OTEL_INITIALIZED = False
 
-type ExportProtocol = Literal["gRPC", "http"]
+type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 
 def setup_otel() -> None:
@@ -59,7 +60,7 @@ def setup_otel() -> None:
         }
     )
 
-    OTLPMetricExporter, OTLPSpanExporter = load_exporters(settings.OF_OTEL_PROTOCOL)
+    OTLPMetricExporter, OTLPSpanExporter = load_exporters()
 
     tracer_provider = TracerProvider(resource=resource)
     processor = BatchSpanProcessor(OTLPSpanExporter())
@@ -77,9 +78,10 @@ def setup_otel() -> None:
     _OTEL_INITIALIZED = True
 
 
-def load_exporters(protocol: ExportProtocol):
+def load_exporters():
+    protocol: ExportProtocol = config(OTEL_EXPORTER_OTLP_PROTOCOL, default="grpc")
     match protocol:
-        case "gRPC":
+        case "grpc":
             from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
                 OTLPMetricExporter,
             )
@@ -88,7 +90,7 @@ def load_exporters(protocol: ExportProtocol):
             )
 
             return (OTLPMetricExporter, OTLPSpanExporter)
-        case "http":
+        case "http/protobuf":
             from opentelemetry.exporter.otlp.proto.http.metric_exporter import (
                 OTLPMetricExporter,
             )
