@@ -3,6 +3,7 @@
 # Taken and adapted from https://grafana.com/docs/loki/latest/setup/install/docker/#install-with-docker-compose
 
 services:
+  # logs storage
   loki:
     image: grafana/loki:latest
     ports:
@@ -11,6 +12,17 @@ services:
     networks:
       - open-forms-dev
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-tsdb:/prometheus
+    networks:
+      - open-forms-dev
+
+  # log scraping from container output
   promtail:
     image: grafana/promtail:latest
     volumes:
@@ -24,32 +36,29 @@ services:
     networks:
       - open-forms-dev
 
+  # open telemetry collector, receives metrics from the application instance(s)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.131.0
+    command: --config=/etc/otel-collector-config.yaml
+    volumes:
+      - ./observability/otel/otel-collector-config.yml:/etc/otel-collector-config.yaml
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 8889:8889
+    networks:
+      - open-forms-dev
+
+  # dashboard tool, visualizes telemetry. queries loki and prometheus
   grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./observability/grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
-    entrypoint:
-      - sh
-      - -euc
-      - |
-        mkdir -p /etc/grafana/provisioning/datasources
-        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
-        apiVersion: 1
-        datasources:
-        - name: Loki
-          type: loki
-          access: proxy 
-          orgId: 1
-          url: http://loki:3100
-          basicAuth: false
-          isDefault: true
-          version: 1
-          editable: false
-        EOF
-        /run.sh
-    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     networks:
@@ -57,6 +66,7 @@ services:
 
 volumes:
   promtail-logs:
+  prometheus-tsdb:
 
 networks:
   open-forms-dev:

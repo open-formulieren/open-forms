@@ -27,6 +27,8 @@ os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development"
 #   looked up from the django-solo model
 os.environ.setdefault("LOG_OUTGOING_REQUESTS", "no")
 
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
+
 from .base import *  # noqa isort:skip
 from .utils import mute_logging  # noqa isort:skip
 

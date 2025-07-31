@@ -928,6 +928,11 @@ else:
     ]
 
 #
+# OpenTelemetry - we use the standardized envvars that are automatically picked
+# up. See https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
+#
+
+#
 # DJANGO REST FRAMEWORK
 #
 ENABLE_THROTTLING = config("ENABLE_THROTTLING", default=True)

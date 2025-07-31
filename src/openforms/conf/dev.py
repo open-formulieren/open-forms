@@ -32,6 +32,8 @@ os.environ.setdefault("VCR_RECORD_MODE", "once")
 
 os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
 
+os.environ.setdefault("OTEL_SDK_DISABLED", "true")
+os.environ.setdefault("OTEL_EXPORTER_OTLP_METRICS_INSECURE", "true")
 
 from .base import *  # noqa isort:skip
 
