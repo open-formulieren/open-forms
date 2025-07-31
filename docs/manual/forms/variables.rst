@@ -25,6 +25,8 @@ Zelf te beheren variabelen die niet gekoppeld zijn aan een specifiek
 formulierveld. U kunt hier bijvoorbeeld waarden opslaan die door logica worden
 verkregen of uit externe koppelingen opgehaald worden.
 
+.. _manual_forms_variables_static_variables:
+
 Vaste variabelen
 ================
 
@@ -32,32 +34,39 @@ Een vaste lijst met variabelen die beschikbaar zijn in alle stappen van het form
 Afhankelijk van het type formulier zijn variabelen wel of niet voorzien van een
 waarde.
 
-================== ========= =========================== =========================================================================
-Variabele          Type      Voorbeeldwaarde             Toelichting
-================== ========= =========================== =========================================================================
-now                datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn
-                                                         :ref:`verschillende weergaven <manual_templates_formatting_of_variables>`
-                                                         van mogelijk.
-                                                         Seconden en milliseconden zijn altijd 0.
-environment        string    ``production``              De waarde die tijdens de installatie gezet is als
-                                                         ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
-form_name          string    ``Paspoort aanvragen``      De naam van het formulier.
-form_id            string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.
-auth               object                                Een verzameling van authenticatie gegevens. Zie hieronder.
-auth.plugin        string    ``digid``                   De systeemnaam van de gebruikte authenticatie plugin.
-auth.value         string    ``111222333``               De identificerende waarde in het ``attribute`` van de
-                                                         authenticatie plugin.
-auth_type          string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
-auth_bsn           string    ``111222333``               De waarde van ``auth.value`` indien ``auth_type`` als waarde
-                                                         ``bsn`` heeft. Anders leeg.
-auth_kvk           string    ``90001354``                De waarde van ``auth.value`` indien ``auth_type`` als waarde
-                                                         ``kvk`` heeft. Anders leeg.
-auth_pseudo        string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth_type`` als waarde
-                                                         ``pseudo`` heeft. Anders leeg.
-auth_context       object    ``{"source": "...", ...}``  De volledige authenticatiecontext, met machtigingsinformatie. Zie
-                                                         :ref:`manual_forms_variables_auth_context` voor de beschrijving en
-                                                         individuele elementen als vaste variabelen.
-================== ========= =========================== =========================================================================
+======================= ========= =========================== =========================================================================
+Variabele               Type      Voorbeeldwaarde             Toelichting
+======================= ========= =========================== =========================================================================
+now                     datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn
+                                                              :ref:`verschillende weergaven <manual_templates_formatting_of_variables>`
+                                                              van mogelijk.
+                                                              Seconden en milliseconden zijn altijd 0.
+environment             string    ``production``              De waarde die tijdens de installatie gezet is als
+                                                              ``ENVIRONMENT``. Zie:
+                                                              :ref:`installation_environment_config`.
+form_name               string    ``Paspoort aanvragen``      De naam van het formulier.
+form_id                 string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.
+auth                    object                                Een verzameling van authenticatie gegevens. Zie
+                                                              hieronder.
+auth.plugin             string    ``digid``                   De systeemnaam van de gebruikte authenticatie plugin.
+auth.value              string    ``111222333``               De identificerende waarde in het ``attribute`` van de
+                                                              authenticatie plugin.
+auth.additional_claims  object    ``{"name": "...", ...}``    De aanvullende authenticatie gegevens, voornamelijk
+                                                              gebruikt bij Yivi en eIDAS authenticatie.
+auth_type               string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
+auth_bsn                string    ``111222333``               De waarde van ``auth.value`` indien ``auth_type`` als
+                                                              waarde ``bsn`` heeft. Anders leeg.
+auth_kvk                string    ``90001354``                De waarde van ``auth.value`` indien ``auth_type`` als
+                                                              waarde ``kvk`` heeft. Anders leeg.
+auth_pseudo             string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth_type`` als
+                                                              waarde ``pseudo`` heeft. Anders leeg.
+auth_additional_claims  object    ``{"name": "...", ...}``    De waarde van ``auth.additional_claims``.
+auth_context            object    ``{"source": "...", ...}``  De volledige authenticatiecontext, met
+                                                              machtigingsinformatie. Zie
+                                                              :ref:`manual_forms_variables_auth_context` voor de
+                                                              beschrijving en individuele elementen als vaste
+                                                              variabelen.
+======================= ========= =========================== =========================================================================
 
 **Verouderde variabelen**
 
@@ -70,6 +79,15 @@ Variabele       Type      Voorbeeldwaarde             Toelichting
 auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben (verouderd,
                                                       gebruik bij voorkeur ``auth_type``).
 =============== ========= =========================== =========================================================================
+
+.. note::
+   Bij authenticatie met de Yivi en eIDAS plugins, worden eventuele aanvullende gegevens beschikbaar gesteld onder
+   ``auth.additional_claims`` en ``auth_additional_claims``. Om deze gegevens te kunnen gebruiken in
+   JsonLogic-expressies, zijn punten in de attribuutnamen vervangen met liggende streepjes.
+
+   Bijvoorbeeld: als je het Yivi attribuut ``pbdf.gemeente.personalData.over18`` gebruikt in een formulier, kan je deze
+   als ``auth.additional_claims.pbdf_gemeente_personalData_over18`` gebruiken in JsonLogic en in overige sjablonen.
+
 
 .. _manual_forms_variables_auth_context:
 
@@ -115,11 +133,19 @@ authenticatiecontextdatamodel_. De structuur is als volgt:
             "legalSubject": {
                 "identifierType": "string",
                 "identifier": "string",
-                "branchNumber": "string"
+                "branchNumber": "string",
+                "additionalInformation": "object",
+                "companyName": "string",
+                "firstName": "string",
+                "familyName": "string",
+                "dateOfBirth": "string",
             },
             "actingSubject": {
                 "identifierType": "string",
-                "identifier": "string"
+                "identifier": "string",
+                "firstName": "string",
+                "familyName": "string",
+                "dateOfBirth": "string",
             }
         },
         "mandate": {
