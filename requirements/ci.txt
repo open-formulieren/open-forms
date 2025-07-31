@@ -911,6 +911,11 @@ ruamel-yaml==0.18.10
     #   -r requirements/base.txt
     #   django-setup-configuration
     #   prance
+ruamel-yaml-clib==0.2.12
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   ruamel-yaml
 ruff==0.11.5
     # via -r requirements/test-tools.in
 schwifty==2024.5.3
@@ -1036,6 +1041,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   pyee
+    #   pyopenssl
     #   qrcode
     #   zgw-consumers
 tzdata==2025.2
