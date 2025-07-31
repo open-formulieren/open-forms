@@ -8,18 +8,25 @@ from django.http import (
     HttpResponseRedirect,
     HttpResponseServerError,
 )
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.views import Response
 import structlog
 from onlinepayments.sdk.api_exception import ApiException
+from onlinepayments.sdk.communication.request_header import RequestHeader
 from onlinepayments.sdk.communicator import CommunicationException
 from onlinepayments.sdk.domain.create_hosted_checkout_request import (
     CreateHostedCheckoutRequest,
 )
+from onlinepayments.sdk.webhooks.api_version_mismatch_exception import (
+    ApiVersionMismatchException,
+)
+from onlinepayments.sdk.webhooks.signature_validation_exception import (
+    SignatureValidationException,
+)
 from rest_framework import serializers
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ParseError
 from rest_framework.request import Request
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -43,7 +50,7 @@ from .typing import (
     Order,
     PaymentOptions,
 )
-from .utils import get_payment_status
+from .utils import get_payment_status, get_webhook_helper
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -76,7 +83,10 @@ def _generate_checkout_input(
 class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     verbose_name = _("Wordline")
     configuration_options = WorldlineOptionsSerializer
-    webhook_methods = ["GET", "POST"]
+
+    webhook_method = "POST"
+    webhook_verification_method = "GET"
+    webhook_verification_header = "X-GCS-Webhooks-Endpoint-Verification"
 
     def start_payment(
         self,
@@ -129,8 +139,8 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         self,
         payment: SubmissionPayment,
         worldline_status: str,
-        checkout_status: str,
         payment_id: str,
+        checkout_status: str = "",
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
@@ -201,12 +211,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             )
 
             try:
-                self.apply_status(
-                    payment,
-                    status,
-                    checkout_status,
-                    payment_provider_id,
-                )
+                self.apply_status(payment, status, payment_provider_id, checkout_status)
             except KeyError:
                 return HttpResponseServerError(b"Unable to retrieve payment status")
 
@@ -221,34 +226,52 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             )
             return HttpResponseRedirect(redirect_url)
 
-    def _validate_webhook_request(self, request: Request) -> str:
-        if "X-GCS-Webhooks-Endpoint-Verification" not in request.headers:
-            raise ValueError(
-                "No X-GCS-Webhooks-Endpoint-Verification header found in request"
-            )
-
-        return request.headers["x-GCS-Webhooks-Endpoint-Verification"]
-
     def handle_webhook(self, request: Request) -> SubmissionPayment | None:
-        if request.method.upper() == "GET":  # validation requests are handled later on
-            return
+        webhook_helper = get_webhook_helper()
 
-        # TODO: process payment event
-
-    def get_webhook_response(self, request: Request) -> Response:
-        if request.method.upper() == "GET":
-            try:
-                value = self._validate_webhook_request(request)
-            except ValueError as e:
-                return Response(
-                    str(e).encode("utf-8"), content_type="text/plain", status=400
-                )  # TODO: follow response as documented in documentation
-
-            return Response(
-                value.encode("utf-8"), content_type="text/plain", status=200
+        try:
+            webhook_event = webhook_helper.unmarshal(
+                request.body,
+                request_headers=[
+                    RequestHeader(header, request.headers[header])
+                    for header in request.headers
+                ],
             )
+        except (SignatureValidationException, ApiVersionMismatchException) as e:
+            raise ParseError from e
 
-        return Response()
+        payment = get_object_or_404(
+            SubmissionPayment, provider_payment_id=webhook_event.payment.id
+        )
+
+        with structlog.contextvars.bound_contextvars(
+            submission_uuid=str(payment.submission.uuid),
+            payment_uuid=str(payment.uuid),
+            plugin=self,
+            entrypoint="webhook",
+        ):
+            log = logger.bind(payment_id=payment.provider_payment_id)
+            log.info("process_payment_status")
+
+            options_serializer = self.configuration_options(data=payment.plugin_options)
+            options_serializer.is_valid(raise_exception=True)
+            options: PaymentOptions = options_serializer.validated_data
+
+            status = (
+                webhook_event.payment.status
+                if webhook_event.payment and webhook_event.payment.status
+                else ""
+            )
+            try:
+                self.apply_status(
+                    payment,
+                    status,
+                    payment.provider_payment_id,
+                )
+            except KeyError as exc:
+                raise ParseError from exc
+
+            return payment
 
     @classmethod
     def iter_config_checks(cls) -> Generator[Entry, Any, Any]:

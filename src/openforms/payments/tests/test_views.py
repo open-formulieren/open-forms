@@ -322,6 +322,7 @@ class PaymentPlugin(BasePlugin):
         return HttpResponseRedirect(payment.submission.form_url)
 
 
+# TODO: add verification header tests
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     CORS_ALLOWED_ORIGINS=["http://allowed.foo"],

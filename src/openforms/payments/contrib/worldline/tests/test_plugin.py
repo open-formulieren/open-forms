@@ -8,6 +8,7 @@ from django.test import RequestFactory, override_settings
 import requests
 from bs4 import BeautifulSoup, Tag
 from django_webtest import WebTest
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from requests.exceptions import SSLError
 from vcr import VCR
 from vcr.request import Request
@@ -25,7 +26,10 @@ from ..constants import (
     WorldlineEndpoints,
 )
 from ..plugin import WorldlinePaymentPlugin
+from ..utils import generate_webhook_signature
 from .factories import (
+    WebhookEventRequestFactory,
+    WorldlineAccountFactory,
     WorldlineMerchantFactory,
 )
 
@@ -451,8 +455,74 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             )
             self.assertIn(incorrect_merchant.label, incorrect_entry.name)
 
-    @expectedFailure
-    def test_webhook(self):
+    def test_webhook_event(self):
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        self.assertEqual(payment.status, PaymentStatus.started)
+
+        plugin = register["worldline"]
+
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
+            type="payment.pending_approval",
+        )
+
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+
+        self.assertEqual(payment.status, PaymentStatus.processing)
+
+    def test_webhook_event_completed_payment(self):
+        """
+        Tests that status mutations should not be possible for completed payments
+        """
+        raise NotImplementedError
+
+    def test_webbhook_api_version_mismatch(self):
+        raise NotImplementedError
+
+    def test_webbhook_incorrect_signature(self):
+        raise NotImplementedError
+
+    def test_webhook_unknown_merchant(self):
+        """
+        Tests that status mutations should not be possible for completed payments
+        """
+        raise NotImplementedError
+
+    def test_webhook_unknown_payment(self):
         raise NotImplementedError
 
     @expectedFailure

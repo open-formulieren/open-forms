@@ -2,7 +2,7 @@ import factory
 import factory.fuzzy
 
 from ..constants import PaymentStatus
-from ..models import WorldlineMerchant
+from ..models import WorldlineAccount, WorldlineMerchant
 
 
 class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
@@ -15,65 +15,85 @@ class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
         model = WorldlineMerchant
 
 
+class WorldlineAccountFactory(factory.django.DjangoModelFactory):
+    webhook_key_id = factory.Faker("uuid4")
+    webhook_key_secret = factory.Faker(
+        "pystr", min_chars=40, max_chars=40
+    )  # TODO: check if this is the correct amount? or use UUID here?
+
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        model = WorldlineAccount
+
+
 class AmountOfMoneyFactory(factory.DictFactory):
     amount = factory.Faker("pyint")
-    currencyCode = factory.Faker("currency_code")
+    currency_code = factory.Faker("currency_code")
 
 
 class ReferencesFactory(factory.DictFactory):
-    merchantReference = factory.Faker(
+    merchant_reference = factory.Faker(
         "pystr_format", string_format="AcmeOrder####{{random_int}}"
     )
-    paymentReference = factory.Faker("pystr_format", string_format="#{{random_int}}")
+    payment_reference = factory.Faker("pystr_format", string_format="#{{random_int}}")
 
 
 class CardFactory(factory.DictFactory):
-    cardNumber = factory.Faker(
+    card_number = factory.Faker(
         "pystr_format", string_format="***********####{{random_int}}"
     )
-    expiryDate = factory.Faker("pystr_format", string_format="####{{random_int}}")
+    expiry_date = factory.Faker("pystr_format", string_format="####{{random_int}}")
 
 
 class FraudResultsFactory(factory.DictFactory):
-    avsResult = factory.Faker("pystr_format", string_format="#{{random_int}}")
-    cvvResult = factory.Faker("pystr_format", string_format="#{{random_int}}")
-    fraudServiceResult = "no-advice"
+    avs_result = factory.Faker("pystr_format", string_format="#{{random_int}}")
+    cvv_result = factory.Faker("pystr_format", string_format="#{{random_int}}")
+    fraud_service_result = "no-advice"
 
 
 class ThreeDSecureResultsFactory(factory.DictFactory):
-    authenticationAmount = factory.SubFactory(AmountOfMoneyFactory)
+    authentication_amount = factory.SubFactory(AmountOfMoneyFactory)
 
 
 class CardPaymentMethodSpecificOutputFactory(factory.DictFactory):
-    paymentProductId = factory.Faker("pyint")
-    authorisationCode = factory.Faker("pyint")
+    payment_product_id = factory.Faker("pyint")
+    authorisation_code = factory.Faker("pyint")
     card = factory.SubFactory(CardFactory)
-    fraudResults = factory.SubFactory(FraudResultsFactory)
-    threeDSecureResults = factory.SubFactory(ThreeDSecureResultsFactory)
+    fraud_results = factory.SubFactory(FraudResultsFactory)
+    three_d_secure_results = factory.SubFactory(ThreeDSecureResultsFactory)
 
 
 class PaymentOutputFactory(factory.DictFactory):
-    amountOfMoney = factory.SubFactory(AmountOfMoneyFactory)
+    amount_of_money = factory.SubFactory(AmountOfMoneyFactory)
     references = factory.SubFactory(ReferencesFactory)
-    paymentMethod = "card"
-    cardPaymentMethodSpecificOutput = factory.SubFactory(
+    payment_method = "card"
+    card_payment_method_specific_output = factory.SubFactory(
         CardPaymentMethodSpecificOutputFactory
     )
 
 
 class StatusOutputFactory(factory.DictFactory):
-    isCancellable = True
-    statusCode = factory.Faker("pyint")
-    statusCodeChangeDateTime = factory.Faker(
+    is_cancellable = True
+    status_code = factory.Faker("pyint")
+    status_code_change_date_time = factory.Faker(
         "pystr_format", string_format="##############{{random_int}}"
     )
-    isAuthorized = True
+    is_authorized = True
 
 
-class PaymentResponseFactory(factory.DictFactory):
+class PaymentRequestFactory(factory.DictFactory):
     id = factory.Faker(
         "pystr_format", string_format="##############################{{random_int}}"
     )
-    paymentOutput = factory.SubFactory(PaymentOutputFactory)
+
+    payment_output = factory.SubFactory(PaymentOutputFactory)
     status = factory.fuzzy.FuzzyChoice(PaymentStatus.values)
-    statusOutput = factory.SubFactory(StatusOutputFactory)
+    status_output = factory.SubFactory(StatusOutputFactory)
+
+
+# see https://docs.connect.worldline-solutions.com/documentation/webhooks/event-structure/
+class WebhookEventRequestFactory(factory.DictFactory):
+    id = factory.Faker("uuid4")
+    api_version = "v1"
+    type = "payment.created"
+    merchant_id = factory.Faker("pyint")
+    payment = factory.SubFactory(PaymentRequestFactory)

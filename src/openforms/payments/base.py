@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Iterable, TypedDict
 
 from django.http import HttpRequest, HttpResponse
 
@@ -43,9 +43,11 @@ class Options(TypedDict):
 
 class BasePlugin[OptionsT: Options](AbstractBasePlugin):
     return_method = "GET"
-    webhook_methods = ["POST"]
-    webhook_custom_response = False
     configuration_options: type[serializers.Serializer] = EmptyOptions
+
+    webhook_method = "POST"
+    webhook_verification_header: str = ""
+    webhook_verification_method: str = ""
 
     # override
 
@@ -91,9 +93,15 @@ class BasePlugin[OptionsT: Options](AbstractBasePlugin):
             request=request,
         )
 
-    def get_webhook_response(self, request: Request) -> Response:
-        raise NotImplementedError
-
     def get_api_info(self, request: HttpRequest) -> APIInfo:
         info = APIInfo(self.identifier, str(self.get_label()))
         return info
+
+    @property
+    def allowed_http_methods(self) -> Iterable[str]:
+        methods = [self.webhook_method.upper()]
+
+        if self.webhook_verification_method:
+            methods.append(self.webhook_verification_method.upper())
+
+        return set(methods)
