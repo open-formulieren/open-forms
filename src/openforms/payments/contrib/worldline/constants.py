@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from django.db import models
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
@@ -7,8 +9,6 @@ import structlog
 from openforms.payments.constants import PaymentStatus as OFPaymentStatus
 
 logger = structlog.stdlib.get_logger(__name__)
-
-# TODO: use TextChoices return type hint where applicable
 
 
 class WorldlineEndpoints(models.TextChoices):
@@ -71,7 +71,9 @@ class StatusCategory(models.TextChoices):
     refunded = "REFUNDED"
 
     @classproperty
-    def payment_status_mapping(cls) -> dict:
+    def payment_status_mapping(
+        cls,
+    ) -> dict["StatusCategory", Collection[PaymentStatus]]:
         return {
             cls.created: [PaymentStatus.created],
             cls.unsuccessful: [
@@ -109,7 +111,7 @@ class StatusCategory(models.TextChoices):
         }
 
     @classproperty
-    def of_status_mapping(cls) -> dict:
+    def of_status_mapping(cls) -> dict["StatusCategory", OFPaymentStatus]:
         return {
             cls.created: OFPaymentStatus.started,
             cls.unsuccessful: OFPaymentStatus.failed,
@@ -145,7 +147,7 @@ class HostedCheckoutStatus(models.TextChoices):
     client_not_eligible = "CLIENT_NOT_ELIGIBLE_FOR_SELECTED_PAYMENT_PRODUCT"
 
     @classproperty
-    def of_mapping(cls) -> dict[str, str]:
+    def of_mapping(cls) -> dict["HostedCheckoutStatus", OFPaymentStatus]:
         return {
             cls.payment_created: OFPaymentStatus.started,
             cls.in_progress: OFPaymentStatus.started,
