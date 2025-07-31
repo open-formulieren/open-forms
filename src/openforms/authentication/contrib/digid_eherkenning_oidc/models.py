@@ -1,4 +1,5 @@
 import warnings
+from collections.abc import Sequence
 
 from django.conf import settings
 from django.db import models
@@ -15,6 +16,7 @@ from digid_eherkenning.oidc.models import (
 from digid_eherkenning.oidc.models.base import default_loa_choices
 from django_jsonform.models.fields import ArrayField
 from mozilla_django_oidc_db.fields import ClaimField, ClaimFieldDefault
+from mozilla_django_oidc_db.typing import ClaimPath
 
 from openforms.authentication.contrib.digid_eherkenning_oidc.choices import (
     EIDASAssuranceLevels,
@@ -174,6 +176,14 @@ class OFEIDASConfig(BaseConfig):
     def oidcdb_username_claim(self):
         return self.legal_subject_identifier_claim
 
+    @property
+    def oidcdb_sensitive_claims(self) -> Sequence[ClaimPath]:
+        return [
+            self.legal_subject_identifier_claim,
+            self.legal_subject_first_name_claim,
+            self.legal_subject_family_name_claim,
+        ]
+
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:
         return "oidc_authentication_callback"
@@ -277,6 +287,15 @@ class OFEIDASCompanyConfig(BaseConfig):
     @property
     def oidcdb_username_claim(self):
         return self.legal_subject_identifier_claim
+
+    @property
+    def oidcdb_sensitive_claims(self) -> Sequence[ClaimPath]:
+        return [
+            self.legal_subject_identifier_claim,
+            self.acting_subject_identifier_claim,
+            self.acting_subject_first_name_claim,
+            self.acting_subject_family_name_claim,
+        ]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:
