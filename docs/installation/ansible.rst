@@ -97,4 +97,4 @@ Installation
 
 
 .. _`Ansible`: https://www.ansible.com/
-.. _`deployment files`: https://github.com/open-formulieren/open-forms/tree/master/deployment
+.. _`deployment files`: https://github.com/open-formulieren/open-forms/tree/stable/3.1.x/deployment
