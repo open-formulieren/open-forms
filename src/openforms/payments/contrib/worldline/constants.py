@@ -175,3 +175,8 @@ def get_payment_status(
         )
         return ""
     return StatusCategory.to_of_status(status_category)
+
+
+assert all(
+    value in StatusCategory.of_status_mapping for value in StatusCategory.values
+), "Not all status categories are present in the of_status_mapping!"
