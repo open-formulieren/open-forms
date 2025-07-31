@@ -6,7 +6,7 @@ Worldline
 
 Open Forms supports the **Worldline** payment backend (using a ``PSPID``).
 
-In order to make use of this module, administrators must create an *Worldline merchant* in
+In order to make use of this module, administrators must create a *Worldline merchant* in
 the admin interface.
 
 1. Navigate to **Configuration** > **Configuration Overview**. In the **Payment Provider Plugin** group, click on **Configuration** for the **Worldline: Test merchant** line.
