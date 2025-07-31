@@ -62,7 +62,7 @@ django-treebeard
 django-upgrade-check
 django-yubin
 mozilla-django-oidc-db[setup-configuration]
-maykin-common[axes,mfa,pdf]
+maykin-common[axes,mfa,otel,pdf]
 maykin-2fa
 django-timeline-logger
 django-csp
@@ -88,11 +88,6 @@ uwsgi
 sentry-sdk[django]  # error monitoring
 elastic-apm  # Elastic APM integration
 flower # task monitoring
-opentelemetry-api
-opentelemetry-resource-detector-containerid
-opentelemetry-sdk
-opentelemetry-exporter-otlp
-opentelemetry-instrumentation-django
 
 # Common Ground integration
 zgw-consumers[setup-configuration]
