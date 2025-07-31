@@ -132,8 +132,8 @@ class StatusCategory(models.TextChoices):
                 for category, items in cls.payment_status_mapping.items()
                 if worldline_status in items
             )
-        except StopIteration:
-            raise KeyError(f"Unknown status {worldline_status} found")
+        except StopIteration as exc:
+            raise KeyError(f"Unknown status {worldline_status} found") from exc
 
     @classmethod
     def to_of_status(cls, worldine_status_category: str) -> str:
