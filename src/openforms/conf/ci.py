@@ -28,7 +28,6 @@ os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development"
 os.environ.setdefault("LOG_OUTGOING_REQUESTS", "no")
 
 os.environ.setdefault("OTEL_SDK_DISABLED", "true")
-os.environ.setdefault("OTEL_SERVICE_NAME", "openforms")
 
 from .base import *  # noqa isort:skip
 from .utils import mute_logging  # noqa isort:skip

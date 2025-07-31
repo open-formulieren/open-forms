@@ -25,17 +25,14 @@ import redis
 import structlog
 from django_redis import get_redis_connection
 from dotenv import load_dotenv
+from maykin_common.otel import setup_otel
 from mozilla_django_oidc import views
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
-from .otel import setup_otel
-
 logger = structlog.stdlib.get_logger(__name__)
 
 mimetypes.init()
-
-_OTEL_INITIALIZED = False
 
 
 def setup_env():
@@ -48,6 +45,7 @@ def setup_env():
     load_dotenv(dotenv_path)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
+    os.environ.setdefault("OTEL_SERVICE_NAME", "openforms")
 
     setup_otel()
     structlog.contextvars.bind_contextvars(source="app")
