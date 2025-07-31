@@ -35,7 +35,6 @@ from openforms.submissions.tokens import submission_status_token_generator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...registry import register
-from .constants import get_payment_status
 from .models import WorldlineMerchant
 from .typing import (
     AmountOfMoney,
@@ -43,6 +42,7 @@ from .typing import (
     Order,
     PaymentOptions,
 )
+from .utils import get_payment_status
 
 logger = structlog.stdlib.get_logger(__name__)
 

@@ -1,14 +1,7 @@
-from collections.abc import Collection
-
 from django.db import models
-from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-import structlog
-
 from openforms.payments.constants import PaymentStatus as OFPaymentStatus
-
-logger = structlog.stdlib.get_logger(__name__)
 
 
 class WorldlineEndpoints(models.TextChoices):
@@ -97,25 +90,6 @@ class HostedCheckoutStatus(models.TextChoices):
     @classmethod
     def to_of_status(cls, value) -> OFPaymentStatus:
         return CHECKOUT_STATUS_TO_OF_STATUS[value]
-
-
-def get_payment_status(
-    worldline_status: str, checkout_status: str | None = None
-) -> str:
-    if not worldline_status and checkout_status:
-        return HostedCheckoutStatus.to_of_status(checkout_status)
-
-    try:
-        status_category = StatusCategory.from_payment_status(worldline_status)
-    except KeyError as exc:
-        logger.exception(
-            "unknown_payment_status_encountered",
-            exc_info=exc,
-            status=worldline_status,
-            checkout_status=checkout_status,
-        )
-        return ""
-    return StatusCategory.to_of_status(status_category)
 
 
 CATEGORY_TO_STATUS = {
