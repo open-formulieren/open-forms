@@ -70,74 +70,22 @@ class StatusCategory(models.TextChoices):
     reversed = "REVERSED"
     refunded = "REFUNDED"
 
-    @classproperty
-    def payment_status_mapping(
-        cls,
-    ) -> dict["StatusCategory", Collection[PaymentStatus]]:
-        return {
-            cls.created: [PaymentStatus.created],
-            cls.unsuccessful: [
-                PaymentStatus.cancelled,
-                PaymentStatus.rejected,
-                PaymentStatus.rejected_capture,
-            ],
-            cls.pending_payment: [
-                PaymentStatus.redirected,
-                PaymentStatus.pending_payment,
-            ],
-            cls.account_verified: [PaymentStatus.account_verified],
-            cls.pending_merchant: [
-                PaymentStatus.pending_approval,
-                PaymentStatus.pending_completion,
-                PaymentStatus.pending_capture,
-                PaymentStatus.pending_fraud_approval,
-            ],
-            cls.pending_connect_or_3rd_party: [
-                PaymentStatus.authorization_requested,
-                PaymentStatus.capture_requested,
-            ],
-            cls.completed: [
-                PaymentStatus.captured,
-                PaymentStatus.paid,
-                PaymentStatus.chargeback_notification,
-            ],
-            cls.reversed: [
-                PaymentStatus.chargebacked,
-                PaymentStatus.reversed,
-            ],
-            cls.refunded: [
-                PaymentStatus.refunded,
-            ],
-        }
-
-    @classproperty
-    def of_status_mapping(cls) -> dict["StatusCategory", OFPaymentStatus]:
-        return {
-            cls.created: OFPaymentStatus.started,
-            cls.unsuccessful: OFPaymentStatus.failed,
-            cls.pending_payment: OFPaymentStatus.processing,
-            cls.account_verified: OFPaymentStatus.started,
-            cls.pending_merchant: OFPaymentStatus.processing,
-            cls.pending_connect_or_3rd_party: OFPaymentStatus.processing,
-            cls.completed: OFPaymentStatus.completed,
-            cls.reversed: OFPaymentStatus.completed,
-            cls.refunded: OFPaymentStatus.failed,
-        }
-
     @classmethod
-    def from_payment_status(cls, worldline_status: str) -> str:
+    def from_payment_status(cls, worldline_status: str) -> "StatusCategory":
         try:
             return next(
                 category
-                for category, items in cls.payment_status_mapping.items()
+                for category, items in CATEGORY_TO_STATUS.items()
                 if worldline_status in items
             )
         except StopIteration as exc:
             raise KeyError(f"Unknown status {worldline_status} found") from exc
 
     @classmethod
-    def to_of_status(cls, worldine_status_category: str) -> str:
-        return cls.of_status_mapping[worldine_status_category]
+    def to_of_status(
+        cls, worldine_status_category: "StatusCategory"
+    ) -> OFPaymentStatus:
+        return CATEGORY_TO_OF_STATUS[worldine_status_category]
 
 
 class HostedCheckoutStatus(models.TextChoices):
@@ -146,18 +94,9 @@ class HostedCheckoutStatus(models.TextChoices):
     cancelled_by_consumer = "CANCELLED_BY_CONSUMER"
     client_not_eligible = "CLIENT_NOT_ELIGIBLE_FOR_SELECTED_PAYMENT_PRODUCT"
 
-    @classproperty
-    def of_mapping(cls) -> dict["HostedCheckoutStatus", OFPaymentStatus]:
-        return {
-            cls.payment_created: OFPaymentStatus.started,
-            cls.in_progress: OFPaymentStatus.started,
-            cls.cancelled_by_consumer: OFPaymentStatus.failed,
-            cls.client_not_eligible: OFPaymentStatus.failed,
-        }
-
     @classmethod
-    def to_of_status(cls, value) -> str:
-        return cls.of_mapping[value]
+    def to_of_status(cls, value) -> OFPaymentStatus:
+        return CHECKOUT_STATUS_TO_OF_STATUS[value]
 
 
 def get_payment_status(
@@ -179,6 +118,62 @@ def get_payment_status(
     return StatusCategory.to_of_status(status_category)
 
 
-assert all(
-    value in StatusCategory.of_status_mapping for value in StatusCategory.values
-), "Not all status categories are present in the of_status_mapping!"
+CATEGORY_TO_STATUS = {
+    StatusCategory.created: [PaymentStatus.created],
+    StatusCategory.unsuccessful: [
+        PaymentStatus.cancelled,
+        PaymentStatus.rejected,
+        PaymentStatus.rejected_capture,
+    ],
+    StatusCategory.pending_payment: [
+        PaymentStatus.redirected,
+        PaymentStatus.pending_payment,
+    ],
+    StatusCategory.account_verified: [PaymentStatus.account_verified],
+    StatusCategory.pending_merchant: [
+        PaymentStatus.pending_approval,
+        PaymentStatus.pending_completion,
+        PaymentStatus.pending_capture,
+        PaymentStatus.pending_fraud_approval,
+    ],
+    StatusCategory.pending_connect_or_3rd_party: [
+        PaymentStatus.authorization_requested,
+        PaymentStatus.capture_requested,
+    ],
+    StatusCategory.completed: [
+        PaymentStatus.captured,
+        PaymentStatus.paid,
+        PaymentStatus.chargeback_notification,
+    ],
+    StatusCategory.reversed: [
+        PaymentStatus.chargebacked,
+        PaymentStatus.reversed,
+    ],
+    StatusCategory.refunded: [
+        PaymentStatus.refunded,
+    ],
+}
+
+CATEGORY_TO_OF_STATUS = {
+    StatusCategory.created: OFPaymentStatus.started,
+    StatusCategory.unsuccessful: OFPaymentStatus.failed,
+    StatusCategory.pending_payment: OFPaymentStatus.processing,
+    StatusCategory.account_verified: OFPaymentStatus.started,
+    StatusCategory.pending_merchant: OFPaymentStatus.processing,
+    StatusCategory.pending_connect_or_3rd_party: OFPaymentStatus.processing,
+    StatusCategory.completed: OFPaymentStatus.completed,
+    StatusCategory.reversed: OFPaymentStatus.completed,
+    StatusCategory.refunded: OFPaymentStatus.failed,
+}
+
+CHECKOUT_STATUS_TO_OF_STATUS = {
+    HostedCheckoutStatus.payment_created: OFPaymentStatus.started,
+    HostedCheckoutStatus.in_progress: OFPaymentStatus.started,
+    HostedCheckoutStatus.cancelled_by_consumer: OFPaymentStatus.failed,
+    HostedCheckoutStatus.client_not_eligible: OFPaymentStatus.failed,
+}
+
+
+assert all(value in CATEGORY_TO_OF_STATUS for value in StatusCategory.values), (
+    "Not all status categories are present in the of_status_mapping!"
+)
