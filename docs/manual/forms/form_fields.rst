@@ -9,7 +9,7 @@ Alle velden in een formulier zijn van een bepaald type, het veld type.
 Algemeen
 ========
 
-Veel veld typen (ook wel componenten genoemd) hebben soortgelijke opties en 
+Veel veld typen (ook wel componenten genoemd) hebben soortgelijke opties en
 functies. Hieronder staan de meest voorkomende genoemd, onderverdeeld in de
 tabbladen binnen het component.
 
@@ -18,13 +18,13 @@ Basis
 
 * **Label**: Het label bij het veld dat zichtbaar is voor de eindgebruiker.
 * **Eigenschapnaam**: De interne naam van het veld. Deze naam wordt gebruikt om
-  eenduidig naar dit veld te verwijzen vanuit andere velden of in 
+  eenduidig naar dit veld te verwijzen vanuit andere velden of in
   :ref:`sjablonen <manual_templates>`.
 * **Beschrijving**: Een optionele help tekst bij het veld.
 * **Weergeven in bevestigingsmail**: Indien aangevinkt, dan wordt dit veld opgenomen in de
   bevestigingsmail naar de eindgebruiker.
 * **Verborgen**: Indien aangevinkt, dan is het veld onzichtbaar voor de
-  eindgebruiker. Dit kan bijvoorbeeld gebruikt worden om informatie voor in te 
+  eindgebruiker. Dit kan bijvoorbeeld gebruikt worden om informatie voor in te
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
 
@@ -35,7 +35,7 @@ Variabelen
 
 Je kan :ref:`variabelen <manual_forms_variables>` gebruiken in het ontwerp van
 formulieren, bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander
-formulierveld weer te geven. Hiervoor is de 
+formulierveld weer te geven. Hiervoor is de
 :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
 
 .. note::
@@ -72,9 +72,9 @@ Geavanceerd
 -----------
 
 * **This component should Display**: Selecteer ``True`` om het veld te tonen als
-  onderstaande conditie geldt. Selecteer ``False`` om het veld juist te 
+  onderstaande conditie geldt. Selecteer ``False`` om het veld juist te
   verbergen als onderstaande conditie geldt.
-* **When the form component**: Selecteer een ander veld dat een specifieke 
+* **When the form component**: Selecteer een ander veld dat een specifieke
   waarde moet hebben om dit veld te tonen of te verbergen.
 * **Has the value**: De waarde die het andere veld moet hebben om de conditie te
   laten slagen.
@@ -85,7 +85,7 @@ Stel er zijn 2 velden:
 
 * Een *Radio* ``Stelling`` met als *Eigenschapnaam* ``stelling``, en 3 waarden:
   ``ja``, ``nee`` en ``anders``.
-* Een *Text Field* ``Toelichting bij anders``. Dit veld wordt als volgt 
+* Een *Text Field* ``Toelichting bij anders``. Dit veld wordt als volgt
   ingesteld:
 
   * **This component should Display**: ``True``
@@ -107,11 +107,11 @@ alleen zichtbaar wordt indien als ``Stelling`` de waarde ``anders`` is gekozen.
 Validatie
 ---------
 
-* **Verplicht**: Indien aangevinkt dan is dit veld verplicht voor de 
+* **Verplicht**: Indien aangevinkt dan is dit veld verplicht voor de
   eindgebruiker. Sommige velden ondersteunen :ref:`niet-blokkerende verplichting <manual_forms_soft_required_fields>`.
 
 * **Plugin**: Je kan gebruik maken van een externe plugin om een veld te
-  valideren. De waarde van het veld wordt naar de plugin gestuurd en 
+  valideren. De waarde van het veld wordt naar de plugin gestuurd en
   gevalideerd.
 
 **Foutmeldingen**
