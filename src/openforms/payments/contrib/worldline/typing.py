@@ -1,7 +1,8 @@
 from typing import TypedDict
 
 from openforms.payments.base import Options
-from openforms.payments.contrib.worldline.models import WorldlineMerchant
+
+from .models import WorldlineMerchant
 
 
 class AmountOfMoney(TypedDict):

@@ -1,6 +1,6 @@
 import factory
 
-from openforms.payments.contrib.worldline.models import WorldlineMerchant
+from ..models import WorldlineMerchant
 
 
 class WorldlineMerchantFactory(factory.django.DjangoModelFactory):

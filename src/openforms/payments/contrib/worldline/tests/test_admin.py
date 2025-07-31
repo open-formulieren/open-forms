@@ -6,7 +6,8 @@ from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.payments.contrib.worldline.constants import WorldlineEndpoints
+
+from ..constants import WorldlineEndpoints
 
 
 @disable_admin_mfa()

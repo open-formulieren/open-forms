@@ -14,19 +14,19 @@ from requests.exceptions import SSLError
 from webtest import AppError
 
 from openforms.payments.constants import PaymentStatus
-from openforms.payments.contrib.worldline.constants import (
-    HostedCheckoutStatus,
-    PaymentStatus as _WorldlinePaymentStatus,
-)
-from openforms.payments.contrib.worldline.plugin import WorldlinePaymentPlugin
-from openforms.payments.contrib.worldline.tests.factories import (
-    WorldlineMerchantFactory,
-)
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....registry import register
+from ..constants import (
+    HostedCheckoutStatus,
+    PaymentStatus as _WorldlinePaymentStatus,
+)
+from ..plugin import WorldlinePaymentPlugin
+from .factories import (
+    WorldlineMerchantFactory,
+)
 
 factory = RequestFactory()
 

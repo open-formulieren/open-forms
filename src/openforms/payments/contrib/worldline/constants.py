@@ -4,9 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 import structlog
 
-from openforms.payments.constants import (
-    PaymentStatus as OFPaymentStatus,
-)
+from openforms.payments.constants import PaymentStatus as OFPaymentStatus
 
 logger = structlog.stdlib.get_logger(__name__)
 

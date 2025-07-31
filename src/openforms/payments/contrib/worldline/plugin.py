@@ -30,21 +30,19 @@ from openforms.payments.constants import (
     PaymentRequestType,
     PaymentStatus,
 )
-from openforms.payments.contrib.worldline.constants import (
-    get_payment_status,
-)
-from openforms.payments.contrib.worldline.models import WorldlineMerchant
-from openforms.payments.contrib.worldline.typing import (
-    AmountOfMoney,
-    CheckoutInput,
-    Order,
-    PaymentOptions,
-)
 from openforms.payments.models import SubmissionPayment
 from openforms.submissions.tokens import submission_status_token_generator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...registry import register
+from .constants import get_payment_status
+from .models import WorldlineMerchant
+from .typing import (
+    AmountOfMoney,
+    CheckoutInput,
+    Order,
+    PaymentOptions,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
