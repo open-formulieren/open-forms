@@ -8,4 +8,4 @@ Payment plugins
    :maxdepth: 1
 
    ogone
-
+   worldline

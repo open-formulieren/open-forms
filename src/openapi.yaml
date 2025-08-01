@@ -9606,8 +9606,9 @@ components:
     PaymentBackendEnum:
       enum:
       - ogone-legacy
+      - worldline
       type: string
-      description: "* `` - \n* `ogone-legacy` - Ogone legacy"
+      description: "* `` - \n* `ogone-legacy` - Ogone legacy\n* `worldline` - Wordline"
     PaymentInfo:
       type: object
       properties:

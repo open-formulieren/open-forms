@@ -32,6 +32,7 @@ typing-extensions
 weasyprint
 zeep
 schwifty
+onlinepayments-sdk-python3 # Worldline SDK
 
 # Framework libraries
 django ~= 4.2
