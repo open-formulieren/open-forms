@@ -654,25 +654,21 @@ class PartnerSerializer(serializers.Serializer):
     initials = serializers.CharField(
         label=_("initials"),
         help_text=_("The initials of the partner"),
-        required=False,
         allow_blank=True,
     )
     affixes = serializers.CharField(
         label=_("affixes"),
         help_text=_("The affixes of the partner"),
-        required=False,
         allow_blank=True,
     )
     lastName = serializers.CharField(
         label=_("last name"),
         help_text=_("The last name of the partner"),
-        required=False,
         allow_blank=True,
     )
-    dateOfBirth = serializers.DateField(
+    dateOfBirth = FormioDateField(
         label=_("date of birth"),
         help_text=_("The date of birth of the partner"),
-        required=False,
     )
 
     def __init__(self, **kwargs):
@@ -721,7 +717,7 @@ class PartnerListField(serializers.Field):
                 {
                     key: (
                         datetime.strptime(value, "%Y-%m-%d").date()
-                        if key == "dateOfBirth"
+                        if key == "dateOfBirth" and value
                         else value
                     )
                     for key, value in partner.items()
