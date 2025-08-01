@@ -5,6 +5,8 @@ SUBMISSIONS_SESSION_KEY = "form-submissions"
 
 IMAGE_COMPONENTS = ["signature"]
 
+MUTATIONS_RESTRICTIONS = ["bsn"]
+
 
 class RegistrationStatuses(models.TextChoices):
     pending = "pending", _("Pending (not registered yet)")

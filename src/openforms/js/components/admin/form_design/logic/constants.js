@@ -112,6 +112,13 @@ const ACTION_TYPES = [
       defaultMessage: 'Evaluate DMN',
     }),
   ],
+  [
+    'synchronize-children',
+    defineMessage({
+      description: 'action type "synchronize children" label',
+      defaultMessage: 'Synchronize children',
+    }),
+  ],
 ];
 
 // Action types that once they are selected need further configurations.
