@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("payments_worldline", "0002_alter_worldlinemerchant_endpoint_preset"),
     ]
