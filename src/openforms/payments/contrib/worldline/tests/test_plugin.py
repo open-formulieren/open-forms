@@ -31,12 +31,12 @@ from .factories import (
 
 factory = RequestFactory()
 
+PSPID = os.getenv("WORLDLINE_PSPID", "pspid")
+
 
 def _scrub_pspid(request: Request):
-    pspid = os.getenv("WORLDLINE_PSPID")
-
-    if pspid and pspid in request.uri:
-        request.uri = request.uri.replace(pspid, "<pspid>")
+    if PSPID in request.uri:
+        request.uri = request.uri.replace(PSPID, "pspid")
     return request
 
 
@@ -44,7 +44,7 @@ def pspid_matcher(request_one: Request, request_two: Request) -> bool:
     if request_one.uri == request_two.uri:
         return True
 
-    url_format = f"{WorldlineEndpoints.test}/v2/<pspid>/hostedcheckouts"
+    url_format = f"{WorldlineEndpoints.test}/v2/pspid/hostedcheckouts"
 
     scrubbed_request = next(
         (request.uri == url_format for request in (request_one, request_two)), None
@@ -82,7 +82,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_valid_payment(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
+            pspid=PSPID,
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -166,7 +166,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment was done normally.
         """
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
+            pspid=PSPID,
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -249,7 +249,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_returnmac_mismatch(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
+            pspid=PSPID,
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -331,7 +331,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_no_redirect_url(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
+            pspid=PSPID,
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -427,7 +427,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_config_check(self):
         correct_merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
+            pspid=PSPID,
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
             label="Correct merchant",
