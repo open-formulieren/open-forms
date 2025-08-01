@@ -78,10 +78,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         url = plugin.get_start_url(request, submission)
 
         # good
-        response = self.app.post_json(
-            url,
-            {"merchant": merchant.id},
-        )
+        response = self.app.post(url)
 
         self.assertEqual(response.status_code, 200)
 
@@ -166,10 +163,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         url = plugin.get_start_url(request, submission)
 
         # good
-        response = self.app.post_json(
-            url,
-            {"merchant": merchant.id},
-        )
+        response = self.app.post(url)
 
         self.assertEqual(response.status_code, 200)
 
@@ -251,10 +245,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         url = plugin.get_start_url(request, submission)
 
         # good
-        response = self.app.post_json(
-            url,
-            {"merchant": merchant.id},
-        )
+        response = self.app.post(url)
 
         self.assertEqual(response.status_code, 200)
 
@@ -340,10 +331,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.vcr_raises(SSLError),
             self.assertRaises(AppError) as exception_manager,
         ):
-            self.app.post_json(
-                url,
-                {"merchant": merchant.id},
-            )
+            self.app.post(url)
 
         self.assertIn(
             "Failed to retrieve redirect URL from payment provider",
