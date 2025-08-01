@@ -121,8 +121,8 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             components_list=[
                 {
                     "key": "hc_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -195,8 +195,8 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             components_list=[
                 {
                     "key": "hc_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -244,8 +244,8 @@ class FamilyMembersPrefillPluginHCV2Tests(OFVCRMixin, TestCase):
             components_list=[
                 {
                     "key": "hc_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -395,8 +395,8 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             components_list=[
                 {
                     "key": "stuf_bg_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -478,8 +478,8 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             components_list=[
                 {
                     "key": "stuf_bg_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -561,8 +561,8 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             components_list=[
                 {
                     "key": "stuf_bg_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
@@ -652,8 +652,8 @@ class FamilyMembersPrefillPluginStufBgTests(TestCase):
             components_list=[
                 {
                     "key": "stuf_bg_prefill_children_mutable",
-                    "type": "partners",
-                    "label": "Partners",
+                    "type": "children",
+                    "label": "Children",
                 },
             ],
         )
