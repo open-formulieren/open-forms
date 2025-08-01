@@ -3,7 +3,6 @@ from django.contrib import admin
 from .models import WorldlineMerchant
 
 
-# TODO: implement feedback url
 @admin.register(WorldlineMerchant)
 class WorldlneMerchantAdmin(admin.ModelAdmin):
     fields = (
@@ -11,8 +10,6 @@ class WorldlneMerchantAdmin(admin.ModelAdmin):
         "pspid",
         "api_key",
         "api_secret",
-        "endpoint_preset",
-        "endpoint_custom",
         "endpoint",
     )
     readonly_fields = ("endpoint",)

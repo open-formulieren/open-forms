@@ -32,24 +32,15 @@ class WorldlineMerchant(models.Model):
         help_text=_("API Secret created for the specified PSPID"),
     )
 
-    endpoint_preset = models.URLField(
+    endpoint = models.URLField(
         _("Preset endpoint"),
         choices=WorldlineEndpoints.choices,
         default=WorldlineEndpoints.test,
         help_text=_("Select a common preset endpoint"),
     )
-    endpoint_custom = models.URLField(
-        _("Custom endpoint"),
-        blank=True,
-        help_text=_("Optionally override the preset endpoint"),
-    )
 
     def __str__(self):
         return self.label
-
-    @property
-    def endpoint(self):
-        return self.endpoint_custom or self.endpoint_preset
 
     def get_merchant_client(self) -> IMerchantClient:
         configuration = CommunicatorConfiguration(
