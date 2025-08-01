@@ -458,7 +458,6 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
     def test_webhook_event(self):
         account = WorldlineAccountFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
-
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
             form__slug="myform",
@@ -466,7 +465,6 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__payment_backend_options={"merchant": merchant.id},
             form__product__price=Decimal("11.35"),
         )
-
         payment = SubmissionPaymentFactory.for_submission(submission)
         payment.provider_payment_id = "12345"
         payment.save(update_fields=("provider_payment_id",))
@@ -474,15 +472,12 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.started)
 
         plugin = register["worldline"]
-
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-
         data = WebhookEventRequestFactory(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__id="12345",
             type="payment.pending_approval",
         )
-
         renderer = CamelCaseJSONRenderer()
         rendered_data = renderer.render(data)
 
@@ -501,7 +496,6 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(response.status_code, 200)
 
         payment.refresh_from_db()
-
         self.assertEqual(payment.status, PaymentStatus.processing)
 
     def test_webhook_event_completed_payment(self):
