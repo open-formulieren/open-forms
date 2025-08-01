@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 from django_webtest import WebTest
 from requests.exceptions import SSLError
+from vcr import VCR
 from vcr.request import Request
 from webtest import AppError
 
@@ -21,6 +22,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..constants import (
     HostedCheckoutStatus,
     PaymentStatus as _WorldlinePaymentStatus,
+    WorldlineEndpoints,
 )
 from ..plugin import WorldlinePaymentPlugin
 from .factories import (
@@ -38,18 +40,45 @@ def _scrub_pspid(request: Request):
     return request
 
 
+def pspid_matcher(request_one: Request, request_two: Request) -> bool:
+    if request_one.uri == request_two.uri:
+        return True
+
+    url_format = f"{WorldlineEndpoints.test}/v2/<pspid>/hostedcheckouts"
+
+    scrubbed_request = next(
+        (request.uri == url_format for request in (request_one, request_two)), None
+    )
+
+    if not scrubbed_request:
+        return False
+
+    request = request_one if request_one != scrubbed_request else request_two
+
+    if _scrub_pspid(request) == scrubbed_request:
+        return True
+
+    return False
+
+
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     CORS_ALLOWED_ORIGINS=["http://foo.bar"],
     CSP_FORM_ACTION=["'self'"],
 )
 class WorldlinePluginTests(OFVCRMixin, WebTest):
-    def _get_vcr_kwargs(self, **kwargs):
+    def _get_vcr_kwargs(self, **kwargs) -> dict:
         kwargs = super()._get_vcr_kwargs(**kwargs)
         kwargs.setdefault("filter_headers", [])
         kwargs["filter_headers"].append("Authorization")
         kwargs["before_record_request"] = _scrub_pspid
         return kwargs
+
+    def _get_vcr(self, **kwargs) -> VCR:
+        _vcr = super()._get_vcr(**kwargs)
+        _vcr.register_matcher("pspid_matcher", pspid_matcher)
+        _vcr.match_on = ["pspid_matcher"]
+        return _vcr
 
     def test_valid_payment(self):
         merchant = WorldlineMerchantFactory.create(
