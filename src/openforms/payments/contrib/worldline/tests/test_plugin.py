@@ -11,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 from django_webtest import WebTest
 from requests.exceptions import SSLError
+from vcr.request import Request
 from webtest import AppError
 
 from openforms.payments.constants import PaymentStatus
@@ -31,6 +32,14 @@ from .factories import (
 factory = RequestFactory()
 
 
+def _scrub_pspid(request: Request):
+    pspid = os.getenv("WORLDLINE_PSPID")
+
+    if pspid and pspid in request.uri:
+        request.uri = request.uri.replace(pspid, "<pspid>")
+    return request
+
+
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
     CORS_ALLOWED_ORIGINS=["http://foo.bar"],
@@ -41,6 +50,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         kwargs = super()._get_vcr_kwargs(**kwargs)
         kwargs.setdefault("filter_headers", [])
         kwargs["filter_headers"].append("Authorization")
+        kwargs["before_record_request"] = _scrub_pspid
         return kwargs
 
     @classmethod
@@ -49,7 +59,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_valid_payment(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
+            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -136,7 +146,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment was done normally.
         """
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
+            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -222,7 +232,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_returnmac_mismatch(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
+            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -307,7 +317,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_no_redirect_url(self):
         merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
+            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
         )
@@ -406,7 +416,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
     def test_config_check(self):
         correct_merchant = WorldlineMerchantFactory.create(
-            pspid=os.getenv("WORLDLINE_PSPID", "maykinmedia"),
+            pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
             api_key=os.getenv("WORLDLINE_API_KEY", "placeholder_api_key"),
             api_secret=os.getenv("WORLDLINE_API_SECRET", "placeholder_api_secret"),
             label="Correct merchant",
