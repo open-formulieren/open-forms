@@ -17,34 +17,35 @@ def check_unmatched_variables() -> str:
     fm_immutable_variables = FormVariable.objects.filter(
         source=FormVariableSources.user_defined,
         prefill_plugin=FM_PLUGIN_IDENTIFIER,
+        form__in=live_forms,
     ).exclude(prefill_options={})
 
     if not fm_immutable_variables:
         return ""
 
-    partners_component_variables = [
-        component["key"]
+    form_component_mappings = [
+        {form.id: component["key"]}
         for form in live_forms
         for component in form.iter_components()
-        if component["type"] == "partners"
+        if component["type"] in ("partners", "children")
     ]
 
-    unmatched_variables = [
+    unmatched = [
         variable.name
         for variable in fm_immutable_variables
-        if variable.prefill_options["mutable_data_form_variable"]
-        not in partners_component_variables
+        if {variable.form.id: variable.prefill_options["mutable_data_form_variable"]}
+        not in form_component_mappings
     ]
 
-    if unmatched_variables:
+    if unmatched:
         return _(
-            "There is no component of type 'partners' connected to variables {variables}."
-        ).format(variables=",".join(unmatched_variables))
+            "There is no component of type 'partners/children' connected to variables '{variables}'."
+        ).format(variables=", ".join(unmatched))
 
     return ""
 
 
-def check_hc_config_for_partners() -> str:
+def check_hc_config_for_family_members() -> str:
     global_config = GlobalConfiguration.get_solo()
     if (
         global_config.family_members_data_api

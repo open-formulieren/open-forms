@@ -1,5 +1,6 @@
 import addressNL from './templates/addressNL';
 import builderSidebar from './templates/builderSidebar';
+import children from './templates/children';
 import coSign from './templates/coSign';
 import columnsTemplate from './templates/columns.ejs';
 import componentTemplate from './templates/component.ejs';
@@ -16,6 +17,7 @@ const TEMPLATES = {
   component: {form: componentTemplate},
   fieldset: {form: fieldsetTemplate},
   partners: {form: partners},
+  children: {form: children},
 };
 
 export default TEMPLATES;

@@ -22,3 +22,7 @@ class MapComponent(Component):
     interactions: MapInteractions
     # The tileLayerUrl will be dynamically generated from the tileLayerIdentifier
     tileLayerUrl: NotRequired[str]
+
+
+class ChildrenComponent(Component):
+    enableSelection: bool

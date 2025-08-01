@@ -7,7 +7,7 @@ Formio components are JSON blobs adhering to a formio-specific schema. We define
 """
 
 from .base import Component, FormioConfiguration, OptionDict
-from .custom import AddressNLComponent, DateComponent, MapComponent
+from .custom import AddressNLComponent, ChildrenComponent, DateComponent, MapComponent
 from .vanilla import (
     Column,
     ColumnsComponent,
@@ -46,5 +46,6 @@ __all__ = [
     "EditGridComponent",
     "AddressNLComponent",
     "MapComponent",
+    "ChildrenComponent",
     # deprecated
 ]

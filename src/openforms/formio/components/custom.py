@@ -1,4 +1,5 @@
 import re
+from copy import deepcopy
 from datetime import datetime
 from typing import Protocol
 
@@ -45,6 +46,7 @@ from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
 from ..typing import (
     AddressNLComponent,
+    ChildrenComponent,
     Component,
     DateComponent,
     DatetimeComponent,
@@ -757,6 +759,157 @@ class Partners(BasePlugin[Component]):
                     "initials": {"type": "string"},
                     "affixes": {"type": "string"},
                     "lastName": {"type": "string"},
+                    "dateOfBirth": {"type": "string", "format": "date"},
+                },
+                "additionalProperties": False,
+            },
+        }
+
+        return schema
+
+
+class ChildSerializer(serializers.Serializer):
+    bsn = serializers.CharField(
+        label=_("bsn"),
+        max_length=9,
+        help_text=_("The BSN of the child"),
+        validators=[BSNValidator()],
+    )
+    firstNames = serializers.CharField(
+        label=_("firstNames"),
+        help_text=_("The first names of the child"),
+        allow_blank=True,
+    )
+    dateOfBirth = FormioDateField(
+        label=_("date of birth"),
+        help_text=_("The date of birth of the child"),
+    )
+    selected = serializers.BooleanField(
+        label=_("selected"),
+        allow_null=True,
+        help_text=_(
+            "Whether the child is selected by the user or not for further processing"
+        ),
+    )
+
+    def __init__(self, **kwargs):
+        self.component = kwargs.pop("component", None)
+        super().__init__(**kwargs)
+
+
+class ChildListField(serializers.Field):
+    def __init__(self, component, **kwargs):
+        self.component = component
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if not isinstance(data, list):
+            raise serializers.ValidationError("Expected a list of children.")
+
+        serializer = ChildSerializer(
+            data=data,
+            many=True,
+            component=self.component,
+        )
+        serializer.is_valid(raise_exception=True)
+
+        validated = serializer.validated_data
+        self.validate_list(validated)
+        return validated
+
+    def to_representation(self, value):
+        return ChildSerializer(value, many=True, component=self.component).data
+
+    # TODO
+    # Add proper type hints when #2324 is completed (sync the frontend with the backend)
+    def validate_list(self, children):
+        component_key = self.component["key"]
+        submission = self.context["submission"]
+        prefill_data = submission.get_prefilled_data()
+
+        fm_immutable_variable = FormVariable.objects.filter(
+            source=FormVariableSources.user_defined,
+            prefill_plugin=FM_PLUGIN_IDENTIFIER,
+            prefill_options__mutable_data_form_variable=component_key,
+            form=submission.form,
+        ).first()
+
+        if fm_immutable_variable:
+            # we do not receive these fields from the frontend (since they are not used
+            # for now) so we have to exclude them from the data that needs validation.
+            initial_value = [
+                {
+                    key: (
+                        datetime.strptime(value, "%Y-%m-%d").date()
+                        if key == "dateOfBirth" and value
+                        else value
+                    )
+                    for key, value in child.items()
+                    if key
+                    not in (
+                        "dateOfBirthPrecision",
+                        "lastName",
+                        "affixes",
+                        "initials",
+                    )
+                }
+                for child in prefill_data[fm_immutable_variable.key]
+            ]
+
+            if not self.selection_state_untampered(children):
+                raise serializers.ValidationError(_("Invalid data."))
+
+            # We also receive the boolean `selected` which is set on the frontend and
+            # therefore should not be part of the data for validation (in combination
+            # with the retrieved data from the external source)
+            mutated_children = deepcopy(children)
+            for child in mutated_children:
+                child.pop("selected", None)
+
+            if initial_value and initial_value != mutated_children:
+                raise serializers.ValidationError(
+                    _("The family members prefill data may not be altered.")
+                )
+
+    # TODO
+    # Add proper type hints when #2324 is completed (sync the frontend with the backend)
+    def selection_state_untampered(self, children) -> bool:
+        """
+        Validate the values of the `selected` key defined on the frontend.
+
+        When the component allows selecting children, the value of the `selected` key
+        should be of type boolean, otherwise it should be None.
+        """
+        selection_allowed = self.component["enableSelection"]
+        if selection_allowed:
+            return all(isinstance(child["selected"], bool) for child in children)
+        else:
+            return all(child["selected"] is None for child in children)
+
+
+@register("children")
+class Children(BasePlugin[ChildrenComponent]):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(self, component: ChildrenComponent) -> ChildListField:
+        return ChildListField(component=component)
+
+    @staticmethod
+    def as_json_schema(component: ChildrenComponent) -> JSONObject:
+        label = component.get("label", "Children")
+        schema = {
+            "title": label,
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["bsn"],
+                "properties": {
+                    "bsn": {
+                        "type": "string",
+                        "pattern": r"^\d{9}$",
+                        "format": "nl-bsn",
+                    },
+                    "firstNames": {"type": "string"},
                     "dateOfBirth": {"type": "string", "format": "date"},
                 },
                 "additionalProperties": False,

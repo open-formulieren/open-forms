@@ -35,6 +35,7 @@ class DefaultFormatterTestCase(TestCase):
             "select3": "08:15",
             "addressNL": "1234AA 1",
             "partners": "[{'bsn': '999970136', 'firstNames': 'Pia', 'initials': 'P.', 'affixes': '', 'lastName': 'Pauw', 'dateOfBirth': '1989-04-01', 'dateOfBirthPrecision': 'date'}]",
+            "children": "[{'bsn': '999970409', 'affixes': 'van', 'initials': 'P.', 'lastName': 'Paassen', 'firstNames': 'Pero', 'dateOfBirth': '2023-02-01', 'dateOfBirthPrecision': 'date', 'selected': False}]",
         }
 
         for component in all_components:

@@ -37,10 +37,12 @@ from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.contrib.family_members.service import (
-    check_hc_config_for_partners,
+    check_hc_config_for_family_members,
     check_unmatched_variables,
 )
-from openforms.prefill.contrib.stufbg.service import check_stufbg_config_for_partners
+from openforms.prefill.contrib.stufbg.service import (
+    check_stufbg_config_for_family_members,
+)
 from openforms.registrations.registry import register
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
@@ -271,8 +273,8 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
 def collect_broken_configurations() -> list[BrokenConfiguration]:
     check_brk_configuration = check_brk_config_for_addressNL()
     check_bag_configuration = check_bag_config_for_address_fields()
-    check_hc_configuration = check_hc_config_for_partners()
-    check_stufbg_configuration = check_stufbg_config_for_partners()
+    check_hc_configuration = check_hc_config_for_family_members()
+    check_stufbg_configuration = check_stufbg_config_for_family_members()
     check_variables_configuration = check_unmatched_variables()
 
     configurations = {
