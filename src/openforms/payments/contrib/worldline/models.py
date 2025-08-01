@@ -15,7 +15,6 @@ class WorldlineMerchant(models.Model):
         max_length=255,
         help_text=_("Human readable label"),
     )
-
     pspid = models.CharField(
         _("PSPID"),
         max_length=255,
@@ -27,7 +26,6 @@ class WorldlineMerchant(models.Model):
         max_length=255,
         help_text=_("API Key created for the specified PSPID"),
     )
-
     api_secret = models.CharField(
         _("API Secret"),
         max_length=255,
