@@ -141,7 +141,7 @@ class DownloadSubmissionReportTests(APITestCase):
             ),
             (
                 "children",
-                '[{"bsn": "999970409","affixes": "van","initials": "P.","lastName": "Paassen","firstNames": "Pero","dateOfBirth": "Feb. 1, 2023","dateOfBirthPrecision": "date","selected":"False","__addedManually":"False","__id":"2232657a-cb04-467d-9ded-6eb7a4819cc4"}]',
+                '[{"bsn": "999970409","affixes": "van","initials": "P.","lastName": "Paassen","firstNames": "Pero","dateOfBirth": "Feb. 1, 2023","dateOfBirthPrecision": "date","selected":"False"}]',
             ),
             ("password", "Panda1911!"),  # XXX Why is this widget even an option?
             ("phonenumber", "+49 1234 567 890"),
@@ -477,8 +477,6 @@ class DownloadSubmissionReportTests(APITestCase):
                 del children_list[0]["lastName"]
                 del children_list[0]["dateOfBirthPrecision"]
                 del children_list[0]["selected"]
-                del children_list[0]["__addedManually"]
-                del children_list[0]["__id"]
                 for child_label, child_value in children_list[0].items():
                     self.assertIn(child_label, html_report)
                     self.assertIn(child_value, html_report)

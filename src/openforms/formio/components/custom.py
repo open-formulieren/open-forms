@@ -1,4 +1,5 @@
 import re
+from copy import deepcopy
 from datetime import datetime
 from typing import Protocol
 
@@ -778,22 +779,18 @@ class ChildSerializer(serializers.Serializer):
         help_text=_("The BSN of the child"),
         validators=[BSNValidator()],
     )
-    # Optional on purpose since we may not receive any data from the external source
     firstNames = serializers.CharField(
         label=_("firstNames"),
         help_text=_("The first names of the child"),
-        required=False,
         allow_blank=True,
     )
-    # Optional on purpose since we may not receive any data from the external source
-    dateOfBirth = serializers.DateField(
+    dateOfBirth = FormioDateField(
         label=_("date of birth"),
         help_text=_("The date of birth of the child"),
-        required=False,
     )
     selected = serializers.BooleanField(
         label=_("selected"),
-        default=False,
+        allow_null=True,
         help_text=_(
             "Whether the child is selected by the user or not for further processing"
         ),
@@ -827,6 +824,8 @@ class ChildListField(serializers.Field):
     def to_representation(self, value):
         return ChildSerializer(value, many=True, component=self.component).data
 
+    # TODO
+    # Add proper type hints when #2324 is completed (sync the frontend with the backend)
     def validate_list(self, children):
         component_key = self.component["key"]
         submission = self.context["submission"]
@@ -836,7 +835,7 @@ class ChildListField(serializers.Field):
             source=FormVariableSources.user_defined,
             prefill_plugin=FM_PLUGIN_IDENTIFIER,
             prefill_options__mutable_data_form_variable=component_key,
-            form=submission.form.id,
+            form=submission.form,
         ).first()
 
         if fm_immutable_variable:
@@ -846,7 +845,7 @@ class ChildListField(serializers.Field):
                 {
                     key: (
                         datetime.strptime(value, "%Y-%m-%d").date()
-                        if key == "dateOfBirth"
+                        if key == "dateOfBirth" and value
                         else value
                     )
                     for key, value in child.items()
@@ -861,15 +860,35 @@ class ChildListField(serializers.Field):
                 for child in prefill_data[fm_immutable_variable.key]
             ]
 
+            if not self.selection_state_untampered(children):
+                raise serializers.ValidationError(_("Invalid data."))
+
             # We also receive the boolean `selected` which is set on the frontend and
-            # therefore should not be part of the data for validation
-            for child in children:
+            # therefore should not be part of the data for validation (in combination
+            # with the retrieved data from the external source)
+            mutated_children = deepcopy(children)
+            for child in mutated_children:
                 child.pop("selected", None)
 
-            if initial_value and initial_value != children:
+            if initial_value and initial_value != mutated_children:
                 raise serializers.ValidationError(
-                    "The family members prefill data may not be altered."
+                    _("The family members prefill data may not be altered.")
                 )
+
+    # TODO
+    # Add proper type hints when #2324 is completed (sync the frontend with the backend)
+    def selection_state_untampered(self, children) -> bool:
+        """
+        Validate the values of the `selected` key defined on the frontend.
+
+        When the component allows selecting children, the value of the `selected` key
+        should be of type boolean, otherwise it should be None.
+        """
+        selection_allowed = self.component["enableSelection"]
+        if selection_allowed:
+            return all(isinstance(child["selected"], bool) for child in children)
+        else:
+            return all(child["selected"] is None for child in children)
 
 
 @register("children")

@@ -700,6 +700,7 @@ class BrokenConfigurationTests(TestCase):
                             "key": "children",
                             "type": "children",
                             "label": "Children",
+                            "enableSelection": False,
                         }
                     ],
                 },
@@ -782,6 +783,7 @@ class BrokenConfigurationTests(TestCase):
                             "key": "children",
                             "type": "children",
                             "label": "Children",
+                            "enableSelection": False,
                         }
                     ],
                 },
@@ -928,6 +930,7 @@ class BrokenConfigurationTests(TestCase):
                         "key": "children",
                         "type": "children",
                         "label": "Children",
+                        "enableSelection": False,
                     }
                 ],
             },
@@ -985,6 +988,7 @@ class BrokenConfigurationTests(TestCase):
                         "key": "children",
                         "type": "children",
                         "label": "Children",
+                        "enableSelection": False,
                     }
                 ],
             },
@@ -1027,6 +1031,7 @@ class BrokenConfigurationTests(TestCase):
                         "key": "children",
                         "type": "children",
                         "label": "Children",
+                        "enableSelection": False,
                     }
                 ],
             },
