@@ -53,10 +53,6 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         kwargs["before_record_request"] = _scrub_pspid
         return kwargs
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
     def test_valid_payment(self):
         merchant = WorldlineMerchantFactory.create(
             pspid=os.getenv("WORLDLINE_PSPID", "pspid"),
