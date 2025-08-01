@@ -1,7 +1,5 @@
-import json
 import os
 from decimal import Decimal
-from pathlib import Path
 from unittest import expectedFailure
 from urllib.parse import urlencode
 
