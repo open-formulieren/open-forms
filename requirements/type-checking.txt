@@ -275,7 +275,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.22.1
+django-digid-eherkenning==0.23.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -357,7 +357,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-setup-configuration==0.6.0
+django-setup-configuration==0.8.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -374,7 +374,6 @@ django-solo==2.3.0
     #   django-camunda
     #   django-digid-eherkenning
     #   django-log-outgoing-requests
-    #   mozilla-django-oidc-db
     #   zgw-consumers
 django-structlog==9.1.1
     # via
@@ -670,7 +669,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.22.0
+mozilla-django-oidc-db==0.24.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1365,7 +1364,6 @@ xmlsec==1.3.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-digid-eherkenning
     #   maykin-python3-saml
 xmltodict==0.12.0
     # via

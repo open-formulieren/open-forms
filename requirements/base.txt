@@ -167,7 +167,7 @@ django-csp==3.8
     # via -r requirements/base.in
 django-csp-reports==1.8.1
     # via -r requirements/base.in
-django-digid-eherkenning==0.22.1
+django-digid-eherkenning==0.23.0
     # via -r requirements/base.in
 django-filter==24.2
     # via -r requirements/base.in
@@ -211,7 +211,7 @@ django-sendfile2==0.7.1
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-setup-configuration==0.6.0
+django-setup-configuration==0.8.2
     # via
     #   mozilla-django-oidc-db
     #   zgw-consumers
@@ -226,7 +226,6 @@ django-solo==2.3.0
     #   django-camunda
     #   django-digid-eherkenning
     #   django-log-outgoing-requests
-    #   mozilla-django-oidc-db
     #   zgw-consumers
 django-structlog==9.1.1
     # via -r requirements/base.in
@@ -361,7 +360,7 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.22.0
+mozilla-django-oidc-db==0.24.0
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
@@ -673,9 +672,7 @@ xlrd==2.0.1
 xlwt==1.3.0
     # via tablib
 xmlsec==1.3.14
-    # via
-    #   django-digid-eherkenning
-    #   maykin-python3-saml
+    # via maykin-python3-saml
 xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.2.1
