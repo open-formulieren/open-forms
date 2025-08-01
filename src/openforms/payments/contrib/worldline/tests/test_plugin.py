@@ -14,11 +14,11 @@ from requests.exceptions import SSLError
 from webtest import AppError
 
 from openforms.payments.constants import PaymentStatus
+from openforms.payments.registry import register
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ....registry import register
 from ..constants import (
     HostedCheckoutStatus,
     PaymentStatus as _WorldlinePaymentStatus,
