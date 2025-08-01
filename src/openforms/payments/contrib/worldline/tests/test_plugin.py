@@ -409,8 +409,8 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
             payment,
             "",
-            HostedCheckoutStatus.cancelled_by_consumer,
             "12345",
+            checkout_status=HostedCheckoutStatus.cancelled_by_consumer,
         )
 
         self.assertEqual(payment.status, PaymentStatus.failed)
