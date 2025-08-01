@@ -469,7 +469,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment.provider_payment_id = "12345"
         payment.save(update_fields=("provider_payment_id",))
 
-        self.assertEqual(payment.status, PaymentStatus.started)
+        assert payment.status == PaymentStatus.started
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
@@ -502,22 +502,265 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         """
         Tests that status mutations should not be possible for completed payments
         """
-        raise NotImplementedError
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.status = PaymentStatus.completed
+        payment.save(update_fields=("provider_payment_id", "status"))
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
+            type="payment.pending_approval",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.completed)
 
     def test_webbhook_api_version_mismatch(self):
-        raise NotImplementedError
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
+            type="payment.pending_approval",
+            api_version="v8",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("not compatible with SDK API", response_data["detail"])
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webbhook_incorrect_signature(self):
-        raise NotImplementedError
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
+            type="payment.pending_approval",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": "foobar",
+            },
+        )
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("failed to validate signature", response_data["detail"])
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webhook_unknown_merchant(self):
-        """
-        Tests that status mutations should not be possible for completed payments
-        """
-        raise NotImplementedError
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": "foo"},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="12345",
+            type="payment.pending_approval",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webhook_unknown_payment(self):
-        raise NotImplementedError
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment__status=_WorldlinePaymentStatus.pending_approval,
+            payment__id="unknown",
+            type="payment.pending_approval",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.started)
+
+    def test_webhook_unknown_event_type(self):
+        account = WorldlineAccountFactory.create()
+        merchant = WorldlineMerchantFactory.create(pspid="psp123")
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__slug="myform",
+            form__payment_backend="worldline",
+            form__payment_backend_options={"merchant": merchant.id},
+            form__product__price=Decimal("11.35"),
+        )
+        payment = SubmissionPaymentFactory.for_submission(submission)
+        payment.provider_payment_id = "12345"
+        payment.save(update_fields=("provider_payment_id",))
+
+        assert payment.status == PaymentStatus.started
+
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(factory.get("/foo"))
+        data = WebhookEventRequestFactory(
+            payment={},
+            type="foobar",
+        )
+        renderer = CamelCaseJSONRenderer()
+        rendered_data = renderer.render(data)
+
+        response = self.client.post(
+            webhook_url,
+            data=rendered_data,
+            content_type="application/json",
+            headers={
+                "X-GCS-KeyId": account.webhook_key_id,
+                "X-GCS-Signature": generate_webhook_signature(
+                    account.webhook_key_secret, rendered_data
+                ),
+            },
+        )
+
+        response_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual("Unknown webhook event encountered", response_data["detail"])
+
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.started)
 
     @expectedFailure
     def test_custom_com_and_title_attributes(self):

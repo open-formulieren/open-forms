@@ -238,7 +238,14 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 ],
             )
         except (SignatureValidationException, ApiVersionMismatchException) as e:
-            raise ParseError from e
+            raise ParseError(str(e)) from e
+
+        if (
+            not webhook_event.type
+            or not webhook_event.type.startswith("payment")
+            or not webhook_event.payment
+        ):
+            raise ParseError("Unknown webhook event encountered")
 
         payment = get_object_or_404(
             SubmissionPayment, provider_payment_id=webhook_event.payment.id
