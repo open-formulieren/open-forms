@@ -24,5 +24,5 @@ def get_payment_status(worldline_status: str, checkout_status: str = "") -> str:
             status=worldline_status,
             checkout_status=checkout_status,
         )
-        return ""
+        raise
     return StatusCategory.to_of_status(status_category)

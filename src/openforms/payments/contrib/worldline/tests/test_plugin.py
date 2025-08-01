@@ -401,14 +401,15 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         payment = SubmissionPaymentFactory.create(status=PaymentStatus.started)
         plugin = register["worldline"]
 
-        plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
-            payment,
-            "",
-            "",
-            "12345",
-        )
+        with self.assertRaises(KeyError):
+            plugin.apply_status(  # pyright: ignore[reportAttributeAccessIssue]
+                payment,
+                "",
+                "",
+                "12345",
+            )
 
-        self.assertEqual(payment.status, "")
+        self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_config_check(self):
         configuration_entries = WorldlinePaymentPlugin.iter_config_checks()  # pyright: ignore[reportAttributeAccessIssue]

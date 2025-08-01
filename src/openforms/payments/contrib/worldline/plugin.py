@@ -198,12 +198,15 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 else ""
             )
 
-            self.apply_status(
-                payment,
-                status,
-                checkout_status,
-                payment_provider_id,
-            )
+            try:
+                self.apply_status(
+                    payment,
+                    status,
+                    checkout_status,
+                    payment_provider_id,
+                )
+            except KeyError:
+                return HttpResponseServerError(b"Unable to retrieve payment status")
 
             redirect_url = get_frontend_redirect_url(
                 payment.submission,
