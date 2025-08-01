@@ -179,6 +179,40 @@ class VariableAction(ActionOperation):
             return {self.variable: jsonLogic(self.value, context.data)}
 
 
+class ChildrenConfig(TypedDict):
+    source_variable: str
+    destination_variable: str
+
+
+@dataclass
+class SynchronizeChildrenAction(ActionOperation):
+    source_variable: str
+    destination_variable: str
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> Self:
+        children_config: ChildrenConfig = action["action"]["config"]
+        return cls(**children_config)
+
+    def eval(
+        self,
+        context: FormioData,
+        submission: Submission,
+    ) -> DataMapping:
+        source_data = context.get(self.source_variable, [])
+        if not source_data:
+            return {
+                self.destination_variable: context.get(self.destination_variable, [])
+            }
+
+        updated_destination_data = []
+        for child in source_data:
+            if child["selected"] is None or child["selected"]:
+                updated_destination_data.append({"bsn": child["bsn"]})
+
+        return {self.destination_variable: updated_destination_data}
+
+
 @dataclass
 class ServiceFetchAction(ActionOperation):
     variable: str
@@ -292,6 +326,7 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
+    LogicActionTypes.synchronize_children: SynchronizeChildrenAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
     LogicActionTypes.evaluate_dmn: EvaluateDMNAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,
