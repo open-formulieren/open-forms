@@ -280,9 +280,12 @@ class FormVariableModelTests(TestCase):
         }
 
         for data_type, data_type_label in FormVariableDataTypes.choices:
-            if data_type == FormVariableDataTypes.partners:
+            if data_type in (
+                FormVariableDataTypes.partners,
+                FormVariableDataTypes.editgrid,
+            ):
                 # Not useful to test anything for this data type, as it is only used as
-                # a subtype. The data type of the partners component is still an array.
+                # a subtype. The data type of these components is still an array.
                 continue
 
             for index, initial_value in enumerate(values_to_try[data_type]):
