@@ -14,6 +14,12 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 
 from openforms.formio.service import FormioData
+from openforms.formio.typing import Component
+from openforms.formio.utils import (
+    get_component_data_subtype,
+    get_component_datatype,
+    iter_components,
+)
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
@@ -400,12 +406,20 @@ class SubmissionValueVariable(models.Model):
             return None
 
         if not self.data_subtype:
-            return self._value_to_python(value, self.data_type)
+            return self._value_to_python(value, self.data_type, self.configuration)
         else:
             assert self.data_type == FormVariableDataTypes.array
-            return [self._value_to_python(v, self.data_subtype) for v in value]
+            return [
+                self._value_to_python(v, self.data_subtype, self.configuration)
+                for v in value
+            ]
 
-    def _value_to_python(self, value: VariableValue, data_type: str) -> VariableValue:
+    def _value_to_python(
+        self,
+        value: VariableValue,
+        data_type: str,
+        configuration: Component | None = None,
+    ) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,
@@ -458,5 +472,28 @@ class SubmissionValueVariable(models.Model):
                 value["dateOfBirth"], FormVariableDataTypes.date
             )
             return value
+
+        if value and data_type == FormVariableDataTypes.editgrid:
+            value = FormioData(value)
+            for child_component in iter_components(configuration):
+                child_key = child_component["key"]
+                if (child_value := value.get(child_key, empty)) is empty:
+                    continue
+
+                data_type = get_component_datatype(child_component)
+                data_subtype = get_component_data_subtype(child_component)
+
+                if not data_subtype:
+                    value[child_key] = self._value_to_python(
+                        child_value, data_type, child_component
+                    )
+                else:
+                    assert data_type == FormVariableDataTypes.array
+                    value[child_key] = [
+                        self._value_to_python(v, data_subtype, child_component)
+                        for v in child_value
+                    ]
+
+            return value.data
 
         return value

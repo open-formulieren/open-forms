@@ -4,7 +4,9 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import (
+    FormStepFactory,
+)
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...models import SubmissionValueVariable
@@ -247,6 +249,73 @@ class SubmissionValueVariableModelTests(TestCase):
                     }
                 ],
             )
+
+    def test_edit_grid_to_python(self):
+        # For editgrids, we need the component configuration to determine the data
+        # types of its children.
+        editgrid_var = SubmissionValueVariableFactory.create(
+            key="editgrid",
+            value=[
+                {
+                    "nestedEditgrid": [
+                        {
+                            "nested": {"date": "2000-01-01"},
+                            "time": ["12:34:56", "11:22:33"],
+                        },
+                        {"nested": {"date": "1111-11-11"}, "time": []},
+                    ]
+                }
+            ],
+            data_type=FormVariableDataTypes.array,
+            data_subtype=FormVariableDataTypes.editgrid,
+            configuration={
+                "type": "editgrid",
+                "key": "editgrid",
+                "label": "Editgrid",
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "components": [
+                            {
+                                "type": "editgrid",
+                                "key": "nestedEditgrid",
+                                "label": "Nested Editgrid",
+                                "components": [
+                                    {
+                                        "type": "date",
+                                        "key": "nested.date",
+                                        "label": "Date",
+                                    },
+                                    {
+                                        "type": "time",
+                                        "key": "time",
+                                        "label": "Time",
+                                        "multiple": True,
+                                    },
+                                ],
+                            }
+                        ],
+                    },
+                ],
+            },
+        )
+
+        editgrid_value = editgrid_var.to_python()
+        self.assertEqual(
+            editgrid_value,
+            [
+                {
+                    "nestedEditgrid": [
+                        {
+                            "nested": {"date": date(2000, 1, 1)},
+                            "time": [time(12, 34, 56), time(11, 22, 33)],
+                        },
+                        {"nested": {"date": date(1111, 11, 11)}, "time": []},
+                    ]
+                }
+            ],
+        )
 
     def test_is_initially_prefilled_is_set(self):
         config = {

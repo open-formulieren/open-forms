@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import UTC, date, datetime, time
 
 from django.test import TestCase, override_settings, tag
 
@@ -27,6 +27,20 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                         "type": "date",
                         "key": "someDate",
                     },
+                    {
+                        "type": "editgrid",
+                        "key": "editgrid",
+                        "label": "Editgrid",
+                        "components": [
+                            {"key": "date", "type": "date", "label": "Date"},
+                            {"key": "time", "type": "time", "label": "Time"},
+                            {
+                                "key": "datetime",
+                                "type": "datetime",
+                                "label": "Datetime",
+                            },
+                        ],
+                    },
                 ]
             },
         )
@@ -45,7 +59,17 @@ class SubmissionStepDeletedRegressionTests(TestCase):
         submission_step1 = SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
-            data={"step1": "stippenlift", "someDate": "2022-11-03"},
+            data={
+                "step1": "stippenlift",
+                "someDate": "2022-11-03",
+                "editgrid": [
+                    {
+                        "date": "2000-01-01",
+                        "time": "12:34:56",
+                        "datetime": "2000-01-01T12:34:56Z",
+                    }
+                ],
+            },
         )
         submission_step2 = SubmissionStepFactory.create(
             submission=submission,
@@ -59,15 +83,24 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
                     "someDate": date(2022, 11, 3),
+                    "editgrid": [
+                        {
+                            "date": date(2000, 1, 1),
+                            "time": time(12, 34, 56),
+                            "datetime": datetime(2000, 1, 1, 12, 34, 56, tzinfo=UTC),
+                        }
+                    ],
                 },
             )
             renderer = Renderer(
                 submission=submission, mode=RenderModes.pdf, as_html=False
             )
             rendered = [node.render() for node in renderer]
-            self.assertIn(
-                "someDate: 3 november 2022", rendered
-            )  # check that type info is used for display
+            # Check that type info is used for display
+            self.assertIn("someDate: 3 november 2022", rendered)
+            self.assertIn("        Date: 1 januari 2000", rendered)
+            self.assertIn("        Time: 12:34", rendered)
+            self.assertIn("        Datetime: 1 januari 2000 12:34", rendered)
 
         # delete a form step
         step1.delete()
@@ -80,15 +113,24 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
                 "someDate": date(2022, 11, 3),
+                "editgrid": [
+                    {
+                        "date": date(2000, 1, 1),
+                        "time": time(12, 34, 56),
+                        "datetime": datetime(2000, 1, 1, 12, 34, 56, tzinfo=UTC),
+                    }
+                ],
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step2.pk).exists())
         renderer = Renderer(submission=submission, mode=RenderModes.pdf, as_html=False)
         rendered = [node.render() for node in renderer]
-        self.assertIn(
-            "someDate: 3 november 2022", rendered
-        )  # check that type info is used for display
+        # Check that type info is used for display
+        self.assertIn("someDate: 3 november 2022", rendered)
+        self.assertIn("        Date: 1 januari 2000", rendered)
+        self.assertIn("        Time: 12:34", rendered)
+        self.assertIn("        Datetime: 1 januari 2000 12:34", rendered)
 
     def test_form_definition_also_deleted(self):
         form = FormFactory.create()
