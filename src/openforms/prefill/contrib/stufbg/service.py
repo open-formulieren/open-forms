@@ -9,7 +9,7 @@ from stuf.stuf_bg.checks import check_config
 from stuf.stuf_bg.exceptions import InvalidPluginConfiguration
 
 
-def check_stufbg_config_for_partners() -> str:
+def check_stufbg_config_for_family_members() -> str:
     global_config = GlobalConfiguration.get_solo()
     if global_config.family_members_data_api != FamilyMembersDataAPIChoices.stuf_bg:
         return ""

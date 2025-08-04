@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import tag
 
@@ -1022,3 +1023,247 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_validate_children_component(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": False,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                },
+            ],
+        )
+
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                # TODO
+                # Make sure this is updated (the data we get from the submission) when task
+                # 2324 is completed
+                # the data here is coming from the submission so that's why we have the extra
+                # keys (used only for frontend operations)
+                "data": {
+                    "children": [
+                        {
+                            "bsn": "999970409",
+                            "affixes": "van",
+                            "initials": "P.",
+                            "lastName": "Paassen",
+                            "firstNames": "Pero",
+                            "dateOfBirth": "2023-02-01",
+                            "dateOfBirthPrecision": "date",
+                            "selected": None,
+                            "__addedManually": False,
+                            "__id": UUID("2232657a-cb04-467d-9ded-6eb7a4819cc4"),
+                        },
+                    ]
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_children_component_retrieves_correct_variable_for_validation(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": False,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            user_defined=True,
+            key="immutable_children_2",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                },
+            ],
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "999970409",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "2023-02-01",
+                },
+            ],
+        )
+
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                # TODO
+                # Make sure this is updated (the data we get from the submission) when task
+                # 2324 is completed
+                # the data here is coming from the submission so that's why we have the extra
+                # keys (used only for frontend operations)
+                "data": {
+                    "children": [
+                        {
+                            "bsn": "999970409",
+                            "affixes": "van",
+                            "initials": "P.",
+                            "lastName": "Paassen",
+                            "firstNames": "Pero",
+                            "dateOfBirth": "2023-02-01",
+                            "dateOfBirthPrecision": "date",
+                            "selected": None,
+                            "__addedManually": False,
+                            "__id": UUID("2232657a-cb04-467d-9ded-6eb7a4819cc4"),
+                        },
+                    ]
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_children_component_fails_when_data_is_tampered(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "children",
+                        "key": "children",
+                        "label": "Children",
+                        "enableSelection": False,
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="immutable_children",
+            data_type=FormVariableDataTypes.array,
+            prefill_plugin="family_members",
+            prefill_options={
+                "type": "children",
+                "mutable_data_form_variable": "children",
+            },
+            initial_value=[
+                {
+                    "bsn": "123456782",
+                    "firstNames": "Pero",
+                    "dateOfBirth": "1990-01-01",
+                }
+            ],
+        )
+
+        step = submission.form.formstep_set.get()
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(
+            endpoint,
+            {
+                # TODO
+                # Make sure this is updated (the data we get from the submission) when task
+                # 2324 is completed
+                # the data here is coming from the submission so that's why we have the extra
+                # keys (used only for frontend operations)
+                "data": {
+                    "children": [
+                        {
+                            "bsn": "999970409",
+                            "affixes": "van",
+                            "initials": "P.",
+                            "lastName": "Paassen",
+                            "firstNames": "Another name",
+                            "dateOfBirth": "2023-02-01",
+                            "dateOfBirthPrecision": "date",
+                            "selected": None,
+                            "__addedManually": False,
+                            "__id": UUID("2232657a-cb04-467d-9ded-6eb7a4819cc4"),
+                        },
+                    ]
+                }
+            },
+        )
+
+        invalid_params = response.json()["invalidParams"]
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(invalid_params), 1)
+        self.assertEqual(invalid_params[0]["name"], "data.children")
+        self.assertEqual(
+            invalid_params[0]["reason"],
+            "The family members prefill data may not be altered.",
+        )

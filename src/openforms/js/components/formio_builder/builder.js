@@ -62,6 +62,7 @@ const getBuilderOptions = () => {
           editgrid: true,
           addressNL: true,
           partners: true,
+          children: true,
         },
       },
       custom_layout: {

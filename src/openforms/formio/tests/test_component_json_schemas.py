@@ -7,6 +7,7 @@ from openforms.formio.constants import DataSrcOptions
 from ..service import as_json_schema
 from ..typing import (
     AddressNLComponent,
+    ChildrenComponent,
     Component,
     ContentComponent,
     DateComponent,
@@ -248,6 +249,15 @@ class ComponentValidJsonSchemaTests(SimpleTestCase):
             "label": "Partners",
             "key": "partners",
             "type": "partners",
+        }
+        self.assertComponentSchemaIsValid(component=component)
+
+    def test_children(self):
+        component: ChildrenComponent = {
+            "label": "Children",
+            "key": "children",
+            "type": "children",
+            "enableSelection": False,
         }
         self.assertComponentSchemaIsValid(component=component)
 

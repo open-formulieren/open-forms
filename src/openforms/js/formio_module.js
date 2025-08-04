@@ -1,6 +1,7 @@
 import AddressNL from './components/form/addressNL';
 import BsnField from './components/form/bsn';
 import CheckboxField from './components/form/checkbox';
+import Children from './components/form/children';
 import CoSignFieldOld from './components/form/coSignOld';
 import ColumnField from './components/form/columns';
 import Component from './components/form/component';
@@ -66,6 +67,7 @@ const FormIOModule = {
     addressNL: AddressNL,
     softRequiredErrors: SoftRequiredErrors,
     partners: Partners,
+    children: Children,
   },
   builders: {
     webform: WebformBuilder,
