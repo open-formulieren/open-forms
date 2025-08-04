@@ -16,6 +16,7 @@ from openforms.submissions.tests.factories import (
     TemporaryFileUploadFactory,
 )
 
+from ...typing import EditGridComponent
 from ..nodes import ComponentNode
 
 
@@ -1190,6 +1191,69 @@ class FormNodeTests(TestCase):
             self.assertEqual("Columns A", nodelist[12].component["label"])
             self.assertEqual("Input A: A2", nodelist[13].render())
             self.assertEqual("Input B: B2", nodelist[14].render())
+
+    def test_nested_editgrid_with_date_and_time_components(self):
+        component: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Editgrid",
+            "groupLabel": "Child",
+            "hidden": False,
+            "components": [
+                {"key": "date", "type": "date", "label": "Date"},
+                {"key": "time", "type": "time", "label": "Time"},
+                {"key": "datetime", "type": "datetime", "label": "Datetime"},
+                {
+                    "key": "nestedEditgrid",
+                    "type": "editgrid",
+                    "label": "Nested editgrid",
+                    "groupLabel": "Nested child",
+                    "components": [
+                        {
+                            "key": "nestedDate",
+                            "type": "date",
+                            "label": "Nested date",
+                            "multiple": True,
+                        }
+                    ],
+                },
+            ],
+        }
+        submission = SubmissionFactory.from_components(
+            components_list=[component],
+            submitted_data={
+                "editgrid": [
+                    {
+                        "date": "2000-01-01",
+                        "time": "12:34:56",
+                        "datetime": "2000-01-01T12:34:56Z",
+                        "nestedEditgrid": [
+                            {"nestedDate": ["2001-02-03", "1999-12-31"]},
+                        ],
+                    },
+                ]
+            },
+        )
+
+        renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+        component_node = ComponentNode.build_node(
+            step_data=submission.data, component=component, renderer=renderer
+        )
+        nodelist = list(component_node)
+
+        self.assertEqual(8, len(nodelist))
+
+        self.assertEqual("Editgrid: ", nodelist[0].render())
+        self.assertEqual("Child 1", nodelist[1].render())
+        self.assertEqual("Date: Jan. 1, 2000", nodelist[2].render())
+        self.assertEqual("Time: 12:34 p.m.", nodelist[3].render())
+        self.assertEqual("Datetime: Jan. 1, 2000 12:34", nodelist[4].render())
+        self.assertEqual("Nested editgrid: ", nodelist[5].render())
+        self.assertEqual("Nested child 1", nodelist[6].render())
+        self.assertEqual(
+            "Nested date: <ul><li>Feb. 3, 2001</li><li>Dec. 31, 1999</li></ul>",
+            nodelist[7].render(),
+        )
 
     def test_fieldset_with_logic_depending_on_selectboxes(self):
         submission = SubmissionFactory.create(
