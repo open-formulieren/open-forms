@@ -17,6 +17,9 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 # wait for required services
 ${SCRIPTPATH}/wait_for_db.sh
 
+# Set defaults for OTEL
+export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms}"
+
 # Apply database migrations
 >&2 echo "Apply database migrations"
 python src/manage.py migrate

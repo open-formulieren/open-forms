@@ -5,6 +5,9 @@
 
 set -e
 
+# Set defaults for OTEL
+export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-setup-configuration}"
+
 if [[ "${RUN_SETUP_CONFIG,,}" =~ ^(true|1|yes)$ ]]; then
     # Figure out abspath of this script
     SCRIPT=$(readlink -f "$0")

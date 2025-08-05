@@ -4,6 +4,9 @@ set -e
 
 LOGLEVEL=${CELERY_LOGLEVEL:-INFO}
 
+# Set defaults for OTEL
+export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-scheduler}"
+
 mkdir -p celerybeat
 
 echo "Starting celery beat"

@@ -34,3 +34,5 @@ DB_HOST=""
 # Applies to dev settings module only!
 DISABLE_2FA=yes
 CSP_EXTRA_FORM_ACTION=http://localhost
+
+OTEL_SERVICE_NAME=openforms-dev
