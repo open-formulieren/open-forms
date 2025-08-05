@@ -6,9 +6,19 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.3.0 "???" (2025-Q3)
+=====================
 
-3.3.0-alpha.0 (2025-??-??)
-==========================
+...
+
+Upgrade procedure
+-----------------
+
+.. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
+   need to lock the entire table and/or can take a long time depending on the amount of
+   data. Some benchmarks on one million of rows showed a migration time of around 20
+   seconds, so anywhere between 10 seconds - 5 minutes can be expected as a normal
+   completion time depending on your data and available resources for the database.
 
 .. warning::
 
@@ -23,6 +33,15 @@ Changelog
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_submission_value_variable_missing_fields.py
 
+Major features
+--------------
+
+...
+
+Detailed changes
+----------------
+
+...
 
 3.1.5 (2025-07-24)
 ==================
