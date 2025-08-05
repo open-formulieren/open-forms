@@ -8,6 +8,7 @@ from rest_framework.reverse import reverse
 from openforms.logging import logevent
 
 from ..constants import PostSubmissionEvents
+from ..metrics import completion_counter
 from ..models import Submission
 from ..signals import submission_complete
 from ..tasks import on_post_submission_event
@@ -65,6 +66,15 @@ class SubmissionCompletionMixin:
                 "api:submission-status",
                 kwargs={"uuid": submission.uuid, "token": token},
             )
+        )
+
+        form = submission.form
+        completion_counter.add(
+            1,
+            {
+                "form.uuid": str(form.uuid),
+                "form.name": str(form.name),
+            },
         )
 
         return status_url
