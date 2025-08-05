@@ -5,7 +5,7 @@
 
 # must be at the top to use it in FROM clauses
 ARG SDK_RELEASE=latest
-FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
+FROM openformulieren/open-forms-sdk:${SDK_RELEASE} AS sdk-image
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
