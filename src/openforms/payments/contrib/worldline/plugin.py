@@ -138,6 +138,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         assert valid_options, "Incorrect payment options encountered"
 
         payment.plugin_options = option_serializer.data
+        payment.provider_payment_id = checkout_response.merchant_reference or ""
         payment.save(update_fields=("plugin_options",))
 
         return PaymentInfo(
@@ -238,9 +239,16 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 )
 
             external_payment_id = (
-                payment_data.payment.id
-                if payment_data and payment_data.payment and payment_data.payment.id
-                else ""
+                payment_data.payment.payment_output.references.merchant_reference
+                if payment_data
+                and payment_data.payment
+                and payment_data.payment.payment_output
+                and payment_data.payment.payment_output.references
+                else None
+            )
+
+            assert external_payment_id, (
+                "No merchant reference found in checkout status response"
             )
 
             self.apply_status(payment, status, external_payment_id)
