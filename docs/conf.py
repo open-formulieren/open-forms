@@ -127,6 +127,7 @@ linkcheck_ignore = [
     # our changelog generates many such links that slow down the link checks :)
     r"https://github.com/open-formulieren/open-forms/issues/[0-9]+",
     r"https://www\.gnu\.org/software/gettext/",
+    r"https://opentelemetry\.io/docs/.*",  # times out frequently, even with 30s timeouts
 ]
 
 linkcheck_anchors_ignore_for_url = [
