@@ -23,7 +23,13 @@ from mozilla_django_oidc_db.typing import JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import deprecated
 
-from .....contrib.auth_oidc.views import anon_user_callback_view
+from openforms.contrib.auth_oidc.typing import (
+    ClaimPathDetails,
+    ClaimProcessingInstructions,
+)
+from openforms.contrib.auth_oidc.utils import process_claims
+from openforms.contrib.auth_oidc.views import anon_user_callback_view
+
 from .constants import (
     OIDC_DIGID_IDENTIFIER,
     OIDC_DIGID_MACHTIGEN_IDENTIFIER,
@@ -36,8 +42,6 @@ from .schemas import (
     EIDAS_COMPANY_SCHEMA,
     EIDAS_SCHEMA,
 )
-from .types import ClaimPathDetails, ClaimProcessingInstructions
-from .utils import process_claims
 
 logger = structlog.stdlib.get_logger(__name__)
 

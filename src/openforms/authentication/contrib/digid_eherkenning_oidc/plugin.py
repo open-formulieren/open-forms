@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from flags.state import flag_enabled
 
+from openforms.authentication.base import LoginLogo
 from openforms.authentication.contrib.digid.views import (
     DIGID_MESSAGE_PARAMETER,
     LOGIN_CANCELLED as DIGID_LOGIN_CANCELLED,
@@ -15,21 +16,29 @@ from openforms.authentication.contrib.eherkenning.views import (
     MESSAGE_PARAMETER as EH_MESSAGE_PARAMETER,
 )
 from openforms.authentication.models import AuthInfo
-from openforms.authentication.types import EIDASCompanyContext, EIDASContext, OIDCErrors
+from openforms.authentication.registry import register
+from openforms.authentication.types import EIDASCompanyContext, EIDASContext
+from openforms.authentication.typing import FormAuth
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication, OptionsT
+from openforms.contrib.auth_oidc.typing import (
+    DigiDClaims,
+    DigiDmachtigenClaims,
+    EHBewindvoeringClaims,
+    EHClaims,
+    EIDASClaims,
+    EIDASCompanyClaims,
+    OIDCErrors,
+)
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
     get_eidas_logo,
 )
 
-from ...base import LoginLogo
 from ...constants import (
     AuthAttribute,
     LegalSubjectIdentifierType,
 )
-from ...registry import register
-from ...typing import FormAuth
 from .constants import EIDAS_COMPANY_PLUGIN_ID, EIDAS_PLUGIN_ID
 from .oidc_plugins.constants import (
     OIDC_DIGID_IDENTIFIER,
@@ -39,14 +48,6 @@ from .oidc_plugins.constants import (
     OIDC_EIDAS_COMPANY_IDENTIFIER,
     OIDC_EIDAS_IDENTIFIER,
     EIDASAssuranceLevels,
-)
-from .oidc_plugins.types import (
-    DigiDClaims,
-    DigiDmachtigenClaims,
-    EHBewindvoeringClaims,
-    EHClaims,
-    EIDASClaims,
-    EIDASCompanyClaims,
 )
 
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"

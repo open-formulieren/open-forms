@@ -17,19 +17,27 @@ from django.contrib import auth
 from django.contrib.auth.models import AnonymousUser
 from django.test import override_settings
 
+from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 from rest_framework.test import APIRequestFactory
 
-from openforms.authentication.registry import register
+from openforms.authentication.registry import (
+    register,
+    register as auth_register,
+)
 from openforms.authentication.tests.utils import URLsHelper
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+    mock_auth_and_oidc_registers,
+)
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import (
     keycloak_login,
     mock_get_random_string,
-    mock_oidc_client,
 )
 
-from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
-from ..plugin import PLUGIN_IDENTIFIER
+from ..oidc_plugins.plugins import OIDCOrgPlugin
+from ..plugin import PLUGIN_IDENTIFIER, OIDCAuthentication
 from .base import IntegrationTestsBase
 
 
@@ -60,8 +68,24 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
             request.session.save()
 
     @mock_get_random_string()
-    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
+    @mock_auth_and_oidc_registers()
     def test_logout_clears_session(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_org=True,
+        )
+        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
+
+        org_init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=oidc_client.identifier,
+            allow_next_from_query=False,
+        )
+
+        @auth_register("org-oidc")
+        class OFTestAuthPlugin(OIDCAuthentication):
+            oidc_plugin_identifier = oidc_client.identifier
+            init_view = staticmethod(org_init_view)
+
         form = FormFactory.create(authentication_backend=PLUGIN_IDENTIFIER)
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id=PLUGIN_IDENTIFIER)
@@ -76,8 +100,24 @@ class OrgOIDCCallbackTests(IntegrationTestsBase):
         self.assertFalse(auth.get_user(self.app).is_authenticated)  # type: ignore
 
     @mock_get_random_string()
-    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
+    @mock_auth_and_oidc_registers()
     def test_logout_without_any_session(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_org=True,
+        )
+        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
+
+        org_init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=oidc_client.identifier,
+            allow_next_from_query=False,
+        )
+
+        @auth_register("org-oidc")
+        class OFTestAuthPlugin(OIDCAuthentication):
+            oidc_plugin_identifier = oidc_client.identifier
+            init_view = staticmethod(org_init_view)
+
         self._do_plugin_logout(user=AnonymousUser())
 
         session = self.app.session

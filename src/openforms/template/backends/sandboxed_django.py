@@ -77,7 +77,7 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
                     "openforms.submissions.templatetags.cosign",
-                    "openforms.utils.templatetags.utils",
+                    "mozilla_django_oidc_db.templatetags.oidc_client",
                 ]
                 + get_registration_custom_libraries(),
             }

@@ -1,25 +1,33 @@
 from django.test import TestCase
 
-from mozilla_django_oidc_db.registry import register as registry
+from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.utils import obfuscate_claims
 
-from openforms.utils.tests.keycloak import mock_oidc_client
-
-from ...oidc_plugins.constants import (
-    OIDC_DIGID_IDENTIFIER,
-    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-    OIDC_EH_BEWINDVOERING_IDENTIFIER,
-    OIDC_EH_IDENTIFIER,
+from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.plugins import (
+    OIDCDigiDMachtigenPlugin,
+    OIDCDigidPlugin,
+    OIDCeHerkenningBewindvoeringPlugin,
+    OIDCeHerkenningPlugin,
+    OIDCEidasCompanyPlugin,
+    OIDCEidasPlugin,
+)
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+    mock_auth_and_oidc_registers,
 )
 
 
 class OIDCPluginsTestCase(TestCase):
-    @mock_oidc_client(
-        OIDC_DIGID_IDENTIFIER,
-        overrides={"options.identity_settings.bsn_claim_path": ["bsn"]},
-    )
+    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_digid(self):
-        plugin = registry[OIDC_DIGID_IDENTIFIER]
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            post__options__identity_settings__bsn_claim_path=["bsn"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
 
         obfuscated_claims = obfuscate_claims(
             {"bsn": "123456789", "other": "other"}, plugin.get_sensitive_claims()
@@ -27,15 +35,17 @@ class OIDCPluginsTestCase(TestCase):
 
         self.assertEqual(obfuscated_claims, {"bsn": "*******89", "other": "other"})
 
-    @mock_oidc_client(
-        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-        overrides={
-            "options.identity_settings.representee_bsn_claim_path": ["aanvrager"],
-            "options.identity_settings.authorizee_bsn_claim_path": ["gemachtigde"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_digid_machtigen(self):
-        plugin = registry[OIDC_DIGID_MACHTIGEN_IDENTIFIER]
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            post__options__identity_settings__representee_bsn_claim_path=["aanvrager"],
+            post__options__identity_settings__authorizee_bsn_claim_path=["gemachtigde"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
 
         obfuscated_claims = obfuscate_claims(
             {
@@ -55,16 +65,20 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_oidc_client(
-        OIDC_EH_IDENTIFIER,
-        overrides={
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["ActingSubject"],
-            "options.identity_settings.branch_number_claim_path": ["branch"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eherkenning(self):
-        plugin = registry[OIDC_EH_IDENTIFIER]
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=[
+                "ActingSubject"
+            ],
+            post__options__identity_settings__branch_number_claim_path=["branch"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
 
         obfuscated_claims = obfuscate_claims(
             {
@@ -86,17 +100,21 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_oidc_client(
-        OIDC_EH_BEWINDVOERING_IDENTIFIER,
-        overrides={
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.representee_claim_path": ["bsn"],
-            "options.identity_settings.acting_subject_claim_path": ["ActingSubject"],
-            "options.identity_settings.branch_number_claim_path": ["branch"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eherkenning_bewindvoering(self):
-        plugin = registry[OIDC_EH_BEWINDVOERING_IDENTIFIER]
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__representee_claim_path=["bsn"],
+            post__options__identity_settings__acting_subject_claim_path=[
+                "ActingSubject"
+            ],
+            post__options__identity_settings__branch_number_claim_path=["branch"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
 
         obfuscated_claims = obfuscate_claims(
             {
@@ -117,5 +135,84 @@ class OIDCPluginsTestCase(TestCase):
                 "branch": "**********66",
                 # this is already obfuscated by the broker
                 "ActingSubject": "1234567890@0987654321",
+            },
+        )
+
+    @mock_auth_and_oidc_registers()
+    def test_obfuscate_claims_eidas(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            post__options__identity_settings__legal_subject_identifier_claim_path=[
+                "person_identifier"
+            ],
+            post__options__identity_settings__legal_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            post__options__identity_settings__legal_subject_family_name_claim_path=[
+                "family_name"
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCEidasPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        obfuscated_claims = obfuscate_claims(
+            {
+                "person_identifier": "123456789",
+                "first_name": "John",
+                "family_name": "Doe",
+            },
+            plugin.get_sensitive_claims(),
+        )
+
+        self.assertEqual(
+            obfuscated_claims,
+            {
+                "person_identifier": "*******89",
+                "first_name": "****",
+                "family_name": "***",
+            },
+        )
+
+    @mock_auth_and_oidc_registers()
+    def test_obfuscate_claims_eidas_company(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            post__options__identity_settings__legal_subject_identifier_claim_path=[
+                "company_identifier"
+            ],
+            post__options__identity_settings__acting_subject_identifier_claim_path=[
+                "person_identifier"
+            ],
+            post__options__identity_settings__acting_subject_first_name_claim_path=[
+                "first_name"
+            ],
+            post__options__identity_settings__acting_subject_family_name_claim_path=[
+                "family_name"
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCEidasCompanyPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        obfuscated_claims = obfuscate_claims(
+            {
+                "company_identifier": "123456789",
+                "person_identifier": "000111222",
+                "family_name": "Doe",
+                "first_name": "John",
+            },
+            plugin.get_sensitive_claims(),
+        )
+
+        self.assertEqual(
+            obfuscated_claims,
+            {
+                "person_identifier": "*******22",
+                "company_identifier": "*******89",
+                "first_name": "****",
+                "family_name": "***",
             },
         )

@@ -2,15 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_jsonform.models.fields import ArrayField
-from typing_extensions import deprecated
-
-
-@deprecated("Left here because used in migrations.")
-def get_default_scopes_yivi():
-    """
-    Returns the default scopes to request for OpenID Connect logins for Yivi.
-    """
-    return ["openid"]
 
 
 class AttributeGroup(models.Model):

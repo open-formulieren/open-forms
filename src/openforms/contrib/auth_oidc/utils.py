@@ -1,24 +1,69 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import structlog
 from glom import Path, PathAccessError, assign, glom
-from mozilla_django_oidc_db.typing import JSONObject
+from mozilla_django_oidc_db.plugins import (
+    BaseOIDCPlugin,
+)
 
-from ...org_oidc.plugin import OIDCAuthentication as OrgOIDCAuthentication
-from ..plugin import OIDCAuthentication
-from .types import ClaimPathDetails, ClaimProcessingInstructions
+from openforms.authentication.base import BasePlugin as BaseAuthPlugin
+from openforms.typing import JSONObject
 
-if TYPE_CHECKING:
-    from .plugins import BaseDigiDeHerkenningPlugin
-
+from .typing import ClaimPathDetails, ClaimProcessingInstructions
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
 class NoLOAClaim(Exception):
     pass
+
+
+class NoAuthPluginFound(Exception):
+    pass
+
+
+def _process_loa(
+    claims: JSONObject, claim_processing_instructions: ClaimProcessingInstructions
+) -> str:
+    default = glom(claim_processing_instructions, "loa_claims.default", default=None)
+    if (
+        not (
+            loa_claim_path := glom(
+                claim_processing_instructions, "loa_claims.path_in_claim", default=None
+            )
+        )
+        and not default
+    ):
+        raise NoLOAClaim("No LoA claim or default LoA configured")
+
+    if not loa_claim_path:
+        return default
+
+    try:
+        loa = glom(claims, Path(*loa_claim_path))
+        loa_claim_missing = False
+    except PathAccessError:
+        # default could be empty (string)!
+        loa = default
+        loa_claim_missing = not default
+
+    if loa_claim_missing:
+        raise NoLOAClaim("LoA claim is absent and no default LoA configured")
+
+    # 'from' is string or number, which are valid keys
+    loa_map: dict[str | float | int, str] = {
+        mapping["from"]: mapping["to"]
+        for mapping in glom(
+            claim_processing_instructions, "loa_claims.value_mapping", default=[]
+        )
+    }
+
+    # apply mapping, if not found -> use the literal original value instead
+    processed_loa = loa_map.get(loa, loa)
+    assert processed_loa
+    return processed_loa
 
 
 def process_claims(
@@ -98,6 +143,12 @@ def process_claims(
     """
     processed_claims = {}
 
+    # Explicitly not adding claims, as these are not obfuscated and
+    # contain sensitive info.
+    log = logger.bind(
+        claim_processing_instructions=claim_processing_instructions, strict=strict
+    )
+
     def _process_claim(
         claim_path: ClaimPathDetails,
         type_claim: Literal[
@@ -143,9 +194,7 @@ def process_claims(
     try:
         loa = _process_loa(claims, claim_processing_instructions)
     except NoLOAClaim as exc:
-        logger.info(
-            "Missing LoA claim, excluding it from processed claims", exc_info=exc
-        )
+        log.info("Missing LoA claim, excluding it from processed claims", exc_info=exc)
     else:
         processed_path = glom(
             claim_processing_instructions, "loa_claims.processed_path", default=None
@@ -155,62 +204,17 @@ def process_claims(
     return processed_claims
 
 
-def _process_loa(
-    claims: JSONObject, claim_processing_instructions: ClaimProcessingInstructions
-) -> str:
-    default = glom(claim_processing_instructions, "loa_claims.default", default=None)
-    if (
-        not (
-            loa_claim_path := glom(
-                claim_processing_instructions, "loa_claims.path_in_claim", default=None
-            )
-        )
-        and not default
-    ):
-        raise NoLOAClaim("No LoA claim or default LoA configured")
-
-    if not loa_claim_path:
-        return default
-
-    try:
-        loa = glom(claims, Path(*loa_claim_path))
-        loa_claim_missing = False
-    except PathAccessError:
-        # default could be empty (string)!
-        loa = default
-        loa_claim_missing = not default
-
-    if loa_claim_missing:
-        raise NoLOAClaim("LoA claim is absent and no default LoA configured")
-
-    # 'from' is string or number, which are valid keys
-    loa_map: dict[str | float | int, str] = {
-        mapping["from"]: mapping["to"]
-        for mapping in glom(
-            claim_processing_instructions, "loa_claims.value_mapping", default=[]
-        )
-    }
-
-    # apply mapping, if not found -> use the literal original value instead
-    processed_loa = loa_map.get(loa, loa)
-    assert processed_loa
-    return processed_loa
-
-
-class NoAuthPluginFound(Exception):
-    pass
-
-
 def get_of_auth_plugin(
-    oidc_plugin: BaseDigiDeHerkenningPlugin,
-) -> OIDCAuthentication | OrgOIDCAuthentication:
+    oidc_plugin: BaseOIDCPlugin,
+) -> BaseAuthPlugin:
+    """Get the Open Forms authentication plugin corresponding to the provided OIDC plugin."""
     from openforms.authentication.registry import register as _of_auth_registry
 
     for _identifier, plugin in _of_auth_registry.items():
         if not hasattr(plugin, "oidc_plugin_identifier"):
             continue
 
-        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:
+        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:  # pyright: ignore[reportAttributeAccessIssue] # We established above that attr oidc_plugin_identifier is present
             return plugin
     else:
         raise NoAuthPluginFound()

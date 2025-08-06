@@ -1,50 +1,49 @@
 from django.test import TestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
-from mozilla_django_oidc_db.registry import register as registry
+from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.tests.factories import (
     OIDCClientFactory,
 )
 
-from openforms.utils.tests.keycloak import mock_oidc_client
-
-from ...oidc_plugins.constants import (
-    OIDC_DIGID_IDENTIFIER,
-    OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-    OIDC_EH_BEWINDVOERING_IDENTIFIER,
-    OIDC_EH_IDENTIFIER,
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+    mock_auth_and_oidc_registers,
 )
-from ...oidc_plugins.types import ClaimProcessingInstructions
-from ...oidc_plugins.utils import process_claims
+from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
+from openforms.contrib.auth_oidc.utils import process_claims
+
+from ...oidc_plugins.plugins import (
+    OIDCDigiDMachtigenPlugin,
+    OIDCDigidPlugin,
+    OIDCeHerkenningBewindvoeringPlugin,
+    OIDCeHerkenningPlugin,
+)
 
 
 class ProcessClaimsDigiDTest(TestCase):
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.plugin = registry[OIDC_DIGID_IDENTIFIER]
-
-    @mock_oidc_client(
-        OIDC_DIGID_IDENTIFIER,
-        overrides={
-            "options.identity_settings.bsn_claim_path": ["sub"],
-            "options.loa_settings": {
-                "claim_path": ["authsp_level"],
-                "default": DigiDAssuranceLevels.middle,
-                "value_mapping": [
-                    {"from": "30", "to": DigiDAssuranceLevels.high},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_digid_process_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            post__options__identity_settings__bsn_claim_path=["sub"],
+            post__options__loa_settings__claim_path=["authsp_level"],
+            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
+            post__options__loa_settings__value_mapping=[
+                {"from": "30", "to": DigiDAssuranceLevels.high},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.subTest("BSN extraction + transform loa values"):
             claims = {"sub": "XXXXXXX54", "authsp_level": "30", "extra": "irrelevant"}
 
             processed_claims = process_claims(
                 claims,
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 False,
             )
 
@@ -61,7 +60,7 @@ class ProcessClaimsDigiDTest(TestCase):
 
             processed_claims = process_claims(
                 claims,
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -78,7 +77,7 @@ class ProcessClaimsDigiDTest(TestCase):
 
             processed_claims = process_claims(
                 claims,
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -90,50 +89,62 @@ class ProcessClaimsDigiDTest(TestCase):
                 },
             )
 
-    @mock_oidc_client(
-        OIDC_DIGID_IDENTIFIER,
-        overrides={
-            "options.identity_settings.bsn_claim_path": ["sub"],
-            "options.loa_settings.claim_path": ["authsp_level"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_digid_raises_on_missing_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            post__options__identity_settings__bsn_claim_path=["sub"],
+            post__options__loa_settings__claim_path=["authsp_level"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.assertRaises(ValueError):
             process_claims(
                 {"bsn": "XXXXXXX54"},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
-    @mock_oidc_client(
-        OIDC_DIGID_IDENTIFIER,
-        overrides={
-            "options.identity_settings.bsn_claim_path": ["sub"],
-            "options.loa_settings.claim_path": ["authsp_level"],
-            "options.loa_settings.default": "",
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_digid_loa_claim_absent_without_default_loa(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            post__options__identity_settings__bsn_claim_path=["sub"],
+            post__options__loa_settings__claim_path=["authsp_level"],
+            post__options__loa_settings__default="",
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         processed_claims = process_claims(
             {"sub": "XXXXXXX54"},
-            self.plugin.get_claim_processing_instructions(),
+            plugin.get_claim_processing_instructions(),
             strict=False,
         )
 
         self.assertEqual(processed_claims, {"bsn_claim": "XXXXXXX54"})
 
-    @mock_oidc_client(
-        OIDC_DIGID_IDENTIFIER,
-        overrides={
-            "options.identity_settings.bsn_claim_path": ["bsn"],
-            "options.loa_settings.claim_path": ["not-present"],
-            "options.loa_settings.default": DigiDAssuranceLevels.middle,
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_digid_loa_claim_not_configured_but_default_set(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            post__options__identity_settings__bsn_claim_path=["bsn"],
+            post__options__loa_settings__claim_path=["not-present"],
+            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         processed_claims = process_claims(
             {"bsn": "XXXXXXX54", "loa": "ignored"},
-            self.plugin.get_claim_processing_instructions(),
+            plugin.get_claim_processing_instructions(),
             strict=False,
         )
 
@@ -144,28 +155,28 @@ class ProcessClaimsDigiDTest(TestCase):
 
 
 class ProcessClaimsDigiDMachtigenTest(TestCase):
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.plugin = registry[OIDC_DIGID_MACHTIGEN_IDENTIFIER]
-
-    @mock_oidc_client(
-        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-        overrides={
-            "options.identity_settings.representee_bsn_claim_path": ["representee"],
-            "options.identity_settings.authorizee_bsn_claim_path": ["authorizee"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.loa_settings": {
-                "claim_path": ["authsp_level"],
-                "default": DigiDAssuranceLevels.middle,
-                "value_mapping": [
-                    {"from": "30", "to": DigiDAssuranceLevels.high},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_process_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            post__options__identity_settings__representee_bsn_claim_path=[
+                "representee"
+            ],
+            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__loa_settings__claim_path=["authsp_level"],
+            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
+            post__options__loa_settings__value_mapping=[
+                {"from": "30", "to": DigiDAssuranceLevels.high},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.subTest("BSN extraction + transform loa values"):
             processed_claims = process_claims(
                 {
@@ -175,7 +186,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                     "extra": "irrelevant",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -196,7 +207,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authorizee": "XXXXXXX99",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -219,7 +230,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                     "extra": "irrelevant",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -233,20 +244,28 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                 },
             )
 
-    @mock_oidc_client(
-        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-        overrides={
-            "options.identity_settings.representee_bsn_claim_path": ["representee"],
-            "options.identity_settings.authorizee_bsn_claim_path": ["authorizee"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.loa_settings.claim_path": ["authsp_level"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_digid_machtigen_raises_on_missing_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            post__options__identity_settings__representee_bsn_claim_path=[
+                "representee"
+            ],
+            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__loa_settings__claim_path=["authsp_level"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.assertRaises(ValueError):
             process_claims(
                 {},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
@@ -257,7 +276,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
@@ -268,7 +287,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
@@ -279,24 +298,32 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authorizee": "XXXXXXX99",
                     "authsp_level": "30",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
-    @mock_oidc_client(
-        OIDC_DIGID_MACHTIGEN_IDENTIFIER,
-        overrides={
-            "options.identity_settings.representee_bsn_claim_path": ["representee"],
-            "options.identity_settings.authorizee_bsn_claim_path": ["authorizee"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.loa_settings.claim_path": ["authsp_level"],
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            post__options__identity_settings__representee_bsn_claim_path=[
+                "representee"
+            ],
+            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__loa_settings__claim_path=["authsp_level"],
+        )
+        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.assertRaises(ValueError):
             process_claims(
                 {},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -307,7 +334,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -318,7 +345,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                     "authsp_level": "30",
                     "service_id": "46ddda34-c4db-4a54-997c-351bc9a0aabc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -328,7 +355,7 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                 "authorizee": "XXXXXXX99",
                 "authsp_level": "30",
             },
-            self.plugin.get_claim_processing_instructions(),
+            plugin.get_claim_processing_instructions(),
             strict=False,
         )
 
@@ -343,29 +370,27 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
 
 
 class ProcessClaimsEHTest(TestCase):
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.plugin = registry[OIDC_EH_IDENTIFIER]
-
-    @mock_oidc_client(
-        OIDC_EH_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_process_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.subTest("all claims provided, happy flow"):
             processed_claims = process_claims(
                 {
@@ -376,7 +401,7 @@ class ProcessClaimsEHTest(TestCase):
                     "loa": "urn:etoegang:core:assurance-class:loa2plus",
                     "extra": "ignored",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -398,7 +423,7 @@ class ProcessClaimsEHTest(TestCase):
                     "sub": "-opaquestring-",
                     "loa": "urn:etoegang:core:assurance-class:loa2plus",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -418,7 +443,7 @@ class ProcessClaimsEHTest(TestCase):
                     "sub": "-opaquestring-",
                     "loa": 3,
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -437,7 +462,7 @@ class ProcessClaimsEHTest(TestCase):
                     "kvk": "12345678",
                     "sub": "-opaquestring-",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -450,64 +475,72 @@ class ProcessClaimsEHTest(TestCase):
                 },
             )
 
-    @mock_oidc_client(
-        OIDC_EH_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_eherkenning_raises_on_missing_claims(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.assertRaises(ValueError):
             process_claims(
                 {"kvk": "12345678"},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
         with self.assertRaises(ValueError):
             process_claims(
                 {"sub": "-opaquestring-"},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=True,
             )
 
-    @mock_oidc_client(
-        OIDC_EH_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.assertRaises(ValueError):
             process_claims(
                 {"sub": "-opaquestring-"},
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
         processed_claims = process_claims(
             {"kvk": "12345678"},
-            self.plugin.get_claim_processing_instructions(),
+            plugin.get_claim_processing_instructions(),
             strict=False,
         )
 
@@ -518,34 +551,34 @@ class ProcessClaimsEHTest(TestCase):
 
 
 class ProcessClaimsEHBewindvoeringTest(TestCase):
-    @classmethod
-    def setUpTestData(cls) -> None:
-        super().setUpTestData()
-
-        cls.plugin = registry[OIDC_EH_BEWINDVOERING_IDENTIFIER]
-
-    @mock_oidc_client(
-        OIDC_EH_BEWINDVOERING_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.identity_settings.representee_claim_path": ["bsn"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.identity_settings.mandate_service_uuid_claim_path": [
+    @mock_auth_and_oidc_registers()
+    def test_eherkenning_bewindvoering_claim_processing(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__identity_settings__representee_claim_path=["bsn"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__identity_settings__mandate_service_uuid_claim_path=[
                 "service_uuid"
             ],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
-    def test_eherkenning_bewindvoering_claim_processing(self):
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         with self.subTest("all claims provided, happy flow"):
             processed_claims = process_claims(
                 {
@@ -559,7 +592,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
                     "extra": "ignored",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -587,7 +620,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -613,7 +646,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -638,7 +671,7 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                     "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
                     "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
                 },
-                self.plugin.get_claim_processing_instructions(),
+                plugin.get_claim_processing_instructions(),
                 strict=False,
             )
 
@@ -654,116 +687,128 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                 },
             )
 
-    @mock_oidc_client(
-        OIDC_EH_BEWINDVOERING_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.identity_settings.representee_claim_path": ["bsn"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.identity_settings.mandate_service_uuid_claim_path": [
-                "service_uuid"
-            ],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
+    @mock_auth_and_oidc_registers()
     def test_raises_on_missing_claims(self):
-        with self.assertRaises(ValueError):
-            process_claims(
-                {
-                    "kvk": "12345678",
-                    "bsn": "XXXXXXX54",
-                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
-                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                },
-                self.plugin.get_claim_processing_instructions(),
-                strict=True,
-            )
-
-        with self.assertRaises(ValueError):
-            process_claims(
-                {
-                    "sub": "-opaquestring-",
-                    "bsn": "XXXXXXX54",
-                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
-                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                },
-                self.plugin.get_claim_processing_instructions(),
-                strict=True,
-            )
-
-        with self.assertRaises(ValueError):
-            process_claims(
-                {
-                    "kvk": "12345678",
-                    "sub": "-opaquestring-",
-                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
-                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                },
-                self.plugin.get_claim_processing_instructions(),
-                strict=True,
-            )
-
-        with self.assertRaises(ValueError):
-            process_claims(
-                {
-                    "kvk": "12345678",
-                    "sub": "-opaquestring-",
-                    "bsn": "XXXXXXX54",
-                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
-                },
-                self.plugin.get_claim_processing_instructions(),
-                strict=True,
-            )
-
-        with self.assertRaises(ValueError):
-            process_claims(
-                {
-                    "kvk": "12345678",
-                    "sub": "-opaquestring-",
-                    "bsn": "XXXXXXX54",
-                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
-                },
-                self.plugin.get_claim_processing_instructions(),
-                strict=True,
-            )
-
-    @mock_oidc_client(
-        OIDC_EH_BEWINDVOERING_IDENTIFIER,
-        overrides={
-            "options.identity_settings.identifier_type_claim_path": ["namequalifier"],
-            "options.identity_settings.legal_subject_claim_path": ["kvk"],
-            "options.identity_settings.acting_subject_claim_path": ["sub"],
-            "options.identity_settings.branch_number_claim_path": ["vestiging"],
-            "options.identity_settings.representee_claim_path": ["bsn"],
-            "options.identity_settings.mandate_service_id_claim_path": ["service_id"],
-            "options.identity_settings.mandate_service_uuid_claim_path": [
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__identity_settings__representee_claim_path=["bsn"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__identity_settings__mandate_service_uuid_claim_path=[
                 "service_uuid"
             ],
-            "options.loa_settings": {
-                "claim_path": ["loa"],
-                "default": AssuranceLevels.low_plus,
-                "value_mapping": [
-                    {"from": 3, "to": AssuranceLevels.substantial},
-                ],
-            },
-        },
-    )
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
+        with self.assertRaises(ValueError):
+            process_claims(
+                {
+                    "kvk": "12345678",
+                    "bsn": "XXXXXXX54",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            process_claims(
+                {
+                    "sub": "-opaquestring-",
+                    "bsn": "XXXXXXX54",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            process_claims(
+                {
+                    "kvk": "12345678",
+                    "sub": "-opaquestring-",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            process_claims(
+                {
+                    "kvk": "12345678",
+                    "sub": "-opaquestring-",
+                    "bsn": "XXXXXXX54",
+                    "service_uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+        with self.assertRaises(ValueError):
+            process_claims(
+                {
+                    "kvk": "12345678",
+                    "sub": "-opaquestring-",
+                    "bsn": "XXXXXXX54",
+                    "service_id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                },
+                plugin.get_claim_processing_instructions(),
+                strict=True,
+            )
+
+    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            post__options__identity_settings__identifier_type_claim_path=[
+                "namequalifier"
+            ],
+            post__options__identity_settings__legal_subject_claim_path=["kvk"],
+            post__options__identity_settings__acting_subject_claim_path=["sub"],
+            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            post__options__identity_settings__representee_claim_path=["bsn"],
+            post__options__identity_settings__mandate_service_id_claim_path=[
+                "service_id"
+            ],
+            post__options__identity_settings__mandate_service_uuid_claim_path=[
+                "service_uuid"
+            ],
+            post__options__loa_settings__claim_path=["loa"],
+            post__options__loa_settings__default=AssuranceLevels.low_plus,
+            post__options__loa_settings__value_mapping=[
+                {"from": 3, "to": AssuranceLevels.substantial},
+            ],
+        )
+        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
+
+        plugin = oidc_register[oidc_client.identifier]
+
         processed_claims = process_claims(
             {
                 "kvk": "12345678",
                 "bsn": "XXXXXXX54",
             },
-            self.plugin.get_claim_processing_instructions(),
+            plugin.get_claim_processing_instructions(),
             strict=False,
         )
 

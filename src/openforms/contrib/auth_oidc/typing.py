@@ -1,6 +1,6 @@
 from typing import NotRequired, TypedDict
 
-type ClaimPath = list[str]
+from mozilla_django_oidc_db.typing import ClaimPath
 
 
 class ClaimPathDetails(TypedDict):
@@ -147,3 +147,7 @@ class EIDASCompanyClaims(TypedDict):
     acting_subject_date_of_birth_claim: str
 
     mandate_service_id_claim: str
+
+
+class OIDCErrors(TypedDict):
+    access_denied: NotRequired[tuple[str, str]]

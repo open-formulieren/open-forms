@@ -25,16 +25,15 @@ from mozilla_django_oidc_db.views import (
 )
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.types import (
+from openforms.contrib.auth_oidc.typing import (
     ClaimPathDetails,
     ClaimProcessingInstructions,
 )
-from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.utils import (
+from openforms.contrib.auth_oidc.utils import (
     get_of_auth_plugin,
     process_claims,
 )
 from openforms.contrib.auth_oidc.views import anon_user_callback_view
-from openforms.forms.models.form import Form
 from openforms.forms.models.form_authentication_backend import FormAuthenticationBackend
 
 from ..config import YiviOptions
@@ -152,13 +151,11 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
     def _get_auth_backend_options(self, form_slug: str) -> YiviOptions | None:
         plugin = get_of_auth_plugin(self.get_config())
 
-        try:
-            form = Form.objects.get(slug=form_slug)
+        auth_backend = FormAuthenticationBackend.objects.filter(
+            form__slug=form_slug, backend=plugin.identifier
+        ).first()
 
-            auth_backend = FormAuthenticationBackend.objects.get(
-                form=form, backend=plugin.identifier
-            )
-        except (Form.DoesNotExist, FormAuthenticationBackend.DoesNotExist):
+        if not auth_backend:
             return None
 
         return auth_backend.options
@@ -265,13 +262,11 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         )
         return claim_processing_instruction
 
-    @staticmethod
-    def _build_authentication_condiscon(options: YiviOptions) -> list[list[str]]:
+    def _build_authentication_condiscon(self, options: YiviOptions) -> list[list[str]]:
         """
-        Helper function for creating the "authentication attributes" part of the Signicat
-        Yivi condiscon.
+        Create the "authentication attributes" part of the Signicat Yivi condiscon.
         """
-        yivi_config = OIDCClient.objects.get(identifier=OIDC_YIVI_IDENTIFIER)
+        yivi_config = self.get_config()
 
         if not len(options["authentication_options"]):
             # If no authentication options are selected, fallback to the pseudo_claim

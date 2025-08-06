@@ -9,11 +9,11 @@ from mozilla_django_oidc_db.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
 
-from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.utils import (
-    get_of_auth_plugin,
-)
 from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
     OIDCAuthentication,
+)
+from openforms.contrib.auth_oidc.utils import (
+    get_of_auth_plugin,
 )
 
 

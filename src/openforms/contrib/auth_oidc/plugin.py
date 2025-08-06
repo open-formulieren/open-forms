@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import ClassVar, Protocol, TypedDict
+from typing import ClassVar, TypedDict
 
 from django.http import (
     HttpRequest,
     HttpResponseBadRequest,
-    HttpResponseBase,
     HttpResponseRedirect,
 )
 
@@ -24,9 +23,9 @@ from openforms.authentication.constants import (
     AuthAttribute,
 )
 from openforms.authentication.exceptions import InvalidCoSignData
-from openforms.authentication.types import OIDCErrors
 from openforms.authentication.typing import FormAuth
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from openforms.contrib.auth_oidc.typing import OIDCErrors
 from openforms.forms.models import Form
 from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
@@ -36,12 +35,6 @@ from .constants import OIDC_ID_TOKEN_SESSION_KEY
 
 class OptionsT(TypedDict):
     pass
-
-
-class AuthInit(Protocol):
-    def __call__(
-        self, request: HttpRequest, return_url: str, options: OptionsT, *args, **kwargs
-    ) -> HttpResponseBase: ...
 
 
 # can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
@@ -75,8 +68,6 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         #
         # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
         # start_view and gets handled there.
-
-        # TODO: using self.init_view passes "self" as first argument, workaround
         init_view = OIDCAuthenticationRequestInitView.as_view(
             identifier=self.oidc_plugin_identifier,
             allow_next_from_query=False,

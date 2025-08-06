@@ -1,8 +1,8 @@
 {% extends "maykin_2fa/login.html" %}
-{% load utils i18n static %}
+{% load oidc_client i18n static %}
 
 {% block extra_login_options %}
-    {% get_oidc_admin_config as oidc_config %}
+    {% get_oidc_admin_client as oidc_config %}
     {% if oidc_config.enabled %}
 
         <div
