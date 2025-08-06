@@ -1,9 +1,10 @@
 import timeit
 import unittest
 from contextlib import contextmanager
+from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.test import TestCase, tag
 
 from openforms.prefill.constants import IdentifierRoles
@@ -302,6 +303,116 @@ class FormVariableModelTests(TestCase):
                     self.assertEqual(
                         expected_values[data_type][index], variable.initial_value
                     )
+
+    # To be able to test the database constraint, need to make sure that the data
+    # types are not overwritten upon saving
+    @patch.object(FormVariable, "check_data_type_and_initial_value", return_value=None)
+    def test_data_type_and_subtype_component(self, m):
+        form = FormFactory.create()
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    }
+                ]
+            },
+        )
+
+        with (
+            self.subTest("data type array and empty subtype not allowed"),
+            self.assertRaises(IntegrityError),
+            transaction.atomic(),
+        ):
+            FormVariable.objects.create(
+                form=form,
+                source=FormVariableSources.component,
+                form_definition=fd,
+                key="textfield",
+                data_type=FormVariableDataTypes.array,
+                data_subtype="",
+            )
+
+        with (
+            self.subTest("data type object and subtype string not allowed"),
+            self.assertRaises(IntegrityError),
+            transaction.atomic(),
+        ):
+            FormVariable.objects.create(
+                form=form,
+                source=FormVariableSources.component,
+                form_definition=fd,
+                key="textfield",
+                data_type=FormVariableDataTypes.object,
+                data_subtype=FormVariableDataTypes.string,
+            )
+
+        with self.subTest("data type array and subtype string allowed"):
+            try:
+                FormVariable.objects.create(
+                    form=form,
+                    source=FormVariableSources.component,
+                    form_definition=fd,
+                    key="textfield",
+                    data_type=FormVariableDataTypes.array,
+                    data_subtype=FormVariableDataTypes.string,
+                )
+            except IntegrityError as e:
+                self.fail(f"IntegrityError raised unexpectedly: {e}")
+
+    # To be able to test the database constraint, need to make sure that the data
+    # types are not overwritten upon saving
+    @patch.object(FormVariable, "check_data_type_and_initial_value", return_value=None)
+    def test_data_type_partners(self, m):
+        form = FormFactory.create()
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Textfield",
+                    }
+                ]
+            },
+        )
+
+        with (
+            self.subTest("data type array and empty subtype not allowed"),
+            self.assertRaises(IntegrityError),
+            transaction.atomic(),
+        ):
+            FormVariable.objects.create(
+                form=form,
+                source=FormVariableSources.component,
+                form_definition=fd,
+                key="textfield",
+                data_type=FormVariableDataTypes.partners,
+                data_subtype="",
+            )
+
+    def test_data_type_and_subtype_user_defined(self):
+        with self.subTest("data type array and empty subtype"):
+            try:
+                FormVariableFactory.create(
+                    data_type=FormVariableDataTypes.array,
+                    data_subtype="",
+                    source=FormVariableSources.user_defined,
+                )
+            except IntegrityError as e:
+                self.fail(f"IntegrityError raised unexpectedly: {e}")
+
+        with self.subTest("data type object and subtype string"):
+            try:
+                FormVariableFactory.create(
+                    data_type=FormVariableDataTypes.object,
+                    data_subtype=FormVariableDataTypes.string,
+                    source=FormVariableSources.user_defined,
+                )
+            except IntegrityError as e:
+                self.fail(f"IntegrityError raised unexpectedly: {e}")
 
 
 class FormVariableManagerTests(TestCase):

@@ -36,6 +36,10 @@ EMPTY_PREFILL_ATTRIBUTE = Q(prefill_attribute="")
 EMPTY_PREFILL_OPTIONS = Q(prefill_options={})
 USER_DEFINED = Q(source=FormVariableSources.user_defined)
 
+DATA_TYPE_ARRAY = Q(data_type=FormVariableDataTypes.array)
+EMPTY_DATA_SUBTYPE = Q(data_subtype="")
+COMPONENT = Q(source=FormVariableSources.component)
+
 # these are the attributes that are derived from the matching formio component,
 # see FormVariableManager.synchronize_for. Other attributes are relational or
 # related to user defined variables (like service fetch, prefill options...).
@@ -373,6 +377,27 @@ class FormVariable(models.Model):
                     | Q(form_definition__isnull=False)
                 ),
                 name="form_definition_not_null_for_component_vars",
+            ),
+            CheckConstraint(
+                check=(
+                    (
+                        (DATA_TYPE_ARRAY & ~EMPTY_DATA_SUBTYPE)
+                        | (~DATA_TYPE_ARRAY & EMPTY_DATA_SUBTYPE)
+                    )
+                    & COMPONENT
+                )
+                | ~COMPONENT,
+                name="form_variable_subtype_empty_iff_data_type_is_not_array",
+            ),
+            CheckConstraint(
+                check=~Q(
+                    data_type__in=(
+                        FormVariableDataTypes.partners,
+                        FormVariableDataTypes.editgrid,
+                        FormVariableDataTypes.children,
+                    )
+                ),
+                name="form_variable_data_type_is_not_subtype_exclusive",
             ),
         ]
 
