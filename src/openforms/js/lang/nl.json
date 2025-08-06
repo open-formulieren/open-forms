@@ -3154,7 +3154,7 @@
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
   },
   "sFWqtz": {
-    "defaultMessage": "Medewerker roltype",
+    "defaultMessage": "Medewerkerroltype",
     "description": "ZGW-APIs registration options 'medewerkerRoltype' label",
     "originalDefault": "Medewerker roltype"
   },

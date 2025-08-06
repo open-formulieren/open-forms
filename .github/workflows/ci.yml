@@ -178,6 +178,35 @@ jobs:
           DB_PASSWORD: ''
           DEBUG: 'true'
 
+  i18n-check:
+    name: Check i18n messages extracted
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Extract messages and check for changes
+        run: |
+          ./bin/makemessages_js.sh
+          ./bin/compilemessages_js.sh
+          git diff --exit-code src/openforms/js/{compiled-lang,lang}
+
+      - name: Write failure markdown
+        if: ${{ failure() }}
+        run: |
+          first_changed_file=$(git diff --name-only --diff-filter=M src/openforms/js/{compiled-lang,lang} | head -n 1)
+          first_lineno=$(git diff -U0 $first_changed_file | grep '^@@' | head -1 | sed -E 's/.*\+([0-9]+).*/\1/')
+          echo "::error file=$first_changed_file,line=$first_lineno,title=Outdated::There are changes detected in the i18n messages"
+          echo 'Please make sure to extract and compile messages locally commit the changes.' >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
   e2etests:
     runs-on: ubuntu-24.04
 
@@ -488,6 +517,7 @@ jobs:
   docker_push:
     needs:
       - tests
+      - i18n-check
       - e2etests
       - docker_build_setup
       - docker_build

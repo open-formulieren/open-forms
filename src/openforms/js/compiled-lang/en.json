@@ -499,6 +499,12 @@
       "value": "CSS class"
     }
   ],
+  "3rmiz8": [
+    {
+      "type": 0,
+      "value": "FirstNames"
+    }
+  ],
   "3z1hhJ": [
     {
       "type": 0,
@@ -849,6 +855,12 @@
       "value": "Additional attributes groups"
     }
   ],
+  "7E8B/6": [
+    {
+      "type": 0,
+      "value": "Enable selection"
+    }
+  ],
   "7F64bK": [
     {
       "type": 0,
@@ -1101,6 +1113,12 @@
     {
       "type": 0,
       "value": "Is not sensitive"
+    }
+  ],
+  "96yhxP": [
+    {
+      "type": 0,
+      "value": "Date of birth"
     }
   ],
   "9AQi2/": [
@@ -2227,6 +2245,12 @@
     {
       "type": 0,
       "value": "Extra elements"
+    }
+  ],
+  "H9I1Lx": [
+    {
+      "type": 0,
+      "value": "BSN"
     }
   ],
   "HCfL9x": [
@@ -4799,6 +4823,12 @@
     {
       "type": 0,
       "value": "Partners description"
+    }
+  ],
+  "e09gXO": [
+    {
+      "type": 0,
+      "value": "Allow the selection of specific children that are retrieved from the external source for further processing."
     }
   ],
   "eAmrdi": [
