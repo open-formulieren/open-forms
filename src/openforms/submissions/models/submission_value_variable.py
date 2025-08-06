@@ -473,6 +473,13 @@ class SubmissionValueVariable(models.Model):
             )
             return value
 
+        if value and data_type == FormVariableDataTypes.children:
+            # Similar comment as for the partners
+            value["dateOfBirth"] = self._value_to_python(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
+
         if value and data_type == FormVariableDataTypes.editgrid:
             value = FormioData(value)
             for child_component in iter_components(configuration):
