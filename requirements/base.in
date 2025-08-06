@@ -14,6 +14,7 @@ jq
 html5lib
 lxml
 lxml-html-clean
+onlinepayments-sdk-python3 # Worldline SDK
 O365  # microsoft graph
 Pillow  # handle images
 portalocker[redis]
@@ -27,11 +28,11 @@ xmltodict
 referencing
 self-certifi
 semantic-version
+schwifty
 tabulate
 typing-extensions
 weasyprint
 zeep
-schwifty
 
 # Framework libraries
 django ~= 4.2

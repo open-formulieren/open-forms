@@ -595,6 +595,10 @@ odfpy==1.4.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+onlinepayments-sdk-python3==5.1.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 open-forms-ext-haalcentraal-hr==0.3.1
     # via -r requirements/extensions.in
 open-forms-ext-token-exchange==0.4.0
@@ -799,6 +803,7 @@ requests==2.32.4
     #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
+    #   onlinepayments-sdk-python3
     #   prance
     #   requests-file
     #   requests-oauthlib
@@ -819,6 +824,7 @@ requests-toolbelt==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   onlinepayments-sdk-python3
     #   zeep
 rfc3339-validator==0.1.4
     # via

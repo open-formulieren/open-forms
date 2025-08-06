@@ -9,6 +9,14 @@ class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
     pass
 
 
+class SlugRelatedAsChoicesField(serializers.SlugRelatedField):
+    """
+    Custom subclass to register a custom drf-jsonschema-serializer converter.
+    """
+
+    pass
+
+
 class JSONFieldWithSchema(serializers.JSONField):
     """
     Custom subclass to register a custom drf-jsonschema-serializer converter.
