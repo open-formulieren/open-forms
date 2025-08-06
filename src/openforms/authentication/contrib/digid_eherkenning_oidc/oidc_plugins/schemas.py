@@ -12,10 +12,12 @@ EIDAS_SCHEMA = {
     "required": ["identity_settings"],
     "properties": {
         "loa_settings": {
+            "title": _("LoA settings"),
             "description": _("Level of Assurance related settings."),
             "type": "object",
             "properties": {
                 "claim_path": {
+                    "title": _("Claim path"),
                     "description": _(
                         "Path to the claim value holding the level of assurance. If left empty, it is "
                         "assumed there is no LOA claim and the configured fallback value will be "
@@ -27,6 +29,7 @@ EIDAS_SCHEMA = {
                     },
                 },
                 "default": {
+                    "title": _("Default"),
                     "description": _(
                         "Fallback level of assurance, in case no claim value could be extracted."
                     ),
@@ -40,6 +43,7 @@ EIDAS_SCHEMA = {
             },
         },
         "identity_settings": {
+            "title": _("Identity settings"),
             "description": _("eIDAS identity settings."),
             "type": "object",
             "required": [
@@ -51,6 +55,7 @@ EIDAS_SCHEMA = {
             ],
             "properties": {
                 "legal_subject_identifier_claim_path": {
+                    "title": ("Legal subject identifier claim path"),
                     "description": _(
                         "Path to the claim value holding the identifier of the authenticated user."
                     ),
@@ -61,6 +66,7 @@ EIDAS_SCHEMA = {
                     },
                 },
                 "legal_subject_identifier_type_claim_path": {
+                    "title": _("Legal subject identifier type claim path"),
                     "description": _(
                         "Path to the claim value that specifies how the person identifier claim must be interpreted. "
                         "The expected claim value is one of: 'bsn', 'pseudo' or 'national_id'."
@@ -72,6 +78,7 @@ EIDAS_SCHEMA = {
                     },
                 },
                 "legal_subject_first_name_claim_path": {
+                    "title": _("Legal subject first name claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal first name of the authenticated user."
                     ),
@@ -82,6 +89,7 @@ EIDAS_SCHEMA = {
                     },
                 },
                 "legal_subject_family_name_claim_path": {
+                    "title": _("Legal subject family name claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal family name of the authenticated user."
                     ),
@@ -92,6 +100,7 @@ EIDAS_SCHEMA = {
                     },
                 },
                 "legal_subject_date_of_birth_claim_path": {
+                    "title": _("Legal subject date of birth claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal birthdate of the authenticated user."
                     ),
@@ -114,10 +123,12 @@ EIDAS_COMPANY_SCHEMA = {
     "required": ["identity_settings"],
     "properties": {
         "loa_settings": {
+            "title": _("LoA settings"),
             "description": _("Level of Assurance related settings."),
             "type": "object",
             "properties": {
                 "claim_path": {
+                    "title": _("Claim path"),
                     "description": _(
                         "Path to the claim value holding the level of assurance. If left empty, it is "
                         "assumed there is no LOA claim and the configured fallback value will be "
@@ -129,6 +140,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "default": {
+                    "title": _("Default"),
                     "description": _(
                         "Fallback level of assurance, in case no claim value could be extracted."
                     ),
@@ -142,6 +154,7 @@ EIDAS_COMPANY_SCHEMA = {
             },
         },
         "identity_settings": {
+            "title": _("Identity settings"),
             "description": _("eIDAS identity settings."),
             "type": "object",
             "required": [
@@ -156,6 +169,7 @@ EIDAS_COMPANY_SCHEMA = {
             ],
             "properties": {
                 "legal_subject_identifier_claim_path": {
+                    "title": _("Legal subject identifier claim path"),
                     "description": _(
                         "Path to the claim value holding the identifier of the authenticated company."
                     ),
@@ -168,6 +182,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "legal_subject_name_claim_path": {
+                    "title": _("Legal subject name claim path"),
                     "description": _(
                         "Path to the claim that holds the name of the authenticated company."
                     ),
@@ -178,6 +193,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "acting_subject_identifier_claim_path": {
+                    "title": _("Acting subject identifier claim path"),
                     "description": _(
                         "Path to the claim value that holds identifier of the acting subject."
                     ),
@@ -188,6 +204,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "acting_subject_identifier_type_claim_path": {
+                    "title": _("Acting subject identifier type claim path"),
                     "description": _(
                         "Path to the claim value that specifies how the acting subject identifier claim must be "
                         "interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
@@ -200,6 +217,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "acting_subject_first_name_claim_path": {
+                    "title": _("Acting subject first name claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal first name of the acting subject."
                     ),
@@ -210,6 +228,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "acting_subject_family_name_claim_path": {
+                    "title": _("Acting subject family name claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal family name of the authenticated user."
                     ),
@@ -220,6 +239,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "acting_subject_date_of_birth_claim_path": {
+                    "title": _("Acting subject date of birth claim path"),
                     "description": _(
                         "Path to the claim value that holds the legal birthdate of the acting subject."
                     ),
@@ -230,6 +250,7 @@ EIDAS_COMPANY_SCHEMA = {
                     },
                 },
                 "mandate_service_id_claim_path": {
+                    "title": _("Mandate service id claim path"),
                     "description": _(
                         "Path to the claim value that holds the service ID for which the acting subject "
                         "is authorized."

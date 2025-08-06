@@ -5,16 +5,18 @@ from digid_eherkenning.oidc.schemas import get_loa_mapping_schema
 
 YIVI_SCHEMA = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Options",
+    "title": _("Options"),
     "description": _("OIDC Yivi configuration options."),
     "type": "object",
     "required": [],
     "properties": {
         "loa_settings": {
+            "title": _("LoA settings"),
             "description": _("Level of Assurance related settings."),
             "type": "object",
             "properties": {
                 "bsn_loa_claim_path": {
+                    "title": _("BSN loa claim path"),
                     "description": _(
                         "Path to the claim value holding the level of assurance. If left empty, it is "
                         "assumed there is no LOA claim and the configured fallback value will be "
@@ -26,6 +28,7 @@ YIVI_SCHEMA = {
                     },
                 },
                 "bsn_default_loa": {
+                    "title": _("BSN default loa"),
                     "description": _(
                         "Fallback level of assurance, in case no claim value could be extracted."
                     ),
@@ -37,6 +40,7 @@ YIVI_SCHEMA = {
                 },
                 "bsn_loa_value_mapping": {
                     **get_loa_mapping_schema(DigiDAssuranceLevels),
+                    "title": _("BSN loa value mapping"),
                     "description": _(
                         "Level of assurance claim value mappings. Useful if the values in the LOA "
                         "claim are proprietary, so you can translate them into their standardized "
@@ -44,6 +48,7 @@ YIVI_SCHEMA = {
                     ),
                 },
                 "kvk_loa_claim_path": {
+                    "title": _("KvK loa claim path"),
                     "description": _(
                         "Path to the claim value holding the level of assurance. If left empty, it is "
                         "assumed there is no LOA claim and the configured fallback value will be "
@@ -55,6 +60,7 @@ YIVI_SCHEMA = {
                     },
                 },
                 "kvk_default_loa": {
+                    "title": _("KvK default loa"),
                     "description": _(
                         "Fallback level of assurance, in case no claim value could be extracted."
                     ),
@@ -66,6 +72,7 @@ YIVI_SCHEMA = {
                 },
                 "kvk_loa_value_mapping": {
                     **get_loa_mapping_schema(AssuranceLevels),
+                    "title": _("KvK loa value mapping"),
                     "description": _(
                         "Level of assurance claim value mappings. Useful if the values in the LOA "
                         "claim are proprietary, so you can translate them into their standardized "
@@ -75,10 +82,12 @@ YIVI_SCHEMA = {
             },
         },
         "identity_settings": {
+            "title": _("Identity settings"),
             "description": _("Yivi identity settings."),
             "type": "object",
             "properties": {
                 "bsn_claim_path": {
+                    "title": _("BSN claim path"),
                     "description": _(
                         "Path to the claim value holding the authenticated user's BSN."
                     ),
@@ -89,6 +98,7 @@ YIVI_SCHEMA = {
                     },
                 },
                 "kvk_claim_path": {
+                    "title": _("KvK claim path"),
                     "description": _(
                         "Path to the claim value holding the KVK identifier of the authenticated company."
                     ),
@@ -99,6 +109,7 @@ YIVI_SCHEMA = {
                     },
                 },
                 "pseudo_claim_path": {
+                    "title": _("Pseudo claim path"),
                     "description": _(
                         "Path to the claim  value holding the (opaque) identifier of the user. "
                         "This claim will be used when the pseudo authentication option is used, or "
