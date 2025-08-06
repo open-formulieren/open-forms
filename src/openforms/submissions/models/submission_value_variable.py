@@ -17,7 +17,7 @@ from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import VariablesRegistry, get_static_variables
 
 from ..constants import SubmissionValueVariableSources
@@ -134,12 +134,20 @@ class SubmissionValueVariablesState:
             # if the key exists from the saved values in the DB, do nothing
             if variable_key in all_submission_variables:
                 continue
+
+            configuration = {}
+            if form_variable.source == FormVariableSources.component:
+                configuration = form_variable.form_definition.configuration_wrapper[
+                    variable_key
+                ]
+
             # TODO Fill source field
             unsaved_submission_var = SubmissionValueVariable(
                 submission=self.submission,
                 key=variable_key,
                 value=form_variable.get_initial_value(),
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
+                configuration=configuration,
             )
             unsaved_submission_var.form_variable = form_variable
             all_submission_variables[variable_key] = unsaved_submission_var
@@ -326,6 +334,12 @@ class SubmissionValueVariable(models.Model):
         default=False,
         null=True,
         blank=True,
+    )
+    configuration = models.JSONField(
+        _("Form.io component configuration"),
+        help_text=_("The component configuration as Form.io JSON schema"),
+        blank=True,
+        default=dict,
     )
 
     objects = SubmissionValueVariableManager()

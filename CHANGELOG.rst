@@ -6,6 +6,24 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+
+3.3.0-alpha.0 (2025-??-??)
+==========================
+
+.. warning::
+
+    In this release, we reworked the internal data type information. To ensure submitted
+    data of existing submissions is formatted correctly, submitted variables need to be
+    processed. Note that we include this script instead of a data migration, so it can be
+    run separately, as it can take up to an hour to complete the entire operation for large
+    environments.
+
+    .. code-block:: bash
+
+        # in the container via ``docker exec`` or ``kubectl exec``:
+        python /app/bin/fix_submission_value_variable_missing_fields.py
+
+
 3.1.5 (2025-07-24)
 ==================
 

@@ -20,6 +20,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.payments.constants import PaymentStatus
+from openforms.variables.constants import FormVariableSources
 
 from ..constants import (
     PostSubmissionEvents,
@@ -300,10 +301,17 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
             if variable.key not in step_data:
                 continue
 
+            configuration = {}
+            if variable.source == FormVariableSources.component:
+                configuration = variable.form_definition.configuration_wrapper[
+                    variable.key
+                ]
+
             SubmissionValueVariableFactory.create(
                 submission=submission_step.submission,
                 key=variable.key,
                 value=step_data[variable.key],
+                configuration=configuration,
             )
 
         if hasattr(submission_step.submission, "_variables_state"):
