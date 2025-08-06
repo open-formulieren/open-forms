@@ -250,6 +250,40 @@ class SubmissionValueVariableModelTests(TestCase):
                 ],
             )
 
+        with self.subTest("children"):
+            children_var = SubmissionValueVariableFactory.create(
+                key="children",
+                value=[
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": "2023-02-01",
+                        "dateOfBirthPrecision": "date",
+                    },
+                ],
+                data_type=FormVariableDataTypes.array,
+                data_subtype=FormVariableDataTypes.children,
+            )
+
+            children_value = children_var.to_python()
+            self.assertEqual(
+                children_value,
+                [
+                    {
+                        "bsn": "999970409",
+                        "affixes": "van",
+                        "initials": "P.",
+                        "lastName": "Paassen",
+                        "firstNames": "Pero",
+                        "dateOfBirth": date(2023, 2, 1),
+                        "dateOfBirthPrecision": "date",
+                    }
+                ],
+            )
+
     def test_edit_grid_to_python(self):
         # For editgrids, we need the component configuration to determine the data
         # types of its children.

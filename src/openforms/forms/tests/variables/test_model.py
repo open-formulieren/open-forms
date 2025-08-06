@@ -282,6 +282,7 @@ class FormVariableModelTests(TestCase):
         for data_type, data_type_label in FormVariableDataTypes.choices:
             if data_type in (
                 FormVariableDataTypes.partners,
+                FormVariableDataTypes.children,
                 FormVariableDataTypes.editgrid,
             ):
                 # Not useful to test anything for this data type, as it is only used as

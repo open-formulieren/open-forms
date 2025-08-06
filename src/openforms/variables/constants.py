@@ -24,6 +24,7 @@ class FormVariableDataTypes(models.TextChoices):
     # This should only be used as a data subtype, and is a work-around to enable
     # converting the partners submission data to native Python types
     partners = "partners", _("Partners")
+    children = "children", _("Children")
     editgrid = "editgrid", _("Edit Grid")
 
 
