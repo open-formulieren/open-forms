@@ -122,7 +122,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             "Parse the payment URL from within the initial Worldline page"
         ):
             response = requests.get(data["url"])
-            soup = BeautifulSoup(response.content)
+            soup = BeautifulSoup(response.content, features="lxml")
             form = soup.select_one("form[name=redirectForm]")
 
             self.assertIsInstance(form, Tag)
@@ -216,7 +216,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             "Parse the payment URL from within the initial Worldline page"
         ):
             response = requests.get(data["url"])
-            soup = BeautifulSoup(response.content)
+            soup = BeautifulSoup(response.content, features="lxml")
             form = soup.select_one("form[name=redirectForm]")
 
             self.assertIsInstance(form, Tag)
@@ -297,7 +297,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             "Parse the payment URL from within the initial Worldline page"
         ):
             response = requests.get(data["url"])
-            soup = BeautifulSoup(response.content)
+            soup = BeautifulSoup(response.content, features="lxml")
             form = soup.select_one("form[name=redirectForm]")
 
             self.assertIsInstance(form, Tag)
