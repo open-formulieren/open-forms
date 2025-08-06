@@ -79,34 +79,25 @@ na de login:
 ``pseudo identifier claim``
     De identificatie van de gebruiker die inlogt.
 
-Voor aanvullende attributen
----------------------------
+Yivi-attribuutgroepen
+---------------------
 
-Voor iedere authenticatiemethode kunnen aanvullende attributengroepen gevraagd worden.
-Hiermee kunnen, naast de identificatiegegevens, ook aanvullende persoons- of
-bedrijfsgegevens opgevraagd worden.
+Bij elke authenticatiemethode kunnen aanvullende attributen worden uitgevraagd. Hiermee
+kunnen, naast identificatiegegevens, ook extra persoons- of bedrijfsgegevens worden
+verkregen.
 
-Om zowel flexibiliteit als gemak te bieden, kan je in de Yivi-configuratie definiëren
-welke attributen voor Yivi gebruikt kunnen worden. Deze kunnen vervolgens per formulier
-ingesteld worden. Hiermee worden de attributen alleen toegepast op de formulieren
-waarbij deze van toepassing zijn.
+In Open Formulieren kunnen deze aanvullende attributen worden gedefinieerd als
+:ref:`Yivi-attribuutgroepen <configuration_oidc_yivi_attribute_groups>`. Deze
+attribuutgroepen kunnen vervolgens worden geconfigureerd in formulieren die gebruikmaken
+van de ``Yivi via OpenID Connect`` authenticatie-plugin.
 
-``group name``
-    Naam van de attributengroep. Dit is een herkenbare naam voor de formulierbouwers en
-    heeft verder geen betekenis.
+Elke attribuutgroep is per stuk optioneel; de gebruiker bepaalt zelf welke groepen wel
+en niet te voorzien van informatie.
 
-``group description``
-    Beschrijving van de attributengroep. Dit kan gebruikt worden om aanvullende
-    informatie te geven over de attributengroep, zoals welke gegevens hiermee opgevraagd
-    kunnen worden. Net als de naam, wordt dit gebruikt als extra context voor
-    formulierbouwers en heeft verder geen betekenis.
-
-``attributes``
-    De attributen die aan de gebruiker gevraagd worden. Wanneer de gebruiker deze
-    gegevens aanbiedt, worden deze beschikbaar bij het
-    :ref:`voorinvullen (prefill) <example_prefill>`.
-    De attribuutgroepen zijn per stuk optioneel; de gebruiker kan zelf bepalen welke
-    attribuutgroepen wel en niet aan te leveren.
+.. important:: Alle verzoeken aan Yivi vereisen het gebruik van Yivi-attributen. Ook voor
+   de BSN, KVK en betrouwbaarheidsniveau claims, moeten Yivi-attributen gebruikt worden.
+   Raadpleeg de `Yivi Attribute Index`_ voor een volledig overzicht van alle beschikbare
+   attributen.
 
 .. _configuration_oidc_yivi_appgroup:
 
@@ -157,8 +148,10 @@ Stel dan de claims in:
 
 Beginnend bij de claims gebruikt voor BSN-authenticatie.
 
-7. Voer bij **BSN-claim** de naam van de claim in die het BSN bevat.
-8. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in als die bekend is.
+7. Voer bij **BSN-claim** de naam van de claim in die het BSN bevat, bijvoorbeeld
+   ``pbdf.gemeente.personalData.bsn``.
+8. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in als die bekend is,
+   bijvoorbeeld ``pbdf.gemeente.personalData.digidlevel``.
    Indien niet, kies dan bij **Standaardbetrouwbaarheidsniveau** de waarde die het meest
    van toepassing is. Dit wordt enkel gebruikt om vast te leggen met welk
    betrouwbaarheidsniveau iemand ingelogd is.
@@ -173,7 +166,8 @@ Beginnend bij de claims gebruikt voor BSN-authenticatie.
 
 Vervolgens richt je de claims voor KVK-authenticatie in.
 
-10. Vul bij **kvk-claim** de claim in die het KVK-nummer bevat.
+10. Vul bij **kvk-claim** de claim in die het KVK-nummer bevat, bijvoorbeeld
+    ``pbdf.signicat.kvkTradeRegister.kvkNumber``.
 11. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in als die bekend is.
     Indien niet, kies dan bij **Standaardbetrouwbaarheidsniveau** de waarde die het meest
     van toepassing is. Dit wordt enkel gebruikt om vast te leggen met welk
@@ -225,3 +219,32 @@ Klik tot slot linksonder op **Opslaan**.
 
 Je kan nu een formulier aanmaken met de ``Yivi via OpenID Connect``
 authenticatie-plugin, zie :ref:`manual_forms_basics`.
+
+.. _configuration_oidc_yivi_attribute_groups:
+
+Configureren van Yivi-attribuutgroepen in Open Formulieren
+==========================================================
+
+Navigeer in de admin naar **Configuratie** > **Yivi-attribuutgroepen** en klik op
+**Yivi-attribuutgroep toevoegen**.
+
+1. Vul bij **groepsnaam** een duidelijke en herkenbare naam in voor de groep.
+   (Deze naam wordt alleen gebruikt in de formulierconfiguratie ter identificatie van de
+   groep en heeft verder geen functionele waarde.)
+
+2. Vul bij **groepsbeschrijving** een korte beschrijving van de groep.
+   (Deze beschrijving wordt alleen gebruikt in de formulierconfiguratie ter
+   verduidelijking van de groep en heeft verder geen functionele waarde.)
+
+3. Vul bij **Attributen** de Yivi-attributen toe die tijdens het inloggen bevraagd moeten
+   worden. De beschikbare attributen zijn te vinden in de `Yivi Attribute Index`_.
+   Als de gebruiker deze attributen beschikbaar stelt, kunnen ze gebruikt worden voor
+   :ref:`voorinvullen (prefill) <example_prefill>`.
+   Klik op **Add item** om meerdere attributen toe te voegen.
+
+Klik vervolgens linksonder op **Opslaan** om de configuratie op te slaan.
+
+De aangemaakte attributengroep is nu beschikbaar voor gebruik in formulieren die
+gebruikmaken van de ``Yivi via OpenID Connect`` authenticatie-plugin.
+
+.. _Yivi Attribute Index: https://portal.yivi.app/attribute-index
