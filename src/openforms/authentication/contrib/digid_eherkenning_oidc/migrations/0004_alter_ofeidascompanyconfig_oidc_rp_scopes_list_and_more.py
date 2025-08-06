@@ -4,7 +4,20 @@ from django.db import migrations, models
 
 import django_jsonform.models.fields
 
-import openforms.authentication.contrib.digid_eherkenning_oidc.models
+
+def get_default_scopes_eidas():
+    """
+    Returns the default scopes to request for OpenID Connect logins for eIDAS.
+    """
+    return ["openid", "profile"]
+
+
+def get_default_scopes_eidas_company():
+    """
+    Returns the default scopes to request for OpenID Connect logins for eIDAS with
+    company.
+    """
+    return ["openid", "profile", "legal"]
 
 
 class Migration(migrations.Migration):
@@ -21,7 +34,7 @@ class Migration(migrations.Migration):
                     max_length=50, verbose_name="OpenID Connect scope"
                 ),
                 blank=True,
-                default=openforms.authentication.contrib.digid_eherkenning_oidc.models.get_default_scopes_eidas_company,
+                default=get_default_scopes_eidas_company,
                 help_text="OpenID Connect scopes that are requested during login. These scopes are hardcoded and must be supported by the identity provider.",
                 size=None,
                 verbose_name="OpenID Connect scopes",
@@ -35,7 +48,7 @@ class Migration(migrations.Migration):
                     max_length=50, verbose_name="OpenID Connect scope"
                 ),
                 blank=True,
-                default=openforms.authentication.contrib.digid_eherkenning_oidc.models.get_default_scopes_eidas,
+                default=get_default_scopes_eidas,
                 help_text="OpenID Connect scopes that are requested during login. These scopes are hardcoded and must be supported by the identity provider.",
                 size=None,
                 verbose_name="OpenID Connect scopes",

@@ -31,6 +31,7 @@ class OIDCAuthentication(BasePlugin):
     verbose_name = _("Organization via OpenID Connect")
     provides_auth = (AuthAttribute.employee_id,)
     oidc_plugin_identifier = OIDC_ORG_IDENTIFIER
+    init_view = staticmethod(org_oidc_init)
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
         return_url = reverse_plus(
@@ -47,7 +48,7 @@ class OIDCAuthentication(BasePlugin):
             # instead of session data
             auth.logout(request)
 
-        response = org_oidc_init(request, return_url=return_url)
+        response = self.init_view(request, return_url=return_url)
 
         assert isinstance(response, HttpResponseRedirect)
         return response

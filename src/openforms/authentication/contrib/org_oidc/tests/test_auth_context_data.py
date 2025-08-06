@@ -15,17 +15,26 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import DjangoTestApp
+from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
+from openforms.authentication.contrib.org_oidc.oidc_plugins.plugins import OIDCOrgPlugin
+from openforms.authentication.contrib.org_oidc.plugin import OIDCAuthentication
+from openforms.authentication.registry import (
+    register as auth_register,
+)
 from openforms.authentication.tests.utils import URLsHelper
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+    mock_auth_and_oidc_registers,
+)
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 from openforms.utils.tests.keycloak import (
     keycloak_login,
     mock_get_random_string,
-    mock_oidc_client,
 )
 
-from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 from .base import IntegrationTestsBase
 
 
@@ -68,8 +77,23 @@ class EmployeeAuthContextTests(PerformLoginMixin, IntegrationTestsBase):
     }
 
     @mock_get_random_string()
-    @mock_oidc_client(OIDC_ORG_IDENTIFIER)
+    @mock_auth_and_oidc_registers()
     def test_record_auth_context_employee(self):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_org=True
+        )
+        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
+
+        org_init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=oidc_client.identifier,
+            allow_next_from_query=False,
+        )
+
+        @auth_register("org-oidc")
+        class OFTestAuthPlugin(OIDCAuthentication):
+            oidc_plugin_identifier = oidc_client.identifier
+            init_view = staticmethod(org_init_view)
+
         self._login_and_start_form("org-oidc", username="admin", password="admin")
 
         submission = Submission.objects.get()

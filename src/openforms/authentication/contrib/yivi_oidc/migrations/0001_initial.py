@@ -5,7 +5,12 @@ from django.db import migrations, models
 import django_jsonform.models.fields
 import mozilla_django_oidc_db.fields
 
-import openforms.authentication.contrib.yivi_oidc.models
+
+def get_default_scopes_yivi():
+    """
+    Return the default scopes to request for OpenID Connect logins for Yivi.
+    """
+    return ["openid"]
 
 
 class Migration(migrations.Migration):
@@ -262,7 +267,7 @@ class Migration(migrations.Migration):
                             max_length=50, verbose_name="OpenID Connect scope"
                         ),
                         blank=True,
-                        default=openforms.authentication.contrib.yivi_oidc.models.get_default_scopes_yivi,
+                        default=get_default_scopes_yivi,
                         help_text="OpenID Connect scopes that are requested during login.",
                         size=None,
                         verbose_name="OpenID Connect scopes",

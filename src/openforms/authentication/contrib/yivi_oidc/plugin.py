@@ -7,11 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 from openforms.typing import AnyRequest
 
+from ....contrib.auth_oidc.typing import OIDCErrors
 from ...base import LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...models import AuthInfo
 from ...registry import register
-from ...types import OIDCErrors, YiviContext
+from ...types import YiviContext
 from ...typing import FormAuth
 from ..digid.constants import DIGID_DEFAULT_LOA
 from ..digid.plugin import loa_order as digid_loa_order

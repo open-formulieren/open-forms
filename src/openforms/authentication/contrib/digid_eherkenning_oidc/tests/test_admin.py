@@ -136,7 +136,8 @@ class DigiDConfigAdminTests(AdminTestsBase):
         expected_error = gettext(
             "{plugin_name} is selected as authentication backend for one or more forms, please remove this backend from these forms before disabling this authentication backend."
         ).format(plugin_name="DigiD via OpenID Connect")
-        self.assertIn(expected_error, response.content.decode("UTF-8"))
+
+        self.assertContains(response, expected_error, html=True)
 
         config.refresh_from_db()
 
