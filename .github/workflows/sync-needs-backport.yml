@@ -1,0 +1,77 @@
+name: Sync needs-backport label
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronized
+      - reopened
+
+jobs:
+  sync-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+
+    steps:
+      - name: Get linked issues via GraphQL
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const query = `
+              query($owner: String!, $repo: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $prNumber) {
+                    closingIssuesReferences(first: 10) {
+                      nodes {
+                        number
+                        labels(first: 20) {
+                          nodes {
+                            name
+                          }
+                        }
+                      }
+                    }
+                    labels(first: 20) {
+                      nodes {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const result = await github.graphql(query, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              prNumber: prNumber
+            });
+
+            const closingIssues = result.repository.pullRequest.closingIssuesReferences.nodes;
+            const prLabels = result.repository.pullRequest.labels.nodes.map(l => l.name);
+            const hasBackportLabel = prLabels.includes("needs-backport");
+
+            const anyIssueNeedsBackport = closingIssues.some(issue =>
+              issue.labels.nodes.some(label => label.name === "needs-backport")
+            );
+
+            core.setOutput("shouldAddLabel", !hasBackportLabel && anyIssueNeedsBackport);
+
+      - name: Add "needs-backport" label to PR
+        if: steps.check.outputs.shouldAddLabel == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-backport']
+            });
+            console.log('Added "needs-backport" label to PR.');
