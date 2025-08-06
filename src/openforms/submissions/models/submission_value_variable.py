@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.db.models.constraints import CheckConstraint
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.utils.functional import empty
@@ -382,6 +383,19 @@ class SubmissionValueVariable(models.Model):
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
         unique_together = (("submission", "key"),)
+
+        constraints = [
+            CheckConstraint(
+                check=~models.Q(
+                    data_type__in=(
+                        FormVariableDataTypes.partners,
+                        FormVariableDataTypes.editgrid,
+                        FormVariableDataTypes.children,
+                    )
+                ),
+                name="submission_variable_data_type_is_not_subtype_exclusive",
+            ),
+        ]
 
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
