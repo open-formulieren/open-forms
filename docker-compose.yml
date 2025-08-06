@@ -11,12 +11,53 @@
 # Before deploying to production, please review the environment configuration reference:
 # https://open-forms.readthedocs.io/en/latest/installation/config.html
 #
-version: '3.4'
-
 x-labels: &x-labels
   client: dev
   target: test
   app: openforms
+
+x-app-env: &x-app-env
+  - DJANGO_SETTINGS_MODULE=openforms.conf.docker
+  - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$$did4z5hun4a}
+  - DB_NAME=openforms
+  - DB_USER=openforms
+  - DB_HOST=db
+  - CACHE_DEFAULT=redis:6379/0
+  - CACHE_AXES=redis:6379/0
+  - CACHE_PORTALOCKER=redis:6379/0
+  - ALLOWED_HOSTS=*
+  - CELERY_BROKER_URL=redis://redis:6379/0
+  - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  - CELERY_LOGLEVEL=DEBUG
+  - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
+  - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
+  - EMAIL_HOST=smtp
+  # Needed for Celery Flower to match the TIME_ZONE configured in the
+  # settings used by workers and beat containers.
+  - TZ=Europe/Amsterdam
+  - CSP_REPORT_ONLY=yes
+  # Legacy endpoints are deprecated, new installs should opt-out of using legacy
+  # settings (the default is to use legacy endpoints).
+  - USE_LEGACY_OIDC_ENDPOINTS=no
+  - USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=no
+  - USE_LEGACY_ORG_OIDC_ENDPOINTS=no
+  # Environment labeling
+  - SHOW_ENVIRONMENT=yes
+  - ENVIRONMENT_LABEL=docker-compose
+  - ENVIRONMENT_BACKGROUND_COLOR=#1d63ed
+  - ENVIRONMENT_FOREGROUND_COLOR=white
+  # Django-setup-configuration
+  - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
+
+  # Enabling Open Telemetry requires the services in docker/docker-compose.observability.yml
+  # to be up and running.
+  - OTEL_SDK_DISABLED=${OTEL_SDK_DISABLED:-true}
+  - OTEL_METRIC_EXPORT_INTERVAL=${OTEL_METRIC_EXPORT_INTERVAL:-60000}
+  - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}  # gRPC
+  # otel:supersecret, escape spaces and = with percent encoding
+  - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic b3RlbDpzdXBlcnNlY3JldA==
+  - OTEL_EXPORTER_OTLP_METRICS_INSECURE=${OTEL_EXPORTER_OTLP_METRICS_INSECURE:-true}
+  - OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
 
 services:
   db:
@@ -60,38 +101,7 @@ services:
         RELEASE: ${TAG:-latest}
         SDK_RELEASE: ${SDK_TAG:-latest}
     image: openformulieren/open-forms:${TAG:-latest}
-    environment: &web_env
-      - DJANGO_SETTINGS_MODULE=openforms.conf.docker
-      - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$$did4z5hun4a}
-      - DB_NAME=openforms
-      - DB_USER=openforms
-      - DB_HOST=db
-      - CACHE_DEFAULT=redis:6379/0
-      - CACHE_AXES=redis:6379/0
-      - CACHE_PORTALOCKER=redis:6379/0
-      - ALLOWED_HOSTS=*
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - CELERY_LOGLEVEL=DEBUG
-      - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
-      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
-      - EMAIL_HOST=smtp
-      # Needed for Celery Flower to match the TIME_ZONE configured in the
-      # settings used by workers and beat containers.
-      - TZ=Europe/Amsterdam
-      - CSP_REPORT_ONLY=yes
-      # Legacy endpoints are deprecated, new installs should opt-out of using legacy
-      # settings (the default is to use legacy endpoints).
-      - USE_LEGACY_OIDC_ENDPOINTS=no
-      - USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=no
-      - USE_LEGACY_ORG_OIDC_ENDPOINTS=no
-      # Environment labeling
-      - SHOW_ENVIRONMENT=yes
-      - ENVIRONMENT_LABEL=docker-compose
-      - ENVIRONMENT_BACKGROUND_COLOR=#1d63ed
-      - ENVIRONMENT_FOREGROUND_COLOR=white
-      # Django-setup-configuration
-      - RUN_SETUP_CONFIG=${RUN_SETUP_CONFIG:-True}
+    environment: *x-app-env
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
@@ -119,7 +129,7 @@ services:
 
   web-init:
     build: .
-    environment: *web_env
+    environment: *x-app-env
     command: /setup_configuration.sh
     volumes: *web_volumes
     depends_on:
@@ -143,7 +153,7 @@ services:
   celery:
     build: *web_build
     image: openformulieren/open-forms:${TAG:-latest}
-    environment: *web_env
+    environment: *x-app-env
     command: /celery_worker.sh
     healthcheck:
       test: ["CMD", "python", "/app/bin/check_celery_worker_liveness.py"]
@@ -164,7 +174,7 @@ services:
   celery-beat:
     build: *web_build
     image: openformulieren/open-forms:${TAG:-latest}
-    environment: *web_env
+    environment: *x-app-env
     command: /celery_beat.sh
     labels:
       <<: *x-labels
@@ -178,7 +188,7 @@ services:
   celery-flower:
     build: *web_build
     image: openformulieren/open-forms:${TAG:-latest}
-    environment: *web_env
+    environment: *x-app-env
     command: /celery_flower.sh
     ports:
       - 5555:5555

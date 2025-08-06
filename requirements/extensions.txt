@@ -460,6 +460,17 @@ glom==23.5.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
+googleapis-common-protos==1.70.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+grpcio==1.74.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
 html5lib==1.1
     # via
     #   -c requirements/base.txt
@@ -475,6 +486,11 @@ idna==3.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests
+importlib-metadata==8.7.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-api
 inflection==0.5.1
     # via
     #   -c requirements/base.txt
@@ -559,7 +575,7 @@ maykin-2fa==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-maykin-common==0.6.0
+maykin-common==0.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -622,6 +638,84 @@ openpyxl==3.1.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
+opentelemetry-api==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-exporter-otlp==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-exporter-otlp-proto-common==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp
+opentelemetry-exporter-otlp-proto-http==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp
+opentelemetry-instrumentation==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+opentelemetry-instrumentation-django==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-instrumentation-wsgi==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+opentelemetry-proto==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-resource-detector-containerid==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+opentelemetry-sdk==1.36.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-resource-detector-containerid
+opentelemetry-semantic-conventions==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
+    #   opentelemetry-sdk
+opentelemetry-util-http==0.57b0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   opentelemetry-instrumentation-django
+    #   opentelemetry-instrumentation-wsgi
 orderedmultidict==1.0.1
     # via
     #   -c requirements/base.txt
@@ -631,6 +725,7 @@ packaging==23.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   opentelemetry-instrumentation
     #   prance
 pathable==0.4.3
     # via
@@ -672,6 +767,12 @@ prompt-toolkit==3.0.27
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   click-repl
+protobuf==6.31.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   googleapis-common-protos
+    #   opentelemetry-proto
 psycopg==3.2.1
     # via
     #   -c requirements/base.txt
@@ -804,6 +905,7 @@ requests==2.32.4
     #   mozilla-django-oidc
     #   o365
     #   onlinepayments-sdk-python3
+    #   opentelemetry-exporter-otlp-proto-http
     #   prance
     #   requests-file
     #   requests-oauthlib
@@ -935,6 +1037,11 @@ typing-extensions==4.12.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
+    #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   psycopg
     #   pydantic
     #   pydantic-core
@@ -1002,6 +1109,7 @@ wrapt==1.15.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   elastic-apm
+    #   opentelemetry-instrumentation
 xlrd==2.0.1
     # via
     #   -c requirements/base.txt
@@ -1032,6 +1140,11 @@ zgw-consumers==0.38.0
     #   -r requirements/base.txt
     #   open-forms-ext-haalcentraal-hr
     #   open-forms-ext-token-exchange
+zipp==3.23.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   importlib-metadata
 zopfli==0.2.3
     # via
     #   -c requirements/base.txt

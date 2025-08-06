@@ -8,6 +8,9 @@ CONCURRENCY=${CELERY_WORKER_CONCURRENCY:-1}
 QUEUE=${CELERY_WORKER_QUEUE:=celery}
 WORKER_NAME=${CELERY_WORKER_NAME:="${QUEUE}"@%n}
 
+# Set defaults for OTEL
+export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms-worker-"${QUEUE}"}"
+
 _binary=$(which celery)
 
 if [[ "$ENABLE_COVERAGE" ]]; then

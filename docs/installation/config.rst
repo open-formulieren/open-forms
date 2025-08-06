@@ -148,8 +148,8 @@ Content Security Policy (CSP) settings
 See also the :ref:`developer documentation <developers_csp>` and
 https://django-csp.readthedocs.io/en/latest/ for more information on CSP.
 
-Logging and monitoring settings
--------------------------------
+Logging, monitoring and Open Telemetry settings
+-----------------------------------------------
 
 * ``SENTRY_DSN``: URL of the sentry project to send error reports to. Defaults
   to an empty string (i.e. no monitoring). See `Sentry settings`_.
@@ -174,8 +174,23 @@ Logging and monitoring settings
 
 * ``LOG_REQUESTS``: When enabled, all incoming requests are logged. Enabled by default.
 
+**Open Telemetry**
+
+Open Forms uses the official Python SDK which should adhere to the environment variables
+`specification <https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/>`_.
+
+There is one custom setting for integration with container runtimes:
+
+* ``OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``: set to ``true`` when deploying with
+  Docker engine or similar to enable container resource detection. On Kubernetes, it's
+  recommended to enable the `kubernetes attributes processor`_ and leave this setting off.
+
+See :ref:`installation_observability_otel_config` for recommended environment variable
+configuration.
+
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
+.. _`kubernetes attributes processor`: https://opentelemetry.io/docs/platforms/kubernetes/collector/components/#kubernetes-attributes-processor
 
 Processing of submissions
 -------------------------

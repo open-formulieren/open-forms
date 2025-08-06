@@ -1,5 +1,6 @@
 import json
 import os
+import warnings
 from pathlib import Path
 
 # Django-hijack (and Django-hijack-admin)
@@ -922,7 +923,12 @@ ELASTIC_APM = {
 if not ELASTIC_APM_SERVER_URL:
     ELASTIC_APM["ENABLED"] = False
     ELASTIC_APM["SERVER_URL"] = "http://localhost:8200"
-else:
+else:  # pragma: no cover - can't test this in CI :/
+    warnings.warn(
+        "Elastic APM agent integration will be deprecated in favour of Open Telemetry",
+        category=PendingDeprecationWarning,
+        stacklevel=1,
+    )
     MIDDLEWARE = ["elasticapm.contrib.django.middleware.TracingMiddleware"] + MIDDLEWARE
     INSTALLED_APPS = INSTALLED_APPS + [
         "elasticapm.contrib.django",

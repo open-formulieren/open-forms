@@ -25,6 +25,7 @@ import redis
 import structlog
 from django_redis import get_redis_connection
 from dotenv import load_dotenv
+from maykin_common.otel import setup_otel
 from mozilla_django_oidc import views
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
@@ -44,7 +45,16 @@ def setup_env():
     load_dotenv(dotenv_path)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openforms.conf.dev")
+    if "OTEL_SERVICE_NAME" not in os.environ:  # pragma: no cover
+        warnings.warn(
+            "No OTEL_SERVICE_NAME environment variable set, using a default. "
+            "You should set a (distinct) value for each component (web, worker...)",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        os.environ.setdefault("OTEL_SERVICE_NAME", "openforms")
 
+    setup_otel()
     structlog.contextvars.bind_contextvars(source="app")
     setup_hypothesis()
     load_self_signed_certs()

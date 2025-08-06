@@ -1,7 +1,7 @@
 # Observability stack
 
-The config files in this directory go together with `docker-compose.observability.yaml` and provide
-a reference for a potential observability stack.
+The config files in this directory go together with `docker-compose.observability.yml` and provide a
+reference for a potential observability stack.
 
 **Disclaimer**
 
@@ -23,6 +23,7 @@ You can now navigate to:
 - http://localhost:3000 for Grafana
 - http://localhost:3100/ready for Loki readiness
 - http://localhost:3100/metrics for Loki metrics
+- http://localhost:9090 for the Prometheus web interface
 
 ## Logging
 
@@ -48,3 +49,22 @@ You can filter application logs based on a request ID:
 ```logql
 {job="docker", app="openforms"} | json | __error__ = "" | request_id=`1e9e1b9d-4d34-4657-99e4-88673d824724`
 ```
+
+## Metrics
+
+Metrics can be sent using OTLP to the collector at http://localhost:4317 (gRPC).
+
+The `maykin_common.otel` module takes care of setting everything up, just make sure to set the
+environment variable `OTEL_SDK_DISABLED=false` in development (it's disabled by default).
+
+The collector ingests the metrics, and they are then scraped by Prometheus. They're also printend to
+stdout.
+
+## Traces
+
+Traces can be sent using OTLP to the collector at http://localhost:4317 (gRPC).
+
+The `maykin_common.otel` module takes care of setting everything up, just make sure to set the
+environment variable `OTEL_SDK_DISABLED=false` in development (it's disabled by default).
+
+The collector ingests the traces and prints them out to stdout.

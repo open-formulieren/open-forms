@@ -17,6 +17,9 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 # wait for required services
 ${SCRIPTPATH}/wait_for_db.sh
 
+# Set defaults for OTEL
+export OTEL_SERVICE_NAME="${OTEL_SERVICE_NAME:-openforms}"
+
 # Apply database migrations
 >&2 echo "Apply database migrations"
 python src/manage.py migrate
@@ -24,6 +27,7 @@ python src/manage.py migrate
 # Start server
 >&2 echo "Starting server"
 exec uwsgi \
+    --strict \
     --ini "${SCRIPTPATH}/uwsgi.ini" \
     --http :$uwsgi_port \
     --http-keepalive \
@@ -34,6 +38,9 @@ exec uwsgi \
     --chdir src \
     --enable-threads \
     --master \
+    --single-interpreter \
+    --die-on-term \
+    --need-app \
     --processes $uwsgi_processes \
     --threads $uwsgi_threads \
     --post-buffering=8192 \
