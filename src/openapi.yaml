@@ -3280,8 +3280,8 @@ paths:
       - in: query
         name: objects_api_group
         schema:
-          type: integer
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          type: string
+        description: The slug identifier of the Objects API group to use. The informatieobjecttypen
           from the Catalogi API in this group will be returned.
         required: true
       tags:
@@ -3336,8 +3336,8 @@ paths:
       - in: query
         name: objects_api_group
         schema:
-          type: integer
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          type: string
+        description: The slug identifier of the Objects API group to use. The informatieobjecttypen
           from the Catalogi API in this group will be returned.
         required: true
       tags:
@@ -3374,7 +3374,7 @@ paths:
         name: objects_api_group
         schema:
           type: string
-        description: Which Objects API group to use.
+        description: Identifier of the Objects API group to use.
       tags:
       - contrib
       security:
@@ -3409,7 +3409,7 @@ paths:
         name: objects_api_group
         schema:
           type: string
-        description: Which Objects API group to use.
+        description: Identifier of the Objects API group to use.
       - in: path
         name: objecttype_uuid
         schema:
@@ -10442,7 +10442,7 @@ components:
       type: object
       properties:
         objectsApiGroup:
-          type: integer
+          type: string
           description: Which Objects API group to use.
         objecttype:
           type: string
