@@ -7367,6 +7367,9 @@ components:
       - datetime
       - time
       - date
+      - partners
+      - children
+      - editgrid
       type: string
       description: |-
         * `string` - String
@@ -7378,6 +7381,9 @@ components:
         * `datetime` - Datetime
         * `time` - Time
         * `date` - Date
+        * `partners` - Partners
+        * `children` - Children
+        * `editgrid` - Edit Grid
     Date:
       type: object
       properties:
@@ -8623,6 +8629,9 @@ components:
             * `datetime` - Datetime
             * `time` - Time
             * `date` - Date
+            * `partners` - Partners
+            * `children` - Children
+            * `editgrid` - Edit Grid
         dataFormat:
           type: string
           description: The format of the value that will be associated with this variable
