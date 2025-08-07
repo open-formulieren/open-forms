@@ -8,7 +8,7 @@ from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
-from openforms.api.fields import JSONFieldWithSchema, PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import JSONFieldWithSchema, SlugRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.contrib.objects_api.clients import (
     get_catalogi_client,
@@ -66,11 +66,12 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+    objects_api_group = SlugRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.filter(
             drc_service__isnull=False,
             catalogi_service__isnull=False,
         ),
+        slug_field="identifier",
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),
     )

@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import SlugRelatedAsChoicesField
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -47,10 +47,11 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+    objects_api_group = SlugRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(
             Q(objects_service=None) | Q(objecttypes_service=None)
         ),
+        slug_field="identifier",
         label=("Objects API group"),
         required=True,
         help_text=_("Which Objects API group to use."),

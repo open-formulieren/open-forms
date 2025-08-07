@@ -28,7 +28,7 @@ OBJECTS_API_GROUP_QUERY_PARAMETER = OpenApiParameter(
     name="objects_api_group",
     type=OpenApiTypes.STR,
     location=OpenApiParameter.QUERY,
-    description=_("Which Objects API group to use."),
+    description=_("Identifier of the Objects API group to use."),
 )
 
 

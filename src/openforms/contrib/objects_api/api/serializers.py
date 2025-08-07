@@ -2,13 +2,14 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import SlugRelatedAsChoicesField
 
 from ..models import ObjectsAPIGroupConfig
 
 
 class ObjectsAPIGroupInputSerializer(serializers.Serializer):
-    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+    objects_api_group = SlugRelatedAsChoicesField(
+        slug_field="identifier",
         queryset=ObjectsAPIGroupConfig.objects.exclude(objecttypes_service=None),
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),

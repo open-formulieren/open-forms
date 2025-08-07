@@ -10,7 +10,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
-from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import (
+    PrimaryKeyRelatedAsChoicesField,
+    SlugRelatedAsChoicesField,
+)
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.clients.catalogi import (
     CaseType,
@@ -151,10 +154,11 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
     # Objects API
-    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+    objects_api_group = SlugRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(
             Q(objects_service=None) | Q(objecttypes_service=None)
         ),
+        slug_field="identifier",
         help_text=_("Which Objects API set to use."),
         label=_("Objects API set"),
         allow_null=True,
