@@ -17,5 +17,11 @@ suspension_counter = meter.create_counter(
 completion_counter = meter.create_counter(
     "submission.completions",
     unit="1",  # unitless count
-    description="The number of form submissions completed by end users",
+    description="The number of form submissions completed by end users.",
+)
+
+step_saved_counter = meter.create_counter(
+    "submission.step_saves",
+    unit="1",  # unitless count
+    description="The number of steps saved to the database.",
 )

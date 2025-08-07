@@ -151,7 +151,7 @@ class SubmissionStep(models.Model):  # noqa: DJ008
             if not self.form_step_id:
                 self.form_step = self._load_form_step_from_history()
 
-    def _load_form_step_from_history(self):
+    def _load_form_step_from_history(self) -> FormStep | None:
         history = deepcopy(self.form_step_history)
 
         if not history:

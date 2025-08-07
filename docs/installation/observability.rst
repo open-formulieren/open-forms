@@ -225,6 +225,17 @@ Submissions
     - ``form.uuid`` - the unique database ID of the form.
     - ``form.name`` - the name of the form that was submitted.
 
+``submission.step_saves``
+    Counts the number times a submission step is saved (i.e. the user submits and goes
+    to the next step). Additional attributes are:
+
+    - ``step.name`` - the name of the step that was saved.
+    - ``step.number`` - the step sequence, starting at 1 for the first step.
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+    - ``type`` - ``create`` or ``update``. Users can go back to a step and modify
+      details, which results in an update.
+
 Tracing
 =======
 

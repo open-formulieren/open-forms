@@ -31,7 +31,7 @@ from ..attachments import attach_uploads_to_submission_step
 from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
-from ..metrics import start_counter, suspension_counter
+from ..metrics import start_counter, step_saved_counter, suspension_counter
 from ..models import Submission, SubmissionStep
 from ..parsers import (
     IgnoreDataAndConfigFieldCamelCaseJSONParser,
@@ -612,6 +612,18 @@ class SubmissionStepViewSet(
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
+
+        assert instance.form_step is not None
+        step_saved_counter.add(
+            1,
+            attributes={
+                "step.name": instance.form_step.form_definition.name,
+                "step.number": current_step_index + 1,
+                "type": "create" if create else "update",
+                "form.name": submission.form.name,
+                "form.uuid": str(submission.form.uuid),
+            },
+        )
 
         status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
         return Response(serializer.data, status=status_code)
