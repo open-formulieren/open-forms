@@ -1693,7 +1693,9 @@ class ImportExportTests(TempdirMixin, TestCase):
 class ExportObjectsAPITests(TempdirMixin, TestCase):
     @tag("gh-5384")
     def test_export_form_with_objects_registration_backend(self):
-        objects_api_group = ObjectsAPIGroupConfigFactory.create(identifier="test-objects-api-group")
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            identifier="test-objects-api-group"
+        )
         form = FormFactory.create()
         FormRegistrationBackendFactory.create(
             form=form,
