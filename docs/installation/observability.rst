@@ -157,6 +157,22 @@ Open Forms produces application metrics (using Open Telemetry).
     - ``form.uuid`` - the unique database ID of the form
     - ``form.name`` - the name of the form that was submitted
 
+``user_count``
+    Reports the number of users in the database. This is a global metric, you must take
+    care in de-duplicating results. Additional attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``type`` - the user type. ``all``, ``staff`` or ``superuser``.
+
+    Sample PromQL query:
+
+    .. code-block:: promql
+
+        max by (type) (last_over_time(
+          otel_user_count_ratio{scope="global"}
+          [1m]
+        ))
+
 Tracing
 =======
 
