@@ -1,7 +1,7 @@
 import factory
 
 from ..constants import HashAlgorithm
-from ..models import OgoneMerchant
+from ..models import OgoneMerchant, OgoneWebhookConfiguration
 
 
 class OgoneMerchantFactory(factory.django.DjangoModelFactory):
@@ -13,3 +13,11 @@ class OgoneMerchantFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = OgoneMerchant
+
+
+class OgoneWebhookConfigurationFactory(factory.django.DjangoModelFactory):
+    webhook_key_id = factory.Faker("pystr", min_chars=20, max_chars=20)
+    webhook_key_secret = factory.Faker("pystr", min_chars=128, max_chars=128)
+
+    class Meta:
+        model = OgoneWebhookConfiguration
