@@ -68,3 +68,6 @@ class WorldlineWebhookEntry(models.Model):
 
     class Meta:
         verbose_name_plural = _("Worldline webhook entries")
+
+    def __str__(self):
+        return self.webhook_key_id

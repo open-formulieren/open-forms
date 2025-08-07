@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterable, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from django.http import HttpRequest, HttpResponse
 
 from rest_framework import serializers
 from rest_framework.request import Request
-from rest_framework.response import Response
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
