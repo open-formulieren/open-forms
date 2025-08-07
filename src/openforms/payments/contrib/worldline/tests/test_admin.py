@@ -5,18 +5,33 @@ from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.payments.registry import register
+
+from .factories import WorldlineMerchantFactory
 
 
 @disable_admin_mfa()
+@override_settings(BASE_URL="https://example.com/foo")
 class WorldlineMerchantAdminTest(WebTest):
-    @override_settings(BASE_URL="https://example.com/foo")
     def test_merchant_detail_page(self):
         user = SuperUserFactory.create()
-        url = reverse("admin:payments_worldline_worldlinemerchant_add")
 
+        url = reverse("admin:payments_worldline_worldlinemerchant_add")
         response = self.app.get(url, user=user)
 
         self.assertEqual(200, response.status_code)
+
+    def test_merchant_list_page(self):
+        WorldlineMerchantFactory()
+        user = SuperUserFactory.create()
+        plugin = register["worldline"]
+        webhook_url = plugin.get_webhook_url(None)
+
+        url = reverse("admin:payments_worldline_worldlinemerchant_changelist")
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response, webhook_url)
 
 
 @disable_admin_mfa()

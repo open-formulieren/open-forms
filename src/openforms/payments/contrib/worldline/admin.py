@@ -28,7 +28,7 @@ class WorldlineMerchantAdmin(admin.ModelAdmin):
     def feedback_url(self, obj: WorldlineMerchant | None = None) -> str:
         if not obj:
             return ""
-        return register["worldine"].get_webhook_url(None)
+        return register["worldline"].get_webhook_url(None)
 
 
 @admin.register(WorldlineWebhookEntry)
