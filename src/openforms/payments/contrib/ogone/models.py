@@ -46,6 +46,28 @@ class OgoneMerchant(models.Model):
         help_text=_("Optionally override the preset endpoint"),
     )
 
+    # Worldline migration fields
+    api_key = models.CharField(
+        _("API Key"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "API Key created for the specified PSPID. This value will be used"
+            " when upgrading to a Open Forms version supporting the Worldline"
+            " payment provider."
+        ),
+    )
+    api_secret = models.CharField(
+        _("API Secret"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "API Secret created for the specified PSPID. This value will be used"
+            " when upgrading to a Open Forms version supporting the Worldline"
+            " payment provider."
+        ),
+    )
+
     @property
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
