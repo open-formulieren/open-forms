@@ -72,7 +72,7 @@ class ObjectsAPIPrefillDataOwnershipCheckTests(OFVCRMixin, TestCase):
             prefill_attribute="",
             prefill_options={
                 "version": 2,
-                "objects_api_group": cls.objects_api_group_used.pk,
+                "objects_api_group": cls.objects_api_group_used.identifier,
                 "objecttype_uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
                 "objecttype_version": 1,
                 "auth_attribute_path": ["bsn"],

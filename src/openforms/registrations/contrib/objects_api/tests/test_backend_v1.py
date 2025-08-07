@@ -1038,7 +1038,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             completed_not_preregistered=True,
             form__registration_backend=PLUGIN_IDENTIFIER,
             form__registration_backend_options={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 1,
                 "objecttype": "8faed0fa-7864-4409-aa6d-533a37616a9e",
                 "objecttype_version": 1,

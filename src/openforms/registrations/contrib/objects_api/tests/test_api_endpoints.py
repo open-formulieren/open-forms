@@ -119,7 +119,7 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
                 "api:objects_api:object-type-versions",
                 args=["39da819c-ac6c-4037-ae2b-6bfc39f6564b"],
             ),
-            data={"objects_api_group": self.config.pk},
+            data={"objects_api_group": self.config.identifier},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -241,7 +241,7 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
         response = self.client.get(
             self.endpoint,
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
             },
         )
 

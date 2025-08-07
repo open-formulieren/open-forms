@@ -608,7 +608,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
                 "http://localhost:8003/catalogi/api/v1/"
                 "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
             ),
-            "objects_api_group": objects_api_group.pk,
+            "objects_api_group": objects_api_group.identifier,
             "objecttype": "http://incorrect.domain/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         }
         serializer = ZaakOptionsSerializer(data=data)
