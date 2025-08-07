@@ -2,7 +2,7 @@ from io import BytesIO
 
 from django.test import SimpleTestCase
 
-from openforms.api.parsers import PlainTextParser
+from ..parsers import PlainTextParser
 
 
 class PlainTextParserTestCase(SimpleTestCase):
