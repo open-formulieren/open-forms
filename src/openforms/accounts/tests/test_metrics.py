@@ -1,13 +1,15 @@
 from unittest.mock import MagicMock, patch
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.backends.db import SessionStore
 from django.test import RequestFactory, TestCase, override_settings
 
 from opentelemetry.metrics import CallbackOptions
 
 from openforms.utils.tests.metrics_assert import MetricsAssertMixin
 
-from ..metrics import count_users, login_failures, user_lockouts
+from ..metrics import count_users, login_failures, logins, logouts, user_lockouts
 from .factories import UserFactory
 
 
@@ -63,3 +65,49 @@ class LockoutsMetricTests(TestCase):
             authenticate(request=request, username="foo", password="still wrong")
 
             self.assertTrue(mock_add.called)
+
+
+class LoginLogoutMetricTests(TestCase):
+    @patch.object(logins, "add", wraps=logins.add)
+    def test_user_logins_incremented(self, mock_add: MagicMock):
+        user = UserFactory.create(username="admin", password="secret")
+        request = RequestFactory().post("/admin/login/")
+        request.session = SessionStore("dummy")
+        authenticate(request=request, username="admin", password="secret")
+        login(
+            request, user, backend="openforms.accounts.backends.UserModelEmailBackend"
+        )
+
+        mock_add.assert_called_once_with(
+            1,
+            attributes={
+                "http_target": "/admin/login/",
+                "username": "admin",
+            },
+        )
+
+    @patch.object(logouts, "add", wraps=logouts.add)
+    def test_user_logouts_incremented(self, mock_add: MagicMock):
+        user = UserFactory.create(username="admin", password="secret")
+        request = RequestFactory().post("/admin/logout/")
+        request.session = SessionStore("dummy")
+        request.user = user
+
+        logout(request)
+
+        mock_add.assert_called_once_with(
+            1,
+            attributes={
+                "username": "admin",
+            },
+        )
+
+    @patch.object(logouts, "add", wraps=logouts.add)
+    def test_user_logouts_incremented_even_for_anon_user(self, mock_add: MagicMock):
+        request = RequestFactory().post("/admin/logout/")
+        request.session = SessionStore("dummy")
+        request.user = AnonymousUser()
+
+        logout(request)
+
+        mock_add.assert_not_called()

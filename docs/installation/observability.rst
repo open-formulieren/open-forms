@@ -186,6 +186,18 @@ Accounts
       happened in a request context.
     - ``username`` - username of the user trying to log in.
 
+``auth.logins``
+    Counter incrementing on every successful login by a user. Additional attributes:
+
+    - ``http_target`` - the request path where the login failure occurred, if this
+      happened in a request context.
+    - ``username`` - username of the user trying to log in.
+
+``auth.logouts``
+    Counter incrementing every time a user logs out. Additional attributes:
+
+    - ``username`` - username of the user who logged out.
+
 Submissions
 ^^^^^^^^^^^
 
