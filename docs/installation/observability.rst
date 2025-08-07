@@ -201,13 +201,29 @@ Accounts
 Submissions
 ^^^^^^^^^^^
 
+``submission.starts``
+    Counts the number of submissions started by end-users. Additional attributes are:
+
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+    - ``auth.logged_in`` - ``true/false``, indicates if the user was logged in when
+      starting the submission.
+    - ``auth.plugin`` - if logged in, the ID of the plugin that the user was logged in
+      with.
+
 ``submission.completions``
     Counts the number of form submissions completed by end-users. Additional attributes
     are:
 
-    - ``form.uuid`` - the unique database ID of the form
-    - ``form.name`` - the name of the form that was submitted
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
 
+``submission.suspensions``
+    Counts the number of submissions suspended/paused by end-users. Additional
+    attributes are:
+
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
 
 Tracing
 =======

@@ -22,7 +22,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.throttle_classes import PollingRateThrottle
 from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
 from openforms.forms.constants import SubmissionAllowedChoices
-from openforms.forms.models import FormStep
+from openforms.forms.models import Form, FormStep
 from openforms.logging import logevent
 from openforms.prefill.service import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -31,6 +31,7 @@ from ..attachments import attach_uploads_to_submission_step
 from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
+from ..metrics import start_counter, suspension_counter
 from ..models import Submission, SubmissionStep
 from ..parsers import (
     IgnoreDataAndConfigFieldCamelCaseJSONParser,
@@ -150,27 +151,43 @@ class SubmissionViewSet(
         return self._get_object_cache
 
     @transaction.atomic
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: SubmissionSerializer):  # pyright: ignore[reportIncompatibleMethodOverride]
         super().perform_create(serializer)
+        submission = serializer.instance
+        assert isinstance(submission, Submission)
 
-        check_form_status(self.request, serializer.validated_data["form"])
+        form: Form = serializer.validated_data["form"]
+
+        check_form_status(self.request, form)
+        anonymous: bool = serializer.validated_data["anonymous"]
 
         # dispatch signal for modules to tap into
         submission_start.send(
             sender=self.__class__,
             instance=serializer.instance,
             request=self.request,
-            anonymous=serializer.validated_data["anonymous"],
+            anonymous=anonymous,
         )
 
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
-        add_submmission_to_session(serializer.instance, self.request.session)
+        add_submmission_to_session(submission, self.request.session)
 
-        logevent.submission_start(serializer.instance)
+        logevent.submission_start(submission)
 
-        prefill_variables(serializer.instance)
-        initialise_user_defined_variables(serializer.instance)
+        prefill_variables(submission)
+        initialise_user_defined_variables(submission)
+
+        logged_in = submission.is_authenticated
+        start_counter.add(
+            1,
+            attributes={
+                "form.name": form.name,
+                "form.uuid": str(form.uuid),
+                "auth.logged_in": logged_in,
+                "auth.plugin": submission.auth_info.plugin if logged_in else "",
+            },
+        )
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),
@@ -421,6 +438,15 @@ class SubmissionViewSet(
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        suspension_counter.add(
+            1,
+            attributes={
+                "form.name": submission.form.name,
+                "form.uuid": str(submission.form.uuid),
+            },
+        )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):

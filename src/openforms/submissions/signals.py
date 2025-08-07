@@ -26,6 +26,7 @@ Signal creation of a new :class:`openforms.models.Submission` instance.
 Provides:
     :arg instance: The :class:`openforms.models.Submission` instance created.
     :arg request: the HttpRequest instance (or DRF wrapper around it).
+    :arg anonymous: boolean indicating if the user is logged in or not.
 """
 
 submission_resumed = Signal()
