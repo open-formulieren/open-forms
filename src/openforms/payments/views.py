@@ -11,8 +11,13 @@ from django.views.generic import DetailView
 import structlog
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import permissions
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
+from rest_framework import permissions, status
 from rest_framework.exceptions import MethodNotAllowed, NotFound, ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -313,18 +318,35 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     ],
     request=None,
     responses={
-        200: None,
-        (200, "text/plain"): OpenApiResponse(
+        (status.HTTP_200_OK, "text/plain"): OpenApiResponse(
             response=str,
-            description=_(
-                "OK. Contains the value of the verification header configured for the plugin."
-            ),
+            examples=[
+                OpenApiExample(
+                    name="Webhook event",
+                    value="",
+                    media_type="text/plain",
+                    status_codes=[status.HTTP_200_OK],
+                    description=_(
+                        "The response returned when a webhook event is processed."
+                    ),
+                ),
+                OpenApiExample(
+                    name="Verification header",
+                    value="<verification-header-value>",
+                    media_type="text/plain",
+                    status_codes=[status.HTTP_200_OK],
+                    description=_(
+                        "The response returned when a verification header is set"
+                        " and no request body is found."
+                    ),
+                ),
+            ],
         ),
-        (400, ERR_CONTENT_TYPE): OpenApiResponse(
+        (status.HTTP_400_BAD_REQUEST, ERR_CONTENT_TYPE): OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Bad request. Invalid parameters were passed."),
         ),
-        (404, ERR_CONTENT_TYPE): OpenApiResponse(
+        (status.HTTP_404_NOT_FOUND, ERR_CONTENT_TYPE): OpenApiResponse(
             response=ExceptionSerializer,
             description=_("Not found. The slug did not point to a live plugin."),
         ),
@@ -375,7 +397,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
                     )
                 )
 
-        return HttpResponse(b"")
+        return HttpResponse(b"", content_type="text/plain")
 
     def get(self, request, *args, **kwargs):
         return self._handle_webhook(request, *args, **kwargs)
