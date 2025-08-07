@@ -63,6 +63,10 @@ Voorbeeld
 
          Hallo John Doe!
 
+.. tip:: Als er speciale syntaxkarakters zoals ``.`` of ``-`` in de variabele bestaan,
+   dan kan je ``{% get_value variabele 'mijn.speciale-sleutel' %}`` gebruiken.
+   Zie :ref:`manual_templates_template_tags` voor meer details.
+
 .. _manual_templates_conditional_display:
 
 Voorwaardelijke weergave
@@ -198,6 +202,8 @@ In het jaar 2024 produceert dit de output ``2023``:
    ``2.023`` (dus zonder groepering van duizendtallen)
 
 .. note:: Sjablonen worden in dezelfde taal/localisatie gerenderd als de taal van de inzending.
+
+.. _manual_templates_template_tags:
 
 Template tags
 -------------
