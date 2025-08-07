@@ -119,6 +119,7 @@ class HijackTests(WebTest):
 
             self.assertEqual(TimelineLogProxy.objects.count(), 2)
             log_release = TimelineLogProxy.objects.order_by("-id").first()
+            assert log_release is not None
             self.assertEqual(
                 log_release.extra_data["hijacker"],
                 {

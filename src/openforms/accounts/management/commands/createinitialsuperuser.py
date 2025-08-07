@@ -10,11 +10,15 @@ from django.contrib.auth.management.commands.createsuperuser import (
 from django.core.mail import send_mail
 from django.urls import reverse
 
+from ...models import User
+
 PASSWORD_FROM_ENV_SUPPORTED = django.VERSION[:2] > (2, 2)
 
 
 class Command(BaseCommand):
     help = "Set up an initial superuser account if it doesn't exist yet"
+
+    UserModel: type[User]
 
     def add_arguments(self, parser):
         super().add_arguments(parser)

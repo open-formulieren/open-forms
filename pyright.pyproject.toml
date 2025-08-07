@@ -22,6 +22,8 @@ include = [
     "src/openforms/validations/registry.py",
     "src/openforms/variables/base.py",
     "src/openforms/variables/registry.py",
+    # Accounts app
+    "src/openforms/accounts/",
     # Appointments module
     "src/openforms/appointments/models.py",
     # Config app
