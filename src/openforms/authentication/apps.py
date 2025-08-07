@@ -6,6 +6,7 @@ class AuthenticationConfig(AppConfig):
     name = "openforms.authentication"
     label = "of_authentication"
     verbose_name = _("Authentication module")
+    default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
         # ensure signal receivers are registered
