@@ -23,7 +23,9 @@ class SecretKeyStore(BaseKeyStore):
         try:
             entry = WorldlineWebhookEntry.objects.get(webhook_key_id=key_id)
         except WorldlineWebhookEntry.DoesNotExist as e:
-            raise SecretKeyNotAvailableException(key_id) from e
+            raise SecretKeyNotAvailableException(
+                key_id, "No secret key found for given value"
+            ) from e
 
         return entry.webhook_key_secret
 
