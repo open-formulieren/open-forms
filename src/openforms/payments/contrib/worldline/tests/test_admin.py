@@ -22,16 +22,24 @@ class WorldlineMerchantAdminTest(WebTest):
         self.assertEqual(200, response.status_code)
 
     def test_merchant_list_page(self):
-        WorldlineMerchantFactory()
         user = SuperUserFactory.create()
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(None)
-
         url = reverse("admin:payments_worldline_worldlinemerchant_changelist")
-        response = self.app.get(url, user=user)
 
-        self.assertEqual(200, response.status_code)
-        self.assertContains(response, webhook_url)
+        with self.subTest("Overview without entries"):
+            response = self.app.get(url, user=user)
+
+            self.assertEqual(200, response.status_code)
+            self.assertNotContains(response, webhook_url)
+
+        WorldlineMerchantFactory()
+
+        with self.subTest("Overview with entries"):
+            response = self.app.get(url, user=user)
+
+            self.assertEqual(200, response.status_code)
+            self.assertContains(response, webhook_url)
 
 
 @disable_admin_mfa()
