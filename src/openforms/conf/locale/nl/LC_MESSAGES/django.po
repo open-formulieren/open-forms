@@ -2062,11 +2062,11 @@ msgstr ""
 
 #: openforms/authentication/contrib/yivi_oidc/models.py:187
 msgid "yivi attribute group"
-msgstr "attributengroep voor Yivi"
+msgstr "Yivi-attribuutgroep"
 
 #: openforms/authentication/contrib/yivi_oidc/models.py:188
 msgid "yivi attribute groups"
-msgstr "Attributengroepen voor Yivi"
+msgstr "Yivi-attribuutgroepen"
 
 #: openforms/authentication/forms.py:13
 msgid "Continue as..."
