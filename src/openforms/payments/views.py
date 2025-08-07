@@ -19,6 +19,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.api.parsers import PlainTextParser
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.logging import logevent
@@ -334,6 +335,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
         FormParser,
         MultiPartParser,
         CamelCaseJSONParser,
+        PlainTextParser,
     )  # TODO: should we derive this from the plugin?
 
     def _handle_webhook(self, request, *args, **kwargs):
@@ -356,11 +358,9 @@ class PaymentWebhookView(PaymentFlowBaseView):
             verification_value = request.headers.get(
                 plugin.webhook_verification_header, ""
             )
-            content_type = "text/plain; charset=utf-8"
             return HttpResponse(
                 verification_value.encode("utf-8"),
-                content_type=content_type,
-                headers={"Content-Type": content_type},
+                content_type="text/plain; charset=utf-8",
             )
 
         payment = plugin.handle_webhook(request)
