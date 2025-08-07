@@ -16,6 +16,8 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
         "endpoint_custom",
         "endpoint",
         "feedback_url",
+        "api_key",
+        "api_secret",
     )
     readonly_fields = (
         "endpoint",
