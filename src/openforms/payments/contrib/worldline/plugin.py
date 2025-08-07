@@ -54,7 +54,7 @@ from .typing import (
     Order,
     PaymentOptions,
 )
-from .utils import get_webhook_helper
+from .utils import get_merchant_reference, get_webhook_helper
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -251,18 +251,17 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                     checkout_status
                 )
 
-            external_payment_id = (
-                payment_data.payment.payment_output.references.merchant_reference
-                if payment_data
-                and payment_data.payment
-                and payment_data.payment.payment_output
-                and payment_data.payment.payment_output.references
+            payment_response = (
+                response.created_payment_output
+                if response.created_payment_output
                 else None
             )
 
-            assert external_payment_id, (
-                "No merchant reference found in checkout status response"
+            assert payment_response and payment_response.payment, (
+                "No payment data found in response"
             )
+
+            external_payment_id = get_merchant_reference(payment_response.payment)
 
             self.apply_status(payment, status, external_payment_id)
 
@@ -304,9 +303,10 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                 }
             )
 
+        merchant_reference = get_merchant_reference(webhook_event.payment)
         payment = get_object_or_404(
             SubmissionPayment,
-            provider_payment_id=webhook_event.payment.payment_output.references.merchant_reference,
+            provider_payment_id=merchant_reference,
         )
 
         with structlog.contextvars.bound_contextvars(
