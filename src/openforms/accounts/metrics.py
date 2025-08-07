@@ -37,3 +37,15 @@ meter.create_observable_gauge(
     unit="1",
     callbacks=[count_users],
 )
+
+login_failures = meter.create_counter(
+    "auth.login_failures",
+    unit="1",  # unitless count
+    description="The number of failed logins by users, including the admin.",
+)
+
+user_lockouts = meter.create_counter(
+    "auth.user_lockouts",
+    unit="1",  # unitless count
+    description="The number of user lockouts because of failed logins.",
+)

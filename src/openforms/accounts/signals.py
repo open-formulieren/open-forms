@@ -1,12 +1,15 @@
-from typing import Any
+from typing import Any, Literal
 
+from django.contrib.auth.signals import user_login_failed
 from django.dispatch import receiver
 from django.http import HttpRequest
 
+from axes.signals import user_locked_out
 from hijack.signals import hijack_ended, hijack_started
 
 from openforms.logging import logevent
 
+from .metrics import login_failures, user_lockouts
 from .models import User
 
 
@@ -36,3 +39,30 @@ def handle_hijack_end(
     hijacker.
     """
     logevent.hijack_ended(hijacker, hijacked)
+
+
+@receiver(user_login_failed, dispatch_uid="user_login_failed.increment_counter")
+def increment_login_failure_counter(
+    sender, request: HttpRequest | None = None, **kwargs
+):
+    login_failures.add(
+        1,
+        attributes={"http_target": request.path if request else ""},
+    )
+
+
+@receiver(user_locked_out, dispatch_uid="user_locked_out.increment_counter")
+def increment_user_locked_out_counter(
+    sender: Literal["axes"],
+    request: HttpRequest,
+    username: str,
+    ip_address: str,
+    **kwargs,
+) -> None:
+    user_lockouts.add(
+        1,
+        attributes={
+            "http_target": request.path,
+            "username": username,
+        },
+    )

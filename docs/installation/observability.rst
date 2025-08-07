@@ -138,7 +138,8 @@ Open Forms produces application metrics (using Open Telemetry).
 .. note:: The exact metric names that show up may be transformed, e.g. Prometheus replaces
    periods with underscores, and processing pipelines may add prefixes or suffixes.
 
-**Generic**
+Generic
+-------
 
 ``http.server.duration``
     Captures how long each HTTP request took, in ms. The metric produces histogram data.
@@ -148,14 +149,11 @@ Open Forms produces application metrics (using Open Telemetry).
     enabled, but the code is in the Open Telemetry SDK instrumentation already and could
     possibly be opted-in to.
 
-**Application specific**
+Application specific
+--------------------
 
-``submission.completions``
-    Counts the number of form submissions completed by end-users. Additional attributes
-    are:
-
-    - ``form.uuid`` - the unique database ID of the form
-    - ``form.name`` - the name of the form that was submitted
+Accounts
+^^^^^^^^
 
 ``user_count``
     Reports the number of users in the database. This is a global metric, you must take
@@ -172,6 +170,32 @@ Open Forms produces application metrics (using Open Telemetry).
           otel_user_count_ratio{scope="global"}
           [1m]
         ))
+
+``auth.login_failures``
+    A counter incremented every time a user login fails (typically because of invalid
+    credentials). Does not include the second factor, if enabled. Additional attributes:
+
+    - ``http_target`` - the request path where the login failure occurred, if this
+      happened in a request context.
+
+``auth.user_lockouts``
+    A counter incremented every time a user is locked out because they reached the
+    maximum number of failed attempts. Additional attributes:
+
+    - ``http_target`` - the request path where the login failure occurred, if this
+      happened in a request context.
+    - ``username`` - username of the user trying to log in.
+
+Submissions
+^^^^^^^^^^^
+
+``submission.completions``
+    Counts the number of form submissions completed by end-users. Additional attributes
+    are:
+
+    - ``form.uuid`` - the unique database ID of the form
+    - ``form.name`` - the name of the form that was submitted
+
 
 Tracing
 =======
