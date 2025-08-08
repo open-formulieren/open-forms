@@ -71,7 +71,7 @@ export default {
       [1, 'ZGW API'],
       [2, 'ZGW API 2'],
     ],
-    objectsApiGroupChoices: [[1, 'Objects API']],
+    objectsApiGroupChoices: [['objects-group', 'Objects API']],
     confidentialityLevelChoices: [
       ['openbaar', 'Openbaar'],
       ['geheim', 'Geheim'],
