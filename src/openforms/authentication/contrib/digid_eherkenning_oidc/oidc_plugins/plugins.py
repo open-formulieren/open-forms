@@ -19,7 +19,7 @@ from mozilla_django_oidc_db.plugins import (
     BaseOIDCPlugin,
 )
 from mozilla_django_oidc_db.registry import register
-from mozilla_django_oidc_db.typing import JSONObject
+from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import deprecated
 
@@ -46,7 +46,7 @@ from .schemas import (
 logger = structlog.stdlib.get_logger(__name__)
 
 
-class OFLegacyOIDCPluginProtocol(Protocol):
+class OFBaseOIDCPluginProtocol(Protocol):
     @deprecated(
         "These plugin-specific callback URLs are deprecated. "
         "Instead, use the generic callback URL in urls.py - it"
@@ -56,8 +56,14 @@ class OFLegacyOIDCPluginProtocol(Protocol):
         """Get the django URL name of the callback URL."""
         ...
 
+    def get_sensitive_claims(self) -> list[ClaimPath]: ...
 
-class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions: ...
+
+
+class BaseDigiDeHerkenningPlugin(
+    BaseOIDCPlugin, OFBaseOIDCPluginProtocol, AnonymousUserOIDCPluginProtocol
+):
     def get_setting(self, attr: str, *args) -> Any:
         attr_lower = attr.lower()
 
@@ -131,18 +137,18 @@ class BaseDigiDeHerkenningPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol
         pass
 
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
-        return anon_user_callback_view(request)
+        return anon_user_callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
 
 
 @register(OIDC_DIGID_IDENTIFIER)
-class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
+class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFBaseOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return DIGID_OPTIONS_SCHEMA
 
     def _get_legacy_callback(self) -> str:
         return "digid_oidc:callback"
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         return [config.options["identity_settings"]["bsn_claim_path"]]
@@ -171,7 +177,7 @@ class OIDCDigidPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
 
 
 @register(OIDC_DIGID_MACHTIGEN_IDENTIFIER)
-class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
+class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFBaseOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return DIGID_MACHTIGEN_OPTIONS_SCHEMA
 
@@ -213,7 +219,7 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginPro
     def _get_legacy_callback(self) -> str:
         return "digid_machtigen_oidc:callback"
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         return [
@@ -223,7 +229,7 @@ class OIDCDigiDMachtigenPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginPro
 
 
 @register(OIDC_EH_IDENTIFIER)
-class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol):
+class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFBaseOIDCPluginProtocol):
     def get_schema(self) -> JSONObject:
         return EHERKENNING_OPTIONS_SCHEMA
 
@@ -280,7 +286,7 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtoc
     def _get_legacy_callback(self) -> str:
         return "eherkenning_oidc:callback"
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         sensitive_claims = [
@@ -296,7 +302,7 @@ class OIDCeHerkenningPlugin(BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtoc
 
 @register(OIDC_EH_BEWINDVOERING_IDENTIFIER)
 class OIDCeHerkenningBewindvoeringPlugin(
-    BaseDigiDeHerkenningPlugin, OFLegacyOIDCPluginProtocol
+    BaseDigiDeHerkenningPlugin, OFBaseOIDCPluginProtocol
 ):
     def get_schema(self) -> JSONObject:
         return EHERKENNING_BEWINDVOERING_OPTIONS_SCHEMA
@@ -372,7 +378,7 @@ class OIDCeHerkenningBewindvoeringPlugin(
     def _get_legacy_callback(self) -> str:
         return "eherkenning_bewindvoering_oidc:callback"
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         sensitive_claims = [
@@ -392,7 +398,7 @@ class OIDCEidasPlugin(BaseDigiDeHerkenningPlugin):
     def get_schema(self) -> JSONObject:
         return EIDAS_SCHEMA
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         return [
@@ -455,7 +461,7 @@ class OIDCEidasCompanyPlugin(BaseDigiDeHerkenningPlugin):
     def get_schema(self) -> JSONObject:
         return EIDAS_COMPANY_SCHEMA
 
-    def get_sensitive_claims(self) -> list[list[str]]:
+    def get_sensitive_claims(self) -> list[ClaimPath]:
         config = self.get_config()
 
         return [

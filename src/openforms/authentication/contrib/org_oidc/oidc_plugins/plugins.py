@@ -9,18 +9,18 @@ from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.schemas import ADMIN_OPTIONS_SCHEMA
 from mozilla_django_oidc_db.typing import JSONObject
 
-from ...digid_eherkenning_oidc.oidc_plugins.plugins import OFLegacyOIDCPluginProtocol
+from ...digid_eherkenning_oidc.oidc_plugins.plugins import OFBaseOIDCPluginProtocol
 from ..views import callback_view
 from .constants import OIDC_ORG_IDENTIFIER
 
 
 @register(OIDC_ORG_IDENTIFIER)
-class OIDCOrgPlugin(OIDCAdminPlugin, OFLegacyOIDCPluginProtocol):
+class OIDCOrgPlugin(OIDCAdminPlugin, OFBaseOIDCPluginProtocol):  # pyright: ignore[reportGeneralTypeIssues] # TODO: OIDCAdminPlugin is a decorated class
     def get_schema(self) -> JSONObject:
         return ADMIN_OPTIONS_SCHEMA
 
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
-        return callback_view(request)
+        return callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
 
     def _get_legacy_callback(self) -> str:
         return "org-oidc-callback"
