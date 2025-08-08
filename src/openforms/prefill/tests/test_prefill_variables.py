@@ -285,7 +285,7 @@ class PrefillVariablesFromOptionsTests(TestCase):
             data_type=FormVariableDataTypes.object,
             prefill_plugin="objects_api",
             prefill_options={
-                "objects_api_group": 1,
+                "objects_api_group": "objects-group",
                 "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "variables_mapping": [
