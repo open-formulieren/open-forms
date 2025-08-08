@@ -28,13 +28,13 @@ from ..constants import (
     WorldlineEndpoints,
 )
 from ..plugin import WorldlinePaymentPlugin
-from ..utils import generate_webhook_signature
 from .factories import (
     ReferencesFactory,
     WebhookEventRequestFactory,
     WorldlineMerchantFactory,
     WorldlineWebhookEntryFactory,
 )
+from .utils import generate_webhook_signature
 
 factory = RequestFactory()
 

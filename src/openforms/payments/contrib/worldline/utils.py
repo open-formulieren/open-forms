@@ -1,7 +1,3 @@
-import hashlib
-import hmac
-from base64 import b64encode
-
 import structlog
 from onlinepayments.sdk.domain.payment_response import PaymentResponse
 from onlinepayments.sdk.factory import DefaultMarshaller
@@ -33,13 +29,6 @@ class SecretKeyStore(BaseKeyStore):
 def get_webhook_helper() -> WebhooksHelper:
     key_store = SecretKeyStore()
     return WebhooksHelper(DefaultMarshaller.instance(), key_store)
-
-
-def generate_webhook_signature(secret_key: str, data: bytes) -> str:
-    _hmac = hmac.new(secret_key.encode("utf-8"), data, hashlib.sha256)
-    raw_hmac = _hmac.digest()
-    expected_signature = b64encode(raw_hmac)
-    return expected_signature.decode("utf-8")
 
 
 def get_merchant_reference(payment_response: PaymentResponse) -> str:
