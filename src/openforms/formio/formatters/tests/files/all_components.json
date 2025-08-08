@@ -1427,240 +1427,6 @@
             "allowCalculateOverride": false
         },
         {
-            "id": "etuoarj",
-            "key": "select2",
-            "data": {
-                "url": "",
-                "json": "",
-                "custom": "",
-                "values": [
-                    {
-                        "label": "Option 1",
-                        "value": "option1"
-                    },
-                    {
-                        "label": "Option 2",
-                        "value": "option2"
-                    }
-                ],
-                "resource": ""
-            },
-            "type": "select",
-            "input": true,
-            "label": "Select",
-            "limit": 100,
-            "filter": "",
-            "hidden": false,
-            "idPath": "id",
-            "prefix": "",
-            "suffix": "",
-            "unique": false,
-            "widget": null,
-            "dataSrc": "values",
-            "dbIndex": false,
-            "overlay": {
-                "top": "",
-                "left": "",
-                "style": "",
-                "width": "",
-                "height": ""
-            },
-            "tooltip": "",
-            "disabled": false,
-            "lazyLoad": true,
-            "multiple": false,
-            "redrawOn": "",
-            "tabindex": "",
-            "template": "<span>{{ item.label }}</span>",
-            "validate": {
-                "custom": "",
-                "unique": false,
-                "plugins": [],
-                "multiple": false,
-                "required": false,
-                "customPrivate": false,
-                "onlyAvailableItems": false,
-                "strictDateValidation": false
-            },
-            "autofocus": false,
-            "encrypted": false,
-            "hideLabel": false,
-            "indexeddb": {
-                "filter": {}
-            },
-            "minSearch": 0,
-            "modalEdit": false,
-            "protected": false,
-            "refreshOn": "",
-            "tableView": true,
-            "attributes": {},
-            "errorLabel": "",
-            "persistent": true,
-            "properties": {},
-            "validateOn": "change",
-            "clearOnHide": true,
-            "conditional": {
-                "eq": "",
-                "show": null,
-                "when": null
-            },
-            "customClass": "",
-            "description": "",
-            "fuseOptions": {
-                "include": "score",
-                "threshold": 0.3
-            },
-            "ignoreCache": false,
-            "placeholder": "",
-            "searchField": "",
-            "showInEmail": false,
-            "authenticate": false,
-            "defaultValue": "",
-            "registration": {
-                "attribute": ""
-            },
-            "selectFields": "",
-            "customOptions": {},
-            "dataGridLabel": false,
-            "labelPosition": "top",
-            "readOnlyValue": false,
-            "searchEnabled": true,
-            "showCharCount": false,
-            "showWordCount": false,
-            "uniqueOptions": false,
-            "valueProperty": "",
-            "calculateValue": "",
-            "clearOnRefresh": false,
-            "useExactSearch": false,
-            "calculateServer": false,
-            "isSensitiveData": false,
-            "selectThreshold": 0.3,
-            "allowMultipleMasks": false,
-            "customDefaultValue": "",
-            "allowCalculateOverride": false,
-            "appointments": {
-                "showDates": true,
-                "showTimes": false
-            }
-        },
-        {
-            "id": "etjkorj",
-            "key": "select3",
-            "data": {
-                "url": "",
-                "json": "",
-                "custom": "",
-                "values": [
-                    {
-                        "label": "Option 1",
-                        "value": "option1"
-                    },
-                    {
-                        "label": "Option 2",
-                        "value": "option2"
-                    }
-                ],
-                "resource": ""
-            },
-            "type": "select",
-            "input": true,
-            "label": "Select",
-            "limit": 100,
-            "filter": "",
-            "hidden": false,
-            "idPath": "id",
-            "prefix": "",
-            "suffix": "",
-            "unique": false,
-            "widget": null,
-            "dataSrc": "values",
-            "dbIndex": false,
-            "overlay": {
-                "top": "",
-                "left": "",
-                "style": "",
-                "width": "",
-                "height": ""
-            },
-            "tooltip": "",
-            "disabled": false,
-            "lazyLoad": true,
-            "multiple": false,
-            "redrawOn": "",
-            "tabindex": "",
-            "template": "<span>{{ item.label }}</span>",
-            "validate": {
-                "custom": "",
-                "unique": false,
-                "plugins": [],
-                "multiple": false,
-                "required": false,
-                "customPrivate": false,
-                "onlyAvailableItems": false,
-                "strictDateValidation": false
-            },
-            "autofocus": false,
-            "encrypted": false,
-            "hideLabel": false,
-            "indexeddb": {
-                "filter": {}
-            },
-            "minSearch": 0,
-            "modalEdit": false,
-            "protected": false,
-            "refreshOn": "",
-            "tableView": true,
-            "attributes": {},
-            "errorLabel": "",
-            "persistent": true,
-            "properties": {},
-            "validateOn": "change",
-            "clearOnHide": true,
-            "conditional": {
-                "eq": "",
-                "show": null,
-                "when": null
-            },
-            "customClass": "",
-            "description": "",
-            "fuseOptions": {
-                "include": "score",
-                "threshold": 0.3
-            },
-            "ignoreCache": false,
-            "placeholder": "",
-            "searchField": "",
-            "showInEmail": false,
-            "authenticate": false,
-            "defaultValue": "",
-            "registration": {
-                "attribute": ""
-            },
-            "selectFields": "",
-            "customOptions": {},
-            "dataGridLabel": false,
-            "labelPosition": "top",
-            "readOnlyValue": false,
-            "searchEnabled": true,
-            "showCharCount": false,
-            "showWordCount": false,
-            "uniqueOptions": false,
-            "valueProperty": "",
-            "calculateValue": "",
-            "clearOnRefresh": false,
-            "useExactSearch": false,
-            "calculateServer": false,
-            "isSensitiveData": false,
-            "selectThreshold": 0.3,
-            "allowMultipleMasks": false,
-            "customDefaultValue": "",
-            "allowCalculateOverride": false,
-            "appointments": {
-                "showDates": false,
-                "showTimes": true
-            }
-        },
-        {
             "id": "eckk9xe",
             "key": "radio",
             "type": "radio",
@@ -2088,10 +1854,10 @@
             "widget": null,
             "dbIndex": false,
             "overlay": {
-                "top": "", 
-                "left": "", 
-                "style": "", 
-                "width": "", 
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
                 "height": ""
             },
             "tooltip": "",
@@ -2121,8 +1887,8 @@
             "validateOn": "change",
             "clearOnHide": true,
             "conditional": {
-                "eq": "", 
-                "show": null, 
+                "eq": "",
+                "show": null,
                 "when": null
             },
             "customClass": "",

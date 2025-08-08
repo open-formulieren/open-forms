@@ -10,7 +10,7 @@ from typing import Literal, TypedDict
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 from openforms.variables.utils import get_variables_for_context
 
 from ..registration_variables import get_cosign_value
@@ -72,7 +72,7 @@ class JSONTemplateContext(TypedDict):
     productaanvraag_type: str
     payment: PaymentContextData
     cosign_data: CosignContextData | None
-    variables: JSONObject
+    variables: dict[str, VariableValue]
     submission: SubmissionContext
 
 

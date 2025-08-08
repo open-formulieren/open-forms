@@ -278,8 +278,8 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         SubmissionValueVariableFactory.create(
             key="userDefinedVar",
             submission=submission,
+            data_type=FormVariableDataTypes.int,
             form_variable__user_defined=True,
-            form_variable__data_type=FormVariableDataTypes.int,
             value=0,
         )
         FormLogicFactory.create(

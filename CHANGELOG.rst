@@ -33,6 +33,15 @@ Upgrade procedure
         # in the container via ``docker exec`` or ``kubectl exec``:
         python /app/bin/fix_submission_value_variable_missing_fields.py
 
+..warning::
+
+    For the email and confirmation templates, and the registration backends, we changed
+    the way that the data is generated. In case of key conflicts between static, component,
+    and user-defined variables, the static variables will take precedence. Previously, the
+    component and user-defined variables would override the static variables. Our validation
+    guards against the use of keys that are already present in the static variables, but this
+    does not cover old forms and newly-added static variables.
+
 Major features
 --------------
 
@@ -51,6 +60,7 @@ Regular bugfix release.
 * [:backend:`5466`] Fixed translations for the cookie banner.
 * [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+
 
 3.2.0 "Nimma" (2025-07-11)
 ==========================

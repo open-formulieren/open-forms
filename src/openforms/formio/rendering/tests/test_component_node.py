@@ -9,7 +9,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
-from ..structured import render_json
+from ..structured import reshape_submission_data_for_json_summary
 
 
 class ComponentNodeTests(TestCase):
@@ -393,7 +393,7 @@ class ComponentNodeTests(TestCase):
             ],
         )
 
-        rendered = render_json(submission)
+        rendered = reshape_submission_data_for_json_summary(submission)
 
         self.assertEqual(
             rendered,

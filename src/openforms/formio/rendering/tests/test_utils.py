@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from openforms.formio.rendering.structured import render_json
+from openforms.formio.rendering.structured import (
+    reshape_submission_data_for_json_summary,
+)
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -8,7 +10,7 @@ from openforms.submissions.tests.factories import (
 )
 
 
-class TestRenderNestedJSON(TestCase):
+class TestReshapeSubmissionDataForJsonSummary(TestCase):
     def test_multiple_steps(self):
         form = FormFactory.create()
         form_step0 = FormStepFactory.create(
@@ -62,7 +64,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_json(submission)
+        data = reshape_submission_data_for_json_summary(submission)
 
         self.assertEqual(
             data,
@@ -134,7 +136,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_json(submission)
+        data = reshape_submission_data_for_json_summary(submission)
 
         self.assertEqual(
             data,
@@ -209,7 +211,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_json(submission)
+        data = reshape_submission_data_for_json_summary(submission)
 
         self.assertEqual(
             data,
@@ -256,7 +258,7 @@ class TestRenderNestedJSON(TestCase):
             data={"editgrid1": [{"input1": "Foo"}, {"input1": "Bar"}]},
         )
 
-        data = render_json(submission)
+        data = reshape_submission_data_for_json_summary(submission)
 
         self.assertEqual(
             data,
