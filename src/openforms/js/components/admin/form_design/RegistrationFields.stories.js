@@ -53,7 +53,7 @@ export default {
               enumNames: ['Openbaar', 'Geheim'],
             },
             objectsApiGroup: {
-              enum: [1],
+              enum: ['objects-group'],
               enumNames: ['Objects API Group'],
             },
           },
@@ -247,7 +247,7 @@ export default {
           type: 'object',
           properties: {
             objectsApiGroup: {
-              enum: [1],
+              enum: ['objects-group'],
               enumNames: ['Objects API Group'],
             },
           },
@@ -724,7 +724,7 @@ export const ConfiguredBackends = {
         backend: 'objects_api',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'objects-group',
           objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
           objecttypeVersion: 1,
           updateExistingObject: false,
@@ -849,7 +849,7 @@ export const ObjectsAPI = {
         backend: 'objects_api',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'objects-group',
           objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
           objecttypeVersion: 1,
           updateExistingObject: false,
@@ -873,7 +873,7 @@ export const ObjectsAPI = {
     // check that the sole api group is automatically selected
     const modalForm = await screen.findByTestId('modal-form');
     expect(modalForm).toBeVisible();
-    expect(modalForm).toHaveFormValues({objectsApiGroup: '1'});
+    expect(modalForm).toHaveFormValues({objectsApiGroup: 'objects-group'});
     const modal = within(modalForm);
 
     await waitFor(() => {
@@ -938,7 +938,7 @@ export const ObjectsAPIJsonSchema = {
         backend: 'objects_api',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'objects-group',
           objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
           objecttypeVersion: 1,
           updateExistingObject: false,
@@ -988,7 +988,7 @@ export const ObjectsAPIJsonSchemaError = {
         backend: 'objects_api',
         options: {
           version: 2,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'objects-group',
           objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
           objecttypeVersion: 1,
           updateExistingObject: false,
@@ -1036,7 +1036,7 @@ export const ObjectsAPILegacy = {
         backend: 'objects_api',
         options: {
           version: 1,
-          objectsApiGroup: 1,
+          objectsApiGroup: 'objects-group',
           objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
           objecttypeVersion: 1,
           updateExistingObject: false,
@@ -1061,7 +1061,7 @@ export const ObjectsAPILegacy = {
     // check that the sole api group is automatically selected
     const modalForm = await screen.findByTestId('modal-form');
     expect(modalForm).toBeVisible();
-    expect(modalForm).toHaveFormValues({objectsApiGroup: '1'});
+    expect(modalForm).toHaveFormValues({objectsApiGroup: 'objects-group'});
 
     await waitFor(() => {
       expect(modalForm).toHaveFormValues({

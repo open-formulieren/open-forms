@@ -80,7 +80,7 @@ const AuthAttributePath = ({
 AuthAttributePath.propTypes = {
   name: PropTypes.string.isRequired,
   errors: PropTypes.arrayOf(PropTypes.string),
-  objectsApiGroup: PropTypes.number,
+  objectsApiGroup: PropTypes.string,
   objecttypeUuid: PropTypes.string,
   objecttypeVersion: PropTypes.number,
   disabled: PropTypes.bool,
