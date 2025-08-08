@@ -138,6 +138,23 @@ Open Forms produces application metrics (using Open Telemetry).
 .. note:: The exact metric names that show up may be transformed, e.g. Prometheus replaces
    periods with underscores, and processing pipelines may add prefixes or suffixes.
 
+.. important:: Some metrics are defined as "global scope".
+
+   These metrics are typically derived from application state introspection, e.g. by
+   performing database (read) queries to aggregate some information. Usually those
+   correspond to an `Asynchronous Gauge <https://opentelemetry.io/docs/specs/otel/metrics/api/#asynchronous-gauge>`_.
+
+   Multiple replicas and/or instances of the same service will produce the same values
+   of the metrics. You need to apply some kind of aggregation to de-duplicate these
+   values. The attribute ``scope="global"``  acts as a marker for these type of metrics.
+
+   With PromQL for example, you can use ``avg`` on the assumption that all values will
+   be equal, so the average will also be identical:
+
+   .. code-block:: promql
+
+       avg by (form_name, type) (otel_submissions_count{scope="global"})
+
 Generic
 -------
 
@@ -252,7 +269,7 @@ Submissions
 
         max by (type, form_name) (
           last_over_time(
-            otel_submissions_total{scope="global"}
+            otel_submissions_count{scope="global"}
             [5m]
           )
         )
