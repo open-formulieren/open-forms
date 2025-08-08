@@ -139,7 +139,12 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
 
         payment.plugin_options = option_serializer.data
         payment.provider_payment_id = checkout_response.merchant_reference or ""
-        payment.save(update_fields=("plugin_options",))
+        payment.save(
+            update_fields=(
+                "plugin_options",
+                "provider_payment_id",
+            )
+        )
 
         return PaymentInfo(
             type=PaymentRequestType.get,
