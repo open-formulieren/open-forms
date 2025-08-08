@@ -6,12 +6,14 @@ from django.db.models import F
 import structlog
 
 from openforms.celery import app
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.constants import Stages
 from openforms.submissions.models import Submission
 
 from .constants import RemovalMethods
 
 logger = structlog.stdlib.get_logger(__name__)
+
+TIME_SINCE_CREATION_DELTA = F("removal_limit") * timedelta(days=1)
 
 
 @app.task(ignore_result=True)
@@ -19,14 +21,16 @@ def delete_submissions():
     log = logger.bind(action="data_removal.delete_submissions")
     log.debug("start")
 
-    successful_submissions_to_delete = Submission.objects.annotate_removal_fields(
+    base_qs = Submission.objects.annotate_stage()
+    filters = {
+        "removal_method": RemovalMethods.delete_permanently,
+        "time_since_creation__gt": TIME_SINCE_CREATION_DELTA,
+    }
+
+    successful_submissions_to_delete = base_qs.annotate_removal_fields(
         "successful_submissions_removal_limit",
         method_field="successful_submissions_removal_method",
-    ).filter(
-        registration_status=RegistrationStatuses.success,
-        removal_method=RemovalMethods.delete_permanently,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    )
+    ).filter(**filters, stage=Stages.successfully_completed)
     log.info(
         "delete_submissions",
         kind="successful",
@@ -34,17 +38,10 @@ def delete_submissions():
     )
     successful_submissions_to_delete.delete()
 
-    incomplete_submissions_to_delete = Submission.objects.annotate_removal_fields(
+    incomplete_submissions_to_delete = base_qs.annotate_removal_fields(
         "incomplete_submissions_removal_limit",
         method_field="incomplete_submissions_removal_method",
-    ).filter(
-        registration_status__in=[
-            RegistrationStatuses.pending,
-            RegistrationStatuses.in_progress,
-        ],
-        removal_method=RemovalMethods.delete_permanently,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    )
+    ).filter(**filters, stage=Stages.incomplete)
     log.info(
         "delete_submissions",
         kind="incomplete",
@@ -52,14 +49,10 @@ def delete_submissions():
     )
     incomplete_submissions_to_delete.delete()
 
-    errored_submissions_to_delete = Submission.objects.annotate_removal_fields(
+    errored_submissions_to_delete = base_qs.annotate_removal_fields(
         "errored_submissions_removal_limit",
         method_field="errored_submissions_removal_method",
-    ).filter(
-        registration_status=RegistrationStatuses.failed,
-        removal_method=RemovalMethods.delete_permanently,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-    )
+    ).filter(**filters, stage=Stages.errored)
     log.info(
         "delete_submissions",
         kind="errored",
@@ -70,7 +63,7 @@ def delete_submissions():
     other_submissions_to_delete = Submission.objects.annotate_removal_fields(
         "all_submissions_removal_limit"
     ).filter(
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
+        time_since_creation__gt=TIME_SINCE_CREATION_DELTA,
     )
     log.info(
         "delete_submissions", kind="other", amount=other_submissions_to_delete.count()
@@ -83,38 +76,26 @@ def make_sensitive_data_anonymous() -> None:
     log = logger.bind(action="data_removal.make_sensitive_data_anonymous")
     log.debug("start")
 
-    successful_submissions = Submission.objects.annotate_removal_fields(
+    base_qs = Submission.objects.annotate_stage().filter(_is_cleaned=False)
+    filters = {
+        "removal_method": RemovalMethods.make_anonymous,
+        "time_since_creation__gt": TIME_SINCE_CREATION_DELTA,
+    }
+
+    successful_submissions = base_qs.annotate_removal_fields(
         "successful_submissions_removal_limit",
         method_field="successful_submissions_removal_method",
-    ).filter(
-        registration_status=RegistrationStatuses.success,
-        removal_method=RemovalMethods.make_anonymous,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        _is_cleaned=False,
-    )
+    ).filter(**filters, stage=Stages.successfully_completed)
 
-    incomplete_submissions = Submission.objects.annotate_removal_fields(
+    incomplete_submissions = base_qs.annotate_removal_fields(
         "incomplete_submissions_removal_limit",
         method_field="incomplete_submissions_removal_method",
-    ).filter(
-        registration_status__in=[
-            RegistrationStatuses.pending,
-            RegistrationStatuses.in_progress,
-        ],
-        removal_method=RemovalMethods.make_anonymous,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        _is_cleaned=False,
-    )
+    ).filter(**filters, stage=Stages.incomplete)
 
-    errored_submissions = Submission.objects.annotate_removal_fields(
+    errored_submissions = base_qs.annotate_removal_fields(
         "errored_submissions_removal_limit",
         method_field="errored_submissions_removal_method",
-    ).filter(
-        registration_status=RegistrationStatuses.failed,
-        removal_method=RemovalMethods.make_anonymous,
-        time_since_creation__gt=(timedelta(days=1) * F("removal_limit")),
-        _is_cleaned=False,
-    )
+    ).filter(**filters, stage=Stages.errored)
 
     log.info(
         "anonymize_submissions",

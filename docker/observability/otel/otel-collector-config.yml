@@ -33,7 +33,7 @@ exporters:
   # Exposes a metrics endpoint that prometheus can scrape
   prometheus:
     endpoint: 0.0.0.0:8889
-    namespace: otel
+    namespace: otel  # this becomes a prefix in the prometheus metrics: `otel_*`
     const_labels:
       environment: docker
 

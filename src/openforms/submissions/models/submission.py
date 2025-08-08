@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, assert_never
+from typing import TYPE_CHECKING, ClassVar, assert_never
 
 from django.conf import settings
 from django.db import models, transaction
@@ -37,7 +37,7 @@ from ..constants import (
 )
 from ..cosigning import CosignData, CosignState
 from ..pricing import get_submission_price
-from ..query import SubmissionQuerySet
+from ..query import SubmissionQuerySet, SubmissionsManagerType
 from ..serializers import CoSignDataSerializer
 from .submission_step import SubmissionStep
 from .typing import SubmissionCosignData
@@ -317,7 +317,9 @@ class Submission(models.Model):
         help_text=_("The key of the registration backend to use."),
     )
 
-    objects = SubmissionQuerySet.as_manager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        SubmissionsManagerType
+    ] = SubmissionQuerySet.as_manager()
 
     _form_login_required: bool | None = None  # can be set via annotation
     _prefilled_data = None

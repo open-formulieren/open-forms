@@ -22,21 +22,20 @@ def _append_field_to_fieldsets(fieldsets, set_name, *field_names):
 
 @admin.register(User)
 class _UserAdmin(UserAdmin):
-    list_display = UserAdmin.list_display + (
+    list_display = tuple(UserAdmin.list_display) + (  # pyright: ignore[reportGeneralTypeIssues]
         "employee_id",
         "is_superuser",
         "get_groups",
     )
-    search_fields = UserAdmin.search_fields + ("employee_id",)
+    search_fields = tuple(UserAdmin.search_fields) + ("employee_id",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.prefetch_related("groups")
 
+    @admin.display(description=_("Groups"))
     def get_groups(self, obj):
         return list(obj.groups.all())
-
-    get_groups.short_description = _("Groups")
 
 
 _append_field_to_fieldsets(_UserAdmin.fieldsets, _("Personal info"), "employee_id")
@@ -81,7 +80,7 @@ class UserPreferencesAdmin(admin.ModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
 
-            wrapper.model_admin = self
+            wrapper.model_admin = self  # pyright: ignore[reportFunctionMemberAccess]
             return update_wrapper(wrapper, view)
 
         url_name_prefix = f"{self.model._meta.app_label}_{self.model._meta.model_name}"

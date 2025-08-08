@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -72,7 +74,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
 
-    objects = UserManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        UserManager
+    ] = UserManager()
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
@@ -111,7 +115,7 @@ class UserPreferences(User):
     Expose the user model for preference-editing in a separate admin entry.
     """
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         proxy = True
         verbose_name = _("user preferences")
         verbose_name_plural = _("user preferences")

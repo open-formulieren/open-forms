@@ -39,6 +39,9 @@ class AccountsConfig(AppConfig):
     def ready(self):
         from . import signals  # noqa
 
+        # register async metrics
+        from . import metrics  # noqa
+
         # enforce some fixtures after migrating
         post_migrate.connect(update_admin_index, sender=self)
         post_migrate.connect(update_groups, sender=self)

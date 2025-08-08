@@ -9,7 +9,7 @@ class TOTPDeviceFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory("openforms.accounts.tests.factories.UserFactory")
     key = factory.LazyAttribute(lambda o: random_hex())
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = "otp_totp.TOTPDevice"
 
 
@@ -17,7 +17,7 @@ class RecoveryDeviceFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory("openforms.accounts.tests.factories.UserFactory")
     name = "backup"
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = StaticDevice
 
 
@@ -25,7 +25,7 @@ class RecoveryTokenFactory(factory.django.DjangoModelFactory):
     device = factory.SubFactory(RecoveryDeviceFactory)
     token = factory.LazyFunction(StaticToken.random_token)
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = StaticToken
 
 
@@ -33,7 +33,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: f"user-{n}")
     password = factory.PostGenerationMethodCall("set_password", "secret")
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = "accounts.User"
 
     class Params:
@@ -64,7 +64,7 @@ class UserFactory(factory.django.DjangoModelFactory):
                         filters["content_type__app_label"] = label
 
                     permission = Permission.objects.get(**filters)
-                self.user_permissions.add(permission)
+                self.user_permissions.add(permission)  # pyright: ignore
 
 
 class StaffUserFactory(UserFactory):
@@ -78,14 +78,14 @@ class SuperUserFactory(StaffUserFactory):
 class TokenFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = "authtoken.Token"
 
 
 class GroupFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("bs")
 
-    class Meta:
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
         model = Group
 
     @factory.post_generation
@@ -107,4 +107,4 @@ class GroupFactory(factory.django.DjangoModelFactory):
                         filters["content_type__app_label"] = label
 
                     permission = Permission.objects.get(**filters)
-                self.permissions.add(permission)
+                self.permissions.add(permission)  # pyright: ignore

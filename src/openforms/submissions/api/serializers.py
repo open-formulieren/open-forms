@@ -120,7 +120,7 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
+class SubmissionSerializer(serializers.HyperlinkedModelSerializer[Submission]):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
         read_only=True,
