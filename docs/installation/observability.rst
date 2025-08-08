@@ -167,7 +167,7 @@ Accounts
     .. code-block:: promql
 
         max by (type) (last_over_time(
-          otel_user_count_ratio{scope="global"}
+          otel_user_count{scope="global"}
           [1m]
         ))
 
@@ -235,6 +235,27 @@ Submissions
     - ``form.name`` - the name of the form that was submitted.
     - ``type`` - ``create`` or ``update``. Users can go back to a step and modify
       details, which results in an update.
+
+``submissions``
+    The total count of submissions in the database. This is a global metric, you must
+    take care in de-duplicating results. Additional attributes are:
+
+    - ``scope`` - fixed, set to ``global`` to enable de-duplication.
+    - ``form.name`` - the name of the form that the submission belongs to.
+    - ``type`` - the kind of submission, possible values are ``successful``,
+      ``incomplete``, ``errored``,  ``other`` which maps to the associated retention
+      periods.
+
+    Sample PromQL query, to report the submissios per stage and form:
+
+    .. code-block:: promql
+
+        max by (type, form_name) (
+          last_over_time(
+            otel_submissions_total{scope="global"}
+            [5m]
+          )
+        )
 
 Tracing
 =======

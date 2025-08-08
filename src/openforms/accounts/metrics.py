@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Collection
 
 from django.db.models import Count, Q
 
@@ -9,7 +9,7 @@ from .models import User
 meter = metrics.get_meter("openforms.accounts")
 
 
-def count_users(options: metrics.CallbackOptions) -> Sequence[metrics.Observation]:
+def count_users(options: metrics.CallbackOptions) -> Collection[metrics.Observation]:
     counts: dict[str, int] = User.objects.aggregate(
         total=Count("id"),
         staff=Count("id", filter=Q(is_staff=True)),
@@ -34,7 +34,7 @@ def count_users(options: metrics.CallbackOptions) -> Sequence[metrics.Observatio
 meter.create_observable_gauge(
     name="user_count",
     description="The number of application users in the database.",
-    unit="1",
+    unit="",  # no unit so that the _ratio suffix is not added
     callbacks=[count_users],
 )
 
