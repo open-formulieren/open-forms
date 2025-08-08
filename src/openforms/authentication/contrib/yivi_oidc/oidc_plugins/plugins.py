@@ -23,6 +23,7 @@ from mozilla_django_oidc_db.utils import obfuscate_claims
 from mozilla_django_oidc_db.views import (
     _RETURN_URL_SESSION_KEY,
 )
+from rest_framework.request import Request
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.auth_oidc.typing import (
@@ -146,10 +147,10 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         pass
 
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
-        return anon_user_callback_view(request)
+        return anon_user_callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
 
     def _get_auth_backend_options(self, form_slug: str) -> YiviOptions | None:
-        plugin = get_of_auth_plugin(self.get_config())
+        plugin = get_of_auth_plugin(self)
 
         auth_backend = FormAuthenticationBackend.objects.filter(
             form__slug=form_slug, backend=plugin.identifier
@@ -329,6 +330,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         )
 
         for attributes_group in attributes_groups:
+            assert isinstance(attributes_group.attributes, list)
             # documentation: https://irma.app/docs/condiscon/#other-features
             additional_attributes_condiscon.append(
                 [
@@ -386,10 +388,12 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         base64_bytes = base64.b64encode(condiscon_string.encode("ascii"))
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
-    def get_extra_params(self, request: HttpRequest, extra_params: dict) -> dict:
+    # TODO: parent has django.http.HttpRequest, but it should be rest_framework.request.Request (maykinmedia/mozilla-django-oidc-db/issues/151)
+    def get_extra_params(self, request: Request, extra_params: dict) -> dict:  # pyright: ignore[reportIncompatibleMethodOverride]
         configured_scopes = deepcopy(self.get_setting("oidc_rp_scopes_list"))
 
         return_url = request.query_params.get("next")
+        assert isinstance(return_url, str)
         return_path = furl(return_url).path
         _, _, kwargs = resolve(str(return_path))
 

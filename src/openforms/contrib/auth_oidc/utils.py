@@ -7,9 +7,9 @@ from glom import Path, PathAccessError, assign, glom
 from mozilla_django_oidc_db.plugins import (
     BaseOIDCPlugin,
 )
+from mozilla_django_oidc_db.typing import JSONObject
 
 from openforms.authentication.base import BasePlugin as BaseAuthPlugin
-from openforms.typing import JSONObject
 
 from .typing import ClaimPathDetails, ClaimProcessingInstructions
 
