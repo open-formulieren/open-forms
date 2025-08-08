@@ -10,13 +10,17 @@ from django.utils.translation import gettext
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
-from mozilla_django_oidc_db.models import OpenIDConnectConfig
+from mozilla_django_oidc_db.plugins import OIDCAdminPlugin
+from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestView
 
 from openforms.accounts.tests.factories import (
     RecoveryTokenFactory,
     StaffUserFactory,
     SuperUserFactory,
 )
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
+from openforms.utils.tests.keycloak import mock_get_random_string
 
 LOGIN_URL = reverse_lazy("admin:login")
 
@@ -77,34 +81,63 @@ class ClassicLoginTests(WebTest):
 @disable_admin_mfa()
 @override_settings(USE_OIDC_FOR_ADMIN_LOGIN=True)
 class OIDCLoginTests(WebTest):
-    def setUp(self):
-        super().setUp()
-
-        patcher = patch(
-            "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
-            return_value=OpenIDConnectConfig(
-                enabled=True,
-                oidc_op_authorization_endpoint="https://oidc.example.com/",
-            ),
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
+    @mock_get_random_string()
+    @override_settings(
+        OIDC_AUTHENTICATE_CLASS="mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+    )
     def test_admin_login_without_next_param(self):
-        login_page = self.app.get(LOGIN_URL).follow()
+        admin_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+        oidc_register(admin_client.identifier)(OIDCAdminPlugin)
+
+        with (
+            patch(
+                "mozilla_django_oidc_db.templatetags.oidc_client.OIDC_ADMIN_CONFIG_IDENTIFIER",
+                new=admin_client.identifier,
+            ),
+            patch.object(
+                OIDCAuthenticationRequestView, "identifier", admin_client.identifier
+            ),
+        ):
+            login_page = self.app.get(LOGIN_URL).follow()
 
         self.assertEqual(login_page.status_code, 302)
         self.assertTrue(
-            login_page.headers["Location"].startswith("https://oidc.example.com/")
+            login_page.headers["Location"].startswith(
+                "http://localhost:8080/realms/test/protocol/openid-connect"
+            )
         )
         self.assertEqual(self.app.session["oidc_login_next"], "/admin/")
 
+    @mock_get_random_string()
+    @override_settings(
+        OIDC_AUTHENTICATE_CLASS="mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+    )
     def test_admin_login_with_next_param(self):
-        login_page = self.app.get(LOGIN_URL, {"next": "/admin/accounts/user/"}).follow()
+        admin_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+        oidc_register(admin_client.identifier)(OIDCAdminPlugin)
+
+        with (
+            patch(
+                "mozilla_django_oidc_db.templatetags.oidc_client.OIDC_ADMIN_CONFIG_IDENTIFIER",
+                new=admin_client.identifier,
+            ),
+            patch.object(
+                OIDCAuthenticationRequestView, "identifier", admin_client.identifier
+            ),
+        ):
+            login_page = self.app.get(
+                LOGIN_URL, {"next": "/admin/accounts/user/"}
+            ).follow()
 
         self.assertEqual(login_page.status_code, 302)
         self.assertTrue(
-            login_page.headers["Location"].startswith("https://oidc.example.com/")
+            login_page.headers["Location"].startswith(
+                "http://localhost:8080/realms/test/protocol/openid-connect"
+            )
         )
         self.assertEqual(self.app.session["oidc_login_next"], "/admin/accounts/user/")
 

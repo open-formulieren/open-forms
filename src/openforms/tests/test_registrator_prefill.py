@@ -6,22 +6,37 @@ from django.test import override_settings
 
 import requests_mock
 from django_webtest import WebTest
+from mozilla_django_oidc_db.registry import register as oidc_register
+from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 from rest_framework import status
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
 from openforms.authentication.constants import REGISTRATOR_SUBJECT_SESSION_KEY
-from openforms.authentication.contrib.org_oidc.plugin import PLUGIN_IDENTIFIER
-from openforms.authentication.contrib.org_oidc.tests.base import mock_org_oidc_config
+from openforms.authentication.contrib.org_oidc.oidc_plugins.plugins import OIDCOrgPlugin
+from openforms.authentication.contrib.org_oidc.plugin import (
+    PLUGIN_IDENTIFIER,
+    OIDCAuthentication,
+)
+from openforms.authentication.registry import (
+    register as auth_register,
+)
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.tests.utils import URLsHelper
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+    mock_auth_and_oidc_registers,
+)
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.forms.tests.factories import FormFactory
 from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV1
 from openforms.submissions.models import Submission
 from openforms.utils.tests.concurrent import mock_parallel_executor
-from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.keycloak import (
+    keycloak_login,
+    mock_get_random_string,
+)
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.utils.urls import reverse_plus
 
@@ -43,20 +58,6 @@ CONFIGURATION = {
     ],
 }
 
-default_config = dict(
-    enabled=True,
-    oidc_rp_client_id="testclient",
-    oidc_rp_client_secret="secret",
-    oidc_rp_sign_algo="RS256",
-    oidc_rp_scopes_list=["openid", "email", "profile"],
-    oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
-    oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-    oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
-    oidc_op_user_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/userinfo",
-    username_claim="sub",
-    make_users_staff=True,
-)
-
 
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
@@ -75,7 +76,8 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(OFVCRMixin, WebTe
     csrf_checks = False
     extra_environ = {"HTTP_HOST": "example.com"}
 
-    @mock_org_oidc_config(enabled=True, make_users_staff=True)
+    @mock_get_random_string()
+    @mock_auth_and_oidc_registers()
     @patch(
         "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfig(
@@ -84,6 +86,25 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(OFVCRMixin, WebTe
     )
     @mock_parallel_executor()
     def test_flow(self, mock_haalcentraal_solo):
+        oidc_client = OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_org=True,
+            enabled=True,
+            oidc_rp_scopes_list=["openid", "email", "profile"],
+            post__options__groups_settings__make_users_staff=True,
+        )
+        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
+
+        org_init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=oidc_client.identifier,
+            allow_next_from_query=False,
+        )
+
+        @auth_register(PLUGIN_IDENTIFIER)
+        class OFTestAuthPlugin(OIDCAuthentication):
+            oidc_plugin_identifier = oidc_client.identifier
+            init_view = staticmethod(org_init_view)
+
         assert not User.objects.exists()
         # group returned by Keycloak and set up with correct permissions
         assert Group.objects.filter(name__iexact="Registreerders").exists()
