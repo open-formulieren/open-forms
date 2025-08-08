@@ -13,6 +13,19 @@ class RegistrationStatuses(models.TextChoices):
     failed = "failed", _("Failed")
 
 
+class Stages(models.TextChoices):
+    """
+    Define submission lifecycle stages.
+
+    Used in annotations for metrics and data removal.
+    """
+
+    successfully_completed = "successful", _("Successfully completed")
+    incomplete = "incomplete", _("Incomplete/processing")
+    errored = "errored", _("Errored")
+    other = "other", _("Other")
+
+
 class ProcessingStatuses(models.TextChoices):
     """
     Translation of interal Celery states to public states.
