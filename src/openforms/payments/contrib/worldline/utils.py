@@ -9,21 +9,21 @@ from onlinepayments.sdk.webhooks.secret_key_store import (
 )
 from onlinepayments.sdk.webhooks.webhooks_helper import WebhooksHelper
 
-from .models import WorldlineWebhookEntry
+from .models import WorldlineWebhookConfiguration
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
 class SecretKeyStore(BaseKeyStore):
     def get_secret_key(self, key_id: str) -> str:
-        try:
-            entry = WorldlineWebhookEntry.objects.get(webhook_key_id=key_id)
-        except WorldlineWebhookEntry.DoesNotExist as e:
+        configuration = WorldlineWebhookConfiguration.get_solo()
+
+        if not configuration.webhook_key_id == key_id:
             raise SecretKeyNotAvailableException(
                 key_id, "No secret key found for given value"
-            ) from e
+            )
 
-        return entry.webhook_key_secret
+        return configuration.webhook_key_secret
 
 
 def get_webhook_helper() -> WebhooksHelper:

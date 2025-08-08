@@ -2,7 +2,7 @@ import factory
 import factory.fuzzy
 
 from ..constants import PaymentStatus
-from ..models import WorldlineMerchant, WorldlineWebhookEntry
+from ..models import WorldlineMerchant, WorldlineWebhookConfiguration
 
 
 class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
@@ -15,14 +15,12 @@ class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
         model = WorldlineMerchant
 
 
-class WorldlineWebhookEntryFactory(factory.django.DjangoModelFactory):
+class WorldlineWebhookConfigurationFactory(factory.django.DjangoModelFactory):
     webhook_key_id = factory.Faker("uuid4")
-    webhook_key_secret = factory.Faker(
-        "pystr", min_chars=40, max_chars=40
-    )  # TODO: check if this is the correct amount? or use UUID here?
+    webhook_key_secret = factory.Faker("pystr", min_chars=40, max_chars=40)
 
     class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
-        model = WorldlineWebhookEntry
+        model = WorldlineWebhookConfiguration
 
 
 class AmountOfMoneyFactory(factory.DictFactory):

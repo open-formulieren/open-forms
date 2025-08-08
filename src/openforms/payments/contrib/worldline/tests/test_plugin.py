@@ -32,7 +32,7 @@ from .factories import (
     ReferencesFactory,
     WebhookEventRequestFactory,
     WorldlineMerchantFactory,
-    WorldlineWebhookEntryFactory,
+    WorldlineWebhookConfigurationFactory,
 )
 from .utils import generate_webhook_signature
 
@@ -514,7 +514,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             self.assertIn(incorrect_merchant.label, incorrect_entry.name)
 
     def test_webhook_event(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -546,9 +546,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )
@@ -562,7 +562,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         """
         Tests that status mutations should not be possible for completed payments
         """
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -593,9 +593,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )
@@ -606,7 +606,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.completed)
 
     def test_webbhook_api_version_mismatch(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -637,9 +637,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )
@@ -654,7 +654,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webbhook_incorrect_signature(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -684,7 +684,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": "foobar",
             },
         )
@@ -699,7 +699,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webhook_unknown_signature(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -733,7 +733,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             headers={
                 "X-GCS-KeyId": "unknown",
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )
@@ -746,7 +746,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         )
 
     def test_webhook_unknown_payment(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -776,9 +776,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )
@@ -789,7 +789,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         self.assertEqual(payment.status, PaymentStatus.started)
 
     def test_webhook_unknown_event_type(self):
-        webhook_entry = WorldlineWebhookEntryFactory.create()
+        webhook_configuration = WorldlineWebhookConfigurationFactory.create()
         merchant = WorldlineMerchantFactory.create(pspid="psp123")
         submission = SubmissionFactory.create(
             with_public_registration_reference=True,
@@ -818,9 +818,9 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             data=rendered_data,
             content_type="application/json",
             headers={
-                "X-GCS-KeyId": webhook_entry.webhook_key_id,
+                "X-GCS-KeyId": webhook_configuration.webhook_key_id,
                 "X-GCS-Signature": generate_webhook_signature(
-                    webhook_entry.webhook_key_secret, rendered_data
+                    webhook_configuration.webhook_key_secret, rendered_data
                 ),
             },
         )

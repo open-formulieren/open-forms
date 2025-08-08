@@ -49,20 +49,18 @@ a *Worldline Webhook entry* in the admin interface.
 
 12. Generate a **WebhooksKey** and a **WebhooksKeySecret** and save these values somewhere safe.
 
-13. Head back to the Open Forms admin and navigate to **Miscellaneous** > **Worldline webhook entries**.
+13. Head back to the Open Forms admin and navigate to **Miscellaneous** > **Worldline webhook configuration**.
 
-14. Click **Add Worldline Webhook Entry**.
-
-15. Copy the **WebhooksKey** from step 12 into the **Webhook Key ID** form field and the **WebhooksKeySecret**
+14. Copy the **WebhooksKey** from step 12 into the **Webhook Key ID** form field and the **WebhooksKeySecret**
     into the **Webhook Key Secret** form field.
 
-16. Save the changes.
+15. Save the changes.
 
-17. Navigate in the Open Forms admin to the **Worldline merchant** list overview and copy
+16. Navigate in the Open Forms admin to the **Worldline merchant** list overview and copy
     the **Feedback url** value.
 
-18. Copy the **Feedback url** into the **Endpoint Urls** text area in the Worldline backoffice
+17. Copy the **Feedback url** into the **Endpoint Urls** text area in the Worldline backoffice
     and save the configuration. The **Endpoint Urls** field is on the same page
     the **WebhooksKey** and **WebhooksKeySecret** were generated (in step 12).
 
-19. Save the changes and verify that all configuration is correct.
+18. Save the changes and verify that all configuration is correct.

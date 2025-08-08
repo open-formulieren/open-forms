@@ -43,11 +43,11 @@ class WorldlineMerchantAdminTest(WebTest):
 
 
 @disable_admin_mfa()
-class WorldlineWebhookEntryAdminTest(WebTest):
+class WorldlineWebhookConfigurationAdminTest(WebTest):
     @override_settings(BASE_URL="https://example.com/foo")
-    def test_webhook_entry_detail_page(self):
+    def test_webhook_configuration_detail_page(self):
         user = SuperUserFactory.create()
-        url = reverse("admin:payments_worldline_worldlinewebhookentry_add")
+        url = reverse("admin:payments_worldline_worldlinewebhookconfiguration_change")
 
         response = self.app.get(url, user=user)
 

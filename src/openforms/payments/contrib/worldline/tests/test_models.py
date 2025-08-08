@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .factories import WorldlineMerchantFactory, WorldlineWebhookEntryFactory
+from .factories import WorldlineMerchantFactory, WorldlineWebhookConfigurationFactory
 
 
 class WorldlineMerchantTests(TestCase):
@@ -10,8 +10,10 @@ class WorldlineMerchantTests(TestCase):
         self.assertEqual(str(merchant), "Maykin Media")
 
 
-class WorldlineWebhookEntryTests(TestCase):
+class WorldlineWebhookConfigurationTests(TestCase):
     def test_string_representation(self):
-        webhook_entry = WorldlineWebhookEntryFactory()
+        webhook_configuration = WorldlineWebhookConfigurationFactory()
 
-        self.assertEqual(str(webhook_entry), webhook_entry.webhook_key_id)
+        self.assertEqual(
+            str(webhook_configuration), webhook_configuration.webhook_key_id
+        )
