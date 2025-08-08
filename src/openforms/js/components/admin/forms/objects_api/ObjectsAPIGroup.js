@@ -83,7 +83,7 @@ ObjectsAPIGroup.propTypes = {
   apiGroupChoices: PropTypes.arrayOf(
     PropTypes.arrayOf(
       PropTypes.oneOfType([
-        PropTypes.number, // value
+        PropTypes.string, // value
         PropTypes.string, // label
       ])
     )

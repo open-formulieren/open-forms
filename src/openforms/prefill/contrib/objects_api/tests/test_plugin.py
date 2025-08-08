@@ -14,11 +14,11 @@ class ObjectsAPIPrefillPluginTestCase(TestCase):
         expected = {
             "api_groups": [
                 [
-                    group1.pk,
+                    group1.identifier,
                     "Foo",
                 ],
                 [
-                    group2.pk,
+                    group2.identifier,
                     "Bar",
                 ],
             ]

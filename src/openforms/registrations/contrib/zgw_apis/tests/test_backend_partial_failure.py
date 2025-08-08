@@ -511,7 +511,7 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
-                "objects_api_group": objects_api_group.pk,
+                "objects_api_group": objects_api_group.identifier,
                 "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
                 "objecttype_version": 1,
             },

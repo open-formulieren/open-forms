@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from zgw_consumers.client import build_client
 
-from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import SlugRelatedAsChoicesField
 from openforms.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.contrib.zgw.api.filters import (
     DocumentTypesFilter,
@@ -13,10 +13,11 @@ from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 
 
 class ObjectsAPIGroupMixin(serializers.Serializer):
-    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+    objects_api_group = SlugRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(catalogi_service=None),
+        slug_field="identifier",
         help_text=_(
-            "The primary key of the Objects API group to use. The informatieobjecttypen from the Catalogi API "
+            "The slug identifier of the Objects API group to use. The informatieobjecttypen from the Catalogi API "
             "in this group will be returned."
         ),
         label=_("Objects API group"),

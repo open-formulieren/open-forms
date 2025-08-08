@@ -44,7 +44,7 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
         self.client.force_authenticate(user=staff_user)
 
         response = self.client.get(
-            self.endpoint, data={"objects_api_group": self.config.pk}
+            self.endpoint, data={"objects_api_group": self.config.identifier}
         )
 
         tree_objecttype = next(obj for obj in response.json() if obj["name"] == "Tree")
@@ -103,7 +103,7 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.client.force_authenticate(user=staff_user)
 
         response = self.client.get(
-            self.endpoint, data={"objects_api_group": self.config.pk}
+            self.endpoint, data={"objects_api_group": self.config.identifier}
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -119,7 +119,7 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
                 "api:objects_api:object-type-versions",
                 args=["39da819c-ac6c-4037-ae2b-6bfc39f6564b"],
             ),
-            data={"objects_api_group": self.config.pk},
+            data={"objects_api_group": self.config.identifier},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -169,7 +169,7 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttypeVersion": 2,
                 "variableJsonSchema": {"type": "string"},
-                "objects_api_group": self.config.pk,
+                "objects_api_group": self.config.identifier,
             },
         )
 
@@ -241,7 +241,7 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
         response = self.client.get(
             self.endpoint,
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
             },
         )
 
@@ -293,7 +293,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         self.client.force_login(user)
 
         response = self.client.get(
-            self.endpoint, {"objects_api_group": self.objects_api_group.pk}
+            self.endpoint, {"objects_api_group": self.objects_api_group.identifier}
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -327,7 +327,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         response = self.client.get(
             self.endpoint,
             {
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
             },
         )
@@ -359,7 +359,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         response = self.client.get(
             self.endpoint,
             {
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 # catalogue in fixture with draft document types
                 "catalogue_url": "http://localhost:8003/catalogi/api/v1/catalogussen/aa0e0a50-33f6-4473-99a1-b92bab94e749",
             },

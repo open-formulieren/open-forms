@@ -299,9 +299,9 @@ class FormDesignerRegistrationBackendConfigTests(OFVCRMixin, E2ETestCase):
         self.assertEqual(len(requests_to_endpoint), 2)
         self.assertEqual(
             furl(requests_to_endpoint[0].url).args["objects_api_group"],
-            str(objects_api_1.pk),
+            str(objects_api_1.identifier),
         )
         self.assertEqual(
             furl(requests_to_endpoint[1].url).args["objects_api_group"],
-            str(objects_api_2.pk),
+            str(objects_api_2.identifier),
         )

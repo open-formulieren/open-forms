@@ -585,7 +585,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         # simulates old, non-migrated options structure
         serializer = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8faed0fa-7864-4409-aa6d-533a37616a9e",
                 "objecttype_version": 1,
@@ -628,7 +628,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             completed_not_preregistered=True,
             form__registration_backend=PLUGIN_IDENTIFIER,
             form__registration_backend_options={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8faed0fa-7864-4409-aa6d-533a37616a9e",
                 "objecttype_version": 1,
@@ -691,7 +691,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         serializer = ObjectsAPIOptionsSerializer(
             data={
                 "version": 2,
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 # See the docker compose fixtures for more info on these values:
                 "objecttype": UUID("59cdc902-576b-495f-ae63-c9c78b8afc09"),
                 "objecttype_version": 1,

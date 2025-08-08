@@ -91,7 +91,7 @@ class ObjectsAPIPrefill(BasePlugin[ObjectsAPIOptions]):
     def configuration_context(cls) -> JSONObject | None:
         return {
             "api_groups": [
-                [group.pk, group.name]
+                [group.identifier, group.name]
                 for group in ObjectsAPIGroupConfig.objects.iterator()
             ]
         }
