@@ -41,7 +41,7 @@ meter.create_observable_gauge(
 logins = meter.create_counter(
     "auth.logins",
     unit="1",  # unitless count
-    description="The number of succesful user logins.",
+    description="The number of successful user logins.",
 )
 
 logouts = meter.create_counter(
