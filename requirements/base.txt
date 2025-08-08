@@ -360,7 +360,7 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.24.0
+mozilla-django-oidc-db==0.25.0
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
