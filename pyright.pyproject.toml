@@ -41,6 +41,8 @@ include = [
     "src/openforms/contrib/microsoft/",
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
+    # Data removal app
+    "src/openforms/data_removal/tasks.py",
     # Emails
     "src/openforms/emails/forms.py",
     "src/openforms/emails/templatetags/cosign_information.py",
@@ -70,6 +72,8 @@ include = [
     # core submissions app
     "src/openforms/submissions/api/validation.py",
     "src/openforms/submissions/cosigning.py",
+    "src/openforms/submissions/metrics.py",
+    "src/openforms/submissions/query.py",
     "src/openforms/submissions/report.py",
     # our own template app/package on top of Django
     "src/openforms/template",
