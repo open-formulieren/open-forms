@@ -47,7 +47,7 @@ from .constants import (
     PaymentStatus as WorldlinePaymentStatus,
     StatusCategory,
 )
-from .models import WorldlineMerchant
+from .models import WorldlineMerchant, WorldlineWebhookConfiguration
 from .typing import (
     AmountOfMoney,
     CheckoutInput,
@@ -333,6 +333,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
     @classmethod
     def iter_config_checks(cls) -> Iterator[Entry]:
         merchants = WorldlineMerchant.objects.all()
+        webhook_configuration = WorldlineWebhookConfiguration.get_solo()
 
         if not merchants:
             yield Entry(
@@ -345,10 +346,29 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
                         ),
                     )
                 ],
+                status=False,
             )
 
         for merchant in merchants:
             yield cls.check_merchant(merchant)
+
+        yield Entry(
+            name="Worldline webhook configuration",
+            actions=[
+                (
+                    _("Configure webhooks"),
+                    reverse(
+                        "admin:payments_worldline_worldlinewebhookconfiguration_change",
+                    ),
+                )
+            ],
+            status=all(
+                (
+                    webhook_configuration.webhook_key_id,
+                    webhook_configuration.webhook_key_secret,
+                )
+            ),
+        )
 
     @classmethod
     def check_merchant(cls, merchant: WorldlineMerchant):
