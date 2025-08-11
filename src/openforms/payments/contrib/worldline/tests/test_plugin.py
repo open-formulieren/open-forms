@@ -471,18 +471,31 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
     def test_config_check(self):
         configuration_entries = list(WorldlinePaymentPlugin.iter_config_checks())  # pyright: ignore[reportAttributeAccessIssue]
 
-        with self.subTest("Test config check without merhcants"):
-            self.assertEqual(len(configuration_entries), 1)
+        with self.subTest("Test config check without merchants"):
+            self.assertEqual(len(configuration_entries), 2)
 
-            entry = configuration_entries[0]
+            merchant_entry = configuration_entries[0]
+            webhook_entry = configuration_entries[1]
 
             self.assertEqual(
-                entry.actions,
+                merchant_entry.actions,
                 [
                     (
                         _("Add merchant"),
                         reverse(
                             "admin:payments_worldline_worldlinemerchant_add",
+                        ),
+                    )
+                ],
+            )
+
+            self.assertEqual(
+                webhook_entry.actions,
+                [
+                    (
+                        _("Configure webhooks"),
+                        reverse(
+                            "admin:payments_worldline_worldlinewebhookconfiguration_change",
                         ),
                     )
                 ],
@@ -499,7 +512,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
         )
         configuration_entries = list(WorldlinePaymentPlugin.iter_config_checks())  # pyright: ignore[reportAttributeAccessIssue]
 
-        self.assertEqual(len(configuration_entries), 2)
+        self.assertEqual(len(configuration_entries), 3)
 
         with self.subTest("Test correct entry", expected_merchant=correct_merchant):
             correct_entry = next(
@@ -512,6 +525,11 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
                 entry for entry in configuration_entries if not entry.status
             )
             self.assertIn(incorrect_merchant.label, incorrect_entry.name)
+
+        with self.subTest("Test webhook entry"):
+            self.assertEqual(
+                configuration_entries[2].name, "Worldline webhook configuration"
+            )
 
     def test_webhook_event(self):
         webhook_configuration = WorldlineWebhookConfigurationFactory.create()
