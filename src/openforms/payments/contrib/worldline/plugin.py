@@ -1,6 +1,7 @@
 from collections.abc import Iterator
 
 from django.http import (
+    Http404,
     HttpRequest,
     HttpResponse,
     HttpResponseRedirect,
@@ -298,16 +299,25 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
             raise ValidationError(
                 {
                     api_settings.NON_FIELD_ERRORS_KEY: [
-                        "Unknown webhook event encountered"
+                        _("Unknown webhook event encountered")
                     ]
                 }
             )
 
         merchant_reference = get_merchant_reference(webhook_event.payment)
-        payment = get_object_or_404(
-            SubmissionPayment,
-            provider_payment_id=merchant_reference,
-        )
+
+        try:
+            payment = get_object_or_404(
+                SubmissionPayment,
+                provider_payment_id=merchant_reference,
+            )
+        except Http404:
+            logger.warning(
+                "unknown_payment",
+                provider_payment_id=merchant_reference,
+                plugin="worldline",
+            )
+            raise
 
         with structlog.contextvars.bound_contextvars(
             submission_uuid=str(payment.submission.uuid),
@@ -318,9 +328,7 @@ class WorldlinePaymentPlugin(BasePlugin[PaymentOptions]):
         ):
             logger.info("process_payment_status")
 
-            status = WorldlinePaymentStatus(
-                webhook_event.payment.status if webhook_event.payment else None
-            )
+            status = WorldlinePaymentStatus(webhook_event.payment.status)
 
             self.apply_status(
                 payment,
