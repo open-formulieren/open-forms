@@ -1,7 +1,9 @@
 from django.contrib import admin
 
+from solo.admin import SingletonModelAdmin
+
 from ...registry import register
-from .models import OgoneMerchant
+from .models import OgoneMerchant, OgoneWebhookConfiguration
 
 
 @admin.register(OgoneMerchant)
@@ -16,6 +18,8 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
         "endpoint_custom",
         "endpoint",
         "feedback_url",
+        "api_key",
+        "api_secret",
     )
     readonly_fields = (
         "endpoint",
@@ -31,3 +35,8 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
         if not obj:
             return ""
         return register["ogone-legacy"].get_webhook_url(None)
+
+
+@admin.register(OgoneWebhookConfiguration)
+class OgoneWebhookAdmin(SingletonModelAdmin):
+    pass

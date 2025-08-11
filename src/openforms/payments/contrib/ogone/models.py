@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from solo.models import SingletonModel
+
 from .constants import HashAlgorithm, OgoneEndpoints
 
 
@@ -45,9 +47,42 @@ class OgoneMerchant(models.Model):
         help_text=_("Optionally override the preset endpoint"),
     )
 
+    # Worldline migration fields
+    api_key = models.CharField(
+        _("API Key"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "API Key created for the specified PSPID. This value will be used"
+            " when upgrading to a Open Forms version supporting the Worldline"
+            " payment provider."
+        ),
+    )
+    api_secret = models.CharField(
+        _("API Secret"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "API Secret created for the specified PSPID. This value will be used"
+            " when upgrading to a Open Forms version supporting the Worldline"
+            " payment provider."
+        ),
+    )
+
     def __str__(self):
         return self.label
 
     @property
     def endpoint(self):
         return self.endpoint_custom or self.endpoint_preset
+
+
+# Worldline migration model
+class OgoneWebhookConfiguration(SingletonModel):
+    webhook_key_id = models.CharField(_("Webhook Key ID"), max_length=255, default="")
+    webhook_key_secret = models.CharField(
+        _("Webhook Key Secret"), max_length=255, default=""
+    )
+
+    def __str__(self):
+        return self.webhook_key_id

@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 
 from ..models import OgoneMerchant
+from .factories import OgoneWebhookConfigurationFactory
 
 
 class OgoneMerchantTests(SimpleTestCase):
@@ -10,3 +11,10 @@ class OgoneMerchantTests(SimpleTestCase):
         result = str(instance)
 
         self.assertIsInstance(result, str)
+
+
+class OgoneWebhookModelTests(SimpleTestCase):
+    def test_string_represenation(self):
+        configuration = OgoneWebhookConfigurationFactory.build(webhook_key_id="Foobar")
+
+        self.assertEqual(str(configuration), "Foobar")
