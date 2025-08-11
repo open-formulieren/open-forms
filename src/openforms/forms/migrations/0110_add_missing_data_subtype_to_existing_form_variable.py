@@ -37,7 +37,7 @@ def add_data_subtype_to_existing_form_variables(apps: StateApps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0112_alter_formvariable_data_subtype_and_more"),
+        ("forms", "0109_formvariable_data_type_and_data_subtype"),
     ]
 
     operations = [

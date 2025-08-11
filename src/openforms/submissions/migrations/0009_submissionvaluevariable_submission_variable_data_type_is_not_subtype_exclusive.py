@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("submissions", "0011_alter_submissionvaluevariable_data_subtype_and_more"),
+        ("submissions", "0008_submissionvaluevariable_data_type_and_subtype"),
     ]
 
     operations = [
