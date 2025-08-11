@@ -1,5 +1,5 @@
 {% extends "maykin_2fa/login.html" %}
-{% load oidc_client i18n static %}
+{% load mozilla_django_oidc_db i18n static %}
 
 {% block extra_login_options %}
     {% get_oidc_admin_client as oidc_config %}

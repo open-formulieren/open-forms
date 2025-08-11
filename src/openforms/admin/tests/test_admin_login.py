@@ -93,7 +93,7 @@ class OIDCLoginTests(WebTest):
 
         with (
             patch(
-                "mozilla_django_oidc_db.templatetags.oidc_client.OIDC_ADMIN_CONFIG_IDENTIFIER",
+                "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
                 new=admin_client.identifier,
             ),
             patch.object(
@@ -122,7 +122,7 @@ class OIDCLoginTests(WebTest):
 
         with (
             patch(
-                "mozilla_django_oidc_db.templatetags.oidc_client.OIDC_ADMIN_CONFIG_IDENTIFIER",
+                "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
                 new=admin_client.identifier,
             ),
             patch.object(
