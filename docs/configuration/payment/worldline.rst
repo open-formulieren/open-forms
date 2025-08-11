@@ -43,14 +43,14 @@ a *Worldline Webhook configuration* in the admin interface.
 
 10. Save the changes and verify that all configuration is correct.
 
-11. Previous steps were done to setup the redirection between Open Forms and Worldline,
+11. The previous steps configured the redirect flow between Open Forms and Worldline,
     the following steps will configure the webhook integration. Nagivate in the
     Worldline Merchant Portal sidebar to: **Developer** > **Webhooks**
 
 12. Generate webhook credentials by clicking on the **Generate webhook keys**
     and save the **Webhook ID** and **Secret webhook key** values somewhere safe.
 
-13. Head back to the Open Forms admin and navigate to **Miscellaneous** > **Worldline webhook configuration**.
+13. Head back to the Open Forms admin and navigate to **Configuration** > **Worldline webhook configuration**.
 
 14. Copy the **Webhook ID** from step 12 into the **Webhook Key ID** form field and the **Secret webhook key**
     into the **Webhook Key Secret** form field.
