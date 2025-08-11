@@ -18,8 +18,6 @@ from django_webtest import DjangoTestApp
 from mozilla_django_oidc_db.registry import register as oidc_register
 from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
-from openforms.authentication.contrib.org_oidc.oidc_plugins.plugins import OIDCOrgPlugin
-from openforms.authentication.contrib.org_oidc.plugin import OIDCAuthentication
 from openforms.authentication.registry import (
     register as auth_register,
 )
@@ -35,6 +33,8 @@ from openforms.utils.tests.keycloak import (
     mock_get_random_string,
 )
 
+from ..oidc_plugins.plugins import OIDCOrgPlugin
+from ..plugin import OIDCAuthentication
 from .base import IntegrationTestsBase
 
 

@@ -5,9 +5,9 @@ from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
+from openforms.contrib.auth_oidc.typing import OIDCErrors
 from openforms.typing import AnyRequest
 
-from ....contrib.auth_oidc.typing import OIDCErrors
 from ...base import LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...models import AuthInfo

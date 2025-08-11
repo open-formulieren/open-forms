@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Protocol
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -21,8 +21,8 @@ from mozilla_django_oidc_db.plugins import (
 from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.typing import ClaimPath, JSONObject
 from mozilla_django_oidc_db.utils import obfuscate_claims
-from typing_extensions import deprecated
 
+from openforms.contrib.auth_oidc.plugin import OFBaseOIDCPluginProtocol
 from openforms.contrib.auth_oidc.typing import (
     ClaimPathDetails,
     ClaimProcessingInstructions,
@@ -44,21 +44,6 @@ from .schemas import (
 )
 
 logger = structlog.stdlib.get_logger(__name__)
-
-
-class OFBaseOIDCPluginProtocol(Protocol):
-    @deprecated(
-        "These plugin-specific callback URLs are deprecated. "
-        "Instead, use the generic callback URL in urls.py - it"
-        " can handle the different configs."
-    )
-    def _get_legacy_callback(self) -> str:
-        """Get the django URL name of the callback URL."""
-        ...
-
-    def get_sensitive_claims(self) -> list[ClaimPath]: ...
-
-    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions: ...
 
 
 class BaseDigiDeHerkenningPlugin(

@@ -9,7 +9,8 @@ from mozilla_django_oidc_db.registry import register
 from mozilla_django_oidc_db.schemas import ADMIN_OPTIONS_SCHEMA
 from mozilla_django_oidc_db.typing import JSONObject
 
-from ...digid_eherkenning_oidc.oidc_plugins.plugins import OFBaseOIDCPluginProtocol
+from openforms.contrib.auth_oidc.plugin import OFBaseOIDCPluginProtocol
+
 from ..views import callback_view
 from .constants import OIDC_ORG_IDENTIFIER
 
