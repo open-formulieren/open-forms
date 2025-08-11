@@ -41,3 +41,19 @@ class MaxFilesizeMultiPartParser(parsers.MultiPartParser):
         return super().parse(
             stream, media_type=media_type, parser_context=parser_context
         )
+
+
+class PlainTextParser(parsers.BaseParser):
+    """
+    Plain text parser.
+    """
+
+    media_type = "text/plain"
+
+    def parse(
+        self, stream, media_type: str | None = None, parser_context: dict | None = None
+    ) -> str:
+        """
+        Simply return a string representing the body of the request.
+        """
+        return stream.read()
