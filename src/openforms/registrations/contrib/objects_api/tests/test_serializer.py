@@ -40,7 +40,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_invalid_fields_v1(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 1,
                 "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
                 "objecttype_version": 1,
@@ -53,7 +53,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_invalid_fields_v2(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
                 "objecttype_version": 1,
@@ -71,7 +71,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_unknown_informatieobjecttype(self, mock_api_version):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
@@ -97,7 +97,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     ):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
@@ -116,7 +116,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_using_zaaktype_instead_of_informatieobjecttype(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
@@ -135,7 +135,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_unknown_objecttype(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 # Unknown UUID:
                 "objecttype": "3064be01-87cd-45e1-8b57-904e183283d6",
@@ -151,7 +151,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_unknown_objecttype_version(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 999,
@@ -166,7 +166,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_auth_attribute_path_required_if_update_existing_object_is_true(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
@@ -185,7 +185,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
     def test_valid_serializer(self):
         options = ObjectsAPIOptionsSerializer(
             data={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
@@ -199,7 +199,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
 
     def test_catalogue_reference_badly_formatted_data(self):
         base = {
-            "objects_api_group": self.objects_api_group.pk,
+            "objects_api_group": self.objects_api_group.identifier,
             "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             "objecttype_version": 1,
         }
@@ -248,7 +248,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
 
     def test_catalogue_reference_with_api_calls(self):
         base = {
-            "objects_api_group": self.objects_api_group.pk,
+            "objects_api_group": self.objects_api_group.identifier,
             "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             "objecttype_version": 1,
         }
@@ -307,7 +307,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                     data={
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         field: (
                             f"{api_group.catalogi_service.api_root}informatieobjecttypen/"
                             "d1cfb1d8-8593-4814-919d-72e38e80388f"  # part of catalogue OTHER
@@ -327,7 +327,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                     data={
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         field: (
                             f"{api_group.catalogi_service.api_root}informatieobjecttypen/"
                             "29b63e5c-3835-4f68-8fad-f2aea9ae6b71"  # part of catalogue TEST
@@ -351,7 +351,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 data={
                     "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                     "objecttype_version": 1,
-                    "objects_api_group": api_group2.pk,
+                    "objects_api_group": api_group2.identifier,
                     "catalogue": {
                         "domain": "TEST",
                         "rsin": "000000000",
@@ -375,7 +375,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 data={
                     "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                     "objecttype_version": 1,
-                    "objects_api_group": api_group2.pk,
+                    "objects_api_group": api_group2.identifier,
                     "catalogue": {
                         "domain": "OTHER",
                         "rsin": "000000000",
@@ -408,7 +408,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             ):
                 serializer = ObjectsAPIOptionsSerializer(
                     data={
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                         "catalogue": {
@@ -429,7 +429,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             with self.subTest("valid reference", field=field, catalogue_ref="explicit"):
                 serializer = ObjectsAPIOptionsSerializer(
                     data={
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                         "catalogue": {
@@ -449,7 +449,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             ):
                 serializer = ObjectsAPIOptionsSerializer(
                     data={
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                         field: "Attachment Informatieobjecttype other catalog",
@@ -466,7 +466,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             with self.subTest("valid reference", field=field, catalogue_ref="implicit"):
                 serializer = ObjectsAPIOptionsSerializer(
                     data={
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                         field: "PDF Informatieobjecttype",
@@ -493,7 +493,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             with self.subTest(catalogue=case):
                 serializer = ObjectsAPIOptionsSerializer(
                     data={
-                        "objects_api_group": api_group.pk,
+                        "objects_api_group": api_group.identifier,
                         "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                         "objecttype_version": 1,
                         "iot_attachment": "PDF Informatieobjecttype",

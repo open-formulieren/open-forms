@@ -78,7 +78,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             form=submission.form,
             prefill_plugin="objects_api",
             prefill_options={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "variables_mapping": [
@@ -129,7 +129,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             form=submission.form,
             prefill_plugin="objects_api",
             prefill_options={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "variables_mapping": [
@@ -184,7 +184,7 @@ class ObjectsAPIPrefillPluginTests(OFVCRMixin, SubmissionsMixin, APITestCase):
             form=submission.form,
             prefill_plugin="objects_api",
             prefill_options={
-                "objects_api_group": self.objects_api_group.pk,
+                "objects_api_group": self.objects_api_group.identifier,
                 "objecttype_uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 3,
                 "variables_mapping": [
