@@ -537,7 +537,7 @@ kombu==5.5.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-lazy-object-proxy==1.9.0
+lazy-object-proxy==1.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

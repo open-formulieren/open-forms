@@ -329,7 +329,7 @@ jsonschema-specifications==2023.7.1
     #   openapi-schema-validator
 kombu==5.5.2
     # via celery
-lazy-object-proxy==1.9.0
+lazy-object-proxy==1.11.0
     # via openapi-spec-validator
 lxml==5.3.1
     # via
