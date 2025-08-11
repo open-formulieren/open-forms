@@ -358,7 +358,7 @@ class PaymentWebhookView(PaymentFlowBaseView):
         MultiPartParser,
         CamelCaseJSONParser,
         PlainTextParser,
-    )  # TODO: should we derive this from the plugin?
+    )
 
     def _handle_webhook(self, request, *args, **kwargs):
         try:
