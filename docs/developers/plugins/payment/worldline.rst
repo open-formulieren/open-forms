@@ -5,7 +5,7 @@ Worldline payment plugin
 ========================
 
 Developers can setup a local environment to test the Worldline payment plugin. See
-:ref:`_configuration_payment_worldline` on how to setup a **Worldline merchant** and
+:ref:`configuration_payment_worldline` on how to setup a **Worldline merchant** and
 configure webhooks with the **Worldine Webhook configuration**.
 
 Testing webhooks with Ngrok
