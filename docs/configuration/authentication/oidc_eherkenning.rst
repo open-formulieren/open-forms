@@ -89,36 +89,48 @@ Zorg dat je de volgende :ref:`gegevens <configuration_oidc_eherkenning_appgroup>
 * Client ID
 * Client secret
 
-Navigeer vervolgens in de admin naar **Configuratie** > **eHerkenning (OIDC)**.
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC Providers** > **eherkenning-oidc-provider**.
+
+Hier kan je de endpoints van de OIDC provider inrichten. Deze kunnen automatisch
+bepaald worden aan de hand van het discovery endpoint
+(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
+
+#. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
+    van de OpenID Connect provider in (met een ``/`` op het einde),
+    bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
+#. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
+
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC Clients** > **eherkenning-oidc**.
 
 Stel de algemene instellingen in:
 
-1. Vink *Ingeschakeld* aan om OIDC in te schakelen.
-2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
+#. Vink *Ingeschakeld* aan om OIDC in te schakelen.
+#. Selecteer de provider die je net heb geconfigureerd in de **OIDC Provider** dropdown.
+#. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
    ``a7d14516-8b20-418f-b34e-25f53c930948``.
-3. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
+#. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
    ``97d663a9-3624-4930-90c7-2b90635bd990``.
-4. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
+#. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
    de instructies van je OpenID Connect provider.
-5. Vul bij **OpenID sign algorithm** ``RS256`` in.
-6. Laat **Sign key** leeg.
+#. Vul bij **OpenID sign algorithm** ``RS256`` in.
+#. Laat **Sign key** leeg.
 
-Stel dan de claims in:
+Stel dan de eHerkenning specifieke instellingen in de **opties** veld:
 
-7. Vul bij **Soort identificatie-claim** de claim in die aangeeft of het een KVK-nummer
+#. Vul bij **Identity settings** > **Soort identificatie-claim-pad** de claim in die aangeeft of het een KVK-nummer
    of RSIN betreft (merk op: op dit moment ondersteunen we enkel KVK). Indien onbekend,
    dan kan je de standaardwaarde laten staan.
-8. Vul bij **Bedrijfsidenticatie-claim** de claim in die het KVK-nummer (of RSIN,
+#. Vul bij **Identity settings** > **Bedrijfsidenticatie-claim** de claim in die het KVK-nummer (of RSIN,
    toekomst) bevat, bijvoorbeeld ``kvk``.
-9. Vul de claim in die het (eventuele) vestigingsnummer bevat bij
-   **Vestigingsnummer-claim**. Indien onbekend, laat dan de standaardwaarde staan.
-10. Vul bij **Identificatie handelende persoon-claim** de claim in die de identificatie
-    bevat van de medewerker die namens het bedrijf inlogt.
-11. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in (bijvoorbeeld
+#. Vul de claim in die het (eventuele) vestigingsnummer bevat bij
+   **Identity settings** > **Vestigingsnummer-claim**. Indien onbekend, laat dan de standaardwaarde staan.
+#. Vul bij **Identity settings** > **Identificatie handelende persoon-claim** de claim in die de identificatie
+   bevat van de medewerker die namens het bedrijf inlogt.
+#. Voer bij **LoA settings** > **claim path** het pad van de claim in (bijvoorbeeld
     ``authsp_level``) als die bekend is. Indien niet, kies dan bij
-    **Standaardbetrouwbaarheidsniveau** de waarde die meest van toepassing is. Dit wordt
+    **LoA settings** > **default** de waarde die meest van toepassing is. Dit wordt
     enkel gebruikt om vast te leggen met welk betrouwbaarheidsniveau iemand ingelogd is.
-12. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
+#. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
     bijvoorbeeld:
 
     * klik op "Add item"
@@ -126,15 +138,6 @@ Stel dan de claims in:
       tekstveld
     * Selecteer "Non existent" in de **To** dropdown
     * Herhaal voor andere waarden en niveaus
-
-Vervolgens richt je de endpoints van de OIDC provider in, deze kunnen automatisch
-bepaald worden aan de hand van het discovery endpoint
-(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
-
-13. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
-    van de OpenID Connect provider in (met een ``/`` op het einde),
-    bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
-14. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
 
 Klik tot slot linksonder op **Opslaan**.
 

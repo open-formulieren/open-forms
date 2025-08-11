@@ -74,29 +74,41 @@ Zorg dat je de volgende :ref:`gegevens <configuration_oidc_digid_appgroup>` hebt
 * Client ID
 * Client secret
 
-Navigeer vervolgens in de admin naar **Configuratie** > **DigiD (OIDC)**.
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC provider** > **oidc-digid-provider**.
+
+Hier kan je de endpoints van de OIDC provider inrichten. Deze kunnen automatisch
+bepaald worden aan de hand van het discovery endpoint
+(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
+
+#. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
+   van de OpenID Connect provider in (met een ``/`` op het einde),
+   bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
+#. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
+
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC clients** > **oidc-digid**.
 
 Stel de algemene instellingen in:
 
-1. Vink *Ingeschakeld* aan om OIDC in te schakelen.
-2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
+#. Vink *Ingeschakeld* aan om OIDC in te schakelen.
+#. Selecteer de provider die je net heb geconfigureerd in de **OIDC Provider** dropdown.
+#. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
    ``a7d14516-8b20-418f-b34e-25f53c930948``.
-3. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
+#. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
    ``97d663a9-3624-4930-90c7-2b90635bd990``.
-4. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
+#. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
    de instructies van je OpenID Connect provider.
-5. Vul bij **OpenID sign algorithm** ``RS256`` in.
-6. Laat **Sign key** leeg.
+#. Vul bij **OpenID sign algorithm** ``RS256`` in.
+#. Laat **Sign key** leeg.
 
-Stel dan de claims in:
+Stel dan de DigiD specifieke instellingen in de **opties** veld:
 
-7. Laat bij **BSN-claim** de standaardwaarde staan, tenzij de naam van het BSN veld
+#. Laat bij **Identity settings** > **BSN claim path** de standaardwaarde staan, tenzij het pad van het BSN veld
    in de OIDC claims anders is dan ``bsn``.
-8. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in (bijvoorbeeld
+#. Voer bij **LoA settings** > **claim path** het pad van de claim in (bijvoorbeeld
    ``authsp_level``) als die bekend is. Indien niet, kies dan bij
-   **Standaardbetrouwbaarheidsniveau** de waarde die meest van toepassing is. Dit wordt
+   **LoA settings** > **Default** de waarde die meest van toepassing is. Dit wordt
    enkel gebruikt om vast te leggen met welk betrouwbaarheidsniveau iemand ingelogd is.
-9. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
+#. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
    bijvoorbeeld:
 
    * klik op "Add item"
@@ -104,15 +116,6 @@ Stel dan de claims in:
      tekstveld
    * Selecteer "DigiD Basis" in de **To** dropdown
    * Herhaal voor andere waarden en niveaus
-
-Vervolgens richt je de endpoints van de OIDC provider in, deze kunnen automatisch
-bepaald worden aan de hand van het discovery endpoint
-(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
-
-10. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
-    van de OpenID Connect provider in (met een ``/`` op het einde),
-    bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
-11. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
 
 Klik tot slot linksonder op **Opslaan**.
 

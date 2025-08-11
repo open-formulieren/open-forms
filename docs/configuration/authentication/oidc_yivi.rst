@@ -129,33 +129,45 @@ Zorg dat je de volgende :ref:`gegevens <configuration_oidc_yivi_appgroup>` hebt:
 * Client ID
 * Client secret
 
-Navigeer vervolgens in de admin naar **Configuratie** > **Yivi (OIDC)**.
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC provider** > **oidc-yivi-provider**.
+
+Hier kan je de endpoints van de OIDC provider inrichten. Deze kunnen automatisch
+bepaald worden aan de hand van het discovery endpoint
+(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
+
+#. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
+   van de OpenID Connect provider in (met een ``/`` op het einde),
+   bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
+#. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
+
+Navigeer vervolgens in de admin naar **Configuratie** > **OIDC clients** > **oidc-yivi**.
 
 Begin met de algemene instellingen.
 Stel de algemene instellingen in:
 
-1. Vink *Ingeschakeld* aan om OIDC in te schakelen.
-2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
+#. Vink *Ingeschakeld* aan om OIDC in te schakelen.
+#. Selecteer de provider die je net heb geconfigureerd in de **OIDC Provider** dropdown.
+#. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
    ``a7d14516-8b20-418f-b34e-25f53c930948``.
-3. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
+#. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
    ``97d663a9-3624-4930-90c7-2b90635bd990``.
-4. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
+#. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
    de instructies van je OpenID Connect provider.
-5. Vul bij **OpenID sign algorithm** ``RS256`` in.
-6. Laat **Sign key** leeg.
+#. Vul bij **OpenID sign algorithm** ``RS256`` in.
+#. Laat **Sign key** leeg.
 
 Stel dan de claims in:
 
 Beginnend bij de claims gebruikt voor BSN-authenticatie.
 
-7. Voer bij **BSN-claim** de naam van de claim in die het BSN bevat, bijvoorbeeld
-   ``pbdf.gemeente.personalData.bsn``.
-8. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in als die bekend is,
-   bijvoorbeeld ``pbdf.gemeente.personalData.digidlevel``.
-   Indien niet, kies dan bij **Standaardbetrouwbaarheidsniveau** de waarde die het meest
+#. Voer bij **Identity settings** > **BSN claim path** het pad van de claim in die het
+   BSN bevat, bijvoorbeeld ``pbdf.gemeente.personalData.bsn``.
+#. Voer bij **LoA settings** > **BSN loa claim path** het pad van de claim in als die
+   bekend is, bijvoorbeeld ``pbdf.gemeente.personalData.digidlevel``. Indien niet,
+   kies dan bij **LoA settings** > **BSN Default loa** de waarde die het meest
    van toepassing is. Dit wordt enkel gebruikt om vast te leggen met welk
    betrouwbaarheidsniveau iemand ingelogd is.
-9. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus
+#. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus
    toevoegen, bijvoorbeeld:
 
    * klik op "Add item"
@@ -166,54 +178,45 @@ Beginnend bij de claims gebruikt voor BSN-authenticatie.
 
 Vervolgens richt je de claims voor KVK-authenticatie in.
 
-10. Vul bij **kvk-claim** de claim in die het KVK-nummer bevat, bijvoorbeeld
-    ``pbdf.signicat.kvkTradeRegister.kvkNumber``.
-11. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in als die bekend is.
-    Indien niet, kies dan bij **Standaardbetrouwbaarheidsniveau** de waarde die het meest
-    van toepassing is. Dit wordt enkel gebruikt om vast te leggen met welk
-    betrouwbaarheidsniveau iemand ingelogd is.
-12. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus
-    toevoegen, bijvoorbeeld:
+#. Vul bij **Identity settings** > **KvK claim path** de claim in die het KVK-nummer
+   bevat, bijvoorbeeld ``pbdf.signicat.kvkTradeRegister.kvkNumber``.
+#. Voer bij **LoA settings** > **KvK loa claim path** het pad van de claim in als die
+   bekend is. Indien niet, kies dan bij **LoA settings** > **KvK Default loa** de waarde
+   die het meest van toepassing is. Dit wordt enkel gebruikt om vast te leggen met welk
+   betrouwbaarheidsniveau iemand ingelogd is.
+#. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus
+   toevoegen, bijvoorbeeld:
 
-    * klik op "Add item"
-    * Kies "Tekstuele waarde" in de **From** dropdown en voer de waarde ``00`` op in het
-      tekstveld
-    * Selecteer "Non existent" in de **To** dropdown
-    * Herhaal voor andere waarden en niveaus
+   * klik op "Add item"
+   * Kies "Tekstuele waarde" in de **From** dropdown en voer de waarde ``00`` op in het
+     tekstveld
+   * Selecteer "Non existent" in de **To** dropdown
+   * Herhaal voor andere waarden en niveaus
 
 Daarna richt je de claim voor authenticatie met pseudoniem in.
 
-13. De standaard waarde voor **Pseudoniem-claim** zal een Yivi-applicatie unieke waarde
-    opleveren. Indien gewenst kan je dit veranderen naar een andere identificatie waarde,
-    zoals een e-mailadres.
+* De standaard waarde voor **Identity settings** > **Pseudo claim path** zal een Yivi-applicatie unieke waarde
+  opleveren. Indien gewenst kan je dit veranderen naar een andere identificatie waarde,
+  zoals een e-mailadres.
 
-Na de verschillende authenticatie claims richt je de endpoints van de OIDC-provider in,
-deze kunnen automatisch bepaald worden aan de hand van het discovery endpoint
-(``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
-
-14. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
-    van de OpenID Connect provider in (met een ``/`` op het einde),
-    bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
-15. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
-
-Vervolgens kan je de **Attribuutgroepen** instellen. Deze zijn niet noodzakelijk om de
+Vervolgens kan je de **Configuratie** > **Yivi Attribuutgroepen** instellen. Deze zijn niet noodzakelijk om de
 Yivi-plugin te kunnen gebruiken, maar bieden wel meer mogelijkheden voor gebruikers en
 formulierbouwers.
 
-16. Indien gewenst, kan je instellen welke attributen op formulierniveau geconfigureerd
-    kunnen worden, bijvoorbeeld:
+* Indien gewenst, kan je instellen welke attributen op formulierniveau geconfigureerd
+  kunnen worden, bijvoorbeeld:
 
-    * Typ in het **Groepnaam** tekstveld de naam van de groep in. Deze waarde wordt
-      enkel gebruikt om de attributenverzameling herkenbaar te maken in de
-      formulier-editor.
-    * In **Groepsbeschrijving** kan je de groep een begrijpelijke omschrijving geven,
-      hiermee kunnen formulierbouwers gemakkelijk herkennen waar de groep attributen voor
-      dient en welke gegevens ermee verzameld worden.
-    * Typ in het **Attributen**-tekstveld het attribuut dat voor deze groep gebruikt zal
-      worden. Om meerdere attributen in dezelfde groep te plaatsen, klik op "Add item"
-      en herhaal totdat je alle gewenste attributen hebt gedefinieerd.
-    * Voor een volgende attributengroep, klik op "Nog een Attribuutgroep toevoegen" en
-      herhaal de vorige stappen.
+  * Typ in het **Groepnaam** tekstveld de naam van de groep in. Deze waarde wordt
+    enkel gebruikt om de attributenverzameling herkenbaar te maken in de
+    formulier-editor.
+  * In **Groepsbeschrijving** kan je de groep een begrijpelijke omschrijving geven,
+    hiermee kunnen formulierbouwers gemakkelijk herkennen waar de groep attributen voor
+    dient en welke gegevens ermee verzameld worden.
+  * Typ in het **Attributen**-tekstveld het attribuut dat voor deze groep gebruikt zal
+    worden. Om meerdere attributen in dezelfde groep te plaatsen, klik op "Add item"
+    en herhaal totdat je alle gewenste attributen hebt gedefinieerd.
+  * Voor een volgende attributengroep, klik op "Nog een Attribuutgroep toevoegen" en
+    herhaal de vorige stappen.
 
 Klik tot slot linksonder op **Opslaan**.
 
