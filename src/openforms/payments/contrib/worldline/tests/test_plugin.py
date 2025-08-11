@@ -523,15 +523,15 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
             form__payment_backend_options={"merchant": merchant.id},
             form__product__price=Decimal("11.35"),
         )
-        payment = SubmissionPaymentFactory.for_submission(submission)
-        payment.provider_payment_id = "12345"
-        payment.save(update_fields=("provider_payment_id",))
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, provider_payment_id="12345"
+        )
 
         assert payment.status == PaymentStatus.started
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__payment_output__references=ReferencesFactory(
                 merchant_reference="12345"
@@ -578,7 +578,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__payment_output__references=ReferencesFactory(
                 merchant_reference="12345"
@@ -623,7 +623,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__id="12345",
             type="payment.pending_approval",
@@ -671,7 +671,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__id="12345",
             type="payment.pending_approval",
@@ -716,7 +716,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__payment_output__references=ReferencesFactory(
                 merchant_reference="12345"
@@ -763,7 +763,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment__status=_WorldlinePaymentStatus.pending_approval,
             payment__id="unknown",
             type="payment.pending_approval",
@@ -806,7 +806,7 @@ class WorldlinePluginTests(OFVCRMixin, WebTest):
 
         plugin = register["worldline"]
         webhook_url = plugin.get_webhook_url(factory.get("/foo"))
-        data = WebhookEventRequestFactory(
+        data = WebhookEventRequestFactory.build(
             payment={},
             type="foobar",
         )

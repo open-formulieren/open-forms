@@ -15,7 +15,7 @@ class WorldlineMerchantFactory(factory.django.DjangoModelFactory):
         model = WorldlineMerchant
 
 
-class WorldlineWebhookConfigurationFactory(factory.django.DjangoModelFactory):
+class WorldlineWebhookConfigurationFactory(factory.DictFactory):
     webhook_key_id = factory.Faker("uuid4")
     webhook_key_secret = factory.Faker("pystr", min_chars=40, max_chars=40)
 
@@ -24,8 +24,8 @@ class WorldlineWebhookConfigurationFactory(factory.django.DjangoModelFactory):
 
 
 class AmountOfMoneyFactory(factory.DictFactory):
-    amount = factory.Faker("pyint")
-    currency_code = factory.Faker("currency_code")
+    amount = factory.Faker("pyint", min_value=1)
+    currency_code = "EUR"
 
 
 class ReferencesFactory(factory.DictFactory):

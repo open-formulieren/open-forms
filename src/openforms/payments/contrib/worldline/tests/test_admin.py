@@ -15,8 +15,8 @@ from .factories import WorldlineMerchantFactory
 class WorldlineMerchantAdminTest(WebTest):
     def test_merchant_detail_page(self):
         user = SuperUserFactory.create()
-
         url = reverse("admin:payments_worldline_worldlinemerchant_add")
+
         response = self.app.get(url, user=user)
 
         self.assertEqual(200, response.status_code)
@@ -33,9 +33,9 @@ class WorldlineMerchantAdminTest(WebTest):
             self.assertEqual(200, response.status_code)
             self.assertNotContains(response, webhook_url)
 
-        WorldlineMerchantFactory()
-
         with self.subTest("Overview with entries"):
+            WorldlineMerchantFactory.create()
+
             response = self.app.get(url, user=user)
 
             self.assertEqual(200, response.status_code)
