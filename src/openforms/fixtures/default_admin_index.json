@@ -243,6 +243,10 @@
                 "prefillconfig"
             ],
             [
+                "payments_worldline",
+                "worldlinewebhookconfiguration"
+            ],
+            [
                 "simple_certmanager",
                 "certificate"
             ],

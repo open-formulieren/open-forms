@@ -18,7 +18,6 @@
     "of_authentication.RegistratorInfo",
     "payments_ogone.OgoneMerchant",
     "payments_worldline.WorldlineMerchant",
-    "payments_worldline.WorldlineWebhookConfiguration",
     "haalcentraal.HaalCentraalConfig",
     "qmatic.QmaticConfig",
     "registrations_email.EmailConfig",
