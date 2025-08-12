@@ -854,7 +854,7 @@ class ComponentModificationTests(TestCase):
             "Some data that must not be cleared!", submission_step.data["textField"]
         )
 
-    @tag("gh-2324")
+    @tag("gh-5520")
     @unittest.expectedFailure
     def test_component_visible_with_date(self):
         """
