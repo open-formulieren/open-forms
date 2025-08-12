@@ -235,6 +235,10 @@
                 "prefillconfig"
             ],
             [
+                "payments_ogone",
+                "ogonewebhookconfiguration"
+            ],
+            [
                 "simple_certmanager",
                 "certificate"
             ],
