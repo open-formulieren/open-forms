@@ -103,6 +103,16 @@ services:
         RELEASE: ${TAG:-latest}
         SDK_RELEASE: ${SDK_TAG:-latest}
     image: openformulieren/open-forms:${TAG:-latest}
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - '-c'
+        - 'import requests; exit(requests.head("http://localhost:8000/admin/login/").status_code not in [200, 302])'
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     environment: *x-app-env
     volumes: &web_volumes
       - media:/app/media
