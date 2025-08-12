@@ -1,6 +1,10 @@
+import time
+
+from django.http import JsonResponse
 from django.urls import include, path
 from django.views.generic import RedirectView
 
+import structlog
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularJSONAPIView,
@@ -70,7 +74,19 @@ router.register("service-fetch-configurations", ServiceFetchConfigurationViewSet
 # configuration
 router.register("themes", ThemeViewSet, basename="themes")
 
+
+logger = structlog.stdlib.get_logger()
+
+
+def slow_view(request) -> JsonResponse:
+    logger.info("sleeping...")
+    time.sleep(10)
+    logger.info("returning!")
+    return JsonResponse({"ok": True})
+
+
 urlpatterns = [
+    path("slow", slow_view),
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
     # API documentation
     path(

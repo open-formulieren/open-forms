@@ -28,6 +28,7 @@ python src/manage.py migrate
 >&2 echo "Starting server"
 exec uwsgi \
     --strict \
+    --listen 10 \
     --ini "${SCRIPTPATH}/uwsgi.ini" \
     --http :$uwsgi_port \
     --http-keepalive \

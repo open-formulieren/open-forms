@@ -17,6 +17,8 @@ x-labels: &x-labels
   app: openforms
 
 x-app-env: &x-app-env
+  - UWSGI_PROCESSES=1
+  - UWSGI_THREADS=1
   - DJANGO_SETTINGS_MODULE=openforms.conf.docker
   - SECRET_KEY=${SECRET_KEY:-@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$$did4z5hun4a}
   - DB_NAME=openforms
