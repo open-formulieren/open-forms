@@ -854,11 +854,11 @@ class ComponentModificationTests(TestCase):
             "Some data that must not be cleared!", submission_step.data["textField"]
         )
 
-    @tag("gh-2324")
+    @tag("gh-5520")
     @unittest.expectedFailure
     def test_component_visible_with_date(self):
         """
-        Assert that the textfield is not cleared, as the conditional cause it to be
+        Assert that the textfield is not cleared, as the conditional causes it to be
         visible. This currently fails because the value is not converted to a date
         object, whereas the submitted data for the date field is. Comparing a plain
         string with a date object will always fail.
