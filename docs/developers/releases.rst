@@ -103,7 +103,7 @@ point for the changelog entry:
         --date=format:"%Y-%m-%d" \
         --cherry \
         --decorate=auto \
-        --pretty=format:"* %s %d"
+        --pretty=format:"* %s %d" \
         --reverse
 
 **Bumping the version**

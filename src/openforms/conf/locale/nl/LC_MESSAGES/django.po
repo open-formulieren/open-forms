@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-24 09:48+0200\n"
-"PO-Revision-Date: 2025-07-24 11:31+0200\n"
+"POT-Creation-Date: 2025-08-12 12:36+0200\n"
+"PO-Revision-Date: 2025-08-12 12:39+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -4440,7 +4440,7 @@ msgid "The (unique) identifier pointing to a particular decision definition."
 msgstr "De (unieke) identifier voor een beslisdefinitie"
 
 #: openforms/dmn/api/serializers.py:23 openforms/dmn/api/serializers.py:36
-#: openforms/payments/contrib/ogone/models.py:10
+#: openforms/payments/contrib/ogone/models.py:12
 #: openforms/plugins/api/serializers.py:14
 #: openforms/prefill/api/serializers.py:73
 #: openforms/registrations/api/serializers.py:34
@@ -5671,10 +5671,12 @@ msgid "Show form"
 msgstr "Toon formulier"
 
 #: openforms/forms/admin/form.py:293
+#, python-brace-format
 msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
 #: openforms/forms/admin/form.py:312
+#, python-brace-format
 msgid "{} {} was successfully exported"
 msgstr "{} {} is met succes geëxporteerd"
 
@@ -5769,6 +5771,7 @@ msgid "Success! You will receive an email when your export is ready."
 msgstr "Gelukt! U ontvangt een e-mail zodra de export gereed is."
 
 #: openforms/forms/admin/views.py:96
+#, python-brace-format
 msgid "Something went wrong while importing form: {}"
 msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
 
@@ -8259,58 +8262,93 @@ msgstr "Ogone testomgeving"
 msgid "Ogone Live"
 msgstr "Ogone productieomgeving"
 
-#: openforms/payments/contrib/ogone/models.py:12
+#: openforms/payments/contrib/ogone/models.py:14
 msgid "Human readable label"
 msgstr "Eenvoudige naam"
 
-#: openforms/payments/contrib/ogone/models.py:16
+#: openforms/payments/contrib/ogone/models.py:18
 msgid "PSPID"
 msgstr "PSPID"
 
-#: openforms/payments/contrib/ogone/models.py:18
+#: openforms/payments/contrib/ogone/models.py:20
 msgid "Ogone PSPID"
 msgstr "Ogone PSPID"
 
-#: openforms/payments/contrib/ogone/models.py:21
+#: openforms/payments/contrib/ogone/models.py:23
 msgid "SHA-IN passphrase"
 msgstr "SHA-IN wachtwoord"
 
-#: openforms/payments/contrib/ogone/models.py:23
-#: openforms/payments/contrib/ogone/models.py:28
-#: openforms/payments/contrib/ogone/models.py:34
+#: openforms/payments/contrib/ogone/models.py:25
+#: openforms/payments/contrib/ogone/models.py:30
+#: openforms/payments/contrib/ogone/models.py:36
 msgid "This must match with the Ogone backend"
 msgstr "Deze moet overeenkomen met de Ogone backend"
 
-#: openforms/payments/contrib/ogone/models.py:26
+#: openforms/payments/contrib/ogone/models.py:28
 msgid "SHA-OUT passphrase"
 msgstr "SHA-OUT wachtwoord"
 
-#: openforms/payments/contrib/ogone/models.py:31
+#: openforms/payments/contrib/ogone/models.py:33
 msgid "Hash algorithm"
 msgstr "Hash algorithme"
 
-#: openforms/payments/contrib/ogone/models.py:38
-#: openforms/payments/contrib/ogone/models.py:58
+#: openforms/payments/contrib/ogone/models.py:40
+#: openforms/payments/contrib/ogone/models.py:82
 msgid "Preset endpoint"
 msgstr "Vooraf ingestelde URL"
 
-#: openforms/payments/contrib/ogone/models.py:41
+#: openforms/payments/contrib/ogone/models.py:43
 msgid "Select a common preset endpoint"
 msgstr "Selecteer een gemeenschappelijk vooraf ingestelde URL"
 
-#: openforms/payments/contrib/ogone/models.py:44
-#: openforms/payments/contrib/ogone/models.py:58
+#: openforms/payments/contrib/ogone/models.py:46
+#: openforms/payments/contrib/ogone/models.py:82
 msgid "Custom endpoint"
 msgstr "Aangepaste URL"
 
-#: openforms/payments/contrib/ogone/models.py:46
+#: openforms/payments/contrib/ogone/models.py:48
 msgid "Optionally override the preset endpoint"
 msgstr "Optioneel de vooraf ingestelde URL overschrijven"
 
+#: openforms/payments/contrib/ogone/models.py:53
+msgid "API Key"
+msgstr "API Key"
+
 #: openforms/payments/contrib/ogone/models.py:57
+msgid ""
+"API Key created for the specified PSPID. This value will be used when "
+"upgrading to a Open Forms version supporting the Worldline payment provider."
+msgstr ""
+"API Key aangemaakt voor de specifieke PSPID. Deze waarde zal gebruikt worden tijdens het upgraden naar een Open Forms versie die de nieuwe Worldline\n"
+"betalingsprovider ondersteunt."
+
+#: openforms/payments/contrib/ogone/models.py:63
+#, fuzzy
+#| msgid "secret"
+msgid "API Secret"
+msgstr "secret"
+
+#: openforms/payments/contrib/ogone/models.py:67
+msgid ""
+"API Secret created for the specified PSPID. This value will be used when "
+"upgrading to a Open Forms version supporting the Worldline payment provider."
+msgstr ""
+"API Secret aangemaakt voor de specifieke PSPID. Deze waarde zal gebruikt "
+"worden tijdens het upgraden naar een Open Forms versie die de nieuwe "
+"Worldline betalingsprovider ondersteunt."
+
+#: openforms/payments/contrib/ogone/models.py:81
 #, python-brace-format
 msgid "Specify either '{preset}' or '{custom}'"
 msgstr "Specificeer '{preset}' of '{custom}'"
+
+#: openforms/payments/contrib/ogone/models.py:89
+msgid "Webhook Key ID"
+msgstr "Webhook Key ID"
+
+#: openforms/payments/contrib/ogone/models.py:91
+msgid "Webhook Key Secret"
+msgstr "Webhook Key Secret"
 
 #: openforms/payments/contrib/ogone/plugin.py:40
 msgid "Merchant to use"
