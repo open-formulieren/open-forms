@@ -779,8 +779,9 @@
     "originalDefault": "Plugin"
   },
   "DaG+4u": {
-    "defaultMessage": "Partners roltype",
+    "defaultMessage": "Partners-roltype",
     "description": "ZGW-APIs registration options 'partnersRoltype' label",
+    "isTranslated": true,
     "originalDefault": "Partners roltype"
   },
   "DaxIUG": {
@@ -876,7 +877,7 @@
     "originalDefault": "Merchant ID"
   },
   "F4SQsB": {
-    "defaultMessage": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user.",
+    "defaultMessage": "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor het maken van notities voor later gebruik of voor een andere beheerder.",
     "description": "Internal form remarks field help text",
     "originalDefault": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
   },
@@ -1216,7 +1217,7 @@
     "originalDefault": "Component {label} requires login, but this form step doesn't have the login marked as required."
   },
   "K3xA0z": {
-    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.",
+    "defaultMessage": "Omschrijving van het ROLTYPE te gebruiken voor medewerkers die een formulier invullen voor een inwoner/bedrijf.",
     "description": "ZGW-APIs registration options 'medewerkerRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
   },
@@ -1581,7 +1582,7 @@
     "originalDefault": "Presentation / appearance"
   },
   "PtKaEy": {
-    "defaultMessage": "The description that will be used in partners registration.",
+    "defaultMessage": "De omschrijving die gebruikt wordt voor het registreren van partners (als betrokkene).",
     "description": "ZGW APIs registration options 'partnersDescription' help text",
     "originalDefault": "The description that will be used in partners registration."
   },
@@ -2302,7 +2303,7 @@
     "originalDefault": "Content for the introduction page that leads to the start page of the form. Leave blank to disable the introduction page."
   },
   "dzIRgm": {
-    "defaultMessage": "Partners description",
+    "defaultMessage": "Omschrijving partners",
     "description": "ZGW APIs registration options 'partnersDescription' label",
     "originalDefault": "Partners description"
   },
@@ -2668,7 +2669,7 @@
     "originalDefault": "Resulting string"
   },
   "jUYCwO": {
-    "defaultMessage": "Internal remarks",
+    "defaultMessage": "Interne opmerkingen",
     "description": "Internal form remarks field label",
     "originalDefault": "Internal remarks"
   },
@@ -2733,7 +2734,7 @@
     "originalDefault": "Whether to show a link to the main website on the confirmation page."
   },
   "kDmazg": {
-    "defaultMessage": "Plugin configuration: Worldline",
+    "defaultMessage": "Plugin-instellingen: Worldline",
     "description": "Worldline options modal title",
     "originalDefault": "Plugin configuration: Worldline"
   },
@@ -2953,7 +2954,7 @@
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
   },
   "obB1ik": {
-    "defaultMessage": "Which merchant should be used for payments related to this form.",
+    "defaultMessage": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier.",
     "description": "Worldline payment options 'merchant' help text",
     "originalDefault": "Which merchant should be used for payments related to this form."
   },
@@ -3406,6 +3407,7 @@
   "xTcRPO": {
     "defaultMessage": "Merchant",
     "description": "Worldline payment options 'merchant' label",
+    "isTranslated": true,
     "originalDefault": "Merchant"
   },
   "xTfMk5": {
@@ -3454,7 +3456,7 @@
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
   },
   "yO/Vkd": {
-    "defaultMessage": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners.",
+    "defaultMessage": "Omschrijving van het ROLTYPE voor de registratie van de partners (als betrokkene) van de burger die het formulier invult.",
     "description": "ZGW-APIs registration options 'partnersRoltype' help text",
     "originalDefault": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
   },

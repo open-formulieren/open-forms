@@ -1799,7 +1799,7 @@
   "DaG+4u": [
     {
       "type": 0,
-      "value": "Partners roltype"
+      "value": "Partners-roltype"
     }
   ],
   "DaxIUG": [
@@ -2023,7 +2023,7 @@
   "F4SQsB": [
     {
       "type": 0,
-      "value": "Remarks or intentions about the form. Can also be used to save notes for later use or for another admin user."
+      "value": "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor het maken van notities voor later gebruik of voor een andere beheerder."
     }
   ],
   "F9ew4C": [
@@ -2577,7 +2577,7 @@
   "K3xA0z": [
     {
       "type": 0,
-      "value": "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+      "value": "Omschrijving van het ROLTYPE te gebruiken voor medewerkers die een formulier invullen voor een inwoner/bedrijf."
     }
   ],
   "KClY/2": [
@@ -3169,7 +3169,7 @@
   "PtKaEy": [
     {
       "type": 0,
-      "value": "The description that will be used in partners registration."
+      "value": "De omschrijving die gebruikt wordt voor het registreren van partners (als betrokkene)."
     }
   ],
   "PtZ96W": [
@@ -4844,7 +4844,7 @@
   "dzIRgm": [
     {
       "type": 0,
-      "value": "Partners description"
+      "value": "Omschrijving partners"
     }
   ],
   "e09gXO": [
@@ -5600,7 +5600,7 @@
   "jUYCwO": [
     {
       "type": 0,
-      "value": "Internal remarks"
+      "value": "Interne opmerkingen"
     }
   ],
   "jV58dA": [
@@ -5760,7 +5760,7 @@
   "kDmazg": [
     {
       "type": 0,
-      "value": "Plugin configuration: Worldline"
+      "value": "Plugin-instellingen: Worldline"
     }
   ],
   "kHn5Yw": [
@@ -6236,7 +6236,7 @@
   "obB1ik": [
     {
       "type": 0,
-      "value": "Which merchant should be used for payments related to this form."
+      "value": "Welke merchant dient gebruikt te worden voor betalingen voor dit formulier."
     }
   ],
   "oqv4fM": [
@@ -7284,7 +7284,7 @@
   "yO/Vkd": [
     {
       "type": 0,
-      "value": "Description (omschrijving) of the ROLTYPE to use for citizens filling in a form with partners."
+      "value": "Omschrijving van het ROLTYPE voor de registratie van de partners (als betrokkene) van de burger die het formulier invult."
     }
   ],
   "yQUV3M": [

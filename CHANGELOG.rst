@@ -6,19 +6,25 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.3.0 "???" (2025-Q3)
-=====================
+3.3.0-alpha.0 (2025-08-25)
+==========================
 
-...
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
 
+To upgrade to 3.3, please:
+
+* ⚠️ Ensure you upgrade to Open Forms 3.2.x before upgrading to the 3.3 release series.
+* ⚠️ Plan an upgrade window to address the warnings below.
+
 .. warning:: Schedule the upgrade for off-peak hours. Some of the database migrations
    need to lock the entire table and/or can take a long time depending on the amount of
-   data. Some benchmarks on one million of rows showed a migration time of around 20
-   seconds, so anywhere between 10 seconds - 5 minutes can be expected as a normal
-   completion time depending on your data and available resources for the database.
+   data. Some benchmarks on one million of rows in the submission variables table
+   (~ 120K submissions) showed a migration time of around 20 seconds, so anywhere
+   between 10 seconds - 5 minutes can be expected as a normal completion time depending
+   on your data and available resources for the database.
 
 .. warning::
 
@@ -42,16 +48,81 @@ Upgrade procedure
     guards against the use of keys that are already present in the static variables, but this
     does not cover old forms and newly-added static variables.
 
-Major features
---------------
-
-...
-
 Detailed changes
 ----------------
 
-...
+**New features**
 
+* [:backend:`5478`] Added additional Yivi documentation.
+* [:backend:`5451`, :backend:`3999`] Added Open Telemetry support. The following metrics
+  are now exposed:
+
+    - HTTP request durations.
+    - Number of "active requests".
+    - Number of users, logins, logouts, failed logins, axes lockouts.
+    - Submission starts, completions, paused and steps submitted.
+    - Total amount of submissions by form or lifecycle stage.
+    - Attachment file sizes and amount uploaded.
+
+* [:backend:`2324`] Reworked part of the logic engine in preparation of further
+  performance improvements, so that we can correctly reason about variable data types.
+* [:backend:`4879`] You can now use the "Worldline" payment provider, which is the
+  successor to Ogone legacy.
+* [:sdk:`825`] Added children component and updated email digest.
+* [:backend:`5382`] Forms now have an internal remarks field.
+* [:backend:`5268`] Added "Partners Roltype" and "Partners omschrijving" registration
+  configuration options for the ZGW APIs and StUF-ZDS registration plugins.
+* [:backend:`5428`] Updated the eIDAS (OIDC) LoA-Levels.
+
+**Bugfixes**
+
+* [:backend:`5384`] Fixed form export references to Objects API groups which can be
+  provisioned through setup-configuration.
+* [:backend:`5527`] Fixed all step data being returned during logic check of saved
+  submission step instead of only the data that has changed.
+* [:backend:`5475`] Fixed Yivi claims with periods not being usable in logic.
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you
+  have logic rules that use the ``reduce`` operation.
+* [:backend:`5481`] Fixed user defined variables not being queried based on the form of
+  the current submission.
+* [:backend:`5471`] Fixed BRP "doelbinding" advanced options not becoming available
+  when using family members components.
+* [:backend:`5340`] Fixed error handling during the validation of registration backends.
+* [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
+* [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+* Fixed a crash when rendering e-mail HTML where links (anchor tags) contain bold or
+  italic formatting elements.
+
+**Project maintenance**
+
+* It's now possible to serve static assets with the reverse proxy (nginx) instead of the
+  application server (uwsgi) through the ``STATIC_ROOT_VOLUME`` environment variable.
+  Check the ``docker-compose.yml`` for a sample setup.
+* Addressed some more test flakiness.
+* [:backend:`5131`] Upgraded OIDC related packages.
+  * django-digid-eherkenning from 0.22.1 to 0.23.0
+  * mozilla-django-oidc-db from 0.22.0 to 0.25.0
+  * django-setup-configuration from 0.6.0 to 0.8.2
+* [:backend:`5356`] Updated django-digid-eherkenning which contains various UX improvements.
+* [:backend:`5331`] Enabled extra type checking and fixed several type checking errors.
+* Changed some primary key fields to bigint for tables that are frequently inserted into.
+* Applied several best practices to the ``uwsgi`` configuration.
+* Added CI check to detect missing frontend translations.
+* Removed absolete ansible deployment example.
+* Upgraded frontend dependencies reported by ``npm audit``.
+* [:backend:`5447`] Added an upgrade check to require version 3.2.0 before upgrading to
+  3.3.0.
+* Removed unused validation code.
+* Enabled django-specific linter rules and fixed the violations.
+* Replaced several code components with maykin-common dependency equivalent.
+  * PDF generation
+  * Admin env info
+  * Server error page
+  * System checks
+  * Schema hook
+  * Admin MFA integration
+  * Admin index integration
+* Removed the obsoleted form price logic model.
 
 3.2.1 (2025-08-19)
 ==================
@@ -109,6 +180,7 @@ Regular bugfix release.
 * [:backend:`5466`] Fixed translations for the cookie banner.
 * [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+
 
 3.2.0 "Nimma" (2025-07-11)
 ==========================
