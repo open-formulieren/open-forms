@@ -1,14 +1,12 @@
-from datetime import datetime
+from datetime import time
 from typing import Any
 
-from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
-from django.utils.dateparse import parse_date, parse_time
+from django.template.defaultfilters import time as fmt_time, yesno
 from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
 
 import structlog
-from glom import glom
 
 from ..typing import (
     Component,
@@ -62,8 +60,8 @@ class EmailFormatter(FormatterBase):
 
 
 class TimeFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_time(parse_time(value))
+    def format(self, component: Component, value: time | None) -> str:
+        return fmt_time(value)
 
 
 class PhoneNumberFormatter(FormatterBase):
@@ -135,28 +133,10 @@ class SelectBoxesFormatter(FormatterBase):
 
 
 class SelectFormatter(FormatterBase):
-    def format(self, component: SelectComponent, value: str | dict) -> str:
-        # grab appointment specific data
-        if glom(component, "appointments.showDates", default=False):
-            assert isinstance(value, str)
-            return fmt_date(parse_date(value))
-        elif glom(component, "appointments.showTimes", default=False):
-            # strip the seconds from a full ISO datetime
-            assert isinstance(value, str)
-            return fmt_time(datetime.fromisoformat(value))
-        elif glom(component, "appointments.showLocations", default=False) or glom(
-            component, "appointments.showProducts", default=False
-        ):
-            if isinstance(value, dict):
-                return value["name"]
-            else:
-                # shouldn't happen
-                return str(value)
-        else:
-            # regular value select
-            values = component["data"].get("values") or []
-            assert isinstance(value, str)
-            return get_value_label(values, value)
+    def format(self, component: SelectComponent, value: str) -> str:
+        values = component["data"].get("values") or []
+        assert isinstance(value, str)
+        return get_value_label(values, value)
 
 
 class CurrencyFormatter(FormatterBase):

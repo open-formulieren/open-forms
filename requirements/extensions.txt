@@ -225,7 +225,7 @@ django-axes==6.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-camunda==0.15.0
+django-camunda==0.15.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

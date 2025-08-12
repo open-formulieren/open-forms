@@ -204,7 +204,7 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     @property
     def data(self) -> FormioData:
         values_state = self.submission.load_submission_value_variables_state()
-        step_data = values_state.get_data(self)
+        step_data = values_state.get_data(submission_step=self)
         if self._unsaved_data:
             step_data.update(self._unsaved_data)
         return step_data

@@ -71,7 +71,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step_2.can_submit)
 
-        evaluate_form_logic(submission, submission_step_2, submission.data)
+        evaluate_form_logic(submission, submission_step_2)
 
         self.assertFalse(submission_step_2.can_submit)
 
@@ -131,7 +131,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step_2.is_applicable)
 
-        evaluate_form_logic(submission, submission_step_1, submission.data)
+        evaluate_form_logic(submission, submission_step_1)
         submission_state = submission.load_execution_state()
         updated_step_2 = submission_state.get_submission_step(
             form_step_uuid=str(step2.uuid)
@@ -199,7 +199,7 @@ class StepModificationTests(TestCase):
         # _is_applicable = None by default -> should look at form_step.is_applicable:
         self.assertFalse(submission_step_2.is_applicable)
 
-        evaluate_form_logic(submission, submission_step_1, submission.data)
+        evaluate_form_logic(submission, submission_step_1)
         submission_state = submission.load_execution_state()
         updated_step_2 = submission_state.get_submission_step(
             form_step_uuid=str(step2.uuid)
@@ -246,7 +246,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -290,7 +290,7 @@ class StepModificationTests(TestCase):
         self.assertTrue(submission_step.can_submit)
 
         with freeze_time("2020-01-01"):
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -393,7 +393,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -441,7 +441,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -479,7 +479,7 @@ class StepModificationTests(TestCase):
 
         self.assertTrue(submission_step.can_submit)
 
-        evaluate_form_logic(submission, submission_step, submission.data)
+        evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)
 
@@ -509,7 +509,7 @@ class StepModificationTests(TestCase):
         )
 
         # This shouldn't raise an error
-        evaluate_form_logic(submission, submission_step, submission_step.data)
+        evaluate_form_logic(submission, submission_step)
 
     def test_datetime_trigger(self):
         form = FormFactory.create()
@@ -554,6 +554,6 @@ class StepModificationTests(TestCase):
         with freeze_time(
             "2023-01-16T16:00:00+01:00"
         ):  # The start of construction is 48h in the future
-            evaluate_form_logic(submission, submission_step, submission.data)
+            evaluate_form_logic(submission, submission_step)
 
         self.assertFalse(submission_step.can_submit)

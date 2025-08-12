@@ -80,8 +80,9 @@ class JsonSummaryTests(TestCase):
             disable_autoescape=True,
         )
 
-        # double quotes are escaped by json.dumps() and not by our html_escape_json function
-        # that's why we expect the text not be escaped except for the double quotes
+        # double quotes are escaped by json.dumps() and not by our
+        # recursively_escape_html_strings function that's why we expect the text not be
+        # escaped except for the double quotes
         expected = '{"formstep-slug": {"voornaam": "<script>alert();</script>\\"\\""}}'
 
         self.assertEqual(rendered, expected)
@@ -119,6 +120,72 @@ class JsonSummaryTests(TestCase):
         )
 
         self.assertEqual(rendered, "{}")
+
+    def test_render_json_with_date_and_time_related_components(self):
+        form = FormFactory.create()
+        step = SubmissionStepFactory.create(
+            submission__form=form,
+            submission__form_url="https://example.com/some-form",
+            submission__completed=True,
+            form_step__form=form,
+            form_step__form_definition__slug="formstep-slug",
+            form_step__form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                    },
+                    {
+                        "key": "dateMultiple",
+                        "type": "date",
+                        "multiple": True,
+                    },
+                    {
+                        "key": "datetime",
+                        "type": "datetime",
+                    },
+                    {
+                        "key": "datetimeMultiple",
+                        "type": "datetime",
+                        "multiple": True,
+                    },
+                    {
+                        "key": "time",
+                        "type": "time",
+                    },
+                    {
+                        "key": "timeMultiple",
+                        "type": "time",
+                        "multiple": True,
+                    },
+                ],
+            },
+            data={
+                "date": "2000-01-01",
+                "dateMultiple": ["2000-01-01", "2000-01-02"],
+                "datetime": "2000-01-01T12:34:56Z",
+                "datetimeMultiple": ["2000-01-01T12:34:56Z", "2000-01-02T11:22:33Z"],
+                "time": "12:34:56",
+                "timeMultiple": ["12:34:56", "11:22:33"],
+            },
+        )
+
+        rendered = render_from_string(
+            "{% json_summary %}",
+            context={"_submission": step.submission},
+            backend=openforms_backend,
+            disable_autoescape=True,
+        )
+
+        expected = (
+            '{"formstep-slug": {"date": "2000-01-01", "dateMultiple": '
+            '["2000-01-01", "2000-01-02"], "datetime": "2000-01-01T12:34:56Z", '
+            '"datetimeMultiple": ["2000-01-01T12:34:56Z", "2000-01-02T11:22:33Z"], '
+            '"time": "12:34:56", "timeMultiple": ["12:34:56", "11:22:33"]}}'
+        )
+
+        self.assertEqual(rendered, expected)
 
 
 class AsGeoJsonTests(TestCase):

@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from datetime import datetime, time
 from typing import TYPE_CHECKING
 
 from django.conf import settings
 
-from openforms.registrations.contrib.objects_api.utils import html_escape_json
-from openforms.typing import JSONObject, JSONValue
+from openforms.registrations.contrib.objects_api.utils import (
+    recursively_escape_html_strings,
+)
+from openforms.typing import JSONObject, VariableValue
 from openforms.utils.date import parse_date
 
 if TYPE_CHECKING:
@@ -34,26 +38,18 @@ def check_initial_value(initial_value: JSONObject, data_type: str) -> JSONObject
         return DEFAULT_INITIAL_VALUE[data_type]
 
 
-def get_variables_for_context(submission: "Submission") -> dict[str, JSONValue]:
-    """Return the key/value pairs of static variables and submission variables.
-
-    This returns the saved component variables and user defined variables for a submission, plus the static variables
-    (which are never saved). Note that depending on when it is called, the 'auth' static variables
-    (auth_bsn, auth_kvk...) can be already hashed.
+def get_variables_for_context(submission: Submission) -> dict[str, VariableValue]:
     """
-    from openforms.formio.service import FormioData
+    Return the key/value pairs of data in the state (static, user-defined, and component
+    variables). If specified in the settings, strings will be escaped for HTML.
 
-    from .service import get_static_variables
+    Note that depending on when it is called, the 'auth' static variables (auth_bsn,
+    auth_kvk...) can be already hashed.
+    """
+    state = submission.load_submission_value_variables_state()
+    data = state.get_data(include_static_variables=True).data
 
-    data = submission.data.data
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        data = html_escape_json(data)
+        data = recursively_escape_html_strings(data)
 
-    formio_data = FormioData(
-        **{
-            variable.key: variable.initial_value
-            for variable in get_static_variables(submission=submission)
-        },
-        **data,
-    )
-    return formio_data.data
+    return data

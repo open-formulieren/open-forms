@@ -283,6 +283,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 if self.json_renderer_path
                 else self.key
             )
+            path = f"{self.path}.{self.key}" if self.path else self.key
 
             yield EditGridGroupNode(
                 step_data=self.step_data,
@@ -290,7 +291,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 group_index=node_index,
-                path=self.key,
+                path=path,
                 json_renderer_path=json_renderer_path,
                 configuration_path=f"{self.configuration_path}.components",
             )

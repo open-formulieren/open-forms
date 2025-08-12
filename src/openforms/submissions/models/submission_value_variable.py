@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.db.models.constraints import CheckConstraint
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.utils.functional import empty
@@ -14,6 +15,12 @@ from django.utils.translation import gettext_lazy as _
 import structlog
 
 from openforms.formio.service import FormioData
+from openforms.formio.typing import Component
+from openforms.formio.utils import (
+    get_component_data_subtype,
+    get_component_datatype,
+    iter_components,
+)
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import JSONEncodable, JSONObject, JSONSerializable, VariableValue
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
@@ -61,18 +68,44 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
-    def get_data(self, submission_step: SubmissionStep | None = None) -> FormioData:
-        """Return the values of the dynamic variables in the submission."""
-        submission_variables = self.saved_variables
+    def get_data(
+        self,
+        *,
+        submission_step: SubmissionStep | None = None,
+        include_unsaved=False,
+        include_static_variables=False,
+    ) -> FormioData:
+        """Return the values of the variables from the submission (step) in a
+        ``FormioData`` instance.
+
+        .. warning::
+
+            ``FormioData`` supports nested-key access ("foo.bar"), which means you
+            should NOT iterate over the values using ``FormioData.items()``, but rather
+            get the value using ``FormioData.get(key)``. See the docstring of
+            ``FormioData`` for more details.
+
+        :param submission_step: Submission step. If passed, only variables in this step
+          will be returned.
+        :param include_unsaved: Whether to include unsaved variables.
+        :param include_static_variables: Whether to include static variables.
+        """
+
         if submission_step:
-            submission_variables = self.get_variables_in_submission_step(
-                submission_step, include_unsaved=False
+            variables = self.get_variables_in_submission_step(
+                submission_step, include_unsaved
             )
+        else:
+            variables = self.variables if include_unsaved else self.saved_variables
 
         data = FormioData()
-        for variable_key, variable in submission_variables.items():
+        for variable in variables.values():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                data[variable_key] = variable.value
+                data[variable.key] = variable.to_python()
+
+        if include_static_variables:
+            data.update(self.get_static_data())
+
         return data
 
     def get_variables_in_submission_step(
@@ -129,7 +162,7 @@ class SubmissionValueVariablesState:
                 continue
             submission_value_variable.form_variable = all_form_variables[variable_key]
 
-        # finally, add in the unsaved variables from defualt values
+        # finally, add in the unsaved variables from default values
         for variable_key, form_variable in all_form_variables.items():
             # if the key exists from the saved values in the DB, do nothing
             if variable_key in all_submission_variables:
@@ -148,6 +181,8 @@ class SubmissionValueVariablesState:
                 value=form_variable.get_initial_value(),
                 is_initially_prefilled=(form_variable.prefill_plugin != ""),
                 configuration=configuration,
+                data_type=form_variable.data_type,
+                data_subtype=form_variable.data_subtype,
             )
             unsaved_submission_var.form_variable = form_variable
             all_submission_variables[variable_key] = unsaved_submission_var
@@ -177,8 +212,6 @@ class SubmissionValueVariablesState:
         if self._static_data is None:
             self._static_data = self._get_static_data()
         return self._static_data
-
-    static_data = get_static_data  # DeprecationWarning
 
     def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []
@@ -213,32 +246,16 @@ class SubmissionValueVariablesState:
         The ``data`` structure maps variable key and (new) values to set on the
         variables in the state.
 
-        :arg data: mapping of variable key to value.
+        Note: we do not perform any conversions to the native Python types here, this is
+        done when fetching the data from the state using ``.get_data()``
 
-        .. todo:: apply variable.datatype/format to obtain python objects? This also
-           needs to properly serialize back to JSON though!
+        :arg data: mapping of variable key to value.
         """
         for key, variable in self.variables.items():
             new_value = data.get(key, default=empty)
             if new_value is empty:
                 continue
             variable.value = new_value
-
-    def to_python(self) -> FormioData:
-        """
-        Collect the total picture of variable values converted to the appropriate Python
-        types.
-
-        The dynamic values are augmented with the static variables.
-
-        :return: A data mapping (key: variable key, value: native python object for the
-            value) ready for (template context) evaluation.
-        """
-        dynamic_values = {
-            key: variable.to_python() for key, variable in self.variables.items()
-        }
-        static_values = self.static_data()
-        return FormioData({**dynamic_values, **static_values})
 
 
 class SubmissionValueVariableManager(models.Manager):
@@ -341,6 +358,22 @@ class SubmissionValueVariable(models.Model):
         blank=True,
         default=dict,
     )
+    data_type = models.CharField(
+        verbose_name=_("data type"),
+        help_text=_("The type of the value that will be associated with this variable"),
+        choices=FormVariableDataTypes.choices,
+        max_length=50,
+    )
+    data_subtype = models.CharField(
+        verbose_name=_("data subtype"),
+        help_text=_(
+            "This field represents the data type of the values inside the container "
+            "for components that are configured as 'multiple'."
+        ),
+        choices=FormVariableDataTypes.choices,
+        max_length=50,
+        blank=True,
+    )
 
     objects = SubmissionValueVariableManager()
 
@@ -350,6 +383,19 @@ class SubmissionValueVariable(models.Model):
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
         unique_together = (("submission", "key"),)
+
+        constraints = [
+            CheckConstraint(
+                check=~models.Q(
+                    data_type__in=(
+                        FormVariableDataTypes.partners,
+                        FormVariableDataTypes.editgrid,
+                        FormVariableDataTypes.children,
+                    )
+                ),
+                name="submission_variable_data_type_is_not_subtype_exclusive",
+            ),
+        ]
 
     def __str__(self):
         return _("Submission value variable {key}").format(key=self.key)
@@ -373,23 +419,21 @@ class SubmissionValueVariable(models.Model):
         if value is None:
             return None
 
-        # it's possible a submission value variable exists without the form variable
-        # being present, e.g. existing submissions for which the form is modified after
-        # the submission is created (like removing a form step, which cascade deletes
-        # the related form variables).
-        # In those situations, we can't do anything meaningful.
-        if self.form_variable is None:
-            logger.debug(
-                "missing_form_variable",
-                action="submissions.convert_value_to_python",
-                submission_id=self.submission_id,
-                key=self.key,
-                submission_value_id=self.pk,
-            )
-            return value
+        if not self.data_subtype:
+            return self._value_to_python(value, self.data_type, self.configuration)
+        else:
+            assert self.data_type == FormVariableDataTypes.array
+            return [
+                self._value_to_python(v, self.data_subtype, self.configuration)
+                for v in value
+            ]
 
-        # we expect JSON types to have been properly stored (and thus not as string!)
-        data_type = self.form_variable.data_type
+    def _value_to_python(
+        self,
+        value: VariableValue,
+        data_type: str,
+        configuration: Component | None = None,
+    ) -> VariableValue:
         if data_type in (
             FormVariableDataTypes.string,
             FormVariableDataTypes.boolean,
@@ -411,7 +455,7 @@ class SubmissionValueVariable(models.Model):
 
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime.date()
@@ -422,7 +466,7 @@ class SubmissionValueVariable(models.Model):
                 return value
             maybe_naive_datetime = parse_datetime(value)
             if maybe_naive_datetime is None:
-                return
+                return None
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime
@@ -432,5 +476,45 @@ class SubmissionValueVariable(models.Model):
             if isinstance(value, time):
                 return value
             return parse_time(value)
+
+        if value and data_type == FormVariableDataTypes.partners:
+            # This is a work-around to convert the date of birth string into a date
+            # object. For now, we always expect the ``dateOfBirthPrecision`` to be
+            # 'date', so we cast to a date object. This might cause problems in the
+            # future when we do support different precisions.
+            value["dateOfBirth"] = self._value_to_python(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
+
+        if value and data_type == FormVariableDataTypes.children:
+            # Similar comment as for the partners
+            value["dateOfBirth"] = self._value_to_python(
+                value["dateOfBirth"], FormVariableDataTypes.date
+            )
+            return value
+
+        if value and data_type == FormVariableDataTypes.editgrid:
+            value = FormioData(value)
+            for child_component in iter_components(configuration):
+                child_key = child_component["key"]
+                if (child_value := value.get(child_key, empty)) is empty:
+                    continue
+
+                data_type = get_component_datatype(child_component)
+                data_subtype = get_component_data_subtype(child_component)
+
+                if not data_subtype:
+                    value[child_key] = self._value_to_python(
+                        child_value, data_type, child_component
+                    )
+                else:
+                    assert data_type == FormVariableDataTypes.array
+                    value[child_key] = [
+                        self._value_to_python(v, data_subtype, child_component)
+                        for v in child_value
+                    ]
+
+            return value.data
 
         return value

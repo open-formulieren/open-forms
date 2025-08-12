@@ -1606,3 +1606,47 @@ class V2HandlerTests(TestCase):
         data = record_data["data"]
 
         self.assertEqual(data, {"path1": ["option1"], "path2": {"option2": True}})
+
+    def test_date_related_components(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {"key": "date", "type": "date"},
+                {"key": "date_multiple", "type": "date", "multiple": True},
+            ],
+            completed=True,
+            submitted_data={
+                "date": "2000-01-01",
+                "date_multiple": ["2000-01-01", "2025-08-11"],
+            },
+        )
+
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "auth_attribute_path": [],
+            "variables_mapping": [
+                {"variable_key": "date", "target_path": ["path1"]},
+                {"variable_key": "date_multiple", "target_path": ["path2"]},
+            ],
+            "iot_attachment": "",
+            "iot_submission_csv": "",
+            "iot_submission_report": "",
+            "transform_to_list": [],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+
+        self.assertEqual(
+            data,
+            {
+                "path1": "2000-01-01",
+                "path2": ["2000-01-01", "2025-08-11"],
+            },
+        )

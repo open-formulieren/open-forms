@@ -176,11 +176,8 @@ class ComponentNode(Node):
         """
         Obtain the value from the submission for this component.
 
-        Note that this returns an unformatted value. There also has not been done
-        any Formio type -> Python type casting, so a datetime will be an ISO-8601
-        datestring for example.
-
-        TODO: build and use the type conversion for Formio components.
+        Note that this returns a native Python object for the relevant Formio
+        components (date/time/datetime).
         """
         path = f"{self.path}.{self.key}" if self.path else self.key
 

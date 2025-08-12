@@ -28,13 +28,18 @@ def get_configuration(step):
     return history["form_definition"]["fields"]["configuration"]
 
 
-def add_configuration_to_existing_submission_value_variables() -> None:
-    from openforms.formio.utils import iter_components
+def add_missing_fields_to_existing_submission_value_variables() -> None:
+    from openforms.formio.utils import (
+        get_component_data_subtype,
+        get_component_datatype,
+        iter_components,
+    )
     from openforms.submissions.models import SubmissionStep, SubmissionValueVariable
+    from openforms.variables.constants import FormVariableSources
 
     step_iterator = (
         SubmissionStep.objects.select_related(
-            "form_step__form_definition", "submission"
+            "form_step__form_definition", "submission", "submission__form"
         )
         .order_by("submission")
         .iterator()
@@ -43,9 +48,11 @@ def add_configuration_to_existing_submission_value_variables() -> None:
     # and to be able to run this script in batches. Only variables with an empty
     # configuration are selected, so running it again will not process the variables
     # multiple times.
-    for _submission, step_group in groupby(step_iterator, key=lambda x: x.submission):
+    for submission, step_group in groupby(step_iterator, key=lambda x: x.submission):
         variables_to_update = []
 
+        components_in_submission = set()
+        # Process component submission variables
         for step in step_group:
             configuration = get_configuration(step)
             if not configuration:
@@ -57,23 +64,48 @@ def add_configuration_to_existing_submission_value_variables() -> None:
                     configuration, recurse_into_editgrid=False
                 )
             }
+            components_in_submission.update(components_in_step.keys())
 
             # Note that a variable is unique by its key and submission
             variables_iterator = SubmissionValueVariable.objects.filter(
-                configuration={}, key__in=components_in_step, submission=step.submission
+                configuration={},
+                data_type="",
+                data_subtype="",
+                key__in=components_in_step,
+                submission=step.submission,
             ).iterator()
             for variable in variables_iterator:
-                if variable.key not in components_in_step:
-                    # This can happen when the form definition still exists, but the
-                    # field related to this submission variable was removed. We can't do
-                    # anything in this case
-                    continue
+                component = components_in_step[variable.key]
 
-                variable.configuration = components_in_step[variable.key]
+                variable.configuration = component
+                variable.data_type = get_component_datatype(component)
+                variable.data_subtype = get_component_data_subtype(component)
                 variables_to_update.append(variable)
 
+        # Process non-component submission variables
+        form_variables = submission.form.formvariable_set.exclude(
+            source=FormVariableSources.component
+        )
+
+        variables_iterator = (
+            SubmissionValueVariable.objects.filter(
+                data_type="", data_subtype="", submission=submission
+            )
+            .exclude(key__in=components_in_submission)
+            .iterator()
+        )
+        for variable in variables_iterator:
+            form_var = form_variables.filter(key=variable.key).first()
+            if not form_var:
+                # Cannot do anything if it doesn't exist anymore
+                continue
+
+            variable.data_type = form_var.data_type
+            variable.data_subtype = form_var.data_subtype
+            variables_to_update.append(variable)
+
         SubmissionValueVariable.objects.bulk_update(
-            variables_to_update, fields=["configuration"]
+            variables_to_update, fields=["configuration", "data_type", "data_subtype"]
         )
 
 
@@ -84,7 +116,7 @@ def main(skip_setup=False, **kwargs):
         setup_env()
         django.setup()
 
-    return add_configuration_to_existing_submission_value_variables()
+    add_missing_fields_to_existing_submission_value_variables()
 
 
 if __name__ == "__main__":

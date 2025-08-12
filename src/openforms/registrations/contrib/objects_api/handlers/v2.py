@@ -4,7 +4,7 @@ Implementation details for the v2 registration handler.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import assert_never, cast
 
 from glom import Assign, Path, glom
@@ -72,8 +72,9 @@ def process_mapped_variable(
     :arg value: The raw value of the form variable for the submission being processed.
       The type/shape of the value depends on the variable/component data type being
       processed and even the component configuration (such as multiple True/False).
-    :arg transform_to_list: transform_to_list: Component keys in this list will be sent as an array of values rather than the default
-      object-shape for selectboxes components.
+    :arg transform_to_list: transform_to_list: Component keys in this list will be sent
+      as an array of values rather than the default object-shape for selectboxes
+      components.
     :arg component: If the variable corresponds to a Formio component, the component
       definition is provided, otherwise ``None``.
     :arg attachment_urls: The registration plugin uploads attachments to a Documents API
@@ -90,19 +91,21 @@ def process_mapped_variable(
     variable_key = mapping["variable_key"]
     target_path = Path(*bits) if (bits := mapping.get("target_path")) else None
 
-    # normalize non-primitive date/datetime values so that they're ready for JSON
-    # serialization in the proper format
-    if isinstance(value, date | datetime):
+    # normalize non-primitive date/datetime values for non components so that they're
+    # ready for JSON serialization in the proper format
+    if isinstance(value, date | datetime) and not component:
         value = value.isoformat()
-
-    # Date and datetime objects are now converted to strings, so we can safely cast to
-    # JSONValue
-    value = cast(JSONValue, value)
 
     # transform the value within the context of the component
     # TODO: convert this in a proper registry in due time so we can use better type
     # annotations
     match component:
+        case {"type": "date" | "datetime" | "time", "multiple": True}:
+            assert isinstance(value, list)
+            value = [v.isoformat() for v in value]  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
+        case {"type": "date" | "datetime" | "time"}:
+            assert isinstance(value, date | time | datetime)
+            value = value.isoformat()
         case {"type": "addressNL"}:
             assert isinstance(value, dict)
             value = value.copy()
@@ -114,7 +117,7 @@ def process_mapped_variable(
                     AssignmentSpec(
                         # the typeddict union of keys/values is lost when looping over them
                         destination=Path(*target_path_bits),  # pyright: ignore[reportGeneralTypeIssues]
-                        value=_value,
+                        value=_value,  # pyright: ignore[reportArgumentType]
                     )
                     for key, target_path_bits in detailed_mappings.items()
                     if target_path_bits
@@ -132,7 +135,7 @@ def process_mapped_variable(
             # map the address NL values as a whole
             else:
                 assert target_path is not None
-                return AssignmentSpec(destination=target_path, value=value)
+                return AssignmentSpec(destination=target_path, value=value)  # pyright: ignore[reportArgumentType]
 
         case {"type": "file"}:
             assert attachment_urls is not None
@@ -160,6 +163,9 @@ def process_mapped_variable(
 
             for partner in value:
                 assert isinstance(partner, dict)
+                assert isinstance(partner["dateOfBirth"], date)
+
+                partner["dateOfBirth"] = partner["dateOfBirth"].isoformat()
 
                 # these are not relevant for the object (at least for now)
                 partner.pop("firstNames", None)
@@ -171,6 +177,9 @@ def process_mapped_variable(
             pass
 
     assert target_path is not None
+
+    # We can "safely" cast to a JSONValue now that the value has been processed
+    value = cast(JSONValue, value)
     return AssignmentSpec(destination=target_path, value=value)
 
 

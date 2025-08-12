@@ -452,17 +452,11 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         log = logger.bind(submission_uuid=str(submission.uuid))
         state = submission.load_submission_value_variables_state()
 
-        # dynamic values: values driven by user input
-        all_values = state.get_data()
-        # static values: values not driven by user input
-        static_values = state.get_static_data()
+        all_values = state.get_data(include_static_variables=True)
         # update with the registration static values - a special subtype of static
         # variables. They're possibly derived from user input.
         registration_vars = state.get_static_data(other_registry=variables_registry)
-        static_values.update(registration_vars)
-
-        # add static values
-        all_values.update(static_values)
+        all_values.update(registration_vars)
 
         # For every file upload component, we alter the value of the variable to be
         # the Document API URL(s).

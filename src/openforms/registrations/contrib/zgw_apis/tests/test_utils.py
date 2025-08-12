@@ -1,4 +1,8 @@
+from datetime import date, datetime
+
 from django.test import SimpleTestCase
+
+from openforms.utils.date import TIMEZONE_AMS
 
 from ..utils import process_according_to_eigenschap_format
 
@@ -12,7 +16,8 @@ class UtilsTests(SimpleTestCase):
             "kardinaliteit": "1",
             "waardenverzameling": [],
         }
-        sample = "2024-11-09"
+        # Submission data fetched from the state will be in native Python objects
+        sample = date(2024, 11, 9)
         processed_value = process_according_to_eigenschap_format(specificatie, sample)
 
         self.assertEqual(processed_value, "20241109")
@@ -25,10 +30,12 @@ class UtilsTests(SimpleTestCase):
             "kardinaliteit": "1",
             "waardenverzameling": [],
         }
-        sample = "2024-01-31T16:24:00+00:00"
+        # Submission data fetched from the state will be in native Python objects with
+        # timezone information
+        sample = datetime(2024, 1, 31, 16, 24, 00, tzinfo=TIMEZONE_AMS)
         processed_value = process_according_to_eigenschap_format(specificatie, sample)
 
-        self.assertEqual(processed_value, "20240131172400")
+        self.assertEqual(processed_value, "20240131162400")
 
     def test_no_date_or_datetime(self):
         samples = ["simple string", "2"]
@@ -52,10 +59,12 @@ class UtilsTests(SimpleTestCase):
             "kardinaliteit": "1",
             "waardenverzameling": [],
         }
-        sample = "2024-11-091"
+        # Note that an invalid datetime string will be converted to None when fetched
+        # from the submission value variable state
+        sample = None
 
         with self.assertRaisesMessage(
-            ValueError, f"Invalid isoformat string: '{sample}'"
+            ValueError, "Received value in unknown/unexpected format!"
         ):
             process_according_to_eigenschap_format(specificatie, sample)
 
@@ -67,9 +76,11 @@ class UtilsTests(SimpleTestCase):
             "kardinaliteit": "1",
             "waardenverzameling": [],
         }
-        sample = "2024-01-313T12:07:00+01:00"
+        # Note that an invalid datetime string will be converted to None when fetched
+        # from the submission value variable state
+        sample = None
 
         with self.assertRaisesMessage(
-            ValueError, f"Invalid isoformat string: '{sample}'"
+            ValueError, "Received value in unknown/unexpected format!"
         ):
             process_according_to_eigenschap_format(specificatie, sample)

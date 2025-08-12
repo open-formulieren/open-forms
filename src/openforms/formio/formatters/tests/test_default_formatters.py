@@ -1,15 +1,23 @@
-from django.test import TestCase
+from datetime import date, datetime, time
+
+from django.test import SimpleTestCase
 from django.utils.translation import gettext_lazy as _
 
 from ...service import format_value
 from .utils import load_json
 
 
-class DefaultFormatterTestCase(TestCase):
+class DefaultFormatterTestCase(SimpleTestCase):
     def test_formatters(self):
         # TODO ditch all_components*.json stuff after #1301 is fixed
         all_components = load_json("all_components.json")["components"]
         data = load_json("all_components_data.json")
+
+        # Submission data should be native Python objects
+        data["date"] = date.fromisoformat(data["date"])
+        data["time"] = time.fromisoformat(data["time"])
+        data["dateTime"] = datetime.fromisoformat(data["dateTime"])
+
         expected = {
             "bsn": "123456782",
             "date": "24 december 2021",
@@ -31,11 +39,17 @@ class DefaultFormatterTestCase(TestCase):
             "phoneNumber": "+31633924456",
             "selectBoxes": "Option 1; Option 2",
             "licenseplate": "1-AAA-BB",
-            "select2": "29 december 2021",
-            "select3": "08:15",
             "addressNL": "1234AA 1",
-            "partners": "[{'bsn': '999970136', 'firstNames': 'Pia', 'initials': 'P.', 'affixes': '', 'lastName': 'Pauw', 'dateOfBirth': '1989-04-01', 'dateOfBirthPrecision': 'date'}]",
-            "children": "[{'bsn': '999970409', 'affixes': 'van', 'initials': 'P.', 'lastName': 'Paassen', 'firstNames': 'Pero', 'dateOfBirth': '2023-02-01', 'dateOfBirthPrecision': 'date', 'selected': False}]",
+            "partners": (
+                "[{'bsn': '999970136', 'firstNames': 'Pia', 'initials': 'P.', "
+                "'affixes': '', 'lastName': 'Pauw', 'dateOfBirth': '1989-04-01', "
+                "'dateOfBirthPrecision': 'date'}]"
+            ),
+            "children": (
+                "[{'bsn': '999970409', 'affixes': 'van', 'initials': 'P.', "
+                "'lastName': 'Paassen', 'firstNames': 'Pero', 'dateOfBirth': '2023-02-01', "
+                "'dateOfBirthPrecision': 'date', 'selected': False}]"
+            ),
         }
 
         for component in all_components:
@@ -53,7 +67,8 @@ class DefaultFormatterTestCase(TestCase):
         )
         time_component["multiple"] = True
 
-        data = ["16:26:00", "8:42:00", "23:01:00"]
+        # The data we pass to the formatter should be native Python objects
+        data = [time(16, 26), time(8, 42), time(23, 1)]
 
         formatted = format_value(time_component, data)
 

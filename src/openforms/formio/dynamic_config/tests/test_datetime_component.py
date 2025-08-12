@@ -1,6 +1,5 @@
 import zoneinfo
 from datetime import datetime
-from typing import Any
 
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -8,6 +7,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.typing import VariableValue
 from openforms.variables.service import get_static_variables
 
 from ...service import FormioConfigurationWrapper, FormioData, get_dynamic_configuration
@@ -18,7 +18,7 @@ from ...typing import DatetimeComponent
 class DynamicDatetimeConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
-        component: DatetimeComponent, variables: dict[str, Any]
+        component: DatetimeComponent, variables: dict[str, VariableValue]
     ) -> DatetimeComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         submission = SubmissionFactory.create()
@@ -282,7 +282,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
             },
         }
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self._get_dynamic_config(component, {"wrongVar": "Im not a datetime!! :("})
 
     def test_variable_string_datetime(self):
@@ -304,13 +304,12 @@ class DynamicDatetimeConfigurationTests(TestCase):
             },
         }
 
-        new_component = self._get_dynamic_config(
-            component, {"stringDateVar": "2023-01-30T15:22:00+01:00"}
-        )
-
-        self.assertEqual(
-            new_component["datePicker"]["maxDate"], "2023-01-30T15:22:00+01:00"
-        )
+        # With the work done in #2324, we expect data returned from the state to
+        # already be in date/datetime objects, so this is not allowed anymore
+        with self.assertRaises(TypeError):
+            self._get_dynamic_config(
+                component, {"stringDateVar": "2023-01-30T15:22:00+01:00"}
+            )
 
     def test_variable_of_wrong_type_list(self):
         component: DatetimeComponent = {
@@ -326,7 +325,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
             },
         }
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self._get_dynamic_config(
                 component, {"wrongVar": ["Im not a datetime!! :("]}
             )

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from openforms.formio.service import FormioData
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.rendering.nodes import SubmissionStepNode
-from openforms.typing import JSONObject
+from openforms.typing import VariableValue
 
 from .default import ColumnsNode, EditGridGroupNode, EditGridNode, FieldSetNode
 from .nodes import ComponentNode
@@ -12,14 +14,17 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-def render_json(submission: "Submission") -> JSONObject:
-    """Render submission as JSON with nesting
+def reshape_submission_data_for_json_summary(
+    submission: Submission,
+) -> dict[str, VariableValue]:
+    """Reshape the submission data for rendering a JSON summary.
 
-    The data is nested within each submission step (using the form definition slug as key).
-    The data is nested for fieldset components and for column components.
+    The data is nested within each submission step (using the form definition slug as
+    key). The data is nested for fieldset components and for column components.
 
-    This is different from how Formio treats fieldsets/columns in the submission data: their children are not
-    nested. We treat them more like Formio treats the 'container' component (currently not supported in Open Forms).
+    This is different from how Formio treats fieldsets/columns in the submission data:
+    their children are not nested. We treat them more like Formio treats the 'container'
+    component (currently not supported in Open Forms).
     """
     renderer = Renderer(
         submission=submission, mode=RenderModes.registration, as_html=False
