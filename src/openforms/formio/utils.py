@@ -375,6 +375,8 @@ def is_visible_in_frontend(component: Component, data: FormioData) -> bool:
     trigger_component_value = data.get(trigger_component_key, None)
     compare_value = conditional.get("eq")
 
+    # Selectboxes need some special attention as we need to check whether the compare
+    # value is set to `True` in the dictionary.
     if (
         isinstance(trigger_component_value, dict)
         and compare_value in trigger_component_value

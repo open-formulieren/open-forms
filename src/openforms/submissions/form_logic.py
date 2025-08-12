@@ -22,6 +22,9 @@ if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
 
+from pprint import pprint
+
+
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: Submission,
@@ -87,6 +90,7 @@ def evaluate_form_logic(
 
     # 4. Apply the (dirty) data to the variable state.
     if unsaved_data is not None:
+        # print(unsaved_data)
         submission_variables_state.set_values(unsaved_data)
     initial_data = submission_variables_state.get_data(
         include_unsaved=True, include_static_variables=True
@@ -118,8 +122,20 @@ def evaluate_form_logic(
 
     # 6. Apply the dynamic configuration
 
+    # TODO-5134: why is this the case? Does it matter that the configuration is updated
+    #  on outdated values? Might be if a value that determines a min/max date for a date
+    #  component is set with a logic action...
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
+    # TODO-5134: getting the defaultValue of a component inside `PropertyAction.eval`
+    #  might be problematic for components with a dynamic source. For example, a
+    #  selectboxes component with another form variable as a data source will have an
+    #  empty object as a default value. Only after calling `get_dynamic_configuration`
+    #  will the default value be updated. Thus, we would have to move this to before step
+    #  5, and directly apply the config mutations from step 6.1 inside step 5.1.
+    #  Probably there is a reason why this wasn't done already though... The problem is
+    #  that it will update the configuration based on outdated data. Perhaps we can do
+    #  it twice?
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
         submission=submission,
@@ -141,10 +157,18 @@ def evaluate_form_logic(
         if is_visible:
             continue
 
+        # TODO-5134: note that the `.get(key, empty)` is there because we are iterating
+        #  over all components, which can include fieldsets and columns. These do not
+        #  have a value.
         # Reset the value of any field that may have become hidden again after
         # evaluating the logic
         original_value = initial_data.get(key, empty)
         empty_value = get_component_empty_value(component)
+        # TODO-5134: the `original_value == empty_value` check might not be necessary
+        #  when moving this to PropertyAction.eval. This is because the data diff that
+        #  we create at the end will not include any values that weren't changed. So if
+        #  it already was an empty value and we set it to an empty value again, all is
+        #  well.
         if original_value is empty or original_value == empty_value:
             continue
 

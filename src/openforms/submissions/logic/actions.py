@@ -98,6 +98,49 @@ class PropertyAction(ActionOperation):
         component = configuration[self.component]
         assign(component, self.property, self.value, missing=dict)
 
+    # TODO-5134: this is a possibility, but we run into a problem when components are
+    #  hidden, and the actions are not triggered. This happens for example when the
+    #  default state of the component is hidden.
+    # TODO-5134: also, this can only work when we apply the mutations directly to the
+    #  configuration wrapper, and pass it to this method. Or we would need to check
+    #  which property it is and to what value it has been set...
+    # TODO-5134: another problem with this is that conditional logic is not taken into
+    #  account at all here. Components can become hidden because of a simple conditional
+    #  which is not a logic rule action. This works fine if the submission step hasn't
+    #  been saved yet, because the submission value variables have not been created. But
+    #  it breaks once a step has been saved. Values are not cleared anymore.
+    def eval(
+        self,
+        context: FormioData,
+        submission: Submission,
+        configuration = {},
+    ) -> DataMapping | None:
+        return None
+
+        from openforms.formio.utils import get_component_default_value, get_component_empty_value
+
+        configuration = submission.total_configuration_wrapper
+
+        # Only apply clearOnHide logic for actions that set the "hidden" property to
+        # True. If the default is hidden and an action causes it to be shown, the value
+        # should not be cleared of course.
+        if not (self.property == "hidden" and self.value):
+            return None
+
+        component = configuration[self.component]
+        # TODO-5134: if we want this call to be representative of the current situation,
+        #  we need to apply the mutations to the configurations directly while iterating
+        #  over the rules/actions.
+        # is_visible = configuration.is_visible_in_frontend(component, context)
+        # if is_visible:
+        #     return None
+
+        if not component.get("clearOnHide", True):
+            return None
+
+        # TODO-5134: default or empty value?
+        return {self.component: get_component_empty_value(component)}
+
 
 class DisableNextAction(ActionOperation):
     @classmethod
