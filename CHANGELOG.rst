@@ -6,7 +6,7 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.1.5 (2025-08-?)
+3.1.6 (2025-08-?)
 =================
 
 Upgrade procedure
