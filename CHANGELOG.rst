@@ -6,6 +6,26 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.1.6 (2025-08-19)
+==================
+
+Regular bugfix release.
+
+.. note:: Worldline is ending support for Ogone Legacy at the end of 2025. Open Forms 3.3.0 will
+   have support for the replacement. To make migrating easier, we've added new configuration options
+   for the replacement:
+
+   * *API Key* and *API Secret* fields for the merchants
+   * Webhook configuration
+
+   You can find these via configuration overview page. They are currently not used, but will make the
+   automatic migration easier in Open Forms 3.3.0.
+
+* [:backend:`4879`] Added fields to the `Ogone Merchant` and added the
+  `Ogone webhook configuration`.
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you
+  have logic rules that use the ``reduce`` operation.
+
 3.1.5 (2025-07-24)
 ==================
 
