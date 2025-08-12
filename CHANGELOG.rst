@@ -6,6 +6,42 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
+3.2.1 (2025-08-?)
+==================
+
+Upgrade procedure
+-----------------
+
+**💰 Ingenico Ogone migration**
+
+In this bugfix release we added fields two new fields to the `Ogone Merchant`, the
+`API Key` and the `API Secret`. We also added the `Ogone webhook configuration` model
+which can be configured through the links **Configuration** > **Ogone webhook configuration**
+on the admin overview page. These new settings were added to allow for a smooth transition
+from the previous payment provider Ogone to the new payment provider Worldline. These fields
+will be used to copy over the mentioned credentials to their new corresponding fields
+in the 3.3.0 release. More information on this can be read in the 3.3.0 release notes.
+
+Regular bugfix release.
+
+**New features**
+
+* [:backend:`4879`] Added fields to the `Ogone Merchant` and added
+  the `Ogone webhook configuration`
+
+**Bugfixes**
+
+* [:backend:`5413`] Fixed uploading screenshots with soft-hyphens
+* [:backend:`5471`] Fixed enabling advanced configuration with family members plugin
+* [:backend:`5481`] Fixed querying user defined variables based on the form of
+  the current submission.
+* [:backend:`5271`] Fixed false positive results with 'reduce' operation.
+* Fixed broken link.
+
+**Project maintenance**
+
+* [:backend:`5454`] Updated Piwik Pro tag manager config
+
 
 3.2.0 "Nimma" (2025-07-11)
 ==========================
