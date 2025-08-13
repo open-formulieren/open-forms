@@ -6,10 +6,10 @@ Changelog
 
     The Dutch version of this changelog can be found :ref:`here <changelog-nl>`.
 
-3.3.0 "???" (2025-Q3)
+3.3.0-alpha.1 (2025-08-?)
 =====================
 
-...
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
@@ -60,6 +60,7 @@ Regular bugfix release.
 * [:backend:`5466`] Fixed translations for the cookie banner.
 * [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
 * [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+
 
 3.2.0 "Nimma" (2025-07-11)
 ==========================
