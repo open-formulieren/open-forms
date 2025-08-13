@@ -74,6 +74,7 @@ class YiviOpenIDConnectConfigAdmin(SingletonModelAdmin):
 class AttributeGroupAdmin(admin.ModelAdmin):
     fields = [
         "name",
+        "slug",
         "description",
         "attributes",
     ]
@@ -82,3 +83,4 @@ class AttributeGroupAdmin(admin.ModelAdmin):
         "description",
         "attributes",
     ]
+    prepopulated_fields = {"slug": ("name",)}

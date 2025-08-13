@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
+from autoslug import AutoSlugField
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from digid_eherkenning.oidc.models.base import LOA_MAPPING_SCHEMA, BaseConfig
 from django_jsonform.models.fields import ArrayField, JSONField
@@ -151,11 +152,18 @@ class AttributeGroup(models.Model):
     name = models.CharField(
         _("group name"),
         max_length=100,
-        unique=True,
         help_text=_(
             "A human-readable name for the group of attributes, used in the form "
             "configuration."
         ),
+    )
+    slug = AutoSlugField(
+        _("slug"),
+        max_length=100,
+        populate_from="name",
+        help_text=_("A unique identifying slug for the group of attributes."),
+        unique=True,
+        editable=True,
     )
     description = models.CharField(
         _("group description"),
