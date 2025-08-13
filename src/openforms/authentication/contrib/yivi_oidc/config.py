@@ -79,7 +79,7 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
         # Pre-process 'additional_attributes_groups' before DRF validates it
         attribute_groups = data.get("additional_attributes_groups", [])
-        valid_choices = AttributeGroup.objects.all().values_list("name", flat=True)
+        valid_choices = AttributeGroup.objects.all().values_list("slug", flat=True)
 
         # Filter out invalid attribute groups
         data["additional_attributes_groups"] = [
