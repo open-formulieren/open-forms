@@ -214,6 +214,7 @@ INSTALLED_APPS = [
     "openforms.ui",
     "openforms.submissions",
     "openforms.logging.apps.LoggingAppConfig",
+    "openforms.contrib.auth_oidc",
     "openforms.contrib.brk",
     "openforms.contrib.digid_eherkenning",
     "openforms.contrib.haal_centraal",
@@ -539,14 +540,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
-    # Put the fake backend first, as it (on success) only puts information in the session
+    # Put the OIDC backend first, as it (on success) only puts information in the session
     # and it's quite easy to shortcut.
-    "openforms.contrib.auth_oidc.backends.GenericOIDCBackend",
-    # Real backends
+    "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
 ]
 
 SESSION_COOKIE_NAME = "openforms_sessionid"
@@ -1092,7 +1091,7 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
 # DeprecationWarning
-# XXX: remove in Open Forms 3.0
+# XXX: remove in Open Forms 4.0
 _USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=False)
 OIDC_AUTHENTICATION_CALLBACK_URL = (
     "legacy_oidc:oidc_authentication_callback"

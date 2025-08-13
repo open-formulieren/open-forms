@@ -19,9 +19,10 @@ from furl import furl
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 class OrgOIDCInitTests(IntegrationTestsBase):
@@ -31,8 +32,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_org_oidc_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
         form = FormFactory.create(authentication_backend="org-oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="org-oidc")
 
@@ -51,10 +52,13 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_org_oidc_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_org=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
+            check_op_availability=True,
+        )
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
@@ -68,8 +72,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "org-oidc")
 
-    @mock_org_oidc_config()
     def test_start_flow_logs_out_existing_user(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
         user = StaffUserFactory.create()
         self.app.get(reverse("admin:index"), user=user)
         form = FormFactory.create(authentication_backend="org-oidc")

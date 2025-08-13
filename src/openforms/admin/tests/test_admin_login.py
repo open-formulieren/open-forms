@@ -2,21 +2,20 @@
 Tests for the possible admin login flows.
 """
 
-from unittest.mock import patch
-
 from django.test import override_settings, tag
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
-from mozilla_django_oidc_db.models import OpenIDConnectConfig
 
 from openforms.accounts.tests.factories import (
     RecoveryTokenFactory,
     StaffUserFactory,
     SuperUserFactory,
 )
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
+from openforms.utils.tests.oidc import OIDCMixin
 
 LOGIN_URL = reverse_lazy("admin:login")
 
@@ -76,35 +75,34 @@ class ClassicLoginTests(WebTest):
 
 @disable_admin_mfa()
 @override_settings(USE_OIDC_FOR_ADMIN_LOGIN=True)
-class OIDCLoginTests(WebTest):
-    def setUp(self):
-        super().setUp()
-
-        patcher = patch(
-            "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
-            return_value=OpenIDConnectConfig(
-                enabled=True,
-                oidc_op_authorization_endpoint="https://oidc.example.com/",
-            ),
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
+class OIDCLoginTests(OIDCMixin, WebTest):
     def test_admin_login_without_next_param(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+
         login_page = self.app.get(LOGIN_URL).follow()
 
         self.assertEqual(login_page.status_code, 302)
         self.assertTrue(
-            login_page.headers["Location"].startswith("https://oidc.example.com/")
+            login_page.headers["Location"].startswith(
+                "http://localhost:8080/realms/test/protocol/openid-connect"
+            )
         )
         self.assertEqual(self.app.session["oidc_login_next"], "/admin/")
 
     def test_admin_login_with_next_param(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+
         login_page = self.app.get(LOGIN_URL, {"next": "/admin/accounts/user/"}).follow()
 
         self.assertEqual(login_page.status_code, 302)
         self.assertTrue(
-            login_page.headers["Location"].startswith("https://oidc.example.com/")
+            login_page.headers["Location"].startswith(
+                "http://localhost:8080/realms/test/protocol/openid-connect"
+            )
         )
         self.assertEqual(self.app.session["oidc_login_next"], "/admin/accounts/user/")
 

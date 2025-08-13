@@ -11,15 +11,19 @@ Some of hese tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
-from functools import partial
 from pathlib import Path
 
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from mozilla_django_oidc_db.models import OIDCClient
 
-from openforms.utils.tests.keycloak import keycloak_login, mock_oidc_db_config
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+)
+from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.oidc import OIDCMixin
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
@@ -28,19 +32,12 @@ from .factories import StaffUserFactory
 TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 
-mock_admin_oidc_config = partial(
-    mock_oidc_db_config,
-    app_label="mozilla_django_oidc_db",
-    model="OpenIDConnectConfig",
-    id=1,  # required for the group queries because we're using in-memory objects
-    make_users_staff=True,
-    username_claim=["preferred_username"],
-)
-
-
-class OIDCLoginButtonTestCase(WebTest):
-    @mock_admin_oidc_config(enabled=False)
+class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
     def test_oidc_button_disabled(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=False
+        )
+
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
@@ -49,8 +46,11 @@ class OIDCLoginButtonTestCase(WebTest):
         # Verify that the login button is not visible
         self.assertIsNone(oidc_login_link)
 
-    @mock_admin_oidc_config(enabled=True)
     def test_oidc_button_enabled(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_admin=True, enabled=True
+        )
+
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
@@ -62,17 +62,34 @@ class OIDCLoginButtonTestCase(WebTest):
             oidc_login_link.attrs["href"], reverse("oidc_authentication_init")
         )
 
+    def test_config_not_found(self):
+        assert not OIDCClient.objects.exists()
 
-class OIDCFlowTests(OFVCRMixin, WebTest):
+        response = self.app.get(reverse("admin-mfa-login"))
+
+        self.assertEqual(response.status_code, 200)
+        oidc_login_link = response.html.find(
+            "a", string=_("Login with organization account")
+        )
+        # Verify that the login button is not visible
+        self.assertIsNone(oidc_login_link)
+
+
+class OIDCFlowTests(OIDCMixin, OFVCRMixin, WebTest):
     VCR_TEST_FILES = TEST_FILES
 
-    @mock_admin_oidc_config()
     def test_duplicate_email_unique_constraint_violated(self):
         """
         Assert that duplicate email addresses result in usable user feedback.
 
         Regression test for #1199
         """
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_admin=True,
+            enabled=True,
+            options__user_settings__claim_mappings__email=["email"],
+        )
         # this user collides on the email address
         staff_user = StaffUserFactory.create(
             username="no-match", email="admin@example.com"
@@ -107,13 +124,20 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
             self.assertEqual(staff_user.email, "admin@example.com")
             self.assertTrue(staff_user.is_staff)
 
-    @mock_admin_oidc_config()
     def test_happy_flow(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_admin=True,
+            enabled=True,
+            options__user_settings__claim_mappings__username=["preferred_username"],
+            options__groups_settings__make_users_staff=True,
+        )
         login_page = self.app.get(reverse("admin-mfa-login"))
         start_response = login_page.click(
             description=_("Login with organization account")
         )
         assert start_response.status_code == 302
+
         redirect_uri = keycloak_login(
             start_response["Location"], username="admin", password="admin"
         )
@@ -127,8 +151,16 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
         user = User.objects.get()
         self.assertEqual(user.username, "admin")
 
-    @mock_admin_oidc_config(make_users_staff=False)
     def test_happy_flow_existing_user(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_admin=True,
+            enabled=True,
+            options__user_settings__claim_mappings__username=["preferred_username"],
+            options__user_settings__claim_mappings__email=["email"],
+            options__groups_settings__make_users_staff=False,
+        )
+
         staff_user = StaffUserFactory.create(username="admin", email="update-me")
         login_page = self.app.get(reverse("admin-mfa-login"))
         start_response = login_page.click(

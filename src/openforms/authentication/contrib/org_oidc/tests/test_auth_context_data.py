@@ -17,11 +17,12 @@ from django.urls import reverse
 from django_webtest import DjangoTestApp
 
 from openforms.authentication.tests.utils import URLsHelper
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 from openforms.utils.tests.keycloak import keycloak_login
 
-from .base import IntegrationTestsBase, mock_org_oidc_config
+from .base import IntegrationTestsBase
 
 
 class PerformLoginMixin:
@@ -62,8 +63,8 @@ class EmployeeAuthContextTests(PerformLoginMixin, IntegrationTestsBase):
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_org_oidc_config()
     def test_record_auth_context_employee(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
         self._login_and_start_form("org-oidc", username="admin", password="admin")
 
         submission = Submission.objects.get()

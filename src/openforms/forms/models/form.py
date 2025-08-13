@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from contextlib import suppress
 from copy import deepcopy
 from functools import cached_property
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -52,7 +52,9 @@ class FormQuerySet(models.QuerySet):
 
 
 class FormManager(models.Manager.from_queryset(FormQuerySet)):
-    pass
+    if TYPE_CHECKING:
+
+        def live(self) -> FormQuerySet: ...
 
 
 class Form(models.Model):
@@ -386,7 +388,9 @@ class Form(models.Model):
         ),
     )
 
-    objects = FormManager()
+    objects: ClassVar[  # pyright: ignore[reportIncompatibleVariableOverride]
+        FormManager
+    ] = FormManager()
 
     get_begin_text = literal_getter("begin_text", "form_begin_text")
     get_previous_text = literal_getter("previous_text", "form_previous_text")

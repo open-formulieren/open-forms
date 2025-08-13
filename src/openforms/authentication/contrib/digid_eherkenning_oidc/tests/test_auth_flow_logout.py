@@ -34,23 +34,14 @@ from furl import furl
 from requests import Session
 from rest_framework.test import APIRequestFactory
 
-from openforms.authentication.registry import register
+from openforms.authentication.registry import register as auth_register
 from openforms.authentication.tests.utils import URLsHelper
-from openforms.contrib.auth_oidc.plugin import (
-    OIDC_ID_TOKEN_SESSION_KEY,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.tests.keycloak import keycloak_login
 
-from .base import (
-    IntegrationTestsBase,
-    mock_digid_config,
-    mock_digid_machtigen_config,
-    mock_eherkenning_bewindvoering_config,
-    mock_eherkenning_config,
-    mock_eidas_company_config,
-    mock_eidas_config,
-)
+from ..plugin import OIDC_ID_TOKEN_SESSION_KEY
+from .base import IntegrationTestsBase
 
 
 class LogoutTestsMixin:
@@ -89,7 +80,7 @@ class LogoutTestsMixin:
             f"/api/v2/authentication/{uuid.uuid4()}/session"
         )
         request.session = self.app.session  # type: ignore
-        plugin = register[plugin_id]
+        plugin = auth_register[plugin_id]
         plugin.logout(request)
         if not isinstance(request.session, dict):
             request.session.save()
@@ -107,8 +98,9 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the DigiD plugin.
     """
 
-    @mock_digid_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
+
         form = FormFactory.create(authentication_backend="digid_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="digid_oidc")
         # use shared session to maintain cookie state
@@ -128,8 +120,9 @@ class DigiDLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_digid_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too
@@ -146,8 +139,9 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eHerkenning plugin.
     """
 
-    @mock_eherkenning_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eherkenning=True)
+
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eherkenning_oidc")
         # use shared session to maintain cookie state
@@ -167,8 +161,9 @@ class EHerkenningLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eherkenning_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eherkenning=True)
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too
@@ -185,8 +180,9 @@ class EIDASLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eIDAS plugin.
     """
 
-    @mock_eidas_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
+
         form = FormFactory.create(authentication_backend="eidas_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_oidc")
         # use shared session to maintain cookie state
@@ -206,8 +202,9 @@ class EIDASLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eidas_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too
@@ -224,8 +221,11 @@ class DigiDMachtigenLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the DigiD Nachtigen plugin.
     """
 
-    @mock_digid_machtigen_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_digid_machtigen=True
+        )
+
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         start_url = URLsHelper(form=form).get_auth_start(
             plugin_id="digid_machtigen_oidc"
@@ -247,8 +247,11 @@ class DigiDMachtigenLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_digid_machtigen_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_digid_machtigen=True
+        )
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too
@@ -265,8 +268,11 @@ class EHerkenningBewindvoeringLogoutTests(LogoutTestsMixin, IntegrationTestsBase
     Test the (RP-initiated) logout flow for the eHerkenning Bewindvoering plugin.
     """
 
-    @mock_eherkenning_bewindvoering_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_eherkenning_bewindvoering=True
+        )
+
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -293,8 +299,11 @@ class EHerkenningBewindvoeringLogoutTests(LogoutTestsMixin, IntegrationTestsBase
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eherkenning_bewindvoering_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True, with_eherkenning_bewindvoering=True
+        )
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too
@@ -311,8 +320,9 @@ class EIDASCompanyLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
     Test the (RP-initiated) logout flow for the eIDAS for companies plugin.
     """
 
-    @mock_eidas_company_config()
     def test_logout_also_logs_out_user_in_openid_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas_company=True)
+
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_company_oidc")
         # use shared session to maintain cookie state
@@ -332,8 +342,9 @@ class EIDASCompanyLogoutTests(LogoutTestsMixin, IntegrationTestsBase):
         self.assertNotIn(OIDC_ID_TOKEN_SESSION_KEY, self.app.session)
         self.assertNotLoggedInToKeycloak(session, start_url)
 
-    @mock_eidas_company_config()
     def test_logout_with_empty_session(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas_company=True)
+
         assert OIDC_ID_TOKEN_SESSION_KEY not in self.app.session
 
         # now, initiate the logout, which must trigger the OP logout too

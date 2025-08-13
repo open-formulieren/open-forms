@@ -1,25 +1,47 @@
-from django.http import HttpRequest
+from django.contrib.auth.models import AnonymousUser
+from django.http import HttpRequest, HttpResponseRedirect
 
-from digid_eherkenning.oidc.models import BaseConfig
-from digid_eherkenning.oidc.views import (
-    OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
-)
 from furl import furl
 from mozilla_django_oidc_db.config import lookup_config
-from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
+from mozilla_django_oidc_db.registry import register as oidc_registry
+from mozilla_django_oidc_db.views import (
+    _RETURN_URL_SESSION_KEY,
+    OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
+)
+
+from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
+    OIDCAuthentication,
+)
+from openforms.contrib.auth_oidc.utils import (
+    get_of_auth_plugin,
+)
 
 
-class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
+class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
     """
-    Relay error messages back to the frontend.
+    We only want to perform the claim processing, no real user is expected to
+    be returned from the authentication backend, and hence we also don't want to try
+    to log in this dummy user (as in, set ``request.user`` to a django user
+    instance).
 
-    This custom callback view relays any failures back to the public frontend URL of the
-    form by setting the appropriate outage parameter and/or message.
+    Note that we deliberately don't perform these changes in :meth:`get` (anymore),
+    since we miss the upstream library changes/fixes when we make invasive changes.
+    Instead, the authentication backend receives all the necessary information and *is*
+    the right place to implement this logic.
     """
 
-    expect_django_user: bool = False  # do NOT create real Django users
+    user: AnonymousUser  # set on succesful auth/code exchange
 
     _redirect_next: str
+
+    def login_success(self):
+        """
+        Overridden to not actually log the user in, since setting the BSN/KVK/... in
+        the session variables is all that matters.
+        """
+        assert self.user
+
+        return HttpResponseRedirect(self.success_url)
 
     def get(self, request: HttpRequest):
         # grab where the redirect next from the session and store it as a temporary
@@ -34,15 +56,13 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
     ) -> tuple[str, str]:
         """
         Return a tuple of the parameter type and the problem code.
+
+        Using the OF auth plugin, generate the error messages. This does not use the
+        OIDC plugin, since the SDK expects the error codes to contain the identifiers
+        of the OF auth plugin, and the OIDC plugins have no knowledge of these.
         """
-        from .plugin import get_config_to_plugin
-
-        config_to_plugin = get_config_to_plugin()
-        config_class = lookup_config(self.request)
-        assert issubclass(config_class, BaseConfig)
-        plugin = config_to_plugin[config_class]
-
-        return plugin.failure_url_error_message(error, error_description)
+        of_auth_plugin = self._get_of_auth_plugin()
+        return of_auth_plugin.get_error_message_parameters(error, error_description)
 
     @property
     def failure_url(self) -> str:
@@ -65,3 +85,12 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
         )
         form_url.args[parameter] = problem_code
         return form_url.url
+
+    def _get_of_auth_plugin(self) -> OIDCAuthentication:
+        configuration = lookup_config(self.request)
+        oidc_plugin = oidc_registry[configuration.identifier]
+
+        return get_of_auth_plugin(oidc_plugin)
+
+
+anon_user_callback_view = OIDCAuthAnonUserCallbackView.as_view()

@@ -1,14 +1,12 @@
-from itertools import chain
 from typing import TypedDict, assert_never, cast
 
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from glom import Path, glom
-
 from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
-from openforms.typing import AnyRequest, JSONObject
+from openforms.contrib.auth_oidc.typing import OIDCErrors
+from openforms.typing import AnyRequest
 
 from ...base import LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
@@ -16,15 +14,13 @@ from ...models import AuthInfo
 from ...registry import register
 from ...types import YiviContext
 from ...typing import FormAuth
-from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from ..digid.constants import DIGID_DEFAULT_LOA
 from ..digid.plugin import loa_order as digid_loa_order
 from ..eherkenning.constants import EHERKENNING_DEFAULT_LOA
 from ..eherkenning.plugin import loa_order as eherkenning_loa_order
 from .config import YiviOptions, YiviOptionsSerializer
 from .constants import LOGIN_CANCELLED, PLUGIN_ID, YIVI_MESSAGE_PARAMETER
-from .models import AttributeGroup, YiviOpenIDConnectConfig
-from .views import OIDCAuthenticationInitView
+from .oidc_plugins.constants import OIDC_YIVI_IDENTIFIER
 
 
 class YiviClaims(TypedDict, total=False):
@@ -72,22 +68,9 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
     provides_multiple_auth_attributes = True
     # Yivi can provide a range of auth attributes, based on form config and user choice
     provides_auth = (AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo)
-    session_key = "yivi_oidc"
-    config_class = YiviOpenIDConnectConfig
+    oidc_plugin_identifier = OIDC_YIVI_IDENTIFIER
     configuration_options = YiviOptionsSerializer
     manage_auth_context = True
-
-    @property
-    def init_view(self):
-        def view(request, options: YiviOptions, *args, **kwargs):
-            yivi_init = OIDCAuthenticationInitView.as_view(
-                config_class=YiviOpenIDConnectConfig,
-                allow_next_from_query=False,
-                options=options,
-            )
-            return yivi_init(request, *args, **kwargs)
-
-        return view
 
     @staticmethod
     def _get_user_chosen_authentication_attribute(
@@ -112,19 +95,8 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
         else:
             return AuthAttribute.pseudo
 
-    def strict_mode(self, request: HttpRequest) -> bool:
-        # Yivi cannot be strict, as all its attributes should be optional!
-        return False
-
-    def failure_url_error_message(
-        self, error: str, error_description: str
-    ) -> tuple[str, str]:
-        match error, error_description:
-            case ("access_denied", "The user cancelled"):
-                return (YIVI_MESSAGE_PARAMETER, LOGIN_CANCELLED)
-
-            case _:
-                return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+    def get_error_codes(self) -> OIDCErrors:
+        return {"access_denied": (YIVI_MESSAGE_PARAMETER, LOGIN_CANCELLED)}
 
     def transform_claims(
         self, options: YiviOptions, normalized_claims: YiviClaims
@@ -185,48 +157,6 @@ class YiviOIDCAuthentication(OIDCAuthentication[YiviClaims, YiviOptions]):
             "levelOfAssurance": auth_info.loa,
         }
         return yivi_context
-
-    def before_process_claims(
-        self, config: YiviOpenIDConnectConfig, claims: JSONObject
-    ):
-        """
-        Update the global Yivi config, before processing the claims.
-
-        Yivi supports multiple sets of loa config, which have to be dynamically set to
-        the "main" loa config in order for the processing of claims to succeed.
-        (Otherwise the "non-main" loa config is ignored, and an error is thrown for the
-        missing "main" loa config.)
-        """
-        has_bsn_claim = bool(glom(claims, Path(*config.bsn_claim), default=False))
-        has_kvk_claim = bool(glom(claims, Path(*config.kvk_claim), default=False))
-
-        # Set the "global" loa config based on the used authentication method
-        match (has_bsn_claim, has_kvk_claim):
-            case True, _:
-                config.loa_claim = config.bsn_loa_claim
-                config.default_loa = config.bsn_default_loa
-                config.loa_value_mapping = config.bsn_loa_value_mapping
-            case False, True:
-                config.loa_claim = config.kvk_loa_claim
-                config.default_loa = config.kvk_default_loa
-                config.loa_value_mapping = config.kvk_loa_value_mapping
-            case False, False:
-                config.loa_claim = [""]
-                config.default_loa = None
-                config.loa_value_mapping = None
-
-    def extract_additional_claims(
-        self, options: YiviOptions, claims: JSONObject
-    ) -> JSONObject:
-        attributes_to_add = AttributeGroup.objects.filter(
-            name__in=options.get("additional_attributes_groups", [])
-        ).values_list("attributes", flat=True)
-
-        return {
-            attribute: claims[attribute]
-            for attribute in list(chain.from_iterable(attributes_to_add))
-            if attribute in claims
-        }
 
     def get_label(self):
         return "Yivi"

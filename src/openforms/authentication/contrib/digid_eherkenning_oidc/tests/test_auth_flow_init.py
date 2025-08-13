@@ -17,16 +17,13 @@ from furl import furl
 
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from openforms.contrib.auth_oidc.tests.factories import (
+    OFOIDCClientFactory,
+)
 from openforms.forms.tests.factories import FormFactory
 
 from .base import (
     IntegrationTestsBase,
-    mock_digid_config,
-    mock_digid_machtigen_config,
-    mock_eherkenning_bewindvoering_config,
-    mock_eherkenning_config,
-    mock_eidas_company_config,
-    mock_eidas_config,
 )
 
 
@@ -37,8 +34,9 @@ class DigiDInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_digid_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
+
         form = FormFactory.create(authentication_backend="digid_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="digid_oidc")
 
@@ -57,10 +55,14 @@ class DigiDInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_digid_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",  # Non-existing endpoint!
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -74,8 +76,13 @@ class DigiDInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "digid_oidc")
 
-    @mock_digid_config(oidc_keycloak_idp_hint="oidc-digid")
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid=True,
+            oidc_keycloak_idp_hint="oidc-digid",
+        )
+
         form = FormFactory.create(authentication_backend="digid_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
@@ -94,8 +101,12 @@ class EHerkenningInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eherkenning_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+        )
+
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eherkenning_oidc")
 
@@ -114,10 +125,14 @@ class EHerkenningInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eherkenning_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",  # Non-existing endpoint!
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -133,8 +148,13 @@ class EHerkenningInitTests(IntegrationTestsBase):
             query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "eherkenning_oidc"
         )
 
-    @mock_eherkenning_config(oidc_keycloak_idp_hint="oidc-eherkenning")
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning=True,
+            oidc_keycloak_idp_hint="oidc-eherkenning",
+        )
+
         form = FormFactory.create(authentication_backend="eherkenning_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
@@ -153,8 +173,12 @@ class EIDASInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eidas_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+        )
+
         form = FormFactory.create(authentication_backend="eidas_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_oidc")
 
@@ -173,10 +197,14 @@ class EIDASInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eidas_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eidas_oidc")
@@ -190,8 +218,13 @@ class EIDASInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "eidas_oidc")
 
-    @mock_eidas_config(oidc_keycloak_idp_hint="oidc-eidas")
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas=True,
+            oidc_keycloak_idp_hint="oidc-eidas",
+        )
+
         form = FormFactory.create(authentication_backend="eidas_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eidas_oidc")
@@ -210,8 +243,12 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eidas_company_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+        )
+
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="eidas_company_oidc")
 
@@ -230,10 +267,14 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eidas_company_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
@@ -249,8 +290,13 @@ class EIDASCompanyInitTests(IntegrationTestsBase):
             query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "eidas_company_oidc"
         )
 
-    @mock_eidas_company_config(oidc_keycloak_idp_hint="oidc-eidas")
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eidas_company=True,
+            oidc_keycloak_idp_hint="oidc-eidas",
+        )
+
         form = FormFactory.create(authentication_backend="eidas_company_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="eidas_company_oidc")
@@ -269,8 +315,12 @@ class DigiDMachtigenInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_digid_machtigen_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+        )
+
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         start_url = URLsHelper(form=form).get_auth_start(
             plugin_id="digid_machtigen_oidc"
@@ -291,10 +341,14 @@ class DigiDMachtigenInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_digid_machtigen_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -310,8 +364,13 @@ class DigiDMachtigenInitTests(IntegrationTestsBase):
             query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "digid_machtigen_oidc"
         )
 
-    @mock_digid_machtigen_config(oidc_keycloak_idp_hint="oidc-digid-machtigen")
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_digid_machtigen=True,
+            oidc_keycloak_idp_hint="oidc-digid-machtigen",
+        )
+
         form = FormFactory.create(authentication_backend="digid_machtigen_oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -330,8 +389,12 @@ class EHerkenningBewindvoeringInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_eherkenning_bewindvoering_config()
     def test_start_flow_redirects_to_oidc_provider(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+        )
+
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -354,10 +417,14 @@ class EHerkenningBewindvoeringInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_eherkenning_bewindvoering_config(
-        oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist"
-    )
     def test_idp_availability_check(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
+            check_op_availability=True,
+        )
+
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )
@@ -378,10 +445,13 @@ class EHerkenningBewindvoeringInitTests(IntegrationTestsBase):
             "eherkenning_bewindvoering_oidc",
         )
 
-    @mock_eherkenning_bewindvoering_config(
-        oidc_keycloak_idp_hint="oidc-eherkenning-bewindvoering"
-    )
     def test_keycloak_idp_hint_is_respected(self):
+        OFOIDCClientFactory.create(
+            with_keycloak_provider=True,
+            with_eherkenning_bewindvoering=True,
+            oidc_keycloak_idp_hint="oidc-eherkenning-bewindvoering",
+        )
+
         form = FormFactory.create(
             authentication_backend="eherkenning_bewindvoering_oidc"
         )

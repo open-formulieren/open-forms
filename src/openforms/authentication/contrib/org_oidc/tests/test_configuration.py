@@ -1,9 +1,9 @@
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from mozilla_django_oidc_db.views import OIDCInit
+from mozilla_django_oidc_db.registry import register as registry
 
-from ..models import OrgOpenIDConnectConfig
+from ..oidc_plugins.constants import OIDC_ORG_IDENTIFIER
 
 
 class CallbackURLConfigurationTests(TestCase):
@@ -11,26 +11,21 @@ class CallbackURLConfigurationTests(TestCase):
     Test the legacy and new behaviour for the OIDC Redirect URIs for each config.
     """
 
-    def setUp(self):
-        super().setUp()
-
-        self.addCleanup(OrgOpenIDConnectConfig.clear_cache)
-
     @override_settings(USE_LEGACY_ORG_OIDC_ENDPOINTS=True)
     def test_legacy_settings(self):
         # use an init view to decouple the implementation details from the
         # desired behaviour.
-        view = OIDCInit(config_class=OrgOpenIDConnectConfig)
+        plugin = registry[OIDC_ORG_IDENTIFIER]
 
-        url = reverse(view.get_settings("OIDC_AUTHENTICATION_CALLBACK_URL"))
+        url = reverse(plugin.get_setting("OIDC_AUTHENTICATION_CALLBACK_URL"))
 
         self.assertEqual(url, "/org-oidc/callback/")
 
     def test_default_settings_behaviour(self):
         # use an init view to decouple the implementation details from the
         # desired behaviour.
-        view = OIDCInit(config_class=OrgOpenIDConnectConfig)
+        plugin = registry[OIDC_ORG_IDENTIFIER]
 
-        url = reverse(view.get_settings("OIDC_AUTHENTICATION_CALLBACK_URL"))
+        url = reverse(plugin.get_setting("OIDC_AUTHENTICATION_CALLBACK_URL"))
 
         self.assertEqual(url, "/auth/oidc/callback/")

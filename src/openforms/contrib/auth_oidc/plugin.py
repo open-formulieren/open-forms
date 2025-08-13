@@ -1,70 +1,52 @@
 from __future__ import annotations
 
-from typing import ClassVar, Protocol, TypedDict
+from collections.abc import Sequence
+from typing import ClassVar, Protocol, runtime_checkable
 
 from django.http import (
     HttpRequest,
     HttpResponseBadRequest,
-    HttpResponseBase,
     HttpResponseRedirect,
 )
 
-from digid_eherkenning.oidc.models.base import BaseConfig
+from mozilla_django_oidc_db.registry import register as oidc_registry
+from mozilla_django_oidc_db.typing import ClaimPath
 from mozilla_django_oidc_db.utils import do_op_logout
-from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
+from mozilla_django_oidc_db.views import (
+    _RETURN_URL_SESSION_KEY,
+    OIDCAuthenticationRequestInitView,
+)
+from typing_extensions import deprecated
 
-from openforms.authentication.base import BasePlugin, CosignSlice
+from openforms.authentication.base import (
+    BasePlugin,
+    CosignSlice,
+    Options as BaseOptions,
+)
 from openforms.authentication.constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
 )
 from openforms.authentication.exceptions import InvalidCoSignData
-from openforms.authentication.registry import register
 from openforms.authentication.typing import FormAuth
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions, OIDCErrors
 from openforms.forms.models import Form
-from openforms.typing import JSONObject
+from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
 
 from .constants import OIDC_ID_TOKEN_SESSION_KEY
 
 
-def get_config_to_plugin() -> dict[type[BaseConfig], OIDCAuthentication]:
-    """
-    Get the mapping of config class to plugin identifier from the registry.
-    """
-    return {
-        plugin.config_class: plugin
-        for plugin in register
-        if isinstance(plugin, OIDCAuthentication)
-    }
+class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
+    verbose_name: StrOrPromise = ""
+    provides_auth: ClassVar[Sequence[AuthAttribute]]
+    oidc_plugin_identifier: ClassVar[str]
 
-
-class OptionsT(TypedDict):
-    pass
-
-
-class AuthInit(Protocol):
-    def __call__(
-        self, request: HttpRequest, return_url: str, options: OptionsT, *args, **kwargs
-    ) -> HttpResponseBase: ...
-
-
-# can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
-# assignable... :(
-class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
-    provides_multiple_auth_attributes: bool = False
-    session_key: str = ""
-    config_class: ClassVar[type[BaseConfig]]
-    init_view: ClassVar[AuthInit]
-
-    def __init_subclass__(cls) -> None:
-        super().__init_subclass__()
-
-        assert cls.provides_multiple_auth_attributes or len(cls.provides_auth) == 1, (
-            f"Did you accidentally enable multiple auth attributes on {cls!r}?"
-        )
-
-    def start_login(self, request: HttpRequest, form: Form, form_url: str, options):
+    def start_login(
+        self, request: HttpRequest, form: Form, form_url: str, options: OptionsT
+    ) -> HttpResponseRedirect:
         return_url_query = {"next": form_url}
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url_query[CO_SIGN_PARAMETER] = co_sign_param
@@ -86,43 +68,26 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         #
         # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
         # start_view and gets handled there.
-        response = self.init_view(request, return_url=return_url, options=options)
+        init_view = OIDCAuthenticationRequestInitView.as_view(
+            identifier=self.oidc_plugin_identifier,
+            allow_next_from_query=False,
+        )
+        response = init_view(request, return_url=return_url)
         assert isinstance(response, HttpResponseRedirect)
         return response
 
     def handle_co_sign(self, request: HttpRequest, form: Form) -> CosignSlice:
-        if not (claim := request.session.get(self.session_key)):
+        if not (claim := request.session.get(self.oidc_plugin_identifier)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {
             "identifier": claim,
             "fields": {},
         }
 
-    def before_process_claims(self, config: BaseConfig, claims: JSONObject):
-        pass
-
-    def strict_mode(self, request: HttpRequest) -> bool:
-        return False
-
     def transform_claims(self, options: OptionsT, normalized_claims: T) -> FormAuth:
         raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
-    def failure_url_error_message(
-        self, error: str, error_description: str
-    ) -> tuple[str, str]:
-        """
-        Return a tuple of the parameter type and the problem code.
-        """
-        raise NotImplementedError(
-            "Subclasses must implement 'failure_url_error_message'"
-        )
-
-    def extract_additional_claims(
-        self, options: OptionsT, claims: JSONObject
-    ) -> JSONObject:
-        return {}
-
-    def handle_return(self, request: HttpRequest, form: Form, options):
+    def handle_return(self, request: HttpRequest, form: Form, options: OptionsT):
         """
         Redirect to form URL.
         """
@@ -130,7 +95,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        normalized_claims: T | None = request.session.get(self.session_key)
+        normalized_claims: T | None = request.session.get(self.oidc_plugin_identifier)
         if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
             form_auth = self.transform_claims(options, normalized_claims)
             request.session[FORM_AUTH_SESSION_KEY] = form_auth
@@ -139,15 +104,49 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
 
     def logout(self, request: HttpRequest):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
-            config = self.config_class.get_solo()
+            oidc_plugin = oidc_registry[self.oidc_plugin_identifier]
+            config = oidc_plugin.get_config()
+
             do_op_logout(config, id_token)
 
         keys_to_delete = (
             "oidc_login_next",  # from upstream library
-            self.session_key,
+            self.oidc_plugin_identifier,
             _RETURN_URL_SESSION_KEY,
             OIDC_ID_TOKEN_SESSION_KEY,
         )
         for key in keys_to_delete:
             if key in request.session:
                 del request.session[key]
+
+    def get_error_message_parameters(
+        self, error: str, error_description: str
+    ) -> tuple[str, str]:
+        """Return the message code and the error description for a failed login."""
+        errors = self.get_error_codes()
+        if (
+            error == "access_denied"
+            and error_description == "The user cancelled"
+            and "access_denied" in errors
+        ):
+            return errors["access_denied"]
+        return (BACKEND_OUTAGE_RESPONSE_PARAMETER, self.identifier)
+
+    def get_error_codes(self) -> OIDCErrors:
+        raise NotImplementedError("Subclasses must implement 'get_error_codes'")
+
+
+@runtime_checkable
+class OFBaseOIDCPluginProtocol(Protocol):
+    @deprecated(
+        "These plugin-specific callback URLs are deprecated. "
+        "Instead, use the generic callback URL in urls.py - it"
+        " can handle the different configs."
+    )
+    def _get_legacy_callback(self) -> str:
+        """Get the django URL name of the callback URL."""
+        ...
+
+    def get_sensitive_claims(self) -> list[ClaimPath]: ...
+
+    def get_claim_processing_instructions(self) -> ClaimProcessingInstructions: ...
