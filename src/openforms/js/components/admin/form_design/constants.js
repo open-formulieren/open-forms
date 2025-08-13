@@ -7,6 +7,8 @@ export const REGISTRATION_OBJECTS_TARGET_PATHS =
 export const REGISTRATION_GENERIC_JSON_FIXED_METADATA_VARIABLES =
   '/api/v2/registration/plugins/generic-json/fixed-metadata-variables';
 export const AUTH_PLUGINS_ENDPOINT = '/api/v2/authentication/plugins';
+export const YIVI_ATTRIBUTE_GROUPS_ENDPOINT =
+  '/api/v2/authentication/plugins/yivi/attribute-groups';
 export const PREFILL_PLUGINS_ENDPOINT = '/api/v2/prefill/plugins';
 export const DMN_PLUGINS_ENDPOINT = '/api/v2/dmn/plugins';
 export const PAYMENT_PLUGINS_ENDPOINT = '/api/v2/payment/plugins';
