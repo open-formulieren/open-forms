@@ -84,8 +84,7 @@ class BaseDigiDeHerkenningPlugin(
         assert payload, "Empty claims should have been blocked earlier"
         obfuscated_claims = obfuscate_claims(payload, self.get_sensitive_claims())
 
-        log = logger.bind(claims=obfuscated_claims)
-        log.debug("received_oidc_claims")
+        logger.debug("oidc_claims_received", claims=obfuscated_claims)
 
         try:
             # process_claims in strict mode raises ValueError if *required* claims are
@@ -96,7 +95,7 @@ class BaseDigiDeHerkenningPlugin(
                 self.strict_mode(),
             )
         except ValueError as exc:
-            log.error(
+            logger.error(
                 "claim_processing_failure", reason="claims_incomplete", exc_info=exc
             )
             msg = "Claims verification failed"

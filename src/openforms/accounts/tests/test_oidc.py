@@ -12,25 +12,18 @@ to bring up a Keycloak instance.
 """
 
 from pathlib import Path
-from unittest.mock import patch
 
-from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
-from mozilla_django_oidc_db.plugins import OIDCAdminPlugin
-from mozilla_django_oidc_db.registry import register as oidc_register
-from mozilla_django_oidc_db.views import OIDCAuthenticationRequestView
+from mozilla_django_oidc_db.models import OIDCClient
 
 from openforms.contrib.auth_oidc.tests.factories import (
     OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
 )
-from openforms.utils.tests.keycloak import (
-    keycloak_login,
-    mock_get_random_string,
-)
+from openforms.utils.tests.keycloak import keycloak_login
+from openforms.utils.tests.oidc import OIDCMixin
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
@@ -39,17 +32,13 @@ from .factories import StaffUserFactory
 TEST_FILES = (Path(__file__).parent / "data").resolve()
 
 
-class OIDCLoginButtonTestCase(WebTest):
+class OIDCLoginButtonTestCase(OIDCMixin, WebTest):
     def test_oidc_button_disabled(self):
-        admin_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True, with_admin=True, enabled=False
         )
 
-        with patch(
-            "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-            new=admin_client.identifier,
-        ):
-            response = self.app.get(reverse("admin-mfa-login"))
+        response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
             "a", string=_("Login with organization account")
@@ -58,15 +47,11 @@ class OIDCLoginButtonTestCase(WebTest):
         self.assertIsNone(oidc_login_link)
 
     def test_oidc_button_enabled(self):
-        admin_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True, with_admin=True, enabled=True
         )
 
-        with patch(
-            "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-            new=admin_client.identifier,
-        ):
-            response = self.app.get(reverse("admin-mfa-login"))
+        response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
             "a", string=_("Login with organization account")
@@ -78,14 +63,11 @@ class OIDCLoginButtonTestCase(WebTest):
         )
 
     def test_config_not_found(self):
-        with patch(
-            "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-            new="doesnt-exist",
-        ):
-            response = self.app.get(reverse("admin-mfa-login"))
+        assert not OIDCClient.objects.exists()
+
+        response = self.app.get(reverse("admin-mfa-login"))
 
         self.assertEqual(response.status_code, 200)
-
         oidc_login_link = response.html.find(
             "a", string=_("Login with organization account")
         )
@@ -93,48 +75,29 @@ class OIDCLoginButtonTestCase(WebTest):
         self.assertIsNone(oidc_login_link)
 
 
-class OIDCFlowTests(OFVCRMixin, WebTest):
+class OIDCFlowTests(OIDCMixin, OFVCRMixin, WebTest):
     VCR_TEST_FILES = TEST_FILES
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
-    @override_settings(
-        OIDC_AUTHENTICATE_CLASS="mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
-    )
     def test_duplicate_email_unique_constraint_violated(self):
         """
         Assert that duplicate email addresses result in usable user feedback.
 
         Regression test for #1199
         """
-
-        admin_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_admin=True,
             enabled=True,
-            post__options__user_settings__claim_mappings__email=["email"],
+            options__user_settings__claim_mappings__email=["email"],
         )
-        oidc_register(admin_client.identifier)(OIDCAdminPlugin)
-
         # this user collides on the email address
         staff_user = StaffUserFactory.create(
             username="no-match", email="admin@example.com"
         )
-        with (
-            patch(
-                "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-                new=admin_client.identifier,
-            ),
-            patch.object(
-                OIDCAuthenticationRequestView, "identifier", admin_client.identifier
-            ),
-        ):
-            login_page = self.app.get(reverse("admin-mfa-login"))
-
-            start_response = login_page.click(
-                description=_("Login with organization account")
-            )
-
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
+        )
         assert start_response.status_code == 302
         redirect_uri = keycloak_login(
             start_response["Location"], username="admin", password="admin"
@@ -161,37 +124,18 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
             self.assertEqual(staff_user.email, "admin@example.com")
             self.assertTrue(staff_user.is_staff)
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
-    @override_settings(
-        OIDC_AUTHENTICATE_CLASS="mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
-    )
     def test_happy_flow(self):
-        admin_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_admin=True,
             enabled=True,
-            post__options__user_settings__claim_mappings__username=[
-                "preferred_username"
-            ],
-            post__options__groups_settings__make_users_staff=True,
+            options__user_settings__claim_mappings__username=["preferred_username"],
+            options__groups_settings__make_users_staff=True,
         )
-        oidc_register(admin_client.identifier)(OIDCAdminPlugin)
-
-        with (
-            patch(
-                "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-                new=admin_client.identifier,
-            ),
-            patch.object(
-                OIDCAuthenticationRequestView, "identifier", admin_client.identifier
-            ),
-        ):
-            login_page = self.app.get(reverse("admin-mfa-login"))
-            start_response = login_page.click(
-                description=_("Login with organization account")
-            )
-
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
+        )
         assert start_response.status_code == 302
 
         redirect_uri = keycloak_login(
@@ -207,40 +151,21 @@ class OIDCFlowTests(OFVCRMixin, WebTest):
         user = User.objects.get()
         self.assertEqual(user.username, "admin")
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
-    @override_settings(
-        OIDC_AUTHENTICATE_CLASS="mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
-    )
     def test_happy_flow_existing_user(self):
-        admin_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_admin=True,
             enabled=True,
-            post__options__user_settings__claim_mappings__username=[
-                "preferred_username"
-            ],
-            post__options__user_settings__claim_mappings__email=["email"],
-            post__options__groups_settings__make_users_staff=False,
+            options__user_settings__claim_mappings__username=["preferred_username"],
+            options__user_settings__claim_mappings__email=["email"],
+            options__groups_settings__make_users_staff=False,
         )
-        oidc_register(admin_client.identifier)(OIDCAdminPlugin)
 
         staff_user = StaffUserFactory.create(username="admin", email="update-me")
-
-        with (
-            patch(
-                "mozilla_django_oidc_db.templatetags.mozilla_django_oidc_db.OIDC_ADMIN_CONFIG_IDENTIFIER",
-                new=admin_client.identifier,
-            ),
-            patch.object(
-                OIDCAuthenticationRequestView, "identifier", admin_client.identifier
-            ),
-        ):
-            login_page = self.app.get(reverse("admin-mfa-login"))
-            start_response = login_page.click(
-                description=_("Login with organization account")
-            )
-
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
+        )
         assert start_response.status_code == 302
         redirect_uri = keycloak_login(
             start_response["Location"], username="admin", password="admin"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import ClassVar, Protocol, TypedDict
+from typing import ClassVar, Protocol, runtime_checkable
 
 from django.http import (
     HttpRequest,
@@ -18,7 +18,11 @@ from mozilla_django_oidc_db.views import (
 )
 from typing_extensions import deprecated
 
-from openforms.authentication.base import BasePlugin, CosignSlice
+from openforms.authentication.base import (
+    BasePlugin,
+    CosignSlice,
+    Options as BaseOptions,
+)
 from openforms.authentication.constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
@@ -35,13 +39,7 @@ from openforms.utils.urls import reverse_plus
 from .constants import OIDC_ID_TOKEN_SESSION_KEY
 
 
-class OptionsT(TypedDict):
-    pass
-
-
-# can't bind T to JSONObject because TypedDict and dict[str, ...] are not considered
-# assignable... :(
-class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
+class OIDCAuthentication[T, OptionsT: BaseOptions](BasePlugin[OptionsT]):
     verbose_name: StrOrPromise = ""
     provides_auth: ClassVar[Sequence[AuthAttribute]]
     oidc_plugin_identifier: ClassVar[str]
@@ -138,6 +136,7 @@ class OIDCAuthentication[T, OptionsT](BasePlugin[OptionsT]):
         raise NotImplementedError("Subclasses must implement 'get_error_codes'")
 
 
+@runtime_checkable
 class OFBaseOIDCPluginProtocol(Protocol):
     @deprecated(
         "These plugin-specific callback URLs are deprecated. "

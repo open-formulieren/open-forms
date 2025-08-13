@@ -20,7 +20,7 @@ class YiviPluginTransformClaimsTest(TestCase):
 
     def test_transform_claims_for_bsn_without_additional_attributes_claims(self):
         plugin_options: YiviOptions = {
-            "authentication_options": AuthAttribute.values,
+            "authentication_options": list(AuthAttribute),
             "additional_attributes_groups": [],
             "bsn_loa": "",
             "kvk_loa": "",
@@ -46,7 +46,7 @@ class YiviPluginTransformClaimsTest(TestCase):
 
     def test_transform_claims_for_kvk_without_additional_attributes_claims(self):
         plugin_options: YiviOptions = {
-            "authentication_options": AuthAttribute.values,
+            "authentication_options": list(AuthAttribute),
             "additional_attributes_groups": [],
             "bsn_loa": "",
             "kvk_loa": "",
@@ -94,7 +94,7 @@ class YiviPluginTransformClaimsTest(TestCase):
     def test_transform_claims_with_additional_attributes_claims(self):
         AttributeGroupFactory(name="foo_attribute", attributes=["attribute_name"])
         plugin_options: YiviOptions = {
-            "authentication_options": AuthAttribute.values,
+            "authentication_options": list(AuthAttribute),
             "additional_attributes_groups": ["foo_attribute"],
             "bsn_loa": "",
             "kvk_loa": "",

@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.postgres.fields import ArrayField
-from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext
 
@@ -9,26 +8,13 @@ from django_jsonform.models.fields import JSONField
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 from mozilla_django_oidc_db.models import OIDCClient
-from mozilla_django_oidc_db.plugins import OIDCAdminPlugin
-from mozilla_django_oidc_db.registry import register as oidc_register
-from mozilla_django_oidc_db.tests.factories import (
-    OIDCClientFactory,
-    OIDCProviderFactory,
-)
+from mozilla_django_oidc_db.tests.factories import OIDCProviderFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
-    DigiDOIDCAuthentication,
-)
-from openforms.authentication.registry import register as auth_register
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.tests.oidc import OIDCMixin
 
-
-# disable django solo cache to prevent test isolation breakage
-@override_settings(SOLO_CACHE=None)
-@disable_admin_mfa()
-class AdminTestsBase(WebTest):
-    pass
+from .factories import OFOIDCClientFactory
 
 
 def _set_arrayfields(form, config: OIDCClient) -> None:
@@ -44,7 +30,8 @@ def _set_arrayfields(form, config: OIDCClient) -> None:
         form[field] = json.dumps(getattr(config, field))
 
 
-class DigiDConfigAdminTests(AdminTestsBase):
+@disable_admin_mfa()
+class AdminEnableDisableTests(OIDCMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -60,21 +47,11 @@ class DigiDConfigAdminTests(AdminTestsBase):
         cls.user = SuperUserFactory.create()
 
     def test_can_disable_backend_iff_unused_in_forms(self):
-        @oidc_register("test-can-disable-oidc-plugin")
-        class TestOIDCPlugin(OIDCAdminPlugin):
-            pass
-
-        @auth_register("test-unused-auth-backend")
-        class TestAuthPlugin(DigiDOIDCAuthentication):
-            oidc_plugin_identifier = "test-can-disable-oidc-plugin"
-
-        config = OIDCClientFactory.create(
-            identifier="test-can-disable-oidc-plugin",
+        config = OFOIDCClientFactory.create(
             oidc_provider=self.provider,
+            with_digid=True,  # uses digid here, but the exact plugin is irrelevant
             enabled=True,
-            with_admin_options=True,
         )
-
         FormFactory.create(authentication_backend="other-backend")
 
         change_page = self.app.get(
@@ -93,29 +70,16 @@ class DigiDConfigAdminTests(AdminTestsBase):
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
-
         config.refresh_from_db()
-
         self.assertFalse(config.enabled)
 
     def test_cannot_disable_backend_if_used_in_any_form(self):
-        @oidc_register("test-cannot-disable-oidc-plugin")
-        class TestOIDCPlugin(OIDCAdminPlugin):
-            pass
-
-        @auth_register("test-auth-backend")
-        class TestAuthPlugin(DigiDOIDCAuthentication):
-            oidc_plugin_identifier = "test-cannot-disable-oidc-plugin"
-
-        config = OIDCClientFactory.create(
-            identifier="test-cannot-disable-oidc-plugin",
+        config = OFOIDCClientFactory.create(
             oidc_provider=self.provider,
+            with_digid=True,
             enabled=True,
-            with_admin_options=True,
         )
-
-        FormFactory.create(authentication_backend="test-auth-backend")
-
+        FormFactory.create(authentication_backend="digid_oidc")
         change_page = self.app.get(
             reverse(
                 "admin:mozilla_django_oidc_db_oidcclient_change",
@@ -123,7 +87,6 @@ class DigiDConfigAdminTests(AdminTestsBase):
             ),
             user=self.user,
         )
-
         form = change_page.forms["oidcclient_form"]
         _set_arrayfields(form, config)
 
@@ -132,31 +95,22 @@ class DigiDConfigAdminTests(AdminTestsBase):
         response = form.submit()
 
         self.assertEqual(response.status_code, 200)  # there are validation errors
-
         expected_error = gettext(
-            "{plugin_name} is selected as authentication backend for one or more forms, please remove this backend from these forms before disabling this authentication backend."
+            "{plugin_name} is selected as authentication backend for one or more "
+            "forms, please remove this backend from these forms before disabling "
+            "this authentication backend."
         ).format(plugin_name="DigiD via OpenID Connect")
-
         self.assertContains(response, expected_error, html=True)
-
         config.refresh_from_db()
-
         self.assertTrue(config.enabled)
 
     def test_leave_enabled(self):
-        @oidc_register("test-can-leave-enabled-oidc-plugin")
-        class TestOIDCPlugin(OIDCAdminPlugin):
-            pass
-
-        config = OIDCClientFactory.create(
-            identifier="test-can-leave-enabled-oidc-plugin",
+        config = OFOIDCClientFactory.create(
             oidc_provider=self.provider,
+            with_digid=True,
             enabled=True,
-            with_admin_options=True,
         )
-
         FormFactory.create(authentication_backend="other-backend")
-
         change_page = self.app.get(
             reverse(
                 "admin:mozilla_django_oidc_db_oidcclient_change",
@@ -177,17 +131,11 @@ class DigiDConfigAdminTests(AdminTestsBase):
         self.assertTrue(config.enabled)
 
     def test_can_disable_if_not_related_to_auth_plugin(self):
-        @oidc_register("test-can-disable-rogue-client")
-        class TestOIDCPlugin(OIDCAdminPlugin):
-            pass
-
-        config = OIDCClientFactory.create(
-            identifier="test-can-disable-rogue-client",
+        config = OFOIDCClientFactory.create(
             oidc_provider=self.provider,
+            with_digid=True,
             enabled=True,
-            with_admin_options=True,
         )
-
         change_page = self.app.get(
             reverse(
                 "admin:mozilla_django_oidc_db_oidcclient_change",
@@ -195,7 +143,6 @@ class DigiDConfigAdminTests(AdminTestsBase):
             ),
             user=self.user,
         )
-
         form = change_page.forms["oidcclient_form"]
         _set_arrayfields(form, config)
 
@@ -204,7 +151,5 @@ class DigiDConfigAdminTests(AdminTestsBase):
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
-
         config.refresh_from_db()
-
         self.assertFalse(config.enabled)

@@ -23,9 +23,6 @@ class OIDCOrgPlugin(OIDCAdminPlugin, OFBaseOIDCPluginProtocol):  # pyright: igno
     def handle_callback(self, request: HttpRequest) -> HttpResponse:
         return callback_view(request)  # pyright: ignore[reportReturnType] # .as_view() returns HttpResponseBase
 
-    def _get_legacy_callback(self) -> str:
-        return "org-oidc-callback"
-
     def get_setting(self, attr: str, *args) -> Any:
         attr_lower = attr.lower()
 
@@ -36,7 +33,7 @@ class OIDCOrgPlugin(OIDCAdminPlugin, OFBaseOIDCPluginProtocol):  # pyright: igno
                     DeprecationWarning,
                     stacklevel=2,
                 )
-                return self._get_legacy_callback()
+                return "org-oidc-callback"
             return "oidc_authentication_callback"
 
         return super().get_setting(attr, *args)

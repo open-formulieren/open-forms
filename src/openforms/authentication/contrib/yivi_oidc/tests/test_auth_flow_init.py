@@ -5,23 +5,13 @@ import re
 from django.urls.base import reverse_lazy
 
 from furl import furl
-from mozilla_django_oidc_db.registry import register as oidc_register
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import (
-    register as auth_register,
-)
 from openforms.authentication.tests.factories import AttributeGroupFactory
 from openforms.authentication.tests.utils import URLsHelper
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import mock_get_random_string
 
-from ..oidc_plugins.plugins import YiviPlugin
-from ..plugin import YiviOIDCAuthentication
 from .base import IntegrationTestsBase
 
 
@@ -48,20 +38,12 @@ class YiviInitTests(IntegrationTestsBase):
 
         self.assertEqual(condiscon, expected)
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_start_flow_redirects_to_oidc_provider(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
+            options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
             authentication_backend__options={
@@ -96,22 +78,14 @@ class YiviInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_signicat_condiscon_contains_only_the_chosen_authentication_and_additional_attributes(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["attribute.bsn"],
+            options__identity_settings__bsn_claim_path=["attribute.bsn"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         AttributeGroupFactory(name="personal", attributes=["first_name", "last_name"])
         AttributeGroupFactory(name="mail", attributes=["email_address"])
         AttributeGroupFactory(name="phone", attributes=["phone_number"])
@@ -145,23 +119,15 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_signicat_condiscon_authentication_attributes_also_contain_defined_loa(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["attribute.bsn"],
-            post__options__loa_settings__bsn_loa_claim_path=["attribute.loa:bsn"],
+            options__identity_settings__bsn_claim_path=["attribute.bsn"],
+            options__loa_settings__bsn_loa_claim_path=["attribute.loa:bsn"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
             authentication_backend__options={
@@ -188,24 +154,16 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_signicat_condiscon_contains_multiple_chosen_authentication_attributes(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["attribute.bsn"],
-            post__options__identity_settings__kvk_claim_path=["attribute.kvk"],
-            post__options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
+            options__identity_settings__bsn_claim_path=["attribute.bsn"],
+            options__identity_settings__kvk_claim_path=["attribute.kvk"],
+            options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
             authentication_backend__options={
@@ -239,22 +197,14 @@ class YiviInitTests(IntegrationTestsBase):
             ],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_signicat_condiscon_without_pre_defined_attributes_contains_the_pseudo_claim(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
+            options__identity_settings__pseudo_claim_path=["attribute.pseudo"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         form = FormFactory.create(
             authentication_backend="yivi_oidc",
             authentication_backend__options={

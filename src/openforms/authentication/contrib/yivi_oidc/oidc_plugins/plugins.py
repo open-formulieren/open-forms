@@ -98,8 +98,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             payload, self.get_sensitive_claims(additional_attributes)
         )
 
-        log = logger.bind(claims=obfuscated_claims)
-        log.debug("received_oidc_claims")
+        logger.debug("oidc_claims_received", claims=obfuscated_claims)
 
         try:
             # Here we use the payload instead of the user_info, because the claims
@@ -107,7 +106,7 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
             # that of the user_info.
             processed_claims = self.process_claims(payload, additional_attributes)
         except ValueError as exc:
-            log.error(
+            logger.error(
                 "claim_processing_failure", reason="claims_incomplete", exc_info=exc
             )
             msg = "Claims verification failed"
@@ -388,8 +387,10 @@ class YiviPlugin(BaseOIDCPlugin, AnonymousUserOIDCPluginProtocol):
         base64_bytes = base64.b64encode(condiscon_string.encode("ascii"))
         return f"signicat:param:condiscon_base64:{base64_bytes.decode('ascii')}"
 
-    # TODO: parent has django.http.HttpRequest, but it should be rest_framework.request.Request (maykinmedia/mozilla-django-oidc-db/issues/151)
-    def get_extra_params(self, request: Request, extra_params: dict) -> dict:  # pyright: ignore[reportIncompatibleMethodOverride]
+    def get_extra_params(
+        self, request: HttpRequest, extra_params: dict
+    ) -> dict[str, str | bytes]:
+        assert isinstance(request, Request)  # stronger guarantee
         configured_scopes = deepcopy(self.get_setting("oidc_rp_scopes_list"))
 
         return_url = request.query_params.get("next")

@@ -8,8 +8,7 @@ docker/docker-compose.keycloak.yml. See the README.md in docker/keycloak/ for mo
 information.
 """
 
-from contextlib import contextmanager, nullcontext
-from unittest.mock import patch
+from contextlib import nullcontext
 
 from pyquery import PyQuery as pq
 from requests import Session
@@ -58,16 +57,3 @@ def keycloak_login(
         assert (redirect_uri := login_response.headers["Location"]).startswith(host)
 
         return redirect_uri
-
-
-@contextmanager
-def mock_get_random_string():
-    """Mock the state & nonce random value generation
-
-    Needed so that we get predictable URLs to match with VCR.
-    """
-    with patch(
-        "mozilla_django_oidc.views.get_random_string",
-        return_value="not-a-random-string",
-    ):
-        yield

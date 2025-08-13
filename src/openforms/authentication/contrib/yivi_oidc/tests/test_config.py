@@ -14,9 +14,7 @@ class YiviOptionsSerializerTest(TestCase):
     """
 
     def test_valid_empty_options(self):
-        serializer = YiviOptionsSerializer(
-            data={},
-        )
+        serializer = YiviOptionsSerializer(data={})
 
         self.assertTrue(serializer.is_valid())
         self.assertEqual(
@@ -30,7 +28,7 @@ class YiviOptionsSerializerTest(TestCase):
         )
 
     def test_valid_filled_in_options(self):
-        AttributeGroupFactory(name="some_group")
+        AttributeGroupFactory.create(name="some_group")
         serializer = YiviOptionsSerializer(
             data={
                 "authentication_options": [

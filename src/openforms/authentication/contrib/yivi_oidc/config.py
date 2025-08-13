@@ -97,11 +97,17 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         if getattr(view, "swagger_fake_view", False):
             return fields
 
+        # help out the type checker a little
+        attribute_groups_field = fields["additional_attributes_groups"]
+        assert isinstance(attribute_groups_field, serializers.ListField)
+        _attribute_group_field = attribute_groups_field.child
+        assert isinstance(_attribute_group_field, serializers.ChoiceField)
+
         try:
-            fields[
-                "additional_attributes_groups"
-            ].child.choices = AttributeGroup.objects.values_list("name", "description")
+            _attribute_group_field.choices = AttributeGroup.objects.values_list(
+                "name", "description"
+            )
         except (OperationalError, ProgrammingError):
             # Early check without DB connection
-            fields["additional_attributes_groups"].child.choices = []
+            _attribute_group_field.choices = []
         return fields

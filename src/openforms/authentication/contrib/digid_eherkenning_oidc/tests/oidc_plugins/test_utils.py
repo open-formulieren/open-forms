@@ -2,39 +2,25 @@ from django.test import TestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from mozilla_django_oidc_db.registry import register as oidc_register
-from mozilla_django_oidc_db.tests.factories import (
-    OIDCClientFactory,
-)
 
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.contrib.auth_oidc.utils import process_claims
-
-from ...oidc_plugins.plugins import (
-    OIDCDigiDMachtigenPlugin,
-    OIDCDigidPlugin,
-    OIDCeHerkenningBewindvoeringPlugin,
-    OIDCeHerkenningPlugin,
-)
+from openforms.utils.tests.oidc import OIDCMixin
 
 
-class ProcessClaimsDigiDTest(TestCase):
-    @mock_auth_and_oidc_registers()
+class ProcessClaimsDigiDTest(OIDCMixin, TestCase):
     def test_digid_process_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid=True,
-            post__options__identity_settings__bsn_claim_path=["sub"],
-            post__options__loa_settings__claim_path=["authsp_level"],
-            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
-            post__options__loa_settings__value_mapping=[
+            options__identity_settings__bsn_claim_path=["sub"],
+            options__loa_settings__claim_path=["authsp_level"],
+            options__loa_settings__default=DigiDAssuranceLevels.middle,
+            options__loa_settings__value_mapping=[
                 {"from": "30", "to": DigiDAssuranceLevels.high},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -89,15 +75,13 @@ class ProcessClaimsDigiDTest(TestCase):
                 },
             )
 
-    @mock_auth_and_oidc_registers()
     def test_digid_raises_on_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid=True,
-            post__options__identity_settings__bsn_claim_path=["sub"],
-            post__options__loa_settings__claim_path=["authsp_level"],
+            options__identity_settings__bsn_claim_path=["sub"],
+            options__loa_settings__claim_path=["authsp_level"],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -108,16 +92,14 @@ class ProcessClaimsDigiDTest(TestCase):
                 strict=False,
             )
 
-    @mock_auth_and_oidc_registers()
     def test_digid_loa_claim_absent_without_default_loa(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid=True,
-            post__options__identity_settings__bsn_claim_path=["sub"],
-            post__options__loa_settings__claim_path=["authsp_level"],
-            post__options__loa_settings__default="",
+            options__identity_settings__bsn_claim_path=["sub"],
+            options__loa_settings__claim_path=["authsp_level"],
+            options__loa_settings__default="",
         )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -129,16 +111,14 @@ class ProcessClaimsDigiDTest(TestCase):
 
         self.assertEqual(processed_claims, {"bsn_claim": "XXXXXXX54"})
 
-    @mock_auth_and_oidc_registers()
     def test_digid_loa_claim_not_configured_but_default_set(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid=True,
-            post__options__identity_settings__bsn_claim_path=["bsn"],
-            post__options__loa_settings__claim_path=["not-present"],
-            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
+            options__identity_settings__bsn_claim_path=["bsn"],
+            options__loa_settings__claim_path=["not-present"],
+            options__loa_settings__default=DigiDAssuranceLevels.middle,
         )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -154,26 +134,20 @@ class ProcessClaimsDigiDTest(TestCase):
         )
 
 
-class ProcessClaimsDigiDMachtigenTest(TestCase):
-    @mock_auth_and_oidc_registers()
+class ProcessClaimsDigiDMachtigenTest(OIDCMixin, TestCase):
     def test_process_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid_machtigen=True,
-            post__options__identity_settings__representee_bsn_claim_path=[
-                "representee"
-            ],
-            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__loa_settings__claim_path=["authsp_level"],
-            post__options__loa_settings__default=DigiDAssuranceLevels.middle,
-            post__options__loa_settings__value_mapping=[
+            options__identity_settings__representee_bsn_claim_path=["representee"],
+            options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__loa_settings__claim_path=["authsp_level"],
+            options__loa_settings__default=DigiDAssuranceLevels.middle,
+            options__loa_settings__value_mapping=[
                 {"from": "30", "to": DigiDAssuranceLevels.high},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -244,21 +218,15 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                 },
             )
 
-    @mock_auth_and_oidc_registers()
     def test_digid_machtigen_raises_on_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid_machtigen=True,
-            post__options__identity_settings__representee_bsn_claim_path=[
-                "representee"
-            ],
-            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__loa_settings__claim_path=["authsp_level"],
+            options__identity_settings__representee_bsn_claim_path=["representee"],
+            options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__loa_settings__claim_path=["authsp_level"],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -302,21 +270,15 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
                 strict=True,
             )
 
-    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid_machtigen=True,
-            post__options__identity_settings__representee_bsn_claim_path=[
-                "representee"
-            ],
-            post__options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__loa_settings__claim_path=["authsp_level"],
+            options__identity_settings__representee_bsn_claim_path=["representee"],
+            options__identity_settings__authorizee_bsn_claim_path=["authorizee"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__loa_settings__claim_path=["authsp_level"],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -369,25 +331,21 @@ class ProcessClaimsDigiDMachtigenTest(TestCase):
         )
 
 
-class ProcessClaimsEHTest(TestCase):
-    @mock_auth_and_oidc_registers()
+class ProcessClaimsEHTest(OIDCMixin, TestCase):
     def test_process_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -475,24 +433,20 @@ class ProcessClaimsEHTest(TestCase):
                 },
             )
 
-    @mock_auth_and_oidc_registers()
     def test_eherkenning_raises_on_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -510,24 +464,20 @@ class ProcessClaimsEHTest(TestCase):
                 strict=True,
             )
 
-    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -550,32 +500,26 @@ class ProcessClaimsEHTest(TestCase):
         )
 
 
-class ProcessClaimsEHBewindvoeringTest(TestCase):
-    @mock_auth_and_oidc_registers()
+class ProcessClaimsEHBewindvoeringTest(OIDCMixin, TestCase):
     def test_eherkenning_bewindvoering_claim_processing(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__identity_settings__representee_claim_path=["bsn"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__identity_settings__mandate_service_uuid_claim_path=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__identity_settings__representee_claim_path=["bsn"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__identity_settings__mandate_service_uuid_claim_path=[
                 "service_uuid"
             ],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -687,31 +631,25 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                 },
             )
 
-    @mock_auth_and_oidc_registers()
     def test_raises_on_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__identity_settings__representee_claim_path=["bsn"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__identity_settings__mandate_service_uuid_claim_path=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__identity_settings__representee_claim_path=["bsn"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__identity_settings__mandate_service_uuid_claim_path=[
                 "service_uuid"
             ],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -775,31 +713,25 @@ class ProcessClaimsEHBewindvoeringTest(TestCase):
                 strict=True,
             )
 
-    @mock_auth_and_oidc_registers()
     def test_lax_mode(self):
         oidc_client = OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__identifier_type_claim_path=[
-                "namequalifier"
-            ],
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=["sub"],
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__identity_settings__representee_claim_path=["bsn"],
-            post__options__identity_settings__mandate_service_id_claim_path=[
-                "service_id"
-            ],
-            post__options__identity_settings__mandate_service_uuid_claim_path=[
+            options__identity_settings__identifier_type_claim_path=["namequalifier"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["sub"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__identity_settings__representee_claim_path=["bsn"],
+            options__identity_settings__mandate_service_id_claim_path=["service_id"],
+            options__identity_settings__mandate_service_uuid_claim_path=[
                 "service_uuid"
             ],
-            post__options__loa_settings__claim_path=["loa"],
-            post__options__loa_settings__default=AssuranceLevels.low_plus,
-            post__options__loa_settings__value_mapping=[
+            options__loa_settings__claim_path=["loa"],
+            options__loa_settings__default=AssuranceLevels.low_plus,
+            options__loa_settings__value_mapping=[
                 {"from": 3, "to": AssuranceLevels.substantial},
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
@@ -830,30 +762,16 @@ class OIDCUtilsTests(TestCase):
             "loa": "urn:etoegang:core:assurance-class:loa1",
         }
 
-        config = OIDCClientFactory.create(
-            identifier="test-processing-claims-non-legacy",
-            enabled=True,
-            with_admin_options=True,
-            options={
-                "bsn_path": ["bsn"],
-                "user_info": {
-                    "pet_path": ["user", "pet"],
-                },
-                "other_config": "bla",
-                "loa_settings": {"claim_path": ["loa"]},
-            },
-        )
-
         processing_instructions: ClaimProcessingInstructions = {
             "always_required_claims": [
                 {
-                    "path_in_claim": config.options["bsn_path"],
+                    "path_in_claim": ["bsn"],
                     "processed_path": ["bsn_claim"],
                 }
             ],
             "strict_required_claims": [
                 {
-                    "path_in_claim": config.options["user_info"]["pet_path"],
+                    "path_in_claim": ["user", "pet"],
                     "processed_path": ["user", "pet"],
                 }
             ],

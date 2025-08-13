@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import assert_never
+from typing import TypedDict, assert_never, final
 
 from django.utils.translation import gettext_lazy as _
 
@@ -19,7 +19,7 @@ from openforms.authentication.models import AuthInfo
 from openforms.authentication.registry import register
 from openforms.authentication.types import EIDASCompanyContext, EIDASContext
 from openforms.authentication.typing import FormAuth
-from openforms.contrib.auth_oidc.plugin import OIDCAuthentication, OptionsT
+from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 from openforms.contrib.auth_oidc.typing import (
     DigiDClaims,
     DigiDmachtigenClaims,
@@ -53,8 +53,13 @@ from .oidc_plugins.constants import (
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
 
 
+@final
+class NoOptions(TypedDict):
+    pass
+
+
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
+class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, NoOptions]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = (AuthAttribute.bsn,)
     oidc_plugin_identifier = OIDC_DIGID_IDENTIFIER
@@ -66,7 +71,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: DigiDClaims
+        self, options: NoOptions, normalized_claims: DigiDClaims
     ) -> FormAuth:
         return {
             "plugin": self.identifier,
@@ -80,7 +85,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims, OptionsT]):
 
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, NoOptions]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = (AuthAttribute.kvk,)
     oidc_plugin_identifier = OIDC_EH_IDENTIFIER
@@ -92,7 +97,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: EHClaims
+        self, options: NoOptions, normalized_claims: EHClaims
     ) -> FormAuth:
         acting_subject_identifier_value = normalized_claims.get(
             "acting_subject_claim", ""
@@ -130,7 +135,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims, OptionsT]):
 
 
 @register(EIDAS_PLUGIN_ID)
-class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
+class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, NoOptions]):
     verbose_name = _("eIDAS via OpenID Connect")
     provides_auth = (
         AuthAttribute.bsn,
@@ -173,7 +178,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
         }
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: EIDASClaims
+        self, options: NoOptions, normalized_claims: EIDASClaims
     ) -> FormAuth:
         legal_subject_identifier_value = normalized_claims[
             "legal_subject_identifier_claim"
@@ -208,7 +213,7 @@ class EIDASOIDCAuthentication(OIDCAuthentication[EIDASClaims, OptionsT]):
 
 
 @register(EIDAS_COMPANY_PLUGIN_ID)
-class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, OptionsT]):
+class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, NoOptions]):
     verbose_name = _("eIDAS for companies via OpenID Connect")
     provides_auth = (AuthAttribute.pseudo,)
     manage_auth_context = True
@@ -252,7 +257,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
         }
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: EIDASCompanyClaims
+        self, options: NoOptions, normalized_claims: EIDASCompanyClaims
     ) -> FormAuth:
         acting_subject_identifier_value = normalized_claims[
             "acting_subject_identifier_claim"
@@ -304,7 +309,7 @@ class EIDASCompanyOIDCAuthentication(OIDCAuthentication[EIDASCompanyClaims, Opti
 
 @register("digid_machtigen_oidc")
 class DigiDMachtigenOIDCAuthentication(
-    OIDCAuthentication[DigiDmachtigenClaims, OptionsT]
+    OIDCAuthentication[DigiDmachtigenClaims, NoOptions]
 ):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = (AuthAttribute.bsn,)
@@ -312,7 +317,7 @@ class DigiDMachtigenOIDCAuthentication(
     is_for_gemachtigde = True
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: DigiDmachtigenClaims
+        self, options: NoOptions, normalized_claims: DigiDmachtigenClaims
     ) -> FormAuth:
         authorizee = normalized_claims["authorizee_bsn_claim"]
         mandate_context = {}
@@ -348,7 +353,7 @@ _EH_IDENTIFIER_TYPE_MAP = {
 
 @register("eherkenning_bewindvoering_oidc")
 class EHerkenningBewindvoeringOIDCAuthentication(
-    OIDCAuthentication[EHBewindvoeringClaims, OptionsT]
+    OIDCAuthentication[EHBewindvoeringClaims, NoOptions]
 ):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
@@ -358,7 +363,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     is_for_gemachtigde = True
 
     def transform_claims(
-        self, options: OptionsT, normalized_claims: EHBewindvoeringClaims
+        self, options: NoOptions, normalized_claims: EHBewindvoeringClaims
     ) -> FormAuth:
         authorizee = normalized_claims["legal_subject_claim"]
         # Assume KVK if claim is not present...

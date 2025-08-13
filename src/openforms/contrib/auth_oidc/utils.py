@@ -4,12 +4,11 @@ from typing import Literal
 
 import structlog
 from glom import Path, PathAccessError, assign, glom
-from mozilla_django_oidc_db.plugins import (
-    BaseOIDCPlugin,
-)
+from mozilla_django_oidc_db.plugins import OIDCPlugin
 from mozilla_django_oidc_db.typing import JSONObject
 
-from openforms.authentication.base import BasePlugin as BaseAuthPlugin
+from openforms.authentication.registry import register as auth_register
+from openforms.contrib.auth_oidc.plugin import OIDCAuthentication
 
 from .typing import ClaimPathDetails, ClaimProcessingInstructions
 
@@ -204,17 +203,12 @@ def process_claims(
     return processed_claims
 
 
-def get_of_auth_plugin(
-    oidc_plugin: BaseOIDCPlugin,
-) -> BaseAuthPlugin:
+def get_of_auth_plugin(oidc_plugin: OIDCPlugin) -> OIDCAuthentication:
     """Get the Open Forms authentication plugin corresponding to the provided OIDC plugin."""
-    from openforms.authentication.registry import register as _of_auth_registry
-
-    for _identifier, plugin in _of_auth_registry.items():
-        if not hasattr(plugin, "oidc_plugin_identifier"):
+    for plugin in auth_register:
+        if not isinstance(plugin, OIDCAuthentication):
             continue
-
-        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:  # pyright: ignore[reportAttributeAccessIssue] # We established above that attr oidc_plugin_identifier is present
+        if plugin.oidc_plugin_identifier == oidc_plugin.identifier:
             return plugin
     else:
         raise NoAuthPluginFound()

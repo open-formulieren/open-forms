@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 
@@ -10,7 +10,7 @@ from openforms.authentication.tests.utils import AuthContextAssertMixin
 from ..constants import PLUGIN_ID
 
 
-class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
+class YiviAuthContextUnitTests(AuthContextAssertMixin, SimpleTestCase):
     """
     Testing the AuthInfo ``to_auth_context_data`` functionality for Yivi.
 
@@ -19,7 +19,7 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
     """
 
     def test_to_auth_context_data_for_bsn(self):
-        auth_info: AuthInfo = AuthInfoFactory.create(
+        auth_info: AuthInfo = AuthInfoFactory.build(
             plugin=PLUGIN_ID,
             attribute=AuthAttribute.bsn,
             value="111222333",
@@ -53,7 +53,7 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
         )
 
     def test_to_auth_context_data_for_kvk(self):
-        auth_info: AuthInfo = AuthInfoFactory.create(
+        auth_info: AuthInfo = AuthInfoFactory.build(
             plugin=PLUGIN_ID,
             attribute=AuthAttribute.kvk,
             value="11122233",
@@ -85,7 +85,7 @@ class YiviAuthContextUnitTests(AuthContextAssertMixin, TestCase):
         )
 
     def test_to_auth_context_data_for_pseudo(self):
-        auth_info: AuthInfo = AuthInfoFactory.create(
+        auth_info: AuthInfo = AuthInfoFactory.build(
             plugin=PLUGIN_ID,
             attribute=AuthAttribute.pseudo,
             value="11122233",

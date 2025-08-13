@@ -62,7 +62,6 @@ class OIDCAuthAnonUserCallbackView(_OIDCAuthenticationCallbackView):
         of the OF auth plugin, and the OIDC plugins have no knowledge of these.
         """
         of_auth_plugin = self._get_of_auth_plugin()
-
         return of_auth_plugin.get_error_message_parameters(error, error_description)
 
     @property

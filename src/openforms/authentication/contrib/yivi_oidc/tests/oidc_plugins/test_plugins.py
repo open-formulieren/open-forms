@@ -2,32 +2,20 @@ from django.http import HttpRequest
 from django.test import RequestFactory, TestCase
 
 from mozilla_django_oidc_db.registry import register as oidc_register
-from mozilla_django_oidc_db.views import (
-    _RETURN_URL_SESSION_KEY,
-)
+from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from openforms.authentication.registry import (
-    register as auth_register,
-)
 from openforms.authentication.tests.factories import AttributeGroupFactory
 from openforms.authentication.tests.utils import URLsHelper
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
-)
-from openforms.contrib.auth_oidc.typing import (
-    ClaimProcessingInstructions,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
+from openforms.contrib.auth_oidc.typing import ClaimProcessingInstructions
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import mock_get_random_string
+from openforms.utils.tests.oidc import OIDCMixin
 
 from ...config import YiviOptions
 from ...constants import PLUGIN_ID as YIVI_PLUGIN_ID
-from ...oidc_plugins.plugins import YiviPlugin
-from ...plugin import YiviOIDCAuthentication
 
 
-class ProcessClaimsYiviTest(TestCase):
+class ProcessClaimsYiviTest(OIDCMixin, TestCase):
     def _setup_form(self, options: YiviOptions) -> HttpRequest:
         form = FormFactory.create(
             authentication_backend=YIVI_PLUGIN_ID,
@@ -42,27 +30,18 @@ class ProcessClaimsYiviTest(TestCase):
         session.save()
 
         factory = RequestFactory()
-        factory = factory
         request = factory.get("/irrelevant")
         request.session = session
 
         return request
 
-    @mock_auth_and_oidc_registers()
     def test_yivi_process_claims_with_dots_in_path(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
-            post__options__loa_settings__bsn_loa_claim_path=["bsn.loa"],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__loa_settings__bsn_loa_claim_path=["bsn.loa"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         AttributeGroupFactory.create(
             name="know_attributes",
             attributes=["irma-demo.gemeente.personalData.familyname"],
@@ -100,20 +79,12 @@ class ProcessClaimsYiviTest(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_extract_additional_claims_with_known_attributes(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         AttributeGroupFactory.create(
             name="know_attributes", attributes=["firstname", "lastname"]
         )
@@ -135,6 +106,7 @@ class ProcessClaimsYiviTest(TestCase):
             {"firstname": "bob", "lastname": "joe", "dob": "21-01-1999"},
             additional_attributes,
         )
+
         self.assertEqual(
             extracted_claims,
             {
@@ -146,20 +118,12 @@ class ProcessClaimsYiviTest(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_extract_additional_claims_with_unknown_attributes(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         request = self._setup_form(
             options={
                 "authentication_options": [],
@@ -176,20 +140,12 @@ class ProcessClaimsYiviTest(TestCase):
 
         self.assertEqual(extracted_claims, {})
 
-    @mock_auth_and_oidc_registers()
     def test_extract_additional_claims_with_missing_claims(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         AttributeGroupFactory.create(
             name="know_attributes", attributes=["firstname", "lastname"]
         )
@@ -209,28 +165,17 @@ class ProcessClaimsYiviTest(TestCase):
 
         self.assertEqual(extracted_claims, {"additional_claims": {"firstname": "bob"}})
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_all_configured_additional_attributes_are_present_in_the_get_sensitive_claims(
         self,
     ):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
-            post__options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
-            post__options__identity_settings__pseudo_claim_path=[
-                "test.attribute.pseudo"
-            ],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
+            options__identity_settings__pseudo_claim_path=["test.attribute.pseudo"],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         AttributeGroupFactory.create(
             name="know_attributes", attributes=["firstname", "lastname"]
         )
@@ -263,7 +208,7 @@ class ProcessClaimsYiviTest(TestCase):
         )
 
 
-class YiviPluginProcessClaimsTest(TestCase):
+class YiviPluginProcessClaimsTest(OIDCMixin, TestCase):
     """
     Testing the Yivi plugin ``before_process_claims`` function.
 
@@ -286,32 +231,20 @@ class YiviPluginProcessClaimsTest(TestCase):
         session.save()
 
         factory = RequestFactory()
-        factory = factory
         request = factory.get("/irrelevant")
         request.session = session
 
         return request
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_before_process_claims_with_bsn_loa_config(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
-            post__options__loa_settings__bsn_loa_claim_path=["test.attribute.loa.bsn"],
-            post__options__loa_settings__bsn_default_loa="urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-            post__options__loa_settings__bsn_loa_value_mapping=[
-                {"from": "bsn", "to": "bla"}
-            ],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__loa_settings__bsn_loa_claim_path=["test.attribute.loa.bsn"],
+            options__loa_settings__bsn_default_loa="urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            options__loa_settings__bsn_loa_value_mapping=[{"from": "bsn", "to": "bla"}],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         oidc_plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         request = self._setup_form()
 
         additional_attributes = oidc_plugin.get_additional_attributes(request)
@@ -339,26 +272,15 @@ class YiviPluginProcessClaimsTest(TestCase):
             [{"from": "bsn", "to": "bla"}],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_before_process_claims_with_kvk_loa_config(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
-            post__options__loa_settings__kvk_loa_claim_path=["test.attribute.loa.kvk"],
-            post__options__loa_settings__kvk_default_loa="urn:etoegang:core:assurance-class:loa2",
-            post__options__loa_settings__kvk_loa_value_mapping=[
-                {"from": "kvk", "to": "bla"}
-            ],
+            options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
+            options__loa_settings__kvk_loa_claim_path=["test.attribute.loa.kvk"],
+            options__loa_settings__kvk_default_loa="urn:etoegang:core:assurance-class:loa2",
+            options__loa_settings__kvk_loa_value_mapping=[{"from": "kvk", "to": "bla"}],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         oidc_plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         request = self._setup_form()
 
         additional_attributes = oidc_plugin.get_additional_attributes(request)
@@ -386,32 +308,19 @@ class YiviPluginProcessClaimsTest(TestCase):
             [{"from": "kvk", "to": "bla"}],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_before_process_claims_with_bsn_and_kvk_loa_config(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_yivi=True,
-            post__options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
-            post__options__loa_settings__bsn_loa_claim_path=["test.attribute.loa.bsn"],
-            post__options__loa_settings__bsn_default_loa="urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
-            post__options__loa_settings__bsn_loa_value_mapping=[
-                {"from": "bsn", "to": "bla"}
-            ],
-            post__options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
-            post__options__loa_settings__kvk_loa_claim_path=["test.attribute.loa.kvk"],
-            post__options__loa_settings__kvk_default_loa="urn:etoegang:core:assurance-class:loa2",
-            post__options__loa_settings__kvk_loa_value_mapping=[
-                {"from": "kvk", "to": "bla"}
-            ],
+            options__identity_settings__bsn_claim_path=["test.attribute.bsn"],
+            options__loa_settings__bsn_loa_claim_path=["test.attribute.loa.bsn"],
+            options__loa_settings__bsn_default_loa="urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+            options__loa_settings__bsn_loa_value_mapping=[{"from": "bsn", "to": "bla"}],
+            options__identity_settings__kvk_claim_path=["test.attribute.kvk"],
+            options__loa_settings__kvk_loa_claim_path=["test.attribute.loa.kvk"],
+            options__loa_settings__kvk_default_loa="urn:etoegang:core:assurance-class:loa2",
+            options__loa_settings__kvk_loa_value_mapping=[{"from": "kvk", "to": "bla"}],
         )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
         oidc_plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         request = self._setup_form()
 
         additional_attributes = oidc_plugin.get_additional_attributes(request)
@@ -441,20 +350,9 @@ class YiviPluginProcessClaimsTest(TestCase):
             [{"from": "bsn", "to": "bla"}],
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_before_process_claims_without_bsn_and_kvk_loa_config(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
-            with_yivi=True,
-        )
-        oidc_register(oidc_client.identifier)(YiviPlugin)
+        oidc_client = OFOIDCClientFactory.create(with_yivi=True)
         oidc_plugin = oidc_register[oidc_client.identifier]
-
-        @auth_register("yivi_oidc")
-        class OFTestAuthPlugin(YiviOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-
         request = self._setup_form()
 
         additional_attributes = oidc_plugin.get_additional_attributes(request)

@@ -15,26 +15,13 @@ from django.contrib.auth import get_user
 from django.urls import reverse, reverse_lazy
 
 from furl import furl
-from mozilla_django_oidc_db.registry import register as oidc_register
-from mozilla_django_oidc_db.views import OIDCAuthenticationRequestInitView
 
 from openforms.accounts.tests.factories import StaffUserFactory
-from openforms.authentication.registry import (
-    register as auth_register,
-)
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.keycloak import (
-    mock_get_random_string,
-)
 
-from ..oidc_plugins.plugins import OIDCOrgPlugin
-from ..plugin import OIDCAuthentication
 from .base import IntegrationTestsBase
 
 
@@ -45,25 +32,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
 
     CALLBACK_URL = f"http://testserver{reverse_lazy('oidc_authentication_callback')}"
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_start_flow_redirects_to_oidc_provider(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
-            with_org=True,
-        )
-        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
-
-        org_init_view = OIDCAuthenticationRequestInitView.as_view(
-            identifier=oidc_client.identifier,
-            allow_next_from_query=False,
-        )
-
-        @auth_register("org-oidc")
-        class OFTestAuthPlugin(OIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-            init_view = staticmethod(org_init_view)
-
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
         form = FormFactory.create(authentication_backend="org-oidc")
         start_url = URLsHelper(form=form).get_auth_start(plugin_id="org-oidc")
 
@@ -82,27 +52,13 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         self.assertEqual(query_params["client_id"], "testid")
         self.assertEqual(query_params["redirect_uri"], self.CALLBACK_URL)
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_idp_availability_check(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_org=True,
             oidc_provider__oidc_op_authorization_endpoint="http://localhost:8080/i-dont-exist",
             check_op_availability=True,
         )
-        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
-
-        org_init_view = OIDCAuthenticationRequestInitView.as_view(
-            identifier=oidc_client.identifier,
-            allow_next_from_query=False,
-        )
-
-        @auth_register("org-oidc")
-        class OFTestAuthPlugin(OIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-            init_view = staticmethod(org_init_view)
-
         form = FormFactory.create(authentication_backend="org-oidc")
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="org-oidc")
@@ -116,25 +72,8 @@ class OrgOIDCInitTests(IntegrationTestsBase):
         query_params = redirect_url.query.params
         self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "org-oidc")
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_start_flow_logs_out_existing_user(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
-            with_org=True,
-        )
-        oidc_register(oidc_client.identifier)(OIDCOrgPlugin)
-
-        org_init_view = OIDCAuthenticationRequestInitView.as_view(
-            identifier=oidc_client.identifier,
-            allow_next_from_query=False,
-        )
-
-        @auth_register("org-oidc")
-        class OFTestAuthPlugin(OIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
-            init_view = staticmethod(org_init_view)
-
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_org=True)
         user = StaffUserFactory.create()
         self.app.get(reverse("admin:index"), user=user)
         form = FormFactory.create(authentication_backend="org-oidc")

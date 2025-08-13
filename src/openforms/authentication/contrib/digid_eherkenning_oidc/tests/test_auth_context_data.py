@@ -17,43 +17,15 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import DjangoTestApp
-from mozilla_django_oidc_db.registry import register as oidc_register
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.registry import (
-    register as auth_register,
-)
 from openforms.authentication.tests.utils import AuthContextAssertMixin, URLsHelper
-from openforms.contrib.auth_oidc.tests.factories import (
-    OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
-)
+from openforms.contrib.auth_oidc.tests.factories import OFOIDCClientFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
-from openforms.utils.tests.keycloak import (
-    keycloak_login,
-    mock_get_random_string,
-)
+from openforms.utils.tests.keycloak import keycloak_login
 
-from ..oidc_plugins.plugins import (
-    OIDCDigiDMachtigenPlugin,
-    OIDCDigidPlugin,
-    OIDCeHerkenningBewindvoeringPlugin,
-    OIDCeHerkenningPlugin,
-    OIDCEidasCompanyPlugin,
-    OIDCEidasPlugin,
-)
-from ..plugin import (
-    DigiDMachtigenOIDCAuthentication,
-    DigiDOIDCAuthentication,
-    EHerkenningBewindvoeringOIDCAuthentication,
-    EIDASCompanyOIDCAuthentication,
-    EIDASOIDCAuthentication,
-    eHerkenningOIDCAuthentication,
-)
-from .base import (
-    IntegrationTestsBase,
-)
+from .base import IntegrationTestsBase
 
 
 class PerformLoginMixin:
@@ -98,17 +70,8 @@ class DigiDAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_auth_and_oidc_registers()
-    @mock_get_random_string()
     def test_record_auth_context(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True, with_digid=True
-        )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
-
-        @auth_register("digid_oidc")
-        class OFTestAuthPlugin(DigiDOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_digid=True)
 
         self._login_and_start_form(
             "digid_oidc", username="testuser", password="testuser"
@@ -135,17 +98,8 @@ class EIDASAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context_for_eidas_natural_person_authentication(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True, with_eidas=True
-        )
-        oidc_register(oidc_client.identifier)(OIDCEidasPlugin)
-
-        @auth_register("eidas_oidc")
-        class OFTestAuthPlugin(EIDASOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
 
         self._login_and_start_form(
             "eidas_oidc", username="eidas-person", password="eidas-person"
@@ -173,17 +127,8 @@ class EIDASAuthContextTests(
             },
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context_for_eidas_natural_national_person_authentication(self):
-        oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True, with_eidas=True
-        )
-        oidc_register(oidc_client.identifier)(OIDCEidasPlugin)
-
-        @auth_register("eidas_oidc")
-        class OFTestAuthPlugin(EIDASOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
+        OFOIDCClientFactory.create(with_keycloak_provider=True, with_eidas=True)
 
         self._login_and_start_form(
             "eidas_oidc",
@@ -214,23 +159,16 @@ class EIDASAuthContextTests(
             },
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context_for_eidas_natural_person_authentication_with_missing_legal_subject_identifier_type_claim(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas=True,
-            post__options__identity_settings__legal_subject_identifier_type_claim_path=[
+            options__identity_settings__legal_subject_identifier_type_claim_path=[
                 "invalid-claim"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCEidasPlugin)
-
-        @auth_register("eidas_oidc")
-        class OFTestAuthPlugin(EIDASOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eidas_oidc", username="eidas-person", password="eidas-person"
@@ -271,18 +209,11 @@ class EIDASCompanyAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context_for_eidas_company_authentication(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas_company=True,
         )
-        oidc_register(oidc_client.identifier)(OIDCEidasCompanyPlugin)
-
-        @auth_register("eidas_company_oidc")
-        class OFTestAuthPlugin(EIDASCompanyOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eidas_company_oidc", username="eidas-company", password="eidas-company"
@@ -320,23 +251,16 @@ class EIDASCompanyAuthContextTests(
             },
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context_for_eidas_company_authentication_with_missing_acting_subject_identifier_type_claim(
         self,
     ):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eidas_company=True,
-            post__options__identity_settings__acting_subject_identifier_type_claim_path=[
+            options__identity_settings__acting_subject_identifier_type_claim_path=[
                 "invalid-claim"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCEidasCompanyPlugin)
-
-        @auth_register("eidas_company_oidc")
-        class OFTestAuthPlugin(EIDASCompanyOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eidas_company_oidc", username="eidas-company", password="eidas-company"
@@ -393,18 +317,11 @@ class EHerkenningAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning=True,
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
-
-        @auth_register("eherkenning_oidc")
-        class OFTestAuthPlugin(eHerkenningOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eherkenning_oidc", username="testuser", password="testuser"
@@ -427,19 +344,12 @@ class EHerkenningAuthContextTests(
         )
         self.assertNotIn("representee", auth_context)
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_vestiging_restriction(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning=True,
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
-
-        @auth_register("eherkenning_oidc")
-        class OFTestAuthPlugin(eHerkenningOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eherkenning_oidc",
@@ -474,18 +384,11 @@ class DigiDMachtigenAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid_machtigen=True,
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
-
-        @auth_register("digid_machtigen_oidc")
-        class OFTestAuthPlugin(DigiDMachtigenOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "digid_machtigen_oidc",
@@ -509,8 +412,6 @@ class DigiDMachtigenAuthContextTests(
             {"identifierType": "bsn", "identifier": "999999999"},
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_new_required_claims_are_backwards_compatible(self):
         """
         Test that the legacy configuration without additional claims still works.
@@ -526,18 +427,13 @@ class DigiDMachtigenAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_digid_machtigen=True,
-            post__options__identity_settings__mandate_service_id_claim_path=[
+            options__identity_settings__mandate_service_id_claim_path=[
                 "required-but-absent-claim"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
-
-        @auth_register("digid_machtigen_oidc")
-        class OFTestAuthPlugin(DigiDMachtigenOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "digid_machtigen_oidc",
@@ -573,18 +469,11 @@ class EHerkenningBewindvoeringAuthContextTests(
         "HTTP_HOST": "localhost:8000",
     }
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_auth_context(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
-
-        @auth_register("eherkenning_bewindvoering_oidc")
-        class OFTestAuthPlugin(EHerkenningBewindvoeringOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
@@ -625,8 +514,6 @@ class EHerkenningBewindvoeringAuthContextTests(
             },
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_new_required_claims_are_backwards_compatible(self):
         """
         Test that the legacy configuration without additional claims still works.
@@ -642,21 +529,16 @@ class EHerkenningBewindvoeringAuthContextTests(
             DeprecationWarning,
             stacklevel=2,
         )
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__mandate_service_id_claim_path=[
+            options__identity_settings__mandate_service_id_claim_path=[
                 "required-but-absent-claim1"
             ],
-            post__options__identity_settings__mandate_service_uuid_claim_path=[
+            options__identity_settings__mandate_service_uuid_claim_path=[
                 "required-but-absent-claim2"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
-
-        @auth_register("eherkenning_bewindvoering_oidc")
-        class OFTestAuthPlugin(EHerkenningBewindvoeringOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",
@@ -689,22 +571,13 @@ class EHerkenningBewindvoeringAuthContextTests(
             {"role": "bewindvoerder", "services": []},
         )
 
-    @mock_get_random_string()
-    @mock_auth_and_oidc_registers()
     def test_record_vestiging_restriction(self):
-        oidc_client = OFOIDCClientFactory.create(
+        OFOIDCClientFactory.create(
             with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__branch_number_claim_path=["vestiging"],
-            post__options__identity_settings__legal_subject_claim_path=[
-                "legalSubjectID"
-            ],
+            options__identity_settings__branch_number_claim_path=["vestiging"],
+            options__identity_settings__legal_subject_claim_path=["legalSubjectID"],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
-
-        @auth_register("eherkenning_bewindvoering_oidc")
-        class OFTestAuthPlugin(EHerkenningBewindvoeringOIDCAuthentication):
-            oidc_plugin_identifier = oidc_client.identifier
 
         self._login_and_start_form(
             "eherkenning_bewindvoering_oidc",

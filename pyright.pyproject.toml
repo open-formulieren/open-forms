@@ -7,9 +7,9 @@ include = [
     "src/openforms/appointments/registry.py",
     "src/openforms/authentication/base.py",
     "src/openforms/authentication/registry.py",
-    "src/openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/",
-    "src/openforms/authentication/contrib/org_oidc/oidc_plugins/",
-    "src/openforms/authentication/contrib/yivi_oidc/oidc_plugins/",
+    "src/openforms/authentication/contrib/digid_eherkenning_oidc/",
+    "src/openforms/authentication/contrib/org_oidc/",
+    "src/openforms/authentication/contrib/yivi_oidc/",
     "src/openforms/dmn/base.py",
     "src/openforms/dmn/registry.py",
     "src/openforms/formio/registry.py",
@@ -44,6 +44,7 @@ include = [
     "src/openforms/contrib/microsoft/",
     "src/openforms/contrib/objects_api/",
     "src/openforms/contrib/reference_lists/",
+    "src/openforms/contrib/auth_oidc/",
     # Data removal app
     "src/openforms/data_removal/tasks.py",
     # Emails
@@ -85,13 +86,20 @@ include = [
     # Utils
     "src/openforms/utils/form_fields.py",
     "src/openforms/utils/pdf.py",
+    "src/openforms/utils/tests/oidc.py",
     # JSON schema generation
     "src/openforms/forms/json_schema.py"
 ]
 exclude = [
     "**/__pycache__",
+    "src/openforms/authentication/contrib/digid_eherkenning_oidc/migrations/",
+    "src/openforms/authentication/contrib/digid_eherkenning_oidc/tests/oidc_plugins/",
+    "src/openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py",
     "src/openforms/authentication/contrib/digid/tests/test_auth_procedure.py",
     "src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py",
+    "src/openforms/authentication/contrib/yivi_oidc/migrations/",
+    "src/openforms/authentication/contrib/yivi_oidc/plugin.py",
+    "src/openforms/authentication/contrib/yivi_oidc/tests/",
     "src/openforms/contrib/objects_api/tests/",
     "src/openforms/contrib/objects_api/json_schema.py",
     "src/openforms/formio/formatters/tests/",

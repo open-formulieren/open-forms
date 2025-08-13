@@ -11,42 +11,41 @@ from openforms.authentication.contrib.digid_eherkenning_oidc.oidc_plugins.plugin
     OIDCEidasCompanyPlugin,
     OIDCEidasPlugin,
 )
+from openforms.contrib.auth_oidc.plugin import OFBaseOIDCPluginProtocol
 from openforms.contrib.auth_oidc.tests.factories import (
     OFOIDCClientFactory,
-    mock_auth_and_oidc_registers,
 )
+from openforms.utils.tests.oidc import OIDCMixin
 
 
-class OIDCPluginsTestCase(TestCase):
-    @mock_auth_and_oidc_registers()
+class OIDCPluginsTestCase(OIDCMixin, TestCase):
     def test_obfuscate_claims_digid(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_digid=True,
-            post__options__identity_settings__bsn_claim_path=["bsn"],
+            options__identity_settings__bsn_claim_path=["bsn"],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigidPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCDigidPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {"bsn": "123456789", "other": "other"}, plugin.get_sensitive_claims()
         )
 
         self.assertEqual(obfuscated_claims, {"bsn": "*******89", "other": "other"})
 
-    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_digid_machtigen(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_digid_machtigen=True,
-            post__options__identity_settings__representee_bsn_claim_path=["aanvrager"],
-            post__options__identity_settings__authorizee_bsn_claim_path=["gemachtigde"],
+            options__identity_settings__representee_bsn_claim_path=["aanvrager"],
+            options__identity_settings__authorizee_bsn_claim_path=["gemachtigde"],
         )
-        oidc_register(oidc_client.identifier)(OIDCDigiDMachtigenPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCDigiDMachtigenPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
                 "aanvrager": "123456789",
@@ -65,21 +64,18 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eherkenning(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_eherkenning=True,
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__acting_subject_claim_path=[
-                "ActingSubject"
-            ],
-            post__options__identity_settings__branch_number_claim_path=["branch"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__acting_subject_claim_path=["ActingSubject"],
+            options__identity_settings__branch_number_claim_path=["branch"],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCeHerkenningPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
                 "kvk": "12345678",
@@ -100,22 +96,19 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eherkenning_bewindvoering(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_eherkenning_bewindvoering=True,
-            post__options__identity_settings__legal_subject_claim_path=["kvk"],
-            post__options__identity_settings__representee_claim_path=["bsn"],
-            post__options__identity_settings__acting_subject_claim_path=[
-                "ActingSubject"
-            ],
-            post__options__identity_settings__branch_number_claim_path=["branch"],
+            options__identity_settings__legal_subject_claim_path=["kvk"],
+            options__identity_settings__representee_claim_path=["bsn"],
+            options__identity_settings__acting_subject_claim_path=["ActingSubject"],
+            options__identity_settings__branch_number_claim_path=["branch"],
         )
-        oidc_register(oidc_client.identifier)(OIDCeHerkenningBewindvoeringPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCeHerkenningBewindvoeringPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
                 "bsn": "123456789",
@@ -138,25 +131,24 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eidas(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_eidas=True,
-            post__options__identity_settings__legal_subject_identifier_claim_path=[
+            options__identity_settings__legal_subject_identifier_claim_path=[
                 "person_identifier"
             ],
-            post__options__identity_settings__legal_subject_first_name_claim_path=[
+            options__identity_settings__legal_subject_first_name_claim_path=[
                 "first_name"
             ],
-            post__options__identity_settings__legal_subject_family_name_claim_path=[
+            options__identity_settings__legal_subject_family_name_claim_path=[
                 "family_name"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCEidasPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCEidasPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
                 "person_identifier": "123456789",
@@ -175,28 +167,27 @@ class OIDCPluginsTestCase(TestCase):
             },
         )
 
-    @mock_auth_and_oidc_registers()
     def test_obfuscate_claims_eidas_company(self):
         oidc_client = OFOIDCClientFactory.create(
-            with_keycloak_provider=True,
             with_eidas_company=True,
-            post__options__identity_settings__legal_subject_identifier_claim_path=[
+            options__identity_settings__legal_subject_identifier_claim_path=[
                 "company_identifier"
             ],
-            post__options__identity_settings__acting_subject_identifier_claim_path=[
+            options__identity_settings__acting_subject_identifier_claim_path=[
                 "person_identifier"
             ],
-            post__options__identity_settings__acting_subject_first_name_claim_path=[
+            options__identity_settings__acting_subject_first_name_claim_path=[
                 "first_name"
             ],
-            post__options__identity_settings__acting_subject_family_name_claim_path=[
+            options__identity_settings__acting_subject_family_name_claim_path=[
                 "family_name"
             ],
         )
-        oidc_register(oidc_client.identifier)(OIDCEidasCompanyPlugin)
 
         plugin = oidc_register[oidc_client.identifier]
 
+        assert isinstance(plugin, OIDCEidasCompanyPlugin)
+        assert isinstance(plugin, OFBaseOIDCPluginProtocol)
         obfuscated_claims = obfuscate_claims(
             {
                 "company_identifier": "123456789",
