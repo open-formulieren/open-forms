@@ -30,6 +30,22 @@ class AuthPluginSerializer(PluginBaseSerializer):
     )
 
 
+class AttributeGroupSerializer(serializers.Serializer):
+    # serializer for form builder
+    slug = serializers.CharField(
+        label=_("Slug"),
+        help_text=_("The unique attribute group slug"),
+    )
+    name = serializers.CharField(
+        label=_("Name"),
+        help_text=_("The unique attribute group name"),
+    )
+    description = serializers.CharField(
+        label=_("Description"),
+        help_text=_("The attribute group description"),
+    )
+
+
 class LoginLogoSerializer(serializers.Serializer):
     title = serializers.CharField(
         label=_("Title"),

@@ -1,35 +1,40 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {components} from 'react-select';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import ReactSelect from 'components/admin/forms/ReactSelect';
-import {getReactSelectOptionsFromSchema} from 'utils/json-schema';
 
 const AdditionalGroupSelectorOption = props => {
-  const {value, label} = props.data;
+  const {label, description} = props.data;
   return (
     <components.Option {...props}>
       <span className="form-additional-attributes-groups-dropdown-option">
-        <b className="form-additional-attributes-groups-dropdown-option__key">{value}</b>
-        <span className="form-additional-attributes-groups-dropdown-option__label">{label}</span>
+        <b className="form-additional-attributes-groups-dropdown-option__key">{label}</b>
+        <span className="form-additional-attributes-groups-dropdown-option__label">
+          {description}
+        </span>
       </span>
     </components.Option>
   );
 };
 
 const AdditionalGroupSelectorValueLabel = props => {
-  const {value} = props.data;
-  return <components.MultiValueLabel {...props}>{value}</components.MultiValueLabel>;
+  const {label} = props.data;
+  return <components.MultiValueLabel {...props}>{label}</components.MultiValueLabel>;
 };
 
-const AdditionalAttributesGroupsField = ({schema}) => {
-  const additionalAttributesGroupsOptions = getReactSelectOptionsFromSchema(
-    schema.properties.additionalAttributesGroups.items.enum,
-    schema.properties.additionalAttributesGroups.items.enumNames
-  );
+const AdditionalAttributesGroupsField = () => {
+  const {availableYiviAttributeGroups} = useContext(FormContext);
+  const additionalAttributesGroupsOptions = availableYiviAttributeGroups.map(attributeGroup => ({
+    value: attributeGroup.slug,
+    label: attributeGroup.name,
+    description: attributeGroup.description,
+  }));
+
   return (
     <FormRow>
       <Field

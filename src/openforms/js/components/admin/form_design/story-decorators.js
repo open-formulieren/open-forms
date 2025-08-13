@@ -77,6 +77,7 @@ export const FormDecorator = (Story, {args}) => (
       formVariables: args.availableFormVariables || [],
       registrationPluginsVariables: args.registrationPluginsVariables || [],
       selectedAuthPlugins: args.selectedAuthPlugins || [],
+      availableYiviAttributeGroups: args.availableYiviAttributeGroups || [],
       plugins: {
         availableAuthPlugins: args.availableAuthPlugins || [],
         availablePrefillPlugins: args.availablePrefillPlugins || [],

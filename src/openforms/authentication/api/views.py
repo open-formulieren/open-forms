@@ -14,8 +14,9 @@ from openforms.submissions.models import Submission
 from openforms.submissions.utils import remove_submission_from_session
 
 from ..constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
+from ..contrib.yivi_oidc.models import AttributeGroup
 from ..registry import register
-from .serializers import AuthPluginSerializer
+from .serializers import AttributeGroupSerializer, AuthPluginSerializer
 
 
 @extend_schema_view(
@@ -37,6 +38,25 @@ class PluginListView(ListMixin, APIView):
 
     def get_objects(self):
         return list(register.iter_enabled_plugins())
+
+
+@extend_schema_view(
+    get=extend_schema(summary=_("List available Yivi attribute groups")),
+)
+class AttributeGroupListView(ListMixin, APIView):
+    """
+    List all Yivi attribute groups.
+
+    The attribute groups are used during Yivi authentication. They allow greater levels
+    of authentication customization, by per form definition of authentication attributes.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = AttributeGroupSerializer
+
+    def get_objects(self):
+        return list(AttributeGroup.objects.all())
 
 
 class SubmissionLogoutView(GenericAPIView[Submission]):

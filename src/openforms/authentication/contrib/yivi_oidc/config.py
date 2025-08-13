@@ -1,6 +1,5 @@
 from typing import Literal, TypedDict
 
-from django.db.utils import OperationalError, ProgrammingError
 from django.utils.translation import gettext_lazy as _
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
@@ -45,7 +44,7 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         allow_empty=True,
     )
     additional_attributes_groups = serializers.ListField(
-        child=serializers.ChoiceField(choices=[]),  # Choices are dynamically defined
+        child=serializers.CharField(),
         label=_("Additional attributes groups"),
         help_text=_(
             "Additional attributes groups to use for authentication. The end-user can "
@@ -90,18 +89,3 @@ class YiviOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     def to_internal_value(self, data: YiviOptions) -> YiviOptions:
         self._handle_before_import(data)
         return super().to_internal_value(data)
-
-    def get_fields(self):
-        fields = super().get_fields()
-        view = self.context.get("view")
-        if getattr(view, "swagger_fake_view", False):
-            return fields
-
-        try:
-            fields[
-                "additional_attributes_groups"
-            ].child.choices = AttributeGroup.objects.values_list("name", "description")
-        except (OperationalError, ProgrammingError):
-            # Early check without DB connection
-            fields["additional_attributes_groups"].child.choices = []
-        return fields
