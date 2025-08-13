@@ -126,6 +126,8 @@ class SubmissionStep(models.Model):  # noqa: DJ008
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.return_only_unsaved_data = False
+
         # See #2632, and a long story here on what happens:
         #
         # When the Submission queryset is deleted, this happens through the
@@ -203,6 +205,10 @@ class SubmissionStep(models.Model):  # noqa: DJ008
 
     @property
     def data(self) -> FormioData:
+        if self.return_only_unsaved_data:
+            assert self._unsaved_data is not None, "Unsaved data must be set"
+            return self._unsaved_data
+
         values_state = self.submission.load_submission_value_variables_state()
         step_data = values_state.get_data(submission_step=self)
         if self._unsaved_data:

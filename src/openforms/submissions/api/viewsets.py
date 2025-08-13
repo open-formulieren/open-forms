@@ -689,6 +689,7 @@ class SubmissionStepViewSet(
             new_configuration = evaluate_form_logic(submission, submission_step, data)
             submission_step.form_step.form_definition.configuration = new_configuration
 
+        submission_step.return_only_unsaved_data = True
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
             context={"request": request, "current_step": submission_step},
