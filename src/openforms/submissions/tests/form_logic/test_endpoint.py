@@ -375,3 +375,31 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, data={"data": {}})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_only_changed_data_is_returned_after_submitting_step(self):
+        submission = SubmissionFactory.from_components(
+            [{"key": "textfield", "type": "textfield", "label": "Textfield"}]
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.form.formstep_set.first().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(endpoint, data={"data": {"textfield": "foo"}})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["step"]["data"], {})
+
+        # Simulate submitting the step (this creates the submission value variables)
+        submission_step = submission.submissionstep_set.first()
+        submission_step.data = {"textfield": "foo"}
+
+        # Ensure returned data is still empty after moving back to the submitted step
+        response = self.client.post(endpoint, data={"data": {"textfield": "bar"}})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # No changes during logic evaluation, so the returned data should be empty
+        self.assertEqual(response.json()["step"]["data"], {})

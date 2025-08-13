@@ -183,6 +183,9 @@ def evaluate_form_logic(
     for key, variable in relevant_variables.items():
         if not variable.form_variable or initial_data[key] != data_for_evaluation[key]:
             updated_step_data[key] = data_for_evaluation[key]
+    # TODO-5527: is it possible to move this to the check logic call? That way we will
+    #  be able to return just unsaved data if it is set. It seems a bit safer than the
+    #  current solution
     step.data = DirtyData(updated_step_data)
 
     step._form_logic_evaluated = True
