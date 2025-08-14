@@ -45,3 +45,24 @@ scrape_configs:
     static_configs:
       - targets: ["otel-collector:8889"]
     metrics_path: /metrics
+    metric_relabel_configs:
+      # put the exported job (service name) in the job label
+      - source_labels: ["exported_job"]
+        regex: (.+)
+        action: replace
+        target_label: job
+        replacement: $1
+      # remove cardinality on service_instance_id when the metric is global scope, this
+      # effectively de-duplicates them.
+      - source_labels: ["scope"]
+        regex: global
+        target_label: service_instance_id
+        replacement: global
+        action: replace
+      # drop irrelevant labels:
+      # - instance is equal to service_instance_id
+      # - exported_instance duplicates instance
+      # - exported_job is already assigned to job
+      # - telemetry_sdk_version increases cardinality, but has little use
+      - action: labeldrop
+        regex: "instance|exported_instance|exported_job|telemetry_sdk_version"
