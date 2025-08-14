@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-12 14:43+0200\n"
-"PO-Revision-Date: 2025-08-12 16:08+0200\n"
+"POT-Creation-Date: 2025-08-14 09:42+0200\n"
+"PO-Revision-Date: 2025-08-14 10:19+0200\n"
 "Last-Translator:   <sonny@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -87,7 +87,7 @@ msgstr "stafstatus"
 msgid "Designates whether the user can log into this admin site."
 msgstr "Bepaalt of de gebruiker zich op deze beheerwebsite kan aanmelden."
 
-#: openforms/accounts/models.py:55 openforms/forms/models/form.py:295
+#: openforms/accounts/models.py:55 openforms/forms/models/form.py:297
 msgid "active"
 msgstr "actief"
 
@@ -115,7 +115,7 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:85 openforms/forms/models/form.py:707
+#: openforms/accounts/models.py:85 openforms/forms/models/form.py:711
 #: openforms/forms/models/form_version.py:64 soap/models.py:50
 msgid "user"
 msgstr "gebruiker"
@@ -738,7 +738,7 @@ msgstr "Unieke sleutel van het product"
 #: openforms/contrib/objects_api/models.py:16
 #: openforms/dmn/api/serializers.py:76 openforms/forms/admin/form.py:265
 #: openforms/forms/admin/form_definition.py:69
-#: openforms/forms/models/category.py:13 openforms/forms/models/form.py:64
+#: openforms/forms/models/category.py:13 openforms/forms/models/form.py:66
 #: openforms/forms/models/form_definition.py:40
 #: openforms/forms/models/form_registration_backend.py:23
 #: openforms/forms/models/form_variable.py:243
@@ -1331,7 +1331,6 @@ msgstr "afspraken"
 
 #: openforms/appointments/models.py:152
 #, python-brace-format
-#| msgid "appointment time"
 msgid "{plugin} appointment on {time}"
 msgstr "{plugin} afspraaktijdstip om {time}"
 
@@ -1621,204 +1620,273 @@ msgstr "DigiD"
 msgid "DigiD/eHerkenning via OpenID Connect"
 msgstr "DigiD/eHerkenning via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:48
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:49
-msgid "DigiD (OIDC)"
-msgstr "DigiD (OIDC)"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:10
+#| msgid "Configuration problems"
+msgid "OIDC eIDAS Configuration options."
+msgstr "OIDC eIDAS instellingen opties."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:69
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:70
-msgid "DigiD Machtigen (OIDC)"
-msgstr "DigiD Machtigen (OIDC)"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:15
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:126
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:14
+#| msgid "Global setting"
+msgid "LoA settings"
+msgstr "LoA instellingen"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:90
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:91
-msgid "eHerkenning (OIDC)"
-msgstr "eHerkenning (OIDC)"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:16
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:127
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:15
+#| msgid "Level of assurance"
+msgid "Level of Assurance related settings."
+msgstr "Betrouwbaarheidsniveau gerelateerde instellingen."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:111
-msgid "legal subject identifier claim"
-msgstr "identificatieclaim van de wettelijke vertegenwoordiger"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:20
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:131
+msgid "Claim path"
+msgstr "Claim pad"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:114
-msgid "Name of the claim holding the identifier of the authenticated user."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:22
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:133
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:21
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:53
+#| msgid ""
+#| "Name of the claim holding the level of assurance. If left empty, it is "
+#| "assumed there is no LOA claim and the configured fallback value will be "
+#| "used."
+msgid ""
+"Path to the claim value holding the level of assurance. If left empty, it is"
+" assumed there is no LOA claim and the configured fallback value will be "
+"used."
+msgstr ""
+"Naam van de claim die het betrouwbaardheidsniveau bevat. Als er geen waarde "
+"wordt opgegeven, wordt verondersteld dat er geen LOA-claim aanwezig is en "
+"wordt de standaardwaarde gebruikt."
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:32
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:143
+#| msgid "Default values"
+msgid "Default"
+msgstr "Standaardwaarden"
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:34
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:145
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:33
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:65
+msgid ""
+"Fallback level of assurance, in case no claim value could be extracted."
+msgstr ""
+"Standaardwaarde voor het betrouwbaarheidsniveau. Wordt gebruikt wanneer er "
+"geen claimwaarde kan worden verkregen."
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:46
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:157
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:85
+#| msgid "General Email settings"
+msgid "Identity settings"
+msgstr "Identity instellingen"
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:47
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:158
+msgid "eIDAS identity settings."
+msgstr "eIDAS identity instellingen."
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:60
+#| msgid ""
+#| "Name of the claim holding the identifier of the authenticated user."
+msgid ""
+"Path to the claim value holding the identifier of the authenticated user."
 msgstr ""
 "Naam van de claim die de identificatie bevat van de geauthoriseerde "
 "gebruiker."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:118
-msgid "legal subject identifier type claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:69
+#| msgid "legal subject identifier type claim"
+msgid "Legal subject identifier type claim path"
 msgstr "identificatiesoort-claim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:121
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:71
+#| msgid ""
+#| "Claim that specifies how the person identifier claim must be interpreted. "
+#| "The expected claim value is one of: 'bsn', 'pseudo' or 'national_id'."
 msgid ""
-"Claim that specifies how the person identifier claim must be interpreted. "
-"The expected claim value is one of: 'bsn', 'pseudo' or 'national_id'."
+"Path to the claim value that specifies how the person identifier claim must "
+"be interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
+"'national_id'."
 msgstr ""
 "Claim die beschrijft hoe de persoonidentificatie-claim moet worden "
 "geïnterpreteerd. De verwachte waarde is een van de volgende: 'bsn', 'pseudo'"
 " of 'national_id'."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:126
-msgid "legal subject first name claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:81
+#| msgid "legal subject first name claim"
+msgid "Legal subject first name claim path"
 msgstr "voornaamclaim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:128
-msgid "Claim that holds the legal name of the authenticated user."
-msgstr "Claim die de wettelijke naam van de geauthoriseerde gebruiker bevat"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:83
+#| msgid ""
+#| "Claim that holds the legal family name of the authenticated user."
+msgid ""
+"Path to the claim value that holds the legal first name of the authenticated"
+" user."
+msgstr ""
+"Claim die de wettelijke achternaam van de geauthenticeerde gebruiker bevat"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:131
-msgid "legal subject family name claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:92
+#| msgid "legal subject family name claim"
+msgid "Legal subject family name claim path"
 msgstr "achternaamclaim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:134
-msgid "Claim that holds the legal family name of the authenticated user."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:94
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:233
+#| msgid ""
+#| "Claim that holds the legal family name of the authenticated user."
+msgid ""
+"Path to the claim value that holds the legal family name of the "
+"authenticated user."
 msgstr ""
-"Claim die de wettelijke achternaam van de geauthoriseerde gebruiker bevat"
+"Claim die de wettelijke achternaam van de geauthenticeerde gebruiker bevat"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:138
-msgid "legal subject date of birth claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:103
+#| msgid "legal subject date of birth claim"
+msgid "Legal subject date of birth claim path"
 msgstr "geboortedatumclaim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:140
-msgid "Claim that holds the legal birthdate of the authenticated user."
-msgstr ""
-"Claim die de wettelijke geboortedatum van de geauthoriseerde gebruiker bevat"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:144
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:242
-#: openforms/authentication/contrib/yivi_oidc/models.py:39
-msgid "OpenID Connect scopes"
-msgstr "OpenID Connect-scopes"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:145
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:243
-#: openforms/authentication/contrib/yivi_oidc/models.py:40
-msgid "OpenID Connect scope"
-msgstr "OpenID Connect-scope"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:149
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:247
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:105
+#| msgid ""
+#| "Claim that holds the legal birthdate of the authenticated user."
 msgid ""
-"OpenID Connect scopes that are requested during login. These scopes are "
-"hardcoded and must be supported by the identity provider."
+"Path to the claim value that holds the legal birthdate of the authenticated "
+"user."
 msgstr ""
-"OpenID Connect-scopes die tijdens het inloggen worden opgevraagd. Deze "
-"scopes zijn constant en moeten worden ondersteund door de "
-"identiteitprovider."
+"Claim die de wettelijke geboortedatum van de geauthenticeerde gebruiker "
+"bevat"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:171
-msgid "eIDAS (OIDC)"
-msgstr "eIDAS (OIDC)"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:121
+#| msgid "component configuration path"
+msgid "OIDC eIDAS company configuration options."
+msgstr "OIDC eIDAS bedrijfsinstellingen opties."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:185
-msgid "company identifier claim"
-msgstr "bedrijfsidentificatie-claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:172
+#| msgid "legal subject identifier claim"
+msgid "Legal subject identifier claim path"
+msgstr "identificatieclaim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:191
-msgid "Name of the claim holding the identifier of the authenticated company."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:174
+#| msgid ""
+#| "Name of the claim holding the identifier of the authenticated company."
+msgid ""
+"Path to the claim value holding the identifier of the authenticated company."
 msgstr ""
-"Naam van de claim die de identificatie van het geauthoriseerde bedrijf "
+"Naam van de claim die de identificatie van het geauthenticeerde bedrijf "
 "bevat."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:195
-msgid "company name claim"
-msgstr "bedrijfsnaam-claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:185
+#| msgid "legal subject first name claim"
+msgid "Legal subject name claim path"
+msgstr "Voornaamclaim van de wettelijke vertegenwoordiger"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:200
-msgid "Claim that holds the name of the authenticated company."
-msgstr "Claim die de naam van het geauthoriseerde bedrijf bevat."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:187
+#| msgid "Claim that holds the name of the authenticated company."
+msgid "Path to the claim that holds the name of the authenticated company."
+msgstr "Claim die de naam van het geauthenticeerde bedrijf bevat."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:204
-msgid "acting subject identifier claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:196
+#| msgid "acting subject identifier claim"
+msgid "Acting subject identifier claim path"
 msgstr "identificatieclaim van de handelende persoon"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:206
-msgid "Name of the claim holding the identifier of the acting subject."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:198
+#| msgid ""
+#| "Name of the claim holding the identifier of the acting subject."
+msgid "Path to the claim value that holds identifier of the acting subject."
 msgstr ""
 "Naam van de claim die de identificatie van de handelende persoon bevat."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:209
-msgid "acting subject identifier type claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:207
+#| msgid "acting subject identifier type claim"
+msgid "Acting subject identifier type claim path"
 msgstr "identificatiesoort-claim van de handelende persoon"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:212
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:209
+#| msgid ""
+#| "Claim that specifies how the acting subject identifier claim must be "
+#| "interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
+#| "'national_id'."
 msgid ""
-"Claim that specifies how the acting subject identifier claim must be "
-"interpreted. The expected claim value is one of: 'bsn', 'pseudo' or "
-"'national_id'."
+"Path to the claim value that specifies how the acting subject identifier "
+"claim must be interpreted. The expected claim value is one of: 'bsn', "
+"'pseudo' or 'national_id'."
 msgstr ""
 "Claim die beschrijft hoe de handelende persoonsidentificatie moet worden "
 "geïnterpreteerd. De verwachte waarde is een van de volgende: 'bsn', 'pseudo'"
 " of 'national_id'."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:218
-msgid "acting subject first name claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:220
+#| msgid "acting subject first name claim"
+msgid "Acting subject first name claim path"
 msgstr "voornaamclaim van de handelende persoon"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:220
-msgid "Claim that holds the legal name of the acting subject."
-msgstr "Claim die de wettelijke naam van de handelende persoon bevat."
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:223
-msgid "acting subject family name claim"
-msgstr "achternaamclaim van de handelende persoon"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:225
-msgid "Claim that holds the legal family name of the acting subject."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:222
+#| msgid "Claim that holds the legal family name of the acting subject."
+msgid ""
+"Path to the claim value that holds the legal first name of the acting "
+"subject."
 msgstr "Claim die de wettelijke achternaam van de handelende persoon bevat."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:228
-msgid "acting subject date of birth claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:231
+#| msgid "acting subject family name claim"
+msgid "Acting subject family name claim path"
+msgstr "achternaamclaim van de handelende persoon"
+
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:242
+#| msgid "acting subject date of birth claim"
+msgid "Acting subject date of birth claim path"
 msgstr "geboortedatumclaim van de handelende persoon"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:230
-msgid "Claim that holds the legal birthdate of the acting subject."
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:244
+#| msgid "Claim that holds the legal birthdate of the acting subject."
+msgid ""
+"Path to the claim value that holds the legal birthdate of the acting "
+"subject."
 msgstr ""
 "Claim die de wettelijke geboortedatum van de handelende persoon bevat."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:233
-msgid "service ID claim"
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:253
+#| msgid "service ID claim"
+msgid "Mandate service id claim path"
 msgstr "service ID-claim"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:236
+#: openforms/authentication/contrib/digid_eherkenning_oidc/oidc_plugins/schemas.py:255
+#| msgid ""
+#| "Name of the claim holding the service ID for which the acting subject is "
+#| "authorized."
 msgid ""
-"Name of the claim holding the service ID for which the acting subject is "
-"authorized."
+"Path to the claim value that holds the service ID for which the acting "
+"subject is authorized."
 msgstr ""
 "Naam van de claim die de service-ID bevat waarvoor de handelende persoon is "
 "geauthoriseerd."
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:275
-msgid "eIDAS for companies (OIDC)"
-msgstr "eIDAS voor bedrijven (OIDC)"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:289
-#: openforms/authentication/contrib/digid_eherkenning_oidc/models.py:290
-msgid "eHerkenning bewindvoering (OIDC)"
-msgstr "eHerkenning bewindvoering (OIDC)"
-
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:75
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:63
 msgid "DigiD via OpenID Connect"
 msgstr "DigiD via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:130
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:89
 msgid "eHerkenning via OpenID Connect"
 msgstr "eHerkenning via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:210
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:139
 msgid "eIDAS via OpenID Connect"
 msgstr "eIDAS via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:324
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:217
 msgid "eIDAS for companies via OpenID Connect"
 msgstr "eIDAS voor bedrijven via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:450
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:314
 msgid "DigiD Machtigen via OpenID Connect"
 msgstr "DigiD Machtigen via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:527
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:358
 msgid "eHerkenning bewindvoering via OpenID Connect"
 msgstr "eHerkenning bewindvoering via OpenID Connect"
 
@@ -1858,7 +1926,7 @@ msgstr "OIDC-authenticatieplugin voor organisaties"
 msgid "Organization via OpenID Connect"
 msgstr "Organisatie via OIDC"
 
-#: openforms/authentication/contrib/org_oidc/plugin.py:89
+#: openforms/authentication/contrib/org_oidc/plugin.py:92
 msgid "OpenID Connect"
 msgstr "OpenID Connect"
 
@@ -1878,20 +1946,8 @@ msgstr "BSN Uitval (test)"
 msgid "KvK Outage"
 msgstr "KvK Uitval (test)"
 
-#: openforms/authentication/contrib/yivi_oidc/admin.py:35
-msgid "Attributes to extract from bsn claims"
-msgstr "Attributen die uit bsn-claims worden gehaald"
-
-#: openforms/authentication/contrib/yivi_oidc/admin.py:38
-msgid "Attributes to extract from kvk claims"
-msgstr "Attributen die uit kvk-claims worden gehaald"
-
-#: openforms/authentication/contrib/yivi_oidc/admin.py:41
-msgid "Attributes to extract from pseudo (anonymous) claims"
-msgstr "Attributen die uit pseudo-claims worden gehaald"
-
 #: openforms/authentication/contrib/yivi_oidc/apps.py:8
-#: openforms/authentication/contrib/yivi_oidc/plugin.py:71
+#: openforms/authentication/contrib/yivi_oidc/plugin.py:67
 msgid "Yivi via OpenID Connect"
 msgstr "Yivi via OpenID Connect"
 
@@ -1936,97 +1992,11 @@ msgstr "opties voor kvk-betrouwbaarheidsniveau (LoA)"
 msgid "The minimal LoA for kvk authentication."
 msgstr "Het minimale betrouwbaarheidsniveau (LoA) voor kvk-authenticatie."
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:43
-msgid "OpenID Connect scopes that are requested during login."
-msgstr "OpenID Connect-scopes die tijdens het inloggen worden opgevraagd."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:47
-msgid "bsn claim"
-msgstr "bsn-claim"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:49
-msgid "Name of the claim holding the authenticated user's BSN."
-msgstr "Naam van de claim die het bsn van de gebruiker bevat."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:52
-#: openforms/authentication/contrib/yivi_oidc/models.py:91
-msgid "LoA claim"
-msgstr "LoA-claim"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:55
-#: openforms/authentication/contrib/yivi_oidc/models.py:94
-msgid ""
-"Name of the claim holding the level of assurance. If left empty, it is "
-"assumed there is no LOA claim and the configured fallback value will be "
-"used."
-msgstr ""
-"Naam van de claim die het betrouwbaardheidsniveau bevat. Als er geen waarde "
-"wordt opgegeven, wordt verondersteld dat er geen LOA-claim aanwezig is en "
-"wordt de standaardwaarde gebruikt."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:63
-#: openforms/authentication/contrib/yivi_oidc/models.py:102
-msgid "default LOA"
-msgstr "Standaard betrouwbaarheidsniveau"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:68
-#: openforms/authentication/contrib/yivi_oidc/models.py:107
-msgid ""
-"Fallback level of assurance, in case no claim value could be extracted."
-msgstr ""
-"Standaardwaarde voor het betrouwbaarheidsniveau. Wordt gebruikt wanneer er "
-"geen claimwaarde kan worden verkregen."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:72
-#: openforms/authentication/contrib/yivi_oidc/models.py:111
-msgid "loa mapping"
-msgstr "Betrouwbaarheidsniveau-koppeling"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:77
-#: openforms/authentication/contrib/yivi_oidc/models.py:116
-msgid ""
-"Level of assurance claim value mappings. Useful if the values in the LOA "
-"claim are proprietary, so you can translate them into their standardized "
-"identifiers."
-msgstr ""
-"Claim-waardekoppeling voor betrouwbaarheidsniveaus. Dit is nuttig wanneer de"
-" waarden in de LOA-claim eigen of niet-standaard zijn, zodat ze kunnen "
-"worden omgezet naar gestandaardiseerde identificaties."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:84
-msgid "KVK claim"
-msgstr "KVK-claim"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:87
-msgid ""
-"Name of the claim holding the KVK identifier of the authenticated company."
-msgstr "Naam van de claim die het kvk-nummer van het bedrijf bevat."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:123
-msgid "pseudo identifier claim"
-msgstr "pseudo-identificatieclaim"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:126
-msgid ""
-"Name of the claim holding the (opaque) identifier of the user. This claim "
-"will be used when the pseudo authentication option is used, or when the "
-"plugin is set to anonymous authentication (when no authentication options "
-"are selected)."
-msgstr ""
-"Naam van de claim die de (gecodeerde) identificatie van de gebruiker bevat. "
-"Deze claim wordt gebruikt wanneer de optie voor pseudo-authenticatie wordt "
-"gebruikt, of wanneer de plugin is ingesteld op anonieme authenticatie "
-"(wanneer er geen authenticatie-opties zijn geselecteerd)."
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:143
-msgid "Yivi (OIDC)"
-msgstr "Yivi (OIDC)"
-
-#: openforms/authentication/contrib/yivi_oidc/models.py:152
+#: openforms/authentication/contrib/yivi_oidc/models.py:9
 msgid "group name"
 msgstr "groepsnaam"
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:156
+#: openforms/authentication/contrib/yivi_oidc/models.py:13
 msgid ""
 "A human-readable name for the group of attributes, used in the form "
 "configuration."
@@ -2034,11 +2004,11 @@ msgstr ""
 "Een eenvoudige naam van de attributengroep die wordt gebruikt in de "
 "formulierconfiguratie."
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:161
+#: openforms/authentication/contrib/yivi_oidc/models.py:18
 msgid "group description"
 msgstr "groepsbeschrijving"
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:164
+#: openforms/authentication/contrib/yivi_oidc/models.py:21
 msgid ""
 "A longer human-readable description for the group of attributes, used in the"
 " form configuration."
@@ -2046,16 +2016,16 @@ msgstr ""
 "Een beschrijving van de attributengroep die wordt gebruikt in de "
 "formulierconfiguratie."
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:171
+#: openforms/authentication/contrib/yivi_oidc/models.py:28
 #: openforms/authentication/models.py:43
 msgid "attribute"
 msgstr "attribuut"
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:176
+#: openforms/authentication/contrib/yivi_oidc/models.py:33
 msgid "attributes"
 msgstr "attributen"
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:179
+#: openforms/authentication/contrib/yivi_oidc/models.py:36
 msgid ""
 "List of attributes that will be requested from the user. The user can choose"
 " whether to grant access to all these attributes, or none. If you want "
@@ -2067,13 +2037,110 @@ msgstr ""
 "je individuele optionele attributen wilt, moet je deze als aparte "
 "attributengroepen definiëren."
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:187
+#: openforms/authentication/contrib/yivi_oidc/models.py:44
 msgid "yivi attribute group"
 msgstr "Yivi-attribuutgroep"
 
-#: openforms/authentication/contrib/yivi_oidc/models.py:188
+#: openforms/authentication/contrib/yivi_oidc/models.py:45
 msgid "yivi attribute groups"
 msgstr "Yivi-attribuutgroepen"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:8
+#| msgid "Actions"
+msgid "Options"
+msgstr "Opties"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:9
+#| msgid "Configuration problems"
+msgid "OIDC Yivi configuration options."
+msgstr "OIDC Yivi configuratie instellingen."
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:19
+msgid "BSN loa claim path"
+msgstr "BSN loa claim pad"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:31
+#| msgid "default LOA"
+msgid "BSN default loa"
+msgstr "BSN standaard loa"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:43
+#| msgid "loa mapping"
+msgid "BSN loa value mapping"
+msgstr "BSN loa waarde mapping"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:45
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:77
+msgid ""
+"Level of assurance claim value mappings. Useful if the values in the LOA "
+"claim are proprietary, so you can translate them into their standardized "
+"identifiers."
+msgstr ""
+"Claim-waardekoppeling voor betrouwbaarheidsniveaus. Dit is nuttig wanneer de"
+" waarden in de LOA-claim eigen of niet-standaard zijn, zodat ze kunnen "
+"worden omgezet naar gestandaardiseerde identificaties."
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:51
+msgid "KvK loa claim path"
+msgstr "KvK loa claim pad"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:63
+#| msgid "default LOA"
+msgid "KvK default loa"
+msgstr "KvK standaard loa"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:75
+#| msgid "loa mapping"
+msgid "KvK loa value mapping"
+msgstr "Betrouwbaarheidsniveau-koppeling"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:86
+msgid "Yivi identity settings."
+msgstr "Yivi identity instellingen"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:90
+msgid "BSN claim path"
+msgstr "BSN claim pad"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:92
+#| msgid "Name of the claim holding the authenticated user's BSN."
+msgid "Path to the claim value holding the authenticated user's BSN."
+msgstr "Naam van de claim die het bsn van de gebruiker bevat."
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:101
+#| msgid "KVK claim"
+msgid "KvK claim path"
+msgstr "KVK-claim"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:103
+#| msgid ""
+#| "Name of the claim holding the KVK identifier of the authenticated company."
+msgid ""
+"Path to the claim value holding the KVK identifier of the authenticated "
+"company."
+msgstr ""
+"Naam van de claim die het kvk-nummer van het geauthenticeerde bedrijf bevat."
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:112
+msgid "Pseudo claim path"
+msgstr "Pseudo claim pad"
+
+#: openforms/authentication/contrib/yivi_oidc/oidc_plugins/schemas.py:114
+#| msgid ""
+#| "Name of the claim holding the (opaque) identifier of the user. This claim "
+#| "will be used when the pseudo authentication option is used, or when the "
+#| "plugin is set to anonymous authentication (when no authentication options "
+#| "are selected)."
+msgid ""
+"Path to the claim  value holding the (opaque) identifier of the user. This "
+"claim will be used when the pseudo authentication option is used, or when "
+"the plugin is set to anonymous authentication (when no authentication "
+"options are selected)."
+msgstr ""
+"Naam van de claim die de (gecodeerde) identificatie van de gebruiker bevat. "
+"Deze claim wordt gebruikt wanneer de optie voor pseudo-authenticatie wordt "
+"gebruikt, of wanneer de plugin is ingesteld op anonieme authenticatie "
+"(wanneer er geen authenticatie-opties zijn geselecteerd)."
 
 #: openforms/authentication/forms.py:13
 msgid "Continue as..."
@@ -2231,7 +2298,6 @@ msgstr ""
 
 #: openforms/authentication/models.py:276
 #, python-brace-format
-#| msgid "Demo authentication plugin"
 msgid "Submission authentication: {plugin}::{attr}"
 msgstr "Inzending authenticatie: {plugin}::{attr}"
 
@@ -2246,7 +2312,6 @@ msgstr "Mag inzendingen opvoeren voor klanten"
 
 #: openforms/authentication/models.py:432
 #, python-brace-format
-#| msgid "Demo registrations plugin"
 msgid "Submission registrator: {plugin}::{attr}"
 msgstr "Inzending registrator: {plugin}::{attr}"
 
@@ -2487,11 +2552,15 @@ msgstr "Toegestaande HTTP methoden voor deze plugin."
 msgid "OK. Possibly a form with validation errors is rendered."
 msgstr "OK. Er kan een formulier met validatie fouten worden getoond."
 
-#: openforms/contrib/auth_oidc/admin.py:36
+#: openforms/contrib/auth_oidc/admin.py:52
 #, python-brace-format
+#| msgid ""
+#| "{plugin_identifier} is selected as authentication backend for one or more "
+#| "forms, please remove this backend from these forms before disabling this "
+#| "authentication backend."
 msgid ""
-"{plugin_identifier} is selected as authentication backend for one or more "
-"forms, please remove this backend from these forms before disabling this "
+"{plugin_name} is selected as authentication backend for one or more forms, "
+"please remove this backend from these forms before disabling this "
 "authentication backend."
 msgstr ""
 "{plugin_identifier} wordt gebruikt in één of meerdere formulieren. Haal deze"
@@ -3854,7 +3923,7 @@ msgstr ""
 " voor meer informatie."
 
 #: openforms/emails/models.py:82 openforms/forms/admin/form_logic.py:27
-#: openforms/forms/models/form.py:397
+#: openforms/forms/models/form.py:401
 #: openforms/forms/models/form_variable.py:227
 #: openforms/forms/models/form_version.py:46
 msgid "form"
@@ -4661,22 +4730,18 @@ msgid "The date of birth of the partner"
 msgstr "De geboortedatum van de partner"
 
 #: openforms/formio/components/custom.py:775
-#| msgid "The BSN of the partner"
 msgid "The BSN of the child"
 msgstr "Het BSN van het kind"
 
 #: openforms/formio/components/custom.py:779
-#| msgid "first name"
 msgid "firstNames"
 msgstr "voornamen"
 
 #: openforms/formio/components/custom.py:780
-#| msgid "The name of the item."
 msgid "The first names of the child"
 msgstr "De voornamen  van het kind"
 
 #: openforms/formio/components/custom.py:785
-#| msgid "The date of birth of the partner"
 msgid "The date of birth of the child"
 msgstr "De geboortedatum van het kind"
 
@@ -4692,12 +4757,10 @@ msgstr ""
 "behandeling"
 
 #: openforms/formio/components/custom.py:860
-#| msgid "Invalid URL."
 msgid "Invalid data."
 msgstr "Incorrecte data."
 
 #: openforms/formio/components/custom.py:871
-#| msgid "The prefill data may not be altered."
 msgid "The family members prefill data may not be altered."
 msgstr "Je mag de familieleden prefill-gegevens niet wijzigen."
 
@@ -4885,12 +4948,10 @@ msgstr "Geboortedatum"
 #: openforms/formio/rendering/default.py:420
 #: openforms/formio/rendering/default.py:512
 #, python-brace-format
-#| msgid "Partner {counter}"
 msgid "{label} {counter}"
 msgstr "{label} {counter}"
 
 #: openforms/formio/rendering/default.py:494
-#| msgid "First name"
 msgid "Firstnames"
 msgstr "Voornamen"
 
@@ -4950,12 +5011,10 @@ msgid "Live"
 msgstr "Live"
 
 #: openforms/forms/admin/form.py:293
-#, python-brace-format
 msgid "{} {} was successfully copied"
 msgstr "{} {} is met succes gekopieerd"
 
 #: openforms/forms/admin/form.py:312
-#, python-brace-format
 msgid "{} {} was successfully exported"
 msgstr "{} {} is met succes geëxporteerd"
 
@@ -5050,7 +5109,6 @@ msgid "Success! You will receive an email when your export is ready."
 msgstr "Gelukt! U ontvangt een e-mail zodra de export gereed is."
 
 #: openforms/forms/admin/views.py:96
-#, python-brace-format
 msgid "Something went wrong while importing form: {}"
 msgstr "Er is iets foutgegaan bij het importeren van formulier: {}"
 
@@ -5143,7 +5201,7 @@ msgid "URL to the product in the Open Forms API"
 msgstr "URL van het product in de Open Formulieren API"
 
 #: openforms/forms/api/serializers/form.py:195
-#: openforms/forms/models/form.py:106
+#: openforms/forms/models/form.py:108
 msgid "payment backend options"
 msgstr "betaalprovider backend opties"
 
@@ -5412,8 +5470,8 @@ msgid "Action type for this particular action."
 msgstr "Soort actie"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:140
-#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:63
-#: openforms/forms/models/form.py:694
+#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:65
+#: openforms/forms/models/form.py:698
 #: openforms/forms/models/form_definition.py:39
 #: openforms/forms/models/form_step.py:24
 #: openforms/forms/models/form_version.py:44
@@ -5998,22 +6056,21 @@ msgstr "Eenvoudige naam"
 msgid "categories"
 msgstr "categorieën"
 
-#: openforms/forms/models/form.py:66
+#: openforms/forms/models/form.py:68
 #: openforms/forms/models/form_definition.py:42
 msgid "internal name"
 msgstr "interne naam"
 
-#: openforms/forms/models/form.py:69
+#: openforms/forms/models/form.py:71
 #: openforms/forms/models/form_definition.py:45
 msgid "internal name for management purposes"
 msgstr "interne naam voor beheerdoeleinden "
 
-#: openforms/forms/models/form.py:72
-#| msgid "internal name"
+#: openforms/forms/models/form.py:74
 msgid "internal remarks"
 msgstr "interne opmerkingen"
 
-#: openforms/forms/models/form.py:74
+#: openforms/forms/models/form.py:76
 msgid ""
 "Remarks or intentions about the form. Can also be used to save notes for "
 "later use or for another admin user."
@@ -6021,17 +6078,17 @@ msgstr ""
 "Opmerkingen of intenties over het formulier. Kan ook gebruikt worden voor "
 "het maken van notities voor later gebruik of voor een andere beheerder."
 
-#: openforms/forms/models/form.py:81
+#: openforms/forms/models/form.py:83
 #: openforms/forms/models/form_definition.py:47
 #: openforms/forms/models/form_step.py:30
 msgid "slug"
 msgstr "URL-deel"
 
-#: openforms/forms/models/form.py:95
+#: openforms/forms/models/form.py:97
 msgid "form theme"
 msgstr "formulierstijl"
 
-#: openforms/forms/models/form.py:97
+#: openforms/forms/models/form.py:99
 msgid ""
 "Apply a specific appearance configuration to the form. If left blank, then "
 "the globally configured default is applied."
@@ -6039,33 +6096,33 @@ msgstr ""
 "Pas een specifieke stijl toe op het formulier. Indien geen optie gekozen is,"
 " dan wordt de globale instelling toegepast."
 
-#: openforms/forms/models/form.py:101
+#: openforms/forms/models/form.py:103
 msgid "translation enabled"
 msgstr "meertaligheid ingeschakeld"
 
-#: openforms/forms/models/form.py:104 openforms/forms/models/form.py:459
+#: openforms/forms/models/form.py:106 openforms/forms/models/form.py:463
 msgid "payment backend"
 msgstr "betaalprovider backend"
 
-#: openforms/forms/models/form.py:111
+#: openforms/forms/models/form.py:113
 msgid "price variable key"
 msgstr "sleutel prijsvariabele"
 
-#: openforms/forms/models/form.py:114
+#: openforms/forms/models/form.py:116
 msgid "Key of the variable that contains the calculated submission price."
 msgstr ""
 "Sleutel van de variabele die de (berekende) kostprijs van de inzending "
 "bevat."
 
-#: openforms/forms/models/form.py:121
+#: openforms/forms/models/form.py:123
 msgid "automatic login"
 msgstr "automatisch inloggen"
 
-#: openforms/forms/models/form.py:127
+#: openforms/forms/models/form.py:129
 msgid "appointment enabled"
 msgstr "Afspraakformulier"
 
-#: openforms/forms/models/form.py:130
+#: openforms/forms/models/form.py:132
 msgid ""
 "Mark the form as an appointment form. Appointment forms do not support form "
 "designer steps."
@@ -6073,11 +6130,11 @@ msgstr ""
 "Markeer het formulier als een afspraakformulier. Afspraakformulieren kunnen "
 "geen stappen hebben in de form designer - de structuur ligt vast."
 
-#: openforms/forms/models/form.py:137
+#: openforms/forms/models/form.py:139
 msgid "maximum allowed submissions"
 msgstr "maximum aantal inzendingen"
 
-#: openforms/forms/models/form.py:141
+#: openforms/forms/models/form.py:143
 msgid ""
 "Maximum number of allowed submissions per form. Leave this empty if no limit"
 " is needed."
@@ -6085,11 +6142,11 @@ msgstr ""
 "Het maximum aantal inzendingen die toegestaan zijn voor het formulier. Laat "
 "dit veld leeg als er geen beperking is."
 
-#: openforms/forms/models/form.py:145
+#: openforms/forms/models/form.py:147
 msgid "submissions counter"
 msgstr "aantal inzendingen"
 
-#: openforms/forms/models/form.py:148
+#: openforms/forms/models/form.py:150
 msgid ""
 "Counter to track how many submissions have been completed for the specific "
 "form. This works in combination with the maximum allowed submissions per "
@@ -6099,11 +6156,11 @@ msgstr ""
 "Deze werkt samen met de inzendingslimiet en kan gereset worden via de "
 "frontend."
 
-#: openforms/forms/models/form.py:154 openforms/config/models/config.py:76
+#: openforms/forms/models/form.py:156 openforms/config/models/config.py:76
 msgid "submission confirmation template"
 msgstr "Bevestigingspagina tekst"
 
-#: openforms/forms/models/form.py:156
+#: openforms/forms/models/form.py:158
 msgid ""
 "The content of the submission confirmation page. It can contain variables "
 "that will be templated from the submitted form data. If not specified, the "
@@ -6113,12 +6170,12 @@ msgstr ""
 "de ingediende formuliergegevens worden weergegeven. Indien niet opgegeven "
 "dan wordt de globale bevestingspagina gebruikt."
 
-#: openforms/forms/models/form.py:165
+#: openforms/forms/models/form.py:167
 #: openforms/submissions/api/serializers.py:135
 msgid "submission allowed"
 msgstr "inzenden toegestaan"
 
-#: openforms/forms/models/form.py:169
+#: openforms/forms/models/form.py:171
 msgid ""
 "Whether the user is allowed to submit this form or not, and whether the "
 "overview page should be shown if they are not."
@@ -6126,31 +6183,31 @@ msgstr ""
 "Geeft aan of de gebruiker het formulier kan verzenden en of de "
 "overzichtspagina getoond wordt als het formulier niet verzonden kan worden."
 
-#: openforms/forms/models/form.py:175
+#: openforms/forms/models/form.py:177
 msgid "suspension allowed"
 msgstr "tussentijds opslaan"
 
-#: openforms/forms/models/form.py:177
+#: openforms/forms/models/form.py:179
 msgid "Whether the user is allowed to suspend this form or not."
 msgstr ""
 "Geeft aan of de gebruiker het formulier tussentijds kan opslaan/pauzeren of "
 "niet."
 
-#: openforms/forms/models/form.py:180
+#: openforms/forms/models/form.py:182
 msgid "show progress indicator"
 msgstr "toon formulierstappen"
 
-#: openforms/forms/models/form.py:183
+#: openforms/forms/models/form.py:185
 msgid "Whether the step progression should be displayed in the UI or not."
 msgstr ""
 "Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker "
 "getoond."
 
-#: openforms/forms/models/form.py:187
+#: openforms/forms/models/form.py:189
 msgid "show summary of the progress"
 msgstr "toon voortgangsoverzicht"
 
-#: openforms/forms/models/form.py:190
+#: openforms/forms/models/form.py:192
 msgid ""
 "Whether to display the short progress summary, indicating the current step "
 "number and total amount of steps."
@@ -6159,30 +6216,30 @@ msgstr ""
 " de huidige stap en het totaal aantal stappen, typisch onder de "
 "formuliertitel."
 
-#: openforms/forms/models/form.py:195
+#: openforms/forms/models/form.py:197
 msgid "display main website link"
 msgstr "toon hoofdsite link"
 
-#: openforms/forms/models/form.py:198
+#: openforms/forms/models/form.py:200
 msgid ""
 "Display the link to the main website on the submission confirmation page."
 msgstr "Toon de link naar de hoofdsite op de bevestigingspagina na inzenden."
 
-#: openforms/forms/models/form.py:202
+#: openforms/forms/models/form.py:204
 msgid "include confirmation page content in PDF"
 msgstr "voeg de \"bevestigingspaginatekst\" toe in de bevestigings-PDF"
 
-#: openforms/forms/models/form.py:204
+#: openforms/forms/models/form.py:206
 msgid "Display the instruction from the confirmation page in the PDF."
 msgstr ""
 "Vink aan om de inhoud van het \"bevestigingspaginatekst\"-veld toe te voegen"
 " aan de PDF met gegevens ter bevestiging."
 
-#: openforms/forms/models/form.py:207
+#: openforms/forms/models/form.py:209
 msgid "send confirmation email"
 msgstr "verstuur bevestigingsmail"
 
-#: openforms/forms/models/form.py:209
+#: openforms/forms/models/form.py:211
 msgid ""
 "Whether a confirmation email should be sent to the end user filling in the "
 "form."
@@ -6190,11 +6247,11 @@ msgstr ""
 "Geef aan of er een bevestigingsmail naar de formulierinzender verstuurd "
 "dient te worden."
 
-#: openforms/forms/models/form.py:214 openforms/config/models/config.py:434
+#: openforms/forms/models/form.py:216 openforms/config/models/config.py:434
 msgid "ask privacy consent"
 msgstr "vraag toestemming om gegevens te verwerken"
 
-#: openforms/forms/models/form.py:219 openforms/config/models/config.py:437
+#: openforms/forms/models/form.py:221 openforms/config/models/config.py:437
 msgid ""
 "If enabled, the user will have to agree to the privacy policy before "
 "submitting a form."
@@ -6202,11 +6259,11 @@ msgstr ""
 "Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid "
 "voordat hij een formulier indient."
 
-#: openforms/forms/models/form.py:223 openforms/config/models/config.py:467
+#: openforms/forms/models/form.py:225 openforms/config/models/config.py:467
 msgid "ask statement of truth"
 msgstr "vraag waarheidsverklaring"
 
-#: openforms/forms/models/form.py:228 openforms/config/models/config.py:470
+#: openforms/forms/models/form.py:230 openforms/config/models/config.py:470
 msgid ""
 "If enabled, the user will have to agree that they filled out the form "
 "truthfully before submitting it."
@@ -6214,11 +6271,11 @@ msgstr ""
 "Indien verplicht dient de gebruiker de verklaring naar waarheid te "
 "accepteren voor die het formulier indient."
 
-#: openforms/forms/models/form.py:235 openforms/config/models/config.py:258
+#: openforms/forms/models/form.py:237 openforms/config/models/config.py:258
 msgid "begin text"
 msgstr "Formulier starten-label"
 
-#: openforms/forms/models/form.py:239
+#: openforms/forms/models/form.py:241
 msgid ""
 "The text that will be displayed at the start of the form to indicate the "
 "user can begin to fill in the form. Leave blank to get value from global "
@@ -6227,11 +6284,11 @@ msgstr ""
 "Het label van de knop om het formulier te starten. Laat leeg om de waarde "
 "van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:245
+#: openforms/forms/models/form.py:247
 msgid "previous text"
 msgstr "Vorige stap-label"
 
-#: openforms/forms/models/form.py:249
+#: openforms/forms/models/form.py:251
 msgid ""
 "The text that will be displayed in the overview page to go to the previous "
 "step. Leave blank to get value from global configuration."
@@ -6239,11 +6296,11 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
 " Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:255 openforms/config/models/config.py:240
+#: openforms/forms/models/form.py:257 openforms/config/models/config.py:240
 msgid "change text"
 msgstr "Stap wijzigen-label"
 
-#: openforms/forms/models/form.py:259
+#: openforms/forms/models/form.py:261
 msgid ""
 "The text that will be displayed in the overview page to change a certain "
 "step. Leave blank to get value from global configuration."
@@ -6251,11 +6308,11 @@ msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:265 openforms/config/models/config.py:249
+#: openforms/forms/models/form.py:267 openforms/config/models/config.py:249
 msgid "confirm text"
 msgstr "Formulier verzenden-label"
 
-#: openforms/forms/models/form.py:269
+#: openforms/forms/models/form.py:271
 msgid ""
 "The text that will be displayed in the overview page to confirm the form is "
 "filled in correctly. Leave blank to get value from global configuration."
@@ -6263,11 +6320,11 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:277
+#: openforms/forms/models/form.py:279
 msgid "introduction page"
 msgstr "introductiepagina"
 
-#: openforms/forms/models/form.py:279
+#: openforms/forms/models/form.py:281
 msgid ""
 "Content for the introduction page that leads to the start page of the form. "
 "Leave blank to disable the introduction page."
@@ -6275,11 +6332,11 @@ msgstr ""
 "Inhoud voor de introductiepagina die naar de formulierstartpagina leidt. "
 "Laat deze leeg om de introductiepagina uit te schakelen."
 
-#: openforms/forms/models/form.py:287
+#: openforms/forms/models/form.py:289
 msgid "explanation template"
 msgstr "Toelichtingssjabloon"
 
-#: openforms/forms/models/form.py:289
+#: openforms/forms/models/form.py:291
 msgid ""
 "Content that will be shown on the start page of the form, below the title "
 "and above the log in text."
@@ -6287,35 +6344,35 @@ msgstr ""
 "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven"
 " de startknop(pen)."
 
-#: openforms/forms/models/form.py:297
+#: openforms/forms/models/form.py:299
 msgid "maintenance mode"
 msgstr "onderhoudsmodus"
 
-#: openforms/forms/models/form.py:300
+#: openforms/forms/models/form.py:302
 msgid "Users will not be able to start the form if it is in maintenance mode."
 msgstr "Gebruikers kunnen een formulier in onderhoudsmodus niet starten."
 
-#: openforms/forms/models/form.py:305
+#: openforms/forms/models/form.py:307
 msgid "activate on"
 msgstr "Activeren op"
 
-#: openforms/forms/models/form.py:308
+#: openforms/forms/models/form.py:310
 msgid "Date and time on which the form should be activated."
 msgstr "Datum en tijdstip waarop het formulier geactiveerd moet worden."
 
-#: openforms/forms/models/form.py:311
+#: openforms/forms/models/form.py:313
 msgid "deactivate on"
 msgstr "Deactiveren op"
 
-#: openforms/forms/models/form.py:314
+#: openforms/forms/models/form.py:316
 msgid "Date and time on which the form should be deactivated."
 msgstr "Datum en tijdstip waarop het formulier gedeactiveerd moet worden."
 
-#: openforms/forms/models/form.py:319 openforms/config/models/config.py:492
+#: openforms/forms/models/form.py:321 openforms/config/models/config.py:492
 msgid "successful submission removal limit"
 msgstr "bewaartermijn voor voltooide inzendingen."
 
-#: openforms/forms/models/form.py:324
+#: openforms/forms/models/form.py:326
 msgid ""
 "Amount of days successful submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -6323,11 +6380,11 @@ msgstr ""
 "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de "
 "waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:329 openforms/config/models/config.py:500
+#: openforms/forms/models/form.py:331 openforms/config/models/config.py:500
 msgid "successful submissions removal method"
 msgstr "opschoonmethode voor voltooide inzendingen"
 
-#: openforms/forms/models/form.py:334
+#: openforms/forms/models/form.py:336
 msgid ""
 "How successful submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -6335,11 +6392,11 @@ msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:339 openforms/config/models/config.py:507
+#: openforms/forms/models/form.py:341 openforms/config/models/config.py:507
 msgid "incomplete submission removal limit"
 msgstr "bewaartermijn voor sessies"
 
-#: openforms/forms/models/form.py:344
+#: openforms/forms/models/form.py:346
 msgid ""
 "Amount of days incomplete submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -6347,11 +6404,11 @@ msgstr ""
 "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:349 openforms/config/models/config.py:515
+#: openforms/forms/models/form.py:351 openforms/config/models/config.py:515
 msgid "incomplete submissions removal method"
 msgstr "opschoonmethode voor sessies."
 
-#: openforms/forms/models/form.py:354
+#: openforms/forms/models/form.py:356
 msgid ""
 "How incomplete submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -6359,12 +6416,12 @@ msgstr ""
 "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om "
 "de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:359 openforms/forms/models/form.py:369
+#: openforms/forms/models/form.py:361 openforms/forms/models/form.py:371
 #: openforms/config/models/config.py:522
 msgid "errored submission removal limit"
 msgstr "bewaartermijn voor niet voltooide inzendingen inzendingen"
 
-#: openforms/forms/models/form.py:364
+#: openforms/forms/models/form.py:366
 msgid ""
 "Amount of days errored submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -6373,7 +6430,7 @@ msgstr ""
 "afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene "
 "configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:374
+#: openforms/forms/models/form.py:376
 msgid ""
 "How errored submissions of this form will be removed after the limit. Leave "
 "blank to use value in General Configuration."
@@ -6382,11 +6439,11 @@ msgstr ""
 "worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:379 openforms/config/models/config.py:537
+#: openforms/forms/models/form.py:381 openforms/config/models/config.py:537
 msgid "all submissions removal limit"
 msgstr "bewaartermijn van inzendingen"
 
-#: openforms/forms/models/form.py:384
+#: openforms/forms/models/form.py:386
 msgid ""
 "Amount of days when all submissions of this form will be permanently "
 "deleted. Leave blank to use value in General Configuration."
@@ -6395,76 +6452,76 @@ msgstr ""
 "verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te "
 "gebruiken."
 
-#: openforms/forms/models/form.py:398
+#: openforms/forms/models/form.py:402
 msgid "forms"
 msgstr "formulieren"
 
-#: openforms/forms/models/form.py:402
+#: openforms/forms/models/form.py:406
 #, python-brace-format
 msgid "{name} (deleted)"
 msgstr "{name} (verwijderd)"
 
-#: openforms/forms/models/form.py:440 openforms/forms/models/form.py:456
-#: openforms/forms/models/form.py:469
+#: openforms/forms/models/form.py:444 openforms/forms/models/form.py:460
+#: openforms/forms/models/form.py:473
 #, python-brace-format
 msgid "{backend} (invalid)"
 msgstr "{backend} (ongeldig)"
 
-#: openforms/forms/models/form.py:447
+#: openforms/forms/models/form.py:451
 msgid "registrations"
 msgstr "Registraties"
 
-#: openforms/forms/models/form.py:474
+#: openforms/forms/models/form.py:478
 msgid "logins"
 msgstr "inloggen"
 
-#: openforms/forms/models/form.py:519 openforms/forms/models/form.py:534
+#: openforms/forms/models/form.py:523 openforms/forms/models/form.py:538
 #: openforms/forms/models/form_definition.py:106
 #: openforms/forms/models/form_definition.py:124
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
-#: openforms/forms/models/form.py:523
+#: openforms/forms/models/form.py:527
 #: openforms/forms/models/form_definition.py:110
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:651
+#: openforms/forms/models/form.py:655
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:696
+#: openforms/forms/models/form.py:700
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:698
+#: openforms/forms/models/form.py:702
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:701
+#: openforms/forms/models/form.py:705
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:702
+#: openforms/forms/models/form.py:706
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:708
+#: openforms/forms/models/form.py:712
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:715
+#: openforms/forms/models/form.py:719
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:716
+#: openforms/forms/models/form.py:720
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:719
+#: openforms/forms/models/form.py:723
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
@@ -6688,7 +6745,6 @@ msgstr "Datatype van de waarden voor deze variabele"
 
 #: openforms/forms/models/form_variable.py:302
 #: openforms/submissions/models/submission_value_variable.py:368
-#| msgid "data type"
 msgid "data subtype"
 msgstr "data subtype"
 
@@ -7507,8 +7563,6 @@ msgstr "%(lead)s: Registratieplugin %(plugin)s meldt: Registratie geslaagd."
 
 #: openforms/logging/templates/logging/events/registration_update_with_confirmation_email_failure.txt:2
 #, python-format
-#| msgid ""
-#| "%(lead)s: Registration plugin %(plugin)s reported: Registration failed."
 msgid ""
 "%(lead)s: Registration plugin %(plugin)s reported: updating registered "
 "submission with confirmation email failed."
@@ -7518,7 +7572,6 @@ msgstr ""
 
 #: openforms/logging/templates/logging/events/registration_update_with_confirmation_email_skip.txt:2
 #, python-format
-#| msgid "%(lead)s: Registration task skipped: no backend configured."
 msgid ""
 "%(lead)s: Update submission registration with confirmation email skipped: no"
 " backend configured."
@@ -7528,8 +7581,6 @@ msgstr ""
 
 #: openforms/logging/templates/logging/events/registration_update_with_confirmation_email_success.txt:2
 #, python-format
-#| msgid ""
-#| "%(lead)s: Registration plugin %(plugin)s reported: Registration succeeded."
 msgid ""
 "%(lead)s: Registration plugin %(plugin)s reported: updating registered "
 "submission with confirmation email succeeded."
@@ -7787,7 +7838,6 @@ msgstr ""
 
 #: openforms/payments/contrib/ogone/models.py:62
 #: openforms/payments/contrib/worldline/models.py:29
-#| msgid "secret"
 msgid "API Secret"
 msgstr "API Secret"
 
@@ -7858,22 +7908,18 @@ msgid "Ogone legacy"
 msgstr "Ogone legacy"
 
 #: openforms/payments/contrib/worldline/apps.py:8
-#| msgid "Ogone payment plugin"
 msgid "Worldline payment plugin"
 msgstr "Worldline betaalproviderplugin"
 
 #: openforms/payments/contrib/worldline/constants.py:10
-#| msgid "Ogone Test"
 msgid "Worldline Test"
 msgstr "Worldline testomgeving"
 
 #: openforms/payments/contrib/worldline/constants.py:12
-#| msgid "Ogone Live"
 msgid "Worldline Live"
 msgstr "Worldline productieomgeving"
 
 #: openforms/payments/contrib/worldline/models.py:20
-#| msgid "Ogone PSPID"
 msgid "Worldline PSPID"
 msgstr "Worldline PSPID"
 
@@ -8268,8 +8314,6 @@ msgstr "Beheer gegevensopvraging van familieleden "
 
 #: openforms/prefill/contrib/family_members/service.py:42
 #, python-brace-format
-#| msgid ""
-#| "There is no component of type 'partners' connected to variables {variables}."
 msgid ""
 "There is no component of type 'partners/children' connected to variables "
 "'{variables}'."
@@ -10626,9 +10670,6 @@ msgstr ""
 "formulier invult voor de klant (burger/bedrijf)."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:141
-#| msgid ""
-#| "Description (omschrijving) of the ROLTYPE to use for employees filling in a "
-#| "form for a citizen/company."
 msgid ""
 "Description (omschrijving) of the ROLTYPE to use for citizens filling in a "
 "form with partners."
@@ -10637,7 +10678,6 @@ msgstr ""
 "van een formulier met partners."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:149
-#| msgid "description for zaakbetrokkene partners registration"
 msgid ""
 "Description (omschrijving) that will be used in the partners registration."
 msgstr "De omschrijving welke gebruikt wordt voor partner registraties."
@@ -11381,12 +11421,10 @@ msgid "In progress (not registered yet)"
 msgstr "Bezig (nog niet doorgezet)"
 
 #: openforms/submissions/constants.py:23
-#| msgid "Successfully processed"
 msgid "Successfully completed"
 msgstr "Successvolle verwerking"
 
 #: openforms/submissions/constants.py:24
-#| msgid "completed on"
 msgid "Incomplete/processing"
 msgstr "Incompleet/in verwerking"
 
@@ -12057,12 +12095,10 @@ msgstr ""
 "gevuld?"
 
 #: openforms/submissions/models/submission_value_variable.py:356
-#| msgid "Form.io configuration"
 msgid "Form.io component configuration"
 msgstr "Form.io component configuratie"
 
 #: openforms/submissions/models/submission_value_variable.py:357
-#| msgid "The form definition as Form.io JSON schema"
 msgid "The component configuration as Form.io JSON schema"
 msgstr "De formulierdefinitie als Form.io JSON schema"
 
@@ -14790,6 +14826,74 @@ msgstr ""
 #: openforms/config/templatetags/privacy_policy.py:19
 msgid "privacy policy"
 msgstr "privacybeleid"
+
+#~ msgid "DigiD (OIDC)"
+#~ msgstr "DigiD (OIDC)"
+
+#~ msgid "DigiD Machtigen (OIDC)"
+#~ msgstr "DigiD Machtigen (OIDC)"
+
+#~ msgid "eHerkenning (OIDC)"
+#~ msgstr "eHerkenning (OIDC)"
+
+#~ msgid "Claim that holds the legal name of the authenticated user."
+#~ msgstr "Claim die de wettelijke naam van de geauthoriseerde gebruiker bevat"
+
+#~ msgid "OpenID Connect scopes"
+#~ msgstr "OpenID Connect-scopes"
+
+#~ msgid "OpenID Connect scope"
+#~ msgstr "OpenID Connect-scope"
+
+#~ msgid ""
+#~ "OpenID Connect scopes that are requested during login. These scopes are "
+#~ "hardcoded and must be supported by the identity provider."
+#~ msgstr ""
+#~ "OpenID Connect-scopes die tijdens het inloggen worden opgevraagd. Deze "
+#~ "scopes zijn constant en moeten worden ondersteund door de "
+#~ "identiteitprovider."
+
+#~ msgid "eIDAS (OIDC)"
+#~ msgstr "eIDAS (OIDC)"
+
+#~ msgid "company identifier claim"
+#~ msgstr "bedrijfsidentificatie-claim"
+
+#~ msgid "company name claim"
+#~ msgstr "bedrijfsnaam-claim"
+
+#~ msgid "Claim that holds the legal name of the acting subject."
+#~ msgstr "Claim die de wettelijke naam van de handelende persoon bevat."
+
+#~ msgid "eIDAS for companies (OIDC)"
+#~ msgstr "eIDAS voor bedrijven (OIDC)"
+
+#~ msgid "eHerkenning bewindvoering (OIDC)"
+#~ msgstr "eHerkenning bewindvoering (OIDC)"
+
+#~ msgid "Attributes to extract from bsn claims"
+#~ msgstr "Attributen die uit bsn-claims worden gehaald"
+
+#~ msgid "Attributes to extract from kvk claims"
+#~ msgstr "Attributen die uit kvk-claims worden gehaald"
+
+#~ msgid "Attributes to extract from pseudo (anonymous) claims"
+#~ msgstr "Attributen die uit pseudo-claims worden gehaald"
+
+#~ msgid "OpenID Connect scopes that are requested during login."
+#~ msgstr "OpenID Connect-scopes die tijdens het inloggen worden opgevraagd."
+
+#~ msgid "bsn claim"
+#~ msgstr "bsn-claim"
+
+#~ msgid "LoA claim"
+#~ msgstr "LoA-claim"
+
+#~ msgid "pseudo identifier claim"
+#~ msgstr "pseudo-identificatieclaim"
+
+#~ msgid "Yivi (OIDC)"
+#~ msgstr "Yivi (OIDC)"
 
 #~ msgid "Laag"
 #~ msgstr "Laag"

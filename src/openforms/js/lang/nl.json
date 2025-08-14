@@ -781,6 +781,7 @@
   "DaG+4u": {
     "defaultMessage": "Partners roltype",
     "description": "ZGW-APIs registration options 'partnersRoltype' label",
+    "isTranslated": true,
     "originalDefault": "Partners roltype"
   },
   "DaxIUG": {
@@ -3406,6 +3407,7 @@
   "xTcRPO": {
     "defaultMessage": "Merchant",
     "description": "Worldline payment options 'merchant' label",
+    "isTranslated": true,
     "originalDefault": "Merchant"
   },
   "xTfMk5": {
