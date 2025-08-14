@@ -59,7 +59,7 @@ x-app-env: &x-app-env
   # otel:supersecret, escape spaces and = with percent encoding
   - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic b3RlbDpzdXBlcnNlY3JldA==
   - OTEL_EXPORTER_OTLP_METRICS_INSECURE=${OTEL_EXPORTER_OTLP_METRICS_INSECURE:-true}
-  - OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
+  - _OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
 
 x-app-volumes: &x-app-volumes
   - static:/srv/static
