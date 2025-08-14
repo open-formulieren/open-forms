@@ -101,6 +101,7 @@ class RegistratorInfoFactory(factory.django.DjangoModelFactory):
 
 class AttributeGroupFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"attribute-group-{n}")
+    slug = factory.Sequence(lambda n: f"attribute-group_slug-{n}")
 
     class Meta:
         model = AttributeGroup
