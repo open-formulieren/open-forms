@@ -1,0 +1,81 @@
+{% extends "admin/import_export/import.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block title %} {% if confirm_form %}{% trans "Confirm import attribute groups" %}{% else %}{% trans "Import attribute groups" %}{% endif %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:yivi_oidc_attributegroup_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans 'Import attribute groups' %}
+</div>
+{% endblock %}
+
+{% block form_detail %}
+    <fieldset class="module aligned">
+        {% for field in form.visible_fields %}
+            <div class="form-row {% if field.errors %}errors{% endif %}">
+                {{ field.errors }}
+                <div>
+                    <div class="flex-container {% if field.errors %}errors{% endif %}">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                </div>
+
+                {% if field.field.help_text %}
+                    <div class="help" {% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                        <div>{{ field.field.help_text|safe }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </fieldset>
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+    <h1>
+        {% if confirm_form %}
+            {% trans "Confirm import attribute groups" %}
+        {% else %}
+            {% trans "Import attribute groups" %}
+        {% endif %}
+    </h1>
+
+    <!-- Render the admin/import_export/import.html blocks for the forms and results -->
+
+    {% if confirm_form %}
+        {% block confirm_import_form %}{{ block.super }}{% endblock %}
+    {% else %}
+        {% block import_form %}{{ block.super }}{% endblock %}
+    {% endif %}
+
+    {% if result %}
+        {% if result.has_errors %}
+            {% block errors %}
+                {{ block.super }}
+            {% endblock %}
+        {% elif result.has_validation_errors %}
+            {% block validation_errors %}
+                {{ block.super }}
+            {% endblock %}
+        {% else %}
+            {% block preview %}
+                {{ block.super }}
+            {% endblock %}
+        {% endif %}
+    {% endif %}
+
+{% endblock %}

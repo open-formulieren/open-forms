@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block title %} {% trans "Export attribute groups" %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:yivi_oidc_attributegroup_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans 'Export attribute groups' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans 'Export attribute groups' %}</h1>
+
+<div id="content-main">
+    <form action="{% url 'admin:yivi_oidc_attributegroup_export' %}" method="post" id="export-attributegroups">
+        {% csrf_token %}
+
+        <fieldset class="module aligned">
+            <div class="description">{% blocktrans trimmed %}
+              <p>Here you can create an export of the configured attribute groups. The
+              export file contains the following columns: name, slug, description and the
+              attributes.</p>
+            {% endblocktrans %}</div>
+
+            {% for field in form.visible_fields %}
+                <div class="form-row {% if field.errors %}errors{% endif %}">
+                    {{ field.errors }}
+                    <div>
+                        <div class="flex-container {% if field.errors %}errors{% endif %}">
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    </div>
+
+                    {% if field.field.help_text %}
+                        <div class="help" {% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
+                            <div>{{ field.field.help_text|safe }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <div class="submit-row">
+            <input type="submit" class="default" value="{% trans 'Export' %}">
+        </div>
+    </form>
+</div>
+{% endblock %}

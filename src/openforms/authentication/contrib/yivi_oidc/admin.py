@@ -8,6 +8,8 @@ from digid_eherkenning.oidc.admin import (
     COMMON_FIELDSETS,
     admin_modelform_factory,
 )
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 from solo.admin import SingletonModelAdmin
 
 from openforms.contrib.auth_oidc.admin import OIDCConfigForm
@@ -70,8 +72,28 @@ class YiviOpenIDConnectConfigAdmin(SingletonModelAdmin):
     )
 
 
+class AttributeGroupResource(resources.ModelResource):
+    class Meta:
+        model = AttributeGroup
+        # Use slug as identifier
+        import_id_fields = ("slug",)
+        # Export all fields, except `id`
+        fields = ("name", "slug", "description", "attributes")
+
+    def dehydrate_name(self, obj: AttributeGroup) -> str:
+        # Trimming whitespace
+        return obj.name.strip()
+
+    def dehydrate_description(self, obj: AttributeGroup) -> str:
+        # Trimming whitespace
+        return obj.description.strip()
+
+
 @admin.register(AttributeGroup)
-class AttributeGroupAdmin(admin.ModelAdmin):
+class AttributeGroupAdmin(ImportExportModelAdmin):
+    import_template_name = "admin/forms/attributegroup/import_form.html"
+    export_template_name = "admin/forms/attributegroup/export_form.html"
+
     fields = [
         "name",
         "slug",
@@ -84,3 +106,6 @@ class AttributeGroupAdmin(admin.ModelAdmin):
         "attributes",
     ]
     prepopulated_fields = {"slug": ("name",)}
+
+    # Import and export options:
+    resource_classes = [AttributeGroupResource]
