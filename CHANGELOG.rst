@@ -42,15 +42,61 @@ Upgrade procedure
     guards against the use of keys that are already present in the static variables, but this
     does not cover old forms and newly-added static variables.
 
-Major features
---------------
-
-...
-
 Detailed changes
 ----------------
 
-...
+**New features**
+
+* [:backend:`5478`] Added additional Yivi documentation.
+* [:backend:`5451`, :backend:`3999`] Added support for Open Telemetry instrumentation. The following metrics are now exposed:
+  * Generic HTTP requests
+  * Generic "active requests"
+  * Number of users, logins, logouts, failed logins, axes lockouts
+  * Submission starts, completed, paused and steps submitted
+  * Total amount of submissions by form or lifecycle stage
+* [:backend:`2324`] Added normalizing of input (python-types) and output (json-types) datatypes.
+* [:backend:`4879`] Added payment redirect flow for Worldline payment provider.
+* [:sdk:`825`] Added children component and updated email digest.
+* [:backend:`5382`] Added the internal remarks admin field.
+* [:backend:`5268`] Added "Partners Roltype" and "Partners omschrijving" fields.
+* [:backend:`5428`] Updated the eIDAS (OIDC) LoA-Levels.
+
+**Bugfixes**
+
+* [:backend:`5475`] Fixed additional claims not being usable in logic.
+* [:backend:`5271`] Fixed false positives being reported in the digest email when you have logic rules that use the ``reduce`` operation.
+* [:backend:`5481`] Fixed user defined variables not being queried based on the form of the current submission.
+* [:backend:`5471`] Made it possible to enable advanced configuration when family members plugin is enabled.
+* [:backend:`5340`] Fixed error handling during the validation of registration backends.
+* [:backend:`5454`] Fixed Piwik Pro debug mode no longer working.
+* [:backend:`5413`] Fixed uploading filenames with soft-hyphens not passing form validation.
+
+**Project maintenance**
+
+* [:backend:`5331`] Enabled extra type checking.
+* Fixed several type check errors.
+* Added annotations for form submissions and updated submission removal.
+* Enabled type checking for accounts app.
+* Changed some primary key fields to bigint.
+* Applied several best practices to uwsgi.
+* Added CI check to detect missing frontend translations.
+* Removed absolete ansible deployment example.
+* Fixed a NPM audit issue.
+* [:backend:`5447`] Added an upgrade check to require version 3.2.0 before upgrading to 3.3.0.
+* [:backend:`5356`] Updated django-digid-eherkenning which contains various UX improvements.
+* Removed unused validation code.
+* Enabled DJ linter rules and fixed the violations.
+* Replaced several code components with maykin-common dependency equivelant.
+  * PDF generation
+  * Admin env info
+  * Server error page
+  * System checks
+  * Schema hook
+  * Admin MFA integration
+  * Admin index integration
+* Added maykin-common dependency
+* Removed the obsoleted form price logic model.
+
 
 3.1.5 (2025-07-24)
 ==================
