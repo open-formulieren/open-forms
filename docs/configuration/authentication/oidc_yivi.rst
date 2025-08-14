@@ -94,6 +94,10 @@ van de ``Yivi via OpenID Connect`` authenticatie-plugin.
 Elke attribuutgroep is per stuk optioneel; de gebruiker bepaalt zelf welke groepen wel
 en niet te voorzien van informatie.
 
+In Open Formulieren kunnen Yivi-attribuutgroepen geëxporteerd en geïmporteerd worden.
+Zo kunt u eenvoudig attribuutgroepen delen met anderen of overzetten van een test- naar
+productie-omgeving.
+
 .. important:: Alle verzoeken aan Yivi vereisen het gebruik van Yivi-attributen. Ook voor
    de BSN, KVK en betrouwbaarheidsniveau claims, moeten Yivi-attributen gebruikt worden.
    Raadpleeg de `Yivi Attribute Index`_ voor een volledig overzicht van alle beschikbare
