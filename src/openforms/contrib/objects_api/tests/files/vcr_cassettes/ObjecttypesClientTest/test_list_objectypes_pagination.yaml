@@ -16,24 +16,24 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204","uuid":"ac49bcc6-ed49-478d-84d4-a9e61fc97204","name":"Form","namePlural":"Forms","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-05-16","modifiedAt":"2025-05-28","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/ac49bcc6-ed49-478d-84d4-a9e61fc97204/versions/1"]}]}'
+      string: '{"count":7,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09","uuid":"59cdc902-576b-495f-ae63-c9c78b8afc09","name":"Partners","namePlural":"Partners","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2025-07-22","modifiedAt":"2025-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/59cdc902-576b-495f-ae63-c9c78b8afc09/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '706'
+      - '713'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 30 Jun 2025 14:58:23 GMT
+      - Fri, 15 Aug 2025 09:51:16 GMT
       Referrer-Policy:
       - same-origin
       Server:
-      - nginx/1.27.4
+      - nginx/1.27.5
       Vary:
       - origin
       X-Content-Type-Options:
