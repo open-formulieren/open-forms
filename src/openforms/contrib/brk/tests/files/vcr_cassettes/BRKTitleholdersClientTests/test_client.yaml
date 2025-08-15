@@ -32,10 +32,6 @@ interactions:
       - 2.0.0
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '784'
       Content-Security-Policy:
       - 'default-src ''self''; script-src ''self''; connect-src ''self''; style-src
         ''self''; img-src ''self'' data:; object-src ''none''; font-src ''self'' https://*.kadaster.nl;
@@ -44,7 +40,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Mon, 30 Jun 2025 14:45:11 GMT
+      - Fri, 15 Aug 2025 09:26:11 GMT
       Keep-Alive:
       - timeout=60
       Referrer-Policy:
@@ -59,6 +55,8 @@ interactions:
       - DENY
       X-Xss-Protection:
       - 1; mode=block
+      content-length:
+      - '3873'
     status:
       code: 200
       message: ''

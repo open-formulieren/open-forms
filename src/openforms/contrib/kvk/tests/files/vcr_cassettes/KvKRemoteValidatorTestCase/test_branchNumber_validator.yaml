@@ -18,25 +18,21 @@ interactions:
     uri: https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921
   response:
     body:
-      string: '{"pagina":1,"resultatenPerPagina":10,"totaal":1,"resultaten":[{"kvkNummer":"90001354","vestigingsnummer":"990000541921","naam":"Grand
-        Joyflex B.V.","adres":{"binnenlandsAdres":{"type":"postadres","plaats":"Sterksel"}},"type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90001354"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/990000541921"}}}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921&pagina=1&resultatenperpagina=10"}}}'
+      string: '{"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?vestigingsnummer=990000541921&pagina=1&resultatenperpagina=10"}},"pagina":1,"resultatenPerPagina":10,"totaal":1,"resultaten":[{"_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90001354"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/990000541921"}},"kvkNummer":"90001354","vestigingsnummer":"990000541921","naam":"Grand
+        Joyflex B.V.","adres":{"binnenlandsAdres":{"type":"postadres","plaats":"Sterksel"}},"type":"hoofdvestiging"}]}'
     headers:
       API-Version:
-      - 2.0.0
+      - 2.1.0
       Cache-Control:
-      - no-cache, no-store, max-age=0, must-revalidate
+      - no-store
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '286'
       Content-Security-Policy:
       - frame-ancestors 'none', default-src 'none'
       Content-Type:
       - application/hal+json
       Date:
-      - Mon, 30 Jun 2025 14:54:58 GMT
+      - Fri, 15 Aug 2025 11:57:08 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -49,8 +45,11 @@ interactions:
       - nosniff
       X-Frame-Options:
       - DENY
+      content-length:
+      - '560'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
+      - max-age=0; includeSubDomains
     status:
       code: 200
       message: ''
@@ -80,16 +79,12 @@ interactions:
       - no-store
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '127'
       Content-Security-Policy:
       - frame-ancestors 'none', default-src 'none'
       Content-Type:
       - application/json
       Date:
-      - Mon, 30 Jun 2025 14:54:58 GMT
+      - Fri, 15 Aug 2025 11:57:08 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
@@ -102,8 +97,11 @@ interactions:
       - nosniff
       X-Frame-Options:
       - DENY
+      content-length:
+      - '122'
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
+      - max-age=0; includeSubDomains
     status:
       code: 404
       message: ''
