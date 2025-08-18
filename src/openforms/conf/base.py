@@ -236,6 +236,8 @@ INSTALLED_APPS = [
     "openforms.registrations.contrib.generic_json",
     "openforms.prefill",
     "openforms.prefill.contrib.demo.apps.DemoApp",
+    "openforms.prefill.contrib.eidas.apps.EIDASApp",
+    "openforms.prefill.contrib.eidas_company.apps.EIDASCompanyApp",
     "openforms.prefill.contrib.kvk.apps.KVKPrefillApp",
     "openforms.prefill.contrib.stufbg.apps.StufBgApp",
     "openforms.prefill.contrib.haalcentraal_brp.apps.HaalCentraalBRPApp",
