@@ -1,0 +1,143 @@
+interactions:
+- request:
+    body: PSPID=maykinmedia&ORDERID=xyz2024%2FOF-123456%2F987654321&AMOUNT=1000&CURRENCY=EUR&LANGUAGE=nl_NL&TITLE=l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21+l%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4%C3%A4mp%21&PMLISTTYPE=2&ACCEPTURL=http%3A%2F%2Ffoo.bar%2Freturn%3Fbazz%3Dbuzz%26action%3Daccept&DECLINEURL=http%3A%2F%2Ffoo.bar%2Freturn%3Fbazz%3Dbuzz%26action%3Dcancel&EXCEPTIONURL=http%3A%2F%2Ffoo.bar%2Freturn%3Fbazz%3Dbuzz%26action%3Dexception&CANCELURL=http%3A%2F%2Ffoo.bar%2Freturn%3Fbazz%3Dbuzz%26action%3Dcancel&BACKURL=http%3A%2F%2Ffoo.bar%2Freturn%3Fbazz%3Dbuzz%26action%3Dcancel&COM=br%C3%B8ther+i+desire+l%C3%B6%C3%B6ps&SHASIGN=EF6D7725AC3A447821DB9E5997FDC2A9B8F4A7403E091A45A25146E98950B6BF433EDEC00D1B7B542AF82C3912B64598F5A44493465C3C31070FE4DA4B72809B
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1570'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+    method: POST
+    uri: https://ogone.test.v-psp.com/ncol/test/orderstandard_utf8.asp
+  response:
+    body:
+      string: '<head><title>Object moved</title></head>
+
+        <body><h1>Object Moved</h1>This object may be found <a HREF="https://ogone.test.v-psp.com/payment/hostedpage/851776df1a79412cab2f6863db0300fc">here</a>.</body>
+
+        '
+    headers:
+      cache-control:
+      - private, max-age=0
+      content-length:
+      - '201'
+      content-security-policy:
+      - script-src 'self' 'nonce-F27D55AD0EF1C2C7E9A4138B8F62B5E921D822D72AA33A2F5E7D5B12F32E3024'
+        'unsafe-eval' https://static-eu.payments-amazon.com/cba/js/ https://images-na.ssl-images-amazon.com/images/G/
+        https://external-assets.test.cdn.v-psp.com/t/ https://secure.ogone.com/Ncol/Test/
+      content-type:
+      - text/html; Charset=utf-8
+      date:
+      - Mon, 18 Aug 2025 10:51:34 GMT
+      expires:
+      - Mon, 18 Aug 2025 10:50:32 GMT
+      location:
+      - https://ogone.test.v-psp.com/payment/hostedpage/851776df1a79412cab2f6863db0300fc
+      set-cookie:
+      - sessionTest=5e9fad66-eaa2-4d4e-bac0-d2d7392db4af; path=/ncol/test/; Secure;
+        HttpOnly
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+      x-content-type-options:
+      - nosniff
+    status:
+      code: 302
+      message: Object moved
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://ogone.test.v-psp.com/payment/hostedpage/851776df1a79412cab2f6863db0300fc
+  response:
+    body:
+      string: ''
+    headers:
+      content-length:
+      - '0'
+      correlation-id:
+      - e925001e-49a4-478a-9660-9c080f13f850
+      - e925001e-49a4-478a-9660-9c080f13f850
+      date:
+      - Mon, 18 Aug 2025 10:51:35 GMT
+      location:
+      - https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3a%2f%2fogone.test.v-psp.com%2fpayment%2freturn%2fe38e1be8b9cb4c38ba0972c196f59f51
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: https://simulator.test.v-psp.com/web-simulator/Ideal/Index?returnurl=https%3A%2F%2Fogone.test.v-psp.com%2Fpayment%2Freturn%2Fe38e1be8b9cb4c38ba0972c196f59f51
+  response:
+    body:
+      string: "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"utf-8\"
+        />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n
+        \   <title>iDEAL Simulator</title>\r\n    <link href=\"https://simulator.test.v-psp.com/web-simulator/Content/default.css\"
+        rel=\"stylesheet\" type=\"text/css\" />\r\n</head>\r\n<body>\r\n\r\n    <div
+        id=\"header\">\r\n        <h1>iDEAL</h1>\r\n        <p>This page simulates
+        iDEAL payments</p>\r\n    </div>\r\n\r\n    <div id=\"main\">\r\n        \r\n<form
+        action=\"https://ogone.test.v-psp.com/payment/return/e38e1be8b9cb4c38ba0972c196f59f51\"
+        method=\"GET\" name=\"redirectForm\" id=\"redirectForm\">\r\n        <input
+        type=\"hidden\" name=\"ec\" />\r\n        <input type=\"hidden\" name=\"trxid\"
+        value=\"0\" />\r\n\r\n    <div class=\"section first\">\r\n        <h2>Redirection</h2>\r\n
+        \       <ul>\r\n            <li>Redirect to domain: ogone.test.v-psp.com</li>\r\n
+        \           <li><a class=\"btn btn-primary btn-lg submit-link\" id=\"lnk_redirect\">Redirect
+        &raquo;</a></li>\r\n            <li>or close this browser window to simulate
+        an interrupted redirection</li>\r\n        </ul>\r\n    </div>\r\n\r\n\r\n<div
+        class=\"section last\">\r\n    <h2>Details of the payment</h2>\r\n    <ul>\r\n
+        \       <li id=\"payid\">Payid: 0</li>\r\n        <li id=\"trxid\">TransactionId:
+        0</li>\r\n        <li id=\"issuer\">Issuer: </li>\r\n    </ul>\r\n</div>\r\n</form>\r\n
+        \   </div>\r\n</body>\r\n</html>\r\n<script src=\"https://simulator.test.v-psp.com/web-simulator/Content/main.js\"
+        type=\"text/javascript\"></script>"
+    headers:
+      content-security-policy:
+      - default-src 'self'; script-src 'self'
+      content-type:
+      - text/html; charset=utf-8
+      correlation-id:
+      - 2c02c1fe-6d18-4fa3-9213-4086a3627f15
+      - 2c02c1fe-6d18-4fa3-9213-4086a3627f15
+      date:
+      - Mon, 18 Aug 2025 10:51:35 GMT
+      pragma:
+      - no-cache
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+      transfer-encoding:
+      - chunked
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

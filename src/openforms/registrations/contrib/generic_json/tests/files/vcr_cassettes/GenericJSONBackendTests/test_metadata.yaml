@@ -1,0 +1,67 @@
+interactions:
+- request:
+    body: '{"values": {}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {}, "required": [], "additionalProperties":
+      false}, "metadata": {"auth_type": "bsn", "public_reference": "OF-ABC123", "form_version":
+      "Version 1.0", "registration_timestamp": "2025-01-30T13:05:00Z"}, "metadata_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {"auth_type": {"title": "Authentication type", "type": "string",
+      "enum": ["bsn", "kvk", "pseudo", "employee_id", "national_id", ""]}, "public_reference":
+      {"title": "Public reference", "type": "string"}, "form_version": {"title": "Form
+      version", "type": "string"}, "registration_timestamp": {"title": "Registration
+      timestamp", "type": "string", "format": "date-time"}}, "required": ["auth_type",
+      "public_reference", "form_version", "registration_timestamp"], "additionalProperties":
+      false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3MzgyNDIzMDAsImV4cCI6MTczODI4NTUwMCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.xt2SCgMh9MK4Zzot8TZPNVLB4K72oC_MBhDm8ZmWOq4
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '924'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {\n      \"auth_type\": \"bsn\",\n
+        \     \"form_version\": \"Version 1.0\",\n      \"public_reference\": \"OF-ABC123\",\n
+        \     \"registration_timestamp\": \"2025-01-30T13:05:00Z\"\n    },\n    \"metadata_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"auth_type\":
+        {\n          \"enum\": [\n            \"bsn\",\n            \"kvk\",\n            \"pseudo\",\n
+        \           \"employee_id\",\n            \"national_id\",\n            \"\"\n
+        \         ],\n          \"title\": \"Authentication type\",\n          \"type\":
+        \"string\"\n        },\n        \"form_version\": {\n          \"title\":
+        \"Form version\",\n          \"type\": \"string\"\n        },\n        \"public_reference\":
+        {\n          \"title\": \"Public reference\",\n          \"type\": \"string\"\n
+        \       },\n        \"registration_timestamp\": {\n          \"format\": \"date-time\",\n
+        \         \"title\": \"Registration timestamp\",\n          \"type\": \"string\"\n
+        \       }\n      },\n      \"required\": [\n        \"auth_type\",\n        \"public_reference\",\n
+        \       \"form_version\",\n        \"registration_timestamp\"\n      ],\n
+        \     \"type\": \"object\"\n    },\n    \"values\": {},\n    \"values_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {},\n      \"required\":
+        [],\n      \"type\": \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1395'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 18 Aug 2025 12:43:11 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 201
+      message: CREATED
+version: 1

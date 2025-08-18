@@ -1,0 +1,79 @@
+interactions:
+- request:
+    body: '{"values": {"repeatingGroup": [{"radio": "A", "select": "B", "selectBoxes":
+      {"A": false, "B": false, "C": true}}]}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"repeatingGroup": {"title": "Repeating Group",
+      "type": "array", "items": {"type": "object", "properties": {"radio": {"title":
+      "Radio", "type": "string", "enum": ["A", "B", "C", ""]}, "select": {"type":
+      "string", "enum": ["A", "B", "C", ""], "title": "Select"}, "selectBoxes": {"title":
+      "Select Boxes", "type": "object", "properties": {"A": {"type": "boolean"}, "B":
+      {"type": "boolean"}, "C": {"type": "boolean"}}, "required": ["A", "B", "C"],
+      "additionalProperties": false}}, "required": ["radio", "select", "selectBoxes"],
+      "additionalProperties": false}}}, "required": ["repeatingGroup"], "additionalProperties":
+      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {}, "required": [], "additionalProperties":
+      false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MjA5OTAsImV4cCI6MTc1NTU2NDE5MCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.KCBBluEaQ2tfbdJlZpXsSLo6VUbsFdmqUoeiP200ai0
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1026'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"repeatingGroup\": [\n        {\n
+        \         \"radio\": \"A\",\n          \"select\": \"B\",\n          \"selectBoxes\":
+        {\n            \"A\": false,\n            \"B\": false,\n            \"C\":
+        true\n          }\n        }\n      ]\n    },\n    \"values_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {\n        \"repeatingGroup\": {\n          \"items\":
+        {\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"radio\": {\n                \"enum\": [\n                  \"A\",\n
+        \                 \"B\",\n                  \"C\",\n                  \"\"\n
+        \               ],\n                \"title\": \"Radio\",\n                \"type\":
+        \"string\"\n              },\n              \"select\": {\n                \"enum\":
+        [\n                  \"A\",\n                  \"B\",\n                  \"C\",\n
+        \                 \"\"\n                ],\n                \"title\": \"Select\",\n
+        \               \"type\": \"string\"\n              },\n              \"selectBoxes\":
+        {\n                \"additionalProperties\": false,\n                \"properties\":
+        {\n                  \"A\": {\n                    \"type\": \"boolean\"\n
+        \                 },\n                  \"B\": {\n                    \"type\":
+        \"boolean\"\n                  },\n                  \"C\": {\n                    \"type\":
+        \"boolean\"\n                  }\n                },\n                \"required\":
+        [\n                  \"A\",\n                  \"B\",\n                  \"C\"\n
+        \               ],\n                \"title\": \"Select Boxes\",\n                \"type\":
+        \"object\"\n              }\n            },\n            \"required\": [\n
+        \             \"radio\",\n              \"select\",\n              \"selectBoxes\"\n
+        \           ],\n            \"type\": \"object\"\n          },\n          \"title\":
+        \"Repeating Group\",\n          \"type\": \"array\"\n        }\n      },\n
+        \     \"required\": [\n        \"repeatingGroup\"\n      ],\n      \"type\":
+        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '2191'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 18 Aug 2025 12:43:10 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 201
+      message: CREATED
+version: 1

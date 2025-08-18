@@ -1,0 +1,89 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:8004/api/v1/tabellen?code=tabel1
+  response:
+    body:
+      string: '{"count":1,"next":null,"previous":null,"results":[{"code":"tabel1","naam":"Tabel1","beheerder":{"naam":"John
+        Doe","email":"john@doe.nl","afdeling":"","organisatie":""},"einddatumGeldigheid":null}]}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Length:
+      - '197'
+      Content-Security-Policy:
+      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
+        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
+        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Accept-Language:
+      - nl
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:8004/api/v1/items?tabel__code=tabel1
+  response:
+    body:
+      string: '{"count":2,"next":null,"previous":null,"results":[{"code":"option2","naam":"Option
+        2","begindatumGeldigheid":"2025-01-07T14:17:59Z","einddatumGeldigheid":null,"aanvullendeGegevens":null},{"code":"option1","naam":"Option
+        1","begindatumGeldigheid":"2025-01-07T14:17:53Z","einddatumGeldigheid":null,"aanvullendeGegevens":null}]}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Length:
+      - '325'
+      Content-Security-Policy:
+      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
+        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
+        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,49 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Accept-Language:
+      - nl
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MTQ1NzcsImV4cCI6MTc1NTU1Nzc3NywiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.7cHYkOeZGPNOdN1iriVjblDcQIKCJpA1GvqNXO3UeeY
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:8004/api/v1/items?tabel__code=tabel1
+  response:
+    body:
+      string: '{"count":2,"next":null,"previous":null,"results":[{"code":"option2","naam":"Option
+        2","begindatumGeldigheid":"2025-01-07T14:17:59Z","einddatumGeldigheid":null,"aanvullendeGegevens":null},{"code":"option1","naam":"Option
+        1","begindatumGeldigheid":"2025-01-07T14:17:53Z","einddatumGeldigheid":null,"aanvullendeGegevens":null}]}'
+    headers:
+      Allow:
+      - GET, HEAD, OPTIONS
+      Content-Length:
+      - '325'
+      Content-Security-Policy:
+      - 'base-uri ''self''; object-src ''none''; style-src ''self'' ''unsafe-inline''
+        fonts.googleapis.com; font-src ''self'' fonts.gstatic.com; frame-src ''self'';
+        worker-src ''self'' blob:; frame-ancestors ''none''; script-src ''self'' ''unsafe-inline'';
+        default-src ''self''; form-action ''self''; img-src ''self'' data: cdn.redoc.ly'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

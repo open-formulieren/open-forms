@@ -1,0 +1,52 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.4
+    method: GET
+    uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions
+  response:
+    body:
+      string: '{"count":4,"next":null,"previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/4","version":4,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"draft","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":18},"bsn":{"type":"string"},"name":{"type":"object","properties":{"last.name":{"type":"string"}}},"nested":{"type":"object","properties":{"unrelated":{"type":"string"},"submission_payment_amount":{"type":"number","multipleOf":0.01}}},"submission_date":{"type":"string","format":"date-time"},"submission_csv_url":{"type":"string","format":"uri"},"submission_pdf_url":{"type":"string","format":"uri"},"submission_payment_completed":{"type":"boolean"},"submission_payment_public_ids":{"type":"array"}}},"createdAt":"2024-11-25","modifiedAt":"2024-11-25","publishedAt":"2024-11-25"},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3","version":3,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"published","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":18},"name":{"type":"object","properties":{"last.name":{"type":"string"}}},"nested":{"type":"object","properties":{"unrelated":{"type":"string"},"submission_payment_amount":{"type":"number","multipleOf":0.01}}},"submission_date":{"type":"string","format":"date-time"},"submission_csv_url":{"type":"string","format":"uri"},"submission_pdf_url":{"type":"string","format":"uri"},"submission_payment_completed":{"type":"boolean"},"submission_payment_public_ids":{"type":"array"}}},"createdAt":"2024-02-08","modifiedAt":"2024-11-25","publishedAt":"2024-11-25"},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","version":2,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"published","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":18,"description":"Age
+        in years which must be equal to or greater than 18."},"lastName":{"type":"string","description":"The
+        person''s last name."},"firstName":{"type":"string","description":"The person''s
+        first name."}}},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","publishedAt":"2024-02-08"},{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","version":1,"objectType":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","status":"published","jsonSchema":{"$id":"https://example.com/person.schema.json","type":"object","title":"Person","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"age":{"type":"integer","minimum":0,"description":"Age
+        in years which must be equal to or greater than zero."},"lastName":{"type":"string","description":"The
+        person''s last name."},"firstName":{"type":"string","description":"The person''s
+        first name."}}},"createdAt":"2023-10-24","modifiedAt":"2024-02-08","publishedAt":"2024-02-08"}]}'
+    headers:
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3516'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Mon, 18 Aug 2025 10:52:34 GMT
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - nginx/1.29.0
+      Vary:
+      - origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+version: 1

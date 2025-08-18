@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: '{"values": {"selectBoxes1": {"manual1": true, "manual2": false}, "selectBoxes2":
+      ["manualarray2"]}, "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"selectBoxes1": {"title": "Selectboxes1", "type":
+      "object", "properties": {"manual1": {"type": "boolean"}, "manual2": {"type":
+      "boolean"}}, "required": ["manual1", "manual2"], "additionalProperties": false},
+      "selectBoxes2": {"title": "Selectboxes2", "type": "array", "items": {"type":
+      "string", "enum": ["manualarray1", "manualarray2"]}}}, "required": ["selectBoxes1",
+      "selectBoxes2"], "additionalProperties": false}, "metadata": {}, "metadata_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {}, "required": [], "additionalProperties": false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MjA5OTAsImV4cCI6MTc1NTU2NDE5MCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.KCBBluEaQ2tfbdJlZpXsSLo6VUbsFdmqUoeiP200ai0
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '806'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"selectBoxes1\": {\n        \"manual1\":
+        true,\n        \"manual2\": false\n      },\n      \"selectBoxes2\": [\n        \"manualarray2\"\n
+        \     ]\n    },\n    \"values_schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"selectBoxes1\":
+        {\n          \"additionalProperties\": false,\n          \"properties\": {\n
+        \           \"manual1\": {\n              \"type\": \"boolean\"\n            },\n
+        \           \"manual2\": {\n              \"type\": \"boolean\"\n            }\n
+        \         },\n          \"required\": [\n            \"manual1\",\n            \"manual2\"\n
+        \         ],\n          \"title\": \"Selectboxes1\",\n          \"type\":
+        \"object\"\n        },\n        \"selectBoxes2\": {\n          \"items\":
+        {\n            \"enum\": [\n              \"manualarray1\",\n              \"manualarray2\"\n
+        \           ],\n            \"type\": \"string\"\n          },\n          \"title\":
+        \"Selectboxes2\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\":
+        [\n        \"selectBoxes1\",\n        \"selectBoxes2\"\n      ],\n      \"type\":
+        \"object\"\n    }\n  },\n  \"message\": \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1355'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 18 Aug 2025 12:43:10 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 201
+      message: CREATED
+version: 1

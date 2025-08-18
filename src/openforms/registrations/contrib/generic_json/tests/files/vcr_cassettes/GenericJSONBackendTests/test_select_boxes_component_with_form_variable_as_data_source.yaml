@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"values": {"selectBoxes": {"A": true, "B": false, "C": true}}, "values_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {"selectBoxes": {"title": "Select Boxes", "type": "object", "properties":
+      {"A": {"type": "boolean"}, "B": {"type": "boolean"}, "C": {"type": "boolean"}},
+      "required": ["A", "B", "C"], "additionalProperties": false}}, "required": ["selectBoxes"],
+      "additionalProperties": false}, "metadata": {}, "metadata_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "type": "object", "properties":
+      {}, "required": [], "additionalProperties": false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MjA5OTIsImV4cCI6MTc1NTU2NDE5MiwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.wHMRV0FzbsOOQsNe1b5krfDpORgOVdS6sRm-l-x_-lA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '628'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"selectBoxes\": {\n        \"A\":
+        true,\n        \"B\": false,\n        \"C\": true\n      }\n    },\n    \"values_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"selectBoxes\":
+        {\n          \"additionalProperties\": false,\n          \"properties\": {\n
+        \           \"A\": {\n              \"type\": \"boolean\"\n            },\n
+        \           \"B\": {\n              \"type\": \"boolean\"\n            },\n
+        \           \"C\": {\n              \"type\": \"boolean\"\n            }\n
+        \         },\n          \"required\": [\n            \"A\",\n            \"B\",\n
+        \           \"C\"\n          ],\n          \"title\": \"Select Boxes\",\n
+        \         \"type\": \"object\"\n        }\n      },\n      \"required\": [\n
+        \       \"selectBoxes\"\n      ],\n      \"type\": \"object\"\n    }\n  },\n
+        \ \"message\": \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1081'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 18 Aug 2025 12:43:12 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 201
+      message: CREATED
+version: 1

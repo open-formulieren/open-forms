@@ -1406,7 +1406,7 @@ class GenericJSONBackendTests(OFVCRMixin, TestCase):
             "additionalProperties": False,
             "properties": {
                 "auth_type": {
-                    "enum": ["bsn", "kvk", "pseudo", "employee_id", ""],
+                    "enum": ["bsn", "kvk", "pseudo", "employee_id", "national_id", ""],
                     "title": "Authentication type",
                     "type": "string",
                 },

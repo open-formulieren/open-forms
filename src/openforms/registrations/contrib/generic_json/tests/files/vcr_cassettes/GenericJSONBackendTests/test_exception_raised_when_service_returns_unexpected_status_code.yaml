@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: '{"values": {"firstName": "We Are", "auth_bsn": "123456789"}, "values_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {"auth_bsn": {"title": "BSN", "description": "Uniquely identifies
+      the authenticated person. This value follows the rules for Dutch social security
+      numbers.", "type": "string", "pattern": "^\\d{9}$|^$", "format": "nl-bsn"},
+      "firstName": {"title": "Firstname", "type": "string"}}, "required": ["auth_bsn",
+      "firstName"], "additionalProperties": false}, "metadata": {}, "metadata_schema":
+      {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+      "properties": {}, "required": [], "additionalProperties": false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MjA5OTAsImV4cCI6MTc1NTU2NDE5MCwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.KCBBluEaQ2tfbdJlZpXsSLo6VUbsFdmqUoeiP200ai0
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '698'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/fake_endpoint
+  response:
+    body:
+      string: '<!doctype html>
+
+        <html lang=en>
+
+        <title>404 Not Found</title>
+
+        <h1>Not Found</h1>
+
+        <p>The requested URL was not found on the server. If you entered the URL manually
+        please check your spelling and try again.</p>
+
+        '
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '207'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Mon, 18 Aug 2025 12:43:10 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 404
+      message: NOT FOUND
+version: 1

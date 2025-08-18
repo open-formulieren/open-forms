@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: '{"values": {"file": [{"file_name": "file1.txt", "content": "VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu"},
+      {"file_name": "file2.txt", "content": "Q29udGVudCBleGFtcGxlIGlzIHRoaXMu"}]},
+      "values_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {"file": {"title": "File", "type": "array",
+      "items": {"type": "object", "properties": {"file_name": {"type": "string"},
+      "content": {"type": "string", "format": "base64"}}, "required": ["file_name",
+      "content"], "additionalProperties": false}}}, "required": ["file"], "additionalProperties":
+      false}, "metadata": {}, "metadata_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object", "properties": {}, "required": [], "additionalProperties":
+      false}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE3NTU1MjA5OTEsImV4cCI6MTc1NTU2NDE5MSwiY2xpZW50X2lkIjoiIiwidXNlcl9pZCI6IiIsInVzZXJfcmVwcmVzZW50YXRpb24iOiIifQ.fx_IBHsvqZq-xNytwcZlzgkEHcOeNvZwC0eUl2RyMMI
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '758'
+      User-Agent:
+      - python-requests/2.32.4
+      content-type:
+      - application/json
+    method: POST
+    uri: http://localhost/json_plugin
+  response:
+    body:
+      string: "{\n  \"data\": {\n    \"metadata\": {},\n    \"metadata_schema\": {\n
+        \     \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"additionalProperties\":
+        false,\n      \"properties\": {},\n      \"required\": [],\n      \"type\":
+        \"object\"\n    },\n    \"values\": {\n      \"file\": [\n        {\n          \"content\":
+        \"VGhpcyBpcyBleGFtcGxlIGNvbnRlbnQu\",\n          \"file_name\": \"file1.txt\"\n
+        \       },\n        {\n          \"content\": \"Q29udGVudCBleGFtcGxlIGlzIHRoaXMu\",\n
+        \         \"file_name\": \"file2.txt\"\n        }\n      ]\n    },\n    \"values_schema\":
+        {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n
+        \     \"additionalProperties\": false,\n      \"properties\": {\n        \"file\":
+        {\n          \"items\": {\n            \"additionalProperties\": false,\n
+        \           \"properties\": {\n              \"content\": {\n                \"format\":
+        \"base64\",\n                \"type\": \"string\"\n              },\n              \"file_name\":
+        {\n                \"type\": \"string\"\n              }\n            },\n
+        \           \"required\": [\n              \"file_name\",\n              \"content\"\n
+        \           ],\n            \"type\": \"object\"\n          },\n          \"title\":
+        \"File\",\n          \"type\": \"array\"\n        }\n      },\n      \"required\":
+        [\n        \"file\"\n      ],\n      \"type\": \"object\"\n    }\n  },\n  \"message\":
+        \"Data received\"\n}\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '1287'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 18 Aug 2025 12:43:11 GMT
+      Server:
+      - Werkzeug/3.1.3 Python/3.12.11
+    status:
+      code: 201
+      message: CREATED
+version: 1
