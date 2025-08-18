@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Date:
+      - Mon, 18 Aug 2025 14:43:29 GMT
+      User-Agent:
+      - python-requests/2.32.4
+      X-GCS-ServerMetaInfo:
+      - ewogICAgInBsYXRmb3JtSWRlbnRpZmllciI6ICJMaW51eCA2LjE1LjYtYXJjaDEtMS8jMSBTTVAgUFJFRU1QVF9EWU5BTUlDIFRodSwgMTAgSnVsIDIwMjUgMTc6MTA6MTggKzAwMDAgUHl0aG9uLzMuMTIuOSAoQ1B5dGhvbjsgR0NDIDE0LjIuMSAyMDI1MDIwNykiLAogICAgInNka0lkZW50aWZpZXIiOiAiUHl0aG9uU2VydmVyU0RLL3Y1LjEuMCIsCiAgICAic2RrQ3JlYXRvciI6ICJPbmxpbmVQYXltZW50cyIsCiAgICAiaW50ZWdyYXRvciI6ICJvcGVuZm9ybXMiCn0=
+    method: GET
+    uri: https://payment.preprod.direct.worldline-solutions.com/v2/pspid/hostedcheckouts/foobar
+  response:
+    body:
+      string: '{"errorId":"5ff94446-1e21-4940-abff-b93609fa3714","errors":[{"errorCode":"20001101","category":"DIRECT_PLATFORM_ERROR","code":"9999","httpStatusCode":500,"id":"UNKNOWN_SERVER_ERROR","message":"UNKNOWN_SERVER_ERROR","retriable":false}]}'
+    headers:
+      content-length:
+      - '235'
+      content-security-policy:
+      - 'default-src ''self'' https://assets.test.cdn.v-psp.com https://external-assets.test.cdn.v-psp.com
+        https://devicefingerprint.pay.checkout.worldline-solutions.com/ https://www.paypal.com
+        https://www.paypalobjects.com https://www.sandbox.paypal.com https://pay.google.com
+        https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js
+        https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png https://us-online.stg.mpay.samsung.com/
+        https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; img-src ''self'' data: https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; style-src ''self'' ''unsafe-inline'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-eX8gDyqGaqU=''  ; style-src-attr ''unsafe-inline'';
+        style-src-elem ''unsafe-inline'' ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com; script-src ''self'' https://assets.test.cdn.v-psp.com
+        https://external-assets.test.cdn.v-psp.com https://devicefingerprint.pay.checkout.worldline-solutions.com/
+        https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com
+        https://pay.google.com https://www.google.com/pay https://img.mpay.samsung.com/gsmpi/sdk
+        https://img.mpay.samsung.com/gsmpi/sdk/samsungpay_web_sdk.js https://resource.stg.samsungpay.com/gsmpi/images/button_buy_black.png
+        https://us-online.stg.mpay.samsung.com/ https://esf-gateway-public-dev.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://esf-gateway-public.services.ogone.sb.eu.ginfra.net/samsungpay-simulator/js/SamsungPay.js
+        https://payment.preprod.direct.ingenico.com/samsungpay-simulator/js/SamsungPay.js
+        https://applepay.cdn-apple.com ''nonce-eX8gDyqGaqU=''; object-src ''none'';'
+      content-type:
+      - application/json; charset=utf-8
+      correlation-id:
+      - 5ff94446-1e21-4940-abff-b93609fa3714
+      - 5ff94446-1e21-4940-abff-b93609fa3714
+      date:
+      - Mon, 18 Aug 2025 14:43:29 GMT
+      strict-transport-security:
+      - max-age=16000000; includeSubDomains; preload;
+    status:
+      code: 404
+      message: Not Found
+version: 1
