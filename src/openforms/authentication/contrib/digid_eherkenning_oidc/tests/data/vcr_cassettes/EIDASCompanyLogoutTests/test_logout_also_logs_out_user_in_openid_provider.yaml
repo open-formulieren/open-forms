@@ -11,63 +11,6 @@ interactions:
       User-Agent:
       - python-requests/2.32.4
     method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
-  response:
-    body:
-      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
-        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
-        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
-        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
-        in to test</title>\n    <link rel=\"icon\" href=\"/resources/qy4ew/login/keycloak/img/favicon.ico\"
-        />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/lib/pficon/pficon.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/login/keycloak/css/login.css\"
-        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
-        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
-        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
-        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
-        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
-        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
-        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
-        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
-    headers:
-      Content-Language:
-      - en
-      Content-Security-Policy:
-      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
-      Content-Type:
-      - text/html;charset=utf-8
-      Referrer-Policy:
-      - no-referrer
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-Robots-Tag:
-      - none
-      X-XSS-Protection:
-      - 1; mode=block
-      content-length:
-      - '1573'
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
     uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid+eidas&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fauth%2Foidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
   response:
     body:
@@ -83,8 +26,8 @@ interactions:
         rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/login/keycloak/css/login.css\"
         rel=\"stylesheet\" />\n        <script type=\"module\">\n            import
         { checkCookiesAndSetTimer } from \"/resources/qy4ew/login/keycloak/js/authChecker.js\";\n\n
-        \           checkCookiesAndSetTimer(\n              \"63806fc9-3626-4fcd-b0f7-8ef042718573\",\n
-        \             \"wIbFYpuyOcc\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=wIbFYpuyOcc&skip_logout=true\"\n
+        \           checkCookiesAndSetTimer(\n              \"91e3abdd-e783-4a4e-8da7-66dbc2ef0569\",\n
+        \             \"ZDiVbtfRT-k\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=ZDiVbtfRT-k&skip_logout=true\"\n
         \           );\n        </script>\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
         \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
         \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
@@ -92,7 +35,7 @@ interactions:
         \       Sign in to your account\n\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
         \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-form\">\n
         \         <div id=\"kc-form-wrapper\">\n                <form id=\"kc-form-login\"
-        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=O87rEOAGbxKcGWX9BFOGsAjY1l3jEpvIxEEJXp2OBfY&amp;execution=bb2343b3-a402-42e1-8122-42f36d63bd96&amp;client_id=testid&amp;tab_id=wIbFYpuyOcc\"
+        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=1II2LZvzcxW-DVBMoG7qk7XZVYt1ajYohKlrG_wgZJI&amp;execution=bb2343b3-a402-42e1-8122-42f36d63bd96&amp;client_id=testid&amp;tab_id=ZDiVbtfRT-k\"
         method=\"post\">\n                        <div class=\"form-group\">\n                            <label
         for=\"username\" class=\"pf-c-form__label pf-c-form__label-text\">Username
         or email</label>\n\n                            <input tabindex=\"1\" id=\"username\"
@@ -132,9 +75,9 @@ interactions:
       Referrer-Policy:
       - no-referrer
       Set-Cookie:
-      - AUTH_SESSION_ID=63806fc9-3626-4fcd-b0f7-8ef042718573; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID=91e3abdd-e783-4a4e-8da7-66dbc2ef0569; Version=1; Path=/realms/test/;
         SameSite=None; Secure; HttpOnly
-      - AUTH_SESSION_ID_LEGACY=63806fc9-3626-4fcd-b0f7-8ef042718573; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID_LEGACY=91e3abdd-e783-4a4e-8da7-66dbc2ef0569; Version=1; Path=/realms/test/;
         HttpOnly
       - KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9hdXRoL29pZGMvY2FsbGJhY2svIiwiYWN0IjoiQVVUSEVOVElDQVRFIiwibm90ZXMiOnsic2NvcGUiOiJvcGVuaWQgZWlkYXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2F1dGgvb2lkYy9jYWxsYmFjay8iLCJzdGF0ZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmciLCJub25jZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmcifX0.UWp8bmOrUl2YihnRX_ABZsWmGPLTskaSjJOM7kKzu3Q;
         Version=1; Path=/realms/test/; HttpOnly
@@ -167,11 +110,11 @@ interactions:
       Content-Type:
       - application/x-www-form-urlencoded
       Cookie:
-      - AUTH_SESSION_ID_LEGACY=63806fc9-3626-4fcd-b0f7-8ef042718573; KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9hdXRoL29pZGMvY2FsbGJhY2svIiwiYWN0IjoiQVVUSEVOVElDQVRFIiwibm90ZXMiOnsic2NvcGUiOiJvcGVuaWQgZWlkYXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2F1dGgvb2lkYy9jYWxsYmFjay8iLCJzdGF0ZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmciLCJub25jZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmcifX0.UWp8bmOrUl2YihnRX_ABZsWmGPLTskaSjJOM7kKzu3Q
+      - AUTH_SESSION_ID_LEGACY=91e3abdd-e783-4a4e-8da7-66dbc2ef0569; KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9hdXRoL29pZGMvY2FsbGJhY2svIiwiYWN0IjoiQVVUSEVOVElDQVRFIiwibm90ZXMiOnsic2NvcGUiOiJvcGVuaWQgZWlkYXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2F1dGgvb2lkYy9jYWxsYmFjay8iLCJzdGF0ZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmciLCJub25jZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmcifX0.UWp8bmOrUl2YihnRX_ABZsWmGPLTskaSjJOM7kKzu3Q
       User-Agent:
       - python-requests/2.32.4
     method: POST
-    uri: http://localhost:8080/realms/test/login-actions/authenticate?session_code=O87rEOAGbxKcGWX9BFOGsAjY1l3jEpvIxEEJXp2OBfY&execution=bb2343b3-a402-42e1-8122-42f36d63bd96&client_id=testid&tab_id=wIbFYpuyOcc
+    uri: http://localhost:8080/realms/test/login-actions/authenticate?session_code=1II2LZvzcxW-DVBMoG7qk7XZVYt1ajYohKlrG_wgZJI&execution=bb2343b3-a402-42e1-8122-42f36d63bd96&client_id=testid&tab_id=ZDiVbtfRT-k
   response:
     body:
       string: ''
@@ -181,7 +124,7 @@ interactions:
       Content-Security-Policy:
       - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
       Location:
-      - http://testserver/auth/oidc/callback/?state=not-a-random-string&session_state=63806fc9-3626-4fcd-b0f7-8ef042718573&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=0c894e91-19e4-4d98-a359-8d4b2496042d.63806fc9-3626-4fcd-b0f7-8ef042718573.adf4ad83-4550-4619-9231-73bd8d700f45
+      - http://testserver/auth/oidc/callback/?state=not-a-random-string&session_state=91e3abdd-e783-4a4e-8da7-66dbc2ef0569&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=70905cfd-5e76-41c9-8fee-03b5e44a800c.91e3abdd-e783-4a4e-8da7-66dbc2ef0569.adf4ad83-4550-4619-9231-73bd8d700f45
       Referrer-Policy:
       - no-referrer
       Set-Cookie:
@@ -191,15 +134,15 @@ interactions:
         Path=/realms/test/; HttpOnly
       - KC_AUTH_STATE=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
         Path=/realms/test/
-      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiNTA2NzBiZjUtMmExYS00ODg0LTlmMGQtNzU5ZGI2M2U4NzRlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.I3IaVsbWH-xseHdwLxveehcUr3mVeRn0XET8oSZgNHA;
+      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiOGYwZGEwZTktNTE2Yy00ZmMwLTg0YmQtYzRiYjk5NzNjZjI0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.pBO0GHqNdwQT1dbirCoYFxtHeEF3xTJ0U_Rndg0PJjM;
         Version=1; Path=/realms/test/; SameSite=None; Secure; HttpOnly
-      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiNTA2NzBiZjUtMmExYS00ODg0LTlmMGQtNzU5ZGI2M2U4NzRlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.I3IaVsbWH-xseHdwLxveehcUr3mVeRn0XET8oSZgNHA;
+      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiOGYwZGEwZTktNTE2Yy00ZmMwLTg0YmQtYzRiYjk5NzNjZjI0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.pBO0GHqNdwQT1dbirCoYFxtHeEF3xTJ0U_Rndg0PJjM;
         Version=1; Path=/realms/test/; HttpOnly
-      - KEYCLOAK_SESSION=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573;
-        Version=1; Expires=Fri, 15-Aug-2025 19:19:18 GMT; Max-Age=36000; Path=/realms/test/;
+      - KEYCLOAK_SESSION=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569;
+        Version=1; Expires=Tue, 19-Aug-2025 18:35:00 GMT; Max-Age=36000; Path=/realms/test/;
         SameSite=None; Secure
-      - KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573;
-        Version=1; Expires=Fri, 15-Aug-2025 19:19:18 GMT; Max-Age=36000; Path=/realms/test/
+      - KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569;
+        Version=1; Expires=Tue, 19-Aug-2025 18:35:00 GMT; Max-Age=36000; Path=/realms/test/
       - KEYCLOAK_REMEMBER_ME=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
         00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
       Strict-Transport-Security:
@@ -226,66 +169,9 @@ interactions:
       - gzip, deflate, br
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
-  response:
-    body:
-      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
-        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
-        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
-        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
-        in to test</title>\n    <link rel=\"icon\" href=\"/resources/qy4ew/login/keycloak/img/favicon.ico\"
-        />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/lib/pficon/pficon.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/login/keycloak/css/login.css\"
-        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
-        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
-        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
-        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
-        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
-        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
-        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
-        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
-    headers:
-      Content-Language:
-      - en
-      Content-Security-Policy:
-      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
-      Content-Type:
-      - text/html;charset=utf-8
-      Referrer-Policy:
-      - no-referrer
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-Robots-Tag:
-      - none
-      X-XSS-Protection:
-      - 1; mode=block
-      content-length:
-      - '1573'
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
       Cookie:
-      - AUTH_SESSION_ID_LEGACY=63806fc9-3626-4fcd-b0f7-8ef042718573; KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiNTA2NzBiZjUtMmExYS00ODg0LTlmMGQtNzU5ZGI2M2U4NzRlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.I3IaVsbWH-xseHdwLxveehcUr3mVeRn0XET8oSZgNHA;
-        KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573
+      - AUTH_SESSION_ID_LEGACY=91e3abdd-e783-4a4e-8da7-66dbc2ef0569; KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiOGYwZGEwZTktNTE2Yy00ZmMwLTg0YmQtYzRiYjk5NzNjZjI0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.pBO0GHqNdwQT1dbirCoYFxtHeEF3xTJ0U_Rndg0PJjM;
+        KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569
       User-Agent:
       - python-requests/2.32.4
     method: GET
@@ -297,7 +183,7 @@ interactions:
       Cache-Control:
       - no-store, must-revalidate, max-age=0
       Location:
-      - http://testserver/auth/oidc/callback/?state=not-a-random-string&session_state=63806fc9-3626-4fcd-b0f7-8ef042718573&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=ed64950e-71b4-4d6a-8350-fa5109772ec8.63806fc9-3626-4fcd-b0f7-8ef042718573.adf4ad83-4550-4619-9231-73bd8d700f45
+      - http://testserver/auth/oidc/callback/?state=not-a-random-string&session_state=91e3abdd-e783-4a4e-8da7-66dbc2ef0569&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=d8a12ad2-d9ad-4d27-a084-cf7b7318f660.91e3abdd-e783-4a4e-8da7-66dbc2ef0569.adf4ad83-4550-4619-9231-73bd8d700f45
       Referrer-Policy:
       - no-referrer
       Set-Cookie:
@@ -309,15 +195,15 @@ interactions:
         Path=/realms/test/; HttpOnly
       - KC_AUTH_STATE=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
         Path=/realms/test/
-      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiYjg1OWVkNGItODA5YS00ZDVkLThhYTMtMjY0ZWZhMDRmZDMxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.s7lxHOsXGLmGzs84oA_Rt4AGQrx1QJ5La9b1_uLP_CI;
+      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiZDg5ZWM3OTUtYmRhZC00NDE3LWExNDktYzUzMjIwNGQyZDc2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.z_ub389eSdh4KhJwVah1tbJbPFQC7vzsb6TNPr01iVg;
         Version=1; Path=/realms/test/; SameSite=None; Secure; HttpOnly
-      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiYjg1OWVkNGItODA5YS00ZDVkLThhYTMtMjY0ZWZhMDRmZDMxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.s7lxHOsXGLmGzs84oA_Rt4AGQrx1QJ5La9b1_uLP_CI;
+      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiZDg5ZWM3OTUtYmRhZC00NDE3LWExNDktYzUzMjIwNGQyZDc2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.z_ub389eSdh4KhJwVah1tbJbPFQC7vzsb6TNPr01iVg;
         Version=1; Path=/realms/test/; HttpOnly
-      - KEYCLOAK_SESSION=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573;
-        Version=1; Expires=Fri, 15-Aug-2025 19:19:18 GMT; Max-Age=36000; Path=/realms/test/;
+      - KEYCLOAK_SESSION=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569;
+        Version=1; Expires=Tue, 19-Aug-2025 18:35:00 GMT; Max-Age=36000; Path=/realms/test/;
         SameSite=None; Secure
-      - KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573;
-        Version=1; Expires=Fri, 15-Aug-2025 19:19:18 GMT; Max-Age=36000; Path=/realms/test/
+      - KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569;
+        Version=1; Expires=Tue, 19-Aug-2025 18:35:00 GMT; Max-Age=36000; Path=/realms/test/
       - KEYCLOAK_REMEMBER_ME=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
         00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
       Strict-Transport-Security:
@@ -332,7 +218,7 @@ interactions:
       code: 302
       message: Found
 - request:
-    body: client_id=testid&client_secret=7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I&grant_type=authorization_code&code=ed64950e-71b4-4d6a-8350-fa5109772ec8.63806fc9-3626-4fcd-b0f7-8ef042718573.adf4ad83-4550-4619-9231-73bd8d700f45&redirect_uri=http%3A%2F%2Ftestserver%2Fauth%2Foidc%2Fcallback%2F
+    body: client_id=testid&client_secret=7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I&grant_type=authorization_code&code=d8a12ad2-d9ad-4d27-a084-cf7b7318f660.91e3abdd-e783-4a4e-8da7-66dbc2ef0569.adf4ad83-4550-4619-9231-73bd8d700f45&redirect_uri=http%3A%2F%2Ftestserver%2Fauth%2Foidc%2Fcallback%2F
     headers:
       Accept:
       - '*/*'
@@ -350,7 +236,7 @@ interactions:
     uri: http://localhost:8080/realms/test/protocol/openid-connect/token
   response:
     body:
-      string: '{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTUyNDk4NTgsImlhdCI6MTc1NTI0OTU1OCwiYXV0aF90aW1lIjoxNzU1MjQ5NTU4LCJqdGkiOiIzMGI2MTNhZS03ZjY0LTRlZTAtODg1OC0xNmQ0MTAwMzFkMGEiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdGlkIiwibm9uY2UiOiJub3QtYS1yYW5kb20tc3RyaW5nIiwic2Vzc2lvbl9zdGF0ZSI6IjYzODA2ZmM5LTM2MjYtNGZjZC1iMGY3LThlZjA0MjcxODU3MyIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovLzEyNy4wLjAuMTo4MDAwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSBlaWRhcyBlbXBsb3llZUlkIGt2ayBncm91cHMgYnNuIiwic2lkIjoiNjM4MDZmYzktMzYyNi00ZmNkLWIwZjctOGVmMDQyNzE4NTczIiwic2VydmljZV91dWlkIjoiZTkyMmI0YTItNDMxMy00ZTQ3LWI1OWQtN2FlYTU5NTgyMmI1IiwicGVyc29uX2lkZW50aWZpZXIiOiIxMjM0NTY3ODkiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImJpcnRoZGF0ZSI6IjE5NDYtMDEtMjUiLCJjb21wYW55X25hbWUiOiJleGFtcGxlIGNvbXBhbnkgQlYiLCJzZXJ2aWNlX2lkIjoidXJuOmV0b2VnYW5nOkRWOjAwMDAwMDAzMjQ0NDQwMDEwMDAwOnNlcnZpY2VzOjkxMDIiLCJncm91cHMiOlsiZGVmYXVsdC1yb2xlcy10ZXN0Iiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdLCJwZXJzb25faWRlbnRpZmllcl90eXBlIjoiYnNuIiwiY29tcGFueV9pZGVudGlmaWVyIjoiTkwvTlRSLzEyMzQ1Njc4OSIsInByZWZlcnJlZF91c2VybmFtZSI6ImVpZGFzLWNvbXBhbnkiLCJmaXJzdF9uYW1lIjoiSm9obiIsImZhbWlseV9uYW1lIjoiRG9lIn0.SfFvG8bBy-BfLrOULwSm3FBo3as_t2UO5UdwoD0yTSGUqEgJ_FitGsDNFyYE6tvLx--J1CdZmvnMHPtuCKtBcEqjKv3IrnJRscdxD7NKsoBSoaDmwvTqdLtejaDTzlKp_N-5eXkiqbS_0gtawJUJLH36E86RFKrfH_HoNFcDvo46DRAZMDRMpw770tLTD9B8lhZjn8wZ-T5B7Y3LYYf6-w8G91dKllMJ6UDBdy18-iftqBcYWVclufa4ScGlzeR6Mzro7_8xaEKcTgECZ4XFMqUPBkq-ufG7g_ornz5Cw4N1bwKZmP41sArjvoCgSpY8Ry3FPnL7ttMmYkE51Xvx8g","expires_in":300,"refresh_expires_in":1800,"refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyNTEzNTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiZjMyYzg1N2YtZjM0MS00ZTRmLThjZmItMjgxZGFkNTI0MDg1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIGVpZGFzIGVtcGxveWVlSWQga3ZrIGdyb3VwcyBic24iLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMifQ.lSYHubKqqqD0787pmzTnE-mLa3mjQs6y0slhsooZAhk","token_type":"Bearer","id_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTUyNDk4NTgsImlhdCI6MTc1NTI0OTU1OCwiYXV0aF90aW1lIjoxNzU1MjQ5NTU4LCJqdGkiOiIwNzk2MjM4Mi0wZjhiLTRmOTEtOGY4MS1jNDI3NjdkOTljZWUiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiIxNDRlNDcyMS1mMDY1LTRkYjYtYTE0OC1jNTVkMTY3OGFmM2MiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJhdF9oYXNoIjoiQzlJdmUtSWdGMElHbXIxU3cxdFNHQSIsImFjciI6IjAiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzZXJ2aWNlX3V1aWQiOiJlOTIyYjRhMi00MzEzLTRlNDctYjU5ZC03YWVhNTk1ODIyYjUiLCJwZXJzb25faWRlbnRpZmllciI6IjEyMzQ1Njc4OSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYmlydGhkYXRlIjoiMTk0Ni0wMS0yNSIsImNvbXBhbnlfbmFtZSI6ImV4YW1wbGUgY29tcGFueSBCViIsInNlcnZpY2VfaWQiOiJ1cm46ZXRvZWdhbmc6RFY6MDAwMDAwMDMyNDQ0NDAwMTAwMDA6c2VydmljZXM6OTEwMiIsImdyb3VwcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl0sInBlcnNvbl9pZGVudGlmaWVyX3R5cGUiOiJic24iLCJjb21wYW55X2lkZW50aWZpZXIiOiJOTC9OVFIvMTIzNDU2Nzg5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZWlkYXMtY29tcGFueSIsImZpcnN0X25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UifQ.NAih9zkQ4l-li5Zr_0ObKRSodgGLhHF3AWdzNBMZDQXoTtEl6ICqqnsQnd6gVttDJwmDkz6ZFP4i4R20ASXDGMEPQOY7Ee4UEHj9qnUk4hH5bRbA0a_T20bjpkE3Ft1lguig0qtdwOdhC0SetcuZ57TgwzbQuX1MCdoWrFfIGgImtitI1nXzoQznW4Z7Cr27lKM3QE_6zatwKJ7dkVpEdeGXfyKnHEUpFoy9S056_5cR0-_dmU4DJ7utAQ107XNSrRoz8O59aYhG_zBKZIb7HEyhbzTszNhKgbyY46G5zPdw5CAe9YGRZwX2udvCZ9AJ2SDonSYvCbTTQYW-c3vyQA","not-before-policy":0,"session_state":"63806fc9-3626-4fcd-b0f7-8ef042718573","scope":"openid
+      string: '{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTU1OTI4MDAsImlhdCI6MTc1NTU5MjUwMCwiYXV0aF90aW1lIjoxNzU1NTkyNTAwLCJqdGkiOiJhYTNmMTc2Ny0yOGE5LTQyZTAtOTU4YS1mOGRlNGI1ZGJjMDEiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdGlkIiwibm9uY2UiOiJub3QtYS1yYW5kb20tc3RyaW5nIiwic2Vzc2lvbl9zdGF0ZSI6IjkxZTNhYmRkLWU3ODMtNGE0ZS04ZGE3LTY2ZGJjMmVmMDU2OSIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovLzEyNy4wLjAuMTo4MDAwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSBlaWRhcyBlbXBsb3llZUlkIGt2ayBncm91cHMgYnNuIiwic2lkIjoiOTFlM2FiZGQtZTc4My00YTRlLThkYTctNjZkYmMyZWYwNTY5Iiwic2VydmljZV91dWlkIjoiZTkyMmI0YTItNDMxMy00ZTQ3LWI1OWQtN2FlYTU5NTgyMmI1IiwicGVyc29uX2lkZW50aWZpZXIiOiIxMjM0NTY3ODkiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImJpcnRoZGF0ZSI6IjE5NDYtMDEtMjUiLCJjb21wYW55X25hbWUiOiJleGFtcGxlIGNvbXBhbnkgQlYiLCJzZXJ2aWNlX2lkIjoidXJuOmV0b2VnYW5nOkRWOjAwMDAwMDAzMjQ0NDQwMDEwMDAwOnNlcnZpY2VzOjkxMDIiLCJncm91cHMiOlsiZGVmYXVsdC1yb2xlcy10ZXN0Iiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdLCJwZXJzb25faWRlbnRpZmllcl90eXBlIjoiYnNuIiwiY29tcGFueV9pZGVudGlmaWVyIjoiTkwvTlRSLzEyMzQ1Njc4OSIsInByZWZlcnJlZF91c2VybmFtZSI6ImVpZGFzLWNvbXBhbnkiLCJmaXJzdF9uYW1lIjoiSm9obiIsImZhbWlseV9uYW1lIjoiRG9lIn0.GfL9RHptk8EH0WIW4oCWnxBHXUxsT6dedIZvOSKuvh3_zgyg5dprR0fmrObtVNLPUl3z66RQqHqMrNfV3SlREYVHrj-OOfFsjGgDQlUn_v9qSO__yYYKWfCq2NVv3AD3hDAfI82_AMmrx-1N4XJyA6ifS71XV4Ikbj7-JuTLwUXzfmRkozubRCTLGMyv6-Iq_PL5__qlU1YGZn0XzCOBk9IE_hvTpU0A2VvSgolNLOvp4RPH4mInD9sY4Q4n1L1DjlLN8FBRMqZ3wlPrVj25uCBAWY2wFvMxR80vTtXzhhErjOIeF89uGxT3y5_RZzF6qXOkTBVjgFPRjTU5ej4FBw","expires_in":300,"refresh_expires_in":1800,"refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU1OTQzMDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiNWFkMzM3NzAtMTA4ZC00MWJiLWJhNTUtZWRlYzJiNjQ5MTJmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIGVpZGFzIGVtcGxveWVlSWQga3ZrIGdyb3VwcyBic24iLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkifQ.9P1EHbHXLFQg6qZ-JI8ziBtxZZ_QpUtHOnsePY4VOEA","token_type":"Bearer","id_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTU1OTI4MDAsImlhdCI6MTc1NTU5MjUwMCwiYXV0aF90aW1lIjoxNzU1NTkyNTAwLCJqdGkiOiJjNzA5OWViNC1hNGUxLTQyYjItOWZlMi05M2FkOGEyZGEyNzMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiIxNDRlNDcyMS1mMDY1LTRkYjYtYTE0OC1jNTVkMTY3OGFmM2MiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJhdF9oYXNoIjoiZ1phZzlMOXluU093SVNadHoxWENDdyIsImFjciI6IjAiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzZXJ2aWNlX3V1aWQiOiJlOTIyYjRhMi00MzEzLTRlNDctYjU5ZC03YWVhNTk1ODIyYjUiLCJwZXJzb25faWRlbnRpZmllciI6IjEyMzQ1Njc4OSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYmlydGhkYXRlIjoiMTk0Ni0wMS0yNSIsImNvbXBhbnlfbmFtZSI6ImV4YW1wbGUgY29tcGFueSBCViIsInNlcnZpY2VfaWQiOiJ1cm46ZXRvZWdhbmc6RFY6MDAwMDAwMDMyNDQ0NDAwMTAwMDA6c2VydmljZXM6OTEwMiIsImdyb3VwcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl0sInBlcnNvbl9pZGVudGlmaWVyX3R5cGUiOiJic24iLCJjb21wYW55X2lkZW50aWZpZXIiOiJOTC9OVFIvMTIzNDU2Nzg5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZWlkYXMtY29tcGFueSIsImZpcnN0X25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UifQ.oTt01guLJuqa0L7kUXbJIaKmpykQMTJ_KczcfmnT0yRsKt61ez-GCU30baa-_ed-4S14PCv1c529C9Gdz0f1iy5FMZ0cO1ar1DYf5d9ckYF_lG_BrOG7-wt1zyzucqDePRDt6fIZYV2_-er98eK7i33_GwYpJnmvKaKvIC3pjW9hNp9UhNzfWjuQLktCWV-n2x859gMeP_jtB64iI4ucPtYlQrbKQEJrGHqTj8oEDNdWSwGO3-p4SI9DXGDGA0FSHsv6xFV22py9zlGiEr0CWfX_pJw-CoxQ3GGqh_eUY3YkXrE9DcF4W6HYmKZ2c24d_ln-AFszH8Ng1S6UrF2jkg","not-before-policy":0,"session_state":"91e3abdd-e783-4a4e-8da7-66dbc2ef0569","scope":"openid
         email profile eidas employeeId kvk groups bsn"}'
     headers:
       Cache-Control:
@@ -411,79 +297,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Authorization:
-      - Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTUyNDk4NTgsImlhdCI6MTc1NTI0OTU1OCwiYXV0aF90aW1lIjoxNzU1MjQ5NTU4LCJqdGkiOiIzMGI2MTNhZS03ZjY0LTRlZTAtODg1OC0xNmQ0MTAwMzFkMGEiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdGlkIiwibm9uY2UiOiJub3QtYS1yYW5kb20tc3RyaW5nIiwic2Vzc2lvbl9zdGF0ZSI6IjYzODA2ZmM5LTM2MjYtNGZjZC1iMGY3LThlZjA0MjcxODU3MyIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovLzEyNy4wLjAuMTo4MDAwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSBlaWRhcyBlbXBsb3llZUlkIGt2ayBncm91cHMgYnNuIiwic2lkIjoiNjM4MDZmYzktMzYyNi00ZmNkLWIwZjctOGVmMDQyNzE4NTczIiwic2VydmljZV91dWlkIjoiZTkyMmI0YTItNDMxMy00ZTQ3LWI1OWQtN2FlYTU5NTgyMmI1IiwicGVyc29uX2lkZW50aWZpZXIiOiIxMjM0NTY3ODkiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImJpcnRoZGF0ZSI6IjE5NDYtMDEtMjUiLCJjb21wYW55X25hbWUiOiJleGFtcGxlIGNvbXBhbnkgQlYiLCJzZXJ2aWNlX2lkIjoidXJuOmV0b2VnYW5nOkRWOjAwMDAwMDAzMjQ0NDQwMDEwMDAwOnNlcnZpY2VzOjkxMDIiLCJncm91cHMiOlsiZGVmYXVsdC1yb2xlcy10ZXN0Iiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdLCJwZXJzb25faWRlbnRpZmllcl90eXBlIjoiYnNuIiwiY29tcGFueV9pZGVudGlmaWVyIjoiTkwvTlRSLzEyMzQ1Njc4OSIsInByZWZlcnJlZF91c2VybmFtZSI6ImVpZGFzLWNvbXBhbnkiLCJmaXJzdF9uYW1lIjoiSm9obiIsImZhbWlseV9uYW1lIjoiRG9lIn0.SfFvG8bBy-BfLrOULwSm3FBo3as_t2UO5UdwoD0yTSGUqEgJ_FitGsDNFyYE6tvLx--J1CdZmvnMHPtuCKtBcEqjKv3IrnJRscdxD7NKsoBSoaDmwvTqdLtejaDTzlKp_N-5eXkiqbS_0gtawJUJLH36E86RFKrfH_HoNFcDvo46DRAZMDRMpw770tLTD9B8lhZjn8wZ-T5B7Y3LYYf6-w8G91dKllMJ6UDBdy18-iftqBcYWVclufa4ScGlzeR6Mzro7_8xaEKcTgECZ4XFMqUPBkq-ufG7g_ornz5Cw4N1bwKZmP41sArjvoCgSpY8Ry3FPnL7ttMmYkE51Xvx8g
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/userinfo
-  response:
-    body:
-      string: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJzdWIiOiIxNDRlNDcyMS1mMDY1LTRkYjYtYTE0OC1jNTVkMTY3OGFmM2MiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImJpcnRoZGF0ZSI6IjE5NDYtMDEtMjUiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJncm91cHMiOlsiZGVmYXVsdC1yb2xlcy10ZXN0Iiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdLCJwZXJzb25faWRlbnRpZmllcl90eXBlIjoiYnNuIiwiY29tcGFueV9pZGVudGlmaWVyIjoiTkwvTlRSLzEyMzQ1Njc4OSIsInByZWZlcnJlZF91c2VybmFtZSI6ImVpZGFzLWNvbXBhbnkiLCJhdWQiOiJ0ZXN0aWQiLCJzZXJ2aWNlX3V1aWQiOiJlOTIyYjRhMi00MzEzLTRlNDctYjU5ZC03YWVhNTk1ODIyYjUiLCJwZXJzb25faWRlbnRpZmllciI6IjEyMzQ1Njc4OSIsImNvbXBhbnlfbmFtZSI6ImV4YW1wbGUgY29tcGFueSBCViIsInNlcnZpY2VfaWQiOiJ1cm46ZXRvZWdhbmc6RFY6MDAwMDAwMDMyNDQ0NDAwMTAwMDA6c2VydmljZXM6OTEwMiIsImZpcnN0X25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UifQ.Yd6vtJCqYHOfScypDeT_R9T4uHn-5RphR3qKeBxROA4na6tNNnW1SImFOKQtsq8o_ubaEuWB5ho_i_RGfufIRc-siv7FM0zlqF6Lo57Vvieufd3CqpTlWigUg3J6LxCkV4Y1qcIu2bhXbFqrgkIwPvVvQ_ZV_9rhe4pkx2fHUruFcItsBVCnu4V1XAizJXhov5GjAJy3cJR6tXU1Lg3kgPxGGIOz9taAHIG3IFjkL0ViL40MtQic5h800bfXcSiF-grR7Tght_3TpUpE7H7aQKgKEfudjDAw_MkBQrbhJ-bCw9xWLCEFEYlP0TBaXP1UpxhJI-LotOD6wvmK-eb0iA
-    headers:
-      Cache-Control:
-      - no-cache
-      Content-Type:
-      - application/jwt
-      Referrer-Policy:
-      - no-referrer
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Content-Type-Options:
-      - nosniff
-      X-XSS-Protection:
-      - 1; mode=block
-      content-length:
-      - '1197'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/certs
-  response:
-    body:
-      string: '{"keys":[{"kid":"4UNQAcvUcv-DFUOx_4O1gt13OdJSotqEKPZurs2vQW8","kty":"RSA","alg":"RS256","use":"sig","n":"2DOZ0qHie73SuFVR7civrl6r82YUiAghfzaMowjCg0o06AF--2lIS7vNV_PbsVVznPAAMqVrNG-8CcevEzvVZMQD9nH4DI7xlOxK0lrYu8rmMeSfOvXVbBVsWBZe0jnGNukZqjwmRE5__ttJdxPfIBT5-2L6mguQbDfhSUEEdIW7y7UfOXvqLqEcBtoIEB-ORKDTUIQwGZM5mSCy-cY3cHvvZfZVgaUUy5NvujPRXTMje4n_hG0KfEV-40G9qC2_Xvx4EooJzBZ6FSThiWhCpwhIvzcQqB6M9lHW7nU6wADhYPNCa2OKWvphwZ_zbrF4B9dmS6Zli5rBvbox9Hh45w","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMLTANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANgzmdKh4nu90rhVUe3Ir65eq/NmFIgIIX82jKMIwoNKNOgBfvtpSEu7zVfz27FVc5zwADKlazRvvAnHrxM71WTEA/Zx+AyO8ZTsStJa2LvK5jHknzr11WwVbFgWXtI5xjbpGao8JkROf/7bSXcT3yAU+fti+poLkGw34UlBBHSFu8u1Hzl76i6hHAbaCBAfjkSg01CEMBmTOZkgsvnGN3B772X2VYGlFMuTb7oz0V0zI3uJ/4RtCnxFfuNBvagtv178eBKKCcwWehUk4YloQqcISL83EKgejPZR1u51OsAA4WDzQmtjilr6YcGf826xeAfXZkumZYuawb26MfR4eOcCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAsnQG/Yi2g1XTCJn74hWv9MjxVAaZb4gBAc2AWm5VgAjhFEM9h6x6m1mQkq7JM4rIdAj8jw55Ok9CBVBIqq4G4cME3eUvVytkj2lC9zcRoAivjjZF2HPg7zNPa2TTR50asmHPRokppV6gewO/C+o5as+4P2zqDXBh61aRd/9kdQfkg14LBbH5/dYccAuvUqlTYC4IEPCvVmBNC1xsMjf0vohvoSjm9vL2bfqG/RJH0ScdCjOd5d2zju4/e2oVdluWm+vzKBQplc7tVMuKpn6LcLmVHiGNAl+EBIZH+WVLlTx0D1+kbHZsfLYG53lQg2LsvurRbWyF/a5fVM/oLTn5ag=="],"x5t":"H5xfs1pRtvX0HyVTskx7eTXx88U","x5t#S256":"XurVtKAIEyc4w9HCGOhnjoRHnYu4d9HCn_5YHmkScJg"},{"kid":"TV3Tl5jIY1nrJLSb53UKEubLR5gYiq9slq1SsDDg1HU","kty":"RSA","alg":"RSA-OAEP","use":"enc","n":"pNvU3ecpVHbJT4bCOEpw6cnV1yi65tB3I0bRF2ilLVOY944QRAGnjBBECPIzNbgqavghYp1j75F2nq6_ny1CYfoaxTV2iDpRUw8_f7sliYbl8FrLLat0S25ItlZrg5TEJHObvOqlG2_nXoeH36MRWwNhms2uCqfhn5VgtenIzpQIBolnM7zzGp21NvdJ1C_ZAUzkXC-l3oQ-BXTtpEVM4h2KpYh4gfZJWCbYij5d1e1YApKD6V61_Cs3Oa2OY7CAUyq5kgAWJZFDB6CpzIr226u3bV7F9RbrQu3Ybc_Lv33EwykscLznKWZY2Mbs3Iz_rFNv3sVX_vHpH4DHWlKu7Q","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMlzANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKTb1N3nKVR2yU+GwjhKcOnJ1dcouubQdyNG0RdopS1TmPeOEEQBp4wQRAjyMzW4Kmr4IWKdY++Rdp6uv58tQmH6GsU1dog6UVMPP3+7JYmG5fBayy2rdEtuSLZWa4OUxCRzm7zqpRtv516Hh9+jEVsDYZrNrgqn4Z+VYLXpyM6UCAaJZzO88xqdtTb3SdQv2QFM5Fwvpd6EPgV07aRFTOIdiqWIeIH2SVgm2Io+XdXtWAKSg+letfwrNzmtjmOwgFMquZIAFiWRQwegqcyK9turt21exfUW60Lt2G3Py799xMMpLHC85ylmWNjG7NyM/6xTb97FV/7x6R+Ax1pSru0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAQGJHeTYSMvp0yndbIn7DLohO9lom5nRrx/bLyb7TiRfogyJEF6rQZ66CAkQFk5eMF878fsHTuMVjtmXVBnhojhVmK91HwjsNQu/8xR6QMXNKJQMvHR245vwUGxlWRw/36ObM1D7QjCd/q+FonpBEY4m5Y6Uz1U0HR2Cbh0E2afVlPLeV+F0LKrlyVMdIaWBGWftCGIKDAHaG/PD66zbAKtxerv2fBIDq100WHPhd57BZxX+2aGJp1IaRDgkxV0E/CjEy3+Knd8xbAgUSW0Tl6OTC75exIvlbzeluEBe0wlapAb7WvBKYsipSW8G8Ey7tjoolDT4AU82EaKUPstiMnA=="],"x5t":"AlfHDI0FOPQpt3RBAILt0dtW1yw","x5t#S256":"a7bhm8-JsnfY7bL_m8Yl72hgmp5516VZlFcVloKzk08"}]}'
-    headers:
-      Cache-Control:
-      - no-cache
-      Content-Type:
-      - application/json;charset=UTF-8
-      Referrer-Policy:
-      - no-referrer
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - 1; mode=block
-      content-length:
-      - '2909'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: id_token_hint=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTUyNDk4NTgsImlhdCI6MTc1NTI0OTU1OCwiYXV0aF90aW1lIjoxNzU1MjQ5NTU4LCJqdGkiOiIwNzk2MjM4Mi0wZjhiLTRmOTEtOGY4MS1jNDI3NjdkOTljZWUiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiIxNDRlNDcyMS1mMDY1LTRkYjYtYTE0OC1jNTVkMTY3OGFmM2MiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJhdF9oYXNoIjoiQzlJdmUtSWdGMElHbXIxU3cxdFNHQSIsImFjciI6IjAiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzZXJ2aWNlX3V1aWQiOiJlOTIyYjRhMi00MzEzLTRlNDctYjU5ZC03YWVhNTk1ODIyYjUiLCJwZXJzb25faWRlbnRpZmllciI6IjEyMzQ1Njc4OSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYmlydGhkYXRlIjoiMTk0Ni0wMS0yNSIsImNvbXBhbnlfbmFtZSI6ImV4YW1wbGUgY29tcGFueSBCViIsInNlcnZpY2VfaWQiOiJ1cm46ZXRvZWdhbmc6RFY6MDAwMDAwMDMyNDQ0NDAwMTAwMDA6c2VydmljZXM6OTEwMiIsImdyb3VwcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl0sInBlcnNvbl9pZGVudGlmaWVyX3R5cGUiOiJic24iLCJjb21wYW55X2lkZW50aWZpZXIiOiJOTC9OVFIvMTIzNDU2Nzg5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZWlkYXMtY29tcGFueSIsImZpcnN0X25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UifQ.NAih9zkQ4l-li5Zr_0ObKRSodgGLhHF3AWdzNBMZDQXoTtEl6ICqqnsQnd6gVttDJwmDkz6ZFP4i4R20ASXDGMEPQOY7Ee4UEHj9qnUk4hH5bRbA0a_T20bjpkE3Ft1lguig0qtdwOdhC0SetcuZ57TgwzbQuX1MCdoWrFfIGgImtitI1nXzoQznW4Z7Cr27lKM3QE_6zatwKJ7dkVpEdeGXfyKnHEUpFoy9S056_5cR0-_dmU4DJ7utAQ107XNSrRoz8O59aYhG_zBKZIb7HEyhbzTszNhKgbyY46G5zPdw5CAe9YGRZwX2udvCZ9AJ2SDonSYvCbTTQYW-c3vyQA
+    body: id_token_hint=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3NTU1OTI4MDAsImlhdCI6MTc1NTU5MjUwMCwiYXV0aF90aW1lIjoxNzU1NTkyNTAwLCJqdGkiOiJjNzA5OWViNC1hNGUxLTQyYjItOWZlMi05M2FkOGEyZGEyNzMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiIxNDRlNDcyMS1mMDY1LTRkYjYtYTE0OC1jNTVkMTY3OGFmM2MiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJhdF9oYXNoIjoiZ1phZzlMOXluU093SVNadHoxWENDdyIsImFjciI6IjAiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzZXJ2aWNlX3V1aWQiOiJlOTIyYjRhMi00MzEzLTRlNDctYjU5ZC03YWVhNTk1ODIyYjUiLCJwZXJzb25faWRlbnRpZmllciI6IjEyMzQ1Njc4OSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYmlydGhkYXRlIjoiMTk0Ni0wMS0yNSIsImNvbXBhbnlfbmFtZSI6ImV4YW1wbGUgY29tcGFueSBCViIsInNlcnZpY2VfaWQiOiJ1cm46ZXRvZWdhbmc6RFY6MDAwMDAwMDMyNDQ0NDAwMTAwMDA6c2VydmljZXM6OTEwMiIsImdyb3VwcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl0sInBlcnNvbl9pZGVudGlmaWVyX3R5cGUiOiJic24iLCJjb21wYW55X2lkZW50aWZpZXIiOiJOTC9OVFIvMTIzNDU2Nzg5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZWlkYXMtY29tcGFueSIsImZpcnN0X25hbWUiOiJKb2huIiwiZmFtaWx5X25hbWUiOiJEb2UifQ.oTt01guLJuqa0L7kUXbJIaKmpykQMTJ_KczcfmnT0yRsKt61ez-GCU30baa-_ed-4S14PCv1c529C9Gdz0f1iy5FMZ0cO1ar1DYf5d9ckYF_lG_BrOG7-wt1zyzucqDePRDt6fIZYV2_-er98eK7i33_GwYpJnmvKaKvIC3pjW9hNp9UhNzfWjuQLktCWV-n2x859gMeP_jtB64iI4ucPtYlQrbKQEJrGHqTj8oEDNdWSwGO3-p4SI9DXGDGA0FSHsv6xFV22py9zlGiEr0CWfX_pJw-CoxQ3GGqh_eUY3YkXrE9DcF4W6HYmKZ2c24d_ln-AFszH8Ng1S6UrF2jkg
     headers:
       Accept:
       - '*/*'
@@ -531,9 +345,9 @@ interactions:
       Referrer-Policy:
       - no-referrer
       Set-Cookie:
-      - AUTH_SESSION_ID=02a63a67-905c-4170-89d4-4508dd29ba9f; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID=11bf3cf9-ff5c-4c47-ab09-981bccd7da24; Version=1; Path=/realms/test/;
         SameSite=None; Secure; HttpOnly
-      - AUTH_SESSION_ID_LEGACY=02a63a67-905c-4170-89d4-4508dd29ba9f; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID_LEGACY=11bf3cf9-ff5c-4c47-ab09-981bccd7da24; Version=1; Path=/realms/test/;
         HttpOnly
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
@@ -559,66 +373,9 @@ interactions:
       - gzip, deflate, br
       Connection:
       - keep-alive
-      User-Agent:
-      - python-requests/2.32.4
-    method: GET
-    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
-  response:
-    body:
-      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
-        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
-        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
-        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
-        in to test</title>\n    <link rel=\"icon\" href=\"/resources/qy4ew/login/keycloak/img/favicon.ico\"
-        />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/common/keycloak/lib/pficon/pficon.css\"
-        rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/login/keycloak/css/login.css\"
-        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
-        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
-        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
-        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
-        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
-        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
-        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
-        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
-    headers:
-      Content-Language:
-      - en
-      Content-Security-Policy:
-      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
-      Content-Type:
-      - text/html;charset=utf-8
-      Referrer-Policy:
-      - no-referrer
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-Robots-Tag:
-      - none
-      X-XSS-Protection:
-      - 1; mode=block
-      content-length:
-      - '1573'
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate, br
-      Connection:
-      - keep-alive
       Cookie:
-      - AUTH_SESSION_ID_LEGACY=63806fc9-3626-4fcd-b0f7-8ef042718573; KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTUyODU1NTgsImlhdCI6MTc1NTI0OTU1OCwianRpIjoiYjg1OWVkNGItODA5YS00ZDVkLThhYTMtMjY0ZWZhMDRmZDMxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzaWQiOiI2MzgwNmZjOS0zNjI2LTRmY2QtYjBmNy04ZWYwNDI3MTg1NzMiLCJzdGF0ZV9jaGVja2VyIjoiOG94eGZqdnBHWDRvcUxYVWhpM19XaTE0UW5YVk8wa2xxaUhoVzhZNDdRbyJ9.s7lxHOsXGLmGzs84oA_Rt4AGQrx1QJ5La9b1_uLP_CI;
-        KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/63806fc9-3626-4fcd-b0f7-8ef042718573;
+      - AUTH_SESSION_ID_LEGACY=91e3abdd-e783-4a4e-8da7-66dbc2ef0569; KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3NTU2Mjg1MDAsImlhdCI6MTc1NTU5MjUwMCwianRpIjoiZDg5ZWM3OTUtYmRhZC00NDE3LWExNDktYzUzMjIwNGQyZDc2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiMTQ0ZTQ3MjEtZjA2NS00ZGI2LWExNDgtYzU1ZDE2NzhhZjNjIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzaWQiOiI5MWUzYWJkZC1lNzgzLTRhNGUtOGRhNy02NmRiYzJlZjA1NjkiLCJzdGF0ZV9jaGVja2VyIjoieVdpLUJmVjd0bG1XMktzTXA3WjJodWdPaV9iUUFlbC0yTDhtelEyeXVZayJ9.z_ub389eSdh4KhJwVah1tbJbPFQC7vzsb6TNPr01iVg;
+        KEYCLOAK_SESSION_LEGACY=test/144e4721-f065-4db6-a148-c55d1678af3c/91e3abdd-e783-4a4e-8da7-66dbc2ef0569;
         KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9hdXRoL29pZGMvY2FsbGJhY2svIiwiYWN0IjoiQVVUSEVOVElDQVRFIiwibm90ZXMiOnsic2NvcGUiOiJvcGVuaWQgZWlkYXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2F1dGgvb2lkYy9jYWxsYmFjay8iLCJzdGF0ZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmciLCJub25jZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmcifX0.UWp8bmOrUl2YihnRX_ABZsWmGPLTskaSjJOM7kKzu3Q
       User-Agent:
       - python-requests/2.32.4
@@ -638,8 +395,8 @@ interactions:
         rel=\"stylesheet\" />\n            <link href=\"/resources/qy4ew/login/keycloak/css/login.css\"
         rel=\"stylesheet\" />\n        <script type=\"module\">\n            import
         { checkCookiesAndSetTimer } from \"/resources/qy4ew/login/keycloak/js/authChecker.js\";\n\n
-        \           checkCookiesAndSetTimer(\n              \"8341d35c-d48b-4698-90b6-6873ee222efe\",\n
-        \             \"4ZChPst-zoY\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=4ZChPst-zoY&skip_logout=true\"\n
+        \           checkCookiesAndSetTimer(\n              \"e71fe0a9-ba6c-43cc-8dae-4f4106e2e5d8\",\n
+        \             \"KEgp8XzIiyE\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=KEgp8XzIiyE&skip_logout=true\"\n
         \           );\n        </script>\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
         \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
         \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
@@ -647,7 +404,7 @@ interactions:
         \       Sign in to your account\n\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
         \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-form\">\n
         \         <div id=\"kc-form-wrapper\">\n                <form id=\"kc-form-login\"
-        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=CqzeSVFJesG6gr6n08h-jmxVMg56luy04RPpH5VlpbQ&amp;execution=bb2343b3-a402-42e1-8122-42f36d63bd96&amp;client_id=testid&amp;tab_id=4ZChPst-zoY\"
+        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=Ccj3uU-9vlYy0eMacUPHirpy8NL1jQM6b544k8IJH1A&amp;execution=bb2343b3-a402-42e1-8122-42f36d63bd96&amp;client_id=testid&amp;tab_id=KEgp8XzIiyE\"
         method=\"post\">\n                        <div class=\"form-group\">\n                            <label
         for=\"username\" class=\"pf-c-form__label pf-c-form__label-text\">Username
         or email</label>\n\n                            <input tabindex=\"1\" id=\"username\"
@@ -703,9 +460,9 @@ interactions:
         00:00:10 GMT; Max-Age=0; Path=/realms/test
       - KEYCLOAK_SESSION_LEGACY=; Version=1; Comment=Expiring cookie; Expires=Thu,
         01-Jan-1970 00:00:10 GMT; Max-Age=0; Path=/realms/test
-      - AUTH_SESSION_ID=8341d35c-d48b-4698-90b6-6873ee222efe; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID=e71fe0a9-ba6c-43cc-8dae-4f4106e2e5d8; Version=1; Path=/realms/test/;
         SameSite=None; Secure; HttpOnly
-      - AUTH_SESSION_ID_LEGACY=8341d35c-d48b-4698-90b6-6873ee222efe; Version=1; Path=/realms/test/;
+      - AUTH_SESSION_ID_LEGACY=e71fe0a9-ba6c-43cc-8dae-4f4106e2e5d8; Version=1; Path=/realms/test/;
         HttpOnly
       - KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9hdXRoL29pZGMvY2FsbGJhY2svIiwiYWN0IjoiQVVUSEVOVElDQVRFIiwibm90ZXMiOnsic2NvcGUiOiJvcGVuaWQgZWlkYXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2F1dGgvb2lkYy9jYWxsYmFjay8iLCJzdGF0ZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmciLCJub25jZSI6Im5vdC1hLXJhbmRvbS1zdHJpbmcifX0.UWp8bmOrUl2YihnRX_ABZsWmGPLTskaSjJOM7kKzu3Q;
         Version=1; Path=/realms/test/; HttpOnly
