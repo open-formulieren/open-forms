@@ -271,7 +271,12 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         new_configuration = evaluate_form_logic(instance.submission, instance)
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
-        return super().to_representation(instance)
+        representation = super().to_representation(instance)
+
+        if self.context.get("unsaved_data_only", False):
+            representation["data"] = instance.unsaved_data
+
+        return representation
 
     def validate_data(self, data: FormioData):
         self._run_formio_validation(data)
