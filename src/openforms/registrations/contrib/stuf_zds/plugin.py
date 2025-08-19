@@ -296,6 +296,8 @@ class StufZDSRegistration(BasePlugin[RegistrationOptions]):
                 for item in value:
                     del item["dateOfBirthPrecision"]
 
+                    item["dateOfBirth"] = item["dateOfBirth"].isoformat()
+
                 extra_data[to_key] = value
                 del extra_data[from_key]
 

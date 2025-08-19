@@ -3645,14 +3645,12 @@ class StufZDSPluginPartnersComponentVCRTests(OFVCRMixin, StUFZDSTestBase):
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.affixes']": "",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.lastName']": "Jansma",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.dateOfBirth']": "1945-04-18",
-                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.0.description']": "A description",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.bsn']": "123456782",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.firstNames']": "Test second partner",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.initials']": "T.s.p.",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.affixes']": "",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.lastName']": "Test",
                 "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.dateOfBirth']": "1945-04-18",
-                "//stuf:extraElementen/stuf:extraElement[@naam='partnersKey.1.description']": "A description",
             },
         )
 
