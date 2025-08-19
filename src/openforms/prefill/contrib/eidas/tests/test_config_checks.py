@@ -53,7 +53,25 @@ class EIDASPrefillConfigCheckTests(OIDCMixin, TestCase):
 
         self.assertEqual(exc.exception.args[0], _("Missing OIDC client for eIDAS."))
 
-    def test_eidas_company_OIDC_client_missing_options(self):
+    def test_eidas_OIDC_client_missing_identity_settings(self):
+        OFOIDCClientFactory.create(
+            enabled=True,
+            with_eidas=True,
+            oidc_provider=self.provider,
+            options__identity_settings=None,
+        )
+        plugin = EIDASPrefill(identifier="eidas")
+
+        # Check the config and expect a raised exception
+        with self.assertRaises(InvalidPluginConfiguration) as exc:
+            plugin.check_config()
+
+        self.assertEqual(
+            exc.exception.args[0],
+            _("Missing OIDC client identity settings for eIDAS."),
+        )
+
+    def test_eidas_OIDC_client_missing_identity_settings_options(self):
         client = OFOIDCClientFactory.create(
             enabled=True,
             with_eidas=True,
