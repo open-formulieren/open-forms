@@ -13,7 +13,11 @@ from glom import assign
 from json_logic import jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
-from openforms.formio.service import FormioConfigurationWrapper, FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    FormioData,
+    process_visibility,
+)
 from openforms.formio.typing.custom import ChildProperties
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
@@ -69,6 +73,7 @@ class ActionOperation:
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping | None:
         """
@@ -99,6 +104,34 @@ class PropertyAction(ActionOperation):
             return None
         component = configuration[self.component]
         assign(component, self.property, self.value, missing=dict)
+
+    def eval(
+        self,
+        context: FormioData,
+        configuration: FormioConfigurationWrapper,
+        submission: Submission,
+    ) -> DataMapping | None:
+        # To avoid doing unnecessary work, only apply clear-on-hide logic for components
+        # for which their action sets the "hidden" property to True.
+        if not (self.property == "hidden" and self.value):
+            return None
+
+        # Note that this can happen when the action applies to a component of a
+        # different step than we are currently evaluating. We don't have to do
+        # anything in this case, because the clear-on-hide behaviour of that
+        # component will be handled once the user has reached that step.
+        if self.component not in configuration:
+            return None
+
+        component = configuration[self.component]
+
+        # Process the visibility of the component. We want to process the component
+        # itself, not try to iterate over its children, so we create a 'fake'
+        # configuration. Mutations are performed on the context directly.
+        process_visibility(
+            {"components": [component]}, context, configuration, parent_hidden=True
+        )
+        return None
 
 
 class DisableNextAction(ActionOperation):
@@ -175,6 +208,7 @@ class VariableAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
@@ -282,6 +316,7 @@ class SynchronizeVariablesAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping | None:
         configuration = submission.total_configuration_wrapper
@@ -303,6 +338,7 @@ class ServiceFetchAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping:
         var = self.rule.form.formvariable_set.get(key=self.variable)
@@ -344,6 +380,7 @@ class EvaluateDMNAction(ActionOperation):
     def eval(
         self,
         context: FormioData,
+        configuration: FormioConfigurationWrapper,
         submission: Submission,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs

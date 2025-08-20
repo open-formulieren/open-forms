@@ -3,7 +3,11 @@ from collections.abc import Iterable, Iterator
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.formio.datastructures import FormioData
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    FormioData,
+    process_visibility,
+)
 from openforms.forms.models import FormLogic, FormStep
 
 from ..models import Submission, SubmissionStep
@@ -109,6 +113,7 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data: FormioData,
+    configuration: FormioConfigurationWrapper,
     submission: Submission,
 ) -> Iterator[tuple[ActionOperation, dict]]:
     """
@@ -139,11 +144,15 @@ def iter_evaluate_rules(
             with log_errors(rule.json_logic_trigger, rule):
                 triggered = bool(jsonLogic(rule.json_logic_trigger, data.data))
 
+            # If the rule was not triggered, we still need to handle the clear on hide,
+            # as components can be hidden by default and shown when a logic rule is
+            # triggered
             if not triggered:
+                handle_clear_on_hide(rule, data, configuration)
                 continue
 
             for operation in rule.action_operations:
-                if mutations := operation.eval(data, submission=submission):
+                if mutations := operation.eval(data, configuration, submission):
                     mutations_python = {
                         key: state.variables[key].to_python(value)
                         for key, value in mutations.items()
@@ -153,3 +162,35 @@ def iter_evaluate_rules(
                     mutations_python = {}
 
                 yield operation, mutations_python
+
+
+def handle_clear_on_hide(
+    rule: FormLogic, data: FormioData, configuration: FormioConfigurationWrapper
+):
+    """
+    Handle clear-on-hide behaviour for components of which the "hidden" property
+    actions were not triggered.
+
+    We can do this by checking the (default) value of the "hidden" property.
+    """
+    for operation in rule.hidden_actions:
+        # Note that this can happen when the action applies to a component of a
+        # different step than we are currently evaluating. We don't have to do anything
+        # in this case, because the clear-on-hide behaviour of that component will be
+        # handled once the user has reached that step.
+        if operation.component not in configuration:
+            continue
+
+        component = configuration[operation.component]
+
+        # To avoid doing unnecessary work, only call ``process_visibility`` when the
+        # component is actually hidden.
+        if not component.get("hidden", False):
+            continue
+
+        # Process the visibility of the component. We want to process the component
+        # itself, not try to iterate over its children, so we create a 'fake'
+        # configuration.
+        process_visibility(
+            {"components": [component]}, data, configuration, parent_hidden=True
+        )

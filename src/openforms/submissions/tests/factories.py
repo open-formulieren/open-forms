@@ -240,7 +240,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             if not component.get("label"):
                 component["label"] = key.title()
             if not component.get("type"):
-                component["type"] = "text"
+                component["type"] = "textfield"
 
             components.append(component)
 
