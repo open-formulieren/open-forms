@@ -29,10 +29,13 @@ class Validate(TypedDict, total=False):
     plugins: list[str]
 
 
+type ConditionalCompareValue = str | bool | int | float | None
+
+
 class Conditional(TypedDict, total=False):
     show: bool | None
     when: str | None
-    eq: str | bool | int | float | None
+    eq: ConditionalCompareValue
 
 
 # Custom validation for AddressNL sub components

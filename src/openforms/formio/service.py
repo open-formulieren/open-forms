@@ -34,11 +34,13 @@ from .typing import (
     FieldsetComponent,
 )
 from .utils import (
+    get_component_empty_value,
     iter_components,
     iterate_data_with_components,
     recursive_apply,
 )
 from .variables import inject_variables
+from .visibility import process_visibility
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -57,6 +59,8 @@ __all__ = [
     "build_serializer",
     "rewrite_formio_components",
     "as_json_schema",
+    "process_visibility",
+    "get_component_empty_value",
 ]
 
 

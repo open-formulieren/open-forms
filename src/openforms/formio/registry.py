@@ -13,6 +13,7 @@ the public API better defined and smaller.
 """
 
 import warnings
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
@@ -22,9 +23,9 @@ from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, VariableValue
 
-from .datastructures import FormioData
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .typing import Component
 from .utils import is_layout_component
 
@@ -117,6 +118,44 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         implemented in the child class
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def apply_visibility(
+        component: ComponentT,
+        data: FormioData,
+        wrapper: FormioConfigurationWrapper,
+        parent_hidden: bool,
+        get_evaluation_data: Callable | None = None,
+    ) -> None:
+        """
+        Apply (conditional) visibility of this component. This routine should be
+        implemented in the child class.
+
+        :param component: Component configuration.
+        :param data: Data used for processing.
+        :param wrapper: Formio configuration wrapper. Required for component lookup.
+        :param parent_hidden: Indicates whether the parent component was hidden.
+        :param get_evaluation_data: Function used to get the evaluation data used during
+          evaluation of the conditional.
+        :param ignore_hidden_property: Whether to ignore the "hidden" property during
+          further processing of its children.
+        """
+
+    @staticmethod
+    def test_conditional(
+        component: ComponentT, value: VariableValue, compare_value: VariableValue
+    ) -> bool | None:
+        """
+        Perform a component-specific comparison whether a conditional is triggered.
+
+        :param component: Component to evaluate.
+        :param value: Value to evaluate.
+        :param compare_value: Value to compare - should be fetched from the conditional
+          in the component configuration.
+        :return: Whether the conditional was triggered, or ``None`` if not overridden in
+          the child class.
+        """
+        return None
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
