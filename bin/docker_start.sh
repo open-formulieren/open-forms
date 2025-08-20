@@ -14,6 +14,11 @@ mountpoint=${SUBPATH:-/}
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
+# Copy static root to volume, if required
+if [ -n "$STATIC_ROOT_VOLUME" ]; then
+    cp -r /app/static/* "$STATIC_ROOT_VOLUME"
+fi
+
 # wait for required services
 ${SCRIPTPATH}/wait_for_db.sh
 

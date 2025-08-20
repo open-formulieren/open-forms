@@ -22,6 +22,7 @@ x-app-env: &x-app-env
   - DB_NAME=openforms
   - DB_USER=openforms
   - DB_HOST=db
+  - STATIC_ROOT_VOLUME=/srv/static/
   - CACHE_DEFAULT=redis:6379/0
   - CACHE_AXES=redis:6379/0
   - CACHE_PORTALOCKER=redis:6379/0
@@ -59,6 +60,15 @@ x-app-env: &x-app-env
   - OTEL_EXPORTER_OTLP_METRICS_INSECURE=${OTEL_EXPORTER_OTLP_METRICS_INSECURE:-true}
   - OF_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR=true
 
+x-app-volumes: &x-app-volumes
+  - static:/srv/static
+  - media:/app/media
+  - private_media:/app/private_media
+  - ./docker/setup_configuration:/app/setup_configuration
+  - log:/app/log
+  - certifi_ca_bundle:/app/certifi_ca_bundle
+  - ./bin/test_fix_scripts.sh:/app/bin/test_fix_scripts.sh
+
 services:
   db:
     image: postgres:${PG_VERSION:-15}  # Minimum required version is 12
@@ -88,10 +98,11 @@ services:
     networks:
       - open-forms-dev
 
-  busybox:
+  prepare-volumes:
     image: busybox
-    command: /bin/chown -R 1000 /private-media
+    command: /bin/chown -R 1000 /private-media /srv/static
     volumes:
+      - static:/srv/static
       - private_media:/private-media
 
   web:
@@ -102,13 +113,7 @@ services:
         SDK_RELEASE: ${SDK_TAG:-latest}
     image: openformulieren/open-forms:${TAG:-latest}
     environment: *x-app-env
-    volumes: &web_volumes
-      - media:/app/media
-      - private_media:/app/private_media
-      - ./docker/setup_configuration:/app/setup_configuration
-      - log:/app/log
-      - certifi_ca_bundle:/app/certifi_ca_bundle
-      - ./bin/test_fix_scripts.sh:/app/bin/test_fix_scripts.sh
+    volumes: *x-app-volumes
     labels:
       <<: *x-labels
       service: web
@@ -116,6 +121,7 @@ services:
     ports:
       - 8000:8000
     depends_on:
+      - prepare-volumes
       - db
       - redis
       - smtp
@@ -131,8 +137,9 @@ services:
     build: .
     environment: *x-app-env
     command: /setup_configuration.sh
-    volumes: *web_volumes
+    volumes: *x-app-volumes
     depends_on:
+      - prepare-volumes
       - db
       - redis
     networks:
@@ -142,6 +149,7 @@ services:
     image: nginx
     volumes:
       - ./docker-nginx-default.conf:/etc/nginx/conf.d/default.conf
+      - static:/static
       - private_media:/private-media
     ports:
       - '9000:80'
@@ -161,7 +169,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    volumes: *web_volumes
+    volumes: *x-app-volumes
     labels:
       <<: *x-labels
       service: background-tasks
@@ -203,6 +211,7 @@ services:
 
 volumes:
   db:
+  static:
   media:
   private_media:
   log:
