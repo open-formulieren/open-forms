@@ -75,3 +75,10 @@ upload_file_size = meter.create_histogram(
         1024**3,  # 1 GiB
     ),
 )
+
+attachments_per_submission = meter.create_histogram(
+    name="submission.attachments_per_submission",
+    unit="1",
+    description="Number of attachments per completed form submission.",
+    explicit_bucket_boundaries_advisory=(0, 5, 10, 20, 50, 100),
+)
