@@ -1,3 +1,6 @@
+# THIS SCRIPT IS ONLY USED IN UNIT TESTS
+
+
 def main(skip_setup=False):
     raise Exception("nope")
 
