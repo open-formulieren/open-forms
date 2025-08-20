@@ -285,6 +285,13 @@ Submissions
     - ``form.name`` - the name of the form that was submitted.
     - ``content_type`` - the file type of the attachment.
 
+``submission.attachments_per_submission``
+    A histogram counting the amount of attachments within a submission. Additional
+    attributes are:
+
+    - ``form.uuid`` - the unique database ID of the form.
+    - ``form.name`` - the name of the form that was submitted.
+
 Tracing
 =======
 
