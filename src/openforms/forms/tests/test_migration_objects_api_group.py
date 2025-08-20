@@ -4,8 +4,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 
 class ObjectsApiGroupMigrationTest(TestMigrations):
-    migrate_from = "0108_form_internal_remarks"
-    migrate_to = "0109_data_migrate_objects_api_group"
+    migrate_from = "0111_formvariable_form_variable_subtype_empty_iff_data_type_is_not_array_and_more"
+    migrate_to = "0112_data_migrate_objects_api_group"
     app = "forms"
 
     def setUpBeforeMigration(self, apps):

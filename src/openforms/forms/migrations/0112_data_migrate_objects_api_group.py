@@ -80,7 +80,10 @@ def reverse_objects_api_group_slug_to_pk(apps: StateApps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0108_form_internal_remarks"),
+        (
+            "forms",
+            "0111_formvariable_form_variable_subtype_empty_iff_data_type_is_not_array_and_more",
+        ),
         ("objects_api", "0006_alter_objectsapigroupconfig_catalogue_domain"),
     ]
 
