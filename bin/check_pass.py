@@ -1,3 +1,4 @@
+# THIS SCRIPT IS ONLY USED IN UNIT TESTS
 import django
 
 
