@@ -74,6 +74,16 @@ class PrefillConfiguration(TypedDict):
     identifierRole: Literal["main", "authorizee"]
 
 
+# TODO-5134: this must be extended to `VariableValue`
+type ConditionalCompareValue = bool | str | int | float
+
+
+class Conditional(TypedDict):
+    show: bool
+    when: str
+    eq: ConditionalCompareValue
+
+
 class Component(TypedDict):
     """
     A formio component definition.
@@ -96,6 +106,8 @@ class Component(TypedDict):
     openForms: NotRequired[OpenFormsConfig]
     autocomplete: NotRequired[str]
     dataType: NotRequired[Literal["string"]]
+    conditional: NotRequired[Conditional]
+    clearOnHide: NotRequired[bool]
 
 
 class FormioConfiguration(TypedDict):
