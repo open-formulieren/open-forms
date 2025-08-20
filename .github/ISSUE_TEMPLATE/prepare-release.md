@@ -35,8 +35,8 @@ assignees: sergei-maertens
     - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
   - Prefill
     - [ ] Objects API: `openforms.prefill.contrib.objects_api`
-    - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't
-          be reinstated)
+    - Suwinet: `openforms.prefill.contrib.suwinet` (testenv access has been retracted and won't be
+      reinstated)
   - ReferenceLists:
     - [ ] `openforms.contrib.reference_lists`
     - [ ] `openforms.emails.tests.test_tasks_integration`
@@ -61,3 +61,8 @@ assignees: sergei-maertens
 - [ ] Update the `upgrade_simulation` CI job matrix
 - [ ] Bump version number (including package-lock.json)
 - [ ] Update changelog
+  - [ ] Document upgrade procedure - mention minimum required current version
+  - [ ] Document major features (proze)
+  - [ ] Document new features
+  - [ ] Document bugfixes
+  - [ ] Document project maintenance
